@@ -1,0 +1,55 @@
+在服务端设置pub任务 seek。
+
+# 请求包
+**备注：如果是海外的pub转推任务，请将Host改为：pili-hw-pub.qiniuapi.com**
+
+```
+POST /tasks/<taskID>/seek
+Host: pili-pub.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+
+{
+    "index":0,
+    "seek":100 
+}
+```
+
+| 参数名称 | 必填 | 说明 |
+| - | - | - | 
+| index | 否 | int, sourceUrls索引号。|
+| seek | 是 | int, seek位置,相对时间,单位: s。|
+
+
+# 返回包
+
+```
+200 {}
+
+400 {
+    "error": "invalid parameter"
+}
+500 {
+    "error": "get worker fail"
+}
+
+500 {
+    "error": "no worker"
+}
+
+500 {
+    "error": "no workers available"
+}
+
+500 {
+    "error": "call worker fail"
+}
+
+500 {
+    "error": "add worker's task fail"
+}
+
+500 {
+    "error": "seek task fail"
+}
+```

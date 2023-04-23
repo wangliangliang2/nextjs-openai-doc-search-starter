@@ -1,0 +1,207 @@
+# 上传证书
+
+```
+用户上传证书的接口, 注意我们不会自动补全证书链，需要用户自己补全
+
+```
+
+## 请求包
+
+```
+POST /sslcert
+{
+		"name": <Name>,
+		"common_name": <CommonName>,
+		"pri": <Pri>,
+		"ca": <Ca>
+}
+
+```
+### 参数解释
+
+| 参数         | 类型     | 含义   |
+| ---------- | ------ | ---- |
+| Name       | string | 证书名称 |
+| CommonName | string | 通用名称 |
+| Pri        | string | 证书私钥 |
+| Ca         | string | 证书内容 |
+
+## 返回包
+
+```
+	{
+		"certID": <CertID>
+		
+	}
+
+```
+### 参数解释
+| 参数         | 类型     | 含义   |
+| ---------- | ------ | ---- |
+| CertID     | string | 证书ID |
+
+
+**错误码**
+
+| 错误码    | 含义           |
+| ------ | ------------ |
+| 400500 | 超过用户绑定证书最大额度 |
+| 404906 | https证书解码失败  |
+| 400323 | 验证https证书链失败 |
+| 400322 | https证书有效期太短 |
+| 400329 | https证书过期    |
+
+# 删除证书
+
+```
+用户删除证书的接口
+
+```
+
+## 请求包
+
+```
+DELETE /sslcert/<CertID>
+Authorization: QBox <QBoxToken>
+
+```
+
+### 参数解释
+
+| 参数     | 类型     | 含义   |
+| ------ | ------ | ---- |
+| CertID | string | 证书ID    |
+
+## 返回包
+
+```
+{}
+
+```
+
+**错误码**
+
+| 错误码    | 含义      |
+| ------ | ------- |
+| 400401 | 无此证书    |
+| 404908 | 无权操作该证书 |
+| 400611 | 证书已绑定CDN域名|
+| 400911 | 证书已绑定存储域名 |
+
+# 获取证书
+
+```
+用户获取单个证书的接口
+
+```
+
+## 请求包
+
+```
+GET /sslcert/<CertID>
+Authorization: QBox <QBoxToken>
+
+```
+
+### 参数解释
+
+| 参数     | 类型     | 含义   |
+| ------ | ------ | ---- |
+| CertID | string | 证书ID    |
+
+## 返回包
+
+```
+{
+	"name": <Name>,
+    	"common_name": <CommonName>,
+        "dnsnames": <DNSNames>,  
+    	"not_before": <NotBefore>,
+     	"not_after": <NotAfter>,
+	"pri": <Pri>,
+	"ca": <Ca>,
+        "create_time": <CreateTime>
+}
+
+```
+
+### 参数解释
+
+| 参数         | 类型     | 含义   |
+| ---------- | ------ | ---- |
+| Name       | string | 证书名称 |
+| CommonName | string | 通用名称 |
+| DNSNames   | []string| DNS域名 |
+| NotBefore  | int    | 生效时间 |
+| NotAfter   | int    | 过期时间 |
+| Pri        | string | 证书私钥 |
+| Ca         | string | 证书内容 |
+| CreateTime | int    |创建时间  |
+
+
+**错误码**
+
+| 错误码    | 含义      |
+| ------ | ------- |
+| 400401 | 无此证书    |
+| 404908 | 无权操作该证书 |
+
+# 获取证书列表
+
+```
+用户获取证书列表的接口
+
+```
+
+## 请求包
+
+```
+GET /sslcert?marker=<Marker>&limit=<Limit>
+Authorization: QBox <QBoxToken>
+
+```
+
+### 参数解释
+
+| 参数     | 类型     | 含义                           |
+| ------ | ------ | ---------------------------- |
+| Marker | string | 用于标示从哪个位置开始获取证书列表。不填或空表示从头开始 |
+| Limit  | int    | 返回的最大证书个数。默认 100             |
+
+## 返回包
+
+```
+{
+	marker: <Marker>,
+	"certs":[{
+            "certid": <CertID>,
+            "name": <Name>,
+    	    "common_name": <CommonName>,
+            "dnsnames": <DNSNames>,  
+    	    "not_before": <NotBefore>,
+     	    "not_after": <NotAfter>,
+            "create_time": <CreateTime>
+    	}]
+}
+
+```
+
+### 参数解释
+
+| 参数     | 类型     | 含义                                       |
+| ------ | ------ | ---------------------------------------- |
+| Marker | string | 用于标示下一次从哪个位置开始获取证书列表                     |
+| CertID     | string | 证书ID  |
+| Name       | string | 证书名称 |
+| CommonName | string | 通用名称 |
+| DNSNames   | []string| DNS域名 |
+| NotBefore  | int    | 生效时间 |
+| NotAfter   | int    | 过期时间 |
+| CreateTime | int    |创建时间  |
+
+**错误码**
+
+| 错误码    | 含义      |
+| ------ | ------- |
+| 404908 | 无权操作该证书 |
+

@@ -1,0 +1,52 @@
+以定时任务的形式去执行 sql 语句，将 sql 读取到的内容全部获取则任务结束，等到下一个定时任务的到来。
+
+### **基础配置信息**
+
+   * 数据库地址(`mssql_datasource`)：
+       - 明文填写: 由 `username`: 用户名， `password`: 用户密码， `hostname`: mssql地址，实例，port: mssql端口，`默认 1433` 组成， 一个完整的 `mssql_datasource` 示例:`server=localhost\SQLExpress;user id=sa;password=PassWord;port=1433`。`！注意：请使用内网方式访问，以免出现安全隐患！`
+       - 环境变量填写：为了不在配置中明文存储，我们在 `1.0.4` 版本及以后支持使用环境变量的方式填写该字段，填写方式为：`${YOUR_ENV}`，其中 `YOUR_ENV` 为环境变量，需要在机器上将该环境变量设置为原先要填写的值，`YOUR_ENV` 可以根据您的实际使用需求进行修改。
+
+   * 数据查询语句(`mssql_sql`)：要执行的 sql 语句，可以用 @(var) 使用魔法变量，用`;`分号隔开，多条语句按顺序执行。多条 sql 输出的内容必须 `schema 相同`，否则请添加新的收集器分开收集。
+   
+	 * 魔法变量：目前支持`年`，`月`，`日`，`时`，`分`，`秒`的魔法变量，以当前时间 2017 年 6 月 5 日 6 时 35 分 24 秒为例。
+      * `@(YYYY)` 年份，就是2017 
+      * `@(YY)` 年份后两位，就是17。
+      * `@(MM)`: 月份,补齐两位，就是06
+      * `@(M)`: 月份，不补齐,就是6
+      * `@(D)`: 日，不补齐,就是5
+      * `@(DD)`: 日，补齐两位，如05
+      * `@(hh)`: 小时，补齐两位, 如06
+      * `@(h)`: 小时,如6
+      * `@(mm)`: 分钟，补齐两位,35
+      * `@(m)`: 分钟,35
+      * `@(ss)`: 秒，补齐两位,24
+      * `@(s)`: 秒,24
+
+### **高级选项**
+ 
+   * 递增的列名称(`mssql_offset_key`)：指定一个 mssql 的列名，作为 offset 的记录，`类型必须是整型`，建议使用插入(或修改)数据的时间戳(unixnano)作为该字段。每次查询会指定这个 key 做 where 条件限制，避免单次查询性能消耗过大。
+ 
+   * 分批查询的单批次大小(`mssql_limit_batch`): mssql_sql 的语句，若数据量大，可以填写该字段，分批次查询。
+      * 若 `mssql_limit_batch` 存在，假设填写为 100，则查询范式为 `select * from table where mssql_offset_key >= 0 and mssql_offset_key < 0 + 100;`
+      * 若没填写 `mssql_limit_batch`，则直接执行整个 SQL select * from table，没有分页。
+
+   * 定时任务（`mssql_cron`）: 定时任务触发周期，支持三种写法。
+      * 直接写 `loop`,任务会不停的循环，执行完一次再接着执行下一次，后面可以跟循环的间歇时间，如 `loop 10s`，表示每次循环间隔 10s，支持的单位还有"m（分钟）"，"h(小时)"
+      * crontab 的写法,类似于`* * * * * *` ，对应的是秒(0~59)，分(0~59)，时(0~23)，日(1~31)，月(1-12)，星期(0~6)，填*号表示所有遍历都执行。
+      * 描述式写法,类似于 "@midnight", "@every 1h30m"，必须`@`符合开头，目前支持`@hourly`,`@weekly`,`@monthly`,`@yearly`,`@every <time duration>`
+
+   * 手动定义 SQL 字段类型（`sql_schema`）:  默认情况下会自动识别数据字段的类型，当不能识别时，可以 sql_schema 指定 mysql 数据字段的类型，目前支持 `string`、`long`、`float` 三种类型，单个字段左边为字段名称，右边为类型，空格分隔 `abc float`；不同的字段用逗号分隔。支持简写为`float=>f`，`long=>l`，`string=>s` 如："sql_schema":"abc string,bcd float,xyz long"。
+
+   * 魔法变量时间延迟(`magic_lag_duration`)：针对魔法变量进行时间延迟，单位支持 h(时)、m(分)、s(秒)，如写 24h，则渲染出来的时间魔法变量往前 1 天,2017 年 6 月 5 日 6 时 35 分 24 秒 的 @(D) 渲染出来的就是 4。
+
+
+### 已知问题
+
+对于 `SQL Server 2008` 和 `2008 R2` 引擎使用`登录报错`的情况，需要安装一下补丁。
+
+* SQL Server 2008 R2 用户安装 SQL Server 2008 R2 Service Pack 2 [下载链接](https://www.microsoft.com/en-us/download/details.aspx?id=30437)
+* SQL Server 2008 用户，则需要安装 Microsoft SQL Server 2008 Service Pack 3 并更新。
+
+详见[官方链接](http://support.microsoft.com/kb/2653857)
+
+> SQL Server 2008 and 2008 R2 engine cannot handle login records when SSL encryption is not disabled. To fix SQL Server 2008 R2 issue, install SQL Server 2008 R2 Service Pack 2. To fix SQL Server 2008 issue, install Microsoft SQL Server 2008 Service Pack 3 and Cumulative update package 3 for SQL Server 2008 SP3. More information: http://support.microsoft.com/kb/2653857

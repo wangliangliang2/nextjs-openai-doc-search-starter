@@ -1,0 +1,13 @@
+目前demo的示例：  
+``````
+WatermarkSetting watermarksetting = new WatermarkSetting(this);
+watermarksetting.setResourceId(R.drawable.qiniu_logo)
+.setAlpha(100)
+.setSize(WatermarkSetting.WATERMARK_SIZE.MEDIUM)
+.setCustomPosition(0.5f, 0.5f);
+``````
+
+如果根据此默认设置，水印在播放端看着非常模糊的话，可以尝试加入如下设置：  
+``````
+.setInJustDecodeBoundsEnabled(false)
+``````

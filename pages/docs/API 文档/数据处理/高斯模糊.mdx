@@ -1,0 +1,58 @@
+# **简介**
+
+**imageMogr2** 提供一系列高级图片处理功能，本文介绍 **图片高斯模糊**，可与 **imageMogr2** 的其他参数一起使用，详细的计费说明请参见 [计费与定价](https://www.qiniu.com/prices/dora?source=dora)。
+
+
+
+## **限制说明**
+
+- 原图限制
+  - 原图格式支持： `psd`、`jpeg`、`png`、`gif`、`webp`、`tiff`、`bmp`、`avif`、`heif`（webp动图，仅支持持久化处理）
+- 输出限制
+  - 如果您有多张多帧 gif 图片需要处理，可在图片上传完成后异步进行预转，这样不必在初次访问时进行图片处理，访问速度更快。建议优先使用[持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop)
+- 同步处理
+  - 同步处理只支持 20MB 以内的图片，超过 20MB 的图片需要使用持久化处理
+  - 同步处理前的gif最大帧数为 200
+  - 同步处理前的图片`w`和`h`参数不能超过3万像素，总像素不能超过1.5亿像素
+  - 同步处理后的图片`w`和`h`参数不能超过9999像素，总像素不得超过24999999（2500w-1）像素
+- 持久化处理
+  - 持久化处理无大小限制
+  - 持久化处理前的`gif`、`webp动图`，最大帧数为 500
+  - 持久化处理前的图片`w`和`h`参数不能超过3万像素，总像素不能超过1.5亿像素
+  - 持久化处理后的图片`w`和`h`参数不能超过14999像素，总像素不得超过59999999（6000w-1）像素
+
+
+
+# **参数说明**
+
+**注意**：接口规格不含任何空格与换行符。  
+
+```
+imageMogr2/blur/<blur>
+          /ignore-error/<ignoreError>            
+```
+
+## 参数说明
+
+| 参数名称                      | 必填 | 说明                                                         |
+| ----------------------------- | ---- | ------------------------------------------------------------ |
+| `/blur/<blur>`                |      | 高斯模糊参数。radius是模糊半径，取值范围为1-50。sigma是正态分布的标准差，必须大于0。图片格式为gif时，不支持该参数。 |
+| `/ignore-error/<ignoreError>` |      | 取值为 1 时，则处理失败时返回原图；取值为 0 时，则处理失败时返回错误信息。默认值为 0。 |
+
+# **示例**
+
+- 原图
+
+  ![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg)
+
+- 半径为 3，Sigma 值为 5：
+
+  ```
+  https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/blur/3x5
+  ```
+
+  ![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/blur/3x5)
+
+# **操作方式**
+
+您可以通过 [同步处理](/dora/api/8266/synchronous-processing)、[持久化处理](/dora/api/1291/persistent-data-processing-pfop)、[图片样式设置](/dora/api/8264/the-picture-style)、[CDN中间源处理](https://developer.qiniu.com/fusion/4954/image-optimization) 等方式，对图片进行处理，详情介绍请参见[图片处理操作方式](/dora/api/8234/the-image-processing1)。

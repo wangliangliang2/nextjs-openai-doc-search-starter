@@ -1,0 +1,59 @@
+# **描述**
+本接口用于查询流截图记录
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}/snapshots?type=<type>&start=<start>&end=<end>&marker=<marker>&line=<line>`
+* Get请求，通过`非SDK`方式调用的客户，http头部Content-Type,`要么设置为application/x-www-form-urlencoded`,`要么置空`, `要么不要携带`; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|流ID
+|type|是|integer|1:实时截图对应的图片列表 2: 按需截图对应的图片列表 3:覆盖式截图对应的图片
+|line|否|integer|限定返回截图的个数，只能输入1-100的整数，不指定默认返回30个，type为3可忽略
+|marker|否|string|上一次查询返回的标记，用于提示服务端从上一次查到的位置继续查询，不指定表示从头查询，type为3可忽略
+|start|否|integer|查询开始时间(unix时间戳,单位为秒)，type为3可忽略
+|end|否|integer|查询结束时间(unix时间戳,单位秒)，type为3可忽略
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|items|截图数组|截图数组
+|items.snap|string|截图url
+|items.file|string|对应云存储中的文件名
+|items.time|integer|截图时间点(unix时间戳 单位为秒)，覆盖式截图不返回
+|marker|string|返回的列举位置标记，作为下次列举的起点信息,为空表示全部返回完毕，覆盖式截图不返回
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/namespaces/d102sni9zryu/streams/device005/snapshots?type=1&start=1586828065&end=1586828456 \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "items": [
+    {
+      "snap": "http://prlghu509.test.bkt.clouddn.com/snapshot/jpg/d102sni9zryu/device005/1586828085507.jpg?e=1586829199&token=Ves3WTXC8XnEHT0I_vacEQQz-9jrJZxNExcmarzQ:atGE_HnerdP2TF1fDSlv2HRurcw",
+      "file":"snapshot/jpg/d102sni9zryu/device005/1586828085507.jpg",
+      "time": 1586828085
+    }, 
+    {
+      "snap": "http://prlghu509.test.bkt.clouddn.com/snapshot/jpg/d102sni9zryu/device005/1586828461726.jpg?e=1586829199&token=Ves3WTXC8XnEHT0I_vacEQQz-9jrJZxNExcmarzQ:AcRKnwvxxDc4kgg22RwbaiiAJYM",
+      "file":"snapshot/jpg/d102sni9zryu/device005/1586828461726.jpg",
+      "time": 1586828461
+    }
+  ],
+  "marker": ""
+}
+```

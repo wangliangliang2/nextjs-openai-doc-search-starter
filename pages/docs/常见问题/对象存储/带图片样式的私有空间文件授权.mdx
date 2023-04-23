@@ -1,0 +1,65 @@
+# 带图片样式的私有空间授权
+
+本文介绍了当使用了拼接了数据处理或者图片样式如何进行签名授权。
+
+私有资源下载是通过 <span style="color:red">HTTP GET</span> 的方式访问特定的    URL。私有资源 URL 与公开资源 URL 相比只是增加了两个参数 `e` 和 `token`，分别表示过期时间和[下载凭证](/kodo/manual/download-token)。一个完整的私有资源 URL 如下所示：
+
+```
+http://<domain>/<key>?e=<deadline>&token=<downloadToken>
+
+```
+
+当使用了七牛的实时数据处理功能或者拼接了图片样式时在 sdk 中进行签名授权时需要带拼接参数进行一起进行签名授权。不能在原文件签名后进行拼接参数。
+
+ 
+如 私用空间中的文件为
+
+原文件：    http://xxx.qiniu.xxx/qiniu.jpg
+<br>
+
+数据处理：  http://xxx.qiniu.xxx/qiniu.jpg?imageslim
+<br>
+
+图片样式：  http://xxx.qiniu.xxx/qiniu.jpg-style
+<br>
+
+文件另存下载  http://xxx.qiniu.xxx/qiniu.jpg?attname=lhs.jpg
+<br>
+
+
+
+** 正确的使用：__http://xxx.qiniu.xxx/qiniu.jpg?imageslim&e=xxxx&token=xxxx__**
+
+** 错误的使用： __http://xxx.qiniu.xxx/qiniu.jpg?e=xxxx&token=xxxxx?imageslim__**
+
+<br>
+
+
+
+
+
+** 以 php-sdk 为例，其中的 `baseUrl` 需要为拼接参数后的 url **
+
+```
+<?php
+require_once __DIR__ . '/../autoload.php';
+use Qiniu\Auth;
+$accessKey = getenv('QINIU_ACCESS_KEY');
+$secretKey = getenv('QINIU_SECRET_KEY');
+// 构建Auth对象
+$auth = new Auth($accessKey, $secretKey);
+// 私有空间中的外链 http://<domain>/<file_key>
+
+$baseUrl = 'http://xxx.qiniu.xxx/qiniu.jpg';
+//签名时的Url需要为拼接参数后的url后进行签名
+//$baseUrl= 'http://xxx.qiniu.xxx/qiniu.jpg?imageslim';
+//$baseUrl = 'http://xxx.qiniu.xxx/qiniu.jpg-style';
+//$baseUrl = 'http://xxx.qiniu.xxx/qiniu.jpg?attname=lhs.jpg';
+
+// 对链接进行签名
+$signedUrl = $auth->privateDownloadUrl($baseUrl);
+echo $signedUrl;
+
+```
+
+

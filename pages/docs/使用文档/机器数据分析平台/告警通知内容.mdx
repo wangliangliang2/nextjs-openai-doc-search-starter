@@ -1,0 +1,115 @@
+
+为了满足不同用户对于告警内容的个性化定制需求，Pandora支持在告警配置中通过变量的方式灵活实现告警通知内容模版的自定义。目前仅支持自定义【通知系统用户】这一种告警触发操作方式的告警内容，针对邮件、钉钉及企业微信等不同的告警通知渠道，Pandora支持不同的自定义编辑方式。用户可以在后续的触发操作配置中选择已经保存的模板。
+
+-----
+
+### **创建自定义告警通知内容模板**
+
+您可进入告警配置的通知内容模版管理页面，点击“新建”按钮创建新的通知内容模版。
+
+![告警通知内容模板管理页面.png](https://dn-odum9helk.qbox.me/FgYACsbWLBcgc3A8vqqO8CGVZ8vM)
+
+**步骤如下：**
+* 填写通知内容模版名称、描述。
+* 选择通知方式：可选系统用户中企业微信、钉钉、邮件。
+	* 企业微信、钉钉支持【markdown格式】。
+	* 邮件支持【富文本格式】。
+	
+除了自定义创建外，Pandora也提供了内置模版，您可点击【导入内置模版】，然后在此基础上进行编辑修改。
+
+
+#### **邮件**
+
+
+在邮件通知主题和正文中，您可以通过富文本编辑方式使用变量来更有效的呈现告警事件内容。
+
+![通知内容模板-邮件.png](https://dn-odum9helk.qbox.me/FpQAZLYY0kwBJpcuSu2e7kBt6ySW)
+
+**【富文本格式编辑方式参考】**
+
+富文本格式（Rich Text Format, 一般简称为RTF）是由微软公司开发的跨平台文档格式。最大的特点是：所见即所得，你把格式调整成什么样子，就会直接显示出什么样的效果。
+
+
+#### **企业微信通知**
+
+
+在企业微信通知文本中，您可以通过markdown编辑方式使用变量来更有效的呈现告警事件内容。
+模版预览：
+![](https://dn-odum9helk.qbox.me/Fk-76DDe4R1klABw9BJ_Gpznx89l)
+
+**【markdown语法参考】**
+Markdown是一种可以使用普通文本编辑器编写的标记语言，通过简单的标记语法，它可以使普通文本内容具有一定的格式。
+
+目前企业微信应用消息中支持的markdown语法是如下的子集：
+![](https://dn-odum9helk.qbox.me/FgAOhszCMAmSwkCiR5z8XWvLZmwj)
+
+
+#### **钉钉**
+
+
+在钉钉通知文本中，您可以通过markdown编辑方式使用变量来更有效的呈现告警事件内容。
+模版预览：
+![](https://dn-odum9helk.qbox.me/Fk-76DDe4R1klABw9BJ_Gpznx89l)
+
+**【markdown语法参考】**
+Markdown是一种可以使用普通文本编辑器编写的标记语言，通过简单的标记语法，它可以使普通文本内容具有一定的格式。
+
+目前钉钉应用消息中支持的markdown语法是如下的子集：
+![](https://dn-odum9helk.qbox.me/FgAOhszCMAmSwkCiR5z8XWvLZmwj)
+
+
+
+### **内置变量列表**
+
+模版中所使用到的变量使用$$进行渲染使用，Pandora内置支持的变量列表如下：
+
+|变量名 |描述|
+|--|--|
+|$附加内容$ |支持用户输入SPL将聚合结果附加在通知内容中，告警条件触发后在通知内容的附加内容模块展示SPL语句运行的聚合结果。**适用于邮件通知模板。**|
+|$附加内容详情$|支持用户输入SPL将聚合结果附加在通知内容中，告警条件触发后在通知内容的附加内容模块展示SPL语句运行的聚合结果。**适用于企业微信或钉钉通知模板**。|
+|$运行周期$ |告警规则运行周期，即每隔多久根据告警规则检测一次日志内容|
+|$来源类型$| 告警事件的来源，平台支持两种：日志告警，前端触发|
+|$当前运行批次$ |告警规则按周期运行，当前运行批次|
+|$告警等级$ |告警规则产生的告警事件的严重程度|
+|$告警条件数目$|告警规则中定义的告警触发条件数目，规则支持添加多个告警条件|
+|$告警服务$ |告警规则触发后产生的告警事件的属性，告警服务定义了事件合并规则和通知策略|
+|$告警时间$ |告警规则触发告警事件的时间|
+|$告警描述$|告警规则描述|
+|$告警指标信息$ |通过搜索分析语句过滤要监控告警的指标|
+|$告警名称$ |告警规则名称|
+|$原始日志$|原始日志|
+|$事件详情$ |事件对应的告警触发条件以及指标情况|
+|$事件描述$ |事件描述|
+|$事件名称$|告警事件名称，注：告警事件名称与告警服务同名|
+|$事件ID$ |告警规则触发的告警事件ID，事件ID唯一|
+|$transferLink$ |“移交”操作链接|
+|$takenoverLink$|“接手”操作链接|
+|$sourceLink$ |“告警来源”链接|
+|$pandoraHost$|主机名|
+|$eventId$ |事件ID|
+|$categoryId$|“告警服务”链接|
+
+
+### **【示例】**
+
+
+以下示例说明了如何在企业微信告警通知中使用自定义模板。
+* 分别创建邮件及企业微信的自定义告警通知内容模板。
+* 创建触发操作方式，选择企业微信和邮件的通知渠道及对应通知内容模板。
+* 新建告警规则“cpu告警"，配置告警触发条件：当五分钟内的平均CPU占用率超过0.6时则触发告警事件，告警级别为【警告】。
+``` 
+sourcetype="metrics" AND repo="cpu_test" AND origin="机器监控测试数据.json" | stats avg(cpu__usage_system) as avg_cpu by agent_id,hostname  //数据源
+```
+* 添加“附加内容”：平均CPU占用率及对应的主机名hostname；
+```
+sourcetype="metrics" AND repo="cpu_test" AND origin="机器监控测试数据.json" | stats avg(cpu__usage_system) as avg_cpu by agent_id,hostname  | where avg_cpu >0.6 | fields + hostname,avg_cpu  //附加内容SPL
+```
+* 在告警触发操作配置中选择已经创建的触发操作方式“notice_usr_integration”或选择“新建触发操作”。
+![](https://dn-odum9helk.qbox.me/FgDpCbcuyakBLAiiYC2HV5WlyVQ7)
+![](https://dn-odum9helk.qbox.me/FoMLP-SE28eXjgSSV4i25MJ37qEW)
+
+最终收到的告警通知内容如下：
+* 企业微信：
+![](https://dn-odum9helk.qbox.me/FsVOoVcG3YS246YgVx5yarZzm6iZ)
+* 邮件：
+![](https://dn-odum9helk.qbox.me/Fm9MGvLlOvqnzTsf_tMH_4mYMITs)

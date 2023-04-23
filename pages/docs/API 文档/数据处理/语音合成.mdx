@@ -1,0 +1,52 @@
+# 产品描述
+语音合成可将文本转化成拟人化语音的一类功能，采用先进的深度神经网络模型技术，合成效果自然流畅，合成度快，部署成本低，并提供多语种、多音色可供选择，满足不同业务场景需求，可广泛应用于新闻播报、小说、客服、智能硬件等场景。
+## 请求参数
+
+**请求URL**: `https://ap-gate-z0.qiniuapi.com/voice/v2/tts`
+
+**请求方式**: POST
+
+**请求 Header**:
+
+| 字段          | 取值                                                         |
+| :------------ | :----------------------------------------------------------- |
+| Content-Type  | application/json                                             |
+| Authorization | Qiniu \<AccessKey>:\<Sign> </br>注意: 用户请根据 AccessKey 和 SuccessKey 生成鉴权，以便进行身份验证。\<Sign> 的取值请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken) |
+
+**请求 Body**:
+
+| 字段      | 类型   | 是否必选 | 说明                                                         |
+| :-------- | :----- | :------- | :----------------------------------------------------------- |
+| spkid     | number | N        | TTS 发音人标识音源 id 7-14,实际可用范围根据情况, 可以不设置,默认是 7; 其中</br>7:精品女声，成熟，声音柔和纯美;</br> 8:精品女声，西安方言;</br> 9:精品女声，东北方言;</br> 10:精品男声，成熟正式，播音腔;</br> 11:精品男声，男孩，活泼开朗;</br> 12:精品男声，常见解说配音腔;</br> 13:精品男声，央视新闻播音腔;</br> 14:精品女声，少女音色。 |
+| content   | string | Y        | 需要进行语音合成的文本内容，最短1个字，最长200字             |
+| audioType | number | N        | 可不填，不填时默认为 3。</br>audioType=3 返回 16K 采样率的 mp3</br>audioType=4 返回 8K 采样率的 mp3</br>audioType=5 返回 24K 采样率的 mp3</br>audioType=6 返回 48k采样率的mp3</br>audioType=7 返回 16K 采样率的 pcm 格式</br>audioType=8 返回 8K 采样率的 pcm 格式</br>audioType=9 返回 24k 采样率的pcm格式</br>audioType=10 返回  8K 采样率的 wav 格式</br>audioType=11 返回 16K 采样率的 wav 格式 |
+| volume    | number | N        | 音量大小，取值范围为 0.75 - 1.25，默认为1                    |
+| speed     | number | N        | 语速，取值范围为 0.75 - 1.25，默认为1                        |
+
+## 返回参数
+
+| 字段             | 类型   | 说明               |
+| :--------------- | :----- | :----------------- |
+| msg              | string | 错误信息           |
+| code             | string | 错误码             |
+| result.audioUrl | string | 合成音频的下载地址 |
+
+返回示例
+
+```JSON
+{
+    "code": "0", 
+    "msg": "ok", 
+    "result": {
+        "audioUrl": "http://example.io/result.mp3"
+    }
+}
+```
+
+## 错误码
+
+| code | 说明 |
+| :--- | :--- |
+| 0    | 成功 |
+# 价格
+3元/千次

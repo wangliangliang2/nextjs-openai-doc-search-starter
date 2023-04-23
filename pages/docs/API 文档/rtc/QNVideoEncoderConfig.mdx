@@ -1,0 +1,175 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                Track 视频编码配置类</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Properties</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#bitrate`)'>bitrate</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#bitrate`)'>bitrate</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#bitrate`)'>bitrate</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#defaultVideoEncoderConfig`)'>defaultVideoEncoderConfig</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#initWithBitrate[1/3]`)'>initWithBitrate[1/3]</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#initWithBitrate[2/3]`)'>initWithBitrate[2/3]</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#initWithBitrate[3/3]`)'>initWithBitrate[3/3]</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Properties</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="bitrate">
+bitrate</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">@property (nonatomic, assign, readonly) NSUInteger bitrate;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>Track 的 bitrate (单位 kbps)，默认码率为 600kbps</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="bitrate">
+bitrate</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">@property (nonatomic, assign, readonly) CGSize videoEncodeSize;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>Track 编码画面大小，默认 480x640</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>若视频编码分辨率无法达到设置值，则以实际采集分辨率为准</p>
+        </blockquote>
+    </section>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="bitrate">
+bitrate</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">@property (nonatomic, assign, readonly) NSUInteger videoFrameRate;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>Track 编码帧数，默认 24 帧</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>若视频输入帧数无法达到设置值，则以实际输入帧数为准</p>
+        </blockquote>
+    </section>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="defaultVideoEncoderConfig">
+defaultVideoEncoderConfig</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">+ (instancetype)defaultVideoEncoderConfig;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>初始化默认编码配置</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span><a href='11944/QNVideoEncoderConfig-iOS'>QNVideoEncoderConfig</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="initWithBitrate[1/3]">
+initWithBitrate[1/3]</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (instancetype)initWithBitrate:(NSUInteger)bitrate;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>初始化指定 bitrate 参数的编码配置</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            bitrate: NSUInteger
+        </div>
+                <p>视频码率，单位 kbps</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='11944/QNVideoEncoderConfig-iOS'>QNVideoEncoderConfig</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="initWithBitrate[2/3]">
+initWithBitrate[2/3]</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (instancetype)initWithBitrate:(NSUInteger)bitrate videoEncodeSize:(CGSize)videoEncodeSize;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>初始化指定 bitrate、videoEncodeSize 参数的编码配置</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            bitrate: NSUInteger
+        </div>
+                <p>视频码率，单位 kbps</p>
+    </li>
+    <li>
+        <div>
+            videoEncodeSize: CGSize
+        </div>
+                <p>视频编码尺寸</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='11944/QNVideoEncoderConfig-iOS'>QNVideoEncoderConfig</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="initWithBitrate[3/3]">
+initWithBitrate[3/3]</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (instancetype)initWithBitrate:(NSUInteger)bitrate videoEncodeSize:(CGSize)videoEncodeSize videoFrameRate:(NSUInteger)videoFrameRate</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>初始化指定 bitrate、videoEncodeSize、videoFrameRate 参数的编码配置</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            bitrate: NSUInteger
+        </div>
+                <p>视频码率，单位 kbps</p>
+    </li>
+    <li>
+        <div>
+            videoEncodeSize: CGSize
+        </div>
+                <p>视频编码尺寸</p>
+    </li>
+    <li>
+        <div>
+            videoFrameRate: NSUInteger
+        </div>
+                <p>视频编码帧率</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='11944/QNVideoEncoderConfig-iOS'>QNVideoEncoderConfig</a></span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

@@ -1,0 +1,13 @@
+key value转换器：解析字段中的key value。
+![](https://dn-odum9helk.qbox.me/Fs_dKLC038G2BVN5Ds1dBJLLyXMN)
+
+原始数据为
+`at=info method=GET path=/ host=mutelight.org fwd=\"124.133.52.161\" dyno=web.2 connect=4ms service=8ms status=200 bytes=1653`
+
+转换后：
+![](https://dn-odum9helk.qbox.me/FkQJYmuu5VqQ9fb4oPWzBjZSqbZU)
+
+* 要进行Transform变化的键(`key`): 必填。支持多级嵌套，多级间用 *.* 符号连接，如 abc.xyz，表示 data["abc"]["xyz"]中的数据。
+* 新的字段名(`new`): 必填，新的字段名称。
+* 分隔符(`splitter`): 表示日志使用该分隔符分隔键值对。
+* 是否保持值为字符串(`keep_string`): 高级选项中，默认为false，进行转换，为true时值解析为字符串，不进行转换

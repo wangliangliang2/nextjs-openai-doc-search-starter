@@ -1,0 +1,249 @@
+# 功能描述
+本功能基于先进的人工智能技术，精准识别各类场景涉政、色情、暴恐、垃圾广告、Logo水印等违规内容，帮助您提前防御内容风险，提高审核效率，净化网络环境，提升用户体验。
+# 接口规格
+## 提交视频流识别请求
+
+**请求URL**: `https://censor-open.qiniuapi.com/anti_fraud/v3/videostream`
+
+**字符编码格式**: 请求及返回结果都使用 UTF-8 字符集进行编码
+
+**请求方法**: POST
+
+**建议超时时长**: 3s
+
+### 请求参数
+放在 HTTP Body 中，采用 Json 格式，具体参数如下:
+
+| 参数名称      | 类型        | 是否必选 | 说明                                                         |
+| :------------ | :---------- | :------- | :----------------------------------------------------------- |
+| imgType       | string      | Y        | 视频流截帧识别类型，可选值: <br>DEFAULT:默认识别涉政、色情、广告，取值为POLITICS_PORN_AD，DEFAULT只能单独 使用不能连接其他类型，否则DEFAULT失效 <br>POLITICS:涉政识别 <br>PERSON:涉政人物识别 <br>VIOLENCE:暴恐识别 <br>PORN:色情识别 <br>AD:广告识别 <br>LOGO:视频水印logo识别 <br>BEHAVIOR:不良场景识别，支持吸烟、喝酒、赌博、吸毒、避孕套和无意义画面 <br>通过下划线连接，如AD_PORN_POLITICS用于广告、色情和涉政组合识别 |
+| audioType     | string      | Y        | 视频流中的音频流识别类型，可选值: <br>DEFAULT:默认识别涉政、色情、广告，等价于POLITICAL_PORN_AD <br>POLITICAL:涉政识别 <br>PORN:色情识别 <br>AD:广告识别 <br>MOAN:娇喘识别 <br>NONE:不识别音频 <br>如需做组合识别，通过下划线连接即可，例如 POLITICAL_PORN_MOAN用于涉政、色情和娇喘识别。 |
+| imgCallback   | string      | Y        | 图片回调地址，将视频流中截帧图片的检测结 果通过该地址回调给用户。 |
+| audioCallback | string      | N        | 音频回调地址，将视频流中音频的检测结果通 过该地址回调给用户; <br>audioType值不为NONE时必传。 |
+| data          | json_object | Y        | 请求数据，最长1MB，详细内容参见下表                          |
+
+其中，data的内容如下:
+
+| 参数名称        | 类型   | 是否必选 | 说明                                                         |
+| :-------------- | :----- | :------- | :----------------------------------------------------------- |
+| url             | string | Y        | 要检测的视频流url地址，目前仅支持rtmp协议                    |
+| tokenId         | string | Y        | 用户账号标识                                                 |
+| returnAllImg    | int    | N        | 用户可根据需求选择返回不同审核结果的图片，可选值为0 和1，默认值为0。 <br>0:回调reject、review结果的图片审核信息 <br>1:回调所有结果的图片审核信息 |
+| streamName      | string | N        | 视频流名称                                                   |
+| returnAllText   | bool   | N        | 取值为true时返回全量的音频流片段识别结果和文本内容; <br>取值为false时只返回有风险(riskType为REJECT)的音频流片段识别结果和文本内容，默认是false |
+| detectFrequency | float  | N        | 视频流截帧频率，取值范围:1-60(秒/帧)，默认为3                |
+| room            | string | N        | 直播间/游戏房间编号，可针对单个房间制定不同的策略;           |
+
+
+### 返回参数
+放在 HTTP Body 中，采用 Json 格式，具体参数如下:
+
+| 参数名称 | 类型   | 是否必选 | 说明                                   |
+| :------- | :----- | :------- | :------------------------------------- |
+| code     | int    | Y        | 返回码                                 |
+| message  | string | Y        | 返回码详情描述                         |
+| entryId  | string | Y        | 请求唯一标识，建议保存可用于关闭视频流 |
+
+## 异步回调识别结果
+
+**支持协议**: HTTP或HTTPS
+
+**字符编码格式**: 请求及返回结果都使用UTF-8字符集进行编码 
+
+**请求方法**: POST
+
+**建议超时时长**: 5s
+
+**返回字段**:
+放在 HTTP Body 中，采用 Json 格式，具体参数如下:
+
+| 参数名称    | 类型        | 是否必选 | 说明                                                         |
+| :---------- | :---------- | :------- | :----------------------------------------------------------- |
+| code        | int         | Y        | 返回码                                                       |
+| message     | string      | Y        | 返回码详情描述                                               |
+| entryId     | string      | Y        | 请求唯一标识                                                 |
+| riskLevel   | string      | N        | 风险级别(code为1100时存在)，可能返回值: <br>PASS:正常内容 <br>REVIEW:疑似违规内容 <br>REJECT:违规内容 |
+| contentType | int         | Y        | 用来区分音频和图片回调，可能取值为1和2。 <br>1:该回调为图片回调 <br>2:该回调为音频回调 |
+| detail      | json_object | N        | 视频流中截帧图片或者音频片段的风险详 情(code 为 1100 时存在) |
+
+其中，在图片回调(contentType 为 1)时，detail 内容如下
+
+| 参数名称          | 类型        | 是否必选 | 说明                                                         |
+| :---------------- | :---------- | :------- | :----------------------------------------------------------- |
+| room              | string      | N        | 房间号，当客户传入时返回该字段                               |
+| requestParams     | json object | Y        | 返回请求参数data中的所有字段                                 |
+| imgUrl            | string      | Y        | 截帧图片url地址，有效时间30分钟                                  |
+| beginProcessTime  | int         | Y        | 截帧生成时间(13位时间戳)                                     |
+| finishProcessTime | int         | Y        | 检测完成时间(13位时间戳)                                     |
+| imgTime           | string      | Y        | 视频流截帧图片违规发生的时间(绝对时间)                       |
+| riskType          | int         | Y        | 标识风险类型，可能取值: <br>0: 正常 <br>100:涉政 <br>200:色情 <br>210:性感 <br>300:广告 <br>310:二维码 <br>320:水印 <br>400:暴恐 <br>500:违规 <br>510:不良场景 <br>700:黑名单 <br>710:白名单 <br>800:高危账号 <br>900:自定义 |
+| model             | string      | Y        | 策略规则标识，用来标识命中的策略规则                         |
+| descriptionV2     | string      | N        | 新版策略规则风险原因描述                                     |
+| matchedItem       | string      | N        | 命中的具体敏感词(该参数仅在命中敏感词时存在)                 |
+| matchedList       | string      | N        | 命中敏感词所在的名单名称(该参数仅在命中敏感词时存在)         |
+| matchedDetail     | string      | N        | 命中的敏感词详请                                             |
+| imgText           | string      | N        | 视频中画面识别出的文字内容                                   |
+
+其中，在音频回调(contentType 为 2)时，detail 内容如下:
+
+| 参数名称      | 类型        | 是否必选 | 说明                                         |
+| :------------ | :---------- | :------- | :------------------------------------------- |
+| audioText     | string      | Y        | 音频转译文本结果                             |
+| audioTime     | int         | N        | 整段音频的音频时长，单位秒，code为1100时存在 |
+| labels        | string      | N        | 音频片段风险原因汇总                         |
+| detail        | json_array  | N        | 风险详情                                     |
+| gender        | json_object | N        | 性别标签与概率值                             |
+| tags          | json_array  | N        | 音色标签与概率值列表                         |
+| callbackParam | json_object | Y        | 客户传入的透传字段                           |
+
+detail 数组中每一项的具体参数如下:
+
+| 参数名称       | 类型        | 是否必选 | 说明                                                         |
+| :------------- | :---------- | :------- | :----------------------------------------------------------- |
+| room           | string      | N        | 房间号，当客户传入时返回该字段                               |
+| requestParams  | json object | Y        | 返回请求参数data中的所有字段                                 |
+| audioUrl       | string      | Y        | 视频流中音频流片段的url地址，有效时间30分钟                     |
+| audioStartTime | string      | Y        | 视频流中音频违规内容开始时间(绝对时间)                       |
+| audioEndTime   | string      | Y        | 视频流中音频违规内容结束时间(绝对时间)                       |
+| riskType       | int         | Y        | 风险类型，可能取值: <br>0:正常 <br>100:涉政 <br>120:国歌 <br>200:色情 <br>210:辱骂 <br>250:娇喘 <br>300:广告 <br>700:黑名单 <br>900:自定义 |
+| matchedItem    | string      | N        | 音频中可能出现的敏感词                                       |
+| descriptionV2  | string      | Y        | 风险原因描述                                                 |
+| isSing         | int         | N        | type取值包含SING时存在，取值0表示检测不存在唱歌片段，取值1表示检测存在唱歌片段 |
+| language       | json_array  | N        | 语种标签与概率值列表                                         |
+| audioText      | string      | Y        | 音频片段对应的文本内容                                       |
+
+language 数组中每一项具体参数如下:
+
+| 参数名称   | 类型 | 是否必选 | 说明                                                         |
+| :--------- | :--- | :------- | :----------------------------------------------------------- |
+| label      | int  | Y        | 语种识别类别标识，可能取值: <br>0:普通话 <br>1:英语 <br>2:粤语 |
+| confidence | int  | Y        | 对应语种标签可能性大小，取值0-100，数值越高表示概率越大。    |
+
+## 关闭视频流识别
+
+**请求URL**: `https://censor-open.qiniuapi.com/anti_fraud/v3/finish_videostream`
+
+**字符编码格式**: 请求及返回结果都使用UTF-8字符集进行编码 
+
+**请求方法**: POST
+
+**建议超时时长**: 5s
+
+## 请求参数
+放在 HTTP Body 中，采用 Json 格式，具体参数如下:
+
+| 参数名称 | 类型   | 是否必选 | 说明                           |
+| :------- | :----- | :------- | :----------------------------- |
+| entryId  | string | Y        | 音频唯一标识，用于查询识别结果 |
+
+# 示例
+
+## 请求示例
+```
+POST /anti_fraud/v3/videostream HTTP/1.1
+Host: censor-open.qiniuapi.com
+Content-Type: application/json
+Authorization: Qiniu YnxrxOSvGotRZpqkZnMzl_euuoqRzOKUd6zwbRju:r6a-o2UpBg6A4puIMnkCExH8lE8=
+
+{
+    "audioCallback": "http://xxx",
+    "audioType": "PORN",
+    "data":{
+        "channel": "VIDEOSTREAM",
+        "returnAllImg": 1,
+        "returnAllText": true,
+        "room": "001", 
+        "tokenId": "1157893895",
+        "url": "rtmp://xxxx"
+    },
+    "imgCallback":"http://xxxxxxxxx",
+    "imgType": "DEFAULT"
+}
+```
+## 返回示例
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "code":1100,
+    "message":"成功", 
+    "entryrid":"5564f430ee6a1adb40f06d768b40316b",
+}
+```
+## 回调示例（图像内容)
+```
+POST /xxxx HTTP/1.1
+Host: xxxx
+Content-Type: application/json
+
+{
+    "code":1100,
+    "message":"成功", 
+    "entryId":"b891cf2d82e214de45df33fc2bea4875",
+    "riskLevel":"REJECT",
+    "contentType":1,
+    "detail":{
+        "descriptionV2":"正常",
+        "imgText":"ocr123 你好",
+        "imgTime":"2019-09-20 14:53:25",
+        "imgUrl":"http://yyyyyyyyyyyyyyyyy.jpg",
+        "matchedDetail":"[{"listId":"0b5d2ed695d40c0aa51e2b35fb51763d","matchedFiled":["text"],"name":"涉政测试","organization":"RlokQwRlVjUrTUlkIqOg","words":[" 你好"]}]",
+        "matchedItem":"你好",
+        "matchedList":"涉政测试",
+        "model":"M02601",
+        "polityName":"你好",
+        "requestParams":{
+            "channel":"VIDEOSTREAM",
+            "returnAllImg":1,
+            "returnAllText":true,
+            "room":"001",
+            "tokenId":"1157893895",
+            "url":"rtmp://xxxxxxx"
+        },
+        "riskType":100,
+        "room":"001"
+    }
+}
+```
+## 回调示例（音频内容)
+```
+POST /xxxx HTTP/1.1
+Host: xxxx
+Content-Type: application/json
+
+{
+    "code":1100,
+    "message":"成功", 
+    "entryId":"b891cf2d82e214de45df33fc2bea4875",
+    "riskLevel":"REJECT",
+    "contentType":2,
+    "detail":{
+        "audioEndTime":"2019-09-20 15:27:35",
+        "audioStartTime":"2019-09-20 15:27:25",
+        "audioText":"老婆",
+        "audioUrl":"http://xxxxxxxxxxx.mp3",
+        "model":"M02101",
+        "requestParams":{
+            "channel":"VIDEOSTREAM",
+            "returnAllImg":1,
+            "returnAllText":true,
+            "room":"001",
+            "tokenId":"1157893895",
+            "url":"rtmp://xxxxxxx"
+        },
+        "riskType":200,
+        "room":"001"
+    }
+}
+```
+# 错误码
+
+| Code | Message |
+| :---: | :---: |
+| 1100 | 成功| 
+| 1901 | QPS受限 |
+| 1902 | 参数不合法 |
+| 1903 | 服务失败 |
+| 1911 | 下载超时 |
+| 91xx | 内部错误 |

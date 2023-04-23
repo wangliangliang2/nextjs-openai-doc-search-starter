@@ -1,0 +1,90 @@
+# **描述**
+本接口用于查询空间下的设备列表。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/devices?offset=<offset>&line=<line>&prefix=<prefix>&status=<status>&qtype=<qtype>`
+* Get请求，通过`非SDK`方式调用的客户，http头部Content-Type,`要么设置为application/x-www-form-urlencoded`,`要么置空`, `要么不要携带`; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|line|否|integer|一次返回多少条,最多1000,当超过1000条时，需要结合offset 循环读取。
+|offset|否|integer|偏移量。当数据较多，需要循环读取时使用。例如有2001条数据，初始值offset = 0, 第N次请求时offset = (N -1) * line
+|prefix|否|string|可以通过gbid前缀、设备名称或设备描述进行检索查询，支持模糊查询。`默认为""`
+|state|否|string|按设备状态查询，offline: 离线, online: 在线, notReg: 未注册
+|qtype|否|integer|按设备类型查询，0:全部, 1:摄像头, 2:平台
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|items|设备数组|设备数组
+|items.gbId|string|设备国标Id
+|items.name|string|设备名称
+|items.state|string|状态（offline: 离线, online: 在线, notReg: 未注册）
+|items.desc|string|设备描述
+|items.status|boolean|false: 未推流状态, true:推流状态
+|items.createdAt|integer|创建时间，Unix时间戳，秒	
+|items.updatedAt|integer|更新时间，Unix时间戳，秒
+|items.lastKeepaliveAt|integer|最近心跳时间, Unix时间戳, 秒	
+|items.lastRegisterAt|integer|最近注册时间, Unix时间戳, 秒
+|items.deviceId|string|设备id
+|items.rtpAudio|boolean|是否开启音频
+|items.rtpAudioTranscode|boolean|是否开启音频转码
+|items.onDemandPull|boolean|是否开启按需拉流
+
+# **示例**
+
+**请求示例**
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarvzvyijd/devices \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+
+**响应示例**
+```
+{
+  "items": [
+    {
+      "name": "device1",
+      "desc": "gb patch test",
+      "nsId": "2akrarvzvyijd",
+      "nsName": "gbt",
+      "gbId": "31011500991320000028",
+      "state": "notReg",
+      "username": "username",
+      "password": "password",
+      "pullIfRegister": false,
+      "createdAt": 1596166110,
+      "updatedAt": 1596176486,
+      "channels": 0,
+      "lastRegisterAt": 0,
+      "lastKeepaliveAt": 0
+    },
+    {
+      "name": "beijing_test",
+      "desc": "gbtest11",
+      "nsId": "2akrarvzvyijd",
+      "nsName": "gbt",
+      "gbId": "31011500991320000020",
+      "state": "offline",
+      "username": "aaaaa",
+      "password": "aaaaa",
+      "pullIfRegister": true,
+      "createdAt": 1595313745,
+      "updatedAt": 1596081446,
+      "channels": 0,
+      "lastRegisterAt": 1596024977,
+      "lastKeepaliveAt": 1596089383,
+      "deviceId": "31011500991320000020"
+    }
+  ],
+  "total": 2
+}
+```

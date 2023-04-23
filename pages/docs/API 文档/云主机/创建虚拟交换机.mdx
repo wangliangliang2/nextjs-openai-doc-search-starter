@@ -1,0 +1,123 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `POST` /v1/vm/switch
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>要创建的交换机的地域 ID</p>
+        <p>您可以通过调用 DescribeRegions 接口获取地域 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>zone_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>要创建的交换机所属的可用区 ID</p>
+        <p>您可以通过调用 DescribeZones 接口获取可用区 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>cidr_block</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>交换机的网段。交换机网段要求如下：</p>
+        <ul>
+          <li>交换机的网段的掩码长度范围为 16~29 位。</li>
+          <li>交换机的网段必须从属于所在 VPC 的网段。</li>
+          <li>交换机的网段不能与所在 VPC 中路由条目的目标网段相同，但可以是目标网段的子集。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>vpc_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>要创建的交换机所属的 VPC ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>v_switch_name</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>交换机的名称</p>
+        <p>名称长度为 2~128 个字符，必须以字母或中文开头，但不能以 <code>http://</code> 或 <code>https://</code> 开头。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>description</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>交换机的描述信息</p>
+        <p>描述长度为 2~256 个字符，必须以字母或中文开头，但不能以 <code>http://</code> 或 <code>https://</code> 开头。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>ipv6_cidr_block_number</td>
+      <td>integer</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>交换机 IPv6 网段的最后 8 比特位</p>
+        <p>取值：0~255。</p>
+        <p>重设 json 的 key，避免和 model 内的 ipv6_cidr_block 类型不同 convert 失败</p>
+      </td>
+    </tr>
+    <tr>
+      <td>client_token</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID
+data	| VSwitch | 交换机信息
+data.v_switch_id | string | 交换机 ID
+data.vpc_id | string | 专有网络 ID
+data.status | string | 状态
+data.cidr_block | string | CIDR
+data.region_id | string | 地域
+data.zone_id | string | 可用区
+data.v_switch_name | string | 交换机名
+data.available_ip_address_count | int | 可用 IP 数量
+data.updated_at | string | 最近更新时间
+data.created_at | string | 创建时间
+
+

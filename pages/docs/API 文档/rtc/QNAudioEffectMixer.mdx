@@ -1,0 +1,357 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                音效混音控制类，提供了控制音效混音的一系列方法</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createAudioEffect`)'>createAudioEffect</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#start`)'>start</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#stop`)'>stop</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#pause`)'>pause</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#resume`)'>resume</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#stopAll`)'>stopAll</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#pauseAll`)'>pauseAll</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#resumeAll`)'>resumeAll</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getCurrentPosition`)'>getCurrentPosition</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setVolume`)'>setVolume</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getVolume`)'>getVolume</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setAllEffectsVolume`)'>setAllEffectsVolume</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#release`)'>release</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">Events</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#finish`)'>finish</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#error`)'>error</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createAudioEffect">
+createAudioEffect</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">createAudioEffect(effectID: number,filePath: string | File): Promise&lt;<a href='12352/WebQNAudioEffect'>QNAudioEffect</a>&gt;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>每一路参与混音的音效都需要对应一个 <a href='12352/WebQNAudioEffect'>QNAudioEffect</a> 实例</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            effectID: number
+        </div>
+                <p>音效文件的唯一标识符，需自行生成并维护，且确保唯一</p>
+    </li>
+    <li>
+        <div>
+            filePath: string | File
+        </div>
+                <p>音效文件地址，支持本地文件和在线文件</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>Promise&lt;<a href='12352/WebQNAudioEffect'>QNAudioEffect</a>&gt;</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="start">
+start</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">start(effectID: number): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>开始音效混音</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            effectID: number
+        </div>
+                <p>音效文件的唯一标识符，需自行生成并维护，且确保唯一</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="stop">
+stop</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">stop(effectID: number): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>停止音效混音</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            effectID: number
+        </div>
+                <p>音效文件的唯一标识符，需自行生成并维护，且确保唯一</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="pause">
+pause</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">pause(effectID: number): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>暂停音效混音</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            effectID: number
+        </div>
+                <p>音效文件的唯一标识符，需自行生成并维护，且确保唯一</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="resume">
+resume</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">resume(effectID: number): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>恢复音效混音</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            effectID: number
+        </div>
+                <p>音效文件的唯一标识符，需自行生成并维护，且确保唯一</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="stopAll">
+stopAll</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">stopAll(): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>停止所有正在混音的音效</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="pauseAll">
+pauseAll</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">pauseAll(): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>暂停所有正在混音的音效</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="resumeAll">
+resumeAll</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">resumeAll(): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>恢复所有暂停混音的音效</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getCurrentPosition">
+getCurrentPosition</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getCurrentPosition(effectID: number): number</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取指定音效混音的位置，单位: ms</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            effectID: number
+        </div>
+                <p>音效文件的唯一标识符，需自行生成并维护，且确保唯一</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>number</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setVolume">
+setVolume</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">setVolume(effectID: number, volume: number): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置指定音效的混音音量</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>若想修改混音中麦克风采集音频的音量，可通过 <a href='9064/WebQNMicrophoneAudioTrack#setVolume'>QNMicrophoneAudioTrack.setVolume</a> 接口实现</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            effectID: number
+        </div>
+                <p>音效文件的唯一标识符，需自行生成并维护，且确保唯一</p>
+    </li>
+    <li>
+        <div>
+            volume: number
+        </div>
+                <p>音效的混音音量</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getVolume">
+getVolume</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getVolume(effectID: number): number</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取指定音效的混音音量</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            effectID: number
+        </div>
+                <p>音效文件的唯一标识符，需自行生成并维护，且确保唯一</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>number</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setAllEffectsVolume">
+setAllEffectsVolume</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">setAllEffectsVolume(volume: number): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置所有正在混音的音效的混音音量</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            volume: number
+        </div>
+                <p>音效的混音音量，默认音量均为 1.0</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>number</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="release">
+release</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">release(): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>释放所有音效资源</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">Events</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="finish">
+finish</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">(effectID: number) =&gt; void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音效混音完成时触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            effectID: number
+        </div>
+                <p>音效文件的唯一标识符，需自行生成并维护，且确保唯一</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="error">
+error</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">(error: <a href='12354/WebQNRTCError'>QNRTCError</a>) =&gt; void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>混音操作发生错误时会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            error: <a href='12354/WebQNRTCError'>QNRTCError</a>
+        </div>
+                <p>错误对象</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

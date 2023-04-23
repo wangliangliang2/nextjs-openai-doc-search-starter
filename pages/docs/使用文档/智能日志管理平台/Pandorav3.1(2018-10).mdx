@@ -1,0 +1,27 @@
+**新功能**
+
+* 数据立方支持指标计算：允许对预聚合的指标进行科学计算。
+
+![](https://pandora-kibana.qiniu.com/datacube/cal.png)
+
+* 数据立方支持从实时仓库最老数据消费：创建数据立方实例允许从实时仓库最老的数据开始消费
+
+![](https://pandora-kibana.qiniu.com/datacube/data_consumption.png)
+
+* 服务器监控应用对触发同一条告警规则的事件进行合并:若连续触发同一条告警规则，不会持续产生多条事件，但会持续发送报警信息，直到报警事件恢复。
+
+* 服务器监控应用支持手动恢复报警事件。
+
+* 服务器监控支持禁用报警规则。
+
+**功能优化：**
+
+实时日志输出支持时间字段筛选以及字段过滤。
+
+* 通过时间字段筛选，输出随当前时间字段产生的实时日志。
+
+![](https://pandora-kibana.qiniu.com/output/output_plus.png)
+
+* 支持交互性字段过滤，输出过滤后的日志结果，操作更简单 ，无需手动输入过滤内容。
+
+![](https://pandora-kibana.qiniu.com/output/output_filter.png)

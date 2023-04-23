@@ -1,0 +1,43 @@
+rex 命令通过正则表达式命名的群组提取字段，多适用于日志格式不统一的场景。
+
+rex 命令将指定字段与未定位的正则表达式进⾏匹配。
+> 注意：针对 _raw 字段运⾏ rex 可能会影响性能。
+
+rex [field=`<field>`] `<regex-expression>`
+
+参数说明：
+
+* `<regex-expression>`：正则表达式，⽤于定义要匹配和从指定字段中提取的信息。需要⽤双引号引起来。
+
+* field=`<field>`：可选参数，指定要从中提取信息的字段，默认从 _raw 提取信息。
+
+**用法示例**
+
+使用 rex 命令提取字段在分析日志格式不统一的数据时格外有用，如下 MySQL 错误日志：
+
+登录失败日志：
+
+```
+2019-06-03T07:24:19.141696Z 3133 [Note] Access denied for user 'root'@'10.10.20.10' (using password: YES) 
+```
+
+连接断开日志：
+
+```
+2019-07-22T18:08:09.052699Z 419654 [Note] Aborted connection 419654 to db: 'db' use
+```
+
+忽略host解析警告：
+
+```
+2019-06-04T06:33:48.126257Z 3575 [Warning] 'user' entry 'root@localhost' ignored in --skip-name-resolve mode.
+```
+
+上述错误日志格式多种多样，没有统一的字段也没有共同的规范，在分析时可以通过 rex 命令提取字段。
+
+如：提取登陆失败日志中的用户名和来源 ip：
+
+```
+sourcetype="mysql_error" AND repo="default" AND Access denied for user 
+| rex field=_raw "Access denied for user '(?<user>[^\']+)'@'(?<src_ip>[^\']+)'" 
+```

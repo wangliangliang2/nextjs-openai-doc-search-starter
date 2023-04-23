@@ -1,0 +1,65 @@
+本篇以PHP的代码为例
+
+## 鉴权方式
+
+### 限时鉴权方式  和无鉴权
+
+描述:主要使用的是 Access_Key / Secret_Key 来做鉴权方式
+
+使用 RTMP 发起推流的地址。
+
+格式：
+
+    rtmp://<RTMPPublishDomain>/<Hub>/<StreamKey>?e=<ExpireAt>&token=<Token>
+
+说明：
+
+| 参数名称 | 说明 |
+| --- | --- |
+| RTMPPublishDomain | 直播空间绑定的 RTMP 推流域名 |
+| Hub | 直播空间名 |
+| StreamKey | 流名 |
+| ExpireAt | [Unix 时间戳](/kodo/glossary/1647/u)表示推流地址的过期时间。 |
+| Token | 推流凭证 |
+
+生成推流凭证：
+
+    // 构造 RTMP 推流 Path
+    path = "/<Hub>/<StreamKey>"
+    
+    // 为推流 Path 加上过期时间
+    path = "/<Hub>/<StreamKey>?e=<ExpireAt>"
+    
+    // 计算 HMAC-SHA1 签名，并对签名结果做 URL 安全的 Base64 编码
+    sign = hmac_sha1(path, "Your_Secret_Key")
+    encodedSign = urlsafe_base64_encode(sign)
+    
+    // 将 AccessKey 与 sign 拼接得到推流凭证
+    token = "Your_Access_Key" + ":" + encodedSign
+
+
+[URL 安全的 Base64 编码](/article/kodo/kodo-developer/appendix.html#urlsafe-base64)
+
+示例：
+
+    rtmp://publish-rtmp.test.com/PiliSDKTest/streamkey?e=1463023142&token=7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII:-5IVlpFNNGJHwv-2qKwVIakC0ME=
+
+#### PHP案例
+
+    require_once 'autoload.php';
+    require_once"config.php";
+    use Qiniu\Auth;
+    $accessKey=Config::ACCESS_KEY;
+    $secretKey=Config::SECRET_KEY;
+    //  推流域名
+    $dynamic="rtmp://pili-publish.pili.echohu.top";
+    $time = time()+3600;
+    //这里是/直播应用名/流名?e=当前的时间戳
+    $path = "/1314xicong/huxicongp?e=".$time;
+    // 计算 HMAC-SHA1 签名，并对签名结果做 URL 安全的 Base64 编码
+    $sign=hash_hmac('sha1',$path,$secretKey,true);
+    $data=Qiniu\base64_urlSafeEncode($sign);
+    //   /直播的流名?e=<当前时间>
+    $token = $accessKey.":".$data;
+    $token=$dynamic.$path."&token=".$token;
+    var_dump($token);

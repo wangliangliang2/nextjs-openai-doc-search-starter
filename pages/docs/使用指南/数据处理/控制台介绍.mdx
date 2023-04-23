@@ -1,0 +1,43 @@
+智能多媒体平台，是为了给您提供更好的多媒体处理服务体验，通过控制台几个简单步骤，将计算原子和逻辑条件进行灵活配置，精准打造云上自动生产线，有效提升视频处理效率。
+
+开发指南为您介绍功能、使用说明等，以便您更好地理解和使用。
+
+​
+
+# 整体流程
+
+使用智能多媒体服务的整体流程如下：![img](https://dora-doc.qiniu.com/image01.jpg)
+
+1. **任务处理对象**
+
+   > - 即 input，bucket + key ，有2种方式：
+   > - 指定文件：选择文件，发起任务处理请求。
+   > - 自动触发：创建任务触发器（如上传到指定Bucket 的文件） ，会自动触发工作流，并发起任务处理请求。
+
+2. **配置工作流**
+
+   > - 定义处理一个对象文件的所有计算能力（包含转码、视频拼接、条件判断、截图、内容审核等），支持串行、并行操作，用户可根据实际需求，来编排任务处理流程。
+   > - 不仅可以针对原片进行处理，还可对中间处理结果进行处理。
+   >
+   >
+   > - 工作流的配置操作，请参考 [工作流](https://developer.qiniu.com/dora/manual/6490/the-workflow-template)。
+
+3. **任务结果**
+
+   > - 即 output，处理成功，会将处理结果文件上传到您指定的 Bucket。
+   > - 可登录控制台->任务，在任务列表中查询其进度和结果，[查看任务列表](https://portal.qiniu.com/dora/media-gate/task)。
+
+4. **消息通知**
+
+   > - 通过配置回调 url ，就能及时获得任务处理结果（成功或失败）。
+
+​
+
+# 功能使用
+
+| 分类           | 描述                                                         | 参考文档                                                     |
+| -------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 工作流原理     | 介绍工作流的核心能力                                         | [工作流原理](/dora/manual/6499/tasks-and-workflows)                                               |
+| 多媒体处理能力 | 提供音视频转码、视频截图、视频拼接、视频水印等基础多媒体处理能力，未来会继续提供内容审核、视频内容识别等强大功能。 | [普通转码](/dora/manual/7507/ordinary-transcoding01)<br />[锐智转码](/dora/manual/7508/perceptive-transcoding01)<br />[视频截图](/dora/manual/7509/video-capture01)<br />[视频拼接](/dora/manual/7510/video-stitching01)<br />[视频水印](/dora/manual/7511/video-watermarking01)<br />[音视频元信息](/dora/manual/7515/audio-and-video-metadata-information)<br />[视频审核](/dora/manual/7771/video-review)<br />[系统预设配置](/dora/manual/7513/the-default-configuration-system)<br /> |
+| 任务通知       | 支持通过消息回调的方式获取任务结果通知。                     | [任务通知](https://developer.qiniu.com/dora/6504/receive-notifications)                                                 |
+| 回调升级       | 关于回调版本和如何升级回调的说明                             | [回调升级](https://developer.qiniu.com/dora/7514/the-callback-to-upgrade)                                                 |

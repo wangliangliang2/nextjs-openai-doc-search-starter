@@ -1,0 +1,200 @@
+音视频元信息，用于获取指定音频、视频资源的元信息。文为您介绍音视频元信息功能、场景、使用方式。
+
+ ​
+# **简介**
+
+音视频元信息，主要是作为下一节点条件判断的前置节点，需要跟【执行条件】节点一起使用。
+
+> - 常用的场景是：用户需要对满足分辨率在某范围的视频，进行处理（如转码、截图、审核等）。
+> - 现在仅支持抽取 **分辨率** 作为条件判断，后面会考虑增加【音视频格式】、【文件大小】【音视频标签】等判断条件，丰富用户的处理场景。
+
+ ​
+# **使用方式**
+
+音视频元信息的使用流程如下：
+
+以 **音视频信息->执行条件->普通转码** 为例，（对>=720p的源视频做转码处理），如下图所示。
+
+![img](https://dora-doc.qiniu.com/WX20201208-113743.png) 
+
+1. 添加 **音视频信息** 节点
+
+- 该节点只能在第一个节点添加。
+
+2. 添加 **执行条件** 节点
+
+- 作为下一节点处理的前置判断条件。执行条件表示父节点满足什么条件，才能触发下一节处理。用户可根据需要配置执行条件，如下图所示。
+
+  ![img](https://dora-doc.qiniu.com/WX20201208-113909.png)
+
+  > 判断 **视频分辨率**，是否做下一步处理
+  >
+  > - 规则：仅支持判断 **分辨率 **
+  >
+  > - 操作符：>、<、=、>=、<=、!=
+  >
+  > - 值：格式为宽 x 高，长边取值范围[20,3840]的整数，短边取值范围[20,2160]的整数。
+  >
+  >   - 宽×高，允许1个为空，当只有1个有值时
+  >
+  >   ​    1）如设置 >=1280(宽），则判断视频 **宽** 是否在这个范围内，高度不比较
+  >   ​    2）如设置 =1280(宽），则判断视频宽=1280，高度不比较
+  >
+  >   - 宽、高都有值时
+  >
+  >   ​     如设置 >=1280×720(宽×高)，则判断视频 **宽and高** 是否都在这个范围内，例如：1280×680 不在该范围
+
+
+
+
+ ​
+# **返回元信息详情**
+
+返回信息如下（已经经过格式化，以便阅读）：
+
+    {
+    "streams": [
+        {
+            "index": 0,    流索引号
+            "codec_name": "h264",   编码器名
+            "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",    编码器名全称
+            "codec_type": "video",    编码器类型
+            "codec_time_base": "1/30",    编码器每帧时长
+            "codec_tag_string": "avc1",    编码器标签名
+            "codec_tag": "0x31637661",    编码器标签
+            "width": 1152,   宽度
+            "height": 864,   高度
+            "has_b_frames": 0,   记录帧缓存大小
+            "sample_aspect_ratio": "1:1",   采样率
+            "display_aspect_ratio": "4:3",
+            "pix_fmt": "yuv420p",   像素个数
+            "level": 40,   级别
+            "is_avc": "1",
+            "nal_length_size": "4",
+            "r_frame_rate": "15/1",   真实基础帧率
+            "avg_frame_rate": "15/1",   平均帧率
+            "time_base": "1/15000",   每帧时长
+            "start_time": "0.000000",   首帧时间
+            "duration": "6413.333333",   文件总时间
+            "nb_frames": "96200",   帧数
+            "tags": {    标签
+                "creation_time": "2013-01-07 12:58:08",     创建时间
+                "language": "eng",   语言
+                "handler_name": "Video Media Handler"    处理器名字
+            }
+        },
+        {
+            "index": 1,   流索引号
+            "codec_name": "aac",   编码器名
+            "codec_long_name": "Advanced Audio 编码器全名Coding",   编码器名全称
+            "codec_type": "audio",   编码器类型
+            "codec_time_base": "1/44100",   编码器每帧时长
+            "codec_tag_string": "mp4a",   编码器标签名
+            "codec_tag": "0x6134706d",   编码器标签
+            "sample_fmt": "s16",   采样格式
+            "sample_rate": "44100",   采样率
+            "channels": 2,   音频数
+            "bits_per_sample": 0,   采样码率
+            "r_frame_rate": "0/0",   真实基础帧率
+            "avg_frame_rate": "0/0",   平均帧率
+            "time_base": "1/44100",   每帧时长
+            "start_time": "0.000000",   首帧时间
+            "duration": "6413.374694",   文件总时间
+            "nb_frames": "276201",   帧数
+            "tags": {   标签信息
+                "creation_time": "2013-01-07 12:58:08",   创建时间
+                "language": "eng",   语言
+                "handler_name": "Sound Media Handler"   处理器名字
+            }
+        }
+    ],
+    "format": {
+        "nb_streams": 2,   流的数目
+        "format_name": "mov,mp4,m4a,3gp,3g2,mj2",   格式名  
+        "format_long_name": "QuickTime/MPEG-4/Motion JPEG 2000 format",   格式名全称
+        "start_time": "0.000000",   首帧时间
+        "duration": "6413.359589",   时长
+        "size": "101416337",   文件大小
+        "bit_rate": "126506",   码率
+        "tags": {   标签信息
+            "major_brand": "mp42",   主品牌
+            "minor_version": "1",   次要版本
+            "compatible_brands": "M4V mp42isom",   兼容性品牌
+            "creation_time": "2013-01-07 12:58:08"   创建时间
+        }
+    }
+    {
+        "streams": [
+            {
+                "index": 0,    流索引号
+                "codec_name": "h264",   编码器名
+                "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",    编码器名全称
+                "codec_type": "video",    编码器类型
+                "codec_time_base": "1/30",    编码器每帧时长
+                "codec_tag_string": "avc1",    编码器标签名
+                "codec_tag": "0x31637661",    编码器标签
+                "width": 1152,   宽度
+                "height": 864,   高度
+                "has_b_frames": 0,   记录帧缓存大小
+                "sample_aspect_ratio": "1:1",   采样率
+                "display_aspect_ratio": "4:3",
+                "pix_fmt": "yuv420p",   像素个数
+                "level": 40,   级别
+                "is_avc": "1",
+                "nal_length_size": "4",
+                "r_frame_rate": "15/1",   真实基础帧率
+                "avg_frame_rate": "15/1",   平均帧率
+                "time_base": "1/15000",   每帧时长
+                "start_time": "0.000000",   首帧时间
+                "duration": "6413.333333",   文件总时间
+                "nb_frames": "96200",   帧数
+                "tags": {    标签
+                    "creation_time": "2013-01-07 12:58:08",     创建时间
+                    "language": "eng",   语言
+                    "handler_name": "Video Media Handler"    处理器名字
+                }
+            },
+            {
+                "index": 1,   流索引号
+                "codec_name": "aac",   编码器名
+                "codec_long_name": "Advanced Audio 编码器全名Coding",   编码器名全称
+                "codec_type": "audio",   编码器类型
+                "codec_time_base": "1/44100",   编码器每帧时长
+                "codec_tag_string": "mp4a",   编码器标签名
+                "codec_tag": "0x6134706d",   编码器标签
+                "sample_fmt": "s16",   采样格式
+                "sample_rate": "44100",   采样率
+                "channels": 2,   音频数
+                "bits_per_sample": 0,   采样码率
+                "r_frame_rate": "0/0",   真实基础帧率
+                "avg_frame_rate": "0/0",   平均帧率
+                "time_base": "1/44100",   每帧时长
+                "start_time": "0.000000",   首帧时间
+                "duration": "6413.374694",   文件总时间
+                "nb_frames": "276201",   帧数
+                "tags": {   标签信息
+                    "creation_time": "2013-01-07 12:58:08",   创建时间
+                    "language": "eng",   语言
+                    "handler_name": "Sound Media Handler"   处理器名字
+                }
+            }
+        ],
+        "format": {
+            "nb_streams": 2,   流的数目
+            "format_name": "mov,mp4,m4a,3gp,3g2,mj2",   格式名  
+            "format_long_name": "QuickTime/MPEG-4/Motion JPEG 2000 format",   格式名全称
+            "start_time": "0.000000",   首帧时间
+            "duration": "6413.359589",   时长
+            "size": "101416337",   文件大小
+            "bit_rate": "126506",   码率
+            "tags": {   标签信息
+                "major_brand": "mp42",   主品牌
+                "minor_version": "1",   次要版本
+                "compatible_brands": "M4V mp42isom",   兼容性品牌
+                "creation_time": "2013-01-07 12:58:08"   创建时间
+            }
+        }
+    }
+
+
+#### 

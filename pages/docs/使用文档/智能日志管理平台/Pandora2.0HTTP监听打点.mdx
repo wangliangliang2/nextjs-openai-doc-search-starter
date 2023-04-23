@@ -1,0 +1,28 @@
+# 简介
+
+Pandora 2.0 HTTP 监听打点是通过使用服务端监控收集器功能，监听HTTP端口的打点方式。打开服务端监控收集器的文档可以参考 [Pandora 2.0 监控收集器](https://developer.qiniu.com/express/6025/monitoring_upload)。
+
+
+
+# 配置参数说明
+
+1. `pandora_http_url`: 选填（不填写默认值为`http://127.0.0.1`），可以填写多个url，通过英文逗号分隔
+2. `pandora_http_port`: 必填（默认值10991），http打点端口号
+3. `pandora_http_path`: 必填，http打点路径，如填写多个需要使用英文逗号分隔。打点路径的个数与域名个数一致的情况下，会按照填写顺序对应拼接，否则随机拼接
+4. `pandora_http_token`: 选填，http打点token，如果http打点不使用token，token，默认为空
+5. `pandora_http_protocol`: 选填，发送数据使用的格式，可选的发送方式有两种：raw和json。使用raw格式发送，会将raw字段的值取出作为http body发送，默认使用raw格式发送
+6. `pandora_http_group`:选填，按照来源、agentId、hostname进行分组，默认不分组
+7. `pandora_http_self_defined_params`:选填，填写日志或解析转换中自定义的字段，英文逗号分隔，发送阶段会将这些字段数据发送出去，默认不发送。比如使用json解析生成的字段，需要在此处填写字段名才可以发送
+8. `pandora_http_gzip`:选填, 发送时启用 `gzip`, 默认开启
+
+## 使用`raw`格式数据说明
+`raw`格式必须在解析时选择 原始数据按行解析(`raw`)方式，然后我们会数据{"raw":"<your_raw_log>"} 部分中key为 raw 的数据拿出来，即 `<your_raw_log>` 取出来放到HTTP body中post出去。
+
+## 使用`json`格式数据样例
+```
+{"name":"jack","timestamp":1529980502,"value":"hehe","age":21}
+{"name":"mark","timestamp":1529980413,"value":"nini","age":19}
+{"name":"yell","timestamp":1529980123,"value":"xsxs","age":30}
+```
+
+选择 `json` 格式后，http sender的 body 每行都是一个json，多行用换行符`\n`分隔，读取时请按行读取，对于单行按json格式解析。

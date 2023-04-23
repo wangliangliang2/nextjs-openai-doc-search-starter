@@ -1,0 +1,127 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `POST` /api/rio/v1/network/loadbalancer
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id           | string | header| 是 | 地域 ID
+flavor_id              | string | body | 是 | 规格 ID
+load_balancer_name     | string | body | 是 | 名称
+description            | string | body | 否 | 描述
+v_switch_id            | string | body | 是 | 交换机 ID
+vpc_id                 | string | body | 是 | 专有网络 ID
+type                   | string | body | 否 | 负载均衡类型。`intranet`: 内网负载均衡，必须绑定 EIP 才能提供公网访问。`internet`: 公网负载均衡，自带公网 IP
+mno                    | string | body | 否 | 运营商类型，当选择公网负载均衡的时候这个为必选项。 `china_mobile`, `china_unicom`, `china_telecom`
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+data		| LoadBalancerInfo    | 负载均衡信息
+
+## LoadBalancerInfo 负载均衡信息
+名称 | 类型 |  描述
+----- | ----- | -----
+load_balancer_id       | string  | 负载均衡 ID
+enabled                | boolean | 启用状态：<ul><li>`true` : 已启用</li><li>`false` : 已停用</li></ul> 
+load_balancer_name     | string  | 名称 
+description            | string  | 描述
+flavor                 | Flavor  | 规格信息
+load_balancer_status   | string  | 状态：<ul><li>`creating` : 创建中</li><li>`updating` : 更新中</li><li>`deleting` :删除中</li><li>`active` : 正常的</li><li>`error` : 错误的</li><li>`inactive` : 非预期的</li><li>`locked` : 实例已经被锁定</li></ul> 
+vpc                    | VPCInfo | 专有网络信息
+create_at              | integer | 创建时间：时间戳，毫秒
+
+### Flavor 规格信息
+名称 | 类型 |  描述
+----- | ----- | -----
+id           | string           | 规格 ID
+name         | string           | 名称
+performance  | PerformanceInfo  | 性能参数
+description  | string           | 描述
+vcpus        | integer          | CPU 核数
+ram          | integer          | 内存，单位：MB
+disk         | integer          | 磁盘：单位：MB
+topology     | string           | 拓扑结构：<ul><li>`SINGLE` : 单节点模式</li><li>`ACTIVE_STANDBY` : 主备模式</li></ul> 
+is_suspend   | boolean          | 上架状态：<ul><li>`true` : 上架中</li><li>`false` : 已下架</li></ul> 
+
+#### PerformanceInfo 性能参数
+名称 | 类型 |  描述
+----- | ----- | -----
+four_gbps       | float    | 四层吞吐，单位：GB
+seven_gbps      | float    | 七层吞吐，单位：GB
+max_connections | integer  | 最大连接数
+cps             | integer  | 每秒新建连接数
+tps             | integer  | 每秒事务数
+qps             | integer  | 每秒查询数，七层转发特有
+
+### VPCInfo 专有网络信息
+名称 | 类型 |  描述
+----- | ----- | -----
+private_ip_address   | string    | 专有网络 IP 地址
+vpc_id               | string    | 专有网络 ID
+vpc_name             | string    | 专有网络名称
+v_switch_id          | string    | 交换机 ID
+v_switch_name        | string    | 交换机名称
+eip_info             | EIPInfo   | EIP 信息
+
+#### EIPInfo EIP 信息
+名称 | 类型 |  描述
+----- | ----- | -----
+eip_id		| string    | EIP ID
+eip_name 	| string    | 名称
+ip_address	| string    | IP 地址
+bandwidth       | integer   | 带宽，单位：Mbps
+
+## 请求示例
+```json
+{
+    "load_balancer_name":"LB-id9QD",
+    "flavor_id":"76ceb572-9846-43fd-a4ff-7447a7ef0fa0",
+    "vpc_id":"35c11b0f-f9e8-4b9d-9e7f-d438f14d713c",
+    "v_switch_id":"430ca45c-20d5-4c29-ada4-85379a2e6291"
+}
+```
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEhb-j5IKyMkW",
+    "data":{
+        "load_balancer_id":"7ebe162e-3351-413b-a9c5-623291061b2f",
+        "enabled":true,
+        "load_balancer_name":"LB-id9QD",
+        "description":"",
+        "flavor":{
+            "id":"76ceb572-9846-43fd-a4ff-7447a7ef0fa0",
+            "name":"简约型",
+            "performance":{
+                "four_gbps":6,
+                "seven_gbps":6,
+                "max_connections":80000,
+                "cps":50000,
+                "tps":50000,
+                "qps":45000
+            },
+            "description":"",
+            "vcpus":4,
+            "ram":4096,
+            "disk":100,
+            "topology":"ACTIVE_STANDBY",
+            "is_suspend":true
+        },
+        "load_balancer_status":"creating",
+        "vpc":{
+            "private_ip_address":"192.168.11.2",
+            "vpc_id":"35c11b0f-f9e8-4b9d-9e7f-d438f14d713c",
+            "vpc_name":"QEC",
+            "v_switch_id":"430ca45c-20d5-4c29-ada4-85379a2e6291",
+            "v_switch_name":"QEC"
+        },
+        "create_at":1642063489000
+    }
+}
+```

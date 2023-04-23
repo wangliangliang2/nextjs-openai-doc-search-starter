@@ -1,0 +1,89 @@
+# **简介**
+
+七牛云的数据处理 API 接口，均支持通过管道操作符 `|`  实现串行处理，即将一个资源经由多个 `<fop>` 串行处理。
+
+**备注**：
+
+- 管道数量限制为30个。
+
+
+
+
+# **接口形式**
+
+处理规格如下：
+
+```
+<fop1>|<fop2>|<fop3>|<fopN>
+```
+
+- `<fop>` (File Operation的缩写)，表示数据处理指令及其所需要的参数。
+- 各 `<fop>` 之间用`|`分割，我们称之为`管道`(pipeline)。
+
+可以看到每一步的输出都是下一步的输入，而最后一步的输出即为最终下载到的资源内容。每调用一次这类串行化接口，就必须实时地按序执行所有接口，有可能引起不必要的计算耗时。
+
+
+
+
+# **示例**
+
+将一个原图缩略，然后在缩略图上打上另外一个图片作为水印：
+
+- **基于原图生成缩略图并打上水印**
+
+  ```
+  https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageView/2/h/200|watermark/1/image/aHR0cHM6Ly9kb3JhLWRvYy5xaW5pdS5jb20vcWluaXV5dW4ucG5n/ws/0.2
+  ``` 
+   ![链接](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageView/2/h/200|watermark/1/image/aHR0cHM6Ly9kb3JhLWRvYy5xaW5pdS5jb20vcWluaXV5dW4ucG5n/ws/0.2)
+
+- **对音视频进行转码，并对转码后的结果另存**
+
+  ```
+  "persistentOps":"avthumb/mp3/ab/192k|saveas/dGVzdDoxLm1wMw=="
+  ```
+
+  ​
+
+# **样式别名**
+
+如果觉得 `url?<fop1>|<fop2>|<fop3>|<fopN>` 这样的形式够冗长，还可以为这些串行的 `<fop>` 集合定义一个`样式别名`。如此一来，就可以用友好URL风格进行访问。
+
+我们先来熟悉七牛[qrsctl](https://developer.qiniu.com/kodo/tools/qrsctl#8)工具的两个命令行：
+
+```
+// 定义 url 和数据处理之间的分隔符为 separator 
+qrsctl separator <bucket> <separator>
+
+// 定义数据处理的别名为 aliasName
+qrsctl style <bucket> <aliasName> <fop>
+```
+
+例如:
+
+```
+// 定义 url 和数据处理之间的分隔符为 "-"
+qrsctl separator <bucket> "-"
+
+// 定义该数据处理样式名为 "iphone" 
+qrsctl style <bucket> "iphone" "imageView/2/h/200|watermark/1/image/aHR0cHM6Ly9vZHVtOWhlbGsucW5zc2wuY29tL3Fpbml1LWxvZ28ucG5n"
+```
+
+
+
+## **示例**
+
+- 原始URL
+
+  ```
+  https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageView/2/h/200|watermark/1/image/aHR0cHM6Ly9vZHVtOWhlbGsucW5zc2wuY29tL3Fpbml1LWxvZ28ucG5n
+  ```
+
+
+- 友好风格URL:
+
+  ```
+  https://dn-odum9helk.qbox.me/resource/gogopher.jpg-iphone
+  ```
+
+  ​
+

@@ -1,0 +1,66 @@
+事件通知功能，能够对管理员所关心的存储资源操作及时进行消息通知。例如：
+
+- 有新数据从图片内容分享平台、音视频平台上传到七牛云存储
+- 资源发生了更新
+- 重要文件被删除
+- 数据同步已经完成
+
+<br>
+
+# **具体说明**
+- 您创建事件通知规则后，若请求者对您的 Kodo 资源进行操作并触发了事件通知规则，则请求者对 Kodo 进行的相关操作将会被发送到您配置的 HTTP(s) 服务端地址上。您可以针对事件通知返回的消息进行收集分析，如重点信息特别关注、数据统计分析等。
+- 事件通知当前针对操作成功的事件进行通知。
+- 事件通知是异步进行的，不影响正常的操作。事件通知的配置包括规则和消息通知两部分。
+   - 规则：用来描述什么情况下需要进行消息通知。
+   - 消息通知：支持以回调方式将消息推送到指定 URL。
+<br>
+
+# **事件类型**
+|事件类型|事件说明|
+|-|-|
+|put	|创建/覆盖文件：简单上传|
+|copy	|创建/覆盖文件：拷贝文件|
+|append	|创建/覆盖文件：追加上传|
+|move	|移动文件|
+|delete	|删除文件：1 个或多个|
+|mkfile	|创建/覆盖文件：分片上传完成|
+|disable	|修改文件状态：禁用|
+|enable	|修改文件状态：启用|
+|restore:completed	|文件解冻：完成|
+
+<br>
+<a id="NotificationMessage"></a>
+
+# **回调消息格式**
+``` 
+{
+   “Message”:“{
+       “event”:“put”,                   //事件类型
+       “time”:1547551207786351434,      //事件发生时间，纳秒级时间戳
+       “reqid”:“niNkZJy_3M9903AEA”,     //请求的 Request ID
+       “source_ip”:“33.236.132.29”,     //请求的源 IP
+       “user_id”:“uid:111111”,          //请求者 uid
+       “access_key”:“akjFT8jsaYB8kj-90HJJkds”  //请求者 ak，需要配合 user_id 识别
+       “bucket”:“bucket_name”,          //Bucket 名称
+       “key”:“event1_tets.txt”,         //Object 名称
+       “fsize”:6,                       //Object 大小
+       “hash”:“FhWqsP2Lk36zuwGEFpPzXct12i-v”,  //Object 的七牛 Etag 值
+       “ftype”:0,                              //Object 的存储类型，0 标准存储、1 低频存储、2 归档存储、3 深度归档存储
+       “mimetype”:“application/octet-stream”,   //Object 的 mimeType
+       “restore_expiration”:“2019-01-20T19:20:07+08:00”,   //Object 的解冻到期时间，仅 restore:completed 事件返回
+       “dest_bucket”:“dest_bucket_name”,    //目标 Bucket 名称，仅 copy/move 事件返回
+       “dest_key”:“dest_key_name”           //目标 Object 名称，仅 copy/move 事件返回
+   }”,
+   “Subject”: “Qiniu KODO Notification”,
+   “Timestamp”: “2019-01-15T19:20:07+08:00” //事件通知发送时间
+}
+```
+
+<br>
+
+
+# **操作方式**
+Kodo 支持通过控制台方式设置事件通知。
+|支持的操作方式|参考文档|
+|-|-|
+|控制台	|[设置事件通知](/kodo/development_guidelines/8541/set-the-event-notification)|

@@ -1,0 +1,15 @@
+使用键值对(Key-Value)的方式解析日志，形如 a=1&b=2&c=3 的日志格式，可以通过指定字段分隔符为 &，键值分隔符为 =，进行字段提取。
+
+Key-Value 解析方式主要用来解析明显的有 Key-Value 的字符串，例如一段日志的 request 内容为：
+
+```
+timestamp=time_local&repo=export_applog&queryString=status%3A>400
+```
+
+用 Key-Value 解析，选择字段分隔符为 & ，键值分隔符为 等号：
+
+![](https://pandora-kibana.qiniu.com/rule/key_value.png)
+
+可以很方便的提取出关键字段和值。
+
+

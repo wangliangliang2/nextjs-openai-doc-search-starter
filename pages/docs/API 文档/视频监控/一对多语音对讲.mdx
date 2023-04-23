@@ -1,0 +1,109 @@
+# **描述**
+
+## 语音采集和发送的demo，可以参考[一对一语音对讲](https://developer.qiniu.com/qvs/8158/voice-call)
+
+## **接口分两个步骤进行**
+## **`步骤1`:首先获取发送音频的url**
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/talks`
+
+# **请求参数**
+
+**路径参数**
+
+| 参数名称    | 必填 | 字段类型 | 说明   |
+| ----------- | ---- | -------- | ------ |
+| namespaceId | 是   | string   | 空间ID |
+
+**Body**
+
+| 参数名称      | 必填 | 字段类型   | 说明                                                         |
+| ------------- | ---- | ---------- | ------------------------------------------------------------ |
+| gbids         | 否   | string数组 | 需要对讲的国标id列表                                         |
+| version       | 否   | string     | 对讲国标协议版本，取值"2014"或"2016"，默认为"2014"，例如大部分大华摄像头为GBT 28181-2014版本对讲模式 |
+| transProtocol | 否   | string     | 取值"tcp"或"udp"，流传输模式，默认"udp"                        |
+
+# **响应参数**
+
+| 参数名称                    | 字段类型 | 说明                                                         |
+| --------------------------- | -------- | ------------------------------------------------------------ |
+| items                       | array    | items结构的数组                                              |
+| items.audioSendAddrForHttp  | string   | 用来发送音频数据的http地址，请求报文格式见`音频发送报文格式` |
+| items.audioSendAddrForHttps | string   | 用来发送音频https地址，请求报文格式见`音频发送报文格式`      |
+| items.gbid                  | string   | 国标id                                                       |
+
+**注意**：此url地址列表在连续1min内没有收到语音数据时，地址无效，需要重新请求步骤1中`talks`接口，获取新地址
+
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarvzvyijd/talks \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json'
+```
+
+**响应示例**
+
+```
+{
+    "items": [
+        {
+            "audioSendAddrForHttp":"http://1945028622.cloudvdn.com/api/v1/gb28181?action=append_audio_pcm&id=31011500991320003732&ssrc=1623567",
+ 	    "audioSendAddrForHttps":"https://1945028622.cloudvdn.com/api/v1/gb28181?action=append_audio_pcm&id=31011500991320003732&ssrc=1623567"
+            "gbid": "31011500991320003732"
+        },
+        {
+            "audioSendAddrForHttp":"http://1945028622.cloudvdn.com/api/v1/gb28181?action=append_audio_pcm&id=31011500991320003733&ssrc=1623568",
+ 	    "audioSendAddrForHttps":"https://1945028622.cloudvdn.com/api/v1/gb28181?action=append_audio_pcm&id=31011500991320003733&ssrc=1623568"
+            "gbid": "31011500991320003732"
+        }
+    ]
+}
+```
+
+## **`步骤2`:向第一步返回的url地址发送音频。`从语音采集端可直接向改地址发送数据,不需要代理`**
+
+
+## **音频发送报文格式**
+* 接口地址：`步骤1`中接口返回
+* 请求方式：POST
+
+# **请求参数**
+
+**路径参数**
+null
+
+
+**Body**
+
+| 参数名称   | 必填 | 字段类型 | 说明                          |
+| ---------- | ---- | -------- | ----------------------------- |
+| base64_pcm | 是   | string   | `base64`编码后的`g711a`格式音频数据,音频采样率务必`8000`, base64数据中不能有换行符\n |
+
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url https://1945028622.cloudvdn.com/api/v1/gb28181?action=append_audio_pcm&id=31011500991320003732&ssrc=1623567 \
+  --header 'content-type: application/json'
+  --data-raw '{
+    "base64_pcm":"1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1VVVVdXV1dVVVVVVVVTV1dTV1FRV1NRQV9TU1dfWVlXX0VJW11RX0NFW199IfXRcWlHawc32"
+  }'
+```
+
+**响应示例**
+
+```
+{
+  "code":0
+}
+```

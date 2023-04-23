@@ -1,0 +1,13 @@
+# 文件预取的意义  
+文件预取，也可称为预加热或预缓存，是指新资源提前由 CDN 拉取到 CDN 缓存节点。这样一来，用户第一次访问到该节点时，就可以直接命中缓存，无需重新回源拉取，由此提高用户第一次访问的速度。  
+# 提交预取请求的三种方法
+1. 在 [七牛开发者中心](https://portal.qiniu.com) 左侧产品列表中找到 CDN ，进去后点击 [刷新预取](https://portal.qiniu.com/cdn/refresh-prefetch) ，选择 **文件预取**。  
+按要求填写需要预取的  URL，点击提交即可。  
+<img src="https://dn-odum9helk.qbox.me/FrcgGjpHkJ3zN-BKg0Ga_xl4aOmA" width="800"/>  
+2. 使用工具  
+使用七牛云提供的 [qshell](/kodo/tools/1302) 命令行工具，参考使用文档，先设置密钥，然后执行  [cdnprefresh](https://github.com/qiniu/qshell/blob/master/docs/cdnprefetch.md) 命令来预取。
+3. 通过API 接口提交预取请求：  
+七牛各服务端的 [SDK](https://developer.qiniu.com/sdk#official-sdk) 都提供了预取的方法。  
+另附：[预取接口文档](https://developer.qiniu.com/fusion/api/1227/file-prefetching)  
+
+**注：**提交预取请求后 **10 分钟** 左右，预取全网生效。  

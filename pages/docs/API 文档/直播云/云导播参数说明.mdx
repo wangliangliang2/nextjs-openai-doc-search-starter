@@ -1,0 +1,119 @@
+# <span id="caster">云导播(caster)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+id | string | - | 云导播唯一ID
+uid | int | - | 用户ID
+name | string | 允许1-18位，小写字母与数字组合 | 云导播名称
+staticKey | string | 默认值为16位小写英文+数字随机值 | 云导播静态密钥，留空会生成随机密钥
+monitors | object | - | 监视器配置，支持0-7共8个频道，详细参数见[监视器配置(monitors)详细参数](#monitors)
+canvas | object | - | 画布配置，详细参数见[画布配置(canvas)详细参数](#canvas)
+storage | object | - | 上传配置，详细参数见[画布配置(storage)详细参数](#storage)
+timeSwitch | object | - | 定时开关，详细参数见[定时开关(timeSwitch)详细参数](#timeSwitch)
+pvwOutput | object | - | PVW输出配置，详细配置见[PVW输出配置(pvwOutput)详细参数](#pvwOutput)
+pgmOutput | object | - | PGM输出配置，详细配置见[PGM输出配置(pgmOutput)详细参数](#pgmOutput)
+layouts | object | - | 布局配置，支持0-7共8组配置，详细参数见[布局配置(layouts)详细参数](#layouts)
+stage | int | [0,4] | 云导播逻辑状态标记位，0:初始化; 1:运行中; 2:关闭; 3:异常; 4:启动中
+status | string | - | 云导播实际状态，部分接口返回值中会省略
+createAt | int | - | 云导播创建时间
+updateAt | int | - | 云导播更新时间
+
+# <span id="monitors">监视器配置(monitors)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+url | string | - | 监视器源流地址，支持直播流、静态视频、图片等
+vol | int | [0,300] | 音量
+muted | bool | - | 是否静音
+
+# <span id="storage">上传配置(storage)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+Bucket | string | - | 存储空间名称，要求华东、公开。用于上传的静态资源的存储
+Domain | string | - | Bucket 内静态资源的访问域名
+
+# <span id="canvas">画布配置(canvas)详细参数</span>
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+resolution | string | ["480p", "720p", "1080p","2k","4k"] | 画布规格，默认为720p
+height | int | （320,3840] | 画布高度
+width | int | （320,3840] | 画布宽度
+
+- 备注：resolution参数填写后，宽高即被确定，如720p的宽高即为1280和720，无法自定义height和width参数；如果需要自定义宽高参数，可以不填写resolution参数，然后自定义height和width两个宽高的参数来自定义画布（即输出视频分辨率）的大小
+* 当自定义画布宽高时，导播台是以480p、720p、1080p、2k、4k来进行计费的,统计说明如下：
+1. 长边小于等于640 且 短边小于等于480，统计为480p
+2. 长边小于等于1280 且 短边小于等于720，统计为720p
+3. 长边小于等于1920 且 短边小于等于1080，统计为1080p
+4. 长边小于等于2560 且 短边小于等于1440，统计为2K
+5. 长边小于等于3840 且 短边小于等于2160，统计为4K
+
+# <span id="timeSwitch">定时开关(timeSwitch)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+start | int | - | 云导播开启时间
+stop | int | - | 云导播关闭时间
+
+# <span id="pvwOutput">PVW输出配置(pvwOutput)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+channel | int | [0,7] | 监视器频道，默认使用0频道
+layout | int | [-1,7] | 布局ID，-1表示不使用布局
+
+# <span id="pgmOutput">PGM输出配置(pgmOutput)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+closed | bool | - | 关闭推流
+publish | string | - | PGM推流地址
+ab | int | [64,512] | 音频码率(Kbps)，默认值为64
+vb | int | [300,10240] | 视频码率(Kbps)，默认值为1000
+channel | int | [0,7] | 监视器频道，默认使用0频道
+overlay | object | - | 画中画配置，key为对应的监视器频道，详细参数见[画中画配置(overlay)详细参数](#overlay)
+text | object | - | 文字水印配置，key为文字水印标题，详细参数见[文字水印配置(text)详细参数](#text)
+emergencyMode | bool | - | 紧急模式开关
+emergencyChannel | int | [0,7] | 紧急模式监视器频道，取值范围是[0,7]，默认使用0频道
+delay | int | [0,180] | 延时播放，单位: 秒
+
+# <span id="layouts">布局配置(layouts)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+title | string | - | 布局标题，可留空
+overlay | object | - | 画中画配置，key为对应的监视器频道，详细参数见[画中画配置(overlay)详细参数](#overlay)
+text | object | - | 文字水印配置，key为文字水印标题，详细参数见[文字水印配置(text)详细参数](#text)
+updateAt | int | - | 更新时间
+
+# <span id="overlay">画中画配置(overlay)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+w | int | [5,#(画布宽度)] | 宽度
+h | int | [5,#(画布高度)] | 高度
+x | int | [0,#(画布高度)] | 距画布左侧的距离
+y | int | [0,#(画布宽度)] | 距画布上侧的距离
+z | int | [0,255] | 堆叠顺序
+
+* 需要保证画中画的画面在画布内，如果超出，会强制拉伸(stretch)画面，导致源流变形
+* 限制 W+X 小于 画布宽度；H+Y 小于 画布高度
+
+# <span id="text">文字水印配置(text)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+content | string | - | 文字水印内容
+fontcolor | string | [#000000,#FFFFFF] | 字体颜色
+bgcolor | string | [#000000,#FFFFFF] | 背景颜色
+opacity | int | [0,255] | 不透明度，8bit Alpha通道
+size | int | [5, #(画布高度)] | 字体大小
+w | int | [5,#(画布宽度)] | 宽度
+h | int | [5,#(画布高度)] | 高度
+x | int | [0,#(画布高度)] | 距画布左侧的距离
+y | int | [0,#(画布宽度)] | 距画布上侧的距离
+z | int | [0,255] | 堆叠顺序
+offsetx | int | - | 距字体框左侧的距离
+offsety | int | - | 距字体框上侧的距离
+speedx | int | [-2000,2000] | X轴滚动速度
+speedy | int | [-2000,2000] | X轴滚动速度

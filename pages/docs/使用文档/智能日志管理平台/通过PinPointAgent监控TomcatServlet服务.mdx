@@ -1,0 +1,215 @@
+Pinpoint 是一款开源的 APM（Application Performance Management/应用性能管理）工具，通过跟踪分布式应用之间的调用来提供解决方案，以帮助分析系统的总体结构和内部模块之间如何相互联系。
+
+智能日志平台全链路追踪的 Pinpoint 链路监控方案的数据采集功能主要分两个角色完成：
+
+* Agent 端负责监控链路上各服务的调用情况，采集 tracing 数据并上报给 Collector；
+
+* Collector 端负责收集所有 Agent 汇集来的 tracing 数据。
+
+Collector 位于 logkit-pro上，负责将 Pinpoint Agent 上报的 tracing 数据，转化成智能日志平台可处理的标准 OpenTracing 协议数据，并打入 Pandora 智能日志管理平台。
+
+本教程通过三个 Tomcat Servlet 应用来讲述如何使用 logkit-pro 接收 Pinpoint tracing 埋点数据，发送到智能日志平台，并使用全链路追踪应用查看链路详情。
+
+# **1.环境准备**
+
+## ** 1.1 安装 JDK **
+
+建议使用 JDK8 或以上版本，请至[Oracle官网下载](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)。
+
+
+## ** 1.2 下载 Pinpoint Agent 包**
+
+[PinPoint Agent包下载地址(版本1.8.0)](https://github.com/naver/pinpoint/releases/download/1.8.0-RC1/pinpoint-agent-1.8.0-RC1.tar.gz)
+
+解压到本地目录: $PinpointAgentRoot，解压出的目录结构如下：
+
+<img src="https://dn-odum9helk.qbox.me/FtQlFvtOr5rLV1b7vt_RgRTkd3YA" width="500" hegiht="330" align=center />
+
+## ** 1.3 下载并安装 Apache Tomcat Application Server**
+
+若您想按照 Demo 源码自己创建 Tomcat Servlet 项目，并编译源码，请[下载 Tomcat 6/7/8 版本](https://tomcat.apache.org/download-80.cgi)中的任意一版本。
+
+若您不想通过源码运行 Demo，可跳过环境准备，下一章节 2.2）中，我们将提供打包完成的 Tomcat 包，可以直接解压运行 Demo，快速体验全链路监控服务效果。
+
+# **2. 准备 Demo：JAVA Tomcat Servlet 服务**
+
+## **2.1 准备 Demo 服务**
+
+为了演示如何使用全链路追踪功能，这里提供三个应用 Demo：分别为 ServletHello， ServletServer1， ServletServer2。三者之间的调用关系如下：
+
+<img src="https://dn-odum9helk.qbox.me/Fh_GB4oY50Bo_kgqfo6o4Vb6GziG" width="500" hegiht="330" align=center />
+
+## ** 2.2 通过 Tomcat 包启动 Demo**
+
+请下载[ Demo 中三个服务与 Tomcat 整合过的包](https://pandora-kibana.qiniu.com/tomcat-servlet-demo.tar.gz)
+
+解压 `tomcat-servlet-demo.tar.gz`，解压后，包含三个 Tomcat 目录和一个 pinpoint-agent 目录，每个 Tomcat 目录里包含一个可独立执行的服务。解压后结果如下图：
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-14%20%E4%B8%8B%E5%8D%886.47.03.jpg" width="550" hegiht="350" align=center />
+
+由于压缩包里包含了 Pinpoint Agent 包，而且每个 Tomcat 服务中均配置了 Pinpoint Agent 的路径指向解压包中的 pinpoint-agent, 所以这里就省去了 Pinpoint Agent 的配置。若想查看相关配置，请到 `apache-tomcat-8.5.34-xxx/bin/catalina.sh` 文件中，关注下图中的配置项：
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-14%20%E4%B8%8B%E5%8D%887.03.01.png" width="650" height="150" align=center />
+接下来到每个 Tomcat 目录，启动每个服务即可，命令行演示如下：
+```
+# 进入 ServletServer2 启动脚本目录
+cd apache-tomcat-8.5.34-server2/bin
+# 启动服务，请确保 18082，8007 端口可用
+./startup.sh
+# 关闭服务请执行 ./shutdown.sh
+
+# 进入 ServletServer1 启动脚本目录
+cd apache-tomcat-8.5.34-server1/bin
+# 启动服务，请确保 18081，8006 端口可用
+./startup.sh
+# 关闭服务请执行 ./shutdown.sh
+
+# 进入 ServletHello 启动脚本目录
+cd apache-tomcat-8.5.34-hello/bin
+# 启动服务，请确保 18080，8005 端口可用
+./startup.sh
+# 关闭服务请执行 ./shutdown.sh
+```
+
+## **2.3 通过源码创建 Demo **
+
+若您想手动编译执行源码，请下载[ Demo 源码](https://pandora-kibana.qiniu.com/tomcat-servlet-demo-src.tar.gz)。解压后有三个服务的项目源码。建议使用 IDE 打开编译执行。执行时每个服务的参数和配置，请关注以下步骤。
+
+**ServletHello 服务以:18080 端口启动, 启动附加 Pinpoint Agent参数如下：**
+
+```
+-javaagent:$PinpointAgentRoot/pinpoint-bootstrap-1.8.0-RC1.jar
+-Dpinpoint.agentId=hello_agent
+-Dpinpoint.applicationName=hello_app
+```
+
+
+**ServletServer1 服务以:18081 端口启动, 启动附加 Pinpoint Agent 参数如下：**
+
+```
+-javaagent:$PinpointAgentRoot/pinpoint-bootstrap-1.8.0-RC1.jar
+-Dpinpoint.agentId=server1_agent
+-Dpinpoint.applicationName=server1_app
+```
+
+
+**ServletServer2 服务以:18082 端口启动, 启动附加 Pinpoint Agent 参数如下：**
+
+```
+-javaagent:$PinpointAgentRoot/pinpoint-bootstrap-1.8.0-RC1.jar
+-Dpinpoint.agentId=server2_agent
+-Dpinpoint.applicationName=server2_app
+```
+
+# **3.到 logkit-pro 接入 Pinpoint Agent 收集的 tracing 数据**
+
+进入 [logkit-pro 数据收集](https://logkit-pro.qiniu.com/#/dataCollect/configInfo)页面，点击 **添加收集器** -> **日志收集**。
+
+![](https://pandora-kibana.qiniu.com/k8s/collect.png)
+
+**3.1 配置数据源**
+
+选择数据源类型为`从 socket 中读取 tracing 数据`，其中调用链数据类型选择 `pinpoint`， 监听的地址和端口填`udp://:9996`。
+
+![](https://dn-odum9helk.qbox.me/Fl66ipkzBHjyhq00u1J1Qe7kzCxi)
+
+跳过数据解析与数据转换。
+
+**3.2 填写发送信息**
+
+选择发送到智能日志平台的链路追踪服务。
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8B%E5%8D%882.34.57.jpg)
+
+`注意：`数据发送到智能日志平台全链路追踪服务会同时生成两个日志仓库 `tracingspan` 和 `tracingservice`。`tracingspan` 仓库里只记录 tracing 数据， `tracingservice` 仓库里记录服务数据。
+
+**3.3 分发收集器到机器**
+
+确认添加收集器之后系统会提示您是否需要分发到当前机器，选择确认分发。
+
+![](https://pandora-kibana.qiniu.com/k8s/k8s_distribute.png)
+
+**3.4 观察数据收集情况**
+
+进入数据收集页面，找到刚刚配置的收集器，点击查看机器运行信息查看收集器运行情况：
+
+![](https://dn-odum9helk.qbox.me/Fmry3DEGN0fJL5-GZZsUITn3S8QD)
+
+有读取成功和发送成功记录证明数据采集发送成功。
+
+# **4.操作验证**
+浏览器中输入 `http://127.0.0.1:18080/hello` ，这是 ServletHello 服务的对外接口。浏览器响应如下图：
+
+<img src="https://dn-odum9helk.qbox.me/Fpi7OfQ7XY51T5L1x5XjyOoJSN--" width="400" hegiht="250" align=center />
+
+证明服务已经启动，接下来使用全链路追踪应用查看链路调用详情。
+
+# **5.到全链路追踪服务查看链路详情**
+
+**5.1到智能日志管理平台查看 tracing 数据：**
+
+选择 logkit Pro 发送数据时自动生成的 repo（`tracingspan` ），搜索 tracing 数据：
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-14%20%E4%B8%8B%E5%8D%887.20.22.jpg)
+
+**5.2 到全链路追踪服务查看链路之间的调用关系**
+
+根据服务名 `hello_app` 搜索出链路：
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-14%20%E4%B8%8B%E5%8D%887.22.11.jpg)
+
+点击链路，查看全链路详细信息，如下图，显示的全链路调用关系与 2.1 节中描述的一致：
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-14%20%E4%B8%8B%E5%8D%887.22.47.jpg)
+
+# **6.Pinpoint 可监控服务兼容性列表**
+
+Pinpoint Agent 请使用最新版本[1.8.0](https://github.com/naver/pinpoint/releases/download/1.8.0-RC1/pinpoint-agent-1.8.0-RC1.tar.gz)
+<style>
+table th:nth-of-type(1) {
+    width:180px;
+}
+</style>
+
+| 组件 | 版本 |
+| :------: | :------: |
+| JDK | 6+ |
+| Tomcat | 6/7/8 |
+| Jetty | 8/9 |
+| JBoss EAP | 6 |
+| Resin | 4 |
+| Websphere | 6/7/8 |
+| Vertx | 3.3/3.4/3.5 |
+| Spring |  |
+| Spring Boot |  |
+| Apache HTTP Client | 3.x/4.x |
+| JDK HttpConnector |  |
+| GoogleHttpClient |  |
+| OkHttpClient |  |
+| NingAsyncHttpClient |  |
+| Thrift Client |  |
+| Thrift Service |  |
+| DUBBO PROVIDER |  |
+| DUBBO CONSUMER |  |
+| kafka | 0.11+ |
+| ActiveMQ |  |
+| RabbitMQ |  |
+| MySQL | 5.x |
+| Oracle |  |
+| MSSQL(jtds) |  |
+| CUBRID |  |
+| POSTGRESQL |  |
+| MARIA |  |
+| Arcus |  |
+| Memcached |  |
+| Redis |  |
+| CASSANDRA |  |
+| iBATIS |  |
+| MyBatis |  |
+| DBCP(2) |  |
+| HIKARICP |  |
+| gson |  |
+| Jackson |  |
+| Json Lib |  |
+| log4j |  |
+| Logback | 0.9.8+ | 
+
+详细兼容信息可参考 [Pinpoint 官方文档](https://github.com/naver/pinpoint#supported-modules)。

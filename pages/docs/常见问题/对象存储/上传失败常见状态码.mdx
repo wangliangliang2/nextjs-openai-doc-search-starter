@@ -1,0 +1,9 @@
+在上传失败返回信息中，可以看到 http 状态码，几种常见错误如下：
+
+| 状态码  | 说明 |
+| ---- | ---- |
+| 400 | 请求报文格式错误。<br>`incorrect region` 表示上传域名与上传空间的区域不符，此时需要升级 SDK 版本。 |  
+| 401 | 鉴权失败。<br>`token not specified` 表示上传请求中没有带 token ，可以抓包验证后排查代码逻辑。<br>`bad token` 表示 token 错误，说明生成 token 的算法有问题，建议直接使用七牛的服务端 SDK 生成 token。<br>`token out of date` 表示 token 过期，推荐 token 过期时间设置为 3600 秒（1 小时），如果是客户端上传，建议每次上传从服务端获取新的 token 。|
+| 403 | 权限不足。<br>`key doesn't match scope` 表示上传文件指定的 key 和上传 token 中，putPolicy 的 scope 字段不符。上传指定的 key 必须跟 scope 里的 key 完全匹配或者前缀匹配。<br>`ExpUser can only upload image/audio/video/plaintext` 表示账号是体验用户，体验用户只能上传文本、图片、音频、视频类型的文件，完成实名认证即可解决。 | 
+| 579 | 上传成功，回调失败。<br>需要确认回调服务器接受 POST 请求，并可以给出 200 的响应。  |
+| 大文件上传失败 |大文件上传容易受到网络波动影响，推荐使用分片上传。如果使用上传工具，推荐使用 [qshell](https://developer.qiniu.com/kodo/tools/1302/qshell) 工具。|

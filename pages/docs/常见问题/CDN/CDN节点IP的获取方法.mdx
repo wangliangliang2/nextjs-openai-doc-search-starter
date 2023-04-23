@@ -1,0 +1,32 @@
+七牛 CDN （Content Delivery Network，内容分发网络）会将网站的静态资源发布到离用户最近的网络边缘。
+
+当用户访问一个配置了七牛 CDN 的域名时，七牛的 CDN 智能调度系统会让用户解析到一个离他最近的 CDN 边缘节点。
+
+于是，不同地区不同运营商的客户端访问同一个域名时，解析到的 IP 很大概率上是不同的。
+
+另外，在中心城市（如上海电信网络），七牛 CDN 可能使用多个甚至多组节点覆盖。
+
+同一终端在相同的网络环境下访问，两次访问解析到的 CDN 节点 IP 也有可能不同。
+
+
+# 获取 CDN 节点 IP 的两种方法：
+
+
+使用浏览器调试窗口查看 remote address 得到节点 IP 。  由于在相同网络环境下，两次解析的结果也有可能会解析到不同节点。
+
+所以下面介绍的方法 1 不能保证一定能得到实际访问到的节点，而方法 2 是可以的。
+
+## 方法一
+
+用终端 ping 域名的方式，可以得到解析到的 IP 节点（以获取访问 www.qiniu.com 的节点ip为例，客户需要根据自身情况更改域名，以获取访问对应域名的节点ip）：  
+
+ ![](https://dn-odum9helk.qbox.me/FhlSq8VdpTUvImvCTCfbtuD0yc2f)
+
+## 方法二
+
+下面介绍 chrome 浏览器获取 remote address 操作流程（以获取访问 www.qiniu.com 的节点ip为例，客户需要根据自身情况更改域名，以获取访问对应域名的节点ip）：  
+在页面空白区域点击右键 -> 检查 -> 点击 “network” -> 点击资源名  
+
+ ![](https://dn-odum9helk.qbox.me/Fve91BAfpRKpscF_V9qjndBD_hz6) 
+
+ 截图中红框即访问 www.qiniu.com 根目录的 remote address ：

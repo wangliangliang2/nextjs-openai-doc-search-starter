@@ -1,0 +1,49 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `POST` /api/rio/v1/compute/warn
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id   | string         | header| 是 | 地域 ID
+name            | string         | body  | 是 | 告警组名称
+alert_user      | string         | body  | 否 | 告警联系人，仅私有化部署时有效
+phone_list      | []string       | body  | 否 | 电话号，仅私有化部署时有效
+email_list      | []string       | body  | 否 | 邮箱，仅私有化部署时有效
+rules           | []WarnRule     | body  | 否 | 告警规则
+instance_list   | []WarnInstance | body  | 否 | 告警实例
+client_token    | string         | body  | 是 | 保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。
+
+## WarnRule 告警规则
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+rule_type               | string  | body | 是 | 指标：<ul><li>`CPUUtilization`：CPU使用率，单位：%</li><li>`disk_readbytes`：磁盘每秒读取的字节数，单位：MB/s</li><li>`disk_readiops`：磁盘每秒的读请求数量，单位：次/s</li><li>`disk_writebytes`：磁盘每秒写入的字节数，单位：MB/s</li><li>`disk_writeiops`：磁盘每秒的写请求数量，单位：次/s</li><li>`diskusage_utilization`：磁盘使用率，单位：%</li><li>`memory_usedutilization`：内存使用率，单位：%</li><li>`networkin_errorpackages`：设备驱动器检测到的发送错误包的数量，单位：个/s</li><li>`networkin_packages`：网卡每秒发送的数据包数，单位：个/s</li><li>`networkin_rate`：网卡的上行带宽，单位：M/s</li><li>`networkout_errorpackages`：设备驱动器检测到的接受错误包的数量，单位：个/s</li><li>`networkout_rate`：网卡的下行带宽，单位：M/s</li><li>`netin_dropped_packet_rate`：网络流入丢包率，单位：个/s</li><li>`netout_dropped_packet_rate`：网络流出丢包率，单位：个/s</li><li>`networkout_packages`：网络包流入速率，单位：个/s</li><li>`diskio_read_delay`：磁盘IO读延迟，单位：ms</li><li>`diskio_write_delay`：磁盘IO写延迟，单位：ms</li></ul>
+medium_threshold        | integer | body | 是 | 中度阈值
+seriousness_threshold   | integer | body | 是 | 严重阈值
+
+## WarnInstance 告警实例
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+instance_id | string | body | 是 | 云主机 ID
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+
+## 请求值示例
+```json
+{
+    "name":"warn-Ico7m",
+    "client_token":"0.27300941639877685"
+}
+```
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEhb-j5IKyMkW"
+}
+```

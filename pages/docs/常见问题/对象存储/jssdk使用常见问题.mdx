@@ -1,0 +1,75 @@
+## 案例1：
+
+Q：如何在文件上传后，删除上传成功的文件记录UI，只保留正在上传，和报错的文件UI。  
+A：要在FileUploaded方法中调用UI逻辑来实现。不要使用RemoveFile方法因为：这个方法是删除文件，终止上传的，跟UI没关系。具体的业务代码需要客户自己实现。
+
+* * *
+
+## 案例2: 
+
+Q：上传文件时，出现400:{"error":"read exceed block size"} 报错
+
+A：首先更换最新的qiniu.js,然后清除掉本地浏览器中的localstory，然后重试文件上传，如果还有错误，请用我们官方提供的默认main.js.如果成功说明是你们main.js修改的不正确导致。
+
+* * *
+
+## 案例3: 
+
+Q：上传的时候，如何初始化多个按钮绑定多个事件来上传？ A：可以参照[https://github.com/qiniu/js-sdk/blob/master/src/qiniu.js#L278-L293](https://github.com/qiniu/js-sdk/blob/master/src/qiniu.js#L278-L293)   
+中var Qiniu = new QiniuJsSDK();这是每次初始化一个对象来上传，你可以新建多个对象来上传就可以了。你新建多个对象，每次新建一个对象就可以重新获取一次token。
+
+* * *
+
+## 案例4:
+
+不设置 chunk\_size 、或 chunk\_size: 0、或 chunk\_size: '0'、或 chunk\_size: '0mb' ，在html5下也是使用直传
+
+## 案例5:
+
+报错信息：
+
+![js](https://dn-odum9helk.qbox.me/fa5deb1d04b47953870a8cf29e947c9d)
+
+
+解决方法： 
+
+
+![js－02](https://dn-odum9helk.qbox.me/dcf17708efef427b2fab2ad01681a83c)
+
+将箭头的代码注释掉。
+
+* * *
+
+## 案例5: 
+
+Q：JS上传报 400，token is not spcified
+
+A：在上传时指定upload\_url上传，需要明确在服务端生成的token的地址返回给客户端时需要返回的token是JSON格式。
+
+* * *
+
+## 案例6：
+
+Q: 400 incorrect region
+
+A: 使用静态服务器来运行demo,否则无法调用获取上传host的接口。或者更改qiniu.js中uploadhost为错误提示中的host
+![](https://dn-odum9helk.qbox.me/Fvnh9Ig7XRImHhrP8ptOeHzj8n8s)
+
+* * *
+
+
+## 案例7：
+
+Q: Moxie not defined
+
+A: 使用2.1.1 ~ 2.1.9 版本的plupload
+
+* * *
+
+## 案例8：
+
+Q: Filters在部分安卓机型微信浏览器中无法生效
+
+A: 建议取消filters参数，直接在FileAdded里做判断，参考http://jsdemo.gugaobai.top/scripts/main.js
+
+

@@ -1,0 +1,183 @@
+本文为您介绍如何使用 logkit-pro 及智能日志平台，采集Oracle数据库 业务数据和监控数据。
+
+<a href="#1">1.安装 logkit-pro（Oracle支持版）</a>
+
+<a href="#2">2.使用 logkit-pro 监控Oracle数据库</a>
+
+<a href="#3">3.使用 logkit-pro 读取Oracle数据库数据</a>
+
+-----
+
+<a name="1"></a>
+
+# **1.安装 logkit-pro（Oracle支持版） **
+## **下载安装包**
+
+logkit-pro（Oracle支持版）是基于logkit-pro主线版本扩展了对Oracle数据库的支持
+
+**下载链接及版本说明**
+
+|下载链接|logkit-pro版本|操作系统支持|Oracle版本|
+|:---|:---|:---|:---|
+|[linux 64位版本下载](https://pandora-dl.qiniu.com/logkit-pro-local_ora_v1.0.6.tar.gz)|v1.0.6|Linux Ubuntu/Debian|11g/12c|
+
+## **启动 logkit-pro**
+
+### **直接启动**
+
+通过命令行进入 logkit-pro 所在的文件夹，然后输入：
+
+```
+export LD_LIBRARY_PATH=./instantclient_12_2
+./logkit-pro -f logkit-pro.conf
+```
+
+### **后台启动**
+
+通过命令行进入 logkit-pro 所在的文件夹，然后输入：
+
+```
+nohup LD_LIBRARY_PATH=./instantclient_12_2 ./logkit-pro -f logkit-pro.conf > logkit.log 2>&1 &
+```
+
+## **访问本地 logkit-pro**
+
+启动后，您可以直接打开浏览器访问`http://127.0.0.1:3000`
+
+![logkit首页](https://dn-odum9helk.qbox.me/FoPsWnVSjGJ3FzyigTDVAoq60MoF)
+
+-----
+
+<a name="2"></a>
+
+# **2.使用 logkit-pro 监控Oracle数据库 **
+
+## **启用Oracle数据库监控**
+
+登陆http://127.0.0.1:3000， 选择`系统信息收集` => `监控Oracle 数据库`，填写数据库连接串，例：`sys/password@192.168.99.199:1521?as=sysdba`
+
+![](https://dn-odum9helk.qbox.me/FuYI6lo-HyeYX04dbRJ-eKXsXjjo)
+
+![](https://dn-odum9helk.qbox.me/FiwnluKHXvJNrkQFeLgrnbT8JhPT)
+
+## **监控指标**
+### **默认监控指标**
+|参数|分类|说明|
+|:---|:---|:---|
+|uptime|system|启动时长|
+|procnum|system|当前进程数|
+|maxprocs|system|最大进程数|
+|dbversion|system|数据库版本|
+|session|session|会话数|
+|session_active|session|活动状态会话|
+|session_inactive|session|非活动状态会话|
+|session_system|session|系统会话|
+|maxsession|session|最大支持会话数|
+|buffercache_hitratio|hitratio|缓存区命中率|
+|dictionarycache_hitratio|hitratio|数据字典缓存命中率|
+|librarycache_hitratio|hitratio|库缓存命中率|
+|waits_latchfree|event wait|闩锁释放等待事件|
+|waits_directpath_read|event wait|直接路径写等待('direct path read')|
+|waits_singleblock_read|event wait|数据文件顺序读等待('db file sequential read')|
+|waits_multiblock_read|event wait|数据文件离散读等待('db file scattered read')|
+|waits_logwrite|event wait|日志文件写等待('log file single write', 'log file parallel write')|
+|waits_controlfileio|event wait|控制文件写等待('control file sequential read', 'control file single write', 'control file parallel write')|
+|waits_latchfree|physicalio|闩锁释放等待事件|
+|physicalio_datafile_reads|physicalio|直接物理读('physical reads direct')|
+|physicalio_datafile_writes|physicalio|直接物理写('physical writes direct')|
+|db_block_gets|logicalio|当前读('db block gets')|
+|db_consistent_gets|logicalio|一致性读('consistent gets')|
+|sga_buffer_cache|sga|数据缓冲区('db_block_buffers', 'buffer_cache')|
+|sga_shared_pool|sga|共享池('shared pool')|
+|sga_log_buffer|sga|日志缓存区('log_buffer')|
+|sga_java_pool|sga|java pool|
+|sga_large_pool|sga|large pool|
+|pga|pga|程序缓存区使用量|
+|tablespace_name|tablespace|表空间名称|
+|used_percent|tablespace|表空间使用率|
+
+### **自定义监控指标**
+
+**注意，自定义监控指标与默认监控指标互斥，当前只能择一使用**
+
+1. 编写自定义监控文件`custom.json`，示例如下：
+```
+{
+    "sql_row": {
+        "session_limit_usage": "SELECT ROUND(100*(CURRENT_UTILIZATION/INITIAL_ALLOCATION),2) FROM gv$resource_limit WHERE resource_name = 'sessions'",
+        "process_limit_usage_pct": "SELECT ROUND(100*(CURRENT_UTILIZATION/INITIAL_ALLOCATION),2) FROM gv$resource_limit WHERE resource_name = 'processes'",
+        "lock_wait_count": "SELECT Count(*) FROM Gv$session A, gv$lock B WHERE A.Lockwait = B.Kaddr",
+        "flash_space_usage_pct": "SELECT (100 - sum(percent_space_used)) + sum(percent_space_reclaimable) FROM v$flash_recovery_area_usage",
+        "asm_diskgroup_usage_pct": "SELECT decode(total_mb,0,0,round(100*free_mb/total_mb,2)) FROM gv$asm_diskgroup",
+        "archivelog_switch_interval": "select delta from (select * from (select RECID ,(First_Time - lag(First_Time) over(order by RECID)) *24 *60  delta from V$archived_Log) order by RECID desc)  where rownum <2",
+        "redo_log_switch_times": "WITH redo_log_switch_times AS (SELECT   sequence#, first_time,LAG (first_time, 1) OVER (ORDER BY first_time) AS LAG,first_time - LAG (first_time, 1) OVER (ORDER BY first_time) lag_time,1440* (first_time - LAG (first_time, 1) OVER (ORDER BY first_time)) lag_time_pct_mins FROM v$log_history ORDER BY sequence#) SELECT AVG (lag_time_pct_mins) avg_log_switch_min FROM redo_log_switch_times",
+        "temp_tablespace_usage_pct": "SELECT round(NVL(t.BYTES / a.BYTES * 100, 0), 2) usedPercent FROM SYS.dba_tablespaces d,(SELECT tablespace_name, SUM(BYTES) BYTES FROM dba_temp_files GROUP BY tablespace_name) a, (SELECT tablespace_name, SUM(bytes_cached) BYTES FROM v$temp_extent_pool GROUP BY tablespace_name) t WHERE d.tablespace_name = a.tablespace_name(+) AND d.tablespace_name = t.tablespace_name(+) AND d.extent_management LIKE 'LOCAL' AND d.CONTENTS LIKE 'TEMPORARY'",
+        "parallel_query_count": "select count(*) from V$PX_SESSION",
+        "failed_job_count": "SELECT COUNT(*) FROM dba_jobs WHERE NVL(failures, 0) < > 0",
+        "dg_gap_count": "select HIGH_SEQUENCE# - LOW_SEQUENCE# as dg_gap_count from v$archive_gap",
+        "librarycache_hitratio": "SELECT ROUND(sum(pinhits)/sum(pins)*100,2) FROM gv$librarycache",
+        "waits_latchfree": "select sum (total_waits) from gv$system_event where event = 'latch free'"
+    },
+    "sql_rows": {
+        "instance_query": "SELECT instance_name,status,to_char ((sysdate - startup_time) * 86400, 'FM99999999999999990') as uptime FROM gv$instance",
+        "invalid_object_query": "SELECT owner as invalid_object_owner,object_name as invalid_object_name FROM dba_objects WHERE status = 'INVALID'",
+        "top_sql_query": "SELECT * FROM (SELECT sql_fulltext,sql_id,elapsed_time,child_number,disk_reads,executions,first_load_time,last_load_time FROM gv$sql ORDER BY elapsed_time DESC) WHERE ROWNUM < 10",
+        "transaction_query": "SELECT username,sid,serial#,program,machine,C.Status as transaction_status,sql_text,start_time, cpu_time/1000000 cpu_time,elapsed_time/1000000 run_time FROM v$session a, v$sqlarea b, v$transaction c WHERE ((a.sql_address = b.address and a.sql_hash_value = b.hash_value ) or ( a.prev_sql_addr = b.address and a.prev_hash_value = b.hash_value)) and c.ses_addr = a.saddr",
+        "undo_usage_query": "SELECT AA.TABLESPACE_NAME,ROUND((nvl(BB.UNEXPIRED_USED_GB, 0) + nvl(BB.ACTIVE_USED_GB, 0)) / AA.TOTAL_GB * 100,2) USED_PERCENT, ROUND(nvl(BB.ACTIVE_USED_GB, 0) / AA.TOTAL_GB * 100, 2) PCT_ACTIVE,ROUND(nvl(BB.UNEXPIRED_USED_GB, 0) / AA.TOTAL_GB * 100, 2) PCT_UNEXPIRED, ROUND(nvl(BB.EXPIRED_USED_GB, 0) / AA.TOTAL_GB * 100, 2) PCT_EXPIRED FROM (SELECT tablespace_name, sum(bytes) / 1024 / 1024 / 1024 TOTAL_GB FROM DBA_DATA_FILES WHERE tablespace_name IN ('UNDOTBS2', 'UNDOTBS1') GROUP BY tablespace_name) AA, (SELECT lix.TABLESPACE_NAME, max(case when lix.STATUS = 'ACTIVE' then USED_GB end) ACTIVE_USED_GB, max(case when lix.STATUS = 'UNEXPIRED' then USED_GB end) UNEXPIRED_USED_GB,max(case when lix.STATUS = 'EXPIRED' then USED_GB end) EXPIRED_USED_GB,max(case when lix.STATUS = 'ACTIVE' then EXTENT_CNT end) ACTIVE_EXTENT_CNT,max(case when lix.STATUS = 'UNEXPIRED' then EXTENT_CNT end) UNEXPIRED_EXTENT_CNT,max(case when lix.STATUS = 'EXPIRED' then EXTENT_CNT end) EXPIRED_EXTENT_CNT FROM (SELECT TABLESPACE_NAME,STATUS,SUM(BYTES) / 1024 / 1024 / 1024 USED_GB,COUNT(*) EXTENT_CNT FROM DBA_UNDO_EXTENTS GROUP BY TABLESPACE_NAME, STATUS) lix group by lix.TABLESPACE_NAME) BB WHERE AA.TABLESPACE_NAME = BB.TABLESPACE_NAME ORDER BY 1"
+    },
+    "shell": {
+        "rac_cluster_status": "crsctl check cluster"
+    }
+}
+```
+说明：
+	* `sql_row`: 定义仅返回值的sql语句
+	* `sql_rows`: 定义返回多个字段返回值的sql语句
+	* `shell`: 通过脚本执行方式
+
+
+2. 将`custom.json`放置于如下目录，此时将采集自定义监控指标；
+```
+.
+|-- logkit-pro
+|-- logkit.conf
+`-- plugins
+    `-- metric
+        `-- oracle
+            |-- oracle
+            |-- oracle.json
+            `-- custom.json
+```
+
+## **配置监控数据发送源**
+
+请参考[发送源（Senders）](/insight/manual/4782/senders)，
+
+推荐发往[七牛智能日志管理平台](/insight/manual/4783/insight-sender)进行统一存储，实时检索、查询和分析等。
+
+-----
+
+<a name="3"></a>
+
+# **3.使用 logkit-pro 读取Oracle数据库数据 **
+当前仅支持通过配置SQL的方式，查询Oracle数据库
+## **配置Oracle Reader**
+配置数据库连接串，例：`sys/password@192.168.99.199:1521?as=sysdba`
+![](https://dn-odum9helk.qbox.me/FsLUIS2BdowVIqE7qwqho5kv1jVc)
+
+### 基础配置信息
+* 数据库连接字符串(`DSN`):由 `username`: 用户名, `password`: 用户密码, `host`: oracle 地址, `port`: oracle 端口组成， 一个完整 `DSN` 示例:"`sys/password@127.0.0.1:1521`"。 ！注意：请使用内网方式访问，以免出现安全隐患！
+* 数据查询语句(`oracle_sql`):需要要执行的 sql 语句;暂只支持配置单条语句。多条 sql 请添加新的收集器分开收集。
+* 启动时立即执行(sql_exec_onstart)：true 表示启动时执行一次，以后再按 cron 处理;false 则表示到cron 预设的时间才执行，默认为 true。
+
+### 高级选项
+* 定时任务(`mysql_cron`)：定时任务触发周期
+   * 直接写 `"loop"`,任务会不停的循环，执行完一次再接着执行下一次，后面可以跟循环的间歇时间，如 `"loop 10s"`，表示每次循环间隔 `10s`，支持的单位还有"m（分钟）"，"h(小时)"
+   * crontab 的写法,类似于`* * * * * *` ，对应的是秒(0~59)，分(0~59)，时(0~23)，日(1~31)，月(1-12)，星期(0~6)，填*号表示所有遍历都执行。
+   * 描述式写法,类似于 `"@midnight"`, `"@every 1h30m"`，必须`@`符合开头，目前支持`@hourly`,`@weekly`,`@monthly`,`@yearly`,`@every <time duration>`
+
+## **配置监控数据发送源**
+推荐发往[七牛智能日志管理平台](/insight/manual/4783/insight-sender)进行统一存储，实时检索、查询和分析等。
+
+-----
+

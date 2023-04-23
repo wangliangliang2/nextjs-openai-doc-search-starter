@@ -1,0 +1,46 @@
+# 浏览器的支持表
+
+[参照如下文档](https://en.wikipedia.org/wiki/HTML5_video)
+
+# MP4 视频格式解释
+MP4有非常复杂的含义（ 见 http://en.wikipedia.org/wiki/Mp4 ），普通人对MP4的理解是后缀为 `.mp4` 的文件。但 MP4 本身不是一种简单的视频格式，它是一个包装了视频和音频格式的容器。至于里面的视频和音频使用什么编码是可选的。MP4的视频格式可以使用 DivX 也可使用 H264，vp8，vp9，theora。
+
+# 推荐浏览器
+Chrome浏览器支持 HTML5 ，它支持原生播放部分的 MP4 格式（不用通过 Flash 等插件）
+
+# 遇到的问题
+为什么是部分MP4呢？是因为 Chrome 只支持 H264。为什么 Chrome 不支持所有的视频编码格式？绝大部份的视频编码格式都是要付专利费的，Google 已经为 H264 买了单，Firefox 没有 Google 那么有钱不愿意买。
+
+# 查看视频格式
+在外链地址后面加上 `?avinfo`，如： http://dn-odum9helk.qbox.me/mp4-v1?avinfo
+
+这是可以在chrome中正常播放的：
+
+    "streams": [
+            {
+                "index": 0,
+                "codec_name": "h264",
+                "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+
+这个格式就是不OK的：
+
+    "streams": [
+            {
+                "index": 0,
+                "codec_name": "mpeg4",
+                "codec_long_name": "MPEG-4 part 2",
+
+
+# 播放效果
+
+[可以播放的视频演示](http://dn-odum9helk.qbox.me/@/test/mp4-test1%20-%20%E5%89%AF%E6%9C%AC.html) 
+
+[不可以播放的视频效果](http://dn-odum9helk.qbox.me/@/test/mp4-test1.html)
+
+
+# 解决方案
+
+1. 使用js或者flash播放器来播放 针对部分格式，即使是播放器也不行。还是建议使用七牛的转码。
+2. 使用七牛的异步转码服务。
+3. 转码前，利用部分的播放器也播放不了。原视频：http://dn-odum9helk.qbox.me/mpeg4.mp4
+4. 转码后：http://dn-odum9helk.qbox.me/mpeg4-zhuanma.mp4

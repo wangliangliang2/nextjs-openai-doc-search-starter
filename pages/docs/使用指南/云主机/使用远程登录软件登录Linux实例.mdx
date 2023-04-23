@@ -1,0 +1,95 @@
+# 操作场景
+本文以 PuTTY 软件为例，介绍如何在 Windows 系统的本地电脑中使用远程登录软件登录 Linux 实例。
+
+# 适用本地操作系统
+Windows
+
+
+# 使用限制
+- 实例必须处于运行中状态。如果实例未运行，请启动实例。
+- 实例已经设置登录密码。如果未设置密码或密码丢失，请重置密码。
+- 实例已经绑定弹性IP，能够访问公网。
+
+# 操作步骤
+本文以PuTTY为例介绍如何通过SSH远程登录Linux实例，主要有以下几个步骤：
+
+**密码登陆**
+1. 下载PuTTY客户端
+2. 打开PuTTY客户端
+3. 密码登陆
+4. 连接登陆成功
+
+
+**秘钥登陆**
+
+1. 下载PuTTY和PuTTYgen客户端
+2. 将.pem私钥文件转换为.ppk私钥文件
+3. 打开PuTTY客户端并填写秘钥
+4. 连接登陆成功
+
+
+# **密码登陆**
+
+**1.下载PuTTY客户端**
+下载 Windows 远程登录软件[PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)。
+
+
+**2.打开PuTTY客户端**
+
+
+界面解释：
+- Host Name（or IP address）：云服务器的公网 IP
+- Port：云服务器的端口，必须设置为22。
+- Connect type：选择 “SSH”。
+- Saved Sessions：填写会话名称，例如 qiniu。
+
+**3.密码登陆**
+单击【Open】，进入 “PuTTY” 的运行界面，提示 “login as:”。
+输入用户名和实例密码。
+
+
+
+备注：
+- Windows操作系统用户名：Administrator
+- Linux操作系统用户名：root
+
+
+**4.连接登陆成功**
+
+
+
+# **秘钥对登陆**
+
+**1.下载PuTTY和PuTTYgen客户端**
+下载并安装PuTTYgen和PuTTY。
+下载链接如下：
+- [PuTTYgen](https://the.earth.li/~sgtatham/putty/latest/w64/puttygen.exe?spm=a2c4g.11186623.2.14.7c987394U0aaRf&file=puttygen.exe)
+- [PuTTY](https://the.earth.li/~sgtatham/putty/latest/w64/putty.exe?spm=a2c4g.11186623.2.15.7c987394U0aaRf&file=putty.exe)
+
+**2.将.pem私钥文件转换为.ppk私钥文件**
+启动PuTTYgen，选择Type of key to generate为RSA，然后单击【Load】，选择并打开已下载的私钥存储路径。如下图所示：
+
+然后选择All Files。
+
+选择待转换的.pem私钥文件。在弹出的对话框中，单击确定。
+
+单击Save private key。
+
+
+指定**.ppk私钥文件**的名称，然后单击保存。
+
+
+**3.打开PuTTY客户端并填写秘钥**
+在左侧导航栏中，选择【Connection】>【SSH】>【Auth】，进入 Auth 配置界面。
+
+单击【Browse】，选择并打开密钥的存储路径。
+界面解释：
+- Host Name（or IP address）：云服务器的公网 IP
+- Port：云服务器的端口，必须设置为22。
+- Connect type：选择 “SSH”。
+- Saved Sessions：填写会话名称，例如 qiniu。
+
+
+
+**4.连接登陆成功**
+单击Open，当出现以下提示时，说明您已经成功地使用SSH密钥对登录了实例。

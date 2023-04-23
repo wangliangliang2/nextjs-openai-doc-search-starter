@@ -1,0 +1,35 @@
+首先和客户拿到无法访问的报错信息，以确定排除诸如 404，403 等资源不可访问的问题
+
+# 1 检测 dns 信息
+
+1）ios，windows 检测 dns
+
+dns 检测链接：
+
+[https://ping.huatuo.qq.com/](https://ping.huatuo.qq.com/)
+
+2）linux 系统 dns 测试，输入下述命令： `curl http://1000.testns.cdnunion.net/`
+
+3）手机端一键检测链接：
+
+[手机端网络测试工具 (android、iOS)](https://developer.qiniu.com/fusion/kb/1324/mobile-terminal-network-test-tool-android-ios)
+
+如果检测结果dns配置不正确，修改即可解决。
+
+
+# 2 提供 ping 域名
+
+如：图片 `http://7xo9nf.com2.z0.glb.qiniucdn.com/123.jpg` 无法访问
+    
+ping 域名，将结果贴过来
+``` 
+ping 7xo9nf.com2.z0.glb.qiniucdn.com
+PING qiniunor.xdwscache.ourglb0.com (112.90.240.150): 56 data bytes
+64 bytes from 112.90.240.150: icmp_seq=0 ttl=49 time=52.046 ms
+...
+
+112.90.240.150 # 这个就是我们重点需要的
+```
+
+综上：将每步的检测结果贴到工单发给我们。收到您提供的信息截图后，我们会进行检测，如果节点存在问题我们会进行调整，调整好后会及时通知您。
+

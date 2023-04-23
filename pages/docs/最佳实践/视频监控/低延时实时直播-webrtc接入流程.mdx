@@ -1,0 +1,55 @@
+# webrtc拉流协议介绍
+
+七牛云视频监控产品(qvs)在现有的3种播放协议(hls, http-flv, rtmp)基础上，拓展了第4种播放协议webrtc。该协议实时延迟可达到500毫秒左右，可以满足客户对低延迟场景的需求
+
+# webrtc拉流播放实现架构
+![1_1.png](https://dn-odum9helk.qbox.me/FuMSZdOGcggsXgULqOsnJrj1jcCk)
+
+# 核心优势
+ * 95%情况下, 实时监控延迟在300-500毫秒区间内
+
+# 快速体验
+* `http`环境: <a href="http://pili-player-demo.qiniu.com">http环境webrtc播放器测试</a>
+* `https`环境:`当切仅当`为域名[配置ssl证书](https://developer.qiniu.com/qvs/6925/qvs-https-configuration)后,方能体验 <a href="https://pili-player-demo.qiniu.com">https环境webrtc播放器测试</a>
+
+ * webrtc地址如何获取
+   * 方式1 通过qvs控制台，点击实时预览页面，会返回webrtc播放地址。 
+   * 方式2 <a href="https://developer.qiniu.com/qvs/6740/obtain-flow-address"> 通过API获取webrtc播放地址 </a>
+   * 最终的地址形式
+      * 1> 如果是动态接入的空间
+      *    http环境：webrtc://ip:1240/空间id/流id
+           https环境：无法使用ip的形式进行播放 。
+      * 2>如果是静态接入的空间
+        http环境：webrtc://域名:1240/空间id/流id
+        https环境：webrtc://域名:447/空间id/流id, 前提要[配置https ssl证书](https://developer.qiniu.com/qvs/6925/qvs-https-configuration)
+      
+# 前提限制
+ * 需要使用七牛的播放器进行webrtc拉流播放
+ * rtmp推流时, 不能含有B帧(webrtc播放不支持B帧)，具体情况请参考以下tips
+   * 1. 使用ffmpeg进行rtmp推流时,务必要携带 -bf 0参数, 例如ffmpeg -re -i xxx.mp4 -c copy -c:v libx264 `-bf 0` -f flv 'rtmp推流地址'
+   * 2. 使用obs推流时, 如下图所示
+       <img src="https://dn-odum9helk.qbox.me/FgNBl1S2A0RimDhFuFHM86fA9b17" width = "450" height = "300" alt="obs rtmp推流设置" align=center />
+   * 3. 小程序rtmp推流不包含B帧，可以跳过该条
+   * 4. 使用七牛安卓/ios推流sdk，可以通过函数设置BaseProfile, 也可以去除B帧
+   * 5. 其他第三方rtmp推流工具/sdk， 可以自行查看文档
+   * 6. 安防行业的摄像头(ipc)或者录像机(nvr)，自带的rtmp推流，默认都不包含B帧，可以跳过该条
+ * 采用gb28181接入的摄像头(ipc)或者录像机(nvr)注意的情况
+   * 1.建议在摄像头的视频参数配置界面。1>设置可变码率 2> I帧间隔 = 帧率 * 2，3>如果需要开启音频， 设置为 g711-alaw, 采样率8K
+<img src="https://dn-odum9helk.qbox.me/Fs0WnLsU25BJzsacWqmuMcX3cUBw" width = "450" height = "300" alt="gb28181视频设置" align=center />
+
+# 正式接入流程
+体验了以上流程之后，正式接入步骤参考如下
+* 七牛webrtc快直播-低延时播放器SDK 下载
+   * Android SDK 下载：[QNRTPlayer-Android](https://github.com/pili-engineering/QNRTPlayer-Android)、
+     * [<低延迟Android SDK使用说明>](https://developer.qiniu.com/pili/7731/geek-android-sdk)
+   * iOS SDK 下载：[QNRTPlayer-iOS](https://github.com/pili-engineering/QNRTPlayer-iOS)
+      * [<低延迟iOS SDK使用说明>](https://developer.qiniu.com/pili/7732/geek-ios-sdk)
+   * Web SDK 下载：[QNRTPlayer-Web](https://github.com/pili-engineering/QNRTPlayer-Web)
+      * [<低延时 Web SDK使用说明>](https://developer.qiniu.io/pili/7730/geek-web-sdk) 低延迟web sdk需要浏览器支持 RTC 和 H264 解码，目前部分 Android 手机自带浏览器并未支持 RTC。在这种情况下，我们建议更换浏览器或直接使用移动端的 SDK, ios端:[<低延时 iOS SDK>](https://developer.qiniu.com/pili/7732/geek-ios-sdk);安卓端:[<低延时 Android SDK>](https://developer.qiniu.com/pili/7731/geek-android-sdk).
+
+* Demo 体验
+Android Demo: [http://fir.qnsdk.com/dun3](http://fir.qnsdk.com/dun3)
+![download.png](https://dn-odum9helk.qbox.me/Fnyl_qNh_zPxPcDe9dpWaiEQB_w1)
+iOS Demo: [http://fir.qnsdk.com/reb4](http://fir.qnsdk.com/reb4)
+![download.png](https://dn-odum9helk.qbox.me/FkOGmwxt-yqxOpAL3B7TX_PMRXZv)
+   

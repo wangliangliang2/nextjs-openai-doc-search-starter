@@ -1,0 +1,307 @@
+本文介绍如何在 Pandora 2.0 应用平台开发自定义组件的最佳实践。Pandora 2.0 应用平台不限制开发自定义组件的前端框架，本文选取 vue 作为开发框架。
+
+#### 一. 使用`create-pandora-app`创建应用模版
+
+1. 生成项目
+
+```bash
+$ npx create-pandora-app grid-component -t view-component
+```
+
+**App 目录结构**
+
+自定义组件 app 整体目录结构如下：
+
+```
+grid-component
+├── app.json
+├── appserver
+│   └── static
+│       ├── css
+│       └── js
+├── default
+│   ├── nav.xml
+│   └── views
+│       └── repo-manager.xml
+├── webapp
+│   ├── package.json
+│   ├── platform
+│   │   ├── craco.config.js
+│   │   ├── env.js
+│   │   ├── package.json
+│   │   ├── public
+│   │   │   ├── index.html
+│   │   │   └── manifest.json
+│   │   ├── src
+│   │   │   ├── index.tsx
+│   │   │   ├── react-app-env.d.ts
+│   │   │   └── typings.d.ts
+│   │   └── tsconfig.json
+│   ├── rollup.config.js
+│   ├── src
+│   │   ├── index.ts
+|   |   ├── index.vue
+│   │   ├── styles.less
+│   │   └── typings.d.ts
+│   └── tsconfig.json
+├── README.md
+├── resources
+│   ├── extractions
+│   └── sourcetypes
+└── static
+    └── icon.png
+```
+
+其中 webapp 目录为开发目录，在该目录下可进行组件相关逻辑的编写和调试。
+
+2. 进入项目目录
+
+```bash
+$ cd grid-component/webapp
+```
+
+3. 初始化项目
+
+```bash
+$ yarn run setup
+```
+
+#### 二. 开发自定义组件逻辑
+
+本示例以使用 Vue 开发框架
+
+Pandora 平台为您提供了以下 SDK 方便您快速构建自己的应用，具体请参考[APP 开发工具库](/app-tools)
+
+- App-Sdk
+
+  1.添加依赖
+
+```bash
+$ yarn add vue vue-template-compiler rollup-plugin-vue
+```
+
+2.配置 rollup.config.js 加入 vue 的配置
+
+```bash
+input: 'src/index.ts',
+plugins:[vue({
+      css: true,
+      compileTemplate: true
+    })]
+```
+
+3.添加业务逻辑
+
+示例代码如下：
+
+新增`Grid.vue`文件，编写 Grid 组件逻辑，其代码如下：
+
+```
+/**
+ * src/Grid/index.vue
+ */
+<template>
+  <table :class="$style.table">
+    <thead>
+      <tr>
+        <th
+          v-for="key in columns"
+          :key="key"
+          @click="sortBy(key)"
+          :class="{ active: sortKey == key }"
+        >
+          {{ key | capitalize }}
+          <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+          </span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(entry, index) in filteredHeroes" :key="index">
+        <td v-for="key in columns" :key="key">
+          {{ entry[key] }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</template>
+
+<script>
+export default {
+  name: 'grid',
+  props: {
+    heroes: Array,
+    columns: Array,
+    filterKey: String
+  },
+  data: function () {
+    var sortOrders = {}
+    this.columns.forEach(function (key) {
+      sortOrders[key] = 1
+    })
+    return {
+      sortKey: '',
+      sortOrders: sortOrders
+    }
+  },
+  computed: {
+    filteredHeroes: function () {
+      var sortKey = this.sortKey
+      var filterKey = this.filterKey && this.filterKey.toLowerCase()
+      var order = this.sortOrders[sortKey] || 1
+      var heroes = this.heroes
+      if (filterKey) {
+        heroes = heroes.filter(function (row) {
+          return Object.keys(row).some(function (key) {
+            return String(row[key]).toLowerCase().indexOf(filterKey) > -1
+          })
+        })
+      }
+      if (sortKey) {
+        heroes = heroes.slice().sort(function (a, b) {
+          a = a[sortKey]
+          b = b[sortKey]
+          return (a === b ? 0 : a > b ? 1 : -1) * order
+        })
+      }
+      return heroes
+    }
+  },
+  filters: {
+    capitalize: function (str) {
+      return str.charAt(0).toUpperCase() + str.slice(1)
+    }
+  },
+  methods: {
+    sortBy: function (key) {
+      this.sortKey = key
+      this.sortOrders[key] = this.sortOrders[key] * -1
+    }
+  }
+}
+</script>
+<style lang="less" module>
+@import './style.less';
+</style>
+```
+
+```less
+/**
+ * src/Grid/style.less
+ */
+.table {
+  border: 2px solid #42b983;
+  border-radius: 3px;
+  background-color: #fff;
+  margin: 0 auto;
+  width: 400px;
+  th {
+    background-color: #42b983;
+    color: rgba(255, 255, 255, 0.66);
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  td {
+    background-color: #f9f9f9;
+  }
+
+  th,
+  td {
+    min-width: 120px;
+    padding: 10px 20px;
+  }
+
+  th.active {
+    color: #fff;
+  }
+
+  th.active .arrow {
+    opacity: 1;
+  }
+
+  .arrow {
+    display: inline-block;
+    vertical-align: middle;
+    width: 0;
+    height: 0;
+    margin-left: 5px;
+    opacity: 0.66;
+  }
+
+  .arrow.asc {
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 4px solid #fff;
+  }
+
+  .arrow.dsc {
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid #fff;
+  }
+}
+```
+
+4.接入自定义组件插件机制
+
+自定义通用组件必须继承自`@qn-pandora/app-sdk --> BaseComponet`，且实现`render`方法。
+
+示例代码如下：
+
+```typescript
+/**
+ * src/index.ts
+ */
+import { BaseComponent } from '@qn-pandora/app-sdk'
+import Vue from 'vue'
+import App from './index.vue'
+
+import style from './styles.less'
+
+export default class extends BaseComponent {
+  render() {
+    /**
+     * 原生js渲染dom
+     */
+    const componentDom = document.createElement('div')
+    componentDom.className = style.view
+    this.element.innerHTML = ''
+    this.element.appendChild(componentDom)
+
+    new Vue({
+      render: h => h(App)
+    }).$mount(componentDom)
+  }
+}
+```
+
+5.查看效果与调试
+
+- 启动项目
+
+```bash
+$ yarn start
+```
+
+- 查看效果
+
+访问`http://localhost:3000`，
+
+效果如下：
+![](../../static/img/pandora/custom-component/grid.png)
+
+#### 三. 打包生成应用
+
+1.打包应用
+
+运行以下命令，会生成`grid-component.tar.gz`
+
+```
+yarn run package
+```
+
+2.导入 Pandora 平台查看效果

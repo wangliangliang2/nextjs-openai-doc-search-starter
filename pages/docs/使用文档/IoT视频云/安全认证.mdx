@@ -1,0 +1,33 @@
+设备接入IoT视频云平台时，需要先通过平台的身份认证。目前平台提供设备密钥的方式进行设备身份认证。
+
+# **认证方式**
+
+IoT视频云平台为每个设备提供了一组密钥（DAK、DSK），设备集成时将其烧录，当设备与平台建立连接时，平台对其携带的设备鉴权信息进行认证。认证通过，平台激活设备，设备与平台间才可传输数据。保证了数据上传的安全性。
+
+使用流程示意图：
+![](https://dn-odum9helk.qbox.me/FrQyWlm5RP5N6vEa3uHEEJfBk893)
+
+# **密钥获取方式**
+
+## **查询单个设备的密钥**
+### **操作说明**
+1.登录[七牛开发者平台](https://sso.qiniu.com/?client_id=PIapUKqa3u6S24H868BelwrG0OFu8dS7AxVQ8oz8HznLXhgrl2BnjaO9cs9LzxK2&redirect_url=https:%2F%2Fportal.qiniu.com%2Fapi%2Fgaea%2Fsso%2Fsignin%3Fredirect%3D%252Fcreate)。
+
+2.选择IoT视频云产品，进入产品控制台，选择**设备管理**，进入设备管理页面。
+3.选择对应的设备，点击**密钥**，查询设备密钥。
+![](https://dn-odum9helk.qbox.me/Fu3BzSeruq_m9t3UboTIpl2Sq3ge)
+![](https://dn-odum9helk.qbox.me/FkVHWMGsMx2GIHnyOBpGcjlK4JCN)
+
+## **批量创建设备获取密钥**
+### **操作说明**
+批量创建完设备后，可下载批量创建设备的密钥，如下图所示：
+![](https://dn-odum9helk.qbox.me/Fj2WHFzIZBJc7ftkWB7wpTFlsJyJ)
+
+## **批量获取密钥**
+### **操作说明**
+（1）设备列表中，点击**批量获取设备密钥**
+![](https://dn-odum9helk.qbox.me/FtBXBrZ6Pp1JejLa8Z71q2_IhsIq)
+（2）输入用户的账号对应的密码进行验证。
+![](https://dn-odum9helk.qbox.me/FjyPEEqcKJjBpWWuc0eK12WRezb2)
+（3）验证通过后方可下载所有设备的密钥，如下图所示：
+![](https://dn-odum9helk.qbox.me/Fu7vHiY-zn-CcSSRSxb_Fn_4Z9JL)

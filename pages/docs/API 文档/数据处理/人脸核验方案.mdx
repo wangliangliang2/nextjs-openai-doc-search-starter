@@ -1,0 +1,102 @@
+# 产品简介
+人脸核验方案基于活体检测、证件OCR、人脸识别等手段，在对自然人真实身份进行校验的同时，使用智能决策引擎进行综合分析，输出最终认证结果。采用多种手段提升刷脸时的安全性，能覆盖所有主流的黑灰产攻击手法。
+
+# 接入流程
+## 说明
+1 提交工单
+2 ⽤户到控制台开通，获取app_id
+3 ⽤户服务端使⽤ QD 签算⽅式调⽤七⽜服务获取⼈脸核验所需的 token 
+4 ⽤户服务端将 token 下发⾄⽤户 app, ⽤户 app 使⽤ token 初始化 sdk 
+5 sdk 通过 token 调⽤七⽜服务, 调⽤完成后七⽜服务端会根据⽤户设置的回调地址进⾏回调, 同时七⽜ 服务端返回⼀个 request_id 给 sdk ⽤于查询结果
+## 时序图
+![image.png](https://dn-odum9helk.qbox.me/Fpt1rQ93QY0Je-kypbTOCU-K5Uu7)
+
+
+## 获取应用ID（app_id）
+[点此跳转链接](https://portal.qiniu.com/face/app/faceid-sdk)
+1 点击新建应用
+![image.png](https://dn-odum9helk.qbox.me/FqOkdAxW7Vqfv9q-U3H2PoQSok1A)
+
+2 填写app参数
+**注意**：应用ID（app_id）必填且不支持修改；回调地址选填, 如果没有回调地址则不进⾏回调
+
+![image.png](https://dn-odum9helk.qbox.me/Fq5F29ISggvRNSc7IYAm5lh548pW)
+3 点击保存
+
+##  QD Token签算方式
+```
+// app_id 加上过期时间
+src = "<app_id>:<expiration>"
+encodedSrc = urlsafe_base64_encode(src)
+// 计算HMAC-SHA1签名，并对签名结果做URL安全的Base64编码
+sign = hmac_sha1(encodedSrc, "Your_Secret_Key")
+encodedSign = urlsafe_base64_encode(sign)
+// 拼接上述结果得到 token
+token = "QD " + Your_Access_Key + ":" + encodedSign + ":" + encodedSrc
+```
+## 获取 sdk token
+### 请求信息
+```
+POST https://ap-open-z0.qiniuapi.com/faceid-sdk/api/face-hdphotoauth/token
+Host: ap-open-z0.qiniuapi.com
+Authorization: <token>
+Content-Type: application/json
+{
+"real_name": "",
+"id_card": ""
+}
+```
+### 返回信息
+```
+200 OK
+Content-Type: application/json
+{
+"face_id": "",
+"token": ""
+}
+```
+
+## ⽤户查询结果
+**注意**：task_id 中填入获取初始化信息时返回的 face_id
+**注意**：⽬前权威⼈脸结果在服务端保存的时⻓为1⼩时(可调整), 超时后结果将⾃动删除, 主动查询会报 404
+### 请求信息
+```
+GET https://ap-open-z0.qiniuapi.com/faceid-sdk/api/face-hdphotoauth-sdk/result?task_id=
+Host: ap-open-z0.qiniuapi.com
+Authorization: <token>
+```
+### 返回信息
+```
+200 OK
+Content-Type: application/json
+{
+"task_id": "",
+"request_id": "",
+"response": {
+"session_id": "12345678",
+"similarity": 70,
+"errorcode": 0,
+"errormsg": "OK"
+ }
+}
+```
+## 服务端错误返回
+### 返回信息
+```
+{
+ "code": 400,
+ "status_code": 400,
+ "message": "bad request"
+}
+```
+### 错误码
+
+| code | message    |
+| ---- | ---------- |
+| 400 |客户端请求错误       |
+| 404 | 客户端请对应资源未找到|
+| 500 | 服务端错误   |
+| 599 | 未知错误   |
+
+# 价格
+1元/次

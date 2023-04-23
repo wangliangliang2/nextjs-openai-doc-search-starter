@@ -1,0 +1,501 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>QNRTC iOS SDK v5.x 是基于 v4.x 版本开发的全量重构版本，<strong>接口与 v4.x 的部分接口不兼容</strong>，<strong>不兼容 v3.x 版本</strong>。</p>
+<p>请在确认好目前使用的 SDK 版本后，根据实际需要，选择参照 <a href="/rtc/development_guidelines/11949/migration-guide-iOS-v5#1">v4.x 升级 v5.x 指南</a> 或 <a href="/rtc/development_guidelines/11949/migration-guide-iOS-v5#2">v3.x 升级 v5.x 指南</a> 进行版本升级。</p>
+
+# v4.x 升级 v5.x 指南
+<blockquote>
+<ul>
+<li><strong>由于 QNRTC iOS SDK v5.x 主要接口基本兼容 v4.x 接口</strong>，因此，如果您是 v4.x 版本用户并希望升级到最新版本以获得更好的用户体验，可参考这里提供的升级指南进行迁版本升级。</li>
+</ul>
+</blockquote>
+<h2 id="改动简介"><a href="#%E6%94%B9%E5%8A%A8%E7%AE%80%E4%BB%8B" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>改动简介</h2>
+<p>5.x 版本优化了 SDK 部分非主要接口调用逻辑，主要改动如下：</p>
+<h3 id="核心系统类-rtc"><a href="#%E6%A0%B8%E5%BF%83%E7%B3%BB%E7%BB%9F%E7%B1%BB-rtc" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>核心系统类 RTC</h3>
+<p>4.x 版本相关 RTC 销毁，可以通过 dealloc 方法中示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// RTC deinit 销毁</span>
+<span></span>- (<span class="hljs-keyword">void</span>)dealloc {
+<span></span>    [QNRTC deinit];
+<span></span>    <span class="hljs-built_in">NSLog</span>(<span class="hljs-string">@&quot;[dealloc]==&gt; %@&quot;</span>, <span class="hljs-keyword">self</span>.description);
+<span></span>}
+<span></span></code></pre>
+<p>5.x 版本 <a href="/rtc/api/8834/QNRTC-iOS#deinit">deinit</a> 方法，<strong>请务必在 dealloc 前调用</strong>，由于 dealloc 是自发调用，内部可能因为某些资源还未释放，<strong>需要手动主动调用释放</strong>，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// RTC deinit 销毁</span>
+<span></span>- (<span class="hljs-keyword">void</span>)viewDidDisappear:(<span class="hljs-built_in">BOOL</span>)animated {
+<span></span>    [QNRTC deinit];
+<span></span>    [<span class="hljs-keyword">super</span> viewDidDisappear:animated];
+<span></span>}
+<span></span></code></pre>
+<p>另外，5.x 版本为保证方法名的命名严谨，重命名部分接口 API，<strong>注意实际功能及使用方式不变</strong>，涉及的接口列出如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 初始化 QNRTC，务必使用</span>
+<span></span>+ (<span class="hljs-keyword">void</span>)configRTC:(QNRTCConfiguration *)configuration;
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span>+ (<span class="hljs-keyword">void</span>)initRTC:(QNRTCConfiguration *)configuration;
+<span></span></code></pre>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 设置 QNRTCDelegate 代理回调</span>
+<span></span>+ (<span class="hljs-keyword">void</span>)setAudioRouteDelegate:(<span class="hljs-keyword">id</span> &lt;QNRTCDelegate&gt;)delegate;
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span>+ (<span class="hljs-keyword">void</span>)setRTCDelegate:(<span class="hljs-keyword">id</span> &lt;QNRTCDelegate&gt;)delegate;
+<span></span></code></pre>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 音频输出设备变更的回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)QNRTCDidChangeRTCAudioOutputToDevice:(QNAudioDeviceType)deviceType;
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCDidAudioRouteChanged:(QNAudioDeviceType)deviceType;
+<span></span></code></pre>
+<h3 id="核心引擎-client"><a href="#%E6%A0%B8%E5%BF%83%E5%BC%95%E6%93%8E-client" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>核心引擎 Client</h3>
+<p>4.x 版本支持通过远端的 userID, 直接获取对应的远端 track 列表，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 获取指定用户已被自己订阅的 tracks。</span>
+<span></span><span class="hljs-built_in">NSArray</span> * trackArray =  [<span class="hljs-keyword">self</span>.client getSubscribedTracks:remoteUserId];
+<span></span></code></pre>
+<p>5.x 版本删除此方法，改为通过 <a href="/rtc/api/8835/QNRemoteUser-iOS">QNRemoteUser</a> 的 audioTrack 和 videoTrack 属性来获取</p>
+<p>4.x 版本支持通过传递 userID，直接获取对应用户的网络质量信息，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 获取指定用户的网络质量信息。</span>
+<span></span>QNNetworkQuality *quality =  [<span class="hljs-keyword">self</span>.client getUserNetworkQuality:remoteUserId];
+<span></span></code></pre>
+<p>5.x 版本更改此方法为直接获取当前订阅的所有远端用户网络质量，具体的 <a href="/rtc/api/8869/QNNetworkQuality-iOS">QNNetworkQuality</a> 可通过 <code>key</code> 获取，无需再传值获取，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 获取当前订阅的所有远端用户网络质量。</span>
+<span></span><span class="hljs-built_in">NSDictionary</span> *dic =  [<span class="hljs-keyword">self</span>.client getUserNetworkQuality];
+<span></span></code></pre>
+<p>5.x 版本在 <a href="/rtc/api/9248/QNRTCClientDelegate">QNRTCClientDelegate</a> 新增回调本地网络质量信息</p>
+<pre><code class="language-objc">- (<span class="hljs-keyword">void</span>)RTCClient:(QNRTCClient *)client didNetworkQualityNotified:(QNNetworkQuality *)quality;
+<span></span></code></pre>
+<p>另外， <a href="/rtc/api/9248/QNRTCClientDelegate">QNRTCClientDelegate</a> 在 4.x 基础上，为保证方法名的命名严谨，重命名回调接口 API，<strong>注意实际功能及使用方式不变</strong>，涉及的回调接口列出如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 成功创建转推/合流转推任务的回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCClient:(QNRTCClient *)client didStartLiveStreamingWith:(<span class="hljs-built_in">NSString</span> *)streamID {}
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCClient:(QNRTCClient *)client didStartLiveStreaming:(<span class="hljs-built_in">NSString</span> *)streamID {}
+<span></span></code></pre>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 停止转推/合流转推任务的回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCClient:(QNRTCClient *)client didStopLiveStreamingWith:(<span class="hljs-built_in">NSString</span> *)streamID {}
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCClient:(QNRTCClient *)client didStopLiveStreaming:(<span class="hljs-built_in">NSString</span> *)streamID {}
+<span></span></code></pre>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 合流转推出错的回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCClient:(QNRTCClient *)client didErrorLiveStreamingWith:(<span class="hljs-built_in">NSString</span> *)streamID errorInfo:(QNLiveStreamingErrorInfo *)errorInfo {}
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCClient:(QNRTCClient *)client didErrorLiveStreaming:(<span class="hljs-built_in">NSString</span> *)streamID errorInfo:(QNLiveStreamingErrorInfo *)errorInfo {}
+<span></span></code></pre>
+<h3 id="本地-track-视频数据回调"><a href="#%E6%9C%AC%E5%9C%B0-track-%E8%A7%86%E9%A2%91%E6%95%B0%E6%8D%AE%E5%9B%9E%E8%B0%83" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>本地 Track 视频数据回调</h3>
+<p>4.x 的版本，目前只有 <a href="/rtc/api/8852/QNCameraVideoTrack-iOS">QNCameraVideoTrack</a> 支持获取对应的视频数据帧代理回调，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 摄像头视频 Track 数据回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)cameraVideoTrack:(QNCameraVideoTrack *)cameraVideoTrack didGetSampleBuffer:(<span class="hljs-built_in">CMSampleBufferRef</span>)sampleBuffer {
+<span></span>
+<span></span>}
+<span></span></code></pre>
+<p>5.x 版本转移至 <a href="/rtc/api/8849/QNLocalVideoTrack-iOS">QNLocalVideoTrack</a> 中，支持 <a href="/rtc/api/8849/QNLocalVideoTrack-iOS">QNLocalVideoTrack</a> 子类，包括：<a href="/rtc/api/8852/QNCameraVideoTrack-iOS">QNCameraVideoTrack</a>; <a href="/rtc/api/8850/QNScreenVideoTrack-iOS">QNScreenVideoTrack</a>; <a href="/rtc/api/8853/QNCustomVideoTrack-iOS">QNCustomVideoTrack</a> 等子类的本地渲染，以及对应数据帧回调，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 本地视频 Track 数据回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)localVideoTrack:(QNLocalVideoTrack *)localVideoTrack didGetPixelBuffer:(CVPixelBufferRef)pixelBuffer {
+<span></span>
+<span></span>}
+<span></span></code></pre>
+<h3 id="本地-track-音频数据回调"><a href="#%E6%9C%AC%E5%9C%B0-track-%E9%9F%B3%E9%A2%91%E6%95%B0%E6%8D%AE%E5%9B%9E%E8%B0%83" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>本地 Track 音频数据回调</h3>
+<p>4.x 版本，目前只有 <a href="/rtc/api/8855/QNMicrophoneAudioTrack-iOS">QNMicrophoneAudioTrack</a> 支持获取对应的音频数据帧代理回调，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 麦克风音频 Track 数据回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)microphoneAudioTrack:(QNMicrophoneAudioTrack *)microphoneAudioTrack didGetAudioBuffer:(AudioBuffer *)audioBuffer bitsPerSample:(<span class="hljs-built_in">NSUInteger</span>)bitsPerSample sampleRate:(<span class="hljs-built_in">NSUInteger</span>)sampleRate {
+<span></span>
+<span></span>}
+<span></span></code></pre>
+<p>5.x 版本转移至 <a href="/rtc/api/8854/QNLocalAudioTrack-iOS">QNLocalAudioTrack</a> 中，支持 <a href="/rtc/api/8854/QNLocalAudioTrack-iOS">QNLocalAudioTrack</a> 子类，包括：<a href="/rtc/api/8855/QNMicrophoneAudioTrack-iOS">QNMicrophoneAudioTrack</a>k; <a href="/rtc/api/8856/QNCustomAudioTrack-iOS">QNCustomAudioTrack</a> 等字类的对应数据帧回调，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 本地音频 Track 数据回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)localAudioTrack:(QNLocalAudioTrack *)localAudioTrack didGetAudioBuffer:(AudioBuffer *)audioBuffer bitsPerSample:(<span class="hljs-built_in">NSUInteger</span>)bitsPerSample sampleRate:(<span class="hljs-built_in">NSUInteger</span>)sampleRate {
+<span></span>
+<span></span>}
+<span></span></code></pre>
+<h3 id="本地视频-track-发送-sei"><a href="#%E6%9C%AC%E5%9C%B0%E8%A7%86%E9%A2%91-track-%E5%8F%91%E9%80%81-sei" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>本地视频 Track 发送 SEI</h3>
+<p>4.x 版本，需要传入 SEI 信息和重复次数</p>
+<pre><code class="language-objc">- (<span class="hljs-keyword">void</span>)sendSEI:(<span class="hljs-built_in">NSString</span> *)videoSEI repeatNmuber:(<span class="hljs-built_in">NSNumber</span> *)repeatNumber;
+<span></span></code></pre>
+<p>5.x 版本在 4.x 版本基础上，更新增加参数 <code>uuid</code> 自定义设置 uuid，便于区分 SEI 信息</p>
+<pre><code class="language-objc">- (<span class="hljs-keyword">void</span>)sendSEI:(<span class="hljs-built_in">NSString</span> *)videoSEI uuid:(<span class="hljs-built_in">NSString</span> *)uuid repeatNmuber:(<span class="hljs-built_in">NSNumber</span> *)repeatNumber;
+<span></span></code></pre>
+<h3 id="本地摄像头-track"><a href="#%E6%9C%AC%E5%9C%B0%E6%91%84%E5%83%8F%E5%A4%B4-track" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>本地摄像头 Track</h3>
+<p>5.x 版本在 4.x 版本基础上，优化移除部分低概率使用属性，移除的属性例举如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 视频 Track 回调代理</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">weak</span>) <span class="hljs-keyword">id</span>&lt;QNCameraTrackVideoDataDelegate&gt; videoDelegate;
+<span></span><span class="hljs-comment">// 视频采集 session，只读变量，给有特殊需求的开发者使用，最好不要修改。</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">readonly</span>) <span class="hljs-built_in">AVCaptureSession</span> * _Nullable captureSession;
+<span></span><span class="hljs-comment">// 视频采集输入源，只读变量，给有特殊需求的开发者使用，最好不要修改。</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">readonly</span>) <span class="hljs-built_in">AVCaptureDeviceInput</span> * _Nullable videoCaptureDeviceInput;
+<span></span><span class="hljs-comment">// 手动点击屏幕进行对焦。默认为 YES</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">assign</span>, <span class="hljs-keyword">getter</span>=isTouchToFocusEnable) <span class="hljs-built_in">BOOL</span> touchToFocusEnable;
+<span></span></code></pre>
+<p>其中，本地摄像头 Track <code>QNCameraTrackVideoDataDelegate</code> 在 5.x 版本上改由其子类 <a href="/rtc/api/8849/QNLocalVideoTrack-iOS">QNLocalVideoTrack</a> 的 <code>QNLocalVideoTrackDelegate</code> 实现；</p>
+<p>手动点击屏幕进行对焦 <code>touchToFocusEnable</code> 改由用户通过实现手势点击，传递对焦位置自主实现。</p>
+<p>5.x 版本在 4.x 版本基础上，为保证方法名的命名严谨，重命名接口 API，<strong>注意实际功能及使用方式不变</strong>，涉及的属性列出如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 聚焦的位置，(0,0) 代表左上, (1,1) 代表右下。默认为 (0.5, 0.5)，即中间位置</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">assign</span>) <span class="hljs-built_in">CGPoint</span> focusPointOfInterest;
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">assign</span>) <span class="hljs-built_in">CGPoint</span> manualFocus;
+<span></span></code></pre>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 设备支持的 formats</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">strong</span>, <span class="hljs-keyword">readonly</span>) <span class="hljs-built_in">NSArray</span>&lt;<span class="hljs-built_in">AVCaptureDeviceFormat</span> *&gt; *videoFormats;
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">strong</span>, <span class="hljs-keyword">readonly</span>) <span class="hljs-built_in">NSArray</span>&lt;<span class="hljs-built_in">AVCaptureDeviceFormat</span> *&gt; *supportedVideoFormats;
+<span></span></code></pre>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 采集的视频的 videoFormat，默认为 AVCaptureSessionPreset640x480</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">copy</span>) <span class="hljs-built_in">NSString</span> *sessionPreset;
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">copy</span>) <span class="hljs-built_in">NSString</span> *videoFormat;
+<span></span></code></pre>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 设置磨皮的程度，范围从 0 ~ 1，0 为不磨皮</span>
+<span></span>- (<span class="hljs-keyword">void</span>)setBeautify:(<span class="hljs-built_in">CGFloat</span>)beautify;
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span>- (<span class="hljs-keyword">void</span>)setSmoothLevel:(<span class="hljs-built_in">CGFloat</span>)smoothLevel;
+<span></span></code></pre>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 设置摄像头 track 发送图片数据</span>
+<span></span>- (<span class="hljs-keyword">void</span>)pushCameraTrackWithImage:(<span class="hljs-keyword">nullable</span> <span class="hljs-built_in">UIImage</span> *)image;
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span>- (<span class="hljs-keyword">void</span>)pushImage:(<span class="hljs-keyword">nullable</span> <span class="hljs-built_in">UIImage</span> *)image;
+<span></span></code></pre>
+<h3 id="本地麦克风-track"><a href="#%E6%9C%AC%E5%9C%B0%E9%BA%A6%E5%85%8B%E9%A3%8E-track" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>本地麦克风 Track</h3>
+<p>4.x 版本使用实现背景音乐混音，通过 <code>QNMicrophoneAudioTrack</code> 下的属性 <code>audioMixer</code> 操作实现</p>
+<pre><code class="language-objc"><span class="hljs-keyword">self</span>.audioTrack.audioMixer.audioURL = [<span class="hljs-built_in">NSURL</span> URLWithString:<span class="hljs-string">@&quot;http://www.xxx.com/test.mp3&quot;</span>];
+<span></span><span class="hljs-keyword">self</span>.audioTrack.audioMixer.delegate = <span class="hljs-keyword">self</span>;
+<span></span></code></pre>
+<p>5.x 版本除了支持背景音乐功能，还新增支持多音效混音，依旧需要依赖 <a href="/rtc/api/8855/QNMicrophoneAudioTrack-iOS">QNMicrophoneAudioTrack</a> 实现，具体可操作 API 详见 <a href="/rtc/api/11930/QNAudioMusicMixer-iOS">QNAudioMusicMixer</a> 和 <a href="/rtc/api/11928/QNAudioEffectMixer-iOS">QNAudioEffectMixer</a></p>
+<pre><code class="language-objc"><span class="hljs-keyword">self</span>.musicMixer = [<span class="hljs-keyword">self</span>.audioTrack createAudioMusicMixer:_musicString musicMixerDelegate:<span class="hljs-keyword">self</span>];
+<span></span><span class="hljs-keyword">self</span>.effectMixer = [<span class="hljs-keyword">self</span>.audioTrack createAudioEffectMixer:<span class="hljs-keyword">self</span>];
+<span></span></code></pre>
+<h3 id="track-的渲染"><a href="#track-%E7%9A%84%E6%B8%B2%E6%9F%93" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>Track 的渲染</h3>
+<p>4.x 的版本本地视频渲染和远端视频渲染，分别对应不同的 view 对象，本地渲染为 <code>QNGLKView</code>，远端为 <code>QNVideoView</code>，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">//本地摄像头渲染方法实现</span>
+<span></span><span class="hljs-keyword">self</span>.preview = [[QNGLKView alloc] init];
+<span></span>[<span class="hljs-keyword">self</span>.cameraTrack play:<span class="hljs-keyword">self</span>.preview];
+<span></span>
+<span></span><span class="hljs-comment">//远端视频 track 渲染方法实现</span>
+<span></span>QNVideoView * videoView = [[QNVideoView alloc] init];
+<span></span>[remoteTrcak play:videoView];
+<span></span></code></pre>
+<p>5.x 版本对所有 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#track">Track</a> 的渲染 view 都由对应的 <a href="">QNVideoGLView</a> 来实现，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">//track 渲染方法实现</span>
+<span></span>QNVideoGLView* videoView = [[QNVideoGLView alloc] init];
+<span></span>[track play:videoView];
+<span></span></code></pre>
+<p>另外，原先其他 Track 涉及的 <code>fillMode</code> 也改由 <a href="/rtc/api/11950/QNVideoGLView-iOS">QNVideoGLView</a> 配置属性实现。</p>
+<h3 id="视频编码配置"><a href="#%E8%A7%86%E9%A2%91%E7%BC%96%E7%A0%81%E9%85%8D%E7%BD%AE" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>视频编码配置</h3>
+<p>4.x 版本需要通过对应 Track 的 config 配置初始化传参实现，这里以本地视频 Track <code>QNCameraVideoTrackConfig</code> 为例子，示例代码如下：</p>
+<pre><code class="language-objc">QNCameraVideoTrackConfig *videoTrackConfig = [[QNCameraVideoTrackConfig alloc] initWithSourceTag:<span class="hljs-string">@&quot;camera&quot;</span> bitrate:<span class="hljs-number">600</span> videoEncodeSize:<span class="hljs-built_in">CGSizeNake</span>(<span class="hljs-number">480</span>, <span class="hljs-number">640</span>) multiStreamEnable:<span class="hljs-literal">NO</span>];
+<span></span></code></pre>
+<p>5.x 版本统一通过 <a href="/rtc/api/11944/QNVideoEncoderConfig-iOS">QNVideoEncoderConfig</a> 配置编码参数</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 使用对象初始化方法，只用默认值可直接使用默认类方法</span>
+<span></span>QNVideoEncoderConfig *config = [[QNVideoEncoderConfig alloc] initWithBitrate:<span class="hljs-number">600</span> videoEncodeSize:<span class="hljs-built_in">CGSizeMake</span>(<span class="hljs-number">480</span>, <span class="hljs-number">640</span>) videoFrameRate:<span class="hljs-number">24</span>];
+<span></span>QNCameraVideoTrackConfig *videoTrackConfig = [[QNCameraVideoTrackConfig alloc] initWithSourceTag:<span class="hljs-string">@&quot;camera&quot;</span> config:config multiStreamEnable:<span class="hljs-literal">NO</span>];
+<span></span></code></pre>
+<h3 id="音频编码配置"><a href="#%E9%9F%B3%E9%A2%91%E7%BC%96%E7%A0%81%E9%85%8D%E7%BD%AE" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>音频编码配置</h3>
+<p>4.x 版本需要通过对应 Track 的 config 配置初始化传参实现，这里以本地音频 Track <code>QNMicrophoneAudioTrackConfig</code> 为例子，示例代码如下：</p>
+<pre><code class="language-objc">QNMicrophoneAudioTrackConfig *audioTrackConfig = [[QNMicrophoneAudioTrackConfig alloc] initWithTag:<span class="hljs-string">@&quot;microphone&quot;</span> bitrate:<span class="hljs-number">64</span>];
+<span></span></code></pre>
+<p>5.x 版本统一通过 <a href="/rtc/api/11936/QNAudioQuality-iOS">QNAudioQuality</a> 配置编码参数</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 使用对象初始化方法，只用默认值可直接使用默认类方法</span>
+<span></span>QNAudioQuality *quality = [[QNAudioQuality alloc] initWithBitrate:<span class="hljs-number">64</span>];
+<span></span>QNMicrophoneAudioTrackConfig *audioTrackConfig = [[QNMicrophoneAudioTrackConfig alloc] initWithTag:<span class="hljs-string">@&quot;microphone&quot;</span> audioQuality:quality];
+<span></span></code></pre>
+<h3 id="合流转推"><a href="#%E5%90%88%E6%B5%81%E8%BD%AC%E6%8E%A8" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>合流转推</h3>
+<p>5.x 版本在 4.x 版本基础上，为保证方法名的命名严谨，重命名 <a href="/rtc/api/8863/QNTranscodingLiveStreamingTrack-iOS">QNTranscodingLiveStreamingTrack</a> 下的 2个属性，<strong>注意实际功能及使用方式不变</strong></p>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 当前要操作的 Track 的 id</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">strong</span>) <span class="hljs-built_in">NSString</span> *trackId;
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">strong</span>) <span class="hljs-built_in">NSString</span> *trackID;
+<span></span></code></pre>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 该 Track 在合流画面中的层次，0 为最底层</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">assign</span>) <span class="hljs-built_in">NSUInteger</span> zIndex;
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span><span class="hljs-keyword">@property</span> (<span class="hljs-keyword">nonatomic</span>, <span class="hljs-keyword">assign</span>) <span class="hljs-built_in">NSUInteger</span> zOrder;
+<span></span></code></pre>
+<h3 id="跨房配置"><a href="#%E8%B7%A8%E6%88%BF%E9%85%8D%E7%BD%AE" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>跨房配置</h3>
+<p>5.x 版本在 4.x 版本基础上，为保证方法名的命名严谨，方法重命名 <a href="">QNRoomMediaRelayConfiguration</a> 下的删除目标房间接口，<strong>注意实际功能及使用方式不变</strong></p>
+<pre><code class="language-objc"><span class="hljs-comment">// 4.x 删除目标房间</span>
+<span></span>- (<span class="hljs-built_in">BOOL</span>)removeDestRoomInfoForRoomName:(<span class="hljs-built_in">NSString</span> *_Nonnull)roomName;
+<span></span><span class="hljs-comment">// 5.x 方法重命名后，如下所示：</span>
+<span></span>- (<span class="hljs-built_in">BOOL</span>)removeDestRoomInfo:(<span class="hljs-built_in">NSString</span> *_Nonnull)roomName;
+<span></span></code></pre>
+
+# v3.x 升级 v5.x 指南
+<blockquote>
+<ul>
+<li><strong>由于 QNRTC iOS SDK v5.x 不兼容 3.x 版本</strong>，因此，如果您是老版本用户并希望升级到最新版本以获得更好的用户体验，可参考这里提供的升级指南进行迁版本升级。</li>
+<li>老版本文档可查看 <a href="https://doc.qnsdk.com/rtn/ios">3.x 及之前版本的相关文档</a>。</li>
+</ul>
+</blockquote>
+<h2 id="改动简介-1"><a href="#%E6%94%B9%E5%8A%A8%E7%AE%80%E4%BB%8B-1" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>改动简介</h2>
+<p>5.x 版本优化了 SDK 接口调用逻辑，主要改动如下：</p>
+<h3 id="优化实时音视频管理方式"><a href="#%E4%BC%98%E5%8C%96%E5%AE%9E%E6%97%B6%E9%9F%B3%E8%A7%86%E9%A2%91%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>优化实时音视频管理方式</h3>
+<p>在 5.x 版本 SDK 中，我们提供了 <a href="/rtc/api/8834/QNRTC-iOS">QNRTC</a> 和 <a href="/rtc/api/8836/QNRTCClient-iOS">QNRTCClient</a> 两个类来替代 <code>QNRTCEngine</code> 来进行 SDK 的初始化、Track 的创建以及房间的管理等操作。其中：</p>
+<ul>
+<li><a href="/rtc/api/8834/QNRTC-iOS">QNRTC</a> 主要负责处理 SDK 的初始化以及本地音视频 Track 的创建采集等房间无关的操作。</li>
+<li><a href="/rtc/api/8836/QNRTCClient-iOS">QNRTCClient</a> 主要负责处理房间的加入、离开，音视频 Track 的发布、订阅等房间交互相关的操作。</li>
+</ul>
+<p>上述管理方式的改动将影响到 SDK 的主要交互流程，若您需要升级，可以参考当前使用指南下的核心场景使用文档分模块进行更新。</p>
+<h3 id="优化音视频-track-的定义及使用方式"><a href="#%E4%BC%98%E5%8C%96%E9%9F%B3%E8%A7%86%E9%A2%91-track-%E7%9A%84%E5%AE%9A%E4%B9%89%E5%8F%8A%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>优化音视频 Track 的定义及使用方式</h3>
+<p>区别于 3.x 版本所有 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#track">Track</a> 均使用 <code>QNTrackInfo</code>，在 5.x 版本 SDK 中，我们细化了音视频 Track 的分类，基于不同类型的 Track 提供了不同的控制接口，新版本的 Track 对本地 Track 和远端 Track 做了区分，继承结构定义如下：</p>
+<ul>
+<li><a href="/rtc/api/8851/QNTrack-iOS">QNTrack</a>
+<ul>
+<li><a href="/rtc/api/8847/QNLocalTrack-iOS">QNLocalTrack</a>
+<ul>
+<li><a href="/rtc/api/8854/QNLocalAudioTrack-iOS">QNLocalAudioTrack</a>
+<ul>
+<li><a href="/rtc/api/8855/QNMicrophoneAudioTrack-iOS">QNMicrophoneAudioTrack</a></li>
+<li><a href="/rtc/api/8856/QNCustomAudioTrack-iOS">QNCustomAudioTrack</a></li>
+</ul>
+</li>
+<li><a href="/rtc/api/8849/QNLocalVideoTrack-iOS">QNLocalVideoTrack</a>
+<ul>
+<li><a href="/rtc/api/8852/QNCameraVideoTrack-iOS">QNCameraVideoTrack</a></li>
+<li><a href="/rtc/api/8853/QNCustomVideoTrack-iOS">QNCustomVideoTrack</a></li>
+<li><a href="/rtc/api/8850/QNScreenVideoTrack-iOS">QNScreenVideoTrack</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="/rtc/api/8857/QNRemoteTrack-iOS">QNRemoteTrack</a>
+<ul>
+<li><a href="/rtc/api/8859/QNRemoteAudioTrack-iOS">QNRemoteAudioTrack</a></li>
+<li><a href="/rtc/api/8858/QNRemoteVideoTrack-iOS">QNRemoteVideoTrack</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>注意：本地仅支持创建一路音频 Track，重复创建会返回 nil。</p>
+</blockquote>
+<p>5.x 版本除了对音视频 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#track">Track</a> 的结构进行了调整，还将部分 Track 的操作接口从 <code>QNRTCEngine</code> 移到了 Track 上，包括采集、渲染、美颜以及音视频回调代理的设置等。更详细接口定义请参考对应的 API 文档。</p>
+<h3 id="优化事件监听接口"><a href="#%E4%BC%98%E5%8C%96%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E6%8E%A5%E5%8F%A3" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>优化事件监听接口</h3>
+<p>v5.x 细化了不同场景下的事件回调，移除了 <code>QNRTCEngineDelegate</code> 回调代理。新版本事件回调代理定义如下：</p>
+<ul>
+<li><a href="/rtc/api/9248/QNRTCClientDelegate">QNRTCClientDelegate:</a> 核心代理，定义了房间相关的回调事件，包括房间连接状态、用户加入离开状态等</li>
+<li><a href="/rtc/api/11970/QNLocalVideoTrackDelegate">QNLocalVideoTrackDelegate:</a> 本地视频 Track 代理，回调视频数据帧</li>
+<li><a href="/rtc/api/11969/QNLocalAudioTrackDelegate">QNLocalAudioTrackDelegate:</a> 本地音频 Track 代理，回调音频数据帧</li>
+<li><a href="/rtc/api/9582/QNScreenVideoTrackDelegate">QNScreenVideoTrackDelegate:</a> 屏幕录制 Track 代理，回调错误信息</li>
+<li><a href="/rtc/api/11946/QNCustomAudioTrackDelegate">QNCustomAudioTrackDelegate:</a> 自定义音频 Track 代理，回调错误信息</li>
+<li><a href="/rtc/api/11947/QNRemoteVideoTrackDelegate">QNRemoteVideoTrackDelegate:</a> 远端视频 Track 代理，回调视频数据帧、静默开关以及监听视频大小流切换</li>
+<li><a href="/rtc/api/11948/QNRemoteAudioTrackDelegate">QNRemoteAudioTrackDelegate:</a> 远端音频 Track 代理，回调数据帧和静默开关</li>
+</ul>
+<hr></hr>
+<h2 id="核心步骤迁移详解"><a href="#%E6%A0%B8%E5%BF%83%E6%AD%A5%E9%AA%A4%E8%BF%81%E7%A7%BB%E8%AF%A6%E8%A7%A3" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>核心步骤迁移详解</h2>
+<p>为了更方便您的版本迁移，本部分详细介绍了新老版本针对通话核心步骤的不同处理方式。</p>
+<h3 id="初始化"><a href="#%E5%88%9D%E5%A7%8B%E5%8C%96" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>初始化</h3>
+<p>3.x 及之前的版本，初始化操作需要调用 <code>QNRTCEngine</code> 的相关方法，示例代码如下：</p>
+<pre><code class="language-objc">QNRTCConfiguration *configuration = [QNRTCConfiguration defaultConfiguration]; <span class="hljs-comment">// 创建并初始化 SDK 默认配置</span>
+<span></span>QNRTCEngine *engine = [[QNRTCEngine alloc] initWithConfiguration:configuration];<span class="hljs-comment">// 创建 QNRTCEngine 对象</span>
+<span></span></code></pre>
+<p>5.x 版本，初始化操作直接通过 <a href="/rtc/api/8834/QNRTC-iOS">QNRTC</a> 类方法即可实现，示例代码如下：</p>
+<pre><code class="language-objc">QNRTCConfiguration *configuration = [QNRTCConfiguration defaultConfiguration]; <span class="hljs-comment">// 创建并初始化 SDK 默认配置</span>
+<span></span>[QNRTC initRTC:configuration]; <span class="hljs-comment">// QNRTC 初始化</span>
+<span></span>QNRTCClient *rtcClient = [QNRTC createRTCClient]; <span class="hljs-comment">// 创建 QNRTCClient</span>
+<span></span></code></pre>
+<p>实现差异：</p>
+<ul>
+<li>5.x 版本 SDK 直接通过 <a href="/rtc/api/8834/QNRTC-iOS#initRTC">QNRTC.init</a> 即可完成初始化操作。</li>
+</ul>
+<p>更详细的 5.x 版本初始化使用方式可参考<a href="/rtc/development_guidelines/9257/user-guidance-iOS">初始化使用指南</a></p>
+<h3 id="加入房间"><a href="#%E5%8A%A0%E5%85%A5%E6%88%BF%E9%97%B4" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>加入房间</h3>
+<p>3.x 及之前的版本，通过 <code>- (void)joinRoomWithToken:(NSString *)token;</code> 的方式加入房间，示例代码如下：</p>
+<pre><code class="language-objc">[rtcEngine joinRoomWithToken:roomToken]; <span class="hljs-comment">// 加入房间</span>
+<span></span>
+<span></span><span class="hljs-comment">// 加入房间成功后会触发如下回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCEngine:(QNRTCEngine *)engine roomStateDidChange:(QNConnectionState)roomState {
+<span></span>    <span class="hljs-keyword">if</span> (state == QNConnectionStateConnected) {
+<span></span>		<span class="hljs-comment">// 成功加入房间</span>
+<span></span>    }
+<span></span>}
+<span></span></code></pre>
+<p>5.x 版本加入房间首先需要创建 <a href="/rtc/api/8836/QNRTCClient-iOS">QNRTCClient</a> 对象，再通过 <a href="/rtc/api/8836/QNRTCClient-iOS#join%5B1/2%5D">QNRTCClient.join</a> 的方式加入房间，示例代码如下：</p>
+<pre><code class="language-objc">rtcClient = [QNRTC createRTCClient]; <span class="hljs-comment">// 创建 QNRTCClient 对象，并设置房间事件监听函数</span>
+<span></span>[rtcClient join:roomToken]; <span class="hljs-comment">// 加入房间</span>
+<span></span>
+<span></span><span class="hljs-comment">// 加入房间成功后会触发如下回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCClient:(QNRTCClient *)client didConnectionStateChanged:(QNConnectionState)state disconnectedInfo:(QNConnectionDisconnectedInfo *)info {
+<span></span>    <span class="hljs-keyword">if</span> (state == QNConnectionStateConnected) {
+<span></span>		<span class="hljs-comment">// 成功加入房间</span>
+<span></span>    }
+<span></span>}
+<span></span></code></pre>
+<p>实现差异：</p>
+<ul>
+<li>5.x 版本移除了 <code>QNRTCEngine</code> 的接口调用，使用 <a href="/rtc/api/8836/QNRTCClient-iOS">QNRTCClient</a> 进行房间的相关操作</li>
+<li>5.x 版本房间连接状态监听回调改为 <a href="/rtc/api/9248/QNRTCClientDelegate#didConnectionStateChanged">QNRTCClientDelegate.didConnectionStateChanged</a>，监听事件包括加入房间成功、失败以及成功离开房间等</li>
+</ul>
+<p>更详细的 5.x 版本房间管理使用方式可参考<a href="/rtc/development_guidelines/9261/room-management-iOS">房间管理使用指南</a></p>
+<h3 id="创建本地-track"><a href="#%E5%88%9B%E5%BB%BA%E6%9C%AC%E5%9C%B0-track" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>创建本地 Track</h3>
+<p>3.x 及之前的版本，通过 <code>QNRTCEngine</code> 创建本地 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#track">Track</a>，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 创建本地音频 Track</span>
+<span></span>QNTrackInfo *audioInfo = [[QNTrackInfo alloc] initWithSourceType:QNRTCSourceTypeAudio master:<span class="hljs-literal">YES</span> bitrateBps:<span class="hljs-keyword">self</span>.audioBitrate * <span class="hljs-number">1000</span>];
+<span></span>
+<span></span><span class="hljs-comment">// 创建本地 Camera 视频 Track</span>
+<span></span>QNTrackInfo *videoInfo = [[QNTrackInfo alloc] initWithSourceType:QNRTCSourceTypeCamera master:<span class="hljs-literal">YES</span> bitrateBps:<span class="hljs-keyword">self</span>.videoBitrate * <span class="hljs-number">1000</span> videoEncodeSize:<span class="hljs-keyword">self</span>.videoEncodeSize];
+<span></span></code></pre>
+<p>5.x 版本通过 <a href="/rtc/api/8834/QNRTC-iOS">QNRTC</a> 创建本地 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#track">Track</a>，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 创建本地音频 Track</span>
+<span></span>QNMicrophoneAudioTrack *microphoneAudioTrack = [QNRTC createMicrophoneAudioTrack];
+<span></span>
+<span></span><span class="hljs-comment">// 创建本地 Camera 视频 Track</span>
+<span></span>QNCameraVideoTrack *cameraVideoTrack = [QNRTC createCameraVideoTrack];
+<span></span></code></pre>
+<p>实现差异：</p>
+<ul>
+<li>5.x 版本移除了 <code>QNRTCEngine</code> 创建 Track 的接口，改用 <a href="/rtc/api/8834/QNRTC-iOS">QNRTC</a> 相关接口创建</li>
+<li>5.x 版本 Track 相关的配置通过 <a href="/rtc/api/8844/QNCameraVideoTrackConfig-iOS">QNCameraVideoTrackConfig</a> 或者 <a href="/rtc/api/8837/QNMicrophoneAudioTrackConfig-iOS">QNMicrophoneAudioTrackConfig</a> 等类似 Config 实现，创建时不传该参数则使用 SDK 提供的默认配置。3.x 版本需要在 <code>QNTrackInfo</code> 初始化配置中传入，不传则使用默认配置。</li>
+</ul>
+<p>更详细的 5.x 版本音视频采集使用方式可参考<a href="/rtc/development_guidelines/9258/audio-and-video-collection-iOS">音视频采集使用指南</a></p>
+<h3 id="track-的使用"><a href="#track-%E7%9A%84%E4%BD%BF%E7%94%A8" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>Track 的使用</h3>
+<p>3.x 及之前的版本对 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#track">Track</a> 的大部分操作都由 <code>QNRTCEngine</code> 来实现，这里以部分功能举例，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 开启 Camera Track 内置美颜并设置美颜参数</span>
+<span></span>[rtcEngine setBeautifyModeOn:<span class="hljs-literal">YES</span>]; <span class="hljs-comment">// 开启美颜</span>
+<span></span>[rtcEngine setBeautify:<span class="hljs-number">0.5</span>]; <span class="hljs-comment">// 设置美颜参数</span>
+<span></span>[rtcEngine setWhiten:<span class="hljs-number">0.5</span>]; <span class="hljs-comment">// 设置美白参数</span>
+<span></span>[rtcEngine setRedden:<span class="hljs-number">0.5</span>]; <span class="hljs-comment">// 设置红润参数</span>
+<span></span>
+<span></span>[rtcEngine startCapture]; <span class="hljs-comment">// 开启 Camera Track 采集</span>
+<span></span>[rtcEngine stopCapture]; <span class="hljs-comment">// 停止 Camera Track 采集</span>
+<span></span>
+<span></span><span class="hljs-comment">// 静默本地 Track</span>
+<span></span>[rtcEngine muteAudio:<span class="hljs-literal">YES</span>]; <span class="hljs-comment">// 设置音频静默状态</span>
+<span></span>[rtcEngine muteVideo:<span class="hljs-literal">YES</span>]; <span class="hljs-comment">// 设置视频静默状态</span>
+<span></span></code></pre>
+<p>5.x 版本对 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#track">Track</a> 的操作都由对应的 Track 来实现，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 开启 Camera Track 内置美颜并设置美颜参数</span>
+<span></span>[cameraVideoTrack setBeautifyModeOn:<span class="hljs-literal">YES</span>]; <span class="hljs-comment">// 开启美颜</span>
+<span></span>[cameraVideoTrack setSmoothLevel:<span class="hljs-number">0.5</span>]; <span class="hljs-comment">// 设置美颜参数</span>
+<span></span>[cameraVideoTrack setWhiten:<span class="hljs-number">0.5</span>]; <span class="hljs-comment">// 设置美白参数</span>
+<span></span>[cameraVideoTrack setRedden:<span class="hljs-number">0.5</span>]; <span class="hljs-comment">// 设置红润参数</span>
+<span></span>
+<span></span>[cameraVideoTrack startCapture]; <span class="hljs-comment">// 开启 Camera Track 采集</span>
+<span></span>[cameraVideoTrack stopCapture]; <span class="hljs-comment">// 停止 Camera Track 采集</span>
+<span></span>
+<span></span><span class="hljs-comment">// 静默本地 Track</span>
+<span></span>[localAudio updateMute:<span class="hljs-literal">YES</span>]; <span class="hljs-comment">// 设置音频静默状态</span>
+<span></span>[localVideo updateMute:<span class="hljs-literal">YES</span>]; <span class="hljs-comment">// 设置视频静默状态</span>
+<span></span>
+<span></span>[microphoneAudioTrack setVolume:<span class="hljs-number">0.8</span>]; <span class="hljs-comment">// 设置麦克风采集音量</span>
+<span></span></code></pre>
+<p>实现差异：</p>
+<ul>
+<li>5.x 版本将 Track 相关操作接口都移交给对应的 Track 来实现，移除了 <code>QNRTCEngine</code> 的相关调用</li>
+</ul>
+<blockquote>
+<p>上述示例代码仅展示了部分功能的示例，更多 Track 相关的接口使用请参考对应的接口文档</p>
+</blockquote>
+<h3 id="发布本地-track"><a href="#%E5%8F%91%E5%B8%83%E6%9C%AC%E5%9C%B0-track" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>发布本地 Track</h3>
+<p>3.x 及之前的版本发布 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#track">Track</a> 通过 <code>QNRTCEngine</code> 来实现，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 发布本地 Track</span>
+<span></span>[rtcEngine publishTracks:tracks];
+<span></span>
+<span></span><span class="hljs-comment">// 发布成功后，会触发 QNRTCEngineDelegate.didPublishLocalTracks 回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCEngine:(QNRTCEngine *)engine didPublishLocalTracks:(<span class="hljs-built_in">NSArray</span>&lt;QNTrack *&gt; *)tracks {
+<span></span>	<span class="hljs-comment">// 回调发布成功的 Track 列表</span>
+<span></span>}
+<span></span></code></pre>
+<p>5.x 版本发布 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#track">Track</a> 通过 <a href="/rtc/api/8836/QNRTCClient-iOS">QNRTCClient</a> 来实现，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 发布本地 Track</span>
+<span></span>[rtcClient publish:tracks completeCallback:^(<span class="hljs-built_in">BOOL</span> onPublished, <span class="hljs-built_in">NSError</span> *error) {
+<span></span>	<span class="hljs-keyword">if</span> (onPublished) {
+<span></span>		<span class="hljs-comment">// Track 发布成功</span>
+<span></span>	} <span class="hljs-keyword">else</span> {
+<span></span>		<span class="hljs-comment">// Track 发布失败</span>
+<span></span>	}
+<span></span>}];
+<span></span></code></pre>
+<p>实现差异：</p>
+<ul>
+<li>5.x 版本通过 <a href="/rtc/api/8836/QNRTCClient-iOS#publish%5B1/2%5D">QNRTCClient.publish</a> 来实现本地 Track 的发布，移除了 <code>QNRTCEngine</code> 的相关调用</li>
+<li>5.x 版本发布结果回调改为了 <a href="/rtc/api/9254/QNTypeDefines#QNPublishResultCallback">QNPublishResultCallback</a>，可在 <a href="/rtc/api/8836/QNRTCClient-iOS#publish%5B2/2%5D">QNRTCClient.publish</a> 中传入，移除了 <code>QNRTCEngineDelegate.didPublishLocalTracks</code> 回调</li>
+</ul>
+<p>更详细的 5.x 版本发布和订阅使用方式可参考<a href="/rtc/development_guidelines/9260/publish-and-subscribe-iOS">发布和订阅使用指南</a></p>
+<h3 id="订阅远端-track"><a href="#%E8%AE%A2%E9%98%85%E8%BF%9C%E7%AB%AF-track" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>订阅远端 Track</h3>
+<p>3.x 及之前的版本订阅 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#track">Track</a> 通过 <code>QNRTCEngine</code> 来实现，示例代码如下：</p>
+<pre><code class="language-objc">rtcEngine.autoSubscribe = <span class="hljs-literal">YES</span>; <span class="hljs-comment">// 设置是否自动订阅远端 Track，默认开启</span>
+<span></span>[rtcEngine subscribeTracks:tracks]; <span class="hljs-comment">// 手动订阅场景下，订阅远端 Track</span>
+<span></span>
+<span></span><span class="hljs-comment">// 订阅成功后，会触发 QNRTCEngineDelegate.didSubscribedRemoteVideoTracks 回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCEngine:(QNRTCEngine *)engine didSubscribedRemoteVideoTracks:(<span class="hljs-built_in">NSArray</span>&lt;QNRemoteVideoTrack *&gt; *)videoTracks audioTracks:(<span class="hljs-built_in">NSArray</span>&lt;QNRemoteAudioTrack *&gt; *)audioTracks ofUserID:(<span class="hljs-built_in">NSString</span> *)userID {
+<span></span>	<span class="hljs-comment">// 回调订阅成功的 Track 列表</span>
+<span></span>}
+<span></span></code></pre>
+<p>5.x 版本订阅 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#track">Track</a> 通过 <a href="/rtc/api/8836/QNRTCClient-iOS">QNRTCClient</a> 来实现，示例代码如下：</p>
+<pre><code class="language-objc">rtcClient.autoSubscribe = <span class="hljs-literal">YES</span>; <span class="hljs-comment">// 设置是否自动订阅远端 Track，默认开启</span>
+<span></span>[rtcClient subscribe:tracks]; <span class="hljs-comment">// 手动订阅场景下，订阅远端 Track，支持可变参数</span>
+<span></span>
+<span></span><span class="hljs-comment">// 订阅成功后，会触发 QNRTCClientDelegate.didSubscribedRemoteVideoTracks 回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCClient:(QNRTCClient *)client didSubscribedRemoteVideoTracks:(<span class="hljs-built_in">NSArray</span>&lt;QNRemoteVideoTrack *&gt; *)videoTracks audioTracks:(<span class="hljs-built_in">NSArray</span>&lt;QNRemoteAudioTrack *&gt; *)audioTracks ofUserID:(<span class="hljs-built_in">NSString</span> *)userID {
+<span></span>	<span class="hljs-comment">// 回调订阅成功的 Track 列表</span>
+<span></span>}
+<span></span></code></pre>
+<p>实现差异：</p>
+<ul>
+<li>5.x 版本通过 <a href="/rtc/api/8836/QNRTCClient-iOS#subscribe">QNRTCClient.subscribe</a> 来实现对 Track 的订阅，移除了 <code>QNRTCEngine</code> 的相关调用</li>
+<li>5.x 版本订阅结果通过 <a href="/rtc/api/9248/QNRTCClientDelegate#didSubscribedRemoteVideoTracks">QNRTCClientDelegate.didSubscribedRemoteVideoTracks</a> 回调，移除了 <code>QNRTCEngineDelegate</code> 相关的回调</li>
+</ul>
+<p>更详细的 5.x 版本发布和订阅使用方式可参考<a href="/rtc/development_guidelines/9260/publish-and-subscribe-iOS">发布和订阅使用指南</a></p>
+<h3 id="cdn-转推"><a href="#cdn-%E8%BD%AC%E6%8E%A8" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>CDN 转推</h3>
+<p>3.x 及之前的版本 CDN 转推通过 <code>QNRTCEngine</code> 来实现，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 创建并配置单路转推任务，配置步骤省略</span>
+<span></span>QNForwardStreamConfiguration *forwardConfig = [QNForwardStreamConfiguration alloc] init];
+<span></span>
+<span></span>[rtcEngine createForwardJobWithConfiguration:forwardConfig]; <span class="hljs-comment">// 开始单路转推任务</span>
+<span></span>[rtcEngine stopForwardJobWithJobId:forwardConfig.jobId]; <span class="hljs-comment">// 停止单路转推任务</span>
+<span></span>
+<span></span><span class="hljs-comment">// 创建并配置合流转推任务，配置步骤省略</span>
+<span></span>QNMergeStreamConfiguration *mergeConfig = [QNMergeStreamConfiguration alloc] init];
+<span></span>[rtcEngine createMergeStreamJobWithConfiguration:mergeConfig; <span class="hljs-comment">// 开始合流转推任务</span>
+<span></span>[rtcEngine setMergeStreamLayouts:layouts jobId:mergeConfig.jobId]; <span class="hljs-comment">// 更新合流布局</span>
+<span></span>[rtcEngine removeMergeStreamLayouts:layouts jobId:mergeConfig.jobId]; <span class="hljs-comment">// 移除合流布局</span>
+<span></span>[rtcEngine stopMergeStreamWithJobId:mergeConfig.jobId]; <span class="hljs-comment">// 停止合流转推任务</span>
+<span></span>
+<span></span><span class="hljs-comment">// 创建成功后会触发 QNRTCEngineDelegate 的相关回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCEngine:(QNRTCEngine *)engine didCreateForwardJobWithJobId:(<span class="hljs-built_in">NSString</span> *)jobId {
+<span></span>	<span class="hljs-comment">// 回调创建成功的单路转推 job id</span>
+<span></span>}
+<span></span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCEngine:(QNRTCEngine *)engine didCreateMergeStreamWithJobId:(<span class="hljs-built_in">NSString</span> *)jobId {
+<span></span>	<span class="hljs-comment">// 回调创建成功的合流转推 job id</span>
+<span></span>}
+<span></span></code></pre>
+<p>5.x 版本 CDN 转推通过 <a href="/rtc/api/8836/QNRTCClient-iOS">QNRTCClient</a> 来实现，示例代码如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// CDN 转推相关回调</span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCClient:(QNRTCClient *)client didStartLiveStreaming:(<span class="hljs-built_in">NSString</span> *)streamID {
+<span></span>	<span class="hljs-comment">// 对应 streamID 的单路/合流转推任务开始转推</span>
+<span></span>}
+<span></span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCClient:(QNRTCClient *)client didStopLiveStreaming:(<span class="hljs-built_in">NSString</span> *)streamID {
+<span></span>	<span class="hljs-comment">// 对应 streamID 的单路/合流转推任务已停止转推</span>
+<span></span>}
+<span></span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCClient:(QNRTCClient *)client didTranscodingTracksUpdated:(<span class="hljs-built_in">BOOL</span>)success withStreamID:(<span class="hljs-built_in">NSString</span> *)streamID {
+<span></span>	<span class="hljs-comment">// 合流布局更改时触发此回调</span>
+<span></span>}
+<span></span>
+<span></span>- (<span class="hljs-keyword">void</span>)RTCClient:(QNRTCClient *)client didErrorLiveStreaming:(<span class="hljs-built_in">NSString</span> *)streamID errorInfo:(QNLiveStreamingErrorInfo *)errorInfo {
+<span></span>	<span class="hljs-comment">// 转推任务出错时触发此回调</span>
+<span></span>}
+<span></span>
+<span></span><span class="hljs-comment">// 创建并配置单路转推任务，配置步骤省略</span>
+<span></span>QNDirectLiveStreamingConfig *directLiveStreamingConfig = [[QNDirectLiveStreamingConfig alloc] init];
+<span></span>[rtcClient startLiveStreamingWithDirect:directLiveStreamingConfig]; <span class="hljs-comment">// 开始单路转推任务</span>
+<span></span>[rtcClient stopLiveStreamingWithDirect:directLiveStreamingConfig]; <span class="hljs-comment">// 停止单路转推任务</span>
+<span></span>
+<span></span><span class="hljs-comment">// 创建并配置合流转推任务，配置步骤省略</span>
+<span></span>QNTranscodingLiveStreamingConfig *transcodingLiveStreamingConfig = [[QNTranscodingLiveStreamingConfig alloc] init];
+<span></span>[rtcClient startLiveStreamingWithTranscoding:transcodingLiveStreamingConfig]; <span class="hljs-comment">// 开始合流转推任务</span>
+<span></span>[rtcClient setTranscodingLiveStreamingID:transcodingLiveStreamingConfig.streamID withTracks:transcodingTracks]; <span class="hljs-comment">// 更新合流布局</span>
+<span></span>[rtcClient removeTranscodingLiveStreamingID:transcodingLiveStreamingConfig.streamID withTracks:transcodingTracks]; <span class="hljs-comment">// 移除合流布局</span>
+<span></span>[rtcClient stopLiveStreamingWithTranscoding:transcodingLiveStreamingConfig]; <span class="hljs-comment">// 停止合流转推任务</span>
+<span></span></code></pre>
+<p>实现差异：</p>
+<ul>
+<li>5.x 版本通过 <a href="/rtc/api/8861/QNDirectLiveStreamingConfig-iOS">QNDirectLiveStreamingConfig</a> 代替 <code>QNForwardStreamConfiguration</code> 实现单路转推的配置；通过 <a href="/rtc/api/8862/QNTranscodingLiveStreamingConfig-iOS">QNTranscodingLiveStreamingConfig</a> 代替 <code>QNMergeStreamConfiguration</code> 实现合流转推的配置；通过 <a href="/rtc/api/8863/QNTranscodingLiveStreamingTrack-iOS">QNTranscodingLiveStreamingTrack</a> 代替 <code>QNMergeStreamLayout</code> 实现合流布局的控制</li>
+<li>5.x 版本通过 <a href="/rtc/api/9248/QNRTCClientDelegate">QNRTCClientDelegate</a> 代替 <code>QNRTCEngineDelegate</code> 相关方法来实现 CDN 转推状态的监听</li>
+</ul>
+<p>更详细的 5.x 版本 CDN 转推使用方式可参考 <a href="/rtc/development_guidelines/9262/turn-the-cdn-push-iOS">CDN 转推使用指南</a></p>
+<h3 id="离开房间"><a href="#%E7%A6%BB%E5%BC%80%E6%88%BF%E9%97%B4" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>离开房间</h3>
+<p>3.x 及之前的版本离开房间通过 <code>QNRTCEngine</code> 来实现，示例代码如下：</p>
+<pre><code class="language-objc">[rtcEngine leaveRoom]; <span class="hljs-comment">// 离开房间</span>
+<span></span></code></pre>
+<p>5.x 版本离开房间通过 <a href="/rtc/api/8836/QNRTCClient-iOS">QNRTCClient</a> 来实现，示例代码如下：</p>
+<pre><code class="language-objc">[rtcClient leave]; <span class="hljs-comment">// 离开房间</span>
+<span></span></code></pre>
+<p>实现差异：</p>
+<ul>
+<li>5.x 版本通过 <a href="/rtc/api/8836/QNRTCClient-iOS#leave">QNRTCClient.leave</a> 来实现离开房间的操作，移除了 <code>QNRTCEngine</code> 的相关调用</li>
+</ul></div></div>

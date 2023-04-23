@@ -1,0 +1,277 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <a href='11288/QNRTCClient-Linux'>QNRTCClient</a> 事件回调接口</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnConnectionStateChanged`)'>OnConnectionStateChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnUserJoined`)'>OnUserJoined</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnUserLeft`)'>OnUserLeft</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnUserReconnecting`)'>OnUserReconnecting</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnUserReconnected`)'>OnUserReconnected</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnUserPublished`)'>OnUserPublished</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnUserUnpublished`)'>OnUserUnpublished</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnSubscribed`)'>OnSubscribed</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnMessageReceived`)'>OnMessageReceived</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnMediaRelayStateChanged`)'>OnMediaRelayStateChanged</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnConnectionStateChanged">OnConnectionStateChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnConnectionStateChanged(QNConnectionState state, const QNConnectionDisconnectedInfo* info) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>房间连接状态变化时通知</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            state: <a href='11266/QNConnectionState-Linux'>QNConnectionState</a>
+        </div>
+                <p>连接状态</p>
+    </li>
+    <li>
+        <div>
+            info: <a href='11265/QNConnectionDisconnectedInfo-Linux'>QNConnectionDisconnectedInfo</a>
+        </div>
+                <p>断开连接时状态信息</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnUserJoined">OnUserJoined</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnUserJoined(const std::string& remote_user_id, const std::string& user_data) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端用户加入房间时通知</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            remote_user_id: string
+        </div>
+                <p>远端用户 id</p>
+    </li>
+    <li>
+        <div>
+            user_data: string
+        </div>
+                <p>远端用户自定义消息</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnUserLeft">OnUserLeft</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnUserLeft(const std::string& remote_user_id) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端用户离开房间时通知</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            remote_user_id: string
+        </div>
+                <p>远端用户 id</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnUserReconnecting">OnUserReconnecting</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnUserReconnecting(const std::string& remote_user_id) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端用户重连时通知</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            remote_user_id: string
+        </div>
+                <p>远端用户 id</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnUserReconnected">OnUserReconnected</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnUserReconnected(const std::string& remote_user_id) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端用户重连成功时通知</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            remote_user_id: string
+        </div>
+                <p>远端用户 id</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnUserPublished">OnUserPublished</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnUserPublished(const std::string& remote_user_id, const RemoteTrackList& track_list) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端用户发布新 track 时通知</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            remote_user_id: string
+        </div>
+                <p>远端用户 id</p>
+    </li>
+    <li>
+        <div>
+            track_list: std::list&lt;shared_ptr&lt;<a href='11213/QNRemoteTrack-Linux'>QNRemoteTrack</a>&gt;&gt;
+        </div>
+                <p>远端用户新发布的 tracks</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnUserUnpublished">OnUserUnpublished</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnUserUnpublished(const std::string& remote_user_id, const RemoteTrackList& track_list) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端用户取消发布 track 时通知</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            remote_user_id: string
+        </div>
+                <p>远端用户 id</p>
+    </li>
+    <li>
+        <div>
+            track_list: std::list&lt;shared_ptr&lt;<a href='11213/QNRemoteTrack-Linux'>QNRemoteTrack</a>&gt;&gt;
+        </div>
+                <p>远端用户取消发布的 tracks</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnSubscribed">OnSubscribed</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnSubscribed(const std::string& remote_user_id,const RemoteAudioTrackList& remote_audio_track_list,const RemoteVideoTrackList& remote_video_track_list) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>订阅 track 成功时通知</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            remote_user_id: string
+        </div>
+                <p>订阅的 track 所属的远端用户</p>
+    </li>
+    <li>
+        <div>
+            remote_audio_track_list: std::list&lt;shared_ptr&lt;<a href='11212/QNRemoteAudioTrack-Linux'>QNRemoteAudioTrack</a>&gt;&gt;
+        </div>
+                <p>订阅的音频 tracks</p>
+    </li>
+    <li>
+        <div>
+            remote_video_track_list: std::list&lt;shared_ptr&lt;<a href='11215/QNRemoteVideoTrack-Linux'>QNRemoteVideoTrack</a>&gt;&gt;
+        </div>
+                <p>订阅的视频 tracks</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnMessageReceived">OnMessageReceived</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnMessageReceived(const CustomMessageList& message) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>接收收到新的自定义消息时通知</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            message: std::list&lt;<a href='11267/QNCustomMessage-Linux'>QNCustomMessage</a>&gt;
+        </div>
+                <p>自定义消息列表</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnMediaRelayStateChanged">OnMediaRelayStateChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnMediaRelayStateChanged(const std::string& relay_room, const QNMediaRelayState state) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>跨发媒体转发状态变更，非主动调用触发，由目标房间状态变化引起此通知</p>
+        <p>目前仅当目标房间关闭时，会触发此通知</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            relay_room: string
+        </div>
+                <p>发生状态变化的房间名</p>
+    </li>
+    <li>
+        <div>
+            state: <a href='undefined'>QNMediaRelayState</a>
+        </div>
+                <p>新状态，当前仅可能为 QNMediaRelayState::kRoomClosed</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

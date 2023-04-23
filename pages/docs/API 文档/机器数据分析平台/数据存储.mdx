@@ -1,0 +1,318 @@
+# 1. 接口清单
+
+数据存储接口为用户提供创建数据表、插入数据、查询数据、删除数据、修改数据等数据管理操作的接口。
+
+数据表相关：
+
+1. 创建数据表：   `POST /api/v1/storage/v2/collections/<appName>/config`
+2. 更新数据表：   `PUT /api/v1/storage/v2/collections/<appName>/config`
+3. 删除数据表：   `DELETE /api/v1/storage/v2/collections/<appName>/<tableName>`
+4. 获取数据表列表：`GET /api/v1/storage/v2/collections/<appName>/config`
+
+数据相关：
+
+5. 插入数据：         `POST /api/v1/storage/v2/collections/<appName>/data/<tableName>`
+6. 批量插入数据：      `POST /api/v1/storage/v2/collections/<appName>/data/<tableName>/batch_save`
+7. 根据query更新数据： `PUT /api/v1/storage/v2/collections/<appName>/data/<tableName>?query=<Query>`
+8. 根据id更新数据：    `PUT /api/v1/storage/v2/collections/<appName>/data/<tableName>/<id>`
+9. 根据query删除数据： `DELETE /api/v1/storage/v2/collections/<appName>/data/<tableName>?query=<Query>`
+10. 根据id删除数据：   `DELETE /api/v1/storage/v2/collections/<appName>/data/<tableName>/<id>`
+11. 根据query获取数据：`GET /api/v1/storage/v2/collections/<appName>/data/<tableName>?query=<Query>`
+12. 根据id获取数据：   `GET /api/v1/storage/v2/collections/<appName>/data/<tableName>/<id>`
+
+> 注意：搜索接口的请求格式是json格式，所以请求Header中必须添加 'Content-Type: application/json' 
+
+## 说明
+
+* 访问数据表需要指定表所属 APP 名
+* APP 之间的数据表是相互隔离的，即相同 APP 内不能创建同名数据表，不同 APP 内则没有数据表名限制
+* 所有数据表都会自动创建自增主键，字段名为id
+* 数据存储暂时无法指定权限（数据表的可见范围）
+
+## 认证
+
+目前支持以下两种存储方式：
+
+* Token 认证：参考[访问控制](/express/manual/6352/access_control)，发送HTTP 请求时在Header中添加"Authorization: 43d2df67-7b6f-4833-bdcc-a1bc296f3ab3"。
+
+* Session 认证：仅在插件中可以使用，是一个动态的 Session，安全性比较高，Session值对应的是[自定义算子](/express/sdk/7282/custom-operators-sdk)的`session_key` 字段，或者[自定义api](/express/sdk/7273/custom-api-sdk)的 `metadata()`中的 `session_key` 字段，发送HTTP 请求时在header中添加"X-App-Session-Key: 43d2df67-7b6f-4833-bdcc-a1bc296f3ab3"。
+
+# 2. 接口描述
+
+## 2.1 创建数据表
+
+请求路径：`/api/v1/storage/v2/collections/<appName>/config`
+
+请求方法：`POST`
+
+请求体示例：
+
+```json
+{
+    "tableName": "<table_name>",    // 需要创建的数据表名，例如 test
+    "fields": [{"name":"<field_name>", "type":"<field_type>","length":"<field_length>"}],  // 数据表中字段定义，支持的字段类型：varchar、int、bigint、timestamp、float、double、text、longtext、mediumtext。length属性仅在类型为varchar时生效。
+    "indices": [["<field>"]]   // 数据表索引，例如 [["title"],["id","name"]]，表示对title字段创建索引，对id和name字段创建联合索引
+}
+```
+
+请求体字段解释：
+
+| 字段名        | 是否必填 | 字段解释      | 默认值   |
+| ------------ | ------- | ----------- | ------- |
+| `tableName ` | 是      | 数据表名      | 无      |
+| `fields`     | 是      | 数据表字段定义 | 无      |
+| `indices`    | 否      | 数据表中索引定义   | 空      |
+
+响应体示例：
+
+```json
+{}
+```
+
+响应为200的时候即为创建数据表成功
+
+## 2.2 更新数据表
+
+请求路径：`/api/v1/storage/v2/collections/<appName>/config`
+
+请求方法：`PUT`
+
+请求体示例：
+
+``` json
+{
+    "tableName": "<table_name>",    // 需要创建的数据表名，例如 test
+    "field": {"name":"<field>", "type":"<type>","length":"<length>"},  // 需要修改的字段定义
+    "operation": "<operationType>"   // 更新操作，支持：add（增加字段）、delete（删除字段）、modify（修改字段类型）
+}
+```
+
+请求体字段解释：
+
+| 字段名        | 是否必填 | 字段解释                                                     | 默认值                              |
+| ------------- | -------- | ------------------------------------------------------------ | ----------------------------------- |
+| `tableName ` | 是      | 数据表名      | 无      |
+| `field`     | 是      | 修改后的字段定义 | 无      |
+| `operation`    | 是     | 操作类型   | 无      |
+
+响应体示例：
+
+```json
+{}
+```
+
+## 2.3 删除数据表
+
+请求路径：`/api/v1/storage/v2/collections/<appName>/<tableName>`
+
+请求方法：`DELETE`
+
+响应体示例：
+
+```json
+{}
+```
+响应为200的时候即为删除数据表成功
+
+## 2.4 获取数据表列表
+
+获取当前app下的数据表以及全局范围的数据表
+
+请求路径：`/api/v1/storage/v2/collections/<appName>/config`
+
+请求方法：`GET`
+
+响应体示例：
+```json
+{
+    "total": <total>,    // 数据表总数
+    "collections": [     // 数据表集合
+        {
+            "app": "<app_name>",                  // app名称
+            "scope": "<scope>",                   // 数据表范围
+            "app_table": "<table_name>",          // 数据表名称
+            "table_fields": [{"name":"<field_name>", "type":"<field_type>","length":"<field_length>"}],                                                 
+                                                  // 数据表字段定义
+            "table_indices": [["<field_name>"]]   // 数据表索引定义
+        },
+        ...
+    ]
+}
+```
+
+返回体字段解释：
+
+| 字段名        | 是否必填 | 字段解释                                                     | 
+| ------------- | -------- | ------------------------------------------------------------ |
+| `total `       | 是      | 返回的数据表总数 | 
+| `collections`   | 是       | 数据表集合        | 
+| `app`     | 是       | app名称 |  
+| `scope`     | 是       | 数据表范围                                              |  
+| `app_table` | 是      | 数据表名称                                     | 
+| `table_fields` | 是      | 数据表字段定义                                     | 
+| `table_indices` | 否      | 数据表索引定义                                    | 
+
+## 2.5 插入数据
+
+请求路径：`/api/v1/storage/v2/collections/<appName>/data/{table}`
+
+请求方法：`POST`
+
+请求体示例：
+
+```json
+{
+    "<field>": "<value>" // 例如 {"title":"author"}
+}
+```
+
+请求体字段解释：
+
+| 字段名        | 是否必填 | 字段解释                                                     | 默认值                              |
+| ------------- | -------- | ------------------------------------------------------------ | ----------------------------------- |
+| `field` | 是      | 字段名      | 无      |
+| `value`     | 是      | 字段值 | 无      |
+
+响应体示例：
+
+```json
+{}
+```
+
+## 2.6 批量插入数据
+
+请求路径：`/api/v1/storage/v2/collections/<appName>/data/<tableName>/batch_save`
+
+请求方法：`POST`
+
+请求体示例：
+
+```json
+[{
+	"<field>": "<value>"                   // 例如 [{"title":"author"}]
+}]
+```
+
+响应体示例：
+
+```json
+{}
+```
+
+## 2.7 根据query更新数据
+
+请求路径：`/api/v1/storage/v2/collections/<appName>/data/<tableName>?query=<Query>`
+
+请求方法：`PUT`
+
+请求参数示例：`query="id=1"`
+
+请求体示例：
+
+```json
+{
+    "<field>": "<value>" // 例如 {"title":"author"}
+}
+```
+
+响应体示例：
+
+```json
+{}
+```
+
+## 2.8 根据id更新数据
+
+请求路径：`/api/v1/storage/v2/collections/<appName>/data/<tableName>/<id>`
+
+请求方法：`PUT`
+
+请求体示例：
+
+```json
+{
+    "<field>": "<value>" // 例如 {"title":"author"}
+}
+```
+
+响应体示例：
+
+```json
+{}
+```
+
+## 2.9 根据query删除数据
+
+请求路径：`/api/v1/storage/v2/collections/<appName>/data/<tableName>?query=<Query>`
+
+请求方法：`DELETE`
+
+响应体示例：
+
+```json
+{}
+```
+响应为200的时候即为数据已经被删除
+
+## 2.10 根据id删除数据
+
+请求路径：`/api/v1/storage/v2/collections/<appName>/data/<tableName>/<id>`
+
+请求方法：`DELETE`
+
+响应体示例：
+
+```json
+{}
+```
+
+## 2.11 根据query获取数据
+
+请求路径：`/api/v1/storage/v2/collections/<appName>/data/<tableName>?query=<Query>&column=<Column>&sort=<SortColumn>&order=<asc|desc>&pageNo=<PageNo>&pageSize=<PageSize>`
+
+请求方法：`GET`
+
+请求参数字段解释：
+
+| 字段名        | 是否必填 | 字段解释                                                     | 默认值                              |
+| ------------- | -------- | ------------------------------------------------------------ | ----------------------------------- |
+| `query `       | 否      | 查询语句，默认返回全部数据 | 空                                  |
+| `column`   | 否       |    返回字段，默认返回所有字段      | *                      |
+| `sort`     | 否       | 排序字段，默认不排序 |   无                         |
+| `order`     | 否       |     排序顺序        | 无  |
+| `pageNo` | 否      |  分页信息，第几页，默认不分页             | 1                                |
+| `pageSize` | 否      |  分页信息，每页数据量             | 10                                |
+
+> 注：query不为空时，sort、order、pageNo、pageSize参数不生效；
+
+响应体示例：
+
+```json
+{
+	"total": <total>,  // 数据总数
+	"data": [          // 数据集合
+		{
+			"<key1>": "<value1>",
+			"<key2>": "<value2>",
+			...
+		},
+		....
+	]
+}
+```
+
+## 2.12 根据id获取数据
+
+请求路径：`/api/v1/storage/v2/collections/<appName>/data/<tableName>/<id>`
+
+请求方法：`GET`
+
+响应体示例：
+
+```json
+{
+	"<key1>": "<value1>",   // 例如 {"author":"test2","id":2,"title":"test2_titlle"}
+	"<key2>": "<value2>",
+	...
+}
+```

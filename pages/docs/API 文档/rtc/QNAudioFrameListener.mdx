@@ -1,0 +1,72 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                音频数据回调接口</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnAudioFrame`)'>OnAudioFrame</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnAudioFrame">OnAudioFrame</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnAudioFrame(const string& user_id,const string& track_id,const uint8_t* data, uint32_t data_size,uint32_t bits_per_sample, uint32_t sample_rate,uint32_t channels) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音频数据回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            user_id: string
+        </div>
+                <p>此音频数据所属的用户</p>
+    </li>
+    <li>
+        <div>
+            track_id: string
+        </div>
+                <p>此音频 track id</p>
+    </li>
+    <li>
+        <div>
+            data: uint8_t*
+        </div>
+                <p>音频数据内存指针</p>
+    </li>
+    <li>
+        <div>
+            data_size: uint32_t
+        </div>
+                <p>数据长度</p>
+    </li>
+    <li>
+        <div>
+            bits_per_sample: uint32_t
+        </div>
+                <p>位宽，即每个采样点占用位数</p>
+    </li>
+    <li>
+        <div>
+            sample_rate: uint32_t
+        </div>
+                <p>采样率</p>
+    </li>
+    <li>
+        <div>
+            channels: uint32_t
+        </div>
+                <p>声道数</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

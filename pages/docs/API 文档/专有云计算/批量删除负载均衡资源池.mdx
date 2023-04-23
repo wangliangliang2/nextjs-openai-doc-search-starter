@@ -1,0 +1,35 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `DELETE` /api/rio/v1/network/loadbalancer_pool
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id    | string   | header | 是 | 地域 ID
+load_balancer_id | string   | body | 是 | 负载均衡 ID
+ids              | []string | body | 是 | 资源池 ID 集合
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+
+## 请求值示例
+```json
+{
+    "load_balancer_id":"4de7c309-e772-4449-94c5-249a87f47206",
+    "ids":[
+        "35c11b0f-f9e8-4b9d-9e7f-d438f14d713c",
+        "35c11b0f-f9e8-4b9d-9e7f-d438f14d713b"
+    ]
+}
+```
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEgzO4NVWyskW"
+}
+```

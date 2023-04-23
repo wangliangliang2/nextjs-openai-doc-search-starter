@@ -1,0 +1,70 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `GET` /api/rio/v1/network/vpc/:id/vswitch
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id              | string | header | 是 | 地域 ID
+id             | string | path | 是 | 专有网络 ID
+vswitch_ids     | []string | query | 否 | 要查询的交换机 ID
+marker           | string | query | 否 | 查询起始标记
+limit            | int | query | 否 | 查询数量
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+Data    |  []VSwitchInfo | 交换机信息
+
+## VSwitchInfo
+名称 | 类型 |  描述
+----- | ----- | -----
+zone_id	| string  | 地域 ID
+vswitch_id    | string | 交换机 ID
+vpc_id        | string | 专有网络 ID
+status    | string | 交换机 状态，Pending: 等待中，Available: 可用
+cidr    | string | 交换机网段
+vswitch_name    | string | 交换机名称
+description    | string | 交换机描述
+available_ip_count    | int | 交换机中可用的IP地址数量
+resource_count    | int | 资源数量
+created_at    | big int | 创建时间戳
+
+## 请求示例
+> `GET` /api/rio/v1/network/vpc/:id/vswitch
+
+## 返回值示例
+```json
+{
+    "request_id": "ioRxAj-SZ1vJA8oW",
+    "data": [
+        {
+            "zone_id": "wenzhou",
+            "vswitch_id": "148475f9-13d7-4183-acc5-c0c56d9fa4f5",
+            "vpc_id": "51234866-875b-4672-9fef-0efa64825193",
+            "status": "Available",
+            "cidr": "192.168.0.0/24",
+            "available_ip_count": 0,
+            "description": "",
+            "vswitch_name": "S-9XhIA",
+            "created_at": 1642126065000,
+            "resource_count": 0
+        },
+        {
+            "zone_id": "wenzhou",
+            "vswitch_id": "93bbbc30-aea7-4b43-9ca8-70053fa98123",
+            "vpc_id": "51234866-875b-4672-9fef-0efa64825193",
+            "status": "Available",
+            "cidr": "192.168.11.0/24",
+            "available_ip_count": 0,
+            "description": "",
+            "vswitch_name": "QVM",
+            "created_at": 1640661703000,
+            "resource_count": 0
+        }
+    ]
+}
+```

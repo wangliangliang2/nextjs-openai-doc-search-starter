@@ -1,0 +1,63 @@
+**使用场景**
+
+连续数据不限于定义的单独值，而是可以占用连续范围内的任何值。在任何两个连续数据值之间，可能有无限多个其他值。比如身高、体重、温度、价格等等。当给定数据集存在时间顺序，其数据之间存在相关性且有可能根据时间而变化，我们倾向于使用时间序列分析（Time Series Analysis）来解决问题。
+
+回归分析和时间序列分析的目的都是对于连续指标的预测，但是他们的差别在于对数据的假设。回归分析假设各数据点之间相互独立，因此随机交换数据顺序、随机选取部分数据顺序进行建模不会影响建模训练的结果，同样，在预测的时候，误差不会累积，每个预测值的误差相对恒定。然而，时间序列分析依赖于数据之间的相关性，在多段时间序列预测中，我们只能通过数据之间的自相关性来做未来预测。因此，我们会发现，随着预测越来越远，误差会逐渐积累：你对于长远未来的预测应该会比近期预测更不确定。
+
+
+**通用语法：**
+
+```
+| fit <algo_name> [options] <target field> [from <_time>] [into model_name]...
+```
+
+**通用参数说明：**
++ <algo_name> 必填，用来指定训练模型采用的算法名称。
++ [options]可选，为算法的内置参数，根据提供的算法变化。
++ <target_field> 必填，且只能是一个字段，用来指定建模使用的目标字段，给定的target_field值必须存在于数据集中。target_field的数据必须为连续数据（只能是int或者float）。
++ [from <\_time>] 可选。如果提供，提供的字段必须为'\_time'字段，即target field发生的时间序列。'\_time'必须为int，推荐使用时间戳（timestamp）
++ [into model_name]可选，用来将fit训练出来的模型保存成model_name以便下次调用。
++ 在fit之前建议使用sort算子根据'\_time'字段将数据正序排序。
++ 数据集必须不为空。
+
+
+以下算法可以用来预测未来某个时间的连续指标：
+
+
+<h2 ><strong>ARIMA时间序列分析</strong></h2>
+
+ARIMA模型的全称叫做自回归移动平均模型，是统计模型中最常见的一种用来进行时间序列预测的模型，只需要内生变量而不需要借助其他外生变量，所以模型非常简单。*在没有很明确的偏好算法的情况下，建议可以使用ARIMA来得出初步的模型*。
+
+
+**语法：**
+
+```
+| fit ARIMA order=<str> seasonal_order=<str> holdback=<int> steps=<int> conf_interval=<int> enforce_stationarity=<True|False> enforce_invertibility=<True|False> low_memory=<True|False> <target field> [from <_time>] [into model_name]...
+```
+
+**参数说明：**
++ order参数必填，用来设定ARIMA模型的p, d, q值。
+	- p是自回归模型(AR)的项数，代表预测模型中采用的时序数据本身的滞后数。
+	- d是差分(I)的系数，含义是模型对时间序列进行了差分，使不平稳的序列手段转化为平稳序列。
+	- q是移动平均模型(MA)的项数，代表预测模型中采用的预测误差的滞后数。
+	- order必须为三个非负整数用'，'连接的str。例如，order='2,1,0'，在该场景下，设定p=2，d=1，q=0.
++ seasonal_order参数，用来设定ARIMA模型中的季节性参数（P, D, Q, s)。
+	- P, D, Q 和p, d, q值含义类似，但是代表模型中季节性时段的回溯。
+	- s为一个季节/周期内有多少个数据点。如果给定seasonal_order，s须大于1，且小于总数据量。例如，如果7天为一个周期，且数据粒度为1天的话，设定s为7。
+	- seasonal_order必须为四个非负整数用'，'连接的str。例如，seaonal_order='2,1,0,12'，在该场景下，设定P=2，D=1，Q=0，s=12。
++ holdback参数用来设定，用作模型验证的数据量。
+	- 需要注意的是，holdback越大，用来训练模型的数据量越小，可能会影响建模的准确性。
+	- holdback必须为0到整体数据量之间的int。
++ steps参数用来设定，需要预测的数据点。
+	- steps必须为大于0的int。
+	- steps过大可能会影响模型的预测结果。
++ conf_interval用来设定置信区间的范围。
+	- 当用ARIMA进行预测时候，模型会产出该时间点的预测值和该预测值的上限和下限。conf_interval用来划定上限和下限的范围，conf_interval越大，上限和下限的范围越大。
+	- conf_interval默认为95.
++ enforce_stationarity用来设定，是否自动将数据转换成平缓序列。
+	- enforce_stationarity默认为True。
++ enforce_invertibility用来设定，是否自动将数据转换成可逆序列。
+	- enenforce_invertibility默认为True。
++ low_memory 用来设定，是否在训练模型的过程中减少memory使用量，适用于数据量非常大的情况。
+	- 如果low_memory=True, memory使用量会大幅减少，但是，这会导致模型无法给出holdback数据的置信区间。
+	- 如果low_memory默认为False。

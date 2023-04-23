@@ -1,0 +1,45 @@
+用于仅过滤或选择某些字段的Transformer
+
+可以在Parser前或者Parser后使用，在Parser前使用类似于shell中的grep命令，仅过滤出包含key的那些行，放在Parser后仅选择key中包含的字段。
+
+配置如下：
+
+```
+{
+		"type":"pick",
+		"key":"PickFieldKey1,PickFieldKey2",
+                "stage":"after_parser"
+}
+```
+
+pick transformer的应用场景就在于，解析数据前，可能你仅关心如ERROR级别的日志；当你的数据解析完后，可能仅想要部分字段。 这时候就可以用pick transformer就可以用来做筛选，仅选择需要的字段，节省传输和存储成本。
+
+* `key` 字段支持多级嵌套，多级间用`.`符号连接，如`abc.xyz`，表示 data["abc"]["xyz"]中的数据。
+* `key` 也支持写多个，用逗号分隔，比如 `field1,field2` 表示选择field1和field2 2个key，其他不要。
+* `stage` 默认为`after_parser`，在parser后使用，也可以写 `before_parser`，在parser前，用法类型 `grep <key>`, 此时key字段对应的就是筛选的关键字
+
+### **示例**：
+一份带有pick Transformer的完整配置类似如下：
+
+```
+{
+		"name":"test2.csv",
+		"reader":{
+			"log_path":"./tests/logdir",
+			"mode":"dir"
+		},
+		"parser":{
+			"name":"jsonps",
+			"type":"json"
+		},
+		"transforms":[{
+			"type":"pick",
+		        "key":"PickFieldKey1,PickFieldKey1"
+		}],
+		"senders":[{
+			"name":"file_sender",
+			"sender_type":"file",
+			"file_send_path":"./test2/test2_csv_file.txt"
+		}]
+}
+```

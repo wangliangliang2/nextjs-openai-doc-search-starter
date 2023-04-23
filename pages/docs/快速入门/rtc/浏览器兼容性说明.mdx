@@ -1,0 +1,305 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div>
+
+# 概述
+<p>WebRTC 是一个支持网页浏览器进行实时语音对话或视频对话、进行实时数据传输的一组 JavaScript API。</p>
+<p>七牛 RTC Web SDK 使用了 WebRTC 技术实现实时音视频功能。因此，SDK 是否可用，依赖于当前浏览器对 WebRTC API 的支持情况。目前 WebRTC 主要在桌面端的 Chrome、 Firefox️、Safari 等浏览器，以及移动端的 Safari 浏览器上有较为完整的支持。本文将分别介绍桌面端和移动端的浏览器兼容性情况。</p>
+<blockquote>
+<p>由于平台和一些应用内置浏览器的实现各不相同，无法涵盖所有浏览器，因此在通话前建议先对浏览器兼容性支持情况做检测，具体检测方法参考 <a href="/rtc/10232/check-system-requirements">浏览器兼容性检测</a>。</p>
+</blockquote>
+<style>
+  .qn-web-sdk-doc-table td {
+    text-align: center;
+  }
+</style>
+
+# 桌面浏览器
+<p>目前七牛 RTC Web SDK在桌面端支持的浏览器及版本如下：</p>
+<blockquote>
+<p>当前桌面浏览器中，Chrome 对 WebRTC API 的支持情况最好，建议使用最新版本的 Chrome 浏览器。</p>
+</blockquote>
+<table class="qn-web-sdk-doc-table" style="width: 63.75%;">
+  <colgroup>
+    <col style="width: 17.6576%;"></col>
+    <col style="width: 20.4704%;"></col>
+    <col style="width: 21.4062%;"></col>
+    <col style="width: 9.29761%;"></col>
+    <col style="width: 12.1958%;"></col>
+    <col style="width: 19.0293%;"></col>
+  </colgroup>
+  <tbody>
+    <tr>
+      <th class="confluenceTh">操作系统</th>
+      <th class="confluenceTh">浏览器</th>
+      <th class="confluenceTh">版本兼容性</th>
+      <th class="confluenceTh">拉流</th>
+      <th class="confluenceTh">推流</th>
+      <th colSpan="1" class="confluenceTh">屏幕共享</th>
+    </tr>
+    <tr>
+      <td rowSpan="5" class="confluenceTd">MacOS</td>
+      <td class="confluenceTd">Safari 浏览器</td>
+      <td class="confluenceTd">11.0 或以上版本</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✔️（Safari 13 或以上版本支持）</td>
+    </tr>
+    <tr>
+      <td class="confluenceTd">Chrome 浏览器</td>
+      <td class="confluenceTd">56.0 或以上版本</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">
+        ✔️（Chrome 72 或以上版本支持）
+      </td>
+    </tr>
+    <tr>
+      <td class="confluenceTd">Firefox 浏览器</td>
+      <td class="confluenceTd">56.0 或以上版本</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✔️（Firefox 66或以上版本支持）</td>
+    </tr>
+    <tr>
+      <td class="confluenceTd">Edge 浏览器</td>
+      <td class="confluenceTd">
+        <p><span style="color: rgb(113,113,113);">80 或以上版本</span></p>
+      </td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+    </tr>
+    <tr>
+      <td class="confluenceTd">微信内置浏览器</td>
+      <td class="confluenceTd">——</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✖️</td>
+    </tr>
+    <tr>
+      <td rowSpan="5" class="confluenceTd"><br></br>Windows<br></br><br></br><br></br><br></br></td>
+      <td class="confluenceTd">Chrome 浏览器</td>
+      <td class="confluenceTd">56 或以上版本</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✔️（Chrome 72 或以上版本支持）</td>
+    </tr>
+    <tr>
+      <td colSpan="1" class="confluenceTd">Firefox 浏览器</td>
+      <td colSpan="1" class="confluenceTd">56 或以上版本</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✔️（Firefox 66 或以上版本支持）</td>
+    </tr>
+    <tr>
+      <td colSpan="1" class="confluenceTd">QQ浏览器</td>
+      <td colSpan="1" class="confluenceTd">10.4 或以上版本</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✖️</td>
+    </tr>
+    <tr>
+      <td colSpan="1" class="confluenceTd">Edge 浏览器</td>
+      <td colSpan="1" class="confluenceTd">80或以上版本支持</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+    </tr>
+    <tr>
+      <td colSpan="1" class="confluenceTd">微信内置浏览器</td>
+      <td colSpan="1" class="confluenceTd">——</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✖️</td>
+      <td colSpan="1" class="confluenceTd">✖️</td>
+    </tr>
+  </tbody>
+</table>
+
+# 移动浏览器
+<h2 id="android"><a href="#android" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>Android</h2>
+<p>目前七牛 RTC Web SDK 在 Android 上支持的浏览器情况如下：</p>
+<table class="qn-web-sdk-doc-table" style="width: 41.1413%;">
+  <colgroup>
+    <col style="width: 10%;"></col>
+    <col style="width: 31.7274%;"></col>
+    <col style="width: 10.7312%;"></col>
+    <col style="width: 10.6744%;"></col>
+    <col style="width: 11.5877%;"></col>
+  </colgroup>
+  <tbody>
+    <tr>
+      <th class="confluenceTh">操作系统</th>
+      <th class="confluenceTh">浏览器</th>
+      <th class="confluenceTh">拉流</th>
+      <th class="confluenceTh">推流</th>
+      <th class="confluenceTh">屏幕共享</th>
+    </tr>
+    <tr>
+      <td rowSpan="6" class="confluenceTd"><br></br><br></br>Android<br></br><br></br><br></br></td>
+      <td class="confluenceTd">Chrome浏览器</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✖️</td>
+    </tr>
+    <tr>
+      <td class="confluenceTd">UC 浏览器（不支持）</td>
+      <td class="confluenceTd">✖️</td>
+      <td class="confluenceTd">✖️</td>
+      <td class="confluenceTd">✖️</td>
+    </tr>
+    <tr>
+      <td class="confluenceTd">Firefox 浏览器</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✖️</td>
+    </tr>
+    <tr>
+      <td class="confluenceTd">QQ 浏览器</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✖️</td>
+    </tr>
+    <tr>
+      <td colSpan="1" class="confluenceTd">企业微信浏览器</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✖️</td>
+    </tr>
+    <tr>
+      <td class="confluenceTd">
+        <p>微信内置浏览器</p>
+        <p>（X5内核）</p>
+      </td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✖️</td>
+    </tr>
+  </tbody>
+</table>
+<blockquote>
+<p>以上列表中提供的浏览器可以大致表明兼容性情况，但由于Android 设备上浏览器情况比较复杂，不同手机产商对自带浏览器内核或多或少做出改动，所以无法保证自带浏览器能够很好地支持 WebRTC，建议开发者使用 Chrome 浏览器。</p>
+<p>也可结合上面提到的<a href="/rtc/10232/check-system-requirements">浏览器兼容性检测</a>方法，在使用之前先进行检测，通过测试之后再允许用户使用。</p>
+</blockquote>
+<h2 id="ios"><a href="#ios" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>iOS</h2>
+<p>目前七牛 RTC Web SDK 在 iOS 上支持的浏览器情况如下：</p>
+<table class="qn-web-sdk-doc-table" role="grid">
+  <colgroup>
+    <col style="width: 20%;"></col>
+    <col style="width: 20%;"></col>
+    <col style="width: 20%;"></col>
+    <col style="width: 10%;"></col>
+    <col style="width: 10%;"></col>
+    <col style="width: 10%;"></col>
+  </colgroup>
+  <thead class="tableFloatingHeaderOriginal" style="position: static; margin-top: 0p✖️; left: 349p✖️; z-inde✖️: 3; width: 299p✖️; top: 152p✖️;">
+    <tr role="row" class="tablesorter-headerRow">
+      <th class="confluenceTh,tablesorter-header,sortableHeader,tablesorter-headerUnSorted" dataColumn="0" tabinde✖️="0" scope="col" role="columnheader" ariaDisabled="false" unselectable="on" ariaSort="none" ariaLabel="操作系统: No sort applied, activate to apply an ascending sort" style="user-select: none; min-width: 8p✖️; ma✖️-width: none;">
+        <div class="tablesorter-header-inner">操作系统</div>
+      </th>
+      <th class="confluenceTh,tablesorter-header,sortableHeader,tablesorter-headerUnSorted" dataColumn="1" tabinde✖️="0" scope="col" role="columnheader" ariaDisabled="false" unselectable="on" ariaSort="none" ariaLabel="浏览器: No sort applied, activate to apply an ascending sort" style="user-select: none; min-width: 8p✖️; ma✖️-width: none;">
+        <div class="tablesorter-header-inner">浏览器</div>
+      </th>
+      <th class="confluenceTh,tablesorter-header,sortableHeader,tablesorter-headerUnSorted" dataColumn="2" tabinde✖️="0" scope="col" role="columnheader" ariaDisabled="false" unselectable="on" ariaSort="none" ariaLabel="版本兼容性: No sort applied, activate to apply an ascending sort" style="user-select: none; min-width: 8p✖️; ma✖️-width: none;">
+        <div class="tablesorter-header-inner">版本兼容性</div>
+      </th>
+      <th class="confluenceTh,tablesorter-header,sortableHeader,tablesorter-headerUnSorted" dataColumn="3" tabinde✖️="0" scope="col" role="columnheader" ariaDisabled="false" unselectable="on" ariaSort="none" ariaLabel="拉流: No sort applied, activate to apply an ascending sort" style="user-select: none; min-width: 8p✖️; ma✖️-width: none;">
+        <div class="tablesorter-header-inner">拉流</div>
+      </th>
+      <th class="confluenceTh,tablesorter-header,sortableHeader,tablesorter-headerUnSorted" dataColumn="4" tabinde✖️="0" scope="col" role="columnheader" ariaDisabled="false" unselectable="on" ariaSort="none" ariaLabel="推流: No sort applied, activate to apply an ascending sort" style="user-select: none; min-width: 8p✖️; ma✖️-width: none;">
+        <div class="tablesorter-header-inner">推流</div>
+      </th>
+      <th class="confluenceTh,tablesorter-header,sortableHeader,tablesorter-headerUnSorted" dataColumn="5" tabinde✖️="0" scope="col" role="columnheader" ariaDisabled="false" unselectable="on" ariaSort="none" ariaLabel="屏幕共享: No sort applied, activate to apply an ascending sort" style="user-select: none; min-width: 8p✖️; ma✖️-width: none;">
+        <div class="tablesorter-header-inner">屏幕共享</div>
+      </th>
+    </tr>
+  </thead>
+  <thead class="tableFloatingHeader" style="display: none;">
+    <tr role="row" class="tablesorter-headerRow">
+      <th class="confluenceTh,tablesorter-header,sortableHeader,tablesorter-headerUnSorted" dataColumn="0" tabinde✖️="0" scope="col" role="columnheader" ariaDisabled="false" unselectable="on" ariaSort="none" ariaLabel="操作系统: No sort applied, activate to apply an ascending sort" style="user-select: none;">
+        <div class="tablesorter-header-inner">操作系统</div>
+      </th>
+      <th class="confluenceTh,tablesorter-header,sortableHeader,tablesorter-headerUnSorted" dataColumn="1" tabinde✖️="0" scope="col" role="columnheader" ariaDisabled="false" unselectable="on" ariaSort="none" ariaLabel="浏览器: No sort applied, activate to apply an ascending sort" style="user-select: none;">
+        <div class="tablesorter-header-inner">浏览器</div>
+      </th>
+      <th class="confluenceTh,tablesorter-header,sortableHeader,tablesorter-headerUnSorted" dataColumn="2" tabinde✖️="0" scope="col" role="columnheader" ariaDisabled="false" unselectable="on" ariaSort="none" ariaLabel="版本兼容性: No sort applied, activate to apply an ascending sort" style="user-select: none;">
+        <div class="tablesorter-header-inner">版本兼容性</div>
+      </th>
+      <th class="confluenceTh,tablesorter-header,sortableHeader,tablesorter-headerUnSorted" dataColumn="3" tabinde✖️="0" scope="col" role="columnheader" ariaDisabled="false" unselectable="on" ariaSort="none" ariaLabel="拉流: No sort applied, activate to apply an ascending sort" style="user-select: none;">
+        <div class="tablesorter-header-inner">拉流</div>
+      </th>
+      <th class="confluenceTh,tablesorter-header,sortableHeader,tablesorter-headerUnSorted" dataColumn="4" tabinde✖️="0" scope="col" role="columnheader" ariaDisabled="false" unselectable="on" ariaSort="none" ariaLabel="推流: No sort applied, activate to apply an ascending sort" style="user-select: none;">
+        <div class="tablesorter-header-inner">推流</div>
+      </th>
+      <th class="confluenceTh,tablesorter-header,sortableHeader,tablesorter-headerUnSorted" dataColumn="5" tabinde✖️="0" scope="col" role="columnheader" ariaDisabled="false" unselectable="on" ariaSort="none" ariaLabel="屏幕共享: No sort applied, activate to apply an ascending sort" style="user-select: none;">
+        <div class="tablesorter-header-inner">屏幕共享</div>
+      </th>
+    </tr>
+  </thead>
+  <tbody ariaLive="polite" ariaRelevant="all">
+    <tr role="row">
+      <td class="confluenceTd">iOS 11.0.1 或以上版本</td>
+      <td class="confluenceTd">Safari浏览器</td>
+      <td class="confluenceTd">11.0 或以上版本</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✖️</td>
+    </tr>
+    <tr role="row">
+      <td class="confluenceTd">iOS 12.1.4 或以上版本</td>
+      <td class="confluenceTd">Chrome 浏览器</td>
+      <td class="confluenceTd">——</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✖️</td>
+      <td class="confluenceTd">✖️</td>
+    </tr>
+    <tr role="row">
+      <td colSpan="1" class="confluenceTd">iOS 12.1.4 或以上版本</td>
+      <td colSpan="1" class="confluenceTd">Edge浏览器</td>
+      <td colSpan="1" class="confluenceTd">——</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✖️</td>
+      <td colSpan="1" class="confluenceTd">✖️</td>
+    </tr>
+    <tr role="row">
+      <td colSpan="1" class="confluenceTd">iOS 12.1.4 或以上版本</td>
+      <td colSpan="1" class="confluenceTd">微信内置浏览器</td>
+      <td colSpan="1" class="confluenceTd">——</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✖️</td>
+      <td colSpan="1" class="confluenceTd">✖️</td>
+    </tr>
+    <tr role="row">
+      <td class="confluenceTd">iOS 12.1.4 或以上版本</td>
+      <td class="confluenceTd">企业微信内置浏览器</td>
+      <td class="confluenceTd">——</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✖️</td>
+      <td class="confluenceTd">✖️</td>
+    </tr>
+    <tr role="row">
+      <td colSpan="1" class="confluenceTd">iOS 14.3 或以上版本</td>
+      <td colSpan="1" class="confluenceTd">Chrome 浏览器</td>
+      <td colSpan="1" class="confluenceTd">——</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✖️</td>
+    </tr>
+    <tr role="row">
+      <td colSpan="1" class="confluenceTd">iOS 14.3 或以上版本</td>
+      <td colSpan="1" class="confluenceTd">微信内置浏览器</td>
+      <td colSpan="1" class="confluenceTd">推荐最新版本</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✔️</td>
+      <td colSpan="1" class="confluenceTd">✖️</td>
+    </tr>
+    <tr role="row">
+      <td class="confluenceTd">iOS 14.3 或以上版本</td>
+      <td class="confluenceTd">Edge 浏览器</td>
+      <td class="confluenceTd">——</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✔️</td>
+      <td class="confluenceTd">✖️</td>
+    </tr>
+  </tbody>
+</table></div></div>

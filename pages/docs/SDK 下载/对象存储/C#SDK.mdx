@@ -1,0 +1,1203 @@
+[NuGet release](https://www.nuget.org/packages/Qiniu/7.3.0)
+
+此 C# SDK 适用于.NET Framework 2.0+, 基于七牛云API参考手册构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
+
+C# SDK 属于七牛服务端SDK之一，主要有如下功能：
+
+1. 提供生成客户端上传所需的上传凭证的功能
+2. 提供文件从服务端直接上传七牛的功能
+3. 提供对七牛空间中文件进行管理的功能
+4. 提供对七牛空间中文件进行处理的功能
+5. 提供七牛CDN相关的刷新，预取，日志功能
+
+<a id="opensource"></a>
+# 开源
+
+- [c# SDK 项目地址](https://github.com/qiniu/csharp-sdk)
+- [c# SDK 发布地址](https://github.com/qiniu/csharp-sdk/releases)
+- [c# SDK 历史文档](https://developer.qiniu.io/kodo/sdk/1237/csharp)
+
+# 安装
+
+- <a href="#qiniu-sdk-dll">直接添加DLL引用</a>
+- <a href="#qiniu-sdk-nuget">包管理器(NuGet)方式安装</a>
+- <a href="#qiniu-sdk-src">从源码编译</a>
+
+<a id="qiniu-sdk-dll"></a>
+**直接添加DLL引用**
+
+您可以在[这里](https://github.com/qiniu/csharp-sdk/releases)找到所有的Release，选择您需要的版本下载，解压后将*.dll文件添加至项目引用。需要注意的是，此SDK依赖[Json.NET](http://www.newtonsoft.com/json)，可以添加对应版本Newtonsoft.Json.dll引用或者使用NuGet来安装它：
+
+```
+Install-Package Newtonsoft.Json
+```
+
+<a id="qiniu-sdk-nuget"></a>
+
+**包管理器(NuGet)方式安装**
+
+或者从NuGet来安装，以Visual Studio 2013/2015为例(如果您的Visual Studio没有安装NuGet，请先[安装](http://docs.nuget.org/docs/start-here/installing-nuget))。打开NuGet程序包管理器搜索Qiniu.Shared或者在控制台中键入以下命令：
+
+```
+Install-Package Qiniu
+```
+
+<a id="qiniu-sdk-src"></a>
+**从源码编译**
+
+当然，您也可以直接从源码编译
+
+```
+git clone https://github.com/qiniu/csharp-sdk
+```
+
+# 鉴权
+
+七牛 c# SDK 的所有的功能，都需要合法的授权。授权凭证的签算需要七牛账号下的一对有效的`Access Key`和`Secret Key`，这对密钥可以通过如下步骤获得：
+
+1. 点击[注册🔗](https://portal.qiniu.com/signup)开通七牛开发者帐号
+2. 如果已有账号，直接登录七牛开发者后台，点击[这里🔗](https://portal.qiniu.com/user/key)查看 Access Key 和 Secret Key
+
+<a id="io-put"></a>
+# 文件上传
+- <a href="#upload-flow">上传流程</a>
+- <a href="#upload-token">客户端上传凭证</a>
+     - <a href="#simple-uptoken">简单上传凭证</a>
+     - <a href="#overwrite-uptoken">覆盖上传凭证</a>
+     - <a href="#returnbody-uptoken">自定义上传回复凭证</a>
+     - <a href="#callback-uptoken">带回调业务服务器的凭证</a>
+     - <a href="#pfop-uptoken">带数据处理的凭证</a>
+     - <a href="#param-uptoken">带自定义参数的凭证</a>
+     - <a href="#general-uptoken">综合上传凭证</a>
+- <a href="#server-upload">服务器直传</a>
+ 	- <a href="#upload-config">构建配置类</a>
+ 	- <a href="#form-upload-file">文件上传（表单方式）</a>
+ 	- <a href="#form-upload-bytes">字节数组上传（表单方式）</a>
+ 	- <a href="#form-upload-stream">数据流上传（表单方式）</a>
+ 	- <a href="#resume-upload-file">文件分片上传（断点续传）</a>
+ 	- <a href="#upload-result-parse">解析自定义回复内容</a>
+ 	- <a href="#upload-callback-verify">业务服务器验证七牛回调</a>
+
+<a id="upload-flow"></a>
+
+### 上传流程
+
+七牛文件上传分为客户端上传（主要是指网页端和移动端等面向终端用户的场景）和服务端上传两种场景，具体可以参考文档[七牛业务流程](/kodo/manual/programming-model)。
+
+服务端SDK在上传方面主要提供两种功能，一种是生成客户端上传所需要的上传凭证，另外一种是直接上传文件到云端。
+
+<a id="upload-token"></a>
+
+### 客户端上传凭证
+
+客户端（移动端或者Web端）上传文件的时候，需要从客户自己的业务服务器获取上传凭证，而这些上传凭证是通过服务端的SDK来生成的，然后通过客户自己的业务API分发给客户端使用。根据上传的业务需求不同，七牛云c# SDK支持丰富的上传凭证生成方式。
+
+创建各种上传凭证之前，我们需要定义好其中鉴权对象`mac`：
+
+```
+Mac mac = new Mac(AccessKey, SecretKey);
+```
+
+<a id="simple-uptoken"></a>
+
+#### 简单上传的凭证
+
+最简单的上传凭证只需要`AccessKey`，`SecretKey`和`Bucket`就可以。
+
+```
+PutPolicy putPolicy = new PutPolicy();
+putPolicy.Scope = Bucket;
+string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+```
+
+默认情况下，在不指定上传凭证的有效时间情况下，默认有效期为1个小时。也可以自行指定上传凭证的有效期，例如：
+
+```
+//自定义凭证有效期（示例2小时，expires单位为秒，为上传凭证的有效时间）
+PutPolicy putPolicy = new PutPolicy();
+putPolicy.Scope = Bucket;
+putPolicy.SetExpires(7200);
+string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+```
+<a id="overwrite-uptoken"></a>
+
+#### 覆盖上传的凭证
+
+覆盖上传除了需要`简单上传`所需要的信息之外，还需要想进行覆盖的文件名称，这个文件名称同时可是客户端上传代码中指定的文件名，两者必须一致。
+```
+PutPolicy putPolicy = new PutPolicy();
+putPolicy.Scope = Bucket + ":" + Key;
+putPolicy.SetExpires(7200);
+string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+```
+<a id="returnbody-uptoken"></a>
+
+#### 自定义上传回复的凭证
+
+默认情况下，文件上传到七牛之后，在没有设置`returnBody`或者`回调`相关的参数情况下，七牛返回给上传端的回复格式为`hash`和`key`，例如：
+
+```
+{"hash":"Ftgm-CkWePC9fzMBTRNmPMhGBcSV","key":"qiniu.jpg"}
+```
+
+有时候我们希望能自定义这个返回的JSON格式的内容，可以通过设置`returnBody`参数来实现，在`returnBody`中，我们可以使用七牛支持的[魔法变量](/kodo/manual/vars#magicvar)和[自定义变量](/kodo/manual/vars#xvar)。
+
+```
+PutPolicy putPolicy = new PutPolicy();
+putPolicy.Scope = Bucket + ":" + Key;
+putPolicy.ReturnBody = "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"fsiz\":$(fsize),\"bucket\":\"$(bucket)\",\"name\":\"$(x:name)\"}";
+string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+```
+
+则文件上传到七牛之后，收到的回复内容如下：
+
+```
+{"key":"qiniu.jpg","hash":"Ftgm-CkWePC9fzMBTRNmPMhGBcSV","bucket":"if-bc","fsize":39335,"name":"qiniu"}
+```
+<a id="callback-uptoken"></a>
+#### 带回调业务服务器的凭证
+
+上面生成的`自定义上传回复`的上传凭证适用于上传端（无论是客户端还是服务端）和七牛服务器之间进行直接交互的情况下。在客户端上传的场景之下，有时候客户端需要在文件上传到七牛之后，从业务服务器获取相关的信息，这个时候就要用到七牛的上传回调及相关回调参数的设置。
+
+```
+putPolicy = new PutPolicy();
+putPolicy.Scope = Bucket;
+putPolicy.CallbackUrl = "http://api.example.com/qiniu/upload/callback";
+putPolicy.CallbackBody = "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"fsiz\":$(fsize),\"bucket\":\"$(bucket)\",\"name\":\"$(x:name)\"}";
+putPolicy.CallbackBodyType = "application/json";
+upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+Console.WriteLine(upToken);
+```
+
+在使用了上传回调的情况下，客户端收到的回复就是业务服务器响应七牛的JSON格式内容。
+通常情况下，我们建议使用`application/json`格式来设置`callbackBody`，保持数据格式的统一性。实际情况下，`callbackBody`也支持`application/x-www-form-urlencoded`格式来组织内容，这个主要看业务服务器在接收到`callbackBody`的内容时如果解析。例如：
+
+```
+putPolicy = new PutPolicy();
+putPolicy.Scope = Bucket;
+putPolicy.CallbackUrl = "http://api.example.com/qiniu/upload/callback";
+putPolicy.CallbackBody = "key=$(key)&hash=$(etag)&bucket=$(bucket)&fsize=$(fsize)&name=$(x:name)";
+upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+Console.WriteLine(upToken);
+```
+#### 带数据处理的凭证
+
+七牛支持在文件上传到七牛之后，立即对其进行多种指令的数据处理，这个只需要在生成的上传凭证中指定相关的处理参数即可。
+
+```
+putPolicy = new PutPolicy();
+string saveMp4Entry = Base64.UrlSafeBase64Encode(Bucket + ":avthumb_test_target.mp4");
+string saveJpgEntry = Base64.UrlSafeBase64Encode(Bucket + ":vframe_test_target.jpg");
+string avthumbMp4Fop = "avthumb/mp4|saveas/" + saveMp4Entry;
+string vframeJpgFop = "vframe/jpg/offset/1|saveas/" + saveJpgEntry;
+string fops = string.Join(";", new string[] { avthumbMp4Fop, vframeJpgFop });
+putPolicy.Scope = Bucket;
+putPolicy.PersistentOps = fops;
+putPolicy.PersistentPipeline = "video-pipe";
+putPolicy.PersistentNotifyUrl = "http://api.example.com/qiniu/pfop/notify";
+upToken = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+Console.WriteLine(upToken);
+```
+
+队列 pipeline 请参阅[创建私有队列](https://portal.qiniu.com/dora/media-gate/pipeline)；转码操作具体参数请参阅[音视频转码](/dora/api/audio-and-video-transcoding-avthumb)；saveas 请参阅[处理结果另存](/dora/api/processing-results-save-saveas)。
+
+<a id="param-uptoken"></a>
+
+#### 带自定义参数的凭证
+
+七牛支持客户端上传文件的时候定义一些自定义参数，这些参数可以在`returnBody`和`callbackBody`里面和七牛内置支持的魔法变量（即系统变量）通过相同的方式来引用。这些自定义的参数名称必须以`x:`开头。例如客户端上传的时候指定了自定义的参数`x:name`和`x:age`分别是`string`和`int`类型。那么可以通过下面的方式引用：
+
+```
+putPolicy.ReturnBody = "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"fsiz\":$(fsize),\"bucket\":\"$(bucket)\",\"name\":\"$(x:name)\"}";
+```
+或者
+```
+putPolicy.CallbackBody = "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"fsiz\":$(fsize),\"bucket\":\"$(bucket)\",\"name\":\"$(x:name)\"}";
+```
+<a id="general-uptoken"></a>
+
+#### 综合上传凭证
+
+上面的生成上传凭证的方法，都是通过设置[上传策略🔗](/kodo/manual/put-policy)相关的参数来支持的，这些参数可以通过不同的组合方式来满足不同的业务需求，可以灵活地组织你所需要的上传凭证。
+
+<a id="server-upload"></a>
+### 服务端直传
+
+服务端直传是指客户利用七牛服务端SDK从服务端直接上传文件到七牛云，交互的双方一般都在机房里面，所以服务端可以自己生成上传凭证，然后利用SDK中的上传逻辑进行上传，最后从七牛云获取上传的结果，这个过程中由于双方都是业务服务器，所以很少利用到上传回调的功能，而是直接自定义`returnBody`来获取自定义的回复内容。
+
+#### 构建配置类
+
+七牛存储支持空间创建在不同的机房，在使用七牛的 C# SDK 中的`FormUploader`和`ResumeUploader`上传文件之前，必须要构建一个上传用的`config`对象，在该对象中，可以指定空间对应的`zone`以及其他的一些影响上传的参数。
+
+```
+Config config = new Config();
+// 空间对应的机房
+config.Zone = Zone.ZONE_CN_East;
+// 是否使用https域名
+config.UseHttps = true;
+// 上传是否使用cdn加速
+config.UseCdnDomains = true;
+```
+
+其中关于`Zone`对象和机房的关系如下：
+
+|机房|Zone对象|
+|---|-----|
+|华东|`ZONE_CN_East`|
+|华北|`ZONE_CN_North`|
+|华南|`ZONE_CN_South`|
+|北美|`ZONE_US_North`|
+
+<a id="form-upload-file"></a>
+#### 文件上传（表单方式）
+最简单的就是上传本地文件，直接指定文件的完整路径即可上传。
+
+```
+Mac mac = new Mac(AccessKey, SecretKey);
+// 上传文件名
+string key = "key";
+// 本地文件路径
+string filePath = "D:\\tools\\putty.exe";
+// 存储空间名
+string Bucket = "7qiniu";
+// 设置上传策略，详见：https://developer.qiniu.com/kodo/manual/1206/put-policy
+PutPolicy putPolicy = new PutPolicy();
+putPolicy.Scope = Bucket;
+putPolicy.SetExpires(3600);
+putPolicy.DeleteAfterDays = 1;
+string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+
+Config config = new Config();
+// 设置上传区域
+config.Zone = Zone.ZONE_CN_East;
+// 设置 http 或者 https 上传
+config.UseHttps = true;
+config.UseCdnDomains = true;
+// 表单上传
+FormUploader target = new FormUploader(config);
+HttpResult result = target.UploadFile(filePath, key, token, null);
+Console.WriteLine("form upload result: " + result.ToString());
+```
+#### 文件分片上传（断点续传）
+
+```
+Mac mac = new Mac(AccessKey, SecretKey);
+// 上传文件名
+string key = "putty.exe";
+// 本地文件路径
+string filePath = "D:\\tools\\putty.exe";
+// 空间名
+string Bucket = "7qiniu";
+// 设置上传策略，详见：https://developer.qiniu.com/kodo/manual/1206/put-policy
+PutPolicy putPolicy = new PutPolicy();
+putPolicy.Scope = Bucket + ":" + key;
+putPolicy.SetExpires(3600);
+string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+Config config = new Config();
+// 设置上传区域
+config.Zone = Zone.ZONE_CN_East;
+// 设置 http 或者 https 上传
+config.UseHttps = true;
+config.UseCdnDomains = true;
+ResumableUploader target = new ResumableUploader(config);
+PutExtra extra = new PutExtra();
+//设置断点续传进度记录文件
+extra.ResumeRecordFile = ResumeHelper.GetDefaultRecordKey(filePath, key);
+Console.WriteLine("record file:" + extra.ResumeRecordFile);
+extra.ResumeRecordFile = "test.progress";
+extra.Version = "v2";
+HttpResult result = target.UploadStream(filePath, key, token, extra);
+Console.WriteLine("resume upload: " + result.ToString());
+```
+<a id="upload-result-parse"></a>
+### 解析自定义回复内容
+有些情况下，七牛返回给上传端的内容不是默认的`hash`和`key`形式，这种情况下，可能出现在自定义`returnBody`或者自定义了`callbackBody`的情况下，前者一般是服务端直传的场景，而后者则是接受上传回调的场景，这两种场景之下，都涉及到需要将自定义的回复进行内容解析，一般建议在交互过程中，都采用`JSON`的方式，这样处理起来方法比较一致，而且`JSON`的方法最通用，基本上了解回复结构就可以处理，这里不再赘述。
+
+<a id="io-get"></a>
+# 下载文件
+
+ - <a href="#public-get">公开空间</a>
+ - <a href="#private-get">私有空间</a>
+
+文件下载分为公开空间的文件下载和私有空间的文件下载。
+
+<a id="public-get"></a>
+### 公开空间
+对于公开空间，其访问的链接主要是将空间绑定的域名（可以是七牛空间的默认域名或者是绑定的自定义域名）拼接上空间里面的文件名即可访问，标准情况下需要在拼接链接之前，将文件名进行`urlencode`以兼容不同的字符。
+
+```
+string domain = "http://if-pbl.qiniudn.com";
+string key = "hello/world/七牛/test.png";
+string publicUrl = DownloadManager.CreatePublishUrl(domain, key);
+Console.WriteLine(publicUrl);
+```
+<a id="private-get"></a>
+### 私有空间
+对于私有空间，首先需要按照公开空间的文件访问方式构建对应的公开空间访问链接，然后再对这个链接进行私有授权签名。
+
+```
+Mac mac = new Mac(AccessKey, SecretKey);
+string domain = "http://if-pri.qiniudn.com";
+string key = "hello/world/七牛/test.png";
+string privateUrl = DownloadManager.CreatePrivateUrl(mac, domain, key, 3600);
+Console.WriteLine(privateUrl);
+```
+
+<a id="rs"></a>
+# 资源管理
+
+资源管理包括的主要功能有：
+
+- <a href="#rs-stat">获取文件信息</a>
+- <a href="#rs-chgm">修改文件MimeType</a>
+- <a href="#rs-chtype">修改文件存储类型</a>
+- <a href="#rs-move">移动或重命名文件</a>
+- <a href="#rs-copy">复制文件副本</a>
+- <a href="#rs-delete">删除空间中的文件</a>
+- <a href="#rs-delete-after-days">设置或更新文件生存时间</a>
+- <a href="#rs-list">获取指定前缀文件列表</a>
+- <a href="#rs-fetch">抓取网络资源到空间</a>
+- <a href="#rs-prefetch">更新镜像存储空间中文件内容</a>
+- <a href="#rs-batch">资源管理批量操作</a>
+    - <a href="#rs-batch-stat">批量获取文件信息</a>
+    - <a href="#rs-batch-chgm">批量修改文件类型</a>
+    - <a href="#rs-batch-delete">批量删除文件</a>
+    - <a href="#rs-batch-copy">批量复制文件</a>
+    - <a href="#rs-batch-move">批量移动或重命名文件</a>
+    - <a href="#rs-batch-deleteAfterDays">批量更新文件的有效期</a>
+    - <a href="#rs-batch-type">批量更新文件存储类型</a>
+
+资源管理相关的操作首先要构建`BucketManager`对象：
+```
+// 设置存储区域
+Config config = new Config();
+config.Zone = Zone.ZONE_CN_East;
+
+Mac mac = new Mac(AccessKey, SecretKey);
+BucketManager bucketManager = new BucketManager(mac, config);
+```
+
+<a id="rs-stat"></a>
+## 获取文件信息
+
+```
+// 存储空间名
+string Bucket = "7qiniu";
+// 	待查询文件名
+string key = "02.mp4";
+
+StatResult statRet = bucketManager.Stat(Bucket, key);
+if (statRet.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine("stat error: " + statRet.ToString());
+}
+
+Console.WriteLine(statRet.Result.Hash);
+Console.WriteLine(statRet.Result.MimeType);
+Console.WriteLine(statRet.Result.Fsize);
+Console.WriteLine(statRet.Result.MimeType);
+Console.WriteLine(statRet.Result.FileType);
+```
+<a id="rs-chgm"></a>
+## 修改文件MimeType
+
+```
+string Bucket = "7qiniu";
+string key = "7qiniu.mp4";
+
+HttpResult ret = bucketManager.ChangeMime(Bucket, key, "application / mpegurl");
+if (ret.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine("change mime error: " + ret.ToString());
+    Console.ReadKey();
+}
+Console.WriteLine(ret.ToString());
+```
+<a id="rs-chtype"></a>
+## 修改文件存储类型
+
+```
+// 存储空间
+string Bucket = "7qiniu";
+// 文件名
+string key = "7qiniu.mp4";
+//newType=0表示普通存储，newType为1表示低频存储
+int newType = 1;
+HttpResult ret = bucketManager.ChangeType(Bucket, key, newType);
+if (ret.Code != (int)HttpCode.OK && !ret.Text.Contains("already in line stat"))
+{
+    Console.WriteLine("change type error: " + ret.ToString());
+}
+Console.WriteLine(ret.ToString());
+```
+<a id="rs-move"></a>
+## 移动或重命名文件
+
+移动操作本身支持移动文件到相同，不同空间中，在移动的同时也可以支持文件重命名。唯一的限制条件是，移动的源空间和目标空间必须在同一个机房。
+
+|源空间|目标空间|源文件名|目标文件名|描述|
+|------|------|------|--------|------|
+|BucketA|BucketA|KeyA|KeyB|相当于同空间文件重命名|
+|BucketA|BucketB|KeyA|KeyA|移动文件到BucketB，文件名一致|
+|BucketA|BucketB|KeyA|KeyB|移动文件到BucketB，文件名变成KeyB|
+
+`move`操作支持强制覆盖选项，即如果目标文件已存在，可以设置强制覆盖选项`force`来覆盖那个文件的内容。
+
+```
+// 原始空间
+string Bucket = "7qiniu";
+// 原始文件名
+string Key = "0_01.png";
+// 目标空间
+string newBucket = "07qiniu";
+// 目标文件名
+string newKey = "move0_01.png";
+// 是否设置强制覆盖
+Boolean force = true;
+HttpResult copyRet = bucketManager.move(Bucket, Key, newBucket, newKey, force);
+if (copyRet.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine("move error: " + moveRet.ToString());
+}
+Console.WriteLine(moveRet.ToString());
+```
+<a id="rs-copy"></a>
+## 复制文件副本
+文件的复制和文件移动其实操作一样，主要的区别是移动后源文件不存在了，而复制的结果是源文件还存在，只是多了一个新的文件副本。
+
+```
+// 原始空间
+string Bucket = "7qiniu";
+// 原始文件名
+string Key = "0_01.png";
+// 目标空间
+string newBucket = "07qiniu";
+// 目标文件名
+string newKey = "copy0_01.png";
+// 是否设置强制覆盖
+Boolean force = true;
+HttpResult copyRet = bucketManager.copy(Bucket, Key, newBucket, newKey, force);
+if (copyRet.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine("copy error: " + copyRet.ToString());
+}
+Console.WriteLine(copyRet.ToString());
+```
+
+<a id="rs-delete"></a>
+## 删除空间中的文件
+
+```
+// 空间名
+string Bucket = "7qiniu";
+// 文件名
+string Key = "10138_7e706ac5317f2993176725cbdf50d0e10f079c05.ppt";
+
+HttpResult deleteRet = bucketManager.Delete(Bucket, Key);
+Console.WriteLine("delete error: " + deleteRet.ToString());
+
+if (deleteRet.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine("delete error: " + deleteRet.ToString());
+}
+```
+<a id="rs-delete-after-days"></a>
+## 设置或更新文件的生存时间
+可以给已经存在于空间中的文件设置文件生存时间，或者更新已设置了生存时间但尚未被删除的文件的新的生存时间。
+
+```
+// 存储空间名
+string Bucket = "7qiniu";
+// 文件名
+string key = "0_01.png";
+
+HttpResult expireRet = bucketManager.DeleteAfterDays(Bucket, key, 7);
+
+if (expireRet.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine("deleteAfterDays error: " + expireRet.ToString());
+}
+Console.WriteLine(expireRet.ToString());
+```
+
+<a id="rs-list"></a>
+## 获取指定前缀的文件列表
+
+```
+// 空间名
+string Bucket = "7qiniu";
+// 指定前缀，只有资源名匹配该前缀的资源会被列出
+string prefix = "qiniu";
+// 指定目录分隔符，列出所有公共前缀（模拟列出目录效果）
+string delimiter = "";
+// 本次列举的条目数，范围为1-1000
+int limit = 100;
+// 上一次列举返回的位置标记，作为本次列举的起点信息
+string marker = "";
+
+
+ListResult listRet = bucketManager.ListFiles(Bucket, prefix, marker, limit, delimiter);
+if (listRet.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine("list files error: " + listRet.ToString());
+}
+Console.WriteLine(listRet.ToString());
+```
+
+<a id="rs-fetch"></a>
+## 抓取网络资源到空间
+
+```
+// 公网可访问的文件链接
+string resUrl = "http://devtools.qiniu.com/qiniu.png";
+// 存储空间名
+string Bucket = "7qiniu";
+// 文件名
+string Key = "qiniu.jpg";
+FetchResult ret = bucketManager.Fetch(resUrl, Bucket, Key);
+
+if (ret.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine("fetch error: " + ret.ToString());
+}
+Console.WriteLine(ret.ToString());
+```
+<a id="rs-prefetch"></a>
+## 更新镜像空间中存储的文件内容
+
+```
+// 设置存储空间
+string Bucket = "7qiniu";
+// 文件名
+string key = "333";
+HttpResult ret = bucketManager.Prefetch(Bucket, "qiniu.png");
+if (ret.Code != (int)HttpCode.OK && !ret.Text.Contains("bucket source not set"))
+{
+    Console.WriteLine("prefetch error: " + ret.ToString());
+}
+Console.WriteLine(ret.ToString());
+```
+<a id="rs-batch"></a>
+## 资源管理批量操作
+
+<a id="rs-batch-stat"></a>
+### 批量获取文件信息
+
+```
+// 每个operations的数量不可以超过1000个，如果总数量超过1000，需要分批发送
+string[] keys = {
+    "00007.mp4",
+    "0072102104.png"
+};
+// 空间名
+string Bucket = "7qiniu";
+List<string> ops = new List<string>();
+foreach (string key in keys)
+{
+    string op = bucketManager.StatOp(Bucket, key);
+    ops.Add(op);
+}
+BatchResult ret = bucketManager.Batch(ops);
+if (ret.Code / 100 != 2)
+{
+    Console.WriteLine("batch error: " + ret.ToString());
+    
+}
+foreach (BatchInfo info in ret.Result)
+{
+    if (info.Code == (int)HttpCode.OK)
+    {
+        Console.WriteLine("{0}, {1}, {2}, {3}, {4}", info.Data.MimeType,
+            info.Data.PutTime, info.Data.Hash, info.Data.Fsize, info.Data.FileType);
+        
+    }
+    else
+    {
+        Console.WriteLine(info.Data.Error);
+        
+    }
+    
+}
+```
+
+<a id="rs-batch-chgm"></a>
+### 批量修改文件类型
+
+```
+//每个operations的数量不可以超过1000个，如果总数量超过1000，需要分批发送
+// 空间名
+string Bucket = "7qiniu";
+// 文件名
+string[] keys = {
+    "354",
+    "3.json"
+};
+
+List<string> ops = new List<string>();
+foreach (string key in keys)
+{
+    string op = bucketManager.ChangeTypeOp(Bucket, key, 1);
+    ops.Add(op);
+}
+
+BatchResult ret = bucketManager.Batch(ops);
+if (ret.Code / 100 != 2)
+{
+    Console.WriteLine("batch error: " + ret.ToString());
+}
+foreach (BatchInfo info in ret.Result)
+{
+    if (info.Code == (int)HttpCode.OK)
+    {
+        Console.WriteLine("chtype success");
+    }
+    else
+    {
+        Console.WriteLine(info.Data.Error);
+    }
+}
+```
+<a id="rs-batch-delete"></a>
+### 批量删除文件
+
+```
+//每个operations的数量不可以超过1000个，如果总数量超过1000，需要分批发送
+// 设置空间
+string Bucket = "7qiniu";
+string[] keys = {
+    "00_wo_ts_a.mp4",
+    "0327-02.png",
+    "0715589972949ea3a.mp4"
+};
+
+List<string> ops = new List<string>();
+foreach (string key in keys)
+{
+    string op = bucketManager.DeleteOp(Bucket, key);
+    ops.Add(op);
+}
+
+BatchResult ret = bucketManager.Batch(ops);
+if (ret.Code / 100 != 2)
+{
+    Console.WriteLine("batch error: " + ret.ToString());
+}
+foreach (BatchInfo info in ret.Result)
+{
+    if (info.Code == (int)HttpCode.OK)
+    {
+        Console.WriteLine("delete success");
+    }
+    else
+    {
+        Console.WriteLine(info.Data.Error);
+    }
+}
+```
+### 批量复制文件
+```
+//每个operations的数量不可以超过1000个，如果总数量超过1000，需要分批发送
+
+// 原空间        
+string srcBucket = "7qiniu";
+// 目标空间
+string dstBucket = "07qiniu";
+
+string[] keys = {
+    "007210021.png",
+    "0072102104.png",
+    "0327-02.png"
+};
+
+List<string> ops = new List<string>();
+foreach (string key in keys)
+{
+    string op = bucketManager.CopyOp(srcBucket, key, dstBucket, key, true);
+    ops.Add(op);
+}
+
+BatchResult ret = bucketManager.Batch(ops);
+if (ret.Code / 100 != 2)
+{
+    Console.WriteLine("batch error: " + ret.ToString());
+}
+foreach (BatchInfo info in ret.Result)
+{
+    if (info.Code == (int)HttpCode.OK)
+    {
+        Console.WriteLine("copy success");
+    }
+    else
+    {
+        Console.WriteLine(info.Data.Error);
+    }
+}
+```
+<a id="rs-batch-move"></a>
+### 批量移动或重命名文件
+
+```
+//每个operations的数量不可以超过1000个，如果总数量超过1000，需要分批发送
+// 原空间        
+string srcBucket = "7qiniu";
+// 目标空间
+string dstBucket = "01test";
+string[] keys = {
+    "007210021.png",
+    "0072102104.png"
+};
+
+List<string> ops = new List<string>();
+foreach (string key in keys)
+{
+    string op = bucketManager.MoveOp(srcBucket, key, dstBucket, key + "-batch-move", true);
+    ops.Add(op);
+}
+
+BatchResult ret = bucketManager.Batch(ops);
+if (ret.Code / 100 != 2)
+{
+    Console.WriteLine("batch error: " + ret.ToString());
+}
+foreach (BatchInfo info in ret.Result)
+{
+    if (info.Code == (int)HttpCode.OK)
+    {
+        Console.WriteLine("move success");
+    }
+    else
+    {
+        Console.WriteLine(info.Data.Error);
+    }
+}
+```
+
+### 批量更新文件的有效期
+
+```
+//每个operations的数量不可以超过1000个，如果总数量超过1000，需要分批发送
+string[] keys = {
+    "4389.png",
+    "4.gif"
+};
+// 空间名
+string Bucket = "7qiniu";
+List<string> ops = new List<string>();
+foreach (string key in keys)
+{
+    string op = bucketManager.DeleteAfterDaysOp(Bucket, key, 7);
+    ops.Add(op);
+}
+
+BatchResult ret = bucketManager.Batch(ops);
+if (ret.Code / 100 != 2)
+{
+    Console.WriteLine("batch error: " + ret.ToString());
+}
+foreach (BatchInfo info in ret.Result)
+{
+    if (info.Code == (int)HttpCode.OK)
+    {
+        Console.WriteLine("deleteAfterDays success");
+    }
+    else
+    {
+        Console.WriteLine(info.Data.Error + "2");
+    }
+}
+```
+
+<a id="rs-batch-type"></a>
+### 批量更新文件存储类型
+
+```
+//每个operations的数量不可以超过1000个，如果总数量超过1000，需要分批发送
+//type=0为普通存储，type=1为低频存储
+string[] keys = {
+        "qiniu-0.png",
+        "qiniu-1.png",
+        "qiniu-2.png"
+    };
+
+    List<string> ops = new List<string>();
+    int type = 0;
+    foreach (string key in keys)
+    {
+        string op = bucketManager.ChangeTypeOp(Bucket, key, type);
+        ops.Add(op);
+    }
+
+    BatchResult ret = bucketManager.Batch(ops);
+    if (ret.Code / 100 != 2)
+    {
+        Console.WriteLine("batch error: " + ret.ToString());
+    }
+    foreach (BatchInfo info in ret.Result)
+    {
+        if (info.Code == (int)HttpCode.OK)
+        {
+            Console.WriteLine("chtype success");
+        }
+        else
+        {
+            Console.WriteLine(info.Data.Error);
+        }
+    }
+}
+```
+
+<a id="pfop"></a>
+# 持久化数据处理
+
+<a id="pfop-request"></a>
+## 发送数据处理请求
+对于已经保存到七牛空间的文件，可以通过发送持久化的数据处理指令来进行处理，这些指令支持七牛官方提供的指令，也包括客户自己开发的自定义数据处理的指令。数据处理的结果还可以通过七牛主动通知的方式告知业务服务器。
+
+```
+Mac mac = new Mac(AccessKey, SecretKey);
+Config config = new Config();
+OperationManager manager = new OperationManager(mac, config);
+
+//处理指令集合
+string saveMp4Entry = Base64.UrlSafeBase64Encode(Bucket + ":avthumb_test_target.mp4");
+string saveJpgEntry = Base64.UrlSafeBase64Encode(Bucket + ":avthumb_test_target.jpg");
+
+string avthumbMp4Fop = "avthumb/mp4|saveas/" + saveMp4Entry;
+string vframeJpgFop = "vframe/jpg/offset/1|saveas/" + saveJpgEntry;
+
+string fops = string.Join(";", new string[] { avthumbMp4Fop, vframeJpgFop });
+
+// 私有隊列名
+string pipeline = "da";
+string notifyUrl = "http://api.example.com/qiniu/pfop/notify";
+
+// 存储空间名
+string Bucket = "7qiniu";
+// 文件名
+string key = "00007.mp4";
+// 当服务端发现 fops 指定的数据处理结果已经存在，那就认为已经处理成功，避免重复处理浪费资源。加上本字段并设为 1，则可强制执行数据处理并覆盖原结果。
+bool force = true;
+PfopResult pfopRet = manager.Pfop(Bucket, key, fops, pipeline, notifyUrl, force);
+if (pfopRet.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine("pfop error: " + pfopRet.ToString());
+}
+//持久化数据处理返回的是任务的persistentId，可以根据这个id查询处理状态
+Console.WriteLine(pfopRet.PersistentId);
+```
+<a id="pfop-status"></a>
+## 查询数据处理请求状态
+由于数据处理是异步处理，可以根据发送处理请求时返回的 `persistentId` 去查询任务的处理进度，如果在设置了`persistentNotifyUrl` 的情况下，直接业务服务器等待处理结果通知即可，如果需要主动查询，可以采用如下代码中的：
+
+```
+//持久化数据处理返回的是任务的persistentId
+string persistentId = "z0.59abf1eb45a2650c9954087d";
+Mac mac = new Mac(AccessKey, SecretKey);
+Config config = new Config();
+OperationManager manager = new OperationManager(mac, config);
+PrefopResult ret = manager.Prefop(persistentId);
+if (ret.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine("prefop error: " + ret.ToString());
+}
+Console.WriteLine(ret.ToString());
+```
+<a id="fusion-cdn"></a>
+# CDN相关功能
+- <a href="#fusion-refresh-urls">文件刷新</a>
+- <a href="#fusion-refresh-dirs">目录刷新</a>
+- <a href="#fusion-prefetch">文件预取操作</a>
+- <a href="#fusion-flux">获取域名流量</a>
+- <a href="#fusion-bandwidth">获取域名带宽</a>
+- <a href="#fusion-logs">获取日志下载链接</a>
+- <a href="#fusion-antileech">构建时间戳防盗链访问链接</a>
+
+在使用CDN相关功能之前，需要构建`CdnManager`对象：
+
+```
+Mac mac = new Mac(AccessKey, SecretKey);
+CdnManager manager = new CdnManager(mac);
+```
+<a id="fusion-refresh-urls"></a>
+## 文件刷新
+
+```
+//URL 列表
+string Domain = "sq.qiniuts.com";
+string[] urls = {
+    string.Format("http://{0}/images/1.png",Domain),
+    string.Format("http://{0}/images/2.png",Domain)
+};
+
+RefreshResult ret = manager.RefreshUrls(urls);
+if (ret.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine(ret.ToString());
+}
+Console.WriteLine(ret.Result.Code);
+Console.WriteLine(ret.Result.Error);
+Console.WriteLine(ret.Result.UrlQuotaDay);
+Console.WriteLine(ret.Result.UrlSurplusDay);
+Console.WriteLine(ret.Result.RequestId);
+if (ret.Result.InvalidUrls != null)
+{
+    foreach (string url in ret.Result.InvalidUrls)
+    {
+        Console.WriteLine(url);
+    }
+}
+```
+<a id="fusion-refresh-dirs"></a>
+## 目录刷新
+
+```
+string Domain = "sq.qiniuts.com";
+//DIR 列表
+string[] dirs = {
+    string.Format("http://{0}/images1/",Domain),
+    string.Format("http://{0}/images2/",Domain)
+};
+
+//刷新目录，刷新目录需要联系七牛技术支持开通权限
+//单次请求链接不可以超过10个，如果超过，请分批发送请求
+RefreshResult ret = manager.RefreshDirs(dirs);
+if (ret.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine(ret.ToString());
+}
+Console.WriteLine(ret.Result.Code);
+Console.WriteLine(ret.Result.Error);
+Console.WriteLine(ret.Result.DirQuotaDay);
+Console.WriteLine(ret.Result.DirSurplusDay);
+Console.WriteLine(ret.Result.RequestId);
+if (ret.Result.InvalidDirs != null)
+{
+    foreach (string dir in ret.Result.InvalidDirs)
+    {
+        Console.WriteLine(dir);
+    }
+}
+```
+<a id="fusion-prefetch"></a>
+## 文件预取
+
+```
+//URL 列表
+string Domain = "sq.qiniuts.com";
+string[] urls = {
+    string.Format("http://{0}/images/1.png",Domain),
+    string.Format("http://{0}/images/2.png",Domain)
+};
+
+PrefetchResult ret = manager.PrefetchUrls(urls);
+if (ret.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine(ret.ToString());
+}
+Console.WriteLine(ret.Result.Code);
+Console.WriteLine(ret.Result.Error);
+Console.WriteLine(ret.Result.QuotaDay);
+Console.WriteLine(ret.Result.SurplusDay);
+Console.WriteLine(ret.Result.RequestId);
+if (ret.Result.InvalidUrls != null)
+{
+    foreach (string url in ret.Result.InvalidUrls)
+    {
+        Console.WriteLine(url);
+    }
+}
+```
+<a id="fusion-flux"></a>
+## 获取域名流量
+
+```
+// 域名
+string Domain = "sq.qiniuts.com";
+string[] domains = new string[] { Domain };
+// 指定日期
+string start = "2017-08-01";
+string end = "2017-08-10";
+// 流量数据粒度
+string granu = "day";
+//获取域名流量
+FluxResult ret = manager.GetFluxData(domains, start, end, granu);
+if (ret.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine(ret.ToString());
+}
+
+foreach (string domain in domains)
+{
+    Console.WriteLine("flux data of domain: " + domain);
+    foreach (string t in ret.Result.Time)
+    {
+        Console.Write(t + "\t");
+    }
+    Console.WriteLine();
+    if (ret.Result.Data.ContainsKey(domain))
+    {
+        if (ret.Result.Data[domain].China != null)
+        {
+            Console.WriteLine("China:");
+            foreach (UInt64 v in ret.Result.Data[domain].China)
+            {
+                Console.Write(v + "\t");
+            }
+            Console.WriteLine();
+        }
+
+
+        if (ret.Result.Data[domain].Oversea != null)
+        {
+            Console.WriteLine("Oversea:");
+            foreach (int v in ret.Result.Data[domain].Oversea)
+            {
+                Console.Write(v + "\t");
+            }
+            Console.WriteLine();
+        }
+    }
+}
+```
+<a id="fusion-bandwidth"></a>
+## 获取域名带宽
+```
+// 域名
+string Domain = "sq.qiniuts.com";
+string[] domains = new string[] { Domain };
+// 设置时间范围
+string start = "2017-08-01";
+string end = "2017-08-10";
+// 带宽数据粒度
+string granu = "day";
+
+//获取域名带宽
+BandwidthResult ret = manager.GetBandwidthData(domains, start, end, granu);
+if (ret.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine(ret.ToString());
+}
+
+foreach (string domain in domains)
+{
+    Console.WriteLine("bandwidth data of domain: " + domain);
+    foreach (string t in ret.Result.Time)
+    {
+        Console.Write(t + "\t");
+    }
+    Console.WriteLine();
+    if (ret.Result.Data.ContainsKey(domain))
+    {
+        if (ret.Result.Data[domain].China != null)
+        {
+            Console.WriteLine("China:");
+            foreach (int v in ret.Result.Data[domain].China)
+            {
+                Console.Write(v + "\t");
+            }
+            Console.WriteLine();
+        }
+
+
+        if (ret.Result.Data[domain].Oversea != null)
+        {
+            Console.WriteLine("Oversea:");
+            foreach (UInt64 v in ret.Result.Data[domain].Oversea)
+            {
+                Console.Write(v + "\t");
+            }
+            Console.WriteLine();
+        }
+    }
+}
+```
+<a id="fusion-logs"></a>
+## 获取日志下载链接
+
+```
+// 设置域名
+string Domain = "sq.qiniuts.com";
+// 设置时间
+string day = "2017-08-10";
+string[] domains = new string[] { Domain };
+LogListResult ret = manager.GetCdnLogList(domains, day);
+if (ret.Code != (int)HttpCode.OK)
+{
+    Console.WriteLine(ret.ToString());
+}
+
+foreach (string domain in ret.Result.Data.Keys)
+{
+    Console.WriteLine("log list for domain: " + domain);
+    foreach (LogData data in ret.Result.Data[domain])
+    {
+        Console.WriteLine(data.Name + "\t" + data.Size + "\t" + data.Mtime + "\t" + data.Url);
+    }
+}
+```
+<a id="fusion-antileech"></a>
+## 构建时间戳防盗链访问链接
+
+具体算法可以参考：[时间戳防盗链](/fusion/kb/timestamp-hotlinking-prevention)
+
+```
+string host = "http://qnls.example.com";
+string fileName = "hello/6000694.ls";
+string query = "v=34";
+int expireInSeconds = 3600;
+//加密密钥
+string encryptKey = "xxx";
+string finalUrl = CdnManager.CreateTimestampAntiLeechUrl(host, fileName, query, encryptKey, expireInSeconds);
+Console.WriteLine(finalUrl);
+```
+
+<a id="api-references"></a>
+# API 参考
+
+- [存储 API 参考](/kodo)
+- [融合CDN API 参考](/fusion)
+- [官方数据处理 API 参考](/dora)
+
+<a id="faq"></a>
+# 常见问题
+
+- API 的使用，可以参考我们为大家精心准备的[使用实例](https://github.com/qiniu/csharp-sdk/tree/master/src/QiniuTests)。
+
+<a id="related-resources"></a>
+# 相关资源
+
+如果您有任何关于我们文档或产品的建议和想法，欢迎您通过以下方式与我们互动讨论：
+
+* [技术论坛](http://segmentfault.com/qiniu) - 在这里您可以和其他开发者愉快的讨论如何更好的使用七牛云服务
+* [提交工单](https://support.qiniu.com/tickets/new) - 如果您的问题不适合在论坛讨论或希望及时解决，您也可以提交一个工单，我们的技术支持人员会第一时间回复您
+* [博客](http://blog.qiniu.com) - 这里会持续更新发布市场活动和技术分享文章
+* [微博](http://weibo.com/qiniutek)
+* [常见问题](https://support.qiniu.com/question)
+
+<a id="contribute-code"></a>
+# 贡献代码
+
+1. Fork
+
+2. 创建您的特性分支 git checkout -b my-new-feature
+
+3. 提交您的改动 git commit -am 'Added some feature'
+
+4. 将您的修改记录提交到远程 git 仓库 git push origin my-new-feature
+
+5. 然后到 github 网站的该 git 远程仓库的 my-new-feature 分支下发起 Pull Request
+
+<a id="license"></a>
+
+# 许可证
+
+Copyright (c) 2014 qiniu.com
+
+基于 MIT 协议发布:
+* [www.opensource.org/licenses/MIT](http://www.opensource.org/licenses/MIT)
+
+
+
+
+
+

@@ -1,0 +1,87 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `POST` /api/rio/v1/network/loadbalancer/:id/listener
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id           | string | header| 是 | 地域 ID
+id						| string 	| path | 是 | 负载均衡 ID
+listener_name			| string 	| body | 是 | 监听器名称
+description				| string 	| body | 否 | 描述
+protocol				| string 	| body | 是 | 监听协议：<ul><li>`tcp`</li><li>`udp`</li><li>`https` :tcp 转发实现</li><li>`http`</li><li>`sctp`</li><li>`terminated_https` : https 协议，创建时需绑定证书</li></ul> 
+listener_port			| integer 	| body | 是 | 负载均衡实例前端使用的端口。取值：1-65535。
+connection_limit		| integer 	| body | 否 | 最大连接数，默认值为 -1 ，表示无限连接
+timeout_client_data		| integer 	| body | 否 | 前端客户端不活动超时，单位：秒，默认值：50
+timeout_member_connect	| integer 	| body | 否 | 后端成员连接超时，单位：秒，默认值：5
+timeout_member_data		| integer 	| body | 否 | 后端成员不活动超时，单位：秒，默认值：50
+timeout_tcp_inspect		| integer 	| body | 否 | 等待 TCP 数据包检查超时，单位：秒，默认值：0
+persistence_timeout		| integer 	| body | 否 | 会话保持的超时时间。取值：0-3600（秒）。默认值：0，表示关闭会话保持。
+established_timeout		| integer 	| body | 否 | 连接超时时间。取值：10-900（秒）。 默认值: 900
+insert_headers			| string 	| body | 否 | 请求发送到后端服务器时添加的请求头：<ul><li>`X-Forwarded-For` : 记录最初发起请求的客户端 IP</li><li>`X-Forwarded-Port` : 记录最初发起请求的客户端 Port</li><li>`X-Forwarded-Proto` :记录负载均衡服务器与后端客户端之间采用的协议类型</li></ul> 
+certificate_id			| string 	| body | 否 | 证书 ID，protocol 为 terminated_https 时必传。
+
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+data		| SLBListenerInfo    | 负载均衡监听器信息
+
+## SLBListenerInfo 负载均衡监听器信息
+名称 | 类型 |  描述
+----- | ----- | -----
+load_balancer_id			| string  	| 负载均衡 ID
+enabled						| boolean 	| 启用状态：<ul><li>`true` : 已启用</li><li>`false` : 已停用</li></ul> 
+listener_id     			| string  	| 监听器 ID 
+listener_name            	| string  	| 名称
+description                 | string  	| 描述
+status   					| string  	| 状态：<ul><li>`active` : 正常的</li><li>`creating` : 创建中</li><li>`updating` :更新中</li><li>`deleting` : 删除中</li><li>`error` : 错误</li><li>`stopped` : 停止</li><li>`no_monitor` : 脱离监控</li></ul> 
+protocol                    | string 	| 监听协议：<ul><li>`tcp`</li><li>`udp`</li><li>`https` :tcp 转发实现</li><li>`http`</li><li>`sctp`</li><li>`terminated_https` : https 协议，创建时需绑定证书</li></ul> 
+listener_port              	| integer 	| 负载均衡实例前端使用的端口。取值：1-65535。
+connection_limit			| integer	| 最大连接数，默认值为 -1 ，表示无限连接
+timeout_client_data			| integer	| 前端客户端不活动超时，单位：秒，默认值：50
+timeout_member_connect		| integer	| 后端成员连接超时，单位：秒，默认值：5
+timeout_member_data			| integer	| 后端成员不活动超时，单位：秒，默认值：50
+timeout_tcp_inspect			| integer	| 等待 TCP 数据包检查超时，单位：秒，默认值：0
+persistence_timeout			| integer	| 会话保持的超时时间。取值：0-3600（秒）。默认值：0，表示关闭会话保持。
+established_timeout			| integer	| 连接超时时间。取值：10-900（秒）。 默认值: 900
+insert_headers			    | []string	| 请求发送到后端服务器时添加的请求头：<ul><li>`X-Forwarded-For` : 记录最初发起请求的客户端 IP</li><li>`X-Forwarded-Port` : 记录最初发起请求的客户端 Port</li><li>`X-Forwarded-Proto` :记录负载均衡服务器与后端客户端之间采用的协议类型</li></ul> 
+certificate_id			    | string	| 证书 ID
+pool_id			   			| string	| 资源池 ID
+pool_name			   		| string	| 资源池 Name
+created_at			   		| integer	| 创建时间，毫秒时间戳
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEujz9VdJz8kW",
+    "data":{
+        "load_balancer_id":"7ebe162e-3351-413b-a9c5-623291061b2f",
+        "listener_id":"9491a0a0-28f4-476f-a7f0-eb2b8a648b64",
+        "enabled":true,
+        "listener_name":"l-NUw33",
+        "description":"",
+        "status":"active",
+        "protocol":"tcp",
+        "listener_port":111,
+        "connection_limit":-1,
+        "timeout_client_data":50000,
+        "timeout_member_connect":5000,
+        "timeout_member_data":50000,
+        "timeout_tcp_inspect":0,
+        "persistence_timeout":null,
+        "established_timeout":null,
+        "insert_headers":[
+
+        ],
+        "certificate_id":"",
+        "pool_id":"",
+        "pool_name":"",
+        "created_at":1642064852000
+    }
+}
+```

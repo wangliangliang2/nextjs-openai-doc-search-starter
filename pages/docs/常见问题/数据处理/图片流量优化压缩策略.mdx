@@ -1,0 +1,37 @@
+ **我们通常都希望使用七牛提供的服务对自己的图片进行压缩，这样可以在加载图片的时候减少下载流量，下面介绍一些常见的对图片进行压缩的方法:**
+
+可以使用我们的图片处理接口：  
+[http://developer.qiniu.com/docs/v6/api/reference/fop/image/imagemogr2.html](http://developer.qiniu.com/docs/v6/api/reference/fop/image/imagemogr2.html)  
+[http://developer.qiniu.com/docs/v6/api/reference/fop/image/imageview2.html](http://developer.qiniu.com/docs/v6/api/reference/fop/image/imageview2.html)
+
+本例中用到的测试图片是：  
+[http://7xkr3o.com1.z0.glb.clouddn.com/testdemo.jpg](http://7xt44n.com2.z0.glb.qiniucdn.com/testdemo.jpg)  
+大小：1.7 MB 分辨率：width: 790,height: 2682
+
+**1.使用我们的 imageView2 或者 imageMogr2 接口改变图片的分辨率：**
+
+[http://7xkr3o.com1.z0.glb.clouddn.com/testdemo.jpg?imageMogr2/thumbnail/500x](http://7xt44n.com2.z0.glb.qiniucdn.com/testdemo.jpg?imageMogr2/thumbnail/500x)  
+大小：168 KB 分辨率: width: 500,height: 1697
+
+**2.如果视频有 exif 信息的话用 strip 去除视频元信息图片 size 会降低不少：**  
+可以查看图片的元信息：  
+[http://7xkr3o.com1.z0.glb.clouddn.com/testdemo.jpg?exif](http://7xkr3o.com1.z0.glb.clouddn.com/testdemo.jpg?exif)  
+[http://7xkr3o.com1.z0.glb.clouddn.com/testdemo.jpg?imageMogr2/strip](http://7xt44n.com2.z0.glb.qiniucdn.com/testdemo.jpg?imageMogr2/strip)  
+大小：360 KB 分辨率：width: 790,height: 2682
+
+**3.如果是 jpg 图片格式的话是可以通过降低图片的 quality 来改变图片的大小:**
+
+[http://7xkr3o.com1.z0.glb.clouddn.com/testdemo.jpg?imageMogr2/quality/50](http://7xt44n.com2.z0.glb.qiniucdn.com/testdemo.jpg?imageMogr2/quality/50)  
+大小：233 KB 分辨率：width: 790,height: 2682
+
+**4.可以通过转换图片的格式来达到改变图片的大小：**
+
+bmp 格式比 png 要大得多，而 png 可能比 jpg 又大得多，而 jpg 又可能比 google 最新推出的 webp 格式大得多  
+可以参考：  
+[http://blog.csdn.net/guoer9973/article/details/44345451](http://blog.csdn.net/guoer9973/article/details/44345451)
+
+**5.以上几种方式集成在一起效果会更好：**
+
+[http://7xkr3o.com1.z0.glb.clouddn.com/testdemo.jpg?imageMogr2/thumbnail/500x/strip/quality/50/format/webp](http://7xt44n.com2.z0.glb.qiniucdn.com/testdemo.jpg?imageMogr2/thumbnail/500x/strip/quality/50/format/webp)  
+大小：69 KB 分辨率：width: 790,height: 2682
+

@@ -1,0 +1,119 @@
+欢迎您使用七牛直播云构建直播类应用，通过本指南您将对一个直播类应用的基本架构有一个大概的了解，接着进行基本的技术选型，最后开始使用我们提供的 SDK 来使用七牛直播云。
+
+为了顺利接入七牛直播云服务，您需要有一个七牛开发者平台账号，并开通了直播云服务的使用权限。具体实现方法请查阅[控制台快速入门](/pili/manual/the-console-quick-start)。
+
+<a id="architecture"></a>
+# 产品架构
+
+直播类应用的基本架构图如下：
+
+![产品架构](https://dn-odum9helk.qbox.me/FnjQPTi0LdV4bpcG9BDhmKnjbUGr)
+
+主要分为四部分：
+
+- **业务服务器**<br>负责协调直播类应用的业务逻辑，包括但不限于：
+    - 创建直播房间
+    - 返回直播房间播放地址列表
+    - 关闭直播房间 
+- **LiveNet 实时流网络**<br>负责流媒体的分发、直播流的创建、查询等相关操作
+- **采集端**<br>负责采集和推送流媒体
+- **播放端**<br>负责拉取并播放流媒体
+
+<a id="service-realization"></a>
+# 业务实现
+
+<a id="push-logic"></a>
+## 采集端逻辑
+
+业务服务器和其中的业务逻辑需要您来实现，例如社交直播场景中，存在直播房间的概念，映射到实时流网络 (LiveNet)是直播流的概念。采集端的逻辑如下：
+
+![采集端的逻辑](https://dn-odum9helk.qbox.me/FjfmG_1G8jHczucHHY6mlDIl3JSw)
+
+1. 首先采集端向业务服务器发起创建房间的请求；
+2. 业务服务器通过 服务端 SDK 发起创建直播流的请求；
+3. 把返回的 JSON 返回给业务服务器，业务服务器返回给采集端并把播放地址记录在本地；
+4. 采集端获取到 JSON 后推流给 LiveNet，业务服务器不需要承担流媒体流量。
+
+其中返回的 JSON 类似：
+
+```
+{
+    "credentials": {
+        "accessKey": "<Your AK>",
+        "secretKey": "<Your SK>"
+    },
+    "id": "z1.wantplus-1.class-99",
+    "createdAt": "2016-08-24T06:23:33.474Z",
+    "updatedAt": "2016-08-24T06:23:33.474Z",
+    "title": "class-99",
+    "hub": "wantplus-1",
+    "publishKey": "a32498a5f43a7237",
+    "publishSecurity": "static",
+    "disabled": false,
+    "profiles": null,
+    "hosts": {
+        "publish": {
+            "rtmp": "pili-publish.wantplus.cn"
+        },
+        "live": {
+            "hdl": "pili-live-hdl.wantplus.cn",
+            "hls": "pili-live-hls.wantplus.cn",
+            "http": "pili-live-hls.wantplus.cn",
+            "rtmp": "pili-live-rtmp.wantplus.cn",
+            "snapshot": "pili-live-snapshot.wantplus.cn"
+        },
+        "playback": {
+            "hls": "100029c.playback1.z1.pili.qiniucdn.com",
+            "http": "100029c.playback1.z1.pili.qiniucdn.com"
+        },
+        "play": {
+            "http": "pili-live-hls.wantplus.cn",
+            "rtmp": "pili-live-rtmp.wantplus.cn"
+        }
+    }
+}
+```
+**注意：**以上返回的 JSON 格式仅作参考。
+
+<a id="play-logic"></a>
+## 播放端逻辑
+
+播放端的逻辑如下：
+![播放端的逻辑](https://dn-odum9helk.qbox.me/FmFs7SHPGu-e9kE2DDCrro-IZ2r-)
+
+1. 首先播放端对业务服务器发起查询房间列表请求，获取所有房间的播放地址；
+2. 播放端通过播放地址播放流媒体，业务服务器不需要承担流媒体流量。
+
+其中播放端从业务服务获取到的播放地址列表类似：
+
+```
+[
+    {
+        "publish": "rtmp://pili-publish.ps.qiniucdn.com/NIU7PS/class-7?key=bbc2d839fbeafa70",
+        "play": {
+            "ORIGIN": "rtmp://pili-live-rtmp.ps.qiniucdn.com/NIU7PS/class-7"
+        },
+        "id": "z1.NIU7PS.class-7",
+        "title": "class-7"
+    },
+    {
+        "publish": "rtmp://pili-publish.wantplus.cn/wantplus-1/class-1?key=0ec27ba231c0a90c",
+        "play": {
+            "ORIGIN": "rtmp://pili-live-rtmp.wantplus.cn/wantplus-1/class-1"
+        },
+        "id": "z1.wantplus-1.class-1",
+        "title": "class-1"
+    }
+]
+```
+**注意：**以上播放地址列表格式由您决定，数据存储在业务数据库，这里仅作参考。
+
+<a id="push-build"></a>
+## 采集端开发
+
+我们的推流 SDK 提供端到端的解决方案，快速实现推送的业务逻辑。您需要把推流 SDK 集成到产品中，并实现前面所描述的交互逻辑，具体接入方式请参考SDK栏目。
+
+<a id="play-build"></a>
+## 播放端开发
+
+我们的播放 SDK 提供端到端的解决方案，快速实现播放的业务逻辑。您需要把播放 SDK 集成到产品中，并实现前面描述的交互逻辑，具体接入方式请参考SDK栏目。

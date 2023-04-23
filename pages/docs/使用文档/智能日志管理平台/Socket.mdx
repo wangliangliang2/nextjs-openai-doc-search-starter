@@ -1,0 +1,58 @@
+以端口监听的方式接收并读取日志，主要支持 `tcp`,`udp`,`unix` 套接字这三大类协议。
+
+![](https://dn-odum9helk.qbox.me/Fhda-dakYfa6mOekCxSqnaBAjVor)
+
+# **基础配置信息** 
+
+  * socket 监听的地址(socket_service_address): 必填项，监听的 url 地址。协议和形式也可以多样化，包括：
+    * `tcp` 监听所有 tcp 协议的数据，如 `tcp://127.0.0.1:http`
+    * `tcp4` 仅监听 `ipv4` 地址传输的 `tcp` 协议数据，如`tcp4://:3110`
+    * `tcp6` 仅监听 `ipv6` 地址传输的 `tcp` 协议数据，如`tcp6://:3110` 或者 `tcp6://[2001:db8::1]:3110`
+    * `udp` 监听所有 `udp` 协议传输的数据，如`udp://:3110`
+    * `udp4` 仅监听 `ipv4` 地址传输的 `udp` 协议数据，如`udp4://:3110`
+    * `udp6` 仅监听 `ipv6` 地址传输的 `udp` 协议数据，如`udp6://:3110`
+    * `unix` 监听面向`字节流`的unix套接字的数据传输协议，如`unix:///tmp/sys.sock`
+    * `unixgram` 监听面向`报文`的unix套接字的数据传输协议，如`unixgram:///tmp/sys.sock`
+    * `unixpacket` 监听面向`数据包`的unix套接字的数据传输协议，如`unixpacket:///tmp/sys.sock`
+  
+# **高级选项**
+
+* 最大并发连接数(`socket_max_connections`): 使用 TCP 协议时最大并发连接数， 设置 `0` 为无限制, `默认无限制`。
+
+* 编码方式(`encoding`)：读取日志文件的编码方式，默认为 `utf-8`，即按照 `utf-8` 的编码方式读取文件。支持读取文件的编码格式包括：`UTF-16`，`GB18030`，`GBK(GB2312可使用GBK编码)`，`cp51932`，`windows-51932`，`EUC-JP`，`EUC-KR`，`ISO-2022-JP`，`Shift_JIS`，`TCVN3` 及其相关国际化通用别名。
+
+* 连接超时时间(`socket_read_timeout`): 面向字节流的 Socket 连接读取的超时时间(tcp\unix)，设置 `0` 为不超时，`默认为不超时`，填写格式可以包含单位秒(s)、分(m)、时(h)，如 3s(3秒) 1m(1分钟)等等。
+  
+* 是否按行分隔内容(`socket_split_by_line`): 对socket请求中有换行符的内容是否按换行符进行分隔处理，`默认不分隔`。  
+  
+* 获取方式(`socket_rule`): 可以选择三种方式，分别为 按接受到的数据包读取、按换行符分隔读取、按json格式读取。
+
+* 连接缓存大小(`socket_read_buffer_size`): 读取数据的 Buffer 大小，`默认设置为 65535`。
+
+* 连接保持时长(`socket_keep_alive_period`): TCP 连接的 `keep_alive` 时间，设置为 `0` 表示关闭 keep_alive ，填写格式可以包含单位秒(`s`)、分(`m`)、时(`h`)，如`3s`(3秒) `1m`(1分钟)等等。
+
+# **Socket Reader 读取Syslog数据**
+
+参考[syslog 日志采集 场景实践](/insight/manual/4678/syslog-scene)
+
+### **Socket Reader 读取 Java Logback 框架数据**
+
+对于 logback 的日志数据接入到logkit需要进行如下配置：
+在logback配置文件中需要新加一个类型为syslog的appender，示例配置如下,请按您实际情况修改：
+
+```
+ <appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
+        <syslogHost>127.0.0.1</syslogHost>
+        <port>514</port>
+        <facility>AUTH</facility>
+        <suffixPattern>[%thread] %logger %msg</suffixPattern>
+    </appender>
+```
+
+其中`<syslogHost></syslogHost>` 内填写日志数据需要发往的主机名或IP地址，`<port></port>` 内填写日志数据需要发往端口号，`<suffixPattern></suffixPattern>` 内则填写发送日志数据的格式。
+
+`完成上述配置后不要忘记在<root></root>标签内添加当前appender的引用`。
+
+在logkit端选用socket reader，`选用udp协议`，并填写上述配置文件中的主机名和端口号。即可接收logback的日志数据。示例配置如下：
+
+![](https://dn-odum9helk.qbox.me/FkJ8XcnyDzeu6Pl4G4E9cTIwB-uw)

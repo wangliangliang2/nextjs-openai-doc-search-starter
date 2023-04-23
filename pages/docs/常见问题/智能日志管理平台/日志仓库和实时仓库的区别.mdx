@@ -1,0 +1,10 @@
+**实时仓库**是实时数据进入智能日志平台的源头，无论是使用 API、传文件，还是使用专业的数据收集工具 logkit-pro 上传的实时数据，都会首先进入到实时仓库。您可以对进入实时仓库的日志进行实时滚动输出，支持字段过滤。
+
+需要注意的是：实时仓库中的每一条数据只被保存 2 天时间，超过时间后自动删除。
+
+![](https://pandora-kibana.qiniu.com/realtime/realtime_output.png)
+
+除了实时仓库以外，我们提供**日志仓库**来存储大量的日志。您可以选择数据存储时限，允许永久存储。您可以对存储在日志仓库中的数据选择指定之间范围进行搜索分析，支持字段过滤、 Lucene [搜索语法](/insight/manual/4871/search-syntax)、[上下文搜索](/insight/manual/4870/context-query)、[告警](/insight/manual/4631/warning)、[分析可视化](/insight/manual/4692/reports-and-dashboards)等。
+
+![](https://pandora-kibana.qiniu.com/log_warehouse.png)
+

@@ -1,0 +1,48 @@
+# **描述**
+
+本接口用于信令透传，用户可以同设备侧实现一些私有定制化的信令。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/devices/{gbId}/sipraw`
+
+# **请求参数**
+
+**路径参数**
+
+| 参数名称    | 必填 | 字段类型 | 说明       |
+| ----------- | ---- | -------- | ---------- |
+| namespaceId | 是   | string   | 空间Id     |
+| gbId        | 是   | string   | 设备国标Id |
+
+**Body**
+
+| 参数名称 | 必填 | 字段类型 | 说明              |
+| -------- | ---- | -------- | ----------------- |
+| msg      | 是   | string   | 透传给设备的信令，可以是任意字符串 |
+
+# **响应参数**
+
+200
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarvzvyijd/devices/31011500991320000028/sipraw \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json'
+  --data-raw '{
+    "msg":"MESSAGE sip:31011500991320000815@3101150000 SIP/2.0\r\nVia: SIP/2.0/UDP 127.0.0.1:5061;rport;branch=QvsGbB90055266\r\nFrom: <sip:31011500002000000001@127.0.0.1:5061>;tag=QvsGbF17394556\r\nTo: <sip:31011500991320000815@3101150000>\r\nCall-ID: 202076370427\r\nCSeq: 1618 MESSAGE\r\nContent-Type: Application/MANSCDP+xml\r\nMax-Forwards: 70\r\nUser-Agent: QVS/2.0.0(Lion)\r\nContent-Length: 149\r\n\r\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<Query>\r\n<CmdType>Catalog</CmdType>\r\n<SN>11112222</SN>\r\n<DeviceID>31011500991320000815</DeviceID>\r\n</Query>\r\n"
+}'
+```
+
+**响应示例**
+
+```
+{
+  "code": 200
+}
+```

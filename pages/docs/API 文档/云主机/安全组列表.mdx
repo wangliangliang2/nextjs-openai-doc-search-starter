@@ -1,0 +1,160 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `GET` /v1/vm/sgr
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+region_id           | string  | query | 否 | 地域 ID。
+security_group_id   | string  | query | 否 | 安全组 ID
+security_group_name | string  | query | 否 | 安全组名称
+vpc_id              | string  | query | 否 | VPC ID
+page                | integer | query | 否 | 页码。默认：1
+size                | integer | query | 否 | 分页大小，最大100。默认20
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID
+page       | integer | 页码
+size       | integer | 分页大小
+total      | integer | 安全组总量
+data       | \[]SecurityGroup | 安全组列表
+
+### SecurityGroup
+<table class="table-fields">
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>
+        <p>地域 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>security_group_id</td>
+      <td>string</td>
+      <td>
+        <p>安全组 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>security_group_name</td>
+      <td>string</td>
+      <td>
+        <p>安全组名称</p>
+      </td>
+    </tr>
+    <tr>
+      <td>description</td>
+      <td>string</td>
+      <td>
+        <p>安全组描述信息</p>
+      </td>
+    </tr>
+    <tr>
+      <td>vpc_id</td>
+      <td>string</td>
+      <td>
+        <p>VPC ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>vpc_name</td>
+      <td>string</td>
+      <td>
+        <p>VPC 名称</p>
+      </td>
+    </tr>
+    <tr>
+      <td>client_token</td>
+      <td>string</td>
+      <td>
+        <p>保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>is_default</td>
+      <td>boolean</td>
+      <td>
+        <p>是否为默认安全组，只在新建的时候插入该字段</p>
+      </td>
+    </tr>
+    <tr>
+      <td>inner_access_policy</td>
+      <td>string</td>
+      <td>
+        <p>安全组内的 ECS 实例之间的内网连通策略。</p>
+        <p>取值范围（取值不区分大小写）：</p>
+        <ul>
+          <li><code>Accept</code>：互通</li>
+          <li><code>Drop</code>：隔离</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>created_at</td>
+      <td>string</td>
+      <td>
+        <p>创建时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>updated_at</td>
+      <td>string</td>
+      <td>
+        <p>更新时间</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+## 返回值示例
+```json
+{
+  "data": [
+    {
+      "region_id": "grand-cn-north-4",
+      "security_group_name": "sgr-default",
+      "description": "System create default securityGroup",
+      "vpc_id": "76b39642-dbdd-4e41-8",
+      "vpc_name": "vpc-default",
+      "client_token": "",
+      "security_group_id": "c2e848ce-ba9c-41b0",
+      "is_default": true,
+      "inner_access_policy": "Accept",
+      "updated_at": "2020-12-01T15:04:55.425+08:00",
+      "created_at": "2020-12-01T15:04:54.913+08:00"
+    },
+    {
+      "region_id": "cn-zhangjiakou",
+      "security_group_name": "sgr-default",
+      "description": "System create default securityGroup",
+      "vpc_id": "vpc-8vb6e",
+      "vpc_name": "vpc-default",
+      "client_token": "",
+      "security_group_id": "sg-8v",
+      "is_default": true,
+      "inner_access_policy": "Accept",
+      "updated_at": "2020-11-10T14:37:57.044+08:00",
+      "created_at": "2020-11-10T14:37:56.877+08:00"
+    }
+  ],
+  "page": 1,
+  "size": 10,
+  "total": 2,
+  "request_id": "ScKvEW-d8GroiVMW"
+}
+```

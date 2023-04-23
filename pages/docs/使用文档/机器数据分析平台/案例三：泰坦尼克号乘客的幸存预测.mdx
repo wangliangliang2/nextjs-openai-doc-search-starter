@@ -1,0 +1,170 @@
+# 案例三：泰坦尼克号乘客的幸存预测
+
+# 背景介绍
+
+## 数据来源
+
+泰坦尼克号是当年世界上体积最庞大、内部设施最豪华的客运轮船，有“永不沉没”的美誉。1912年4月15日，它在首次航行期间，撞上冰山后沉没，众多名乘客和机组人员中大约有三分之二以上的人遇难。这场悲剧震撼了国际社会，直接促进了更好船舶安全条例的诞生。
+
+该数据集就是来自网络上流传的有关泰坦尼克号乘客生存记录的一个版本，已经成为很多人在机器学习领域使用的经典测试案例，用来构建包含年龄、性别、船舱等特征的预测乘客是否幸存的模型。
+
+最初的源数据已被清洁、整理并拆分为titanic_train.csv（891条记录）和titanic_test.csv（418条记录）两个文件。
+
+数据集下载链接如下：
+
+<http://pw7x36qrk.bkt.clouddn.com/Titanic_train.csv>
+
+<http://pw7x36qrk.bkt.clouddn.com/Titanic_test.csv>
+
+字段含义
+
+| **特征变量名称**  | **特征变量含义**                 |
+|------------------|----------------------------------|
+| sex              | 乘客的性别                       |
+| age              | 乘客的年龄                       |
+| parch            | 与乘客同行的父母和子女的数量     |
+| sibsp            | 与乘客同行的兄弟姐妹和配偶的数量 |
+| familysize       | 与乘客同行的家庭成员的总数量     |
+| title            | 乘客的称谓（如先生、女士等）     |
+| pclass           | 乘客所持船票的等级               |
+| cabin            | 乘客所在的船舱                   |
+| fare             | 乘客所持船票的价格               |
+| embark           | 乘客登船的港口                   |
+| **目标变量名称** | **目标变量含义**                 |
+| survival         | 0（遇难）                        |
+|                  | 1（幸存）                        |
+
+# 数据预处理
+
+## 数据质量检查
+
+已完成，此处不考虑。
+
+## 数据清洗
+
+已完成，此处不考虑。
+
+## 特征选择
+
+由于该数据集中的字段都有预测意义，但title与sex的相关性较强，
+parch、sibsp与familysize的相关性较强，因此我们会剔除title和parch、sibsp这三个字段，其他字段全部投入使用。
+
+# 建模
+
+## 算法选择
+
+因为预测值（乘客是否幸存）为离散型数据，且问题的目的是判断某个乘客属于哪一种类型，我们可以选择使用**分类模型**来拟合数据。其中我们将采用准确率和训练速度都很突出的一种算法，即**随机森林（Random Forest）**。
+
+## 拆分数据集
+
+已完成，训练集使用titanic_train.csv，测试集使用titanic_test.csv，分别将其导[](http://)入平台，并存为同名的数据集。
+
+## 训练模型
+
+在机器学习APP内，我们选定作为训练的子集之后，用fit算子训练线性回归模型,
+并将该模型保存到模型库。同时，会产出该模型在训练集上的预测结果：
+
+```
+| from dataset: titanic_train
+| fit RandomForestClassifier survival from sex age familysize pclass fare
+embark into titanicRF
+```
+
+![](https://dn-odum9helk.qbox.me/Fi_Pb17oiJf0qq_PzWCo9R6xeFBP)
+
+# 预测结果
+
+## 模型预测
+
+在机器学习APP内，我们可以用apply算子将刚刚保存的titanicRF模型应用到目标测试库，并产生该模型在测试集上的预测结果：
+
+```
+| from dataset: titanic_test
+| apply titanicRF
+```
+
+![](https://dn-odum9helk.qbox.me/FrjPcp00fuGJDsIGlu0mp7RDdbOA)
+
+
+## 模型效果评估（AUC值）
+
+首先，我们可以通过score算子计算预测结果的AUC值来评估模型的训练效果。AUC值在[0,1]之间波动，其值越大，表明模型效果越好。
+
+训练集
+
+```
+| from dataset: titanic_train
+| fit RandomForestClassifier survival from sex age familysize pclass fare
+embark into titanicRF
+| score roc_auc_score survival against predicted_survival
+```
+
+![](https://dn-odum9helk.qbox.me/FnXHKJ_fv0vqSSSJlzdLaBuHEStC)
+
+测试集
+
+```
+| from dataset: titanic_test
+| apply titanicRF
+| score roc_auc_score survival against predicted_survival
+```
+
+![](https://dn-odum9helk.qbox.me/Fm4bYGdJqvOFvzZ_IsWQ2Ja7gV5U)
+
+
+## 模型效果评估（混淆矩阵）
+
+接着，我们可以通过score算子产生混淆矩阵的方法来评估模型的训练效果。其中，在正向对角线上的数据量越多，其他位置的数据量越少，证明判断准确的数据越多。
+
+训练集
+
+```
+| from dataset: titanic_train
+| fit RandomForestClassifier survival from sex age familysize pclass fare
+embark into titanicRF
+| score confusion_matrix survival against predicted_survival
+```
+
+![](https://dn-odum9helk.qbox.me/FvIy-0y1fa8vM86gudWVSdboaOEC)
+
+测试集
+
+```
+| from dataset: titanic_test
+| apply titanicRF
+| score accuracy_score survival against predicted_survival
+| score confusion_matrix survival against predicted_survival
+```
+
+![](https://dn-odum9helk.qbox.me/FgRgW8_HUkc3IHk_pPL7p_lOljLq)
+
+
+## 模型效果评估（准确性）
+
+再次，我们可以通过score算子计算预测的准确性来评估模型的训练效果。准确性的值在[0,1]之间波动，其值越大，表明模型效果越好。
+
+训练集
+
+```
+| from dataset: titanic_train
+| fit RandomForestClassifier survival from sex age familysize pclass fare
+embark into titanicRF
+| score accuracy_score survival against predicted_survival
+```
+
+![](https://dn-odum9helk.qbox.me/FomxW4Ut_ZzLdgIfZWXDWdJxX5Di)
+
+测试集
+
+```
+| from dataset: titanic_test
+| apply titanicRF
+| score accuracy_score survival against predicted_survival
+```
+
+![](https://dn-odum9helk.qbox.me/Ft28qUDbg8LNqfwBbM9iRkcRTVnI)
+
+
+综合以上训练集和测试集的AUC值、混淆矩阵和准确性结果，我们不难发现通过机器学习得到的模型在在测试集上的表现明显不如其在训练集上的表现。如果我们对模型预测质量的有较高的要求，可以通过重新划分数据集、选择新特征、更换算法等方法来进行模型优化。
+
+此外，我们还可以用score算子来计算Precision（精确率）、Recall（召回率）、F1-score（F1值）和ROC-Curve（ROC曲线）等二分类模型的常用结果，以便更全面地评估模型的训练效果。

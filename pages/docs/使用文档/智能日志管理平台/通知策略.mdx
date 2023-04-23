@@ -1,0 +1,248 @@
+告警规则触发后，告警平台将产生一条新的告警事件，同时根据（告警事件所属的）[告警服务](/insight/manual/5464/alert-service)里配置的`通知策略`发送告警通知，本教程讲解通知策略的使用。
+
+进入[服务管理](https://portal.qiniu.com/insight/nb/alert/service/manage) tab，切换至服务配置页面，您可以看到通知策略的管理列表。
+
+![](https://pandora-kibana.qiniu.com/alert/noticification_strategy1.png)
+
+# **创建通知策略**
+
+通知策略可被应用于告警服务，当告警规则触发产生告警事件时，智能告警平台将根据告警事件所属[告警服务](/insight/manual/5464/alert-service)指定的通知策略发送告警通知。创建通知策略步骤如下：
+
+1.选择告警事件触发时通知的人或组，并勾选通知方式。
+
+`注意：`若所选择的通知人/组没有填写您选择的联系方式，通知人将无法收到通知。
+
+同时可直接在此创建通知人。
+
+2.可添加候选策略。如：告警事件触发后 5 分钟内无人接手，则发送告警通知给候选策略的通知人。
+
+3.可开启轮询策略。若告警事件一直无人接手，可根据设置的轮询次数轮询通知。
+
+4.可开启事件接手通知和事件解决通知。
+
+![](https://pandora-kibana.qiniu.com/alert/create_noticification_strategy1.png)
+
+# **添加通知人**
+
+在[通知方式管理](https://portal.qiniu.com/insight/nb/alert/notice) tab，点击右上角`新建通知人`按钮，填写通知人的名称和通知方式。智能告警服务支持`邮箱`、`短信`、`企业微信`、`HTTP 接口回调`、`钉钉`五种通知方式。
+
+![](https://pandora-kibana.qiniu.com/alert/noticification_method.png)
+
+* 1.对于邮箱通知方式，您可以选择自己的 SMTP 服务，在`其他通知配置`里配置即可。也可使用默认的七牛 SMTP。
+
+![](https://pandora-kibana.qiniu.com/alert/advanced_setting.png)
+
+* 2.对于企业微信，您可以在`其他通知配置`里配置企业微信的应用信息。如图，配置企业微信需要填写企业微信的配置名称、企业 ID、应用 ID、应用秘钥，获取方式如下：
+
+* 2.1. 注册企业微信获取企业 ID(corpid)：
+
+ 注册链接：<https://work.weixin.qq.com/wework_admin/register_wx>
+	 
+ 点击链接注册企业微信，填好下列信息。
+
+![](https://dn-odum9helk.qbox.me/FgATaOanUdezl22XWjw-M8Flefea)
+
+   注册好后在管理后台“我的企业”－“企业信息”下查看**企业 ID**（需要有管理员权限）。
+
+![](https://dn-odum9helk.qbox.me/FvE47gYMSdNNHP3ycuthTOO1cZ0j)
+
+* 2.2. 创建应用，获取应用 ID(AgentId) 以及秘钥(Secret)：
+
+ 点击进入应用与小程序。
+
+![](https://dn-odum9helk.qbox.me/FlC5m4QIAoZY4eXJC4XiXlbQj0kb)
+	
+在**应用**一栏里点击**创建应用。**
+
+![](https://dn-odum9helk.qbox.me/FokB88XIPX9494R-ZFt0iMpXEqYX)
+
+填好应用基本信息，注意选择好可见范围**为公司根部门**
+
+![](https://dn-odum9helk.qbox.me/Fu5x1HeTEiKjBwGIOGfY3H-wSpVD)
+
+点击**创建应用**即创建成功，即可看到该应用对应的 **Secret** 及 **AgentId**。请留意 **Secret** 参数，后面有用到，不再赘述。
+
+![](https://dn-odum9helk.qbox.me/FuZBsQ56dkXskMb6y5saahvEZ1Ac)
+	
+* 2.3. 创建群聊获取群聊 ID(chatid)：
+
+ 企业微信创建群聊有一个限制，通过客户端创建的群聊即使是管理员账号也无法获取它的群聊 id，这意味着我们之前通过客户端创建的群聊都无法接入自建应用发送消息，因此，这里我们首先要做的就是通过调用接口新建一个群聊。只要两个 curl 命令即可，步骤及命令如下：
+	* 获取token
+	
+	```
+	curl -XGET https://qyapi.weixin.qq.com/cgi-bin/gettoken\?corpid\=wwde7de534ea0085bf\&corpsecret\=eT3KaFIyn7egjsCe2b0QIX6yPF_7-KO29tBYVoX1GoE
+	```
+这里需要两个参数 corpid ，corpsecret。分别对应的是企业 Id，企业应用 Secret，上面均有介绍。
+返回内容如下，其中 access_token 我们后面要用到：
+
+	```
+   {
+		"access_token":"ZphmO1UJz4c1lj7Fr8JU_qs16EL1Utxaas01cHJJrXTkLYZm4lTCC",
+		"expires_in":7200,
+		"errcode":0,
+		"errmsg":"ok",
+   }
+   ```
+	 
+	*  新建群聊，获取群聊 Id
+
+	```
+   curl -XPOST https://qyapi.weixin.qq.com/cgi-bin/appchat/create\?access_token\=ZphmO1UJz4c1lj7Fr8JU_qs16EL1Utxaas01cHJJrXTkLYZm4lTCC -d '{"name":"chatName","owner":"mrLee","userlist":["mrLee","mrLiu"]}'
+   ```
+	 
+	这里 access_token 为上一步获取的，name 为群聊名称，owner 为群主，userlist 为群聊成员，必须大于等于两人，建议就填两人，群聊创建后可以客户端可以继续添加。
+	返回内容如下：
+	```
+   {
+		"errcode":0,
+		"errmsg":"ok",
+		"chatid":"12659900028568218222"
+   }
+   ```
+	
+	至此，群聊创建完毕，拿到群聊 Id(chatid)，这是群的唯一标识，后面要用到。
+	
+	2.4.获取用户 ID(userid)
+	
+	每个成员都有唯一的 userid，即所谓“帐号”。在管理后台->“通讯录”->点进某个成员的详情页，可以看到。
+	
+	2.5.获取标签 ID(tagid)
+	
+	每个标签都有唯一的标签id，在管理后台->“通讯录”->“标签”，选中某个标签，在右上角会有“标签详情”按钮，点击即可看到。
+	
+	2.6.获取部门 ID(partyid)
+	
+	每个部门都有唯一的id，在管理后台->“通讯录”->“组织架构”->点击某个部门右边的小圆点可以看到
+	
+关于企业微信的更多使用说明，可阅读官方文档 [https://work.weixin.qq.com/api/doc#90000/90135/90665](https://work.weixin.qq.com/api/doc#90000/90135/90665)。
+
+获取到上述信息后，在企业微信配置里填写相关的配置信息。并在企业微信通知方式里选择创建好的配置名称，输入用户/部门/标签/群组 ID 即可。
+
+* 3.HTTP 接口回调：添加能接受请求的地址，智能告警平台会发送告警内容到该地址，提醒您日志出现异常。同时可以在 HTTP 请求中增加自定义的 Header，用来完成例如鉴权等多种高级需求。请求方式为 HTTP POST 请求，请求体格式如下：
+
+```
+{
+	"alert": "alert",  // alert 名字
+	"time": "2018-03-06 14:15:52",  // 报警时间
+	"metrics": [{
+		"buckets": { // 每个分组的详细信息
+			"groupId": "分组1"  // groupId 字段为 分组1 
+		},
+		"value": 137543.0, // 分组的统计值
+		"abnormal": true   // 是否出现异常，true为异常，false为正常
+	}, {
+		"buckets": {
+			"groupId": "分组2"
+		},
+		"value": 69610.0,
+		"abnormal": true
+	}]
+}
+```
+
+注意：由于在创建通知策略的时候需要选择具体的某种通知方式，这里我们建议用户尽可能每种通知方式都填写，避免某个用户由于没有填写在通知策略里选择的通知方式而收不到告警通知的情况。
+
+* 4.钉钉（仅在私有云支持）:通过钉钉方式通知，您需要填写钉钉的应用信息，选择给用户、群组还是部门发通知，以及对应的 id 信息。钉钉的应用信息在`其他通知配置`里配置。如图，配置企业微信需要填写配置名称、应用 ID、应用 key、应用秘钥，获取方式如下：
+
+![](https://pandora-kibana.qiniu.com/dingding_config.png)
+
+  * 4.1 注册钉钉并创建应用获取应用ID
+
+     注册链接： [https://oa.dingtalk.com/register.html](https://oa.dingtalk.com/register.html)
+		 
+	点击链接注册钉钉，填写下列信息。
+		 
+	![](https://pandora-kibana.qiniu.com/dingding_register.png)
+		 
+* 4.2 注册之后进入工作台，点击自建应用跳转到开发者后台创建应用。
+		 
+	![](https://pandora-kibana.qiniu.com/dingding_workbench.png)
+	
+	填写应用基本信息，选择“企业内部自主开发”。
+	
+	![](https://pandora-kibana.qiniu.com/dingding_createApp.png)
+	
+	选择“开发应用”这个开发模式，输入服务端出口IP等信息，完成创建应用步骤。
+	
+	![](https://pandora-kibana.qiniu.com/dingding_createApp2.png)
+	
+	登入钉钉管理后台，点击“工作台”，找到您的应用，点击“设置”按钮。
+	
+	![](https://pandora-kibana.qiniu.com/dingding_setting.png)
+	
+	页面会跳转到开发者后台的应用详情页，点击“查看详情”，可以找到 AgentID(应用 ID)、appKey（应用 key） 和 appSecret(应用秘钥)。
+	
+	![](https://pandora-kibana.qiniu.com/dingding_appDetail.png)
+	
+	![](https://pandora-kibana.qiniu.com/dingding_information.png)
+	
+	至此，您已经获取到了配置钉钉需填写的应用信息。下面我们介绍如何获取 chatid、userid、deptid。
+	
+* 4.3 获取 token（获取 chatid 需要用到）
+
+   ```
+	 curl -XGET https://oapi.dingtalk.com/gettoken?appkey=key&appsecret=secret
+	 ```
+
+   这里需要两个参数 appkey ，appsecret，在上一步已经获取到了。
+
+   返回内容示例：
+
+   ```
+{
+    "errcode": 0,
+    "errmsg": "ok",
+    "access_token": "fw8ef8we8f76e6f7s8df8s"
+}
+```
+
+ 其中 access_token 我们后面要用到。
+
+ > 注意：正常情况下access_token有效期为7200秒，有效期内重复获取返回相同结果，并自动续期。
+
+
+
+  * 4.4 创建群聊，获取 chatid。步骤及命令如下：
+
+   ```
+	curl -XPOST https://oapi.dingtalk.com/chat/create?access_token=ACCESS_TOKEN -d  '{"name":"groupName","owner":"zhangsan","userlist":["zhangsan","lisi"]}'
+	```
+	
+	这里 access_token 为上一步获取的，name 为群聊名称，owner 为群主，userlist 为群聊成员，必须大于等于两人。建议就填两人，群聊创建后可以客户端可以继续添加。
+	
+	返回内容如下：
+	
+	```
+	{
+    "errcode": 0,
+    "errmsg": "ok",
+    "chatid": "chatxxxxxxxxxxxxxxxxxxx",
+    "conversationTag": 2
+}
+```
+
+ 至此，群聊创建完毕，拿到群聊 Id(chatid)。
+
+* 4.5 获取 userid。
+
+ 每个成员都有唯一的 userid。在管理后台->“通讯录”->点进某个成员的详情页，可以看到。
+
+![](https://pandora-kibana.qiniu.com/dingding_userid.png)
+	 
+  * 4.6 获取 deptid。
+
+ 每个部门都有唯一的id，在管理后台->“通讯录”->“部门管理”->点击编辑部门可看到部门 ID。
+
+获取到上述信息后，在企业微信通知方式里选择创建好的应用名称，输入用户/部门/群组 ID 即可。
+
+![](https://pandora-kibana.qiniu.com/dingding_deptid.png)
+
+# **添加通知组**
+
+添加多个通知人到通知组，方便告警触发时批量发送告警通知。
+
+
+
+
+
+

@@ -1,0 +1,52 @@
+# 接口描述
+
+点播域名用于访问直播空间对应的存储空间中的内容，例如回放、截图文件
+
+请在相应存储空间配置好可用域名后，将其绑定到直播空间。若未正确配置点播域名，可能无法正常使用回放录制、保存截图等功能
+
+# 请求参数
+
+```
+POST /v2/hubs/<hub>/voddomain
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/json 
+
+{
+    "vodDomain":"<vodDomain>"
+}
+```
+
+|      参数          |      类型          |  必填   |                 描述                      |
+| -------------------- | -------------------- | ----------- | ------------------------------------------ |
+|       Hub           |    string           | 是   |            直播空间名                                |
+| vodDomain           |    string           | 是   |                点播域名                            |
+
+# 返回数据
+
+空
+
+# 示例
+
+请求体:
+
+```
+POST /v2/hubs/testhub/voddomain HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/json 
+
+{
+    "vodDomain":"pili-vod.testhub.cloudvdn.com"
+}
+```
+
+返回体:
+
+```
+200 OK
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

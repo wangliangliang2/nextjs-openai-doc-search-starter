@@ -1,0 +1,35 @@
+# **描述**
+本接口用于查询域名相关信息(cname，时间戳防盗链，https配置)。涉及域名的API，仅适用于空间模式为“静态地址”的空间。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/domains/{domain}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间名称ID
+|domain|是|string|域名
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|domain|Object|域名信息
+|domain.domain|string|域名
+|domain.type|string|域名类型 "publishRtmp":rtmp推流, "liveRtmp": rtmp播放, "liveHls": HLS, "liveHdl": HDL	
+|domain.cname|integer|cname
+|domain.state|integer|0: 未配置CNAME，1: 可用，2: 不可用
+|domain.isDefault|boolean|是否默认域名
+|domain.createdAt|integer|创建时间
+|domain.playSecurity|object|时间戳防盗链
+|domain.playSecurity.open|boolean|时间戳防盗链开关
+|domain.playSecurity.primary|string|主KEY
+|domain.playSecurity.secondary|string|备用KEY
+|domain.httpsSwitch|object|https开关
+|domain.httpsSwitch.certid|string|证书id
+|domain.httpsSwitch.httpsOpen|boolean|https开关
+
+

@@ -1,0 +1,10 @@
+七牛目前有三种凭证：[上传凭证](/kodo/manual/upload-token)、[下载凭证](/kodo/manual/download-token)、[管理凭证](/kodo/manual/access-token)。
+
+其中：
+
+- 上传凭证和下载凭证的算法均包含过期时间，过期时间在签名时指定。
+- 管理凭证是根据请求内容签出的，没有过期时间。
+- 服务端验证过期时间使用的是[Unix时间戳](/kodo/glossary/u#unixtime)。如果出现 token 意外超时，优先确认是不是过期时间使用了 Unix 时间戳造成的。
+
+
+

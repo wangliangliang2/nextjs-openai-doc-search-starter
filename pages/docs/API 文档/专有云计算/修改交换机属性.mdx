@@ -1,0 +1,34 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `PUT` /api/rio/v1/network/vpc/:id/vswitch/:vswitch_id/modify
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id              | string | header | 是 | 地域 ID
+id             | string | path | 是 | 专有网络 ID
+vswitch_id     | string | path | 是 | 交换机 ID
+vswitch_name           | string | body | 否 | 交换机名称
+description            | string | body | 否 | 交换机描述
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+
+## 请求示例
+```json
+{
+    "vswitch_name":"S-9XhIA",
+    "description":"测试专用"
+}
+```
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEhb-j5IKyMkW",
+}
+```

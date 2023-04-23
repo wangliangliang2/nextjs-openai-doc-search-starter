@@ -1,0 +1,34 @@
+在七牛申请 ssl 证书，申请失败的订单，可以将鼠标放在订单状态后的圆形提示图表，看到失败原因的简短说明：  
+![](https://dn-odum9helk.qbox.me/Fn3Qv5EcV2mLPQla0v6hQQdGbMEN)  
+若提示 “CA 审核不通过” 最有可能是由于您的域名中包含 CA 所不允许的某些敏感词，而敏感词列表，CA 并未透露给七牛。  
+根据以往经验，我们总结了一些会导致审核失败的敏感词:    
+* live（不包含 .live 顶级域名）
+* bank
+* banc
+* ban.c
+* alpha
+* test
+* example
+* credit
+* 内、外网IP地址
+* 主机名
+* pw（包含 .pw 顶级域名）
+* apple
+* ebay
+* trust
+* root
+* amazon
+* android
+* visa
+* google
+* discover
+* financial
+* wordpress
+* pal
+* hp
+* lv
+* free  
+
+根据 CA 中心的建议，出现这种情况可以选择：  
+* 使用不含以上敏感词的域名绑定免费证书  
+* 购买付费性数字证书来绑定域名  

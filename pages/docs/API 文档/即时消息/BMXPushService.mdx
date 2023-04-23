@@ -1,0 +1,819 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>class im.floo.floolib.BMXPushService</p>
+                <p></p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">字段</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#swigCMemOwn`)'>swigCMemOwn</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getCPtr`)'>getCPtr</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#finalize`)'>finalize</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#delete`)'>delete</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#start`)'>start</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#start`)'>start</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#start`)'>start</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#stop`)'>stop</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#resume`)'>resume</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#unbindAlias`)'>unbindAlias</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getToken`)'>getToken</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getCert`)'>getCert</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#status`)'>status</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#bindDeviceToken`)'>bindDeviceToken</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#bindVoipToken`)'>bindVoipToken</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getPushProfile`)'>getPushProfile</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setTags`)'>setTags</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getTags`)'>getTags</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#deleteTags`)'>deleteTags</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#clearTags`)'>clearTags</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setBadge`)'>setBadge</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPushMode`)'>setPushMode</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPushMode`)'>setPushMode</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPushTime`)'>setPushTime</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setSilenceTime`)'>setSilenceTime</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setRunBackgroundMode`)'>setRunBackgroundMode</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setRunBackgroundMode`)'>setRunBackgroundMode</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setGeoFenceMode`)'>setGeoFenceMode</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setGeoFenceMode`)'>setGeoFenceMode</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setGeoFenceMode`)'>setGeoFenceMode</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#clearNotification`)'>clearNotification</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#clearAllNotifications`)'>clearAllNotifications</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#sendMessage`)'>sendMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#loadLocalPushMessages`)'>loadLocalPushMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#loadLocalPushMessages`)'>loadLocalPushMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#addPushListener`)'>addPushListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#removePushListener`)'>removePushListener</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">字段</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="swigCMemOwn">swigCMemOwn</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">protected transient boolean swigCMemOwn</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getCPtr">getCPtr</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+protected static long getCPtr(BMXPushService obj);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="finalize">finalize</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+protected void finalize();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="delete">delete</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public synchronized void delete();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="start">start</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode start(String alias, String bmxToken);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>初始化推送sdk。在仅使用推送的情况下使用该接口初始化推送sdk。在同时使用IM功能的时候直接在BMXClient调用登陆功能即可。config对象初始化的时候需要传入平台类型和设备id。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            alias: String
+        </div>
+                <p>推送初始化使用的当前用户别名</p>
+    </li>
+    <li>
+        <div>
+            bmxToken: String
+        </div>
+                <p>推送初始化的时候App传入的使用的用户的token，无用户的状态下不传入即可。</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="start">start</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode start(String alias);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="start">start</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode start();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="stop">stop</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode stop();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>停止推送功能接口。</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="resume">resume</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode resume();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>恢复推送功能接口。</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="unbindAlias">unbindAlias</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode unbindAlias(String alias);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>解除用户别名绑定。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            alias: String
+        </div>
+                <p>需要解除绑定的用户别名。</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getToken">getToken</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String getToken();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取登陆后使用的用户token。</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getCert">getCert</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String getCert();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取登陆后服务器返回的推送证书。</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="status">status</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXPushService.PushSdkStatus status();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>推送sdk当前的状态。</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>PushSdkStatus</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="bindDeviceToken">bindDeviceToken</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode bindDeviceToken(String token);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>推送绑定设备token。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            token: String
+        </div>
+                <p>设备的推送token</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="bindVoipToken">bindVoipToken</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode bindVoipToken(String token);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>绑定推送设备的voiptoken。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            token: String
+        </div>
+                <p>设备的voip推送token</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getPushProfile">getPushProfile</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode getPushProfile(BMXPushUserProfile pushProfile, boolean forceRefresh);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取推送用户详情，如果forceRefresh == true，则强制从服务端拉取</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            pushProfile: <a href='/IM/api/8271/bmxpushuserprofile'>BMXPushUserProfile</a>
+        </div>
+                <p>推送用户profile信息，初始传入指向为空的shared_ptr对象，函数返回后从此处获取用户profile信息。</p>
+    </li>
+    <li>
+        <div>
+            forceRefresh: boolean
+        </div>
+                <p>是否强制从服务器拉取，本地获取失败的情况下会自动从服务器拉取</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setTags">setTags</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode setTags(TagList tags, String operationId);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置推送用户的标签。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            tags: TagList
+        </div>
+                <p>用户标签</p>
+    </li>
+    <li>
+        <div>
+            operationId: String
+        </div>
+                <p>操作id。在回调通知中对应通知提醒。</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getTags">getTags</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode getTags(TagList tags, String operationId);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取推送用户的标签。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            tags: TagList
+        </div>
+                <p>用户标签</p>
+    </li>
+    <li>
+        <div>
+            operationId: String
+        </div>
+                <p>操作id。在回调通知中对应通知提醒。</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="deleteTags">deleteTags</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode deleteTags(TagList tags, String operationId);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>删除推送用户的标签。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            tags: TagList
+        </div>
+                <p>要删除用户标签</p>
+    </li>
+    <li>
+        <div>
+            operationId: String
+        </div>
+                <p>操作id。在回调通知中对应通知提醒。</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="clearTags">clearTags</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode clearTags(String operationId);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>清空推送用户的标签。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            operationId: String
+        </div>
+                <p>操作id。在回调通知中对应通知提醒。</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setBadge">setBadge</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode setBadge(int count);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置推送用户的未读角标。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            count: int
+        </div>
+                <p>用户未读角标数</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPushMode">setPushMode</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode setPushMode(boolean enable);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置推送启用状态。默认为使用推送。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            enable: boolean
+        </div>
+                <p>推送的启用状态</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPushMode">setPushMode</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode setPushMode();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPushTime">setPushTime</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode setPushTime(int startHour, int endHour);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置允许推送时间。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            startHour: int
+        </div>
+                <p>静默允许推送的起始时间小时</p>
+    </li>
+    <li>
+        <div>
+            endHour: int
+        </div>
+                <p>静默允许推送的结束时间小时</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setSilenceTime">setSilenceTime</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode setSilenceTime(int startHour, int endHour);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置推送静默的起始结束时间。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            startHour: int
+        </div>
+                <p>静默推送的起始时间小时</p>
+    </li>
+    <li>
+        <div>
+            endHour: int
+        </div>
+                <p>静默推送的结束时间小时</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setRunBackgroundMode">setRunBackgroundMode</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode setRunBackgroundMode(boolean enable);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置推送是否可以后台运行。默认是false。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            enable: boolean
+        </div>
+                <p>推送后台运行状态。</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setRunBackgroundMode">setRunBackgroundMode</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode setRunBackgroundMode();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setGeoFenceMode">setGeoFenceMode</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode setGeoFenceMode(boolean enable, boolean isAllow);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置推送的地理围栏功能是否运行。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            enable: boolean
+        </div>
+                <p>地理围栏功能是否运行。</p>
+    </li>
+    <li>
+        <div>
+            isAllow: boolean
+        </div>
+                <p>用户是否主动弹出用户定位请求。</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setGeoFenceMode">setGeoFenceMode</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode setGeoFenceMode(boolean enable);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setGeoFenceMode">setGeoFenceMode</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode setGeoFenceMode();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="clearNotification">clearNotification</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void clearNotification(long notificationId);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>清除指定id的通知。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            notificationId: long
+        </div>
+                <p>通知id</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="clearAllNotifications">clearAllNotifications</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void clearAllNotifications();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="sendMessage">sendMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void sendMessage(String content);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>发送推送上行消息，消息状态变化会通过listener通知</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            content: String
+        </div>
+                <p>发送的上行推送消息内容</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="loadLocalPushMessages">loadLocalPushMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode loadLocalPushMessages(long refMsgId, long size, BMXMessageList result, BMXPushService.PushDirection arg3);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>加载数据库本地存储的推送消息。如果不指定则从最新消息开始</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            refMsgId: long
+        </div>
+                <p>加载推送消息的起始id</p>
+    </li>
+    <li>
+        <div>
+            size: long
+        </div>
+                <p>最大加载消息条数</p>
+    </li>
+    <li>
+        <div>
+            result: BMXMessageList
+        </div>
+                <p>数据库返回的加载本地推送消息列表</p>
+    </li>
+    <li>
+        <div>
+            arg3: PushDirection
+        </div>
+                <p>加载推送消息的方向，默认是加载更早的消息</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="loadLocalPushMessages">loadLocalPushMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode loadLocalPushMessages(long refMsgId, long size, BMXMessageList result);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="addPushListener">addPushListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void addPushListener(BMXPushServiceListener listener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>添加推送监听者</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            listener: <a href='/IM/api/8314/bmxpushservicelistener'>BMXPushServiceListener</a>
+        </div>
+                <p>推送监听者</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="removePushListener">removePushListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void removePushListener(BMXPushServiceListener listener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>移除推送监听者</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            listener: <a href='/IM/api/8314/bmxpushservicelistener'>BMXPushServiceListener</a>
+        </div>
+                <p>推送监听者</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

@@ -1,0 +1,30 @@
+# 1.点播保存
+业务服务器有两个版本，v1和v2，下面分别介绍如何进行视频流的保存：
+
+**v1：**
+
+v1版本服务器是通过saveAs(saveAsName, saveAsFormat, saveAsStart, saveAsEnd)方法进行视频流的保存的，其中
+
+saveAsName是保存的视频的名称。
+
+saveAsFormat是目标视频的格式，指定format为null进行操作，立即生成m3u8。
+
+saveAsStart, saveAsEnd分别为想保存视频的起止时间，以Unix时间戳的格式传入，这个时间可以通过segments方法获得。
+
+**v2：**
+
+v2版本服务器是通过save(long start, long end)方法进行视频流的保存的，默认只能保存成m3u8文件，其参数为想保存视频的起止时间，以Unix时间戳的格式传入，这个时间可以通过historyRecord方法获得。
+
+【注意】
+
+如果是转存mp4（或其他格式）,不建议在saveas的时候直接指定format为mp4，那样有些已知的问题，比如转出来的视频播放卡住，快进，无法拖动进度条等等。因此推荐用户指定format为null，先保存成m3u8文件再使用存储SDK的avthumb接口进行转码操作。
+
+  
+
+# 2.视频转码
+
+视频的转码可以使用存储SDK的avthumb接口来操作。下面是相关文档链接：
+
+avthumb的接口文档：[http://developer.qiniu.com/code/v6/api/dora-api/av/avthumb.html](http://developer.qiniu.com/code/v6/api/dora-api/av/avthumb.html)
+
+Java SDK相关：[http://developer.qiniu.com/code/v7/sdk/java.html](http://developer.qiniu.com/code/v7/sdk/java.html)

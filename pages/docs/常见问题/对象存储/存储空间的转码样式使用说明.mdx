@@ -1,0 +1,59 @@
+<a id="Parameter"></a>
+# **转码命令参数详解**
+
+<style>
+table th:first-of-type {
+	width: 200px;
+}
+table {
+	table-layout:fixed;
+}
+table td {
+	word-break: break-all;
+}
+</style>
+
+
+转码命令   |    完整命令   |    命令参数
+-------------- | ------------- | -------------
+audio-AAC-64K  | avthumb/mp4/ab/64k/ar/44100/acodec/libfaac  | 封装：MP4，音频码率：64Kbps，音频采样率：44100Hz，音频编码格式：libfaac
+audio-AAC-128K  | avthumb/mp4/ab/128k/ar/44100/acodec/libfaac  | 封装：MP4，音频码率：128Kbps，音频采样率：44100Hz，音频编码格式：libfaac
+audio-AAC-256K  | avthumb/mp4/ab/256k/ar/44100/acodec/libfaac  | 封装：MP4，音频码率：256Kbps，音频采样率：44100Hz，音频编码格式：libfaac
+audio-HLS-32k  | avthumb/m3u8/segtime/10/ab/32k/ar/44100/acodec/libfaac  | 封装：m3u8，切片时长：10s，音频码率：32Kbps，音频采样率：44100Hz，音频编码格式：libfaac
+audio-HLS-48k  | avthumb/m3u8/segtime/10/ab/48k/ar/44100/acodec/libfaac  | 封装：m3u8，切片时长：10s，音频码率：48Kbps，音频采样率：44100Hz，音频编码格式：libfaac
+audio-HLS-64k  | avthumb/m3u8/segtime/10/ab/64k/ar/44100/acodec/libfaac  | 封装：m3u8，切片时长：10s，音频码率：64Kbps，音频采样率：44100Hz，音频编码格式：libfaac
+audio-MP3-128K  | avthumb/mp3/ab/128k/ar/44100/acodec/libmp3lame  | 封装：MP3，音频码率：128Kbps，音频采样率：44100Hz，音频编码格式：MP3 (MPEG audio layer 3)
+audio-MP3-160K  | avthumb/mp3/ab/160k/ar/44100/acodec/libmp3lame  | 封装：MP3，音频码率：160Kbps，音频采样率：44100Hz，音频编码格式：MP3 (MPEG audio layer 3)
+audio-MP3-192K  | avthumb/mp3/ab/192k/ar/44100/acodec/libmp3lame  | 封装：MP3，音频码率：192Kbps，音频采样率：44100Hz，音频编码格式：MP3 (MPEG audio layer 3)
+audio-MP3-320K  | avthumb/mp3/ab/320k/ar/44100/acodec/libmp3lame  | 封装：MP3，音频码率：320Kbps，音频采样率：44100Hz，音频编码格式：MP3 (MPEG audio layer 3)
+video-Generic-320x240  | avthumb/mp4/ab/128k/ar/22050/acodec/libfaac/r/30/vb/300k/vcodec/libx264/s/320x240/autoscale/1/stripmeta/0  | 封装：MP4，音频码率：128Kbps，音频采样率：22050Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：300Kbps，视频编码：H.264，视频分辨率：320x240，视频按原比例缩放至分辨率，清除文件metadata
+video-Generic-360p-16:9  | avthumb/mp4/ab/128k/ar/44100/acodec/libfaac/r/30/vb/720k/vcodec/libx264/s/640x360/autoscale/1/stripmeta/0  | 封装：MP4，音频码率：128Kbps，音频采样率：44100Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：720Kbps，视频编码：H.264，视频分辨率：640x360，视频按原比例缩放至分辨率，清除文件metadata
+video-Generic-360p-4:3  | avthumb/mp4/ab/128k/ar/44100/acodec/libfaac/r/30/vb/600k/vcodec/libx264/s/480x360/autoscale/1/stripmeta/0 | 封装：MP4，音频码率：128Kbps，音频采样率：44100Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：600Kbps，视频编码：H.264，视频分辨率：480x360，视频按原比例缩放至分辨率，清除文件metadata
+video-Generic-480p-16:9  | avthumb/mp4/ab/128k/ar/44100/acodec/libfaac/r/30/vb/1200k/vcodec/libx264/s/854x480/autoscale/1/stripmeta/0 | 封装：MP4，音频码率：128Kbps，音频采样率：44100Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：1200Kbps，视频编码：H.264，视频分辨率：854x480，视频按原比例缩放至分辨率，清除文件metadata
+video-Generic-480p-4:3  | avthumb/mp4/ab/128k/ar/44100/acodec/libfaac/r/30/vb/900k/vcodec/libx264/s/640x480/autoscale/1/stripmeta/0 | 封装：MP4，音频码率：128Kbps，音频采样率：44100Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：900Kbps，视频编码：H.264，视频分辨率：640x480，视频按原比例缩放至分辨率，清除文件metadata
+video-Generic-720P  | avthumb/mp4/ab/160k/ar/44100/acodec/libfaac/r/30/vb/2400k/vcodec/libx264/s/1280x720/autoscale/1/stripmeta/0 | 封装：MP4，音频码率：160Kbps，音频采样率：44100Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：2400Kbps，视频编码：H.264，视频分辨率：1280x720，视频按原比例缩放至分辨率，清除文件metadata
+video-Generic-1080P  | avthumb/mp4/ab/160k/ar/44100/acodec/libfaac/r/30/vb/5400k/vcodec/libx264/s/1920x1080/autoscale/1/strpmeta/0 | 封装：MP4，音频码率：160Kbps，音频采样率：44100Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：5400Kbps，视频编码：H.264，视频分辨率：1920x1080，视频按原比例缩放至分辨率，清除文件metadata
+video-HLS-150k  | avthumb/m3u8/segtime/10/ab/128k/ar/44100/acodec/libfaac/r/30/vb/150k/vcodec/libx264/stripmeta/0 | 封装：m3u8，切片时长：10s，音频码率：128Kbps，音频采样率：44100Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：150Kbps，视频编码：H.264，清除文件metadata
+video-HLS-240k  | avthumb/m3u8/segtime/10/ab/128k/ar/44100/acodec/libfaac/r/30/vb/240k/vcodec/libx264/stripmeta/0 | 封装：m3u8，切片时长：10s，音频码率：128Kbps，音频采样率：44100Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：240Kbps，视频编码：H.264，清除文件metadata
+video-HLS-640k  | avthumb/m3u8/segtime/10/ab/128k/ar/44100/acodec/libfaac/r/30/vb/640k/vcodec/libx264/stripmeta/0 | 封装：m3u8，切片时长：10s，音频码率：128Kbps，音频采样率：44100Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：640Kbps，视频编码：H.264，清除文件metadata
+video-HLS-1000k  | avthumb/m3u8/segtime/10/ab/128k/ar/44100/acodec/libfaac/r/30/vb/1000k/vcodec/libx264/stripmeta/0 | 封装：m3u8，切片时长：10s，音频码率：128Kbps，音频采样率：44100Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：1000Kbps，视频编码：H.264，清除文件metadata
+video-Web  | avthumb/mp4/ab/160k/ar/44100/acodec/libfaac/r/30/vb/2200k/vcodec/libx264/s/1280x720/autoscale/1/stripmeta/0 | 封装：MP4，音频码率：160Kbps，音频采样率：44100Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：2200Kbps，视频分辨率：1280x720，视频按原比例缩放至分辨率，视频编码：H.264，清除文件metadata
+video-iPhone4 | avthumb/mp4/ab/160k/ar/48000/acodec/libfaac/r/30/vb/2200k/vcodec/libx264/s/1280x720/autoscale/1/stripmeta/0 | 封装：MP4，音频码率：160Kbps，音频采样率：48000Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：2200Kbps，视频分辨率：1280x720，视频按原比例缩放至分辨率，视频编码：H.264，清除文件metadata
+video-iPhone4s | avthumb/mp4/ab/160k/ar/48000/acodec/libfaac/r/30/vb/5000k/vcodec/libx264/s/1920x1080/autoscale/1/stripmeta/0 | 封装：MP4，音频码率：160Kbps，音频采样率：48000Hz，音频编码格式：libfaac，视频帧率：30Hz，视频码率：5000Kbps，视频分辨率：1920x1080，视频按原比例缩放至分辨率，视频编码：H.264，清除文件metadata
+
+<a id="Filename"></a>
+# **目标文件名设置**
+
+目标文件名指转码后的文件名，设置时支持使用[魔法变量](/kodo/manual/1235/vars#magicvar)，魔法变量引用格式为${var}，$(var)。
+
+特别的，魔法变量仅支持：bucket、key、etag、fsize、mimeType、endUser、fname、ext、fprefix、keybase
+
+举例：
+
+1.目标文件名设置为$(fprefix)-transcode.$(ext) 
+
+2.上传文件名为butterfly.mp4，则转码后文件名为butterfly-transcode.mp4；上传文件名newcity.flv，则转码后文件名为newcity-transcode.flv
+
+
+
+

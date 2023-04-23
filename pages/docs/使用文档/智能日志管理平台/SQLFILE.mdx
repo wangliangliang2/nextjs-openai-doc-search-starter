@@ -1,0 +1,5 @@
+### **基础配置信息**
+
+  * sqlfile表名称(`sqlfile_table`)：必选项，表示sql语句操作的表名称。
+  * sqlfile文件前缀(`sqlfile_path_prefix`): 可选项，默认为`./sync.sql`，表示发送的sqlfile文件路径前缀。
+  * sqlfile文件切割大小(`sqlfile_rotate_size`): 可选项，数值类型，默认为`10485760`（10MB），表示当sqlfile文件大小超过指定大小时将触发该文件的切割，继续写入到下一个sqlfile文件。sqlfile文件名称的生成格式：`文件前缀-MMddHHmmss`，例如文件前缀为`./sync.sql`，当前时间为`2018-10-24 15:15:30`，则生成的文件路径为`./sync.sql-1024151530`。

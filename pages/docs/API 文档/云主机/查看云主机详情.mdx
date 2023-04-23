@@ -1,0 +1,185 @@
+# 请求路径
+> `GET` /v1/vm/instance/:instance_id
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+instance_id | string | path  | 是 | 云主机实例ID 
+region_id   | string | query | 是 | 实例所属的地域 ID。 <br />您可以调用 DescribeRegions 查看最新的七牛云地域列表。 
+
+
+# 返回值
+名称 | 类型 | 描述
+----- | ----- | -----
+instance_id | string | 实例 ID
+instance_name | string | 实例名称
+host_name | string | 实例主机名
+instance_type | string | 实例资源规格
+region_id | string | 实例所属地域 ID
+zone_id | string | 实例所属可用区
+image_id | string | 实例运行的镜像 ID
+instance_charge_type | string | 实例的计费方式。可能值：<br />PrePaid：预付费（包年包月 ）<br />PostPaid：按量付费
+serial_number | string | 实例序列号
+status | string | 实例状态
+create_time | string | 实例创建时间。按照ISO8601标准表示，并需要使用UTC时间，格式为yyyy-MM-ddTHH:mm:ssZ。
+expired_time | string | 过期时间。按照ISO8601标准表示，并需要使用UTC时间，格式为yyyy-MM-ddTHH:mm:ssZ。
+device_available | boolean | 实例是否还可以挂载数据盘
+security_group_ids | object | 实例所属安全组集合
+security_group_ids.security_group_id | string\[] | 安全组ID
+eip_address | object | 弹性公网 IP 绑定信息
+eip_address.allocation_id | string | 弹性公网 IP 绑定的实例 ID。
+eip_address.ip_address | string | 弹性公网 IP。
+eip_address.bandwidth | integer | 弹性公网 IP 的公网带宽限速，单位为 Mbps。<br />默认值：5。
+eip_address.internet_charge_type | string | 弹性公网 IP 的计费方式。<br />PayByTraffic：按流量计费<br />PayByBandwidth：按带宽计费
+eip_address.is_support_dissociate | boolean | 可以解绑弹性公网 IP。
+vpc_attributes | object | 专有网络 VPC 属性
+vpc_attributes.private_ip_address | object | 私网IP属性
+vpc_attributes.private_ip_address.ip_address | string[] | 私网IP列表
+vpc_attributes.private_ip_address.vswitch_id | string | 交换机 ID
+vpc_attributes.private_ip_address.vpc_id | string | 虚拟专有网络 ID
+vpc_attributes.private_ip_address.nat_ip_address | string | 云产品 IP，用于云产品之间的网络互通
+operation_locks | object | 实例的锁定原因
+operation_locks.lock_reason | string\[] | 锁定类型<br />financial：因欠费被锁定<br />security：因安全原因被锁定<br />recycling：抢占式实例的待释放锁定状态<br />dedicatedhostfinancial：因为专有宿主机欠费导致 ECS 实例被锁定
+
+## 返回值示例
+```json
+{
+  "data": {
+    "uid": 1381403989,
+    "instance_id": "i-wz9crqasdfasdfq",
+    "image_info": {
+      "image_id": "ubuntu_20_04_x64_20G_alibase_20201120.vhd",
+      "description": "",
+      "product_code": "",
+      "os_type": "linux",
+      "architecture": "x86_64",
+      "os_name": "Ubuntu  20.04 64位",
+      "image_owner_alias": "system",
+      "progress": "100%",
+      "usage": "instance",
+      "image_version": "",
+      "status": "Available",
+      "image_name": "ubuntu_20_04_x64_20G_alibase_20201120.vhd",
+      "is_self_shared": "",
+      "platform": "Ubuntu",
+      "size": 20,
+      "is_support_cloudinit": true,
+      "is_support_io_optimized": true,
+      "is_copied": false,
+      "is_subscribed": false,
+      "disk_device_mappings": {
+        "disk_device_mapping": []
+      },
+      "snapshot_id": "",
+      "min_disk_size": ""
+    },
+    "vlan_id": "",
+    "zone_id": "cn-shenzhen-c",
+    "spot_strategy": "NoSpot",
+    "stopped_mode": "Not-applicable",
+    "serial_number": "96fd351f-a841-47e4-9d7f-da92b9564854",
+    "io_optimized": true,
+    "memory": 98304,
+    "cpu": 24,
+    "device_available": true,
+    "sale_cycle": "",
+    "spot_price_limit": 0,
+    "auto_release_time": "",
+    "instance_name": "I-rQYFK",
+    "description": "",
+    "resource_group_id": "",
+    "os_type": "linux",
+    "os_name": "Ubuntu  20.04 64位",
+    "host_name": "iZwz9crqasdfasdfqZ",
+    "instance_type": "ecs.cm4.6xlarge",
+    "instance_type_family": "ecs.cm4",
+    "status": "Running",
+    "cluster_id": "",
+    "recyclable": false,
+    "region_id": "cn-shenzhen",
+    "gpu_spec": "",
+    "gpu_amount": 0,
+    "vnc_passwd": "",
+    "key_pair_name": "",
+    "instance_charge_type": "PostPaid",
+    "instance_network_type": "vpc",
+    "expired_time": "2099-12-31T23:59:00+08:00",
+    "network_interfaces": {
+      "network_interface": [
+        {
+          "network_interface_id": "eni-wz9ikxo4dkno41rvvl65",
+          "mac_address": "00:16:3e:12:38:d0",
+          "primary_ip_address": "10.6.2.55"
+        }
+      ]
+    },
+    "vpc_attributes": {
+      "nat_ip_address": "",
+      "private_ip_address": {
+        "ip_address": [
+          "123.123.123.123"
+        ]
+      },
+      "v_switch_id": "vsw-wz9m5dmumu53jjjnbox2w",
+      "vpc_id": "vpc-wz9tt8ai7vgasdfasd1a8",
+      "vpc_name": "wxy-abc",
+      "v_switch_name": "vswitch-default"
+    },
+    "security_group_ids": {
+      "security_group_id": [
+        "sg-wz9c3kdvzo4mx8yj7iew"
+      ],
+      "security_group_name": [
+        "sgr-default"
+      ]
+    },
+    "operation_locks": {
+      "lock_reason": []
+    },
+    "inner_ip_address": {
+      "ip_address": []
+    },
+    "eip_address": {
+      "ip_address": "47.115.137.121",
+      "allocation_id": "eip-wz92ul2d1s5c6bhxs2zed",
+      "internet_charge_type": "PayByTraffic",
+      "is_support_unassociate": true,
+      "bandwidth": 1
+    },
+    "public_ip_address": {
+      "ip_address": []
+    },
+    "human_spec": "高主频通用型 cm4 - 24 核 96 GB",
+    "enable_assign_ipv6": false,
+    "tags": null,
+    "auto_renew_info": {
+      "_id": "",
+      "uid": 0,
+      "region_id": "",
+      "resource_type": "",
+      "resource_id": "",
+      "cost_params": null,
+      "current_expire_attr": {
+        "expire_time": "0001-01-01T00:00:00Z",
+        "renew_op": "",
+        "order_hash": "",
+        "last_status": "",
+        "status": "",
+        "err_msg": "",
+        "err_class": "",
+        "notify": ""
+      },
+      "is_ali_release": false,
+      "updated_at": "0001-01-01T00:00:00Z",
+      "created_at": "0001-01-01T00:00:00Z"
+    },
+    "customized_expire_time": null,
+    "cost_charge_type": "PostPaid",
+    "cost_charge_mode": "PayByDisk",
+    "updated_at": "2020-12-17T15:23:16.05+08:00",
+    "created_at": "2020-12-16T11:28:53.621+08:00"
+  },
+  "request_id": "ScKvEdzF10L0cFEW"
+}
+```

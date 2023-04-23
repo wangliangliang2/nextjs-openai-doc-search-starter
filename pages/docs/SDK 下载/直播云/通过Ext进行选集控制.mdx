@@ -1,0 +1,20 @@
+# 通过Ext进行选集控制
+
+
+
+在点播场景中，我们经常会遇到一个播放页里有一个系列的剧集，比如电视剧场景下，我们要在播放上切换到上一集，切换到下一集，或者是切换到某一集，在Ext很好的做到了这一切，根据前面的介绍，我们已经构建了CommonPlayerDataSource，那么选集控制就是利用这个数据源来实现的
+
+
+
+当你在Ext架构内，你肯定能获取到PlayerCore 通过PlayerCore 我们就能拿到选集控制器，通过他我们就能很好来实现切集
+
+```kotlin
+mPlayerCore.mCommonPlayerVideoSwitcher
+```
+
+具体接口请参见API文档,包路径如下
+
+```
+com.qiniu.qplayer2ext.commonplayer.controller.CommonPlayerVideoSwitcher
+```
+

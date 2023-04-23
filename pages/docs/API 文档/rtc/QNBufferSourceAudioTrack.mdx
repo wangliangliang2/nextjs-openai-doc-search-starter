@@ -1,0 +1,227 @@
+<div data-v-md-line="1"><link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                外部音频导入</section>
+                <section class="rtc-doc-panel rtc-doc-section-hierarchy">
+        <div class="rtc-doc-title rtc-doc-title-hierarchy">Hierarchy</div>
+            <ul>
+                <li>
+                    EventEmitter                    <ul>
+        <li>
+           <a href='9076/WebQNTrack'>QNTrack</a>
+               <ul>
+        <li>
+           <a href='9085/WebQNLocalTrack'>QNLocalTrack</a>
+               <ul>
+        <li>
+           <a href='9061/WebQNLocalVideoTrack'>QNLocalVideoTrack</a>
+               <ul>
+        <li>
+           <a href='9068/WebQNCameraVideoTrack'>QNCameraVideoTrack</a>
+        </li>
+        <li>
+           <a href='9092/WebQNScreenVideoTrack'>QNScreenVideoTrack</a>
+        </li>
+        <li>
+           <a href='10320/WebQNCanvasVideoTrack'>QNCanvasVideoTrack</a>
+        </li>
+        <li>
+           <a href='9088/WebQNCustomVideoTrack'>QNCustomVideoTrack</a>
+        </li>
+</ul>
+        </li>
+        <li>
+           <a href='9089/WebQNLocalAudioTrack'>QNLocalAudioTrack</a>
+               <ul>
+        <li>
+           <a href='9064/WebQNMicrophoneAudioTrack'>QNMicrophoneAudioTrack</a>
+        </li>
+        <li>
+           QNBufferSourceAudioTrack
+        </li>
+        <li>
+           <a href='9091/WebQNCustomAudioTrack'>QNCustomAudioTrack</a>
+        </li>
+</ul>
+        </li>
+</ul>
+        </li>
+        <li>
+           <a href='9082/WebQNRemoteTrack'>QNRemoteTrack</a>
+               <ul>
+        <li>
+           <a href='9060/WebQNRemoteVideoTrack'>QNRemoteVideoTrack</a>
+        </li>
+        <li>
+           <a href='9087/WebQNRemoteAudioTrack'>QNRemoteAudioTrack</a>
+        </li>
+</ul>
+        </li>
+</ul>
+        </li>
+</ul>
+                </li>
+            </ul>
+    </section>
+<div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Properties</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#source`)'>source</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">Event</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#state-changed`)'>state-changed</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#start`)'>start</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#stop`)'>stop</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#pause`)'>pause</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#resume`)'>resume</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getDuration`)'>getDuration</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getCurrentPosition`)'>getCurrentPosition</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#seekTo`)'>seekTo</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Properties</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="source">source</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">source: <a href='9075/WebQNType#QNAudioSourceType'>QNAudioSourceType</a></li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音频数据源类型</p>
+    </div>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">Event</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="state-changed">state-changed</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">(state: <a href='9047/WebQNAudioSourceState'>QNAudioSourceState</a>): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音频源处理状态变化</p>
+    </div>
+    <pre class="rtc-doc-example"><code>track.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;state-changed&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">state</span>) {    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;state-changed&#x27;</span>, state)})</code></pre>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            state: <a href='9047/WebQNAudioSourceState'>QNAudioSourceState</a>
+        </div>
+                <p>音频源处理状态</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="start">start</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">start(loop?: boolean): Promise&lt;void&gt;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>开始处理</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="stop">stop</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">stop(): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>停止处理</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="pause">pause</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">pause(): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>暂停处理</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="resume">resume</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">resume(): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>恢复处理</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getDuration">getDuration</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getDuration(): number</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取音频时长（秒）</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>number</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getCurrentPosition">getCurrentPosition</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getCurrentPosition(): number</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取当前位置（秒）</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>number</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="seekTo">seekTo</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">seekTo(time: number): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>跳转到指定位置（秒）</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            time: number
+        </div>
+                <p>处理位置（秒）</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+
+</div>

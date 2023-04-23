@@ -1,0 +1,44 @@
+** 七牛云CDN**支持多项自定义配置，您可以根据自身业务需要进行设置。
+# [回源配置](https://developer.qiniu.com/fusion/manual/4943/back-to-the-source-configuration)
+
+配置项|描述|默认值
+-|-|-
+源站信息|资源的回源域名或IP, 推荐使用七牛云存储作为源站|用户配置
+回源HOST|指定请求的服务器的域名，默认为加速域名|加速域名
+回源协议|请求回源的协议，如需修改回源协议请先开启 HTTPS|HTTP
+<br/>
+# [缓存配置](https://developer.qiniu.com/fusion/manual/4944/cache-configuration)
+
+配置项|描述|默认值
+-|-|-
+缓存时间|定义指定资源内容的缓存过期时间规则|全局缓存1个月
+忽略URL参数|资源缓存时去除 URL「?」后的全部参数进行缓存|未开启
+<br/>
+# 访问控制配置
+
+配置项|描述|默认值
+-|-|-
+[referer防盗链](https://developer.qiniu.com/fusion/manual/3839/domain-name-hotlinking-prevention)|配置 Request Header 中 referer 黑白名单，从而限制访问来源|未开启
+[时间防盗链](https://developer.qiniu.com/fusion/manual/3841/timestamp-hotlinking-prevention-fusion)|设置密钥，配合签名过期时间来控制资源内容的访问时限|未开启
+[回源鉴权](https://developer.qiniu.com/fusion/manual/3930/back-to-the-source-authentication)|配置回源验证策略，对 CDN 接收到的访问请求进行鉴权，适用于对防盗链有很高实时性要求的场景|未开启
+[IP黑白名单](https://developer.qiniu.com/fusion/manual/4977/ip-black-and-white-list)|允许或者禁止某些 IP 或 IP 段的访问，帮助您解决恶意 IP 盗刷、攻击等问题|未开启
+<br/>
+# [HTTPS配置](https://developer.qiniu.com/fusion/manual/4952/https-configuration)
+
+配置项|描述|默认值
+-|-|-
+开启HTTPS|开启 HTTPS 安全加速，支持 SSL 证书绑定及 HTTPS 状态管理|未开启
+更换证书|更换即将过期或泄漏的证书|无
+强制HTTPS|开启后 HTTP 请求会强制跳转到 HTTPS 进行访问，关闭时默认兼容用户的 HTTP/HTTPS 请求|未开启
+<br/>
+# [流量带宽告警](https://developer.qiniu.com/fusion/manual/4953/warning-traffic-bandwidth)
+配置项|描述|默认值
+-|-|-
+阈值告警|可针对域名流量/带宽设置阈值，接近和触发阈值时会告警通知|未开启
+<br/>
+# [图片优化](https://developer.qiniu.com/fusion/manual/4954/image-optimization)
+配置项|描述|默认值
+-|-|-
+图片自动瘦身|无需添加任何参数，自动瘦身；图片体积大幅减少，节省 CDN 流量|未开启
+图片处理|缩略图，裁剪，选择，格式等多种图片处理，需用户添加参数主动调用|未开启
+<br/>

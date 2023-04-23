@@ -1,0 +1,197 @@
+
+本文首先简单介绍文件传输的基本原理，然后详细介绍类Unix/Linux、Windows平台上常用的文件传输方式，并针对它们各自的特点进行比较，让您对文件传输方式有比较详尽地了解，从而能够根据不同的需要选择合适的文件传输方式。
+
+# 文件传输原理
+
+文件传输是信息传输的一种形式，它是在数据源和数据宿之间传送文件数据的过程，也称文件数据通信。操作系统把文件数据提取到内存中做暂存，再复制到目的地，加密就是在文件外加了一个壳，文件本身还是一个整体，复制只是把这个整体转移到其它地方，不需要解密，只有打开压缩包时才需解密。一个大文件作为一个数据整体，是不可能瞬间从一台主机转移到其它的主机，传输是一个持续的过程，但不是把文件分割了，因此，如果在传输的过程中意外中断，目标路径中是不会有传输的文件，另外，如果传输的是多个文件，那么，这些文件是按顺序分别传输，如果中间中断，则正在传输的文件会传输失败，但是，之前已经传完的文件传输成功（如果传输的是文件压缩包，那么，不管里面有几个文件，它本身被视为一个文件）。
+
+通常我们看到的NC、FTP、SCP、NFS等等，都是可以用来传输文件数据的工具，下面我们将详细介绍主要文件传输工具的特点以及用法。
+
+# NETCAT
+
+在网络工具中有“瑞士军刀”的美誉，它功能强大，作为网络工具的同时，它传输文件的能力也不容小觑。
+
+常用参数说明如下表所示。
+
+参数 | 说明  
+---|---  
+-g <网关> | 设置路由器跃程通信网关，最多可设置8个  
+-G <指向器数目> | 设置来源路由指向器，其数值为4的倍数  
+-i <延迟秒数> | 设置时间间隔，以便传送信息及扫描通信端口  
+-l | 使用监听模式，管控传入的资料  
+-o <输出文件> | 指定文件名称，把往来传输的数据以16进制字码倾倒成该文件保存  
+-p <通信端口> | 设置本地主机使用的通信端口  
+-r | 指定本地与远端主机的通信端口  
+-u | 使用UDP传输协议  
+-v | 显示指令执行过程  
+-w <超时秒数> | 设置等待连线的时间  
+-z | 使用0输入/输出模式，只在扫描通信端口时使用  
+-n | 直接使用IP地址，而不通过域名服务器  
+  
+# 用法举例
+
+  * 端口扫描21~24（以IP192.168.2.34为例）。 
+    
+        nc -v -w 2 192.168.2.34 -z 21-24
+
+返回示例：
+
+    
+        nc: connect to 192.168.2.34 port 21 (tcp) failed: Connection refusedConnection to 192.168.2.34 22 port [tcp/ssh] succeeded!nc: connect to 192.168.2.34 port 23 (tcp) failed: Connection refusednc: connect to 192.168.2.34 port 24 (tcp) failed: Connection refused
+
+  * 从192.168.2.33拷贝文件到192.168.2.34。 
+    * 在192.168.2.34上：`nc-l 1234 > test.txt`
+    * 在192.168.2.33上：`nc192.168.2.34 < test.txt`
+  * 用nc命令操作memcached。 
+    * 存储数据：`printf “set key 0 10 6rnresultrn” |nc 192.168.2.34 11211`
+    * 获取数据：`printf “get keyrn” |nc 192.168.2.34 11211`
+    * 删除数据：`printf “delete keyrn” |nc 192.168.2.34 11211`
+    * 查看状态：`printf “statsrn” |nc 192.168.2.34 11211`
+    * 模拟top命令查看状态：`watch “echo stats” |nc 192.168.2.34 11211`
+    * 清空缓存： 
+        
+                printf “flush_allrn” |nc 192.168.2.34 11211       #谨慎操作，清空了缓存就没了
+
+# SCP安全拷贝
+
+SCP（ Secure
+Copy）命令的用法和RCP命令格式非常类似，区别就是SCP提供更安全保障，SCP在需要进行验证时会要求您输入密码或口令，一般推荐使用SCP命令，因为它比RCP更安全。SCP命令使用SSH来传输数据，并使用与SSH相同的认证模式，提供同样的安全保障，SSH是目前较可靠得，为远程登录会话和其他网络服务提供安全性的协议，利用SSH协议可以有效防止远程管理过程中的信息泄露问题。SCP是基于SSH的应用，所以进行数据传输的机器上必须支持SSH服务。
+
+SCP的特点如下：
+
+SCP类似于RCP，它能够保留一个特定文件系统上的文件属性，能够保留文件属性或者需要递归的拷贝子目录。
+
+SCP具备更好的文件传输保密性。与此同时，付出的代价就是文件传输时需要输入密码而且涉及到SSH的一些配置问题，这些都影响其使用的方便性，对于有特定需求的用户，是比较合适的传输工具。
+
+SCP的常用示例如下：
+
+  1. 使用SCP命令，需要输入密码，如果不想每次都输入，可以通过配置SSH，这样在两台机器间拷贝文件时不需要每次都输入用户名和密码。 
+
+生成RSA类型的密钥：  
+![返回示例](http://qey2kbifv.hn-
+bkt.clouddn.com/2020-08-13/WVEgDbsQdFmTAqYac7yn.png)  
+
+上述命令生成RSA类型的密钥。在提示密钥的保存路径和密码时，可以直接回车使用默认路径和空密码。这样，生成的公共密钥保存在/.ssh/id_rsa.pub，私有密钥保存在
+/.ssh/id_rsa。然后把这个密钥对中的公共密钥的内容复制到要访问的机器上的/.ssh/authorized_keys文件中。这样，下次再访问那台机器时，就不用输入密码了。
+
+  2. 在两台Linux主机间复制文件。 
+
+命令基本格式：
+```
+scp [可选参数] file_source file_target
+```
+
+* 从本地复制到远程（如下四种方式）：     
+```
+scp local_file remote_username@remote_ip:remote_folder
+scp local_file remote_username@remote_ip:remote_file
+scp local_file remote_ip:remote_folder
+scp local_file remote_ip:remote_file
+```
+> **说明** 第1、2个指定了用户名，命令执行后需要再输入密码，第1个仅指定了远程的目录，文件名字不变，第2个指定了文件名。
+> 
+> 第3、4个没有指定用户名，命令执行后需要输入用户名和密码，第3个仅指定了远程的目录，文件名字不变，第4个指定了文件名。
+
+* 从远程复制到本地： 
+```
+scp root@www.cumt.edu.cn:/home/root/others/music /home/space/music/i.mp3
+scp -r www.cumt.edu.cn:/home/root/others/ /home/space/music/
+```
+
+**说明** 从远程复制到本地，只要将从本地复制到远程的命令的后2个参数调换顺序即可。
+
+# Rsync
+
+Rsync是linux/Unix文件同步和传送工具。用于替代RCP的一个工具，rsync可以通过rsh或ssh使用，也能以daemon模式去运行，在以daemon方式运行时rsync
+server会开一个873端口，等待客户端去连接。连接时rsync
+server会检查口令是否相符，若通过口令查核，则可以通过进行文件传输，第一次连通完成时，会把整份文件传输一次，以后则就只需进行增量备份。
+
+Rsync的安装方式如下：
+
+**说明** 可以使用每个发行版本自带的安装包管理器安装。
+
+```
+sudo apt-get  install  rsync      #在debian、ubuntu 等在线安装方法；
+slackpkg  install  rsync          #Slackware 软件包在线安装；
+yum install rsync                 #Fedora、Redhat 等系统安装方法；
+``` 
+ 
+源码编译安装：
+```
+wget http://rsync.samba.org/ftp/rsync/src/rsync-3.0.9.tar.gz
+tar xf rsync-3.0.9.tar.gz
+cd rsync-3.0.9
+./configure && make && make install
+```
+
+参数介绍如下表所示：  参数 | 说明  
+---|---  
+-v | 详细模式输出  
+-a | 归档模式，表示以递归的方式传输文件，并保持所有文件属性不变，相当于使用了组合参数-rlptgoD  
+-r | 对子目录以递归模式处理  
+-l | 保留软链接  
+-p | 保持文件权限  
+-t | 保持文件时间信息  
+-g | 保持文件属组信息  
+-o | 保持文件属主信息  
+-D | 保持设备文件信息  
+-H | 保留硬链结  
+-S | 对稀疏文件进行特殊处理以节省DST的空间  
+-z | 对备份的文件在传输时进行压缩处理  
+  
+rsync有以下六种不同的工作模式：
+
+  * 拷贝本地文件，将/home/coremail目录下的文件拷贝到/cmbak目录下。 
+    
+        rsync -avSH /home/coremail/ /cmbak/
+
+  * 拷贝本地机器的内容到远程机器。 
+    
+        rsync -av /home/coremail/ 192.168.11.12:/home/coremail/
+
+  * 拷贝远程机器的内容到本地机器。 
+    
+        rsync -av 192.168.11.11:/home/coremail/ /home/coremail/
+
+  * 拷贝远程rsync服务器（daemon形式运行rsync）的文件到本地机。 
+    
+        rsync -av root@172.16.78.192::www /databack
+
+  * 拷贝本地机器文件到远程rsync服务器（daemon形式运行rsync）中。当DST路径信息包含`::`分隔符时启动该模式。 
+    
+        rsync -av /databack root@172.16.78.192::www
+
+  * 显示远程机器的文件列表。这类似于rsync传输，不过只要在命令中省略掉本地机器信息即可。 
+    
+        rsync -v rsync://192.168.11.11/data
+
+rsync配置文件说明如下：
+```
+cat/etc/rsyncd.conf              #内容如下
+port = 873                       #端口号
+uid = nobody                     #指定当模块传输文件的守护进程UID
+gid = nobody                     #指定当模块传输文件的守护进程GID
+use chroot = no                  #使用chroot到文件系统中的目录中
+max connections = 10             #最大并发连接数
+strict modes = yes               #指定是否检查口令文件的权限
+pid file = /usr/local/rsyncd/rsyncd.pid       #指定PID文件
+lock file = /usr/local/rsyncd/rsyncd.lock     #指定支持max connection的锁文件，默认为/var/run/rsyncd.lock
+motd file = /usr/local/rsyncd/rsyncd.motd     #定义服务器信息的，自己写 rsyncd.motd 文件内容
+log file = /usr/local/rsyncd/rsync.log        #rsync 服务器的日志
+log format = %t %a %m %f %b
+syslog facility = local3
+timeout = 300
+[conf]                                   #自定义模块
+path = /usr/local/nginx/conf             #用来指定要备份的目录
+comment = Nginx conf
+ignore errors                            #可以忽略一些IO错误
+read only = no                           #设置no，客户端可以上传文件，yes是只读
+write only = no                          #no为客户端可以下载，yes不能下载
+hosts allow = 192.168.2.0/24             #可以连接的IP
+hosts deny = *                           #禁止连接的IP
+list = false                             #客户请求时，使用模块列表
+uid = root
+gid = root
+auth users = backup                      #连接用户名，和linux系统用户名无关系
+secrets file = /etc/rsyncd.pass          #验证密码文件
+```

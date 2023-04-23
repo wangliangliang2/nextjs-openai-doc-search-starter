@@ -1,0 +1,114 @@
+介绍一些利用 qsuits 工具对存储空间的文件进行自动化管理的操作，分为两个基本部分：数据源读取和数据操作，其中数据源读取采用本工具提供的数据源模式（参考：[数据源](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md)），而数据操作根据需求选择，详细使用建议参考：[项目地址](https://github.com/NigelWu95/qiniu-suits-java)）。  
+ 
+1. 支持通过 `-a=<account-name>`/`-d` 使用已设置的账号，则不需要再直接设置数据源的密钥，参考：[账号设置](https://github.com/NigelWu95/qiniu-suits-java/blob/master/README.md#账号设置)，以下配置中出现 ak,sk 等参数设置是为了说明需要用到的密钥参数名称，通过 account 方式读取该参数的情况下就不要再设置该密钥。  
+
+# 1. 转换标准/低频/归档
+即修改文件存储类型，修改为**低频存储**或者**标准存储**文件，配置如下：  
+```
+path=qiniu://<bucket>
+ak=
+sk=
+# region 没有设置时可以自动判断，但建议自行设置 region
+#region=z0/z1/qvm-z0/...
+# 因为有数据源 path 中 bucket 的存在，可以不再设置 bucket 参数，如果设置则覆盖数据源 path 中的 bucket 值
+#bucket=
+// 修改存储类型的 process 操作为 type
+process=type
+# 0 表示标准存储，1 表示低频存储，2 表示归档存储
+type=0
+# 比如这里从低频修改为标准，对于本身已经是标准存储的文件不需要做这一次的 api 调用，那么建议加上过滤参数 f-type=1，只是过滤出原来是低频的文件才进行修改
+f-type=1
+```  
+
+## 转换单个文件
+如果只是单个文件需要该操作，可以用 single 模式，从命令行输入文件名直接处理一次即可，命令如下：  
+`qsuits -s -d -process=type -bucket=temp -type=1 -key=10.mp4`   
+无异常错误输出则表示成功，`-s` 表示启用 single 模式进行单次操作，`-d` 表示使用默认账号。  
+
+# 2. 修改文件生命周期
+这里的生命周期表示设置文件多少天后自动删除，配置如下：  
+```
+path=qiniu://<bucket>
+ak=
+sk=
+# region 没有设置时可以自动判断，但建议自行设置 region
+#region=z0/z1/qvm-z0/...
+# 因为有数据源 path 中 bucket 的存在，可以不再设置 bucket 参数，如果设置则覆盖数据源 path 中的 bucket 值
+#bucket=
+// 修改生命周期的 process 操作为 lifecycle
+process=lifecycle
+# days 表示多少天后进行文件删除，如果设置 0 的话表示取消生命周期，即不会进行删除操作
+days=0
+```  
+
+## 修改单个文件
+如果只是单个文件需要该操作，可以用 single 模式，从命令行输入文件名直接处理一次即可，命令如下：  
+`qsuits -s -d -process=lifecycle -bucket=temp -days=1 -key=10.mp4`   
+无异常错误输出则表示成功，`-s` 表示启用 single 模式进行单次操作，`-d` 表示使用默认账号。  
+
+# 3. 禁用空间文件
+即修改空间里一些文件的状态，使得该文件不能被访问，比如一些违规或非法文件，如使用文件列表的方式请配置 localfile 数据源，这里直接使用存储数据源配置如下：  
+```
+path=qiniu://<bucket>
+ak=
+sk=
+# region 没有设置时可以自动判断，但建议自行设置 region
+#region=z0/z1/qvm-z0/...
+# 因为有数据源 path 中 bucket 的存在，可以不再设置 bucket 参数，如果设置则覆盖数据源 path 中的 bucket 值
+#bucket=
+// 修改文件状态的 process 操作为 status
+process=status
+# 0 表示文件启用，1 表示文件禁用
+status=0
+# 通常是针对部分文件进行禁用，不应该空间全部文件都禁用（风险操作！！！），所以建议根据需要设置过滤条件或者提前拿到禁用的文件列表，使用 localfile 数据源来操作
+# 设置文件名后缀为 .html/.svg 的文件被禁用，或者设置 content-type 为 text/html 的文件被禁用可以使用 f-mime=text/html
+f-suffix=.html,.svg
+```  
+
+## 禁用单个文件
+如果只是单个文件需要该操作，可以用 single 模式，从命令行输入文件名直接处理一次即可，命令如下：  
+`qsuits -s -d -process=status -bucket=temp -status=1 -key=10.mp4`   
+无异常错误输出则表示成功，`-s` 表示启用 single 模式进行单次操作，`-d` 表示使用默认账号。  
+
+# 4. 删除文件
+删除存储的文件，配置如下：  
+```
+path=qiniu://<bucket>
+ak=
+sk=
+# region 没有设置时可以自动判断，但建议自行设置 region
+#region=z0/z1/qvm-z0/...
+# 因为有数据源 path 中 bucket 的存在，可以不再设置 bucket 参数，如果设置则覆盖数据源 path 中的 bucket 值
+#bucket=
+// 删除文件的 process 操作为 delete
+process=delete
+```  
+
+## 删除单个文件
+如果只是单个文件需要该操作，可以用 single 模式，从命令行输入文件名直接处理一次即可，命令如下：  
+`qsuits -s -d -process=delete -bucket=ts-work -key=10.mp4`   
+无异常错误输出则表示成功，`-s` 表示启用 single 模式进行单次操作，`-d` 表示使用默认账号。  
+
+# 5. 修改 content-type
+即修改存储文件的 mime 类型，配置如下：  
+```
+path=qiniu://<bucket>
+ak=
+sk=
+# region 没有设置时可以自动判断，但建议自行设置 region
+#region=z0/z1/qvm-z0/...
+# 因为有数据源 path 中 bucket 的存在，可以不再设置 bucket 参数，如果设置则覆盖数据源 path 中的 bucket 值
+#bucket=
+// 修改文件 mime 的 process 操作为 mime
+process=mime
+# 表示将文件修改为 video/mp4 类型，避免所有文件都被修改，建议加上过滤条件，或者使用已存在的文件列表做本地数据源的操作。
+mime=video/mp4
+```
+
+## 修改单个文件
+如果只是单个文件需要该操作，可以用 single 模式，从命令行输入文件名直接处理一次即可，命令如下：  
+`qsuits -d -s -process=mime -bucket=temp -key=test.py -mime=text/plain`   
+无异常错误输出则表示成功，`-s` 表示启用 single 模式进行单次操作，`-d` 表示使用默认账号。  
+
+# 6. 其他操作
+其他更多操作：[数据操作](https://developer.qiniu.com/kodo/tools/6263/the-command-line-tools-qsuits#10)

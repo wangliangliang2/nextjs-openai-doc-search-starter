@@ -1,0 +1,406 @@
+数据处理V2为自定义数据处理提供了新的命令行工具 `qdoractl`，通过使用该命令行工具，开发者能够创建、部署、维护、管理在数据处理V2上的自定义数据处理应用。
+
+# **下载**
+* [Mac OS 64bits](https://devtools.qiniu.com/qdoractl-darwin-amd64-0.4.6)
+* [Linux 64bits](https://devtools.qiniu.com/qdoractl-linux-amd64-0.4.6)
+* [Windows 64bits](https://devtools.qiniu.com/qdoractl-windows-amd64-0.4.5.exe)
+
+
+# **获取帮助**
+
+### 查看 qdoractl 帮助信息
+用法：
+
+```
+qdoractl help
+或
+qdoractl -h
+或
+qdoractl --help
+```
+### 查看子命令帮助
+用法：
+
+```
+qdoractl help <subcommand>
+或
+qdoractl <subcommand> -h
+或
+qdoractl <subcommand> --help
+```
+参数说明：
+
+| 参数名称         | 说明   | 类型     | 必填   |
+| :---------- | :---- | :------ | :---- |
+| subcommand | 子命令名 | string | 是    |
+
+## 注意
+功能 `push`, `attach` 目前不支持 windows 平台。
+docker image 建议在 Unix-like 环境下构建。
+
+# **子命令介绍**
+
+## login
+
+使用 qdoractl 开发自定义数据处理，需要先使用七牛账号的Access Key 和Secret Key登录。
+
+如何获取 Access Key 和 Secret Key，请查阅[这里](https://portal.qiniu.com/user/key)。
+
+用法：
+
+```
+qdoractl login -u <access key> -p <secret key>
+```
+
+标志说明：
+
+| 名称       | 说明         | 类型     | 必填   |
+| :--------- | :---------- | :------ | :---- |
+| -u 或 --ak | 填写Access Key | string | 是    |
+| -p 或 --sk | 填写Secret Key | string | 是    |
+
+## logout
+退出当前登录，用法：
+
+```
+qdoractl logout
+```
+
+## register
+创建一个自定义数据处理
+
+用法：
+
+```
+qdoractl register <ufop> [-d <description>] [-m <mode>]
+```
+
+参数、标志说明：
+
+| 名称                 | 说明                      | 类型     | 必填   |
+| :------------------ | :------------------------ | :------ | :---- |
+| ufop                | 自定义数据处理名称          | string | 是    |
+| -d 或 --description | 设置自定义数据处理的描述  | string | 否    |
+| -m 或 --mode        | 设置访问模式<br>public : 任何人都能访问<br>protected : [apply](#apply)过的用户才能访问<br>private : 只有自己才能访问。普通用户只能创建private或protected的自定义数据处理，默认是private | string | 否 |
+
+## list
+查看所有已经创建的自定义数据处理
+
+用法：
+
+```
+qdoractl list
+```
+
+## unregister
+注销一个自定义数据处理
+
+用法：
+
+```
+qdoractl unregister <ufop>
+```
+
+参数说明：
+
+| 名称                 | 说明                      | 类型     | 必填   |
+| :------------------ | :------------------------ | :------ | :---- |
+| ufop                | 自定义数据处理名称          | string | 是    |
+
+## push
+上传本地可运行的 docker image到自定义数据处理镜像仓库（需要本地有docker环境） 
+### 注意
+目前不支持 windows 平台。
+
+用法：
+
+```
+qdoractl push <image>
+```
+
+参数说明：
+
+| 名称                 | 说明           | 类型     | 必填   |
+| :------------------ | :------------- | :------ | :---- |
+| image               | 镜像名          | string | 是    |
+
+**注意：** 本地运行Docker版本需为[1.12.0](https://github.com/docker/docker/blob/master/CHANGELOG.md#1120-2016-07-28)及以上
+
+
+## image
+查看当前用户已经上传的 docker image
+
+用法：
+
+```
+qdoractl image
+```
+
+
+## release
+查看或者创建一个发布版本
+
+### 查看发布版本信息
+用法：
+
+```
+qdoractl release <ufop> [<version>] [--detail]
+```
+
+参数说明：
+
+| 名称                 | 说明                    | 类型     | 必填   |
+| :------------------ | :---------------------- | :------ | :---- |
+| ufop                | 自定义数据处理名称        | string | 是    |
+| version             | 查看指定版本的详细发布信息   | string | 否    |
+| -d 或 --detail      | 显示实例信息             | string | 否    |
+
+### 创建发布版本模版
+准备发布版本的配置文件
+
+用法：
+
+```
+qdoractl release --mkconfig <path>
+```
+
+标志说明：
+
+| 名称                 | 说明                          | 类型     | 必填   |
+| :------------------ | :---------------------------- | :------ | :---- |
+| path         | 设置生成的配置文件模版的存储路径  | string | 是    |
+
+配置文件参数说明：
+
+| 名称                 | 说明                      | 类型     | 必填   |
+| :------------------ | :------------------------ | :------ | :---- |
+| ufopname      | 自定义数据处理名称          | string | 是    |
+| verstr        | 该发布的版本号             | string | 是    |
+| image         | 镜像名                    | string | 是    |
+| desc          | 设置发布的说明信息          | string | 否    |
+| flavor        | 设置需要的资源配置          | string | 是    |
+| health_check | 设置健康检查<br>path : string, 健康检查url，平台会向该url发送GET请求，并根据返回的http status code是否是200来判断该应用是否健康<br>timeout : int, 调用健康检查的时间间隔，单位为秒   | struct | 否 |
+| log_file_paths | 用户自定义日志路径，该路径下的用户日志会被采集并自动回收 | string | 否   |
+
+### 创建发布版本
+用法：
+
+```
+qdoractl release --config <path>
+```
+
+参数说明：
+
+| 名称              | 说明                   | 类型     | 必填   |
+| :---------------- | :-------------------- | :------ | :---- |
+| path    | 设置配置文件的路径       | string | 是    |
+
+
+## deploy
+查看或调整实例数
+
+### 查看特定应用的所有实例信息
+用法：
+
+```
+qdoractl deploy <ufop> --all
+```
+
+参数、标志说明：
+
+| 名称               | 说明                      | 类型     | 必填   |
+| :---------------- | :--------------- | :------ | :---- |
+| ufop              | 自定义数据处理名称  | string | 是    |
+| -a 或 --all             | 查看所有实例信息       | bool | 是    |
+
+### 查看特定应用的特定实例信息
+用法：
+
+```
+qdoractl deploy <ufop> --id <deployment_id>
+```
+
+参数、标志说明：
+
+| 名称               | 说明                      | 类型     | 必填   |
+| :---------------- | :------------------------ | :------ | :---- |
+| ufop              | 自定义数据处理名称          | string | 是    |
+| -i 或 --id             | 查看指定id的部署信息         | string | 是    |
+
+### 调整实例数
+用法：
+
+```
+qdoractl deploy <ufop> <verstr> --region <region> --expect <num>
+```
+
+参数、标志说明：
+
+| 名称               | 说明               | 类型     | 必填   |
+| :---------------- | :----------------- | :------ | :---- |
+| ufop              | 自定义数据处理名称    | string | 是    |
+| verstr            | 设置发布版本         | string | 是    |
+| -r 或 --region    | 设置实例部署的区域           | string | 是    |
+| -e 或 --expect    | 设置期望实例数,当值为0时，表示该发布版本在该区域已禁用  | int    | 是    |
+
+
+## apply
+启用其他开发者的自定义数据处理
+
+用法：
+
+```
+qdoractl apply <ufop>
+```
+
+参数说明：
+
+| 名称               | 说明                      | 类型     | 必填   |
+| :---------------- | :------------------------ | :------ | :---- |
+| ufop              | 自定义数据处理名称          | string | 是    |
+
+**注意：**apply 之后大概需要 5 分钟生效
+
+## unapply
+
+禁用其他开发者的自定义数据处理
+
+用法：
+
+```
+qdoractl unapply <ufop>
+```
+
+参数说明：
+
+| 名称               | 说明                      | 类型     | 必填   |
+| :---------------- | :------------------------ | :------ | :---- |
+| ufop              | 自定义数据处理名称          | string | 是    |
+
+**注意：**unapply 之后大概需要 5 分钟生效
+
+## attach
+登录实例
+
+### 注意
+目前不支持 windows 平台。
+
+用法：
+
+```
+qdoractl attach <ufop> --region <region> --instance <instanceId>
+```
+参数说明：
+
+| 名称               | 说明               | 类型     | 必填   |
+| :---------------- | :----------------- | :------ | :---- |
+| ufop              | 自定义数据处理名称    | string | 是    |
+| -r 或者 --region   | 指定实例部署的区域           | string | 是    |
+| -i 或者 --instance | 指定实例号          | string | 是    | 
+
+## flavor
+查看资源可选配置
+
+用法：
+
+```
+qdoractl flavor
+```
+
+## region
+查看可选实例部署的区域 
+
+用法：
+
+```
+qdoractl region
+```
+
+## instance
+查看实例信息
+
+### 查看所有实例信息
+用法：
+
+```
+qdoractl instance <ufop> --all
+```
+
+参数、标志说明：
+
+| 名称               | 说明               | 类型     | 必填   |
+| :---------------- | :----------------- | :------ | :---- |
+| ufop              | 自定义数据处理名称    | string | 是    |
+| -a 或 --all       | 查看所有实例信息      | bool | 是    |
+
+
+### 查看指定部署区的所有实例
+
+```
+qdoractl instance <ufop> --region <region>
+```
+
+参数、标志说明：
+
+| 名称               | 说明               | 类型     | 必填   |
+| :---------------- | :----------------- | :------ | :---- |
+| ufop              | 自定义数据处理名称    | string | 是    |
+| -r 或 --region    | 指定实例部署的区域     | string | 是    |
+
+
+### 查看指定发布版本的所有实例
+
+```
+qdoractl instance <ufop> --release <release>
+```
+
+参数、标志说明：
+
+| 名称               | 说明               | 类型     | 必填   |
+| :---------------- | :----------------- | :------ | :---- |
+| ufop              | 自定义数据处理名称    | string | 是    |
+| -l 或 --release    | 设置发布的版本          | string | 是    |
+
+## log
+查看实例日志
+
+用法：
+
+```
+qdoractl log <ufop> <release> --region <region> [--from <from>] [--to <to>] [--instance_id <instance_id>] [--keyword <keyword>] [--show <show>] [--size <size>] [--type <type>]
+```
+
+参数、标志说明：
+
+| 名称               | 说明               | 类型     | 必填   |
+| :---------------- | :----------------- | :------ | :---- |
+| ufop              | 自定义数据处理名称    | string | 是    |
+| release           | 设置发布的版本          | string | 是    |
+| -r 或 --region    | 指定实例部署的区域     | string | 是    |
+| --from            | 设置运行日志的开始时间，若没有指定，则从最早的运行日志开始     | string | 否    |
+| --to              | 设置运行日志的结束时间，若没有指定，则以当前时间为结束时间    | string | 否    |
+| --instance_id    | 设置运行日志来自那个实例     | string | 否    |
+| -k 或 --keyword    | 设置查询关键字     | string | 否    |
+| --show    | 日志显示模式<br>simple : 只包含日志文本<br>detail : 包含时间戳，日志类型，实例ID和日志文本，默认是simple     | string | 否    |
+| --size    | 设置返回日志条数，默认为100条   | int | 否    |
+| --type    | 设置查询日志类型<br>stdout : 标准输出日志<br>stderr：标准错误输出日志<br>数字如1，2，3 ...：自定义用户日志，如填写1，则表示在创建一个发布版本时在log_file_paths中指定的第一个自定义日志路径上收集到日志；填写2，则表示在log_file_paths中指定的第二个自定义日志路径上收集到日志，默认是包含所有日志类型     | string | 否    |
+
+
+
+
+### std 
+查看标准输出/标准错误 
+
+```
+qdoractl log std <ufop> --region <region> --id <instanceID> --tail <num>
+```
+
+参数说明：
+
+| 名称                 | 说明                    | 类型     | 必填   |
+| :------------------ | :---------------------- | :------ | :---- |
+| ufop                | 自定义数据处理名称        | string | 是    |
+| -r / --region                | instance 区域        | string | 是    |
+| -i / --instance_id                | instance id        | string | 是    |
+| -t / --tail                | 最新几条输出        | int | 否    |
+| -l / --limit_byte           | 最大输出字节数        | int | 否    |

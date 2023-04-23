@@ -1,0 +1,76 @@
+# 接口介绍
+短信字数 ≤ 70 个字数，按照 70 个字数一条短信计算，短信字数 > 70 个字数，即为长短信，按照 67 个字数记为一条短信计算，接口统计的为实际计费条数。
+
+
+# 请求定义
+```
+GET /v1/user/statistics HTTP 1.1
+Host: sms.qiniuapi.com
+Authorization: \<QiniuToken\>
+Content-Type: application/x-www-form-urlencoded
+```
+
+# 请求头
+> 请参考 [请求认证](https://developer.qiniu.com/sms/5842/sms-api-authentication)
+
+# 参数
+|名称|必填|描述|
+|----|----|----|
+|`start`|是|查询开始时间。格式：2006-01-02|
+|`end`|是|查询结束时间。格式：2006-01-02|
+|`g`|是|计量数据聚合粒度，支持： day, 5min|
+|`status`|是|短信的状态，支持："success"(发送成功), "failed"(发送失败), "sending"(发送中)|
+
+# 请求示例
+> GET https://sms.qiniuapi.com/v1/user/statistics?start=2021-01-01&end=2021-01-02&g=day&status=success
+
+# 响应定义
+该接口正确处理请求时返回如下 JSON 数据
+```json
+{
+    "data": {
+        "marketing": { // 营销短信统计
+            "times": [
+                1609430400,
+            ],
+            "values": [
+                0,
+            ]
+        },
+        "notification": { // 通知短信统计
+            "times": [
+                1609430400,
+            ],
+            "values": [
+                0,
+            ]
+        },
+        "verification": {// 验证码短信统计
+            "times": [
+                1609430400,
+            ],
+            "values": [
+                0,
+            ]
+        },
+        "voice": { // 语音短信统计
+            "times": [
+                1609430400,
+            ],
+            "values": [
+                0,
+            ]
+        }
+    }
+}
+```
+说明： 通知短信和验证码短信会统一到 系统短信 计量计费
+
+出错是响应如下 JSON 数据：
+```json
+{
+    "error": "{error_type}",
+    "message": "{error_message}",
+    "request_id": "{request_id}"
+}
+```

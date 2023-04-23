@@ -1,0 +1,98 @@
+<div data-v-md-line="1"><link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                跨房媒体转发回调接口，可通过调用 <a href='8684/QNRTCClient#startMediaRelay'>QNRTCClient.startMediaRelay</a> 等方法传入</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onResult`)'>onResult</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onError`)'>onError</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onResult">
+onResult</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">void onResult(Map&lt;String, <a href='10168/QNMediaRelayState'>QNMediaRelayState</a>&gt; stateMap)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>跨房媒体转发操作成功</p>
+    </div>
+<section class="rtc-doc-panel rtc-doc-describe-note">
+    <blockquote class="blockquote-warning">
+    <p>注意：此接口回调的是全量的跨房状态，包含所有跨房目标。具体每个目标房间是否转发成功，需要参考回调参数中目标房间对应的 <a href='10168/QNMediaRelayState'>QNMediaRelayState</a></p>
+    </blockquote>
+</section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            stateMap: Map&lt;String, <a href='10168/QNMediaRelayState'>QNMediaRelayState</a>&gt;
+        </div>
+                <p>具体目标房间状态， key 为房间名， value 为状态</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onError">
+onError</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">void onError(int errorCode, String description)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>接口失败回调</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>ERROR_INVALID_CLIENT_MODE</td>
+                    <td>使用场景不符</td>
+                    <td>请确认当前场景为互动直播，通信场景不支持角色设置</td>
+                </tr>
+                <tr>
+                    <td>ERROR_INVALID_CLIENT_ROLE</td>
+                    <td>用户角色不符</td>
+                    <td>请确认当前角色为主播，观众角色不支持跨房媒体转发</td>
+                </tr>
+                <tr>
+                    <td>ERROR_RELAY_TOKEN_ERROR</td>
+                    <td>Token 验证失败</td>
+                    <td>请确认 Token 是否正确</td>
+                </tr>
+        </tbody>
+    </table>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            errorCode: int
+        </div>
+                <p>错误码</p>
+    </li>
+    <li>
+        <div>
+            description: String
+        </div>
+                <p>错误描述</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+
+</div>

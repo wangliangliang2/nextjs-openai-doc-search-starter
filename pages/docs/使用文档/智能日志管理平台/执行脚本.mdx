@@ -1,0 +1,20 @@
+以定时任务的形式执行脚本，将脚本执行的结果全部获取则任务结束，等到下一个定时任务的到来，也可以仅执行一次。
+![](https://dn-odum9helk.qbox.me/FjEi2rKGTjKM4GRE8iDyUXgepiwB)
+
+读取后的数据：
+![](https://dn-odum9helk.qbox.me/FhIoKdITR7aBjKAorYWgbZd1pxUs)
+
+**基础配置信息**
+
+  * 脚本执行解释器(`script_exec_interpreter`)：默认使用 bash，支持 who 等常见命令，不支持交互式命令，如 top。
+  
+  * 脚本命令参数(`script_params`): 默认为空，脚本命令执行的参数。
+  
+  * 脚本内容(`(script_content`)：默认为空，可以填写具体的脚本执行内容，也可以填写脚本路径。
+
+**高级选项**
+  
+  * `定时任务(script_cron)`: 定时任务触发周期，支持三种写法。
+    * 直接写 `"loop"`,任务会不停的循环，执行完一次再接着执行下一次，后面可以跟循环的间歇时间，如 "loop 10s"，表示每次循环间隔 10s，支持的单位还有"m（分钟）"，"h(小时)"
+    * crontab 的写法,类似于`* * * * * *` ，对应的是秒(0~59)，分(0~59)，时(0~23)，日(1~31)，月(1-12)，星期(0~6)，填*号表示所有遍历都执行。
+    * 描述式写法,类似于 "@midnight", "@every 1h30m"，必须`@`符合开头，目前支持`@hourly`,`@weekly`,`@monthly`,`@yearly`,`@every <time duration>`

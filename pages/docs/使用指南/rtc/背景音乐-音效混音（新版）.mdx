@@ -1,0 +1,96 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本部分介绍背景音乐混音功能的使用</p>
+<blockquote>
+<p>注意，自 SDK 4.2.0 版本开始，增加了新版本的背景音乐混音功能，本篇文档介绍新版本背景音乐混音的用法。如果想要查看旧版本背景音乐混音的用法，可以参考 <a href="/rtc/9470/background-music-mix-web">背景音乐混音（旧版）</a>。</p>
+</blockquote>
+
+# 背景音乐混音
+<p>用户可在连麦过程中通过混音功能添加背景音乐，支持 MP3、AAC 等格式的本地或在线音乐，使用方式如下：</p>
+<h2 id="创建-createaudiomusicmixer"><a href="#%E5%88%9B%E5%BB%BA-createaudiomusicmixer" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>创建 createAudioMusicMixer</h2>
+<p>SDK 当前仅支持基于 <a href="/rtc/api/9064/WebQNMicrophoneAudioTrack">QNMicrophoneAudioTrack</a> 的混音功能，因此，可以通过 <a href="/rtc/api/9064/WebQNMicrophoneAudioTrack">QNMicrophoneAudioTrack</a> 创建 <a href="/rtc/12353/WebQNAudioMusicMixer">QNAudioMusicMixer</a> 对象。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> filePath = <span class="hljs-string">&quot;/sdcard/music/example.mp3&quot;</span>;
+<span></span><span class="hljs-keyword">const</span> musicAudioMixer = mMicrophoneAudioTrack.<span class="hljs-title function_">createAudioMusicMixer</span>(filePath)
+<span></span></code></pre>
+<p><code>createAudioMusicMixer</code> 不仅支持文件地址，同时还支持 AudioBuffer 与 File 类型。</p>
+<h2 id="音乐控制"><a href="#%E9%9F%B3%E4%B9%90%E6%8E%A7%E5%88%B6" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>音乐控制</h2>
+<p>在创建了 <a href="/rtc/12353/WebQNAudioMusicMixer">QNAudioMusicMixer</a> 实例后，可以通过该实例提供的混音控制接口进行混音操作的控制，使用代码参考如下：</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// 开始混音，成功后会触发 QNAudioMusicMixerState.MIXING 状态的回调</span>
+<span></span>mAudioMixer.<span class="hljs-title function_">start</span>();
+<span></span><span class="hljs-comment">// 停止混音，成功后会触发 QNAudioMusicMixerState.STOPPED 状态的回调</span>
+<span></span>mAudioMixer.<span class="hljs-title function_">stop</span>();
+<span></span><span class="hljs-comment">// 恢复混音，成功后会触发 QNAudioMusicMixerState.MIXING 状态的回调</span>
+<span></span>mAudioMixer.<span class="hljs-title function_">resume</span>();
+<span></span><span class="hljs-comment">// 暂停混音，成功后会触发 QNAudioMusicMixerState.PAUSED 状态的回调</span>
+<span></span>mAudioMixer.<span class="hljs-title function_">pause</span>();
+<span></span><span class="hljs-comment">// 跳到指定位置进行混音，成功后回触发 QNAudioMusicMixerState.MIXING 状态的回调</span>
+<span></span>mAudioMixer.<span class="hljs-title function_">seekTo</span>(positionMs);
+<span></span></code></pre>
+<p>上述为混音基本流程的控制，更多控制方式请参考 <a href="/rtc/12353/WebQNAudioMusicMixer">QNAudioMusicMixer</a>。</p>
+<blockquote>
+<p>当前<strong>仅支持一个麦克风 track 混一路音频</strong>，重复针对同一个麦克风 track 创建不同的 <a href="/rtc/12353/WebQNAudioMusicMixer">QNAudioMusicMixer</a> 并执行 start 操作，后面的会覆盖前面的，即以后执行 start 的音频混音控制器为准进行混音。</p>
+</blockquote>
+
+# 多音效混音
+<h2 id="创建-createaudioeffectmixer"><a href="#%E5%88%9B%E5%BB%BA-createaudioeffectmixer" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>创建 createAudioEffectMixer</h2>
+<p>SDK 当前仅支持基于 <a href="/rtc/api/9064/WebQNMicrophoneAudioTrack">QNMicrophoneAudioTrack</a> 的多重音效混音功能，可以通过 <a href="/rtc/api/9064/WebQNMicrophoneAudioTrack">QNMicrophoneAudioTrack</a> 接口来创建 <a href="rtc/12350/WebQNAudioEffectMixer">QNAudioEffectMixer</a> 对象。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> filePath = <span class="hljs-string">&quot;/sdcard/music/example.mp3&quot;</span>;
+<span></span><span class="hljs-keyword">const</span> audioEffectMixer = mMicrophoneAudioTrack.<span class="hljs-title function_">createAudioEffectMixer</span>()
+<span></span></code></pre>
+<p><code>createAudioEffectMixer</code> 不仅支持文件地址，同时还支持 AudioBuffer 与 File 类型。</p>
+<h2 id="创建-qnaudioeffect"><a href="#%E5%88%9B%E5%BB%BA-qnaudioeffect" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>创建 QNAudioEffect</h2>
+<p><a href="/rtc/12352/WebQNAudioEffect">QNAudioEffect</a> 为音效文件的配置类，可通过 <a href="/rtc/12350/WebQNAudioEffectMixer#createAudioEffect">QNAudioEffectMixer.createAudioEffect</a> 接口进行创建，每一个音效文件都需对应一个 <a href="/rtc/12352/WebQNAudioEffect">QNAudioEffect</a> 实例，使用代码参考如下：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> filePath = <span class="hljs-string">&quot;/sdcard/effect.mp3&quot;</span>;
+<span></span><span class="hljs-keyword">const</span> effectID = <span class="hljs-string">&quot;test&quot;</span>;
+<span></span><span class="hljs-keyword">const</span> audioEffect = mAudioEffectMixer.<span class="hljs-title function_">createAudioEffect</span>(effectID, filePath);
+<span></span></code></pre>
+<p><strong>其中，effectID 为音效文件的唯一标识符，可自行生成并维护，该标识符为控制一系列音效混音操作的依据，需保证唯一。</strong></p>
+<h2 id="混音控制"><a href="#%E6%B7%B7%E9%9F%B3%E6%8E%A7%E5%88%B6" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>混音控制</h2>
+<pre><code class="language-typescript"><span class="hljs-comment">// 开始指定音效混音</span>
+<span></span>mAudioEffectMixer.<span class="hljs-title function_">start</span>(audioEffect.<span class="hljs-title function_">getID</span>());
+<span></span><span class="hljs-comment">// 停止指定音效混音</span>
+<span></span>mAudioEffectMixer.<span class="hljs-title function_">stop</span>(audioEffect.<span class="hljs-title function_">getID</span>());
+<span></span><span class="hljs-comment">// 恢复指定音效混音</span>
+<span></span>mAudioEffectMixer.<span class="hljs-title function_">resume</span>(audioEffect.<span class="hljs-title function_">getID</span>());
+<span></span><span class="hljs-comment">// 暂停指定音效混音</span>
+<span></span>mAudioEffectMixer.<span class="hljs-title function_">pause</span>(audioEffect.<span class="hljs-title function_">getID</span>());
+<span></span><span class="hljs-comment">// 停止所有正在混音的音效</span>
+<span></span>mAudioEffectMixer.<span class="hljs-title function_">stopAll</span>();
+<span></span><span class="hljs-comment">// 暂停所有正在混音的音效</span>
+<span></span>mAudioEffectMixer.<span class="hljs-title function_">pauseAll</span>();
+<span></span><span class="hljs-comment">// 恢复所有已经暂停混音的音效</span>
+<span></span>mAudioEffectMixer.<span class="hljs-title function_">resumeAll</span>();
+<span></span></code></pre>
+
+# 音量控制
+<p>混音场景下，主要包含三种音量设置：麦克风混音音量、音效/音乐混音音量、本地播放音量。三种音量的设置方式参考如下：</p>
+<ul>
+<li>
+<p><strong>麦克风混音音量</strong>：可以通过 <a href="/rtc/9064/WebQNMicrophoneAudioTrack#setVolume">QNMicrophoneAudioTrack.setVolume</a> 接口进行配置。</p>
+</li>
+<li>
+<p><strong>音效混音音量</strong>：可以通过 <a href="/rtc/12350/WebQNAudioEffectMixer#setVolume">QNAudioEffectMixer.setVolume</a> 和 <a href="/rtc/12350/WebQNAudioEffectMixer#setAllEffectsVolume">QNAudioEffectMixer.setAllEffectsVolume</a> 接口分别对指定音效和所有音效进行音量配置。</p>
+</li>
+<li>
+<p><strong>背景音乐混音音量</strong>：可以通过 <a href="/rtc/12353/WebQNAudioMusicMixer#setMixingVolume">QNAudioMusicMixer.setMixingVolume</a> 进行音量设置。</p>
+</li>
+<li>
+<p><strong>本地播放音量</strong>：可以通过 <a href="/rtc/9064/WebQNMicrophoneAudioTrack#setPlayingVolume">QNMicrophoneAudioTrack.setPlayingVolume</a> 接口进行配置，需要注意的是，播放音量是基于混音后的音频进行调整的，会受到混音音量调整的影响。</p>
+</li>
+</ul>
+<p>参考代码如下：</p>
+<pre><code class="language-typescript">mMicrophoneAudioTrack.<span class="hljs-title function_">setVolume</span>(<span class="hljs-number">0.5</span>);                  <span class="hljs-comment">// 设置麦克风采集(混音)音量</span>
+<span></span>mMicrophoneAudioTrack.<span class="hljs-title function_">setPlayingVolume</span>(<span class="hljs-number">0.5</span>);           <span class="hljs-comment">// 设置混音后本地播放的音量</span>
+<span></span>mAudioEffectMixer.<span class="hljs-title function_">setVolume</span>(audioEffect.<span class="hljs-title function_">getID</span>(), <span class="hljs-number">0.5</span>); <span class="hljs-comment">// 设置指定音效的混音音量</span>
+<span></span>mAudioEffectMixer.<span class="hljs-title function_">setAllEffectsVolume</span>(<span class="hljs-number">0.5</span>);            <span class="hljs-comment">// 设置所有音效的混音音量</span>
+<span></span>mAudioMusicMixer.<span class="hljs-title function_">setMixingVolume</span>(<span class="hljs-number">0.5</span>);                 <span class="hljs-comment">// 设置背景音乐的混音音量                    </span>
+<span></span>
+<span></span></code></pre>
+
+# 耳返
+<p>若您在混音场景下，有开启返听的需要，则可以通过 <a href="/rtc/9064/WebQNMicrophoneAudioTrack#setEarMonitorEnabled">QNMicrophoneAudioTrack.setEarMonitorEnabled</a> 接口进行开启，参考代码如下：</p>
+<pre><code class="language-typescript">mMicrophoneAudioTrack.<span class="hljs-title function_">setEarMonitorEnabled</span>(<span class="hljs-literal">true</span>); <span class="hljs-comment">// 开启返听</span>
+<span></span></code></pre>
+<blockquote>
+<p>为达到最佳体验，建议在佩戴耳机的情况下使用该功能</p>
+</blockquote></div></div>

@@ -1,0 +1,20 @@
+ **需求情景描述**
+
+当你需要对上传完成的文件进行压缩，然后对压缩过的文件进行下载，来减少流量，七牛云提供了以下解决方案来帮助你节省流量
+
+**解决方案**
+
+首先七牛对用户的上传文件，原样上传（保存最原始的文件），其次当用户请求的时候，七牛自动会对文本文件进行压缩操作（gzip）。然后客户端（浏览器）如果支持gzip的话，会自动解压缩。这样会给用户省去很多流量费用。
+
+七牛解决方案： 支持的文件类型：
+
+    text/plain
+    text/css
+    text/javascript
+    text/xml
+    application/x-javascript
+    application/json
+    application/xml
+    application/xml+rss
+    application/javascript
+

@@ -1,0 +1,219 @@
+# **简介**
+肉眼可见的水印方式，一般用于标志图片的出处或者用于声明版权，会破坏原图，且影响美观。七牛提供盲水印功能，隐蔽性强，在不破坏原始作品的情况下，实现版权的防护与追踪。当图片被盗用后，您可对图片进行盲水印解码，验证版权归属。
+
+七牛提供的盲水印功能有两种类型：
+
+| 水印类型   | 说明                         |
+| ---------- | ---------------------------- |
+| 图片盲水印 | 将图片作为盲水印添加到图片中 |
+| 文字盲水印 | 将文字作为盲水印添加到图片中 |
+
+## **限制说明**
+- 原图限制：
+
+  ```
+  1. 格式支持 jpg、png
+  2. 宽高限制为：4096x4096
+  3. version为3时，原图的尺寸宽高都需大于512
+  ```
+
+- 编码、解码的 version 要相同
+
+- 盲水印主要为CPU密集型任务，处理时间会随着图片文件的增大而增大
+
+- 建议使用 version/3，相较于之前的版本有以下优化：
+
+  ```
+  1. 解水印不需要对比原图，去除对原图的依赖
+  2. 抗大面积涂抹&裁剪攻击
+  ```
+
+
+
+
+# **应用场景**
+
+**隐形美观**
+
+盲水印是一种肉眼不可见的水印方式，可以保持图片美观的同时，保护您的资源版权。
+
+**版权保护**
+
+对图片资源使用图片盲水印或者文字水印，借此避免数字媒体未经授权的复制和拷贝，可通过对原图进行解码操作，得到水印图来证明版权归属。
+
+**防泄漏**
+
+对于内部分享的图片资源，您可使用盲水印功能，加上不同标识，如果资料被复制、传播可根据解码出的唯一标识得出泄露方信息。
+
+
+
+# **图片盲水印**
+## **接口规格**
+```
+watermark/5
+         /version/<version>
+         /method/<method>
+         /imageKey/<encodedImageKey>
+         /orignal/<encodedImage>
+```
+
+## **添加水印**
+
+version 为1或2时，请求参数说明如下：
+
+| 名称                          | 必填 | 说明                                                         |
+| ----------------------------- | :--: | ------------------------------------------------------------ |
+| `/version/<version>`          |  N   | 接口版本值为1或2 , 默认为 1。                                |
+| `/method/<method>`            |  Y   | 盲水印标志位，编码（添加水印）为encode。                     |
+| `/imageKey/<encodedImageKey>` |  N   | 水印图片（经过URL安全的Base64编码），图片来源为七牛bucket（需要与输入图片在同一个bucket中）。<br>**例如**：imageKey=upload.png，encodedImageKey=urlsafe_base64_encode(imageKey)。<br>**注意**：水印图片宽高分别不超过原图宽高的二分之一，图片为黑底白字效果更佳。 |
+
+version 为3时，请求参数说明如下：
+
+| 名称                          | 必填 | 说明                                                         |
+| ----------------------------- | ---- | ------------------------------------------------------------ |
+| `/version/<version>`          | N    | 接口版本值为3，注意：<br>1）原图的宽高都需大于512。<br>2）水印图片的限制，必须是二值图像，且水印的大小为64x64，如果不符合条件， 会缩放和处理图片到服务要求。 |
+| `/method/<method>`            | Y    | 盲水印标志位，编码（即添加水印）为encode。                   |
+| `/imageKey/<encodedImageKey>` | N    | 水印图片（经过URL安全的Base64编码），图片来源为七牛bucket（需要与输入图片在同一个bucket中）。<br>**例如**：imageKey=upload.png，encodedImageKey=urlsafe_base64_encode(imageKey)。 |
+
+## **提取水印**
+
+version 为1或2时，请求参数说明如下：
+
+| 名称                      | 必填 | 说明                                                         |
+| ------------------------- | ---- | ------------------------------------------------------------ |
+| `/version/<version>`      | N    | 接口版本值为1或2 , 默认为 1。                                |
+| `/method/<method>`        | Y    | 盲水印标志位，解码（即提取水印）为decode。                   |
+| `/orignal/<encodedImage>` | N    | 解码对比原图（经过URL安全的Base64编码），图片来源为七牛bucket（需要与输入图片在同一个bucket中）。 |
+
+version 为3时，请求参数说明如下：
+
+| 名称                 | 必填 | 说明                                         |
+| -------------------- | ---- | -------------------------------------------- |
+| `/version/<version>` | N    | 接口版本值为3，注意：原图的宽高都需大于512。 |
+| `/method/<method>`   | Y    | 盲水印标志位，解码（即提取水印）为decode。   |
+
+## **示例**
+
+1-1.编码/ 添加盲水印（version/3)
+
+```
+https://dora-doc.qiniu.com/gogopher1.jpg?watermark/5/version/3/method/encode/imageKey/cWluaXUtbG9nby0zLnBuZw==
+```
+
+![查看效果图](https://dora-doc.qiniu.com/gogopher1.jpg?watermark/5/version/3/method/encode/imageKey/cWluaXUtbG9nby0zLnBuZw==)
+
+1-2.解码/ 提取盲水印（version/3)
+
+```
+https://dora-doc.qiniu.com/gogopher1.jpg?watermark/5/version/3/method/encode/imageKey/cWluaXUtbG9nby0zLnBuZw==|watermark/5/version/3/method/decode
+```
+
+![查看效果图](https://dora-doc.qiniu.com/gogopher1.jpg?watermark/5/version/3/method/encode/imageKey/cWluaXUtbG9nby0zLnBuZw==|watermark/5/version/3/method/decode)
+
+2-1.编码/ 添加盲水印（version/2)
+
+```
+https://dora-doc.qiniu.com/gogopher.jpg?watermark/5/version/2/method/encode/imageKey/dXBkYXRlLmpwZw==
+```
+
+![查看效果图](https://dora-doc.qiniu.com/gogopher.jpg??watermark/5/method/encode/imageKey/dGVzdDAwMC5wbmc=)
+
+2-2.解码/ 提取盲水印（version/2)
+
+```
+https://dora-doc.qiniu.com/gogopher.jpg?watermark/5/version/2/method/encode/imageKey/dXBkYXRlLmpwZw==|watermark/5/version/2/method/decode/orignal/Z29nb3BoZXIuanBn
+```
+
+![查看效果图](https://dora-doc.qiniu.com/gogopher.jpg?watermark/5/method/encode/imageKey/dXBkYXRlLmpwZw==|watermark/5/method/decode/orignal/Z29nb3BoZXIuanBn)
+
+
+
+# **文字盲水印**
+
+## **接口规格**
+
+```
+watermark/6
+         /version/<version>
+         /method/<method>
+         /text/<encodedText>
+         /orignal/<encodedImage>
+```
+
+## **添加水印**
+
+version 为1和2时，请求参数说明如下：
+
+| 名称                  | 必填 | 说明                                                         |
+| --------------------- | ---- | ------------------------------------------------------------ |
+| `/version/<version>`  | N    | 接口版本 可选1、2 , 默认为 1。                               |
+| `/method/<method>`    | Y    | 盲水印标志位，编码（添加水印）为encode。                     |
+| `/text/<encodedText>` | N    | 水印文字（经过URL安全的Base64编码）。只支持英文数字字符，不支持中文字符，数量上限分别为 10。 |
+
+version 为3时，请求参数说明如下：
+
+| 名称                  | 必填 | 说明                                                         |
+| --------------------- | ---- | ------------------------------------------------------------ |
+| `/version/<version>`  | N    | 版本为3时，注意：原图的宽高都需大于512。                     |
+| `/method/<method>`    | Y    | 盲水印标志位，编码（添加水印）为encode。                     |
+| `/text/<encodedText>` | N    | 水印文字（经过URL安全的Base64编码）。只支持英文数字字符，不支持中文字符，数量上限分别为 15。 |
+
+## **提取水印**
+
+version 为1和2时，请求参数说明如下：
+
+| 名称                      | 必填 | 说明                                                         |
+| ------------------------- | ---- | ------------------------------------------------------------ |
+| `/version/<version>`      | N    | 接口版本 可选1、2 , 默认为 1。                               |
+| `/method/<method>`        | Y    | 盲水印标志位，解码（即提取水印）为decode。                   |
+| `/orignal/<encodedImage>` | N    | 解码对比原图（经过URL安全的Base64编码），图片来源为七牛bucket（需要与输入图片在同一个bucket中）。 |
+
+version 为3时，请求参数说明如下：
+
+| 名称                 | 必填 | 说明                                       |
+| -------------------- | ---- | ------------------------------------------ |
+| `/version/<version>` | N    | 版本为3时，注意：原图的宽高都需大于512。   |
+| `/method/<method>`   | Y    | 盲水印标志位，解码（即提取水印）为decode。 |
+
+## **示例**
+
+1-1.编码/ 添加盲水印（version/3）
+```
+https://dora-doc.qiniu.com/gogopher1.jpg?watermark/6/version/3/method/encode/text/MTIzNDU2Nzg5
+```
+![查看效果图](https://dora-doc.qiniu.com/gogopher1.jpg?watermark/6/version/3/method/encode/text/MTIzNDU2Nzg5)
+
+1-2.解码/ 提取盲水印（version/3）
+```
+https://dora-doc.qiniu.com/gogopher1.jpg?watermark/6/version/3/method/encode/text/MTIzNDU2Nzg5|watermark/6/version/3/method/decode
+```
+![查看效果图](https://dora-doc.qiniu.com/gogopher1.jpg?watermark/6/version/3/method/encode/text/MTIzNDU2Nzg5|watermark/6/version/3/method/decode)
+
+
+
+2-1.编码/ 添加盲水印（version/2）
+```
+https://dora-doc.qiniu.com/gogopher.jpg?watermark/6/version/2/method/encode/text/OTAyR0h3cmM=
+```
+![查看效果图](https://dora-doc.qiniu.com/gogopher.jpg?watermark/6/version/2/method/encode/text/OTAyR0h3cmM=)
+
+2-2.解码/ 提取盲水印（version/2）
+```
+https://dora-doc.qiniu.com/gogopher.jpg?watermark/6/version/2/method/encode/text/OTAyR0h3cmM=|watermark/6/version/2/method/decode/orignal/Z29nb3BoZXIuanBn
+```
+![查看效果图](https://dora-doc.qiniu.com/gogopher.jpg?watermark/6/version/2/method/encode/text/OTAyR0h3cmM=|watermark/6/version/2/method/decode/orignal/Z29nb3BoZXIuanBn)
+
+
+
+# **操作方式**
+
+您可以通过 [同步处理](/dora/api/8266/synchronous-processing)、[持久化处理](/dora/api/1291/persistent-data-processing-pfop)、[图片样式设置](/dora/api/8264/the-picture-style)等方式，对图片进行处理，目前盲水印功能不支持 `CDN中间源处理`，详情介绍请参见[图片处理操作方式](/dora/api/8234/the-image-processing1)。
+
+
+
+# **计费说明**
+
+| 处理类型    | 价格      |
+| :---------- | :-------- |
+| 盲水印-添加 | 1 元/千次 |
+| 盲水印-提取 | 1 元/千次 |

@@ -1,0 +1,51 @@
+通常我们在搜索时提取字段，但是在一些数据结构相对稳定的情况下,配置字段加速，实现在索引时提取字段会大幅增加搜索分析的性能。例如，如果您通常使用诸如method=GET之类的表达式搜索大型事件集，并且字段method的值总是GET。或者搜索时提取字段的值经常出现在该字段之外，例如通常只搜索method=GET，但是在许多没有method=GET的事件中也有GET值，则针对method字段的提取配置字段加速是个不错的选择。字段加速对于统计类算子的分析场景有显著的性能优化。
+
+
+> **注意：**
+* 配置字段加速后，每个索引字段都会增加可搜索索引的大小。
+* 另外索引字段也会降低分析的灵活性，每次调整提取的字段集时都必须对整个数据集重新索引。
+
+
+
+**关于字段命名规则**
+
+字段命名须遵循以下语法规则：
+
+1. 字段名的有效字符为a-z、a-z、0-9或_。
+2. 字段名不能以0-9或_开头。Pandora为其系统变量保留了开头的下划线。
+3. 避免指定与任何系统字段名相同的字段名。
+4. 不要指定包含国际字符的字段名。
+
+
+
+
+-----
+
+
+## **字段加速配置**
+Pandora通过数据写入时提取字段并构建索引来实现字段加速。
+目前支持在字段提取规则配置流程中进行字段加速的配置，针对需要加速的字段配置字段提取规则。
+通过搜索返回结果进入字段提取页面，点击字段栏或日志内容区域的**“提取字段”**按钮，或者在字段管理页面点击右上角的**“+”**创建提取规则。
+![](https://dn-odum9helk.qbox.me/FiAuJ8HtkPwZVy5BrGsqlPLvsljC)
+![](https://dn-odum9helk.qbox.me/Fr8QBJo5PaWIyaShjqSl-AVXxq2t)
+
+**一、选择示例数据：**
+进入字段提取配置页面，选择一个来源类型获取数据，针对新创建或缺乏示例数据的sourcetype，可以支持上传本地文件或者手动粘贴文本输入用户想提取字段的示例数据。
+![](https://dn-odum9helk.qbox.me/FlqqIv-CedaZJbOShR9b9AaeCQN7)
+![](https://dn-odum9helk.qbox.me/FgxsZQooyDd4aBjdmifrcYQCh8BM)
+
+**二、选择解析方式：**
+根据数据类型选择解析方法，可选的方法包含正则表达式、固定分隔符、JSON、键值对解析以及XML解析。
+![](https://dn-odum9helk.qbox.me/FvXRz_AWcfNabxy_EtdEA4na74vN)
+
+**三、配置字段加速保存解析规则：**
+在保存规则页面勾选**“字段加速”**勾选框实现对应解析规则中的字段加速。系统中所有解析规则的字段加速配置情况可以在字段管理列表或者来源类型管理列表中查看。
+![](https://dn-odum9helk.qbox.me/FtogmUiS5B-542gGuwKwp6TEH-Mr)
+![](https://dn-odum9helk.qbox.me/FkHY6xSTzcptbf_XBDSyYwIrqaot)
+![](https://dn-odum9helk.qbox.me/FkVg1vveSxtHaZG8iXH2561VDYwg)
+
+
+
+> **注意：**当Pandora创建字段名时，会应用字段命名规则：
+> * 带有前下划线的字段默认不做索引提取，前下划线是为Pandora中的系统字段保留的。
+

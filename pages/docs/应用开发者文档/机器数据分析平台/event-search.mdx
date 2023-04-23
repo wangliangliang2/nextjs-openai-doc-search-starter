@@ -1,0 +1,61 @@
+使用`<event-search>`元素在应用中定义搜索，可以通过设置初始化搜索条件、时间等可以渲染出日志搜索页面，并且可以通过修改搜索条件、时间等进行交互式的日志查看与分析。
+
+### 子元素
+
+|元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<initial-value>`|设置日志的初始化条件，可通过`<search>`，`<document-type>`，`<fields>`子元素设置|无|
+|`<progress>`|设置搜索时进度条的样式，详解参见`<progress>`元素|无|
+|`<hide-timeline>`|是否隐藏该页面里的timeline模块|false|
+|`<hide-schema-selector>`|是否隐藏该页面里的 感兴趣字段模块|false|
+
+示例
+
+```
+<event-search>
+  <initial-value>
+    <search>
+      <query>sourcetype=*</query>
+      <earliest>-30m</earliest>
+    </search>
+    <document-type>json</document-type>
+    <fields>['_time', 'host']</fields>
+  </initial-value>
+  <progress>
+    <color>red</color>
+    <width>6</width>
+  </progress>
+  <hide-timeline>true</hide-timeline>
+</event-search>
+```
+
+#### progress
+
+使用`<progress>`元素在`<event-search>`元素中定义搜索时的进度条样式。
+
+**`<progress>`的子元素**
+
+|元素|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|`<color>`|进度条的颜色|#2c6dd2|
+|`<width>`|进度条的宽度|2|
+
+#### document-type
+
+使用`<document-type>`元素在`<event-search>`元素中设置日志搜索结果以何种形式展示，展示类型可以是 json(json 模式)、table(表格模式) 或 document(文档模式)， 默认值是 document。
+
+示例
+
+```
+<document-type>json</document-type>
+```
+
+#### fields
+
+使用`<fields>`元素在`<event-search>`元素中设置希望日志里展示的感兴趣的字段，设置在 fields 里的字段会被选中作为展示的字段。值为字符串数组类型。
+
+示例
+
+```
+<fields>['_time', 'host']</fields>
+```

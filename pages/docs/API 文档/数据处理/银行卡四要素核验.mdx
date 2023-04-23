@@ -1,0 +1,80 @@
+# 接口简介
+
+银行卡四要素核验接口采用权威官方数据库进行比对，验证姓名、证件号码、手机号码、银行卡号的真实性和一致性。
+
+# 请求参数
+
+**请求URL**: `https://ap-gate-z0.qiniuapi.com/faceref/fourmeta/check`
+
+**请求方式**: POST
+
+**请求 Header**:
+
+| 字段          | 取值                                                         |
+| :------------ | :----------------------------------------------------------- |
+| Content-Type  | application/json                                             |
+| Authorization | Qiniu \<AccessKey>:\<Sign> </br>注意: 用户请根据 AccessKey 和 SuccessKey 生成鉴权，以便进行身份验证。\<Sign> 的取值请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken) |
+
+**请求 Body**:
+
+| 字段      | 类型   | 是否必选 | 说明     |
+| :-------- | :----- | :------- | :------- |
+| cert_name | string | Y        | 真实姓名 |
+| cert_no   | string | Y        | 证件号码 |
+| mobile    | string | Y        | 手机号码 |
+| bank_card | string | Y        | 银行卡号 |
+
+# 返回结果
+
+| 字段        | 类型   | 说明                            |
+| :---------- | :----- | :------------------------------ |
+| result_code | string | 结果码，一般OK表示调用成功      |
+| result_msg  | string | 异常信息的文本描述              |
+| match       | string | true: 匹配通过; false: 匹配失败 |
+
+# 示例
+
+**请求示例**
+
+```HTTP
+POST /faceref/fourmeta/check HTTP/1.1
+Host: ap-gate-z0.qiniuapi.com
+Content-Type: application/json
+Authorization: Qiniu xxxxxxx
+
+{
+    "cert_name": "张三",
+    "cert_no": "33010219001123123X",
+    "mobile": "13812341234"
+    "bank_card": "000000000000000000"
+}
+```
+
+**返回示例**
+
+```HTTP
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "result_code":"FOURMETA_MATCH_FAIL",
+    "result_msg":"匹配失败(Z8803)",
+    "match":"false"
+}
+```
+
+# 错误码
+
+| 错误码                       | 说明                                                    |
+| :--------------------------- | :------------------------------------------------------ |
+| OK                           | 匹配成功(Z8802)                                         |
+| FOURMETA_MATCH_FAIL          | 匹配失败(Z8803)                                         |
+| INITIALIZE_INVALID_CERT_NO   | 用户身份证号码信息无效，请填写正确的身份号码信息(Z8111) |
+| INITIALIZE_INVALID_CERT_NAME | 姓名无效，请填写正确的姓名(Z8109)                       |
+| INITIALIZE_INVALID_MOBILE_NO | 手机号码无效，请填写正确的手机号码(Z8113)               |
+| INITIALIZE_INVALID_BANK_NO   | 银行卡号无效，请填写正确的银行卡号(Z8114)               |
+| FOURMETA_THIRDPARTY_ERROR    | 第三方调用异常，请您稍后再试(Z8801)                     |
+| SYSTEM_ERROR                 | 抱歉，系统出错了，请您稍后再试(Z8198)                   |
+
+# 价格
+0.5元/次	

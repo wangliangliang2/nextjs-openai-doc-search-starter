@@ -1,0 +1,663 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>class im.floo.floolib.BMXChatServiceListener</p>
+                <p>聊天监听者</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">字段</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#swigCMemOwn`)'>swigCMemOwn</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getCPtr`)'>getCPtr</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#finalize`)'>finalize</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#delete`)'>delete</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#swigDirectorDisconnect`)'>swigDirectorDisconnect</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#swigReleaseOwnership`)'>swigReleaseOwnership</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#swigTakeOwnership`)'>swigTakeOwnership</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onStatusChanged`)'>onStatusChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onAttachmentUploadProgressChanged`)'>onAttachmentUploadProgressChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onRecallStatusChanged`)'>onRecallStatusChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReceive`)'>onReceive</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReceiveCommandMessages`)'>onReceiveCommandMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReceiveSystemMessages`)'>onReceiveSystemMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReceiveReadAcks`)'>onReceiveReadAcks</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReceiveDeliverAcks`)'>onReceiveDeliverAcks</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReceiveRecallMessages`)'>onReceiveRecallMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReceiveReadCancels`)'>onReceiveReadCancels</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReceiveReadAllMessages`)'>onReceiveReadAllMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReceiveDeleteMessages`)'>onReceiveDeleteMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReceivePlayAcks`)'>onReceivePlayAcks</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onAttachmentStatusChanged`)'>onAttachmentStatusChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onAttachmentDownloadByUrlStatusChanged`)'>onAttachmentDownloadByUrlStatusChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onRetrieveHistoryMessages`)'>onRetrieveHistoryMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onLoadAllConversation`)'>onLoadAllConversation</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onConversationCreate`)'>onConversationCreate</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onConversationDelete`)'>onConversationDelete</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onTotalUnreadCountChanged`)'>onTotalUnreadCountChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#registerChatService`)'>registerChatService</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">字段</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="swigCMemOwn">swigCMemOwn</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">protected transient boolean swigCMemOwn</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getCPtr">getCPtr</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+protected static long getCPtr(BMXChatServiceListener obj);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="finalize">finalize</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+protected void finalize();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="delete">delete</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public synchronized void delete();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="swigDirectorDisconnect">swigDirectorDisconnect</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+protected void swigDirectorDisconnect();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="swigReleaseOwnership">swigReleaseOwnership</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void swigReleaseOwnership();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="swigTakeOwnership">swigTakeOwnership</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void swigTakeOwnership();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onStatusChanged">onStatusChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onStatusChanged(BMXMessage msg, BMXErrorCode error);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息发送状态发生变化</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msg: <a href='/IM/api/8239/bmxmessage'>BMXMessage</a>
+        </div>
+                <p>发生状态变化的消息</p>
+    </li>
+    <li>
+        <div>
+            error: BMXErrorCode
+        </div>
+                <p>状态错误码</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onAttachmentUploadProgressChanged">onAttachmentUploadProgressChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onAttachmentUploadProgressChanged(BMXMessage msg, int percent);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>附件上传进度发送变化</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msg: <a href='/IM/api/8239/bmxmessage'>BMXMessage</a>
+        </div>
+                <p>上传附件的消息</p>
+    </li>
+    <li>
+        <div>
+            percent: int
+        </div>
+                <p>附件上传的进度</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onRecallStatusChanged">onRecallStatusChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onRecallStatusChanged(BMXMessage msg, BMXErrorCode error);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息撤回状态发送变化</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msg: <a href='/IM/api/8239/bmxmessage'>BMXMessage</a>
+        </div>
+                <p>撤回状态发生变化的消息</p>
+    </li>
+    <li>
+        <div>
+            error: BMXErrorCode
+        </div>
+                <p>状态错误码</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReceive">onReceive</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onReceive(BMXMessageList list);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            list: BMXMessageList
+        </div>
+                <p>接收到的消息列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReceiveCommandMessages">onReceiveCommandMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onReceiveCommandMessages(BMXMessageList list);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到命令消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            list: BMXMessageList
+        </div>
+                <p>接收到的消息列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReceiveSystemMessages">onReceiveSystemMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onReceiveSystemMessages(BMXMessageList list);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到系统通知消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            list: BMXMessageList
+        </div>
+                <p>接收到的系统消息列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReceiveReadAcks">onReceiveReadAcks</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onReceiveReadAcks(BMXMessageList list);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到消息已读回执</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            list: BMXMessageList
+        </div>
+                <p>接收到的已读回执消息列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReceiveDeliverAcks">onReceiveDeliverAcks</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onReceiveDeliverAcks(BMXMessageList list);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到消息已送达回执</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            list: BMXMessageList
+        </div>
+                <p>接收到的已送达回执消息列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReceiveRecallMessages">onReceiveRecallMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onReceiveRecallMessages(BMXMessageList list);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到撤回消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            list: BMXMessageList
+        </div>
+                <p>接收到的撤回消息列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReceiveReadCancels">onReceiveReadCancels</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onReceiveReadCancels(BMXMessageList list);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到消息已读取消（多设备其他设备同步消息已读状态变为未读）</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            list: BMXMessageList
+        </div>
+                <p>接收到的消息已读取消消息列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReceiveReadAllMessages">onReceiveReadAllMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onReceiveReadAllMessages(BMXMessageList list);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到消息全部已读（多设备同步某消息之前消息全部设置为已读）</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            list: BMXMessageList
+        </div>
+                <p>接收到的消息全部已读消息列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReceiveDeleteMessages">onReceiveDeleteMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onReceiveDeleteMessages(BMXMessageList list);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到删除消息 （多设备同步删除消息）</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            list: BMXMessageList
+        </div>
+                <p>接收到的删除消息列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReceivePlayAcks">onReceivePlayAcks</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onReceivePlayAcks(BMXMessageList list);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到消息已播放回执</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            list: BMXMessageList
+        </div>
+                <p>接收到的已读回执消息列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onAttachmentStatusChanged">onAttachmentStatusChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onAttachmentStatusChanged(BMXMessage msg, BMXErrorCode error, int percent);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>附件下载状态发生变化</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msg: <a href='/IM/api/8239/bmxmessage'>BMXMessage</a>
+        </div>
+                <p>发生下载状态变化的消息</p>
+    </li>
+    <li>
+        <div>
+            error: BMXErrorCode
+        </div>
+                <p>状态错误码</p>
+    </li>
+    <li>
+        <div>
+            percent: int
+        </div>
+                <p>附件下载的进度</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onAttachmentDownloadByUrlStatusChanged">onAttachmentDownloadByUrlStatusChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onAttachmentDownloadByUrlStatusChanged(long msgId, BMXErrorCode error, int percent);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>附件下载状态发生变化</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msgId: long
+        </div>
+                <p>发生下载状态变化的消息ID</p>
+    </li>
+    <li>
+        <div>
+            error: BMXErrorCode
+        </div>
+                <p>状态错误码</p>
+    </li>
+    <li>
+        <div>
+            percent: int
+        </div>
+                <p>附件下载的进度</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onRetrieveHistoryMessages">onRetrieveHistoryMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onRetrieveHistoryMessages(BMXConversation conversation);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>拉取历史消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            conversation: <a href='/IM/api/8207/bmx-conversation'>BMXConversation</a>
+        </div>
+                <p>发生了拉取指历史消息的会话</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onLoadAllConversation">onLoadAllConversation</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onLoadAllConversation();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>已经加载完未读会话列表</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onConversationCreate">onConversationCreate</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onConversationCreate(BMXConversation conversation, BMXMessage msg);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>本地创建新会话</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            conversation: <a href='/IM/api/8207/bmx-conversation'>BMXConversation</a>
+        </div>
+                <p>新创建的本地会话</p>
+    </li>
+    <li>
+        <div>
+            msg: <a href='/IM/api/8239/bmxmessage'>BMXMessage</a>
+        </div>
+                <p>会话的最新消息，存在返回不存在返回为空</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onConversationDelete">onConversationDelete</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onConversationDelete(long conversationId, BMXErrorCode error);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>删除会话</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            conversationId: long
+        </div>
+                <p>删除的本地会话id</p>
+    </li>
+    <li>
+        <div>
+            error: BMXErrorCode
+        </div>
+                <p>状态错误码</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onTotalUnreadCountChanged">onTotalUnreadCountChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onTotalUnreadCountChanged(int unreadCount);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>更新总未读数</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            unreadCount: int
+        </div>
+                <p>本地全部会话未读总数</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="registerChatService">registerChatService</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void registerChatService(BMXChatService service);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

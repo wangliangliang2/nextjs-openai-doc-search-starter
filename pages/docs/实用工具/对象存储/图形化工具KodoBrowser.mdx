@@ -1,0 +1,360 @@
+Kodo Browser 是七牛对象存储提供的图形化管理工具，支持用户通过可视化页面进行上传、下载等操作。
+
+Github [代码地址](https://github.com/qiniu/kodo-browser)
+
+# 下载
+|支持平台|链接|
+|---------|----|
+|Windows x86|[下载](https://kodo-toolbox.qiniu.com/kodo-browser-Windows-x86-v1.0.19.2.zip)
+|Windows x64|[下载](https://kodo-toolbox.qiniu.com/kodo-browser-Windows-x64-v1.0.19.2.zip)
+|Mac OS |[下载](https://kodo-toolbox.qiniu.com/kodo-browser-Mac%20OS-v1.0.19.2.zip)
+|Linux x64 |[下载](https://kodo-toolbox.qiniu.com/kodo-browser-Linux-x64-v1.0.19.2.zip)
+
+
+[查看更新日志/下载历史版本](https://github.com/qiniu/kodo-browser/releases)
+
+# 登录
+安装后，点击 Kodo Browser 图标进入登录页面；默认是登录、管理公有云存储资源，Endpoint也可以选择「自定义（私有云）」，登录、管理私有云存储资源。
+
+![](https://dn-odum9helk.qbox.me/Fna0pFkLGP-46VPmUQGZb1ldCPak)
+* AccessKeyId/AccessKeySecret：通过[七牛控制台个人中心](https://portal.qiniu.com/user/key)获取 AK/SK
+
+登录私有云环境时，需要先在登录页面配置区域信息；Endpoint选择「自定义（私有云）」后，点击右侧设置图标即可打开配置页面
+
+![](https://dn-odum9helk.qbox.me/FmfhVN8W0PGMrP3VpBzo-WAV-JKB)
+
+* 区域信息未配置时，禁止登录私有云环境。
+* 自 1.0.10 版本开始，支持 IAM 用户登录使用 Kodo Browser。
+
+## **记住密钥**
+
+可以勾选「记住密钥」，记录登录成功的 AccessKeyId/AccessKeySecret 信息，以便于下一次的快速登录。
+
+<font color="red">**注意：请不要在临时使用的电脑上勾选记住密钥！** </font>
+
+![](https://dn-odum9helk.qbox.me/FsOtQAD6M5pWBcnQ_GNEgiPkxc3_)
+
+点击「AK 历史」，可以选择之前已验证通过的 AccessKeyId/AccessKeySecret 对来做登录。已添加的 AK 历史记录可以被删除。
+
+![](https://dn-odum9helk.qbox.me/FojiiEJaH9tPHM8BuhqZSTrE0mtt)
+
+* 登录私有云环境时，需保证当前的私有云环境区域配置信息与 AccessKeyId/AccessKeySecret 相匹配。
+
+## **切换账号**
+
+客户端允许在不退出登录的情况下，直接切换账号。
+
+![](https://dn-odum9helk.qbox.me/FoJaRtn-iCh0fGYWoe6RuwioPLjF)
+
+* 点击客户端右上角的账户小图标
+* 点击切换账号，在 AK 历史弹窗中选择要切换的 AK 点击「使用」
+* 客户端就会尝试以所选择的账号重新登录，并定位到首页展示
+
+# 功能说明
+## **Bucket 操作**
+
+自1.0.13 版本开始，客户端支持公有云的授权空间管理。
+
+### **创建 Bucket**
+
+* 在 Kodo browser 首页点击【新建 Bucket】
+* 输入 Bucket 信息
+	* 名称：由 3 ~ 63 个字符组成 ，可包含小写字母、数字和短划线，且必须以小写字母或者数字开头和结尾
+	* 区域：选择 Bucket 所在区域
+	* ACL 权限：暂不支持设置，默认创建公开 Bucket
+* 点击【确定】
+
+![](https://dn-odum9helk.qbox.me/FvCVzfiTdXyTbzleMIx8qcGitA5r)
+
+### **删除 Bucket**
+
+
+在 Bucket 列表中选中指定的 Bucket，点击【更多】-【删除】即可。
+
+![](https://dn-odum9helk.qbox.me/Fsh-OVKGBY2SfZxrSDfLD17w8HT7)
+
+## **Object 操作**
+
+![](https://dn-odum9helk.qbox.me/FnmCHL3By8QXtIJqraaCL-B48Nop)
+
+### **创建目录**
+
+* 在 Bucket 列表中点击对应的 Bucket，进入 Bucket 内对象列表
+* 点击【创建目录】
+* 输入目录名称，点击【确定】
+
+![](https://dn-odum9helk.qbox.me/FpKkJeGRwt4tKB_6FQVzSL9Fh-Dr)
+
+### **上传文件/目录**
+
+* 在指定的 Bucket 或目录内，点击【上传】
+* 选择需要上传的文件或目录即可
+
+![](https://dn-odum9helk.qbox.me/FsIRIZc-be58FpnJRc7z_e-vWtxW)
+
+* 上传文件/目录，支持拖拽操作。**注意，Windows 系统下做目录上传时，需要采用拖拽操作。**
+* 上传文件时，可以指定要保存的存储类型。客户端默认禁止上传同名文件，但是可以在上传确认界面中勾选「本次开启覆盖上传」后，覆盖上传同名文件。
+
+![](https://dn-odum9helk.qbox.me/Fr_YCm4rGh4M8_tNGlq-dMsecFvY)
+
+* 客户端默认允许上传空目录，但是可以在上传任务管理器中设置「禁止空目录上传」。
+
+![image.png](https://dn-odum9helk.qbox.me/Fi8eNvL-MSHxfSYhLYKlbFe4cg3R)
+
+### **下载文件/目录**
+
+* 在指定的 Bucket 或目录内，选中需要下载的文件或目录
+* 点击【下载】，并选择下载目录即可
+* 如本地下载目录中包含同名文件，将会在原文件名后添加后缀保存
+
+![](https://dn-odum9helk.qbox.me/FqAJCA2xrxgAMBZiUUV57l7SWJTc)
+
+* 客户端下载同名文件时，默认会在文件名最后添加数字编号；但是可以在上传任务管理器中「开启覆盖下载」模式，在下载同名文件时覆盖所选路径下已存在的文件。
+
+![](https://dn-odum9helk.qbox.me/FmeLmWFXC8dB0KhBCe3Qor0TxPoP)
+
+* 客户端默认使用空间源站域名做文件预览和下载，也支持选用空间已绑定的cdn域名来预览和下载文件。
+
+![](https://dn-odum9helk.qbox.me/FhVDArDXq_ewt962ZBRN5VOa4Oy2)
+
+<font color="red">**注意**</font>
+
+默认不使用自有域名下载公有云存储的文件时，**会产生一定的外网流出流量**，**可能会产生流量计费**。
+使用空间已绑定的cdn域名下载公有云存储的文件时，**则会产生CDN回源流量**。
+
+### **复制文件/目录**
+
+* 在指定的 Bucket 或目录内，选中需要复制的文件或目录
+* 点击【复制】
+* 进入需要粘贴文件的 Bucket 或目录，点击【粘贴】
+
+![](https://dn-odum9helk.qbox.me/FnOcZBL_hJ9R0jlmalRzciHkzeac)
+
+* 当原 Bucket 与目标 Bucket 一致，需要重命名文件，否则会提示【已有同名文件，是否覆盖？】，此时可根据您的需求选择【确定】或【取消】
+* 当原 Bucket 与目标 Bucket 不一致，会覆盖目标 Bucket 中的同名原文件
+
+![](https://dn-odum9helk.qbox.me/Fn5GiKuKQSHPWz589vy2fgncKZJQ)
+
+* 不支持跨区域复制
+
+### **移动文件/目录**
+
+* 在指定的 Bucket 或目录内，选中需要移动的文件或目录
+* 点击【移动】
+* 进入需要粘贴文件的 Bucket 或目录，点击【粘贴】
+
+![](https://dn-odum9helk.qbox.me/FhrmFK21vGs9AOZjNDoYD-NIlRUH)
+
+* 当原 Bucket 与目标 Bucket 一致，需要重命名文件，否则会提示【已有同名文件，是否覆盖？】，此时可根据您的需求选择【确定】或【取消】
+* 当原 Bucket 与目标 Bucket 不一致，会覆盖目标 Bucket 中的同名原文件
+
+![](https://dn-odum9helk.qbox.me/FrU3-SVBNfQIFY91-jI6hGgdm0Y2)
+
+* 不支持跨区域移动
+
+### **重命名文件/目录**
+
+* 在指定的 Bucket 或目录内，选中需要重命名的文件或目录
+* 点击【重命名】
+* 输入文件名称：禁止以 `/` 开头或结尾，禁止输入连续的 `/`。当文件名在 Bucket 中已存在，会提示【已有同名文件，是否覆盖？】，此时可根据您的需求选择【确定】或【取消】
+* 点击【确定】
+
+![](https://dn-odum9helk.qbox.me/FsRyZK4DMxdSAXBw69LfVUzZb45Z)
+
+### **删除文件/目录**
+
+* 在指定的 Bucket 或目录内，选中需要删除的文件或目录
+* 点击【删除】并【确定】
+
+![](https://dn-odum9helk.qbox.me/FgyUJeCmKac-YnfpZxK_asNb_RcV)
+
+* 支持单个文件/目录的删除，也支持批量删除
+
+### **解冻归档文件**
+
+归档存储类型的文件，鼠标悬停在文件「名称」上时，可以查看解冻状态。
+
+![](https://dn-odum9helk.qbox.me/FgJdBjEkGP7PuP8EvIfUK76VRmYD)
+
+在文件列表视图的「操作」列中点击解冻图标，可以解冻归档存储类型的文件。
+
+![](https://dn-odum9helk.qbox.me/FnFMuJaO558btqmng0M7WTr1TIOJ)
+
+* 设置解冻天数：1~7。
+* 点击【确定】
+* 成功提交解冻请求后，文件会切换为「解冻中」的状态。
+* 一般 5 分钟之后解冻完成，文件变为「已解冻」状态，此时归档存储文件的内容才可以被正常访问。
+
+![](https://dn-odum9helk.qbox.me/Fo-Yl2hFT_KZdKNH52eBqUnhErnJ)
+
+### **修改文件存储类型**
+
+文件列表中会展示文件的存储类型信息。[不同存储类型的差别](https://developer.qiniu.com/kodo/3956/kodo-category)
+
+![](https://dn-odum9helk.qbox.me/Fk3iLa4wWRMXzRQQGxy8YIqTYlom)
+
+在列表视图的「操作」列中点击修改存储类型的图标，可以修改文件的存储类型。
+
+![image.png](https://dn-odum9helk.qbox.me/FqP7hVcic-UFWpBbm4s0fQ87Vqef)
+
+- 归档存储类型的文件需要先解冻为可读取状态，才能进行类型转换。
+- 低频存储和归档存储类型，Object 最小计量 64KB。
+- 从低频类型转换为其他类型时，如果该 Object 保存时间少于 30 天，将按照 30 天来计费。
+- 从归档存储类型转换为其他类型时，如果该 Object 保存时间少于 60 天，将按照 60 天来计费。
+
+### **预览文件**
+
+在列表视图中双击文件名，或在矩阵视图中双击文件即可预览。目前支持 txt 和大部分图片文件的预览。
+
+![](https://dn-odum9helk.qbox.me/FrFcG8hFVC0Cu0w_joC5w6h8ErN3)
+
+
+**注意：归档存储文件，必须先解冻才能预览。**
+
+![](https://dn-odum9helk.qbox.me/Fow-X7k1EMsJ_5YbU4wk9zuyEXyV)
+
+
+### **获取外链**
+
+在文件列表视图的「操作」列中点击外链图标，或在文件的预览界面点击「获取外链」，都能方便地生成并复制文件外链。
+
+![](https://dn-odum9helk.qbox.me/FpiA0X2vPU2cyJs3FW2V5Dp_IaA8)
+
+默认不使用自有域名时，文件外链必须设置有效期，有效期范围1-604800s，默认600。
+
+![](https://dn-odum9helk.qbox.me/FgIQybBzJQYSC24PDHQepodcvkKz)
+* 设置外链有效期
+* 点击【生成】
+* 外链生成，【点击复制】文件外链即拷贝到剪切板
+
+客户端支持选用空间已绑定的cdn域名来生成外链。使用cdn域名时，
+* 空间是公开的，生成永久有效外链，无需设置有效期
+* 空间是私有的，必须设置外链有效期，有效期最长 1 年，默认 600s
+
+![](https://dn-odum9helk.qbox.me/FmpnoA-FXt9RKrKdXmwLnktKt3Q8)
+
+<font color="red">**注意**</font>
+
+默认不使用自有域名（使用空间的源站域名）生成外链，经由外链访问公有云存储的文件时，**会产生一定的外网流出流量**，**可能会产生流量计费**。
+使用空间的cdn域名生成外链，经由外链访问公有云存储的文件时，**产生的是 CDN 回源流量**。
+归档存储文件，可以直接获取外链，但是文件访问前需要先解冻。
+
+### **批量导出外链**
+
+在文件列表视图中勾选多个文件，点击批量操作区域的「导出外链」，可以一次性将多个文件的外链以 csv 文件保存到本地。
+勾选目录时，会把目录下所有文件的外链导出，而目录本身则不会导出外链。
+
+![](https://dn-odum9helk.qbox.me/FhPaOQ094jkaAZ7C2-eUUkb-_V9z)
+
+客户端支持选用空间已绑定的cdn域名来生成外链：
+* 不使用自有域名时，文件外链必须设置有效期，有效期范围1-604800s，默认600s
+* 使用cdn域名时，空间是公开的，无需设置外链有效期；空间是私有的，则必须设置有效期，有效期最长 1 年，默认 600s
+
+![](https://dn-odum9helk.qbox.me/FiRx7jk6QoHBtv5ft0dxAPD9PYts)
+
+* 设置外链有效期
+* 点击【生成并导出】
+* 客户端会弹出本地目录选择框，选择外链文件要保存的路径
+* 确认后，客户端将把所有文件外链以 csv 格式保存至所选路径下。csv 文件命名举例：kodo-browser-download-links-20200317110450.csv
+	* 使用时建议以文本编辑工具打开csv文件
+	* 文件名有中文字符时，使用 Excel 打开csv文件需要选择编码方式：打开新的空白sheet ——> 数据 ——> 从文本 ——> 选择已下载的 csv 文件，点击获取数据 ——> 选择文件原始格式或编码为：Unicode(UTF-8) ——> 设置数据分隔，点击完成，导入的中文字符即可正常显示
+
+## **管理外部路径**
+
+经由 Bucket Policy 授予权限的空间或目录，需要添加为「外部路径」，才能在客户端中使用和管理。
+
+### **开启外部路径功能**
+
+点击【设置】进入设置页面
+
+* 外部路径：勾选时，表示启用外部路径功能；不勾选时，客户端不显示「外部路径」菜单。外部路径功能，默认不启用。
+
+![](https://dn-odum9helk.qbox.me/FqSH8NODpzYT3nW6ZJTUMWPqIOZ-)
+
+### **管理外部路径**
+
+外部路径功能启用后，界面会出现「外部路径」的菜单
+
+![](https://dn-odum9helk.qbox.me/FpFpSPfoZ30VNKw0ZiTZZMMTtNDv)
+
+点击「添加外部路径」打开弹窗
+
+![](https://dn-odum9helk.qbox.me/Fuu7L-r3KVpB4q23duo5B4gG_PDD)
+* 输入外部路径名：可以是被授权的空间或目录，需要由授权者提供。
+* 选择外部路径的区域
+* 点击确定，添加完成
+
+添加好的外部路径，只要有相应的权限，支持的操作与自己创建的空间一致。
+
+选中某个已添加的外部路径，点击「更多」的「删除」，可以把这个外部路径移除。
+
+![](https://dn-odum9helk.qbox.me/FnZPToZ0Nrm3dH_ZqiNXwa0Y3aYA)
+* 此操作为客户端的配置移除，并没有真正删除对应的空间或目录。客户端不支持删除通过 Bucket Policy 授予权限的空间或目录。
+
+## **其他操作**
+
+### **断点上传设置**
+
+点击【设置】进入设置页面
+
+* 断点上传文件阈值：当开启断点上传且文件大小大于此阈值时，自动使用可恢复的分片上传
+* 断点上传文件大小：分片大小，必须为4M的整数倍，最小为8M
+* 最大上传任务数：同时上传的任务数，不仅限于断点上传模式；超过任务数量会进入队列，等待前面的任务完成
+
+![](https://dn-odum9helk.qbox.me/FnLB6ypr7zGxRFLSlIzW6sxaIC2v)
+
+### **上传限速**
+
+客户端支持设置单个文件的上传限速(单个上传任务的限速)，结合「最大上传任务数」的设置，实现客户端上传的整体限速控制。
+
+* 上传限速：勾选时表示开启限速控制；不勾选时，「单个文件上传限速」的设置不生效
+* 单个文件上传限速：单个文件上传的带宽限制值，范围 1KB/s - 100MB/s
+
+![](https://dn-odum9helk.qbox.me/FrPzzpEj52Z2SObP3K3TUDO1JMcL)
+
+### **断点下载设置**
+
+* 断点下载文件阈值：当开启断点下载且文件大小大于此阈值时，自动使用可恢复的分片下载
+* 断点下载文件大小：分片大小，最小为8M
+* 最大下载任务数：同时下载的任务数，不仅限于断点下载模式；超过任务数量会进入队列，等待前面的任务完成
+
+![](https://dn-odum9helk.qbox.me/FrKeSudUlByIfkzCwNl5zCHLZq5p)
+
+### **下载限速**
+
+客户端支持设置单个文件的下载限速(单个下载任务的限速)，结合「最大下载任务数」的设置，实现客户端下载的整体限速控制。
+
+* 下载限速：勾选时表示开启限速控制；不勾选时，「单个文件下载限速」的设置不生效
+* 单个文件下载限速：单个文件下载的带宽限制值，范围 1KB/s - 100MB/s
+
+![](https://dn-odum9helk.qbox.me/FmZiAkvuV27UlcjR3cIN-cTTXJUX)
+
+### **文件列表分步加载**
+
+客户端默认会把当前路径下的所有文件/目录全部列举出来，文件数量特别多的时候，等待时间会比较久，可以设置开启文件列表的分步加载模式。
+
+* 文件列表分步加载：勾选时表示分步加载文件列表，而不是一次性全部列举完成为止。
+
+![](https://dn-odum9helk.qbox.me/Fv9kUqi2jpFKy_dUu-r_UVEmBDU3)
+
+开启分步加载后，需要手动点击「加载更多」，才会继续列举文件。
+
+![](https://dn-odum9helk.qbox.me/FgWdwAFgSC5a38pry927QPhSHyet)
+
+* 自定义列举条目数：客户端支持自定义每次列举文件时的加载条目数，默认是 1000。只有当「分步加载」模式开启时，此设置才生效。
+
+![](https://dn-odum9helk.qbox.me/FuPu6j5_T5CZ8IYeYgvXKFRSb5fa)
+
+### **书签**
+
+客户端支持书签功能。
+
+![](https://dn-odum9helk.qbox.me/Fig5kUr8nuoZs1SevmeCDbxO3Hqf)
+
+* 在对应的界面访问路由下，点击五角星图标，可以将页面保存为书签
+* 点击「书签管理」，可以查看、使用和删除已保存的书签
+
+![](https://dn-odum9helk.qbox.me/Fl2jGyVBPT4S5XFNyJifHj5WAlwR)
+
+* 点击已保存的书签URL，客户端会跳转到对应的页面
+* 不再需要使用的书签，可以点击删除

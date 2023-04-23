@@ -1,0 +1,167 @@
+全链路追踪服务兼容 zipkin、pinpoint、skywalking 和 jaeger 等开源 Tracing 方案，通过专业日志采集工具 logkit-pro 采集 tracing 的埋点日志数据，并发送到智能日志管理平台。
+
+# **1.通过 logkit-pro 采集 tracing 数据**
+
+## **1.安装 logkit-pro**
+
+首先需要在机器上安装 logkit-pro。
+
+1.登录 [logkit-pro](http://logkit-pro.qiniu.com/)，进入机器管理页面，点击添加机器。
+
+![](https://pandora-kibana.qiniu.com/k8s/add_machine.png)
+
+2.手动安装：根据您机器的操作系统版本选择对应的命令，复制到命令行工具即可，如图所示：
+
+![](https://pandora-kibana.qiniu.com/k8s/addbyhand.png)
+
+![](https://pandora-kibana.qiniu.com/logkit/running.png)
+
+详细的安装文档可以阅读 [logkit-pro 安装](/insight/manual/4682/download-and-install) 。
+
+3. 安装完毕后，您可以在机器列表页面看到您安装的机器:
+
+![](https://dn-odum9helk.qbox.me/FpmPwc2L2arnlHd9OpBEXkJs0rbx)
+
+## **配置数据源**
+
+进入数据收集页面，点击 **添加收集器** -> **日志收集**。
+
+![](https://pandora-kibana.qiniu.com/k8s/collect.png)
+
+选择 `Tracing Collector` 数据源类型来接收 tracing 数据：
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8B%E5%8D%882.18.08.jpg)
+
+配置参数说明如下：
+
+* `接收调用链数据类型(tracing_type)`: tracing 数据类型，目前支持 zipkin，jaeger，pinpoint 和 skywalking；
+
+* `接收调用链数据版本(tracing_version)`: tracing 数据版本，zipkin 需要指定版本 `v1/v2`，jaeger，pinpoint 和 skywalking 不需填写；
+
+* `监听的地址和端口(http_service_address)`: logkit-pro 接收 tracing 数据开放的地址，如`:14268`
+
+* `监听地址前缀(http_service_path)`: logkit-pro 开放的 httpserver 路由地址，如: `/api/traces`
+
+通过如上配置完成 tracing reader，接收 Tracing 打点的 Endpoint 示例为：`http://127.0.0.1:14268/api/traces`。
+
+## **配置发送端**
+
+发送到智能日志管理平台全链路追踪服务；
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8B%E5%8D%882.34.57.jpg)
+
+`注意1：` 采集 tracing 数据无需设置解析器 Parser，转换器 Transformer。
+
+`注意2:` `将数据发送到智能日志平台全链路追踪服务`会同时生成两个日志仓库 `tracingspan` 和 `tracingservice`。`tracingspan` 仓库里只记录 tracing 数据， `tracingservice` 仓库里记录服务数据。
+
+# **2.到 zipkin、jaeger、pinpoint、skywalking 客户端修改配置**
+
+## **zipkin 客户端配置**
+
+通过 logkit-pro 采集 zipkin tracing 数据的数据源配置为 ：
+
+```
+tracing_type: "zipkin"
+tracing_version: "v2"
+http_service_address: ":9411”
+http_service_path: "/api/v2/spans"
+```
+
+您需要在您的应用代码中将数据发送地址更改为 logkit-pro 接收 tracing 数据的地址，即可获得 zipkin tracing 数据。
+
+### **zipkin-java 应用配置修改**
+
+zipkin-java 开发包下载地址：[zipkin-java](https://github.com/openzipkin/zipkin-reporter-java)
+
+在您自己的应用中修改配置：
+
+```
+// <省略...>
+// 配置 httpreporter 地址为 “http://127.0.0.1:9411/api/v2/spans”
+reporter = AsyncReporter.create(URLConnectionSender.create("http://127.0.0.1:9411/api/v2/spans"));
+
+// Schedules the span to be sent, and won't block the calling thread on I/O
+reporter.report(span);
+// <省略...>
+```
+
+### **zipkin-go 应用配置修改**
+
+zipkin-go 开发包下载地址：[zipkin-go](https://github.com/openzipkin/zipkin-go)
+
+在您自己的应用中修改配置：
+
+```
+package zipkin
+import (
+  // <省略...>
+	httpreporter "github.com/openzipkin/zipkin-go/reporter/http"
+	// <省略...>
+)
+func Example() {
+	// 配置 httpreporter 地址为 “http://127.0.0.1:9411/api/v2/spans”
+	reporter :=  httpreporter.NewReporter("http://127.0.0.1:9411/api/v2/spans")
+	// <省略...>
+}
+```
+
+## **pinpoint 客户端配置**
+
+通过 logkit-pro 采集 pinpoint tracing 数据的数据源配置为 ：
+
+```
+tracing_type: "pinpoint"
+socket_service_address 填 udp: "udp://:9996”
+```
+
+pinpoint 采用字节码增强技术实现非侵入式埋点，无需修改客户端配置。您可以阅读[通过 PinPoint Agent 监控 Tomcat Servlet 服务教程](/insight/manual/5056/tracingdemo-pinpoint-tomcat) 了解如何在智能日志平台使用 pinpoint agent 追踪服务链路。
+
+## **jaeger 客户端配置**
+
+通过 logkit-pro 采集 jaeger tracing 数据的数据源配置为 ：
+
+```
+tracing_type: "jaeger"
+tracing_version: ""
+http_service_address: ":14268”
+http_service_path: "/api/traces"
+```
+
+您需要在您的应用代码中将数据发送地址更改为 logkit-pro 接收 tracing 数据的地址，即可获得 jaeger tracing 数据。
+
+### **jaeger-go 应用配置修改**
+
+jaeger-go 开发包下载地址：[jaeger-go](https://github.com/jaegertracing/jaeger-client-go)
+
+在您自己的应用中修改配置：
+
+```
+package jaeger
+import (
+  // <省略...>
+	jaegercfg "github.com/uber/jaeger-client-go/config"
+	// <省略...>
+)
+func Example() {
+	// 配置CollectorEndpoint “http://127.0.0.1:14268/api/traces”
+	cfg := jaegercfg.Configuration{
+		Sampler: &jaegercfg.SamplerConfig{
+			Type:  jaeger.SamplerTypeConst,
+			Param: 1,
+		},
+		Reporter: &jaegercfg.ReporterConfig{
+			LogSpans: true,
+			CollectorEndpoint: "http://127.0.0.1:14268/api/traces",
+		},
+	}
+	// <省略...>
+}
+```
+
+## **skywalking 客户端配置**
+```
+agent.application_code=Your_ApplicationName
+collector.backend_service=127.0.0.1:10800
+```
+
+现在您已经将数据发送到了智能日志平台，在智能日志平台查询服务链路请阅读下一节：[调用链查询](/insight/manual/5117/call-chain-query)。

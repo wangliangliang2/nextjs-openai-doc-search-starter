@@ -1,0 +1,33 @@
+使用`<visualization-search>`元素在图表中定义搜索，并且可以在图表中通过交互式的修改搜索。
+
+### 子元素
+
+|元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<initial-value>`|设置日志的初始化条件，包括search，chart-type， option 属性以及图表内可以支持的所有样式元素|无|
+|`<progress>`|设置搜索时进度条的样式， 详解参见[progress](/express/extend/6572/event-search)元素|无|
+
+示例
+
+```
+<visualization-search>
+  <initial-value>
+    <chart-type>single</chart-type>
+    <search>
+        <query>sourcetype=*</query>
+        <earliest>m3</earliest>
+        <latest>now</latest>
+    </search>
+    <option name="colorBy">value</option>
+    <option name="colorMode">block</option>
+    <option name="drilldown">all</option>
+    <option name="height">97</option>
+    <option name="numberPrecision">0</option>
+    <option name="rangeColors">["0xdc4e41","0xdc4e41"]</option>
+  </initial-value>
+  <progress>
+    <color>#122a2a</color>
+    <width>3</width>
+  </progress>
+</visualization-search>
+```

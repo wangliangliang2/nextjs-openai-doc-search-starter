@@ -1,0 +1,438 @@
+## 自定义表单简介
+
+Pandora 2.0 平台提供了常用的表单组件，支持通过 xml 的方式自定义图表属性的配置表单。比如自定义图表、自定义触发操作等功能，需要用户能够在前端填写相关的自定义参数。比如自定义图表需要用户选择图表样式选项，自定义触发操作需要用户填写邮件服务器地址等类似相关信息。
+
+
+这一节分为以下 4 点介绍配置自定义表单的方式：
+
+1. 配置表单的 xml 元素
+2. 定义表单校验规则
+3. 设置 input 元素的动态选项
+4. 定义 input 元素的过滤器
+
+
+
+## 1.配置表单的 xml 元素 
+
+### 1.1. 表单元素
+
+**form**
+
+作为表单配置的顶层元素，所有 form 元素需使用 `form` 包裹。
+
+### 1.2. 布局元素
+
+**Collapse：折叠面板**
+
+| 属性             | 说明                                                    | 类型               | 默认值 |
+| ---------------- | ------------------------------------------------------- | ------------------ | ------ |
+| defaultActiveKey | 默认展开的 panel 的 keys，展开所有 'all', 不展开 'none' | string 或 string[] | 'none' |
+| accordion        | 是否打开手风琴模式， 最多只能打开一个折叠板             | boolean            | false  |
+
+**Collapse.panel**
+
+| 属性     | 说明              | 类型   | 默认值 |
+| -------- | ----------------- | ------ | ------ |
+| panelKey | 当前 panel 的 key | string | ''     |
+| title    | 标题              | string | ''     |
+
+### 1.3. 输入类型元素
+
+#### 1.3.1. input
+
+**公共属性**
+
+| 属性     | 说明                                   | 类型    | 默认值 |
+| -------- | -------------------------------------- | ------- | ------ |
+| field    | 属性名称， 嵌套类型可用 `a.b`          | string  | ' '    |
+| required | 是否必填，为 true 是自动做不能为空校验 | boolean | false  |
+
+**公共子元素**
+
+| 元素名称      | 描述                 | required |
+| ------------- | -------------------- | -------- |
+| rule          | 用于实现表单校验规则 | no       |
+| label         | 输入表单项的显示名称 | yes      |
+| initial-value | 输入表单项的初始值   | yes      |
+| change | 定义如何对 input 的输入或选择事件作出响应。注：自定义表单的 `change` 元素不支持 `link` 子元素| no |
+
+##### 1.3.1.1. 文本输入类：输入值类型的表单元素
+
+**text**
+
+示例：
+
+```xml
+<input type="text" field="name">
+  <label>展示名称</label>
+  <initial-value />
+</input>
+```
+
+![form_input_text.png](https://dn-odum9helk.qbox.me/FrqCetXSqnzgUYnt7iO1B3qKmFgy)
+
+**number**
+
+与`text`类似，区别在于其值只能为数值类型。
+示例：
+
+```xml
+<input type="number" field="size">
+  <label>字号</label>
+  <initial-value>12</initial-value>
+</input>
+```
+
+![form_input_number.png](https://dn-odum9helk.qbox.me/FgNCAbWNU0lrLAxe3SSkSAFj8kCq)
+
+
+##### 1.3.1.2. 选择类：选择输入类表单
+
+公共子元素：
+
+| 元素名称 | 描述                                                                                                         | required |
+| -------- | ------------------------------------------------------------------------------------------------------------ | -------- |
+| choice   | 定义选择类表单的选项，`<choice value="{value}">{label}</choice>`，可以指定选项的`{value}`和对应的`{label}`。 | no       |
+| filter   | 用于过滤表单的选项                                                                                           | no       |
+| dataset  | 用于动态指定表单元素的选项                                                                                   | no       |
+
+**dropdown**
+
+示例：
+
+```xml
+<input type="dropdown" field="align">
+  <label>对其方式</label>
+  <initial-value>left</initial-value>
+  <choice value="left">向左</choice>
+  <choice value="center">居中</choice>
+  <choice value="right">向右</choice>
+</input>
+```
+
+![form_input_dropdown.png](https://dn-odum9helk.qbox.me/FpTMq3-J9LQEs_49kVwwHO4NzB9t)
+
+**multiselect**
+
+```xml
+<input type="multiselect" field="fields">
+  <label>展示字段</label>
+  <initial-value>["longitude", "latitude"]</initial-value>
+  <choice value="one">longitude</choice>
+  <choice value="two">latitude</choice>
+  <choice value="avg(count)">avg(count)</choice>
+</input>
+```
+
+![form_input_multiselect.png](https://dn-odum9helk.qbox.me/FsK15XePjW_zbtPCRTEvyyduCvDp)
+
+**radio**
+
+```xml
+<input type="radio" field="status">
+  <label>标签显示状态</label>
+  <initial-value>on</initial-value>
+  <choice value="on">显示</choice>
+  <choice value="off">隐藏</choice>
+</input>
+```
+
+![form_input_radio.png](https://dn-odum9helk.qbox.me/FspiV9QZu5Jt05VxkZ0crvQZB20U)
+
+**checkbox**
+
+```xml
+<input type="checkbox" field="displayMetrics">
+  <label>数值显示</label>
+  <initial-value>["value"]</initial-value>
+  <choice value="value">数值</choice>
+  <choice value="percentage">百分比</choice>
+</input>
+```
+
+![form_input_checkbox.png](https://dn-odum9helk.qbox.me/FtBc4zdMigFOIga32WelYYB9tl3n)
+
+#### 1.3.2 其他输入类型元素
+
+**unit**
+
+常用单位选择元素
+
+```xml
+<input type="unit" field="unit">
+  <label>单位</label>
+  <initial-value>["none", "none"]</initial-value>
+</input>
+```
+
+![form_input_unit.png](https://dn-odum9helk.qbox.me/FpKI13DuJIY0erwD8_OUEICDhHk8)
+
+**color-pick**
+
+```xml
+<input type="color" field="fontColor">
+  <label>字体颜色</label>
+  <initial-value>#111111</initial-value>
+</input>
+```
+
+![form_input_colorpick.png](https://dn-odum9helk.qbox.me/Fmy2gxfvhUaII3SkPR1u-b3AwqjP)
+
+
+**text-color-splitter**
+
+**初始值**
+
+| 元素名称        | 描述                                                                    | required |
+| ------------- | ---------------------------------------------------------------------- | -------- |
+| color-palette | 定义颜色，属性 type 只支持"list"，参见 [color-palette](/express/extend/6580/color-palette)       | yes      |
+| rules         | 定义 text 文本按照那种匹配规则                       | yes      |
+
+
+```xml
+<input type="text-color-splitter">
+  <label>颜色</label>
+  <initial-value>
+    <color-palette type="list">['red', 'yellow']</color-palette>
+    <rules>
+      <rule type="startWith">Pandora</rule>
+      <rule type="endWith">Portal</rule>
+    </rules>
+  </initial-value>
+</input>
+```
+
+![form_input_text_color_splitter.png](https://dn-odum9helk.qbox.me/FvNsnfVkKl4lEndVi4VoJNhmrQoi)
+
+
+**number-color-splitter**
+
+**初始值**
+
+| 元素名称      | 描述                                                                     | required |
+| ------------- | ------------------------------------------------------------------------ | -------- |
+| color-palette | 定义颜色，属性 type 只支持"list"，参见 [color-palette](/express/extend/6580/color-palette) | yes      |
+| scale         | 定义数值的范围                                                           | yes      |
+
+```xml
+<input type="number-color-splitter">
+  <label>颜色</label>
+  <initial-value>
+    <color-palette type="list">['blue', 'yellow', 'red']</color-palette>
+    <scale>0,30,60,100</scale>
+  </initial-value>
+</input>
+```
+
+![form_input_number_color_splitter.png](https://dn-odum9helk.qbox.me/Fnusa-rClSAWlT_Xxkgq3qgOm6VY)
+
+
+### 1.4 条件渲染元素
+
+参见 [view-condition](/xml_view_condition)
+
+## 2.定义表单校验规则 
+
+### 2.1. 校验参数
+
+支持内置校验规则和自定义校验规则，目前支持通过 `<pattern>`、`<required>`、`<function>`元素校验表单内容。
+
+- pattern：通过正则表达式校验表单输入内容，输入正则字符串即可。例如：`<pattern>\d<pattern>`。
+- required：标识该字段是否为必填项，可直接在表单通过 required 属性设置，在这里可通过`<message>`设置校验失败文案。
+- function：自定义函数，可在`form.js`中导出该函数名函数去校验。校验失败，函数返回错误提示，校验成功返回空串即可。函数参数为：
+  - value： 当前表单值
+  - config： 所有表单值
+
+```xml
+<input type="number" field="valid">
+  <label>标签</label>
+  <initial-value>123</initial-value>
+  <rule>
+    <function>validator</function>
+  </rule>
+</input>
+```
+
+### 2.2 内置校验规则
+
+内置校验规则为 pattern 类型，直接作为 pattern 值传入即可。
+
+- 支持您校验表单输入内容是否为数值：
+
+```xml
+<input type="number" field="field">
+  <label>标签</label>
+  <initial-value>123</initial-value>
+  <rule>
+    <pattern>number</pattern>
+    <message>该字段必须为数值类型</message>
+  </rule>
+</input>
+```
+
+- 支持您校验表单输入内容是否为整数类型：
+
+```xml
+<input type="number" field="decimal">
+  <label>百分比小数位</label>
+  <initial-value>2</initial-value>
+  <rule>
+    <pattern>integer</pattern>
+    <message>该字段必须为整数类型</message>
+  </rule>
+</input>
+```
+
+## 3.根据搜索分析结果动态生成选项 
+
+`input`的选项支持通过搜索分析结果动态生成，添加`dataset`标签即可。
+
+### 3.1 将搜索结果字段设置为`input`的选项
+
+`dataset`标签的值设置为`"fields"`，可将搜索结果的所有字段名作为 input 的可选项。
+
+假设搜索结果为：
+
+| longitude    | latitude   | avg(count) |
+| ------------ | ---------- | ---------- |
+| -118.2959851 | 34.0576289 | 200        |
+| 116.3579939  | 39.9587664 | 110        |
+| -74.0392709  | 40.7590403 | 180        |
+
+如下：设置表单项**分组字段**的可选项是搜索果字段名，
+
+```xml
+<input type="dropdown" field="bucket">
+  <label>分组字段</label>
+  <dataset>fields</dataset>
+</input>
+```
+
+结果：
+
+
+![generated_options.png](https://dn-odum9helk.qbox.me/FkyxDrfIqZXZVmNpP1u5MuYzLWXU)
+
+
+### 3.2 将搜索结果字段对应的值设置为`input`的选项
+
+`dataset`标签的值为"column"， 将搜索结果字段对应的值设置为`input`的选项。其中：
+
+`field-for-value`：设置可选项的值。
+`field-for-label`：设置可选项的值显示名称。
+
+仍然以上面的搜索结果为例，表单配置如下
+
+```xml
+<input type="dropdown" field="avgValue">
+  <label>平均值</label>
+  <dataset>column</dataset>
+  <field-for-label>avg(count)</field-for-label>
+  <field-for-value>avg(count)</field-for-value>
+</input>
+```
+
+配置效果：
+
+![generated_options_column.png](https://dn-odum9helk.qbox.me/Fp-f8smddJ-m_L_7VhZHaiCH8Tyh)
+
+## 4.根据api请求结果动态生成选项 
+
+`input`的选项支持通过api请求结果动态生成，添加`api`标签即可,`api`标签包含`url`和`field-name`。
+
+`url`：可以是完整的url也可以不加域名和端口。
+`field-name`：api返回用于options的字段名称,不填默认api返回数据是数组。
+
+`field-for-value`：设置可选项的值。
+`field-for-label`：设置可选项的值显示名称。
+
+```xml
+<input type="multiselect" field="fields">
+  <label>api模式</label>
+  <initial-value>["longitude", "latitude"]</initial-value>
+  <api>
+   <url> <![CDATA[ /api/v1/dashboard?order=desc&pageNo=1&pageSize=100000&prefix=&sort=updateTime&withCharts=true]]></url>
+   <field-name>dashboards</field-name>
+  </api>
+  <field-for-label>title</field-for-label>
+  <field-for-value>id</field-for-value>
+</input>
+```
+
+## 5.设置 input 元素的选项过滤器 
+
+`input`元素支持自定义函数来过滤选项，在`visualization.js`中定义该函数并将函数名通过`filter`标签添加到`input`下方。函数参数为：
+
+- choice: 当前选项，包含以下属性：
+  - value: 当前选项的值。
+  - text: 当前选项的值对应的显示名称。
+  - row: 当前选项对应的 dataset（搜索分析结果）行。
+- config: 所有表单元素。
+- row: 同 choice 标签里的 row 属性。
+- dataset： 当前图表对应的搜索结果数据。
+
+```xml
+<input type="dropdown" field="avgValue">
+  <label>平均值</label>
+  <initial-value>column</initial-value>
+  <filter>itemFilter</filter>
+  <field-for-label>avg(count)</field-for-label>
+  <field-for-value>avg(count)</field-for-value>
+</input>
+```
+
+`itemFilter`函数定义：
+
+```javascript
+function itemFilter(choice, config, row, dataset) {
+  return choice.value > 150
+}
+```
+
+配置效果如下，可选项仅包含：`200, 180`。
+
+
+![input_filter.png](https://dn-odum9helk.qbox.me/FjrIuSGN2xsmp2wIYgeNwaVgRcyr)
+
+## 6.自定义函数写法 
+
+
+### 6.1 直接原生js文件,支持AMD模块的js
+
+```javascript
+function itemFilter(choice, config, row, dataset) {
+  return choice.value > 150
+}
+ define([], function() {
+      return {itemFilter};
+ });
+```
+
+### 6.2 直接原生ts文件最后打包成AMD模块的js文件
+
+```javascript
+function itemFilter(choice, config, row, dataset) {
+  return choice.value > 150
+}
+```
+
+## 7. 自定义表单配置form.xml位置 
+
+自定义触发操作：
+
+```
+appserver/static/<APP_NAME>/<自定义触发操作名字>/form.xml
+
+例如：
+appserver/static/custom_triggers/webhook1/form.xml
+```
+
+自定义可视化图表：
+
+```
+appserver/static/visualizations/<自定义图表名字>/form.xml
+
+如
+appserver/static/visualizations/bulletGraph/form.xml
+```
+

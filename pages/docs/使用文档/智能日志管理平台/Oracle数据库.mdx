@@ -1,0 +1,43 @@
+### **基础配置信息**
+  * 数据库连接字符串(`DSN`):用户名/用户密码@oracle地址:端口/服务名，如:"sys:password@127.0.0.1:1521/xe?as=sysdba"。 `！注意：请使用内网方式访问，以免出现安全隐患！`
+
+  * 数据查询语句(`oracle_sql`)：要执行的 sql 语句。注意 oracle 中大小写敏感，请使用准确的列名和表名去查询,若数据库中的列名或者表名含有特殊符号或者包含小写字母，查询时请使用 `""`(双引号)，如 select `"`id`"` form `"`table`"`。如果直接查询，默认查询的列名或表名会全部大些，则查询的语句为  select ID form TABLE。
+
+  * 启动时立即执行(`sql_exec_onstart`)：true 表示启动时执行一次，以后再按 cron 处理;false 则表示到 cron 预设的时间才执行，默认为 true。
+
+### **高级选项**
+  * 定时任务(`sql_cron`)：定时任务触发周期。
+
+  * 递增的列名称(`oracle_offset_key`):指定一个 oracle 的列名，作为 offset 的记录，类型必须是整型。每次查询会指定这个key做where条件限制，查询的大小由填写的分批查询的单批次大小(`oracle_batch_size`) 指定。
+
+  * 递增的时间列名称(`oracle_time_offset_key`):指定一个 oracle 列名，该列必须是时间类型，目前支持的时间类型有 `DATE`，`TIMESTAMP`，`TIMESTAMP WITH TIME ZONE`，`TIMESTAMP WITH LOCAL TIME ZONE`。每次查询会指定一个查询的时间窗口且会从上次结束的时间窗口开始查询。查询的时间范围由填写的分批查询的单批次大小(`oracle_batch_size`) 指定。
+
+  `递增的列名称和递增的时间列名称填一个即可，使用多表联合查询时不支持`
+
+  * 是否同步历史数据(`oracle_history_date`)：可选项，默认为 false，表示不导入历史数据，设置为 true 时，表示导入符合条件的历史数据。
+
+  * 分批查询的单批次大小(`oracle_batch_size`)：
+      - 对于递增的列名，所填写数值为每次查询的数量。假设填写为 100，填写的 `oracle_offset_key` 为 id 则查询 select * from table where id >=0 and id< 0+100。此时查询的范围为[id,id+100)。
+      - 对于递增的时间列名称，所填写数值的单位为秒。假设填写为 100，填写的 `oracle_offset_key` 为 eventTime 则查询 select * from table where eventTime >= time and eventTime < time+100。此时查询的时间窗口为[time,time+100)。
+
+### **新增功能**
+1. 采集指定 时间范围 的oracle数据：
+   注意事项：必须指定递增的时间列名称、同步历史数据设置为true，数据查询语句搜索出来的结果需要包含时间列，举个例子递增的时间列名称是date，这个数据表包含的column有date和id，则数据查询语句可以是`SELECT * FROM TABLE`或者`SELECT date FROM TABLE`。时间范围比较大的话可以结合配置定时任务和分批次查询的单批次大小来完成数据采集。
+
+### **常见问题及处理方法**
+
+  * 问：为什么页面上点获取数据报错`reader type unsupported : oracle`？
+  * 答：首次使用Oracle采集器需要安装插件，请直接下发。
+<br/>
+  * 问：为什么插件安装正常，点击获取数据报错`reader "oracle" read timeout, no data received`？
+  * 答：这类报错通常是由于获取到的数据量为0造成的，有两种造成此报错的原因：
+      - 通常填写了高级选项中的`递增的列名称`或者`递增的时间列名称`，请查看日志 ora.log（agent安装文件夹下/plugins/reader/oracle），查看日志中输  出的query语句，复制后在数据库中执行，确定此段查询窗口内是否确实没有数据。
+      - 查询获得的数据量过大，导致超时，请使用`递增的列名称`或`递增的时间列名称`优化每次查询的数据量大小。
+<br/>
+  * 问：为什么下发后仓库里没有数据？
+  * 答：与上一个问题的情况类似，请查看日志 ora.log（agent安装文件夹下/plugins/reader/oracle），查看日志中输出的query语句，复制后在数据库中执行，确定此段查询窗口内是否确实没有数据。
+<br/>
+  * 问：点击获取数据或者下发后没有日志怎么办？
+  * 答：请检查logkit进程，确认采集器已经下发，可以尝试删除采集器后重新下发。
+
+

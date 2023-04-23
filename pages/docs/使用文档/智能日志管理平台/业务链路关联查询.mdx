@@ -1,0 +1,21 @@
+输入起始系统的搜索条件，根据关联字段，系统会帮您查出业务链路中全部系统的关联数据，可查看每个系统的详细日志。
+
+1.切换到`链路查询` tab，选择某条链路，输入链路中起始系统的搜索条件，即可根据业务链路中的关联字段将链路中的全部系统的关联数据搜索出来。
+
+![](https://pandora-kibana.qiniu.com/business_analysis/business_analysis_1.png)
+
+如：在图中的链路中，三个系统的关联字段为 `sent_http_x_reqid - Reqid - reqid`。输入起始系统的搜索条件：`sent_http_x_reqid：xx` 可搜索出 `Nginx 入口`日志中对应搜索条件的日志，同时根据 ` Nginx 入口`日志和`审计日志`的关联字段 `Reqid` 搜索出审计日志中对应的日志，根据`审计日志`和`应用日志`的关联字段 `reqid` 搜索出应用日志中对应的日志，顺次将链路中的关联数据搜索出来。 
+
+2.点击每个系统名称旁边的搜索按钮可跳转查看业务链路中各系统在此条件下的详细日志。
+
+![](https://pandora-kibana.qiniu.com/alert/search_1.png)
+
+3.支持可视化查看业务链路，还原业务办理路径。
+
+![](https://pandora-kibana.qiniu.com/business_analysis/visual_icon1.png)
+
+![](https://pandora-kibana.qiniu.com/business_analysis/business_analysis_visual.png)
+
+4.点击链路查询结果中任意系统的数据所在行，可查看整条链路的持续时间和全部日志。
+
+![](https://pandora-kibana.qiniu.com/duration_.png)

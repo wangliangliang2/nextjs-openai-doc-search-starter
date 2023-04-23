@@ -1,0 +1,25 @@
+# **描述**
+本接口用于开启或关闭域名对应的HTTPs开关
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/domains/{domain}/ssls`
+* 使用场景：当用户有安全需求时，可通过此开关开启或关闭HTTPs保证安全可靠
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间名称ID
+|domain|是|string|域名
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|certid|是|string|证书Id
+|httpsOpen|是|boolen|https开关
+
+# **响应参数**
+200

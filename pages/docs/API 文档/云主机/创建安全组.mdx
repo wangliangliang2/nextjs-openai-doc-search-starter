@@ -1,0 +1,74 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `POST` /v1/vm/sgr
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>安全组所属地域 ID。您可以调用 DescribeRegions 查看最新的七牛云地域列表。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>security_group_name</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>安全组名称。</p>
+        <p>长度为 2~128 个英文或中文字符。必须以大小字母或中文开头，不能以 http://和 https://开头。可以包含数字、半角冒号（:）、下划线（_）或者连字符（-）。</p>
+        <p>默认值：空。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>description</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>安全组描述信息。长度为 2~256 个英文或中文字符，不能以 http://和 https://开头。默认值：空。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>vpc_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>安全组所属 VPC ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>client_token</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+名称 | 类型 | 描述
+----- | ----- | -----
+request_id | string | 请求 ID

@@ -1,0 +1,61 @@
+**功能提要**：
+
+* 加强实时仓库的数据导入能力，直接上传本地日志文件到实时仓库进行查看，方便用户对于已有存量数据快速接入【[说明文档](/insight/manual/4812/sever-regex-parser#1)】。
+
+* 上传文件后配置数据解析规则，从文本中提取字段【[使用文档](/insight/manual/4812/sever-regex-parser#2)】。
+
+* 批量上传文件到已有规则仓库
+
+* 开放 API 上传文本数据
+
+* 支持搜索结果分享【[说明文档](/insight/manual/4872/quick-search#3)】
+
+# **实时仓库支持文件上传功能**
+
+**在实时仓库中增加上传文件功能**
+
+![支持上传文件](https://pandora-kibana.qiniu.com/release-2018-04-18/1.png)
+
+**可以在上传文件中，选择向已有的仓库进行数据上传，或者直接创建新的数据仓库进行数据上传**
+
+![选择数据仓库上传](https://pandora-kibana.qiniu.com/release-2018-04-18/2-choose.png)
+
+**上传文件可以选择使用单行或者多行模式（Beta）对数据进行读取和解析**
+
+![选择数据单行多行模式](https://pandora-kibana.qiniu.com/release-2018-04-18/3-read.png)
+
+# **配置解析规则提取字段**
+
+## **生成正则表达式抽取日志字段**
+
+当选择了使用正则表达式对数据进行抽取的时候，可以通过鼠标在原始文本上进行点选和滑动，可以选择想要抽取的字段。选择完毕后，系统会自动学习生成正则表达式，尝试对所有的数据样本进行数据解析。
+
+![正则表达式数据抽取](https://pandora-kibana.qiniu.com/release-2018-04-18/4-regex.png)
+
+
+## **固定分隔符抽取日志字段**
+
+当选择了使用固定分隔符对数据进行抽取的时候，可以选择合适的数据分隔符对数据文本进行切分。可以指定每个字段的名字和类型，对数据进行解析。同样可以对所有文本检查数据规则是否符合自己的抽取需求。
+
+![固定分隔符数据抽取](https://pandora-kibana.qiniu.com/release-2018-04-18/5-csv.png)
+
+# **批量上传文件**
+
+当配置好数据文件的解析规则后，就可以通过数据仓库的上传文件功能快速上传数据文件，同时拖拽多个数据到上传文本框中即可完成数据快速上传。
+
+![快速上传](https://pandora-kibana.qiniu.com/release-2018-04-18/7-quickupload.png)
+
+# **支持直接上传原始文本数据开放 API**
+
+新版开放API支持直接将数据文本置于请求体中，可以直接服务端进行数据解析，字段抽取和数据入库。
+
+```
+POST /v2/stream/{REPO_NAME}/data
+Content-Type: text/plain
+
+[2017-12-21 05:36:26,917][WARN ][cluster.routing.allocation.decider] [Master Mold] high disk watermark [90%] exceeded on [gXIMYOjpQ0SmV-vvUpnaKw][Master Mold][/Users/jason/Development/elasticsearch-2.3.3/data/elasticsearch/nodes/0] free: 1.8gb[1.6%], shards will be relocated away from this node
+```
+
+# **支持搜索结果分享功能**
+
+现在支持将链接直接复制粘贴分享给其他人，即可以直接开始搜索，不需要再重新进行搜索。

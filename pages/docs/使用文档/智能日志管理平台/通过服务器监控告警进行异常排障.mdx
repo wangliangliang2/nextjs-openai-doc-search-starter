@@ -1,0 +1,74 @@
+告警是服务监控应用及时发现、主动提醒用户异常的功能，保证了用户在任何情况下都能及时发现异常信息，提升 IT 人员运维的效率。
+
+本教程介绍如何使用告警功能实现服务器的异常排障。
+
+# **在目标监控机器上安装 logkit-pro**
+
+使用智能日志平台的服务监控应用，首先需要确保您的机器已经安装 logkit-pro，并`开启机器监控`。
+
+1.登录 [logkit-pro](http://logkit-pro.qiniu.com/)，进入机器管理页面，点击添加机器。
+
+![](https://pandora-kibana.qiniu.com/k8s/add_machine.png)
+
+2.手动安装：根据您机器的操作系统版本选择对应的命令，复制到命令行工具即可，如图所示：
+
+![](https://pandora-kibana.qiniu.com/k8s/addbyhand.png)
+
+![](https://pandora-kibana.qiniu.com/logkit/running.png)
+
+详细的安装文档可以阅读 [logkit-pro 安装](/insight/manual/4682/download-and-install) 。
+
+3.进入机器列表页，开启机器监控。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/logkit_open.png)
+
+# **在服务监控应用监控机器**
+
+这样，您就可以在服务监控应用监控机器资源与性能指标。
+
+进入[智能日志平台应用平台](https://portal.qiniu.com/insight/apps)，找到服务监控应用，点击`进入应用`。
+
+进入服务监控应用即可看到目标服务器监控视图。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/monitor_machine.png)
+
+# **创建报警通知对像**
+进入报警管理页面，在通知管理新建通知对象，下一步配置告警规则需要填写这个通知对象。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/create_contact2.png)
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/create_contact3.png)
+
+# **配置报警规则**
+
+在报警规则 tab，创建指定监控项的报警规则，系统每隔 5 分钟聚合监控项指标，一旦监控项指标满足所配置的阈值，您将接收到报警信息。这里配置的报警规则是 CPU 使用率大于 40% 即报警。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/create_alert_.png)
+
+# **运维人员接收告警信息**
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/alert_message_.png)
+
+进入报警管理页面，可以发现新增了一条报警事件，状态为未恢复。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/event_list.png)
+
+# **观察服务器概览定位异常时间点，排查异常原因**
+
+接收到报警信息后，进入智能日志平台服务监控应用。
+
+1.去服务器概览查看目标机器的 CPU 使用率时序监控视图，找出最近异常发生的时间节点。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/time_line_chart.png)
+
+2.分析异常发生原因，及时处理异常。
+
+# **异常处理完毕报警事件置为已恢复**
+
+异常处理完毕，您会收到一条异常回复信息。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/alert_message_recover.png)
+
+进入报警管理页面，查看对应的报警事件，状态未已恢复代表异常已经处理完毕。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/recover_list.png)

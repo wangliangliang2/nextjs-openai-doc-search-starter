@@ -1,0 +1,105 @@
+# 一. 概览
+<img src="https://dn-odum9helk.qbox.me/FodfQmV94f0fSybXEVnOeEUdgF5u" width=400 />
+
+如上图所示流程：
+
+1. 用户请求到 CDN 节点；
+1. CDN 节点将用户请求原封不动的转发给鉴权服务器；
+1. 鉴权服务器根据请求头中的鉴权参数等给出鉴权结果；
+1. CDN 节点未命中向源站获取文件；
+1. 源站根据请求响应内容给 CDN ，同时 CDN 缓存内容；
+1. CDN 节点根据鉴权结果将内容响应给最终用户；
+
+# 二. 使用说明
+## 开启设置
+域名管理列表 -> 配置 -> 访问控制 -> 回源鉴权 -> 点击修改配置，如下图：
+
+<img src="https://dn-odum9helk.qbox.me/Fr29HEF4Y0J1NHYmOWW1SkjcyUFD" width=400 />  
+<img src="https://dn-odum9helk.qbox.me/FrdpM2-nAZJOO9IoXOAOGPuwdxve" width=400 />
+
+注意：如果域名回源七牛私有 bucket ，只用点开启就可以了，后面的参数不用设置，终端用户访问完全兼容七牛私有资源访问格式
+
+## 设置介绍
+
+## 1. 配置鉴权服务器地址
+鉴权地址就是用户的鉴权 http 服务器的对外可访问的地址。
+
+## 2. 配置鉴权请求方法
+用户的鉴权 http 服务器支持的请求方法，现在支持 GET，POST，HEAD。
+
+## 3. 配置鉴权参数
+鉴权参数为用户鉴权服务器端需要的 URL 参数的 KEY ， 配置的 URL 参数会从终端用户访问资源（CDN 边缘节点）时所带的 URL 参数。
+采集并过滤后，发送给用户鉴权服务器；同时这些参数在回源时也会带上。配置格式请参考样例。
+
+注意：
+- 终端用户访问资源时的请求头信息（request header）会全部传给用户的鉴权服务器；
+- 如果用户鉴权服务不是通过 URL 参数鉴权，而是通过请求头信息中的某些字段，上面的鉴权参数可以不用设置
+
+## 4. 设置回调参数(更多参数)
+
+## 名词解释
+回调参数(更多参数)是指不参与鉴权但可配置返回给用户鉴权服务器的参数，用以帮助查错及统计分析鉴权的结果，分为系统参数和自定义参数两种。系统参数类型有请求资源的ip，请求资源的path，请求资源的host，请求资源的query等几种，其对应的值已解析出来，不用设置，但参数名称以及返回的方式都可自定义；而自定义参数， 其名称、值以及返回的方式都可自定义。
+
+## 如何设置
+### a. 入口
+打开回源鉴权配置，拉到更多参数配置选项，如下图，注意如果是回源七牛私有bucket，没有该选项。
+<img src="https://dn-odum9helk.qbox.me/Fi4AItGekSsO6Be7hnPs9-JtXOsz" width=400 />
+
+### b. 返回方式选择
+根据用户请求方法HEAD，GET，POST 选择其回调参数的返回方式如下图:
+<img src="https://dn-odum9helk.qbox.me/FixEFiAXv9Xgpm19om2aJkiaI5WU" width=400 />
+
+如果请求方法为POST，可额外选择为从body返回：
+<img src="https://dn-odum9helk.qbox.me/FgywfDnMS5XoPGrrE7aPzfv7G58J" width=400 />
+
+### c. 参数名和参数值选择
+<img src="https://dn-odum9helk.qbox.me/FgmmMsdWLU1-wG8HhojVwYs7Onf8" width=400 />
+
+注意如果是系统参数，参数值是不可以设置的：
+<img src="https://dn-odum9helk.qbox.me/FgefrwtEkRfsdC4QsSA9gkVQQcN8" width=400 />
+
+### d. 例子
+需要拿到用户的请求ip，并放到Header里面，并且在Header里标记该回源鉴权请求来自七牛：
+<img src="https://dn-odum9helk.qbox.me/FnM8TcSpom_mBBnXaD337siDUslE" width=400 />
+
+
+## 5. 设置鉴权返回状态码
+设置用户鉴权服务器的返回的 HTTP 状态码。
+
+## 6. 设置鉴权超时时间
+设置 CDN 发起鉴权请求到用户鉴权服务器的超时时间，超时后的行为请参考下一步。
+
+## 7. 设置鉴权超时或者其他情况下的鉴权结果
+这一步是设置 CDN 发起鉴权请求到用户的鉴权服务器超时（超时时间请参考上一步）后， CDN 是否返回鉴权成功还是鉴权失败。
+
+注意：
+- 这一步隐含了一个设置，当设置超时后为鉴权通过时，非鉴权失败的状态码（请参考第5步）都是判定为成功；
+- 反之，设置超时为鉴权失败时，非鉴权成功的状态码（请参考第5步）都是判定为失败。
+
+# 三. CDN 发起怎样的鉴权请求
+设置回源鉴权后，终端用户每次请求 CDN 边缘节点都会触发回源鉴权请求，该请求是 CDN 边缘节点直接访问用户设置的鉴权服务器。例如：
+
+鉴权配置：
+- 鉴权地址：`http://www.userauth.com/auth`
+- 鉴权方法：POST
+- 鉴权参数：key1
+
+终端用户请求：
+```
+GET http://www.example.com/a.txt?key1=test1&key2=test2 HTTP/1.1 
+Accept-Language:zh-cn
+Connection:Keep-Alive
+Host:www.example.com
+User-Agent:Mozila/4.0(compatible;MSIE5.01;Window NT5.0)
+Accept-Encoding:gzip,deflate
+```
+
+鉴权请求：
+```
+POST http://www.userauth.com/auth?key1=test1 
+Accept-Language:zh-cn
+Connection:Keep-Alive
+Host:www.example.com
+User-Agent:Mozila/4.0(compatible;MSIE5.01;Window NT5.0)
+Accept-Encoding:gzip,deflate
+```

@@ -1,0 +1,74 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `GET` /api/rio/v1/compute/warn/alert
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id   | string | header| 是 | 地域 ID
+warn_id         | string | query | 否 | 告警组 ID
+instance_name   | string | query | 否 | 实例名称
+alert_levels    | string | query | 否 | 告警级别：<ul><li>`LOST`：紧急告警</li><li>`CRITICAL`：严重告警</li><li>`WARNING`：中度告警</li><li>`OK_RECOVERY`：告警恢复</li><li>`OK`：正常</li></ul>
+marker          | string | query | 否 | marker 分页参数
+limit           | string | query | 否 | limit 分页参数，默认 20
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+data        | []AlertMessge | 告警信息
+
+## AlertMessge 告警信息
+名称 | 类型 |  描述
+----- | ----- | -----
+alert_id             | string | 告警 ID
+alert_level          | string | 告警级别：<ul><li>`LOST`：紧急告警</li><li>`CRITICAL`：严重告警</li><li>`WARNING`：中度告警</li><li>`OK_RECOVERY`：告警恢复</li><li>`OK`：正常</li></ul>
+resource_id          | string | 资源 ID
+resource_sc_name_cn  | string | 告警实例类型
+resource_name_cn     | string | 实例名
+resource_address     | string | 实例专有网络 IP
+insert_time          | string | 告警信息产生时间
+update_time          | string | 告警信息更新时间
+events               | []AlertEvent | 告警信息指标详情
+
+### AlertEvent 告警信息指标详情
+名称 | 类型 |  描述
+----- | ----- | -----
+event_type    | string  | 告警指标：<ul><li>`CPUUtilization`：CPU使用率，单位：%</li><li>`disk_readbytes`：磁盘每秒读取的字节数，单位：MB/s</li><li>`disk_readiops`：磁盘每秒的读请求数量，单位：次/s</li><li>`disk_writebytes`：磁盘每秒写入的字节数，单位：MB/s</li><li>`disk_writeiops`：磁盘每秒的写请求数量，单位：次/s</li><li>`diskusage_utilization`：磁盘使用率，单位：%</li><li>`memory_usedutilization`：内存使用率，单位：%</li><li>`networkin_errorpackages`：设备驱动器检测到的发送错误包的数量，单位：个/s</li><li>`networkin_packages`：网卡每秒发送的数据包数，单位：个/s</li><li>`networkin_rate`：网卡的上行带宽，单位：M/s</li><li>`networkout_errorpackages`：设备驱动器检测到的接受错误包的数量，单位：个/s</li><li>`networkout_rate`：网卡的下行带宽，单位：M/s</li><li>`netin_dropped_packet_rate`：网络流入丢包率，单位：个/s</li><li>`netout_dropped_packet_rate`：网络流出丢包率，单位：个/s</li><li>`networkout_packages`：网络包流入速率，单位：个/s</li><li>`diskio_read_delay`：磁盘IO读延迟，单位：ms</li><li>`diskio_write_delay`：磁盘IO写延迟，单位：ms</li></ul>
+alert_level   | string  | 告警级别：<ul><li>`LOST`：紧急告警</li><li>`CRITICAL`：严重告警</li><li>`WARNING`：中度告警</li><li>`OK_RECOVERY`：告警恢复</li><li>`OK`：正常</li></ul>
+threshold     | integer | 当前告警阈值
+
+## 请求值示例
+```json
+```
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEvlcmUjKQMsW",
+    "data":{
+        "alert_id":"927e3fde-87d2-4f91-8e7e-6afe0b0abeb0",
+        "alert_level":"CRITICAL",
+        "resource_id":"347e3fde-213d2-4f91-8e7e-6afe0b0abeb0",
+        "resource_sc_name_cn":"云主机",
+        "resource_name_cn":"warn_test",
+        "resource_address":"192.168.1.1",
+        "insert_time":1642063489000,
+        "update_time":1642063489000,
+        "events":[
+            {
+                "event_type":"CPUUtilization",
+                "alert_level":"WARNING",
+                "threshold":58.4
+            },
+            {
+                "event_type":"diskusage_utilization",
+                "alert_level":"CRITICAL",
+                "threshold":80
+            }
+        ]
+    }
+}
+```

@@ -1,0 +1,230 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `GET` /v1/vm/snapshot
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>page</td>
+      <td>integer</td>
+      <td>query</td>
+      <td>否</td>
+      <td>
+        <p>页码。默认：1</p>
+      </td>
+    </tr>
+    <tr>
+      <td>size</td>
+      <td>integer</td>
+      <td>query</td>
+      <td>否</td>
+      <td>
+        <p>分页大小，最大 100。默认 20</p>
+      </td>
+    </tr>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>query</td>
+      <td>否</td>
+      <td>
+        <p>地域 ID。</p>
+        <p>您可以调用 DescribeRegions 查看最新的七牛云地域列表。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>snapshot_id</td>
+      <td>string</td>
+      <td>query</td>
+      <td>否</td>
+      <td>
+        <p>快照 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>snapshot_name</td>
+      <td>string</td>
+      <td>query</td>
+      <td>否</td>
+      <td>
+        <p>快照名称。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>source_disk_id</td>
+      <td>string</td>
+      <td>query</td>
+      <td>否</td>
+      <td>
+        <p>源磁盘 ID</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+total | integer | 总数
+page | integer | 页码
+size | integer | 分页大小
+request_id | string | 请求 ID
+data | \[]Snapshot | 快照列表
+
+### Snapshot
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>cost_charge_type</td>
+      <td>string</td>
+      <td>
+        <p>付费方式</p>
+      </td>
+    </tr>
+    <tr>
+      <td>cost_charge_mode</td>
+      <td>string</td>
+      <td>
+        <p>计费方式</p>
+      </td>
+    </tr>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>
+        <p>地域 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>created_at</td>
+      <td>string</td>
+      <td>
+        <p>创建时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>updated_at</td>
+      <td>string</td>
+      <td>
+        <p>更新时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>snapshot_id</td>
+      <td>string</td>
+      <td>
+        <p>快照 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>snapshot_name</td>
+      <td>string</td>
+      <td>
+        <p>快照名称</p>
+      </td>
+    </tr>
+    <tr>
+      <td>description</td>
+      <td>string</td>
+      <td>
+        <p>描述</p>
+      </td>
+    </tr>
+    <tr>
+      <td>status</td>
+      <td>string</td>
+      <td>
+        <p>状态</p>
+        <ul>
+        <li>
+        progressing: 创建中
+        </li>
+        <li>
+        accomplished: 创建成功
+        </li>
+        <li>
+        failed: 创建失败
+        </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>progress</td>
+      <td>string</td>
+      <td>
+        <p>创建进度</p>
+      </td>
+    </tr>
+    <tr>
+      <td>source_disk_id</td>
+      <td>string</td>
+      <td>
+      源磁盘ID
+      </td>
+    </tr>
+    <tr>
+      <td>source_disk_name</td>
+      <td>string</td>
+      <td>
+      源磁盘名称
+      </td>
+    </tr>
+    <tr>
+      <td>source_disk_type</td>
+      <td>string</td>
+      <td>
+      源磁盘类型,`data` 数据盘 `system` 系统盘
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+## 返回值示例
+```json
+{
+  "data": [
+    {
+      "_id": "5fca940543c29c4c46b79229",
+      "uid": 123,
+      "region_id": "cn-shanghai",
+      "snapshot_id": "s-uf67**",
+      "snapshot_name": "Created from i-uf6**",
+      "description": "Created from i-uf6**",
+      "status": "accomplished",
+      "progress": "100%",
+      "source_disk_id": "d-uf62**",
+      "source_disk_name": "ox2**",
+      "source_disk_type": "system",
+      "source_disk_size": 40,
+      "created_at": "2020-12-05T03:54:45.826+08:00",
+      "updated_at": "2020-12-05T03:54:49.232+08:00"
+    }
+  ],
+  "page": 1,
+  "size": 10,
+  "total": 18,
+  "request_id": "N8cGF3EvRnQOSFMW"
+}
+```

@@ -1,0 +1,107 @@
+本篇文档，阐述如何将摄像头,网络录像机,或者下级监控平台上云。
+
+# **接入准备**
+
+**注册七牛开发者平台**
+若尚无七牛开发者平台账号，需要先进行注册；访问[七牛官网](https://www.qiniu.com/)，点击右上角的[注册](https://portal.qiniu.com/signup)，进行七牛帐号注册。
+
+**直播域名**
+在qvs创建空间时，如果选择`静态地址`模式，则需准备好备案过的域名，详情请参见 [ICP 备案](https://developer.qiniu.com/fusion/kb/6000/the-icp-registration-process)，如果选择`动态地址`模式，则不用域名即可快速体验本产品，两种模式的区别见下文。
+
+**开通存储服务**
+如果需要对实时视频流进行录制或者截图，用于点播回看等, 则需要先在七牛`云存储`服务中创建存储bucket,否则跳过本步骤。详情请参照[创建存储空间](https://developer.qiniu.com/kodo/manual/1233/console-quickstart#step1)
+
+# **使用流程**
+
+- [步骤一：创建空间](#步骤一)
+- [步骤二：设备接入](#步骤二)
+  - [RTMP主动推流接入](#方式1)
+  - [GB/T 28181接入](#方式2)
+  - [`主动拉流`(rtsp/hls/flv/rtmp主动拉流)接入](#方式3)
+  - [ONVIF接入](#方式4)
+- [步骤三：实时预览、云端录制回放、查看截图](#步骤三)
+
+<a id="步骤一"></a>
+
+## **步骤一：创建空间**
+
+**操作说明：**
+1.登录[七牛开发者平台](https://sso.qiniu.com/?client_id=PIapUKqa3u6S24H868BelwrG0OFu8dS7AxVQ8oz8HznLXhgrl2BnjaO9cs9LzxK2&redirect_url=https:%2F%2Fportal.qiniu.com%2Fapi%2Fgaea%2Fsso%2Fsignin%3Fredirect%3D%252Fcreate)。
+
+2.选择**视频监控**产品，进入产品控制台，选择**空间管理**，[创建空间](https://developer.qiniu.io/qvs/manual/6784/namespace-management#1)，完成空间配置。注：创建空间时的模式选择, `动态地址和静态地址的区别`
+
+| 模式&nbsp;&nbsp;&nbsp;&nbsp; | 说明                                                         |
+| ---------------------------- | ------------------------------------------------------------ |
+| 静态地址                     | 通过配置域名的方式接入, 默认情况下`地址是固定的`,[流地址格式](https://developer.qiniu.com/qvs/6740/obtain-flow-address)<br>1. `必须`为域名配置cname解析,[如何配置cname?](https://developer.qiniu.com/qvs/8746/configure-cname)<br> 2.`如果`在`https`环境播放, 则`必须`配置https ssl证书。[如何配置https证书?](https://developer.qiniu.com/qvs/6925/qvs-https-configuration)<br>3.看不到域名配置管理入口或者流地址ip不固定? 因为新建空间时,`模式`选择了动态地址,重建一个新空间，选择`静态地址`即可。 |
+| 动态地址                     | 无需配置域名，流地址全部为IP形式，需通过API获取实时的流地址。<br>适用场景：<br>1.测试阶段，快速验证。<br> 2.不想配置域名，能接受流地址通过API获取。<br> 3. 只能用在http的播放环境。如果是`https`环境,必须新建空间,模式选择`静态地址` <br>**动态地址`不支持https`环境中播放, IP`不能`固定，必须通过[API](https://developer.qiniu.com/qvs/6801/dynamic-model)获取最新流地址** |
+
+3.如果创建空间时，选择`静态地址`（直播域名）的接入模式，需要进入[域名管理](https://developer.qiniu.io/qvs/manual/6784/namespace-management#2)完成域名的解析配置。[如何CNAME解析配置](https://developer.qiniu.com/qvs/8746/configure-cname)。如果空间模式为`动态地址`可跳过此步。
+
+4.如果需要对监控视频流进行录制或者截图，需要先创建 [录制模板](https://developer.qiniu.io/qvs/manual/6789/recording-the-template)、[截图模板](https://developer.qiniu.io/qvs/manual/6790/screenshot-of-the-template)，然后绑定到对应的空间或流。
+![](https://dn-odum9helk.qbox.me/Fh2F_tcpI2Yr_TbyqT6vSVt2MuX8)
+
+<a id="步骤二"></a>
+
+## **步骤二：设备接入**
+
+<a id="方式1"></a>
+
+### **（1）RTMP接入**
+
+**获取推拉流地址**
+
+* 方式一：
+  完成空间的配置后，进入流管理模块，进行[添加流](https://developer.qiniu.com/qvs/api/6734/create-flow)操作，创建完成之后点击【实时预览】查询推拉流地址。
+  ![](https://dn-odum9helk.qbox.me/FmAdBVumd800h2FDTwBWhkvAAW5V)
+
+* 方式二：
+  完成空间的配置后，可以通过portal中的**辅助工具**生成推流地址进行测试。
+  ![](https://dn-odum9helk.qbox.me/FjRLjw4zlR8hUV1l1Ii2NZyyFz0C)
+
+**设备端配置**
+设备端推流地址配置可参考[设备端配置说明](https://developer.qiniu.com/qvs/7452/rtmp-access-process)。
+
+<a id="方式2"></a>
+
+### **（2）GB/T 28181接入**
+
+**创建设备**
+完成空间配置后，进入设备管理模块，进行[添加设备](https://developer.qiniu.io/qvs/manual/7026/equipment-control#1)操作。
+![](https://dn-odum9helk.qbox.me/FoSt_Edyp7ngV-6L8NuDzoNEBuJw)
+**获取设备国标接入信息**
+设备列表中检索出需要接入的设备，点击**查看**，获取设备国标接入信息。
+![](https://dn-odum9helk.qbox.me/FnJuH3cCF-QAu9krENoHVzZ_AjBe)
+![](https://dn-odum9helk.qbox.me/FoyD7JNJrJQDl7H8Bjo6CbKcldwe)
+
+**设备端配置**
+设备端接入配置可参考[设备端配置说明](https://developer.qiniu.com/qvs/7448/gb-access-process)。
+
+
+
+<a id="方式3"></a>
+
+### **（3）主动拉流接入**
+
+1. 第一步
+   ![step1.png](https://dn-odum9helk.qbox.me/FhEjcD85k6fIKSoMviFPY7qTxZDB)
+2. 第二步
+   ![rtsp.png](https://dn-odum9helk.qbox.me/FmVe4lHpvtDns-mfVkX5vgwemW21)
+
+<a id="方式4"></a>
+
+### **（4）ONVIF接入**
+
+注意：`onvif接入要求设备有公网ip(内网设备可以使用内网映射工具，比如花生壳)`
+
+1. 在摄像头web页面添加onvif用户名密码。
+![用户名密码.png](https://dn-odum9helk.qbox.me/FrfcPZfjIdgmer-mGIeI6d2Kqpsp)
+2. 在七牛控制台创建onvif设备。输入设备的`公网ip`和添加的onvif用户名密码。
+![创建onvif设备.png](https://dn-odum9helk.qbox.me/Fh6DEZg7wpJJYqGUshig86QF7b3F)
+
+
+<a id="步骤三"></a>
+
+## **步骤三：实时预览、云端录制回放、查看截图**
+
+选择**视频流管理**，找到对应的流名，可以进行[实时预览](https://developer.qiniu.io/qvs/manual/6785/video-streaming-management#2)、查询流状态、[云端录制回放](https://developer.qiniu.io/qvs/manual/6785/video-streaming-management#3)、查询[视频截图](https://developer.qiniu.io/qvs/manual/6785/video-streaming-management#4)等操作。
+![](https://dn-odum9helk.qbox.me/Fj_GTzzP_Jb_KviEMBAU7AVDEmiM)

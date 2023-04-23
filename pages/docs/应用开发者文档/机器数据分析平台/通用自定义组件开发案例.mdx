@@ -1,0 +1,229 @@
+本文介绍如何在 Pandora 2.0 应用平台开发自定义组件的最佳实践。Pandora 2.0 应用平台不限制开发自定义组件的前端框架，本文选取 react 作为开发框架，其它框架开发过程与使用 react 类似。
+
+#### 一. 使用`create-pandora-app`创建应用模版
+
+1. 生成项目
+
+```bash
+$ npx create-pandora-app repo-manager -t view-component
+```
+
+![](../../static/img/pandora/custom-component/cpa.png)
+
+**创建过程中相关参数**
+
+- `appName` 应用的标识符，名称规则：大小字符、数字、中划线、下划线，且第一个字符必须是字符
+- `Description` 应用的描述
+- `Component Name(多个使用','分割)` 自定义组件对应名称，支持多个，需要使用逗号分隔
+- `pandora server URL` 开发调试时所使用的 pandora 环境的地址。
+- `pandora account username` pandora 环境的用户名
+- `pandora account password` pandora 环境的密码
+- `Select a package manager` 选择包管理工具 `npm` or `yarn`
+- `TypeScript` 是否使用 TypeScript 进行开发
+
+**App 目录结构**
+
+自定义组件 app 整体目录结构如下：
+
+```
+repo-manager
+├── app.json
+├── appserver
+│   └── static
+│       ├── css
+│       └── js
+├── default
+│   ├── nav.xml
+│   └── views
+│       └── repo-manager.xml
+├── README.md
+├── resources
+│   ├── extractions
+│   └── sourcetypes
+├── static
+│   └── icon.png
+└── webapp
+    ├── package.json
+    ├── platform
+    │   ├── craco.config.js
+    │   ├── env.js
+    │   ├── package.json
+    │   ├── public
+    │   │   ├── index.html
+    │   │   └── manifest.json
+    │   ├── src
+    │   │   ├── index.tsx
+    │   │   ├── react-app-env.d.ts
+    │   │   └── typings.d.ts
+    │   └── tsconfig.json
+    ├── rollup.config.js
+    ├── src
+    │   ├── index.tsx
+    │   ├── styles.less
+    │   └── typings.d.ts
+    └── tsconfig.json
+```
+
+其中 webapp 目录为开发目录，在该目录下可进行组件相关逻辑的编写和调试。
+
+2. 进入项目目录
+
+```bash
+$ cd repo-manager/webapp
+```
+
+3. 初始化项目
+
+```bash
+$ yarn run setup
+```
+
+#### 二. 开发自定义组件逻辑
+
+本示例以使用 React 开发框架
+
+Pandora 平台为您提供了以下 SDK 和组件库(仅针对 react 提供)方便您快速构建自己的应用，具体请参考[APP 开发工具库](/app-tools)
+
+- App-Sdk
+- Pandora-Component(仅 react 可用)
+
+  1.添加依赖
+
+```bash
+$ yarn add react react-dom antd
+$ yarn add -D @types/react @types/react-dom
+```
+
+2.添加业务逻辑
+
+完成自定义业务逻辑，本示例使用 react 创建 RepoList 组件。
+
+示例代码如下：
+
+新增`RepoList.tsx`文件，编写仓库列表组件逻辑，其代码如下：
+
+```typescript
+/**
+ * src/RepoList.tsx
+ */
+import React from 'react'
+import 'antd/dist/antd.css'
+import { Table } from 'antd'
+import { RepoManager, IRepo } from '@qn-pandora/app-sdk'
+
+const columns = [
+  {
+    title: '仓库名称',
+    dataIndex: 'name',
+    key: 'name'
+  },
+  {
+    title: '当前数据量',
+    dataIndex: 'bytes',
+    key: 'bytes'
+  },
+  {
+    title: '数据条数',
+    dataIndex: 'docTotal',
+    key: 'docTotal'
+  },
+  {
+    title: '存储时限',
+    dataIndex: 'retention',
+    key: 'retention'
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+    key: 'createTime'
+  },
+  {
+    title: '更新时间',
+    dataIndex: 'updateTime',
+    key: 'updateTime'
+  }
+]
+
+export default class RepoList extends React.Component<{}, { repos: IRepo[] }> {
+  repoManager: RepoManager
+  state = {
+    repos: []
+  }
+
+  get dataSource() {
+    return this.state.repos.map((repo: IRepo) => ({
+      ...repo,
+      key: repo.name
+    }))
+  }
+
+  constructor(props: {}) {
+    super(props)
+    const fetchAll = false // false by default
+    const pageSize = 20 // 10 by default
+
+    // 创建@qn-pandora/app-sdk提供的RepoManager的实例
+    this.repoManager = new RepoManager(fetchAll, pageSize)
+  }
+
+  render() {
+    return <Table columns={columns} dataSource={this.dataSource} />
+  }
+
+  componentDidMount() {
+    // 使用@qn-pandora/app-sdk提供的RepoManager获取仓库列表
+    this.repoManager.listRepos().then(repos => {
+      this.setState({ repos })
+    })
+  }
+}
+```
+
+3.接入自定义组件插件机制
+
+自定义通用组件必须继承自`@qn-pandora/app-sdk --> BaseComponet`，且实现`render`方法。
+
+示例代码如下：
+
+```typescript
+/**
+ * src/index.tsx
+ */
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { BaseComponent } from '@qn-pandora/app-sdk'
+import RepoList from './RepoList'
+
+export default class extends BaseComponent {
+  render() {
+    ReactDOM.render(<RepoList />, this.element)
+  }
+}
+```
+
+4.查看效果与调试
+
+- 启动项目
+
+```bash
+$ yarn start
+```
+
+- 查看效果
+
+访问`http://localhost:3000`，
+
+效果如下：
+![](../../static/img/pandora/custom-component/repo_manager.png)
+
+#### 三. 打包生成应用
+
+1.打包应用
+
+运行以下命令，会生成`repo-manager.tar.gz`
+
+```
+yarn run package
+```
+
+2.导入 Pandora 平台查看效果

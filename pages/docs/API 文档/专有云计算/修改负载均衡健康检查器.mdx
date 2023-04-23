@@ -1,0 +1,76 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `PUT` /api/rio/v1/network/loadbalancer_health/:health_id
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id             | string | header| 是 | 地域 ID
+health_id                 | string | path | 是 | 健康检查器 ID
+health_monitor_name       | string | body | 否 | 名称
+health_http_method        | string | body | 否 | 健康检查请求方法：<ul><li>`connect`</li><li>`delete`</li><li>`get`</li><li>`head`</li><li>`options`</li><li>`patch`</li><li>`post`</li><li>`put`</li><li>`trace`</li></ul> 
+health_check_domain       | string | body | 否 | 健康检查的域名
+health_check_uri          | string | body | 否 | 健康检查的 URI
+healthy_threshold         | integer | body | 否 | 健康检查连续成功多少次后，将后端服务器的健康检查状态由fail判定为success。取值：2-10。 默认值: 3
+unhealthy_threshold       | integer | body | 否 | 健康检查连续失败多少次后，将后端服务器的健康检查状态由success判定为fail。取值：2-10。 默认值: 3
+health_check_interval     | integer | body | 否 | 健康检查的时间间隔。取值：1-50（秒）。 默认值: 2
+health_check_timeout      | integer | body | 否 | 健康检查连接超时时间，此值必须小于延迟值（health_check_interval）
+health_check_http_code    | string | body | 否 | 健康检查正常的HTTP状态码：<ul><li>`http_2xx`</li><li>`http_3xx`</li><li>`http_4xx`</li><li>`http_5xx`</li></ul>
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+data		| SLBHealthMonitorInfo    | 负载均衡健康检查器信息
+
+## SLBHealthMonitorInfo 负载均衡健康检查器信息
+名称 | 类型 |  描述
+----- | ----- | -----
+health_monitor_id			| string	| 健康检查器 ID
+health_monitor_name			| string	| 健康检查器名称
+health_check_type			| string	| 健康检查协议类型：<ul><li>`http`</li><li>`https`</li><li>`ping`</li><li>`sctp`</li><li>`tcp`</li><li>`tls-hello`</li><li>`udp-connect`</li></ul> 
+health_http_method			| string	| 健康检查请求方法：<ul><li>`connect`</li><li>`delete`</li><li>`get`</li><li>`head`</li><li>`options`</li><li>`patch`</li><li>`post`</li><li>`put`</li><li>`trace`</li></ul> 
+health_check_domain			| string	| 用于健康检查的域名
+health_check_uri			| string	| 用于健康检查的URI
+health_check_connect_port	| integer	| 健康检查使用的端口。取值：1-65535。
+healthy_threshold			| integer	| 健康检查连续成功多少次后，将后端服务器的健康检查状态由fail判定为success。取值：2-10。 默认值: 3
+unhealthy_threshold			| integer	| 健康检查连续失败多少次后，将后端服务器的健康检查状态由success判定为fail。取值：2-10。 默认值: 3
+health_check_interval		| integer	| 健康检查的时间间隔。取值：1-50（秒）。 默认值: 2
+health_check_timeout		| integer	| 健康检查连接超时时间，此值必须小于延迟值（health_check_interval）
+health_check_http_code		| string	| 健康检查正常的HTTP状态码：<ul><li>`http_2xx`</li><li>`http_3xx`</li><li>`http_4xx`</li><li>`http_5xx`</li></ul> 
+
+## 请求值示例
+```json
+{
+    "health_monitor_name":"health-F4EWU",
+    "health_check_type":"ping",
+    "health_check_interval":7,
+    "unhealthy_threshold":7,
+    "healthy_threshold":7,
+    "health_check_timeout":7,
+    "health_id":"81235b5c-42fa-46a0-aa0a-051230c9816d"
+}
+```
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEmmZpchR-8oW",
+    "data":{
+        "health_monitor_id":"81235b5c-42fa-46a0-aa0a-051230c9816d",
+        "health_monitor_name":"health-F4EWU",
+        "health_check_type":"ping",
+        "health_http_method":null,
+        "health_check_domain":"",
+        "health_check_uri":"",
+        "health_check_connect_port":null,
+        "healthy_threshold":7,
+        "unhealthy_threshold":7,
+        "health_check_interval":7,
+        "health_check_timeout":7,
+        "health_check_http_code":null
+    }
+}
+```

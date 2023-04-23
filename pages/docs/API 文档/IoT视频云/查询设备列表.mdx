@@ -1,0 +1,129 @@
+# 描述
+该接口用于查询指定应用下所有设备的列表。
+
+# 请求
+**请求语法**
+
+```
+GET /v1/apps/<appid>/devices?prfix=<prefix>&limit=<limit>&marker=<marker>&online=<true>&type=<type>  HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization: <QiniuToken>
+```
+
+**请求参数**
+
+| 参数名称   | 必填  | 字段类型 | 说明|
+| -------- | -------- | -------- |-------- | 
+| appid | 是 |string | 设备所属应用的appid，设备名称只能由 4-200 位英文字母和数字组成|
+| prefix | 否 |string | 使用设备名称的前缀进行查询 |
+| limit | 否 | int | 限定返回的设备个数，只能输入1-1000的整数，不指定表示遵从系统限定的最大个数。|
+| marker | 否 | string |上一次查询返回的标记，用于提示服务端从上一次查到的位置继续查询，不指定表示从头查询。|
+| online | 否 |bool | 返回设备状态，online为true时只返回在线的设备|
+|status|否|bool|返回设备列表信息是否包含设备在线消息；status=false时不返回设备在线信息，status=true时返回；该参数只有在online=false或不输入online参数时才会生效 |
+|type|否|int|设备类型，type=0 只返回普通设备，type=1 只返回网关设备，type=2 返回全部设备(包含网关设备和普通设备)。注：只有online=false时type参数才会生效|
+
+**请求头**
+
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+
+**请求元素**
+该请求操作的请求体为空。
+
+# 响应
+**响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)
+**响应元素**
+```
+200 {
+  "marker": "<marker>",
+  "items":[
+    {
+      "device": "<deviceName>",
+      "loginAt": "<loginTimestamp>",
+	  "remoteIp": "<remoteIp>",
+      "state": "<state>",
+      "createdAt": "<createdTimestamp>",
+	  "type": "<Type> ",
+      "maxChannel": "<maxChannel>",
+      "channels":[{"channelid":"<Channelid>", "comment":"<comment>"}],
+      "meta": {} 
+    }
+    {
+      "device": "<deviceName>",
+      "loginAt":"<loginTimestamp>",
+      "activedAt": "<activedTimestamp>",
+      "state": "<state>",
+      "createdAt": "<createdTimestamp>",
+      "type": "<Type> ",
+      "maxChannel": "<maxChannel>",
+      "channels":[{"channelid":"<Channelid>", "comment":"<comment>"}],
+      "meta": {} 
+    }
+    ...
+  ]
+}
+```
+
+|参数名称   | 参数说明  |
+| -------- | -------- |
+| device   | 设备名称  |
+|loginAt | 设备是否在线，设备在线才会出现此字段|
+|remoteIp|设备联网上线使用的IP地址，设备在线才会出现此字段|
+| state   |  1表示被禁用，onlive不为true时才会返回 | 
+| activedAt   | 设备首次激活时间， onlive不为true时才会返回 |
+| createdAt   | 创建时间， onlive不为true时才会返回 |
+|type|设备类型，0：设备, 1：网关|
+|maxChannel|网关设备最大channel数,当type为网关时才显示此项|
+|channels|频道信息，当type为网关时才显示此项，channelid：频道id，comment：频道备注信息|
+|meta|用户自定义的设备属性信息，(为空不返回)|
+|marker|返回的列举位置标记，作为下次列举的起点信息|
+
+
+# 示例
+
+**请求示例**
+
+```
+GET /v1/apps/test/devices?prfix=test&limit=10&online=true HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=
+```
+
+**响应示例**
+
+```
+HTTP/1.1 200 OK
+Access-Control-Allow-Origi: *
+Connection: keep-alive
+Content-Length: xxx
+Content-Type: application/json
+Date: Wed, 26 Sep 2018 11:42:10 GMT
+Server: nginx/1.8.0
+Vary: Accept-Encoding
+X-Reqid: 6SAAABDWHM1o8FcV
+X-Whom: cs1
+
+200 {
+  "marker": "",
+  "items":[
+  {
+     "device": "testdevice1",
+     "loginAt":1537853919
+  }
+  {
+     "device": "testdevice2",
+     "loginAt": 1537853921
+  }
+  {
+     "device": "testdevice3",
+     "loginAt": 1537853923
+  }
+  {
+     "device": "testdevice4",
+     "loginAt": 1537853925
+  }
+}
+400  {
+    "error":  "bad request"
+}
+```

@@ -1,0 +1,165 @@
+# **任务查询方式**
+
+通过【控制台 ->工作流】 创建的任务，用户可以使用以下3种方式进行查询：
+
+1. 通过任务查询接口，发起查询请求。
+2. 登录 proral ，在任务列表中进行查询。
+3. 创建工作流时，设置回调地址，会将任务处理后的结果推送到指定URL，详情参见 [任务通知](https://developer.qiniu.com/dora/6504/receive-notifications)。
+
+> **注意：**
+>
+> 备注：目前支持查询7天以内的持久化处理任务。
+
+
+
+# **任务查询API**
+
+## 接口规格
+
+```
+<persistentId>
+```
+
+| 参数名称  | 必填  | 说明                                               |
+| -------- | ---- | -------------------------------------------------- |
+| <persistentId>  | 是   | 上传预处理或持久化处理接口返回的`<persistentId>`。|
+
+## 请求报文
+
+服务端完成所有指定的处理操作后，会将处理结果状态提交到`<NotifyUrl>`指向的网址。
+
+### 请求语法
+
+```
+GET /v3/task/status/<persistentId> HTTP/1.1
+Host: dora.qiniuapi.com  
+
+Content-Type: application/x-www-form-urlencoded  
+Authorization: Qiniu <AccessToken>
+```
+
+其中`AccessToken`的生成算法可参见[管理凭证](https://developer.qiniu.com/kodo/manual/access-token)。
+
+### 头部信息
+
+| 头部名称 | 必填 | 说明                         |
+| -------- | ---- | ---------------------------- |
+| Host     | 是   | 固定为` dora.qiniuapi.com`。 |
+
+## 响应报文
+
+### 响应语法
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: <prefopResponseContentLength>
+
+<prefopResponseContent>
+```
+
+### 头部信息
+
+| 头部名称     | 必填 | 说明                                                         |
+| ------------ | ---- | ------------------------------------------------------------ |
+| Content-Type | 是   | 正常情况下该值将被设为`application/json`，表示返回JSON格式的文本信息。 |
+
+### 响应内容
+
+- 如果请求成功，返回包含如下内容的JSON字符串（已格式化，便于阅读）：
+
+```
+{
+    "code": 0, 
+    "created_at": 1609830317402, 
+    "desc": "successfully completed", 
+    "id": "z0.01z002c8b17y9mewnd00mtwhak00019s", 
+    "input": {
+        "kodo_file": {
+            "bucket": "st-qtest-in", 
+            "key": "foreman.mp4"
+        }
+    }, 
+    "ops": [
+        {
+            "fop": {
+                "cmd": "tetras_cloud_codec", 
+                "input_from": "__origin__", 
+                "result": {
+                    "code": 0, 
+                    "desc": "successfully completed", 
+                    "has_output": false
+                }
+            }, 
+            "id": "A"
+        }, 
+        {
+            "depends": [
+                "A"
+            ], 
+            "fop": {
+                "cmd": "saveas/c3QtcXRlc3Qtb3V0OmZvcmVtYW5fb3V0cHV0Lm1wNA==/jsonQuery/eyJidWNrZXQiOiJzdC1xdGVzdC1vdXQiLCJrZXlfdGVtcGxhdGUiOiJ7ey5mbmFtZX19X291dHB1dHt7LmV4dH19In0=", 
+                "input_from": "A", 
+                "result": {
+                    "code": 0, 
+                    "desc": "successfully completed", 
+                    "has_output": true, 
+                    "kodo_file": {
+                        "bucket": "st-qtest-out", 
+                        "hash": "Fu4szUcZD6cREejZwUoYV-YHW3j_", 
+                        "key": "foreman_output.mp4"
+                    }
+                }
+            }, 
+            "id": "B"
+        }
+    ], 
+    "pipeline": "1380480140.default.sys", 
+    "reqid": "lYcAABEVjBclRFcW", 
+    "version": "v3"
+}
+
+```
+
+### 响应状态码
+
+| HTTP状态码 | 含义                                                         |
+| ---------- | ------------------------------------------------------------ |
+| 200        | 查询成功                                                     |
+| 400        | 请求报文格式错误                                             |
+| 401        | 签名验证不通过                                              |
+| 404        | 查询对象不存在                                               |
+| 599        | 服务端操作失败如遇此错误，请将完整错误信息（包括所有HTTP响应头部）[提交工单](https://support.qiniu.com/tickets/category) 给我们。 |
+
+# **控制台查询**
+
+登录【智能多媒体控制台】，进入【导航栏->任务】页面，进入任务列表页面。
+
+![img](https://dora-doc.qiniu.com/WX20201208-154524.png)
+
+> **查询条件说明：**
+>
+> - 切换区域
+>
+>   - 任务资源所属区域：**华东、华北、华南、东南亚、北美**
+>
+> - 按时间查询
+>
+>   - 当前支持查询 **近7天** 的任务
+>
+>   - 选择队列：任务执行的队列
+>
+>   - 选择区域：任务资源所属区域
+>
+>   - 选择任务状态：
+>
+>     **全部、成功、失败、处理中、已提交、已取消**（当用户删除pipeline时，并且有任务还在等待中）
+>
+> - 按任务ID查询
+>
+>   - 输入任务ID，进行精确匹配查询
+>
+> **搜索结果说明：**
+>
+> - 对应查询条件以列表形式展示任务信息：任务ID、资源名称、状态、队列。
+> - 点击【加载更多】，展示更多任务。

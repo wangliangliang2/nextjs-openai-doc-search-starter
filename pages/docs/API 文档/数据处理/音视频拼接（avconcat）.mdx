@@ -1,0 +1,103 @@
+# **简介**
+音视频拼接接口(avconcat)，用于将指定的数个音频片段拼接成一段音频，或者将数个视频片段拼接成一段视频。
+
+## 使用限制
+1. 不支持m3u8文件的拼接。如果要拼接m3u8文件，建议先音视频转码再调用该接口拼接。
+2. 如果要拼接多段直播的推流，请调用[saveAs](/dora/api/processing-results-save-saveas)的接口，它会把指定时间戳内的多段推流拼接成一段视频。
+3. 除去作为数据处理对象的源文件以外，还可以指定最多20个源文件（即总计21个片段）
+4. 本接口只能用于 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 的方式，处理结果参考[处理结果另存 (saveas)](/dora/api/processing-results-save-saveas)。
+
+
+<a id="avconcat-specification"></a>
+# **接口规格**
+
+**注意**：接口规格不含任何空格与换行符，下列内容经过格式化以便阅读。  
+
+```
+avconcat/<Mode>
+        /format/<Format>
+        /s/<Resolution>
+        /index/<Index>
+        /addAudio/<AddAudio>
+        /<encodedkodocheme0>
+        /<encodedkodocheme1>
+        /<encodedkodocheme2>
+        /...
+```
+
+| 参数名称               | 必填 | 说明                                                         |
+| :--------------------- | :--- | :----------------------------------------------------------- |
+| `<Mode>`               | 是   | 值为 `1 `时，可改变待拼接视频的封装格式，不进行编解码，不支持设置 `<Resolution> `与`<AddAudio>`。<br> 值为 `2 `时，可改变待拼接视频的封装格式、分辨率等。 |
+| `<Format>`             | 是   | 目标视频的格式，例如 flv、mp4 等。<br>请参考[支持转换的视频格式](https://support.qiniu.com/hc/kb/article/182125/) |
+| `/s/<Resolution>`      | 否   | 指定目标视频分辨率，格式为宽 x 高 ，长边取值范围[20,3840]的整数，短边取值范围[20,2160]的整数。 |
+| `/index/<Index>`       | 否   | 用于设置源文件在拼接时的位置（表示位于第几个视频），默认值为1，表示源文件在拼接时作为第一个视频，最大值为拼接视频的文件数，如果设置的值超过最大值，则会报错。 |
+| `/maxrate/<Maxrate>`   | 否   | 使用该参数限制输出视频流的峰值码率，单位：比特每秒（bit/s）。 `<Mode>` 值为 2 时，且输出格式为 mp4、mov、mkv 时有效。 |
+| `/addAudio/<AddAudio>` | 否   | 当待拼接视频文件中，部分有音频流部分没有音频流时，是否给没有音频流的视频文件填充空的音频流。默认值为 1，表示填充；值为 0，则表示不填充。**注意**:转场不支持填充音频，设置了转场动画的情况下本参数会无效。 |
+| `/<encodedUrlN>`       | 是   | 待拼接的文件，目前支持两种类型： kodo 资源、转场动画。<br>1、kodo 资源可由 `kodo://<bucketname>/<key>` 表示（此时 bucketname 需要与输入源在同一区域），需要经过`urlsafe_base64_encode`。<br>2、转场过渡动画可以看作一个视频，但是不占用拼接视频的数量名额，添加转场动画的方式也用 url 表示，具体格式为 `video://transition/<transitionType>/<transitionTime>` 表示，转场只支持 `<Mode>` 为 2 时使用，待拼接序列（含输入源文件）中不能连续两个转场， `transitionType`即转场支持的类型如下表，`transitionTime` 支持小数，向下取整取两位小数，不能超过两端任何一个视频的时长。支持首尾设置转场，此时的转场时间为 `<transitionTime>` 的一半。上述 url 均需要经过 `urlsafe_base64_encode`。 |
+
+## **转场类型**
+视频拼接时，在两个视频片段之间添加转场动画，可以让视频拼接过渡更自然或者实现一些特殊视觉效果，达到吸引观众的效果。下表是转场类型的效果演示。
+
+| 转场名   | transitionType 取值 |                                            
+| -------- | ------------------- | 
+| 闪白转场 |     flashwhite              |
+| 闪黑转场 |     flashblack              | 
+
+敬请期待其他转场效果，如有需求可[提交工单](https://support.qiniu.com/tickets/new/?ref=developer.qiniu.com)。
+
+## **转场使用示例**
+
+设置源文件拼接位置，index=3
+
+- 示例1：片头+转场特效+源文件
+
+```
+avconcat/2/format/mp4/index/3/base64待拼接片头视频url/base64转场url
+```
+
+- 示例2：片头+转场特效+源文件+转场特效+片尾
+
+```
+avconcat/2/format/mp4/index/3/base64待拼接片头视频url/base64转场url/base64转场url/base64待拼接片尾视频url
+```
+
+
+
+
+# **操作方式**
+
+可以通过 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 的方式来调用：
+- `资源上传时自动触发`：可以在上传时指定[persistentOps](/kodo/manual/put-policy#put-policy-persistent-ops-explanation)参数
+- `对已有资源手动手动触发`：调用[pfop]()命令
+
+# **示例**
+
+`对已有资源手动触发`  的形式，将多段mp4视频拼接成一段（分别是`thinking-in-go.1.mp4`、`thinking-in-go.2.mp4`、`thinking-in-go.3.mp4`。 假设这几个视频放在一个绑定了域名`test.clouddn.com`的空间中）：  
+
+```
+POST /pfop/ HTTP/1.1
+Host: api.qiniu.com
+Content-Type: application/x-www-form-urlencoded
+Authorization: QBox <AccessToken>
+
+bucket=qiniu-ts-demo&key=thinking-in-go.1.mp4&fops=avconcat/2/format/mp4/aHR0cDovL3Rlc3QuY2xvdWRkbi5jb20vdGhpbmtpbmctaW4tZ28uMi5tcDQ=/aHR0cDovL3Rlc3QuY2xvdWRkbi5jb20vdGhpbmtpbmctaW4tZ28uMy5tcDQ=&notifyURL=http://fake.com/qiniu/notify
+```
+
+**注意**：要在`Authorization`头部的`<AccessToken>`前添加`QBox`和半角空格。
+
+以 Python Sdk 为例，具体可以看下[音视频转码的示例](/dora/api/audio-and-video-transcoding-avthumb)。需要在音视频转码的示例]的基础修改数据处理命令 `fops` ，将其修改为：
+
+```
+fops = avconcat/2/format/mp4/aHR0cDovL3Rlc3QuY2xvdWRkbi5jb20vdGhpbmtpbmctaW4tZ28uMi5tcDQ=/aHR0cDovL3Rlc3QuY2xvdWRkbi5jb20vdGhpbmtpbmctaW4tZ28uMy5tcDQ=
+```
+**注意**:
+其他语言 Sdk 可在[官方 Sdks ](/sdk)下载，可以通过查看 Sdk 使用指南中 `对已有资源手动触发`，`资源上传时自动触发`使用。
+
+
+
+# **计费说明**
+使用 `avconcat/1`，按照转封装收费，0.003 元/分钟（不分帧率）。
+使用 `avconcat/2`，按照转码收费，其价格与音视频转码相同。具体请参考 官网说明。
+
+
+

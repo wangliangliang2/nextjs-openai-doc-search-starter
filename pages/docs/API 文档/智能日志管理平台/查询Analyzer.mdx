@@ -1,0 +1,19 @@
+请求包：
+
+```
+GET /v5/repo/<RepoName>/analyzer
+Authorization: Pandora <auth>
+```
+
+返回包
+```
+Content-Type: application/json
+[{
+    "analyzerName":"<AnalyzerName>",
+    "options":{
+         "type":"<TYPE>",
+         "stopwords":["word1","word2"...],
+         "pattern":"PATTERN"
+    }
+}]
+```

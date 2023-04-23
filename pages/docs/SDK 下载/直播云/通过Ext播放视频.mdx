@@ -1,0 +1,141 @@
+
+
+
+# 通过Ext播放视频
+本文讲解demo长视频通过ext将视频播放起来的技术细节。
+
+## 创建数据集
+
+​	ext中的数据集`CommonPlayerDataSource`是对MediaModel的封装，为了更好的实现业务层的切集逻辑，抽象出来2个对象视频`CommonVideoParams`和播放元素`CommonPlayableParams`，他们是一对多的关系，比如有个场景是一个视频有前贴广告和后贴广告，那么这个视频`CommonVideoParams`就对应3个播放元素`CommonPlayableParams`。
+
+​	同时，视频`CommonVideoParams`和播放元素`CommonPlayableParams`支持扩展，用户可以继承这两个类，扩展属于自己的业务属性，比如在里视频参数中加上视频标题、 发布者名字等。
+
+
+
+##### 继承播放元素参数，此处参数和基类一致
+
+```kotlin
+class LongPlayableParams(
+    mediaModel: QMediaModel, 				//媒体数据
+    controlPanelType: String, 				//该播放元素对应的面板类型
+    displayOrientation: DisplayOrientation,	//视频是竖屏视频还是横屏视频，根据宽高比判定
+    environmentType: String,				//播放元素对应的播放环境(业务逻辑)
+    startPos: Long							//起播位置
+): CommonPlayableParams(mediaModel, controlPanelType, displayOrientation, environmentType, startPos) {
+
+}
+```
+
+##### 继承视频参数，此处多了个参数title
+
+```kotlin
+class LongVideoParams(
+    val title: String,	//视频标题
+    id: Long			//视频ID，用户设置 需要唯一
+): CommonVideoParams(id) {
+
+}
+```
+
+##### 通过一个工厂类来创建`CommonPlayerDataSource`包含一个视频，有多个分辨率
+
+```kotlin
+
+object LongPlayerDataSourceFactory {
+
+    fun create(): CommonPlayerDataSource<LongPlayableParams, LongVideoParams> {
+        val dataSourceBuilder =
+            CommonPlayerDataSource.DataSourceBuilder<LongPlayableParams, LongVideoParams>()
+        var videoParams: LongVideoParams
+
+        var builder = QMediaModelBuilder()
+        var url = ""
+        var name = ""
+        builder = QMediaModelBuilder()
+
+        builder.addElement(
+            "",
+            QURLType.QAUDIO_AND_VIDEO,
+            1080,
+            "http://demo-videos.qnsdk.com/qiniu-1080p.mp4",
+            true)
+        builder.addElement(
+            "", QURLType.QAUDIO_AND_VIDEO, 720,
+            "http://demo-videos.qnsdk.com/qiniu-720p.mp4", false
+        )
+        builder.addElement(
+            "", QURLType.QAUDIO_AND_VIDEO, 480,
+            "http://demo-videos.qnsdk.com/qiniu-480p.mp4", false
+        )
+        builder.addElement(
+            "", QURLType.QAUDIO_AND_VIDEO, 360,
+            "http://demo-videos.qnsdk.com/qiniu-360p.mp4", false
+        )
+        builder.addElement(
+            "", QURLType.QAUDIO_AND_VIDEO, 240,
+            "http://demo-videos.qnsdk.com/qiniu-240p.mp4", false
+        )
+        name = "1-点播-http-mp4-30fps-多清晰度"
+        videoParams = LongVideoParams(name, name.hashCode().toLong())
+        dataSourceBuilder.addVideo(
+            videoParams,
+            arrayListOf(
+                LongPlayableParams(
+                    builder.build(false),
+                    LongControlPanelType.Normal.type,
+                    DisplayOrientation.LANDSCAPE,
+                    LongEnviromentType.LONG.type,
+                    PlayerSettingRespostory.startPosition,
+
+                )
+            )
+        )
+        return dataSourceBuilder.build()
+    }
+}
+```
+
+## 初始化播放器
+
+创建完成后，初始化播放器，初始化代码放在onCreate中
+
+```kotlin
+//创建数据集
+mPlayerDataSource = LongPlayerDataSourceFactory.create()
+val config = CommonPlayerConfig.Builder<Any,
+           Any, LongPlayableParams, LongVideoParams>()
+	//添加播放环境(后面会介绍)
+	.addEnviroment(LongEnviromentType.LONG.type, LongPlayerEnviroment())
+	//设置数据集
+	.setPlayerDataSource(mPlayerDataSource)
+	//设置Context
+	.setContext(this)
+	//设置视频渲染View的容器
+	.setRootUIContanier(this, findViewById(R.id.video_container_FL))
+	//使用surfaceView渲染视频
+	.enableScreenRender(CommonPlayerConfig.ScreenRenderType.SURFACE_VIEW)
+	.build()
+//创建播放器
+mCommonPlayer = CommonPlayer(config)
+//播放第一个视频
+mPlayerDataSource.getVideoParamsList()[0]?.also {
+    mCommonPlayer.playerVideoSwitcher.switchVideo(it.id)
+}
+```
+
+## 播放第一个视频
+
+```kotlin
+//播放第一个视频
+mPlayerDataSource.getVideoParamsList()[0]?.also {
+    mCommonPlayer.playerVideoSwitcher.switchVideo(it.id)
+}
+```
+
+## 销毁播放器
+
+当页面退出时，释放播放器
+
+```kotlin
+mCommonPlayer.release()
+```

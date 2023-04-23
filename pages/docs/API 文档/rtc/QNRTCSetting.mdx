@@ -1,0 +1,93 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                SDK 的核心参数配置结构体</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Properties</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#is_aec3_enabled`)'>is_aec3_enabled</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#is_maintain_resolution_enabled`)'>is_maintain_resolution_enabled</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#is_audio_redundant_enabled`)'>is_audio_redundant_enabled</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#is_audio_route_to_speakerphone`)'>is_audio_route_to_speakerphone</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#log_level`)'>log_level</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#encoder_type`)'>encoder_type</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Properties</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="is_aec3_enabled">is_aec3_enabled</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">is_aec3_enabled: bool</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>是否开启软件回音消除，默认开启</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="is_maintain_resolution_enabled">is_maintain_resolution_enabled</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">is_maintain_resolution_enabled: bool</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>是否固定编码分辨率，默认不固定</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="is_audio_redundant_enabled">is_audio_redundant_enabled</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">is_audio_redundant_enabled: bool</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>是否开启音频冗余包发送，开启后能抗抗一定的丢包，默认开启</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="is_audio_route_to_speakerphone">is_audio_route_to_speakerphone</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">is_audio_route_to_speakerphone: bool</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置是否配置扬声器为默认音频路由，默认开启，若传入 false，则默认音频路由为听筒，该参数仅适用于 Android 和 iOS</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="log_level">log_level</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">log_level: <a href='9432/QNLogLevel'>QNLogLevel</a></li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置日志级别，默认为 kLogInfo 级别</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="encoder_type">encoder_type</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">encoder_type: <a href='9460/QNVideoEncoderType'>QNVideoEncoderType</a></li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置编码类型，Windows 和 Linux 默认 kEncodeOpenH264 软件编码，Android 和 iOS 默认 kEncodeH264MobileHwCodec 编码</p>
+        <p>其中 Android 和 iOS 也支持 kEncodeOpenH264 软件编码，Windows 支持 kEncodeH264QSV 和 kEncodeH264NVENC 编码类型，Linux 暂不支持硬件编码</p>
+    </div>
+</li>
+</ul>
+</section>
+</div>
+
+

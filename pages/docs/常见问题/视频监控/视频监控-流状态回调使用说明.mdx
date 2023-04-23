@@ -1,0 +1,30 @@
+1.如何触发流状态回调？
+空间中需要配置回调地址，这是前提条件。具体操作如下
+ * 通过api创建或者更新空间的客户，可以填充callBack字段，该字段就是回调地址，例如该字段形式为 www.qiniu.com/callback 或者 11.11.11.11:8888/callback   
+ *  用户也可以通过视频监控(qvs)的官方控制台，在portal中，添加回调地址(后续的portal版本会添加对流状态回调的支持)
+ 
+2.触发回调的时机和格式？
+*  在流连接和断开时，会分别触发回调
+*  回调的格式，采用http post请求。body采用json编码，并固定以下几个字段，根据实际情况会调整，并保持兼容。
+```
+{
+  "type": "stream"          // 回调类型
+	"nsId": "xx",            // 空间id, (字符串类型)
+	"streamId": "xx",        // 流id， (字符串类型)
+	"streamState": 1,        // 0:流断开 1:流连接, (整型)
+	"timeSec": xx,   // streamState为0,代表流断开的时间戳；streamState为1,代表流连接的时间戳，(整型)
+	"reqId": "xx" //唯一标示，(字符串类型)
+}
+```  
+
+* 视频监控(qvs)回调,需要客户侧具备接受http post请求和解析的能力。
+* 视频监控(qvs)回调的http post示例如下
+
+```	
+curl -X POST \
+--url http://11.11.11.11:8888/callback \
+-H "Content-Type:application/json" \
+--data '{"type": "stream", "nsId": "xxx","streamId": "xxx", "streamState": xxx, "timeSec": xxx, "reqId": "xxx"}' 
+
+其中url"11.11.11.11:8888/callback"就是客户在空间中已配置好的回调地址
+```

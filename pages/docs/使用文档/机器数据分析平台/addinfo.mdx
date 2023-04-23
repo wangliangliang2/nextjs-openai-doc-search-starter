@@ -1,0 +1,24 @@
+addinfo 命令用于给每条数据添加搜索相关的元信息，会产生四个字段记录对应的元信息。
+
+
+**语法：**
+
+```
+addinfo
+```
+
+**生成的字段：**
+- info_max_time: 搜索时间范围的右边界
+- info_min_time: 搜索时间范围的左边界
+- info_search_time: 搜索开始执行的时间
+- info_sid: 搜索执行的 jobId
+
+**用法示例：**
+
+1. 直接添加在语句中单独使用
+```
+……| addinfo
+```
+2. 使用该命令生成的字段
+``` ……| addinfo | eval a = info_max_time + 1
+```

@@ -1,0 +1,25 @@
+根据微软官方2022年1月13日的公告，微软官方2022年1月的安全补丁安装后会出现域控服务器无法重启问题（或无限重启）、Hyper-V 中的虚拟机 (VM) 可能无法启动、 IPSec VPN 连接可能失败等风险。受该问题影响的操作系统版本包括：
+Windows Server 2022；
+Windows Server, version 20H2；
+Windows Server 2019；
+Windows Server 2016；
+Windows Server 2012 R2；
+Windows Server 2012
+
+七牛云官方提供的WSUS服务中，已经将相关补丁剔除。为了确保您的操作系统不会受到相关影响，请检测是否已经安装了相关补丁，检测的CMD命令如下：
+
+Windows Server 2012 R2: wmic qfe get hotfixid | find "5009624"
+Windows Server 2019: wmic qfe get hotfixid | find "5009557"
+Windows Server 2016: wmic qfe get hotfixid | find "5009546"
+Windows Server 2012: wmic qfe get hotfixid | find "5009586"
+Windows Server 2022: wmic qfe get hotfixid | find "5009555"
+
+如果已经安装补丁，并出现域控无法使用或虚拟机无法启动问题建议卸载相关补丁恢复，相关的卸载CMD命令如下：
+Windows Server 2012 R2: wusa /uninstall /kb:5009624
+Windows Server 2019: wusa /uninstall /kb:5009557
+Windows Server 2016: wusa /uninstall /kb:5009546
+Windows Server 2012: wusa /uninstall /kb:5009586
+Windows Server 2022: wusa /uninstall /kb:5009555
+
+关于该问题的进一步更新和操作指导，以微软的官方说明为准。
+微软官方说明链接：https://docs.microsoft.com/en-us/windows/release-health/status-windows-10-1809-and-windows-server-2019#2775msgdesc

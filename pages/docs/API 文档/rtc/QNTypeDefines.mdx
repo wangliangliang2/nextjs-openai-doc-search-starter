@@ -1,0 +1,920 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                类型定义管理类</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Enum</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNRTCLogLevel`)'>QNRTCLogLevel</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNRTCErrorDomain`)'>QNRTCErrorDomain</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNAudioMixErrorDomain`)'>QNAudioMixErrorDomain</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNMediaRelayErrorDomain`)'>QNMediaRelayErrorDomain</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNConnectionState`)'>QNConnectionState</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNAuthorizationStatus`)'>QNAuthorizationStatus</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNAudioMusicMixerState`)'>QNAudioMusicMixerState</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNTrackKind`)'>QNTrackKind</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNAudioDeviceType`)'>QNAudioDeviceType</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNRTCPolicy`)'>QNRTCPolicy</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNNetworkGrade`)'>QNNetworkGrade</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNClientMode`)'>QNClientMode</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNClientRole`)'>QNClientRole</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNMediaRelayState`)'>QNMediaRelayState</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNVideoFillModeType`)'>QNVideoFillModeType</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNTrackProfile`)'>QNTrackProfile</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNConnectionDisconnectedReason`)'>QNConnectionDisconnectedReason</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">Block</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNPublishResultCallback`)'>QNPublishResultCallback</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNClientRoleResultCallback`)'>QNClientRoleResultCallback</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#QNMediaRelayResultCallback`)'>QNMediaRelayResultCallback</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Enum</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNRTCLogLevel">
+QNRTCLogLevel</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">@typedef NS_ENUM(NSUInteger, QNRTCLogLevel)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>日志输出等级</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNRTCLogLevelVerbose</td>
+                    <td>Verbose 日志输出</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNRTCLogLevelInfo</td>
+                    <td>Info 日志输出</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNRTCLogLevelWarning</td>
+                    <td>Warning 日志输出</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNRTCLogLevelError</td>
+                    <td>Error 日志输出</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNRTCLogLevelNone</td>
+                    <td>None 日志输出</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNRTCErrorDomain">
+QNRTCErrorDomain</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">NS_ERROR_ENUM(QNRTCErrorDomain)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>异常的错误码，指代具体出现错误的原因</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNRTCErrorTokenError</td>
+                    <td>鉴权失败</td>
+                    <td>建议用户收到此错误代码时尝试重新获取 RoomToken 后再次加入房间</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorTokenExpired</td>
+                    <td>RoomToken 过期</td>
+                    <td>建议用户收到此错误代码时尝试重新获取 RoomToken 后再次加入房间</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorRoomClosed</td>
+                    <td>房间被管理员关闭</td>
+                    <td>请联系服务器</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorRoomIsFull</td>
+                    <td>房间人数已超过限制</td>
+                    <td>请联系服务器</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorUserAlreadyExist</td>
+                    <td>用户已存在，该用户可能已使用其他设备进入房间</td>
+                    <td>请确认是否已使用其他设备进入房间</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorNoPermission</td>
+                    <td>当在进行踢人合流等操作没有权限时会返回此错误代码</td>
+                    <td>请确定用户在进行操作时是否有对应权限</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorInvalidParameter</td>
+                    <td>参数错误</td>
+                    <td>请确定当前操作输入参数是否合法</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorMediaCapNotSupport</td>
+                    <td>服务不可用</td>
+                    <td>SDK 内部错误。用户无需处理</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorSubscribeDisconnected</td>
+                    <td>订阅失败，或订阅不存在</td>
+                    <td>用户无需处理</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorAuthFailed</td>
+                    <td>鉴权失败</td>
+                    <td>建议用户收到此错误代码时检查网络并尝试重新获取 RoomToken 后再次加入房间</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorRoomStateError</td>
+                    <td>当前房间状态不允许此操作</td>
+                    <td>请在当前操作前，确定房间状态</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorReconnectFailed</td>
+                    <td>房间重连失败</td>
+                    <td>建议重新加入房间</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorNetworkTimeout</td>
+                    <td>网络超时</td>
+                    <td>请确认网络状态</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorFatalError</td>
+                    <td>非预期错误</td>
+                    <td>SDK 内部错误。用户无需处理</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorSignalTimeOut</td>
+                    <td>信令超时</td>
+                    <td>请重新尝试</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorPushAudioBufferFailed</td>
+                    <td>音频重采样失败</td>
+                    <td>SDK 内部错误。用户无需处理</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNAudioMixErrorDomain">
+QNAudioMixErrorDomain</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">NS_ERROR_ENUM(QNAudioMixErrorDomain)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音频混音错误</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNAudioMixErrorResampleFailed</td>
+                    <td>音频混音重采样</td>
+                    <td>请重新尝试混音操作</td>
+                </tr>
+                <tr>
+                    <td>QNAudioMixErrorAudioNotFound</td>
+                    <td>音频文件不存在</td>
+                    <td>请检查音频文件是否实际存在</td>
+                </tr>
+                <tr>
+                    <td>QNAudioMixErrorIOException</td>
+                    <td>输入输出错误</td>
+                    <td>请检查混音文件是否存在异常</td>
+                </tr>
+                <tr>
+                    <td>QNAudioMixErrorDecoderException</td>
+                    <td>解码错误</td>
+                    <td>音频格式支持 aac、mp3、mp4、wav、m4r、caf、ogg、opus、m4a、flac</td>
+                </tr>
+                <tr>
+                    <td>QNAudioMixErrorSeekFailed</td>
+                    <td>跳转失败错误</td>
+                    <td>请检查是否在开始混音前执行了 Seek 操作</td>
+                </tr>
+                <tr>
+                    <td>QNAudioMixErrorInvalidID</td>
+                    <td>唯一标识非法</td>
+                    <td>请检查多音效或多音源使用的唯一标识 ID 是否可用</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNMediaRelayErrorDomain">
+QNMediaRelayErrorDomain</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">NS_ERROR_ENUM(QNMediaRelayErrorDomain)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>跨房媒体转发错误</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNMediaRelayErrorTokenError</td>
+                    <td>跨房转推 Token 错误</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNMediaRelayErrorAlreadyStart</td>
+                    <td>当前跨房已开始</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNMediaRelayErrorNotStart</td>
+                    <td>当前跨房未开始</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNMediaRelayErrorDestinationRoomNotExisted</td>
+                    <td>目标房间不存在</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNMediaRelayErrorPlayerInDestRoom</td>
+                    <td>已在房间内</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNMediaRelayErrorStartFailed</td>
+                    <td>开始失败</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorInvalidMode</td>
+                    <td>使用场景不符</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNRTCErrorInvalidRole</td>
+                    <td>用户角色不符</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNConnectionState">
+QNConnectionState</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef NS_ENUM(NSUInteger, QNConnectionState)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>房间连接状态</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNConnectionStateDisconnected</td>
+                    <td>空闲状态，初始状态或者退出后都会进入该状态</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNConnectionStateConnecting</td>
+                    <td>正在加入的状态</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNConnectionStateConnected</td>
+                    <td>已加入的状态</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNConnectionStateReconnecting</td>
+                    <td>正在重连的状态</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNConnectionStateReconnected</td>
+                    <td>重连成功的状态</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNAuthorizationStatus">
+QNAuthorizationStatus</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef NS_ENUM(NSUInteger, QNAuthorizationStatus) </li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设备授权状态</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNAuthorizationStatusNotDetermined</td>
+                    <td>还没有确定是否授权</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNAuthorizationStatusRestricted</td>
+                    <td>设备受限，一般在家长模式下设备会受限</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNAuthorizationStatusDenied</td>
+                    <td>拒绝授权</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNAuthorizationStatusAuthorized</td>
+                    <td>已授权</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNAudioMusicMixerState">
+QNAudioMusicMixerState</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef NS_ENUM(NSUInteger, QNAudioMusicMixerState)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>背景音乐混音状态</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNAudioMusicMixerStateIdle</td>
+                    <td>初始状态</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNAudioMusicMixerStateMixing</td>
+                    <td>正在混音的状态</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNAudioMusicMixerStatePaused</td>
+                    <td>暂停混音的状态态</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNAudioMusicMixerStateStopped</td>
+                    <td>停止混音的状态</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNAudioMusicMixerStateCompleted</td>
+                    <td>混音完成的状态</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNTrackKind">
+QNTrackKind</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef NS_ENUM(NSUInteger, QNTrackKind) </li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>定义 Track 的类型</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNTrackKindAudio</td>
+                    <td>音频类型</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNTrackKindVideo</td>
+                    <td>视频类型</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNAudioDeviceType">
+QNAudioDeviceType</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef NS_ENUM(NSUInteger, QNAudioDeviceType)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音频设备的类型</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNAudioDeviceTypeSpeaker</td>
+                    <td>扬声器</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNAudioDeviceTypeReceiver</td>
+                    <td>听筒</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNAudioDeviceTypeWiredHeadphone</td>
+                    <td>有线耳机</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNAudioDeviceTypeBluetooth</td>
+                    <td>蓝牙</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNRTCPolicy">
+QNRTCPolicy</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef NS_ENUM(NSUInteger, QNRTCPolicy)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>媒体流的连接方式</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNRTCPolicyForceUDP</td>
+                    <td>使用 UDP</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNRTCPolicyForceTCP</td>
+                    <td>使用 TCP</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNRTCPolicyPreferUDP</td>
+                    <td>优先 UDP，不通的话自动改为 TCP</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNNetworkGrade">
+QNNetworkGrade</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef NS_ENUM(NSUInteger, QNNetworkGrade)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>网络质量等级</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNNetworkGradeInvalid</td>
+                    <td>初始状态</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNNetworkGradeExcellent</td>
+                    <td>网络优</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNNetworkGradeGood</td>
+                    <td>网络良</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNNetworkGradeGeneral</td>
+                    <td>网络一般</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNNetworkGradePoor</td>
+                    <td>网络差</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNClientMode">
+QNClientMode</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef NS_ENUM(NSUInteger, QNClientMode)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>使用场景</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNClientModeRTC</td>
+                    <td>通信场景（默认）</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNClientModeLive</td>
+                    <td>直播场景</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNClientRole">
+QNClientRole</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef NS_ENUM(NSUInteger, QNClientRole)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>用户角色</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNClientRoleBroadcaster</td>
+                    <td>主播角色</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNClientRoleAudience</td>
+                    <td>观众角色</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNMediaRelayState">
+QNMediaRelayState</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef NS_ENUM(NSUInteger, QNMediaRelayState)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>跨房媒体转发状态</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNMediaRelayStateSuccess</td>
+                    <td>成功</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNMediaRelayStateStopped</td>
+                    <td>主动停止</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNMediaRelayStateInvalidToken</td>
+                    <td>无效token</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNMediaRelayStateNoRoom</td>
+                    <td>目标房间不存在</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNMediaRelayStateRoomClosed</td>
+                    <td>目标房间已关闭</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNMediaRelayStatePlayerExisted</td>
+                    <td>目标房间存在相同用户名</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNMediaRelayStateUnknown</td>
+                    <td>未知状态</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNVideoFillModeType">
+QNVideoFillModeType</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef enum {...}QNVideoFillModeType</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>视频填充模式</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNVideoFillModeNone</td>
+                    <td>默认</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNVideoFillModeStretch</td>
+                    <td>拉伸以填充整个视图，这可能会使图像超出其正常纵横比</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNVideoFillModePreserveAspectRatio</td>
+                    <td>保持源图像的纵横比，添加指定背景色的条</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNVideoFillModePreserveAspectRatioAndFill</td>
+                    <td>保持源图像的纵横比，放大其中心以填充视图</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNTrackProfile">
+QNTrackProfile</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef NS_ENUM(NSUInteger, QNTrackProfile)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>大小流等级</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNTrackProfileLow</td>
+                    <td>低分辨率</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNTrackProfileMedium</td>
+                    <td>中分辨率</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNTrackProfileHigh</td>
+                    <td>高分辨率</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNConnectionDisconnectedReason">
+QNConnectionDisconnectedReason</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef NS_ENUM(NSUInteger, QNConnectionDisconnectedReason)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>断联原因</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNConnectionDisconnectedReasonLeave</td>
+                    <td>主动退出</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNConnectionDisconnectedReasonKickedOut</td>
+                    <td>被踢出房间</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNConnectionDisconnectedReasonRoomClosed</td>
+                    <td>房间被关</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNConnectionDisconnectedReasonRoomFull</td>
+                    <td>房间人数已满</td>
+                    <td>无</td>
+                </tr>
+                <tr>
+                    <td>QNConnectionDisconnectedReasonError</td>
+                    <td>发生错误异常断开</td>
+                    <td>无</td>
+                </tr>
+        </tbody>
+    </table>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">Block</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNPublishResultCallback">
+QNPublishResultCallback</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef void (^QNPublishResultCallback)(BOOL onPublished, NSError *error);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>用户发布 Track 的 Callback</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNClientRoleResultCallback">
+QNClientRoleResultCallback</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef void (^QNClientRoleResultCallback)(QNClientRole newRole, NSError *error);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置用户角色的 Callback.</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="QNMediaRelayResultCallback">
+QNMediaRelayResultCallback</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">typedef void (^QNMediaRelayResultCallback)(NSDictionary *state, NSError *error);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>跨房间媒体转发的 Callback.</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>此接口回调的是所有跨房目标房间的状态。具体每个目标房间转发状态，需要参考回调参数中目标房间对应的 QNMediaRelayState</p>
+        </blockquote>
+    </section>
+</li>
+</ul>
+</section>
+</div>
+
+

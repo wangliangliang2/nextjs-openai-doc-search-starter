@@ -1,0 +1,69 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `POST` /api/rio/v1/compute/image
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id  | string | header| 是 | 地域 ID
+server_id      | string | body | 是 | 云主机 ID
+image_name     | string | body | 是 | 镜像名称
+disk_format    | string | body | 否 | 镜像格式：<ul><li>`ami`</li><li>`ari`</li><li>`aki`</li><li>`vhd`</li><li>`vhdx`</li><li>`vmdk`</li><li>`raw`</li><li>`qcow2`</li><li>`vdi`</li><li>`ploop`</li><li>`iso`</li></ul>
+client_token   | string | body | 否 | 保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+data        | Image | 镜像详情
+
+## Image 镜像详情
+名称 | 类型 |  描述
+----- | ----- | -----
+image_id                | string | 镜像 ID
+snapshot_id             | string | 快照 ID
+description             | string | 镜像描述
+os_type                 | string | 操作系统类型：<ul><li>`linux`</li><li>`windows`</li></ul>
+architecture            | string | 镜像系统架构类型：<ul><li>`x86_64`</li><li>`arm`</li><li>`pcc64`</li><li>`i386`</li></ul>
+os_name                 | string | 操作系统显示名称
+image_version           | string | 镜像版本
+status                  | string | 镜像的状态：<ul><li>`UnAvailable`：不可用</li><li>`Available`：可用</li><li>`Creating`：创建中</li><li>`CreateFailed`：创建失败</li><li>`Waiting`：排队中</li><li>`Deprecated`：已弃用</li></ul>
+image_name              | string | 镜像名称
+image_owner_alias       | string | 镜像来源：<ul><li>`system`：公共镜像</li><li>`self`：私有镜像</li><li>`others`：共享镜像</li><li>`marketplace`：市场镜像</li></ul>
+platform                | string | 操作系统平台：<ul><li>`Windows`</li><li>`CentOS`</li><li>`Redhat`</li><li>`Ubuntu`</li><li>`SUSE`</li><li>`Debian`</li><li>`Fedora`</li><li>`Neoshine`</li><li>`Oracle`</li><li>`凝思Linux`</li><li>`红旗Linux`</li><li>`Kylin`</li><li>`UOS`</li><li>`CirrOS`</li><li>`Other`</li></ul>
+size                    | integer | 镜像大小，单位：Bytes
+is_support_cloud_init   | boolean | 镜像是否支持cloud-init
+is_copied               | boolean | 是否是拷贝的镜像
+created_at              | integer | 镜像的创建时间：时间戳，毫秒
+
+## 请求值示例
+```json
+```
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEo3oOPBmScsW",
+    "data":{
+        "zone_id":"",
+        "image_id":"ce5fa8f9-0bf7-4ecc-919d-72b9c04e4ceb",
+        "snapshot_id":"",
+        "description":"",
+        "os_type":"windows",
+        "architecture":"",
+        "os_name":"",
+        "progress":"",
+        "image_version":"",
+        "status":"Available",
+        "image_name":"Windows-io",
+        "image_owner_alias":"system",
+        "platform":"Windows",
+        "size":540987392,
+        "is_support_cloud_init":false,
+        "is_copied":false,
+        "created_at":1641959842000
+    }
+}
+```

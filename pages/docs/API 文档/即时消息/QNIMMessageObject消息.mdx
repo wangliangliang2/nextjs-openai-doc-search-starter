@@ -1,0 +1,215 @@
+# QNIMMessageObject Class Reference
+
+Inherits from | NSObject
+---|---
+Declared in | QNIMMessageObject.h
+
+### `- initWithQNIMMessageText:fromId:toId:type:conversationId:`
+
+创建文本消息
+
+`- (instancetype)initWithQNIMMessageText:(NSString *) _content_ fromId:(long
+long) _fromId_ toId:(long long) _toId_ type:(QNIMMessageType) _mtype_
+conversationId:(long long) _conversationId_`
+
+#### Parameters
+
+content |内容
+---|---
+fromId |发送id
+toId |接收id
+mtype |消息类型
+conversationId |会话id
+
+#### Return Value
+
+QNIMMessageObject
+
+#### Discussion
+
+创建文本消息
+
+#### Declared In
+
+`QNIMMessageObject.h`
+
+### `- initWithQNIMCommandMessageText:fromId:toId:type:conversationId:`
+
+创建发送命令消息(命令消息通过content字段或者extension字段存放命令信息)
+
+`- (instancetype)initWithQNIMCommandMessageText:(NSString *) _content_
+fromId:(long long) _fromId_ toId:(long long) _toId_ type:(QNIMMessageType)
+_mtype_ conversationId:(long long) _conversationId_`
+
+#### Parameters
+
+content |消息内容
+---|---
+fromId | 消息发送者
+toId |消息接收者
+mtype |消息类型
+conversationId |会话id
+
+#### Discussion
+
+创建发送命令消息(命令消息通过content字段或者extension字段存放命令信息)
+
+#### Declared In
+
+`QNIMMessageObject.h`
+
+### `- initWithQNIMMessageAttachment:fromId:toId:type:conversationId:`
+
+创建附件消息
+
+`- (instancetype)initWithQNIMMessageAttachment:(QNIMMessageAttachment *)
+_attachment_ fromId:(long long) _fromId_ toId:(long long) _toId_
+type:(QNIMMessageType) _mtype_ conversationId:(long long) _conversationId_`
+
+#### Parameters
+
+attachment |[QNIMMessageAttachment](../Classes/QNIMMessageAttachment.html)
+---|---
+fromId |发送id
+toId |接收id
+mtype |消息类型
+conversationId |会话id
+
+#### Return Value
+
+QNIMMessageObject
+
+#### Discussion
+
+创建附件消息
+
+#### Declared In
+
+`QNIMMessageObject.h`
+
+### `-
+initWithRecieveQNIMMessageText:msgId:fromId:toId:type:conversationId:timeStamp:`
+
+创建接收文本消息
+
+`- (instancetype)initWithRecieveQNIMMessageText:(NSString *) _content_
+msgId:(long long) _msgId_ fromId:(long long) _fromId_ toId:(long long) _toId_
+type:(QNIMMessageType) _mtype_ conversationId:(long long) _conversationId_
+timeStamp:(long long) _timeStamp_`
+
+#### Parameters
+
+content |内容
+---|---
+msgId |消息id
+fromId |发送id
+toId |接收id
+mtype |消息类型
+conversationId |会话id
+timeStamp |时间戳
+
+#### Return Value
+
+QNIMMessageObject
+
+#### Discussion
+
+创建接收文本消息
+
+#### Declared In
+
+`QNIMMessageObject.h`
+
+### `-
+initWithRecieveQNIMMessageCommandMessageText:msgId:fromId:toId:type:conversationId:timeStamp:`
+
+创建收到的命令消息(命令消息通过content字段或者extension字段存放命令信息)
+
+`- (instancetype)initWithRecieveQNIMMessageCommandMessageText:(NSString *)
+_content_ msgId:(long long) _msgId_ fromId:(long long) _fromId_ toId:(long
+long) _toId_ type:(QNIMMessageType) _mtype_ conversationId:(long long)
+_conversationId_ timeStamp:(long long) _timeStamp_`
+
+#### Parameters
+
+content |消息内容
+---|---
+msgId |消息id
+fromId |消息发送者
+toId |消息接收者
+mtype |消息类型
+conversationId |会话id
+timeStamp |服务器时间戳
+
+#### Discussion
+
+创建收到的命令消息(命令消息通过content字段或者extension字段存放命令信息)
+
+#### Declared In
+
+`QNIMMessageObject.h`
+
+### `-
+initWithRecieveQNIMMessageAttachment:msgId:fromId:toId:type:conversationId:timeStamp:`
+
+创建接收附件消息
+
+`- (instancetype)initWithRecieveQNIMMessageAttachment:(QNIMMessageAttachment *)
+_attachment_ msgId:(long long) _msgId_ fromId:(long long) _fromId_ toId:(long
+long) _toId_ type:(QNIMMessageType) _mtype_ conversationId:(long long)
+_conversationId_ timeStamp:(long long) _timeStamp_`
+
+#### Parameters
+
+attachment |[QNIMMessageAttachment](../Classes/QNIMMessageAttachment.html)
+---|---
+msgId |消息id
+fromId |发送id
+toId |接收id
+mtype |消息类型
+conversationId |会话id
+timeStamp |时间戳
+
+#### Return Value
+
+QNIMMessageObject
+
+#### Discussion
+
+创建接收附件消息
+
+#### Declared In
+
+`QNIMMessageObject.h`
+
+### `- initWithForwardMessage:fromId:toId:type:conversationId:`
+
+创建转发消息
+
+`- (instancetype)initWithForwardMessage:(QNIMMessageObject *) _message_
+fromId:(long long) _fromId_ toId:(long long) _toId_ type:(QNIMMessageType)
+_mtype_ conversationId:(long long) _conversationId_`
+
+#### Parameters
+
+message |QNIMMessageObject
+---|---
+fromId |发送id
+toId |接收id
+mtype |消息类型
+conversationId |会话id
+
+#### Return Value
+
+QNIMMessageObject
+
+#### Discussion
+
+创建转发消息
+
+#### Declared In
+
+`QNIMMessageObject.h`
+
+
+

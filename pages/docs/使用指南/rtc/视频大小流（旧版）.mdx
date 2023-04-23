@@ -1,0 +1,46 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本部分介绍视频大小流的使用方式。</p>
+<blockquote>
+<p>注意，自 SDK 4.0.9 版本开始，发布了新版本的大小流功能，新版本大小流功能更加丰富，使用更加简单，推荐使用新版本，具体接入参考 <a href="/rtc/10566/video-size-flow-web-new">视频大小流（新版）</a>。</p>
+</blockquote>
+
+# 功能介绍
+<p><img src="http://docs.qnsdk.com/multistream.png" alt="大小流示意图"></img></p>
+<p>当用户 A 开启大小流时，会发送多个不同分辨率的视频码流到服务端；此时，不同的用户需要订阅 A 的视频流时可以根据自己的需要或者服务端的策略来订阅到不同质量的视频流。</p>
+<blockquote>
+<p>旧版本大小流功能开启后，会在原视频流的基础上，创建一个一路中流，一路小流，三路流共享同一个 Track，一并发布到房间。</p>
+</blockquote>
+
+# 开启大小流
+<p>在创建音视频 track 时，可以通过 track config 提供的 <code>isMultiProfileEnabled</code> 接口来启用大小流功能，以 QNCameraVideoTrack 为例，其启用方式如下：</p>
+<pre><code class="language-typescript"><span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createCameraVideoTrack</span>({
+<span></span>    <span class="hljs-attr">encoderConfig</span>: {
+<span></span>        <span class="hljs-attr">isMultiProfileEnabled</span>: <span class="hljs-literal">true</span>
+<span></span>    }
+<span></span>});
+<span></span></code></pre>
+
+# 订阅大小流
+<p>订阅端可以通过 <a href="/rtc/api/9060/WebQNRemoteVideoTrack#isMultiProfileEnabled">QNRemoteVideoTrack.isMultiProfileEnabled</a> 属性判断远端用户是否发布大小流。若接口返回 true，则可通过 <a href="/rtc/api/9060/WebQNRemoteVideoTrack#setProfile">QNRemoteVideoTrack.setProfile</a> 来订阅指定的 QNTrackProfile。</p>
+<p>示例代码如下：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">if</span> (remoteVideoTrack.<span class="hljs-property">isMultiProfileEnabled</span>) {
+<span></span>    remoteVideoTrack.<span class="hljs-title function_">setProfile</span>(QNTrackProfile.<span class="hljs-property">MEDIUM</span>);
+<span></span>}
+<span></span></code></pre>
+<blockquote>
+<p><strong>注意：setProfile 接口仅是设置预期的流等级，并不代表实际的订阅等级，若实际发送端还未发送指定等级的流，则将无法订阅到指定的 profile</strong></p>
+</blockquote>
+<p>可以监听 <a href="/rtc/api/9060/WebQNRemoteVideoTrack#profile-changed">QNRemoteVideoTrack.profile-changed</a> 当订阅指定 profile 生效后，将通过事件告知，具体使用方式如下：</p>
+<pre><code class="language-typescript">track.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;profile-changed&#x27;</span>,<span class="hljs-keyword">function</span>(<span class="hljs-params">profile</span>){
+<span></span>     <span class="hljs-comment">// 当订阅的 profile 发生改变时触发，该 profile 为当前实际订阅到的 profile</span>
+<span></span>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;profile-changed&#x27;</span>,profile)
+<span></span>})
+<span></span></code></pre>
+
+# 注意事项
+<ul>
+<li><strong>开启大小流功能设置编码宽高最低为 1280 x 720</strong></li>
+<li><strong>目前仅支持在发送端发布单路视频 track 的场景下，使用大小流功能</strong></li>
+<li><strong>对于开启大小流的用户，建议保证有良好的网络环境，保证多流发送质量</strong></li>
+</ul></div></div>

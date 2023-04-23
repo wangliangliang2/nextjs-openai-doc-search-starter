@@ -1,0 +1,496 @@
+
+
+## 关于鉴权
+
+* 鉴权使用的签名算法是 HMAC-SHA1，密钥对是 Qiniu 账号的 [AccessKey/SecretKey](/kodo/manual/1277/product-introduction#ak-sk)。
+
+## 播放信息
+
+### 实时播放人数带宽
+* 查询实时的播放人数以及播放带宽
+
+#### 规格
+请求包:
+
+```
+GET /v2/hubs/<Hub>/stat/play
+Host: pili.qiniuapi.com
+Authorization: <QiniuToken>
+```
+
+* `<Hub>`: 直播空间名
+
+返回包:
+
+```
+200   {
+         "total" : {
+            "bandwidth" : <Bandwidth>,
+            "count" : <Count>
+         },
+         "streams" : {
+            "<Key>" : {
+               "count" : <StreamCount>,
+               "bandwidth" : <StreamBandwidth>
+            },
+            ...
+         }
+      }
+```
+
+* total.bandwidth: 总的播放带宽，单位bps
+* total.count: 总的播放人数
+* Key: 流名，形如 `rtmp://xxxx/dctest/test`中的`test`
+* Key.bandwidth: 这个流的播放带宽，单位bps
+* Key.count: 这个流的播放人数
+
+#### 返回示例
+
+```
+{
+   "total" : {
+      "count" : 3,
+      "bandwidth" : 2858352
+   },
+   "streams" : {
+      "4233c75485d12b" : {
+         "bandwidth" : 979176,
+         "count" : 1
+      },
+      "234c123413b" : {
+         "count" : 2,
+         "bandwidth" : 1879176
+      },
+   }
+}
+```
+
+### 历史时间段内的播放人数带宽
+* 查询过去一段时间内的播放人数带宽
+* 返回的列表以5分钟为间隔
+* 统计任务每分钟执行一次，每5分钟写入一次统计结果，写入的是5次统计的平均值
+
+
+#### 规格
+请求包：
+
+```
+GET /v2/hubs/<Hub>/stat/play/history?start=<Start>&end=<End>&limit=<Limit>&marker=<Marker>
+Host: pili.qiniuapi.com
+Authorization: <QiniuToken>
+```
+* `<Hub>`: 直播空间名
+* `<Start>`: 开始时间戳。不填，默认一小时前的时间戳
+* `<End>`: 结束时间戳。不填，默认当前时间戳
+* `<Limit>`: 返回的列表个数限制。不填，默认1000
+* `<Marker>`: 如果上一次返回的结果超过了limit，则会返回marker表示上一次读取到哪条记录。这一次请求带上marker后，继续从该marker后开始读取
+
+返回包:
+
+```
+200   {
+         "marker" : "<Marker>",
+         "items" : [
+            {
+               "time" : <Time>,
+               "stats" : {
+                  "count" : <Count>,
+                  "bandwidth" : <Bandwidth>
+               }
+            },
+            ...
+         ]
+      }
+```
+
+* marker: 若这次请求items个数超过了limit，读取到哪条记录记为marker
+* items.time: 这条记录的的时间戳，对齐到5分钟
+* items.stats: 这个5分钟内的平均播放人数以及播放带宽，带宽单位bps
+
+#### 返回示例
+
+```
+{
+   "items" : [
+      {
+         "time" : 1480919100,
+         "stats" : {
+            "bandwidth" : 12718720,
+            "count" : 40
+         }
+      },
+      {
+         "time" : 1480919400,
+         "stats" : {
+            "bandwidth" : 13451332,
+            "count" : 41
+         }
+      }
+   ],
+   "marker" : ""
+}
+```
+
+### 某个时间点内各个流的播放人数带宽
+* 查询过去某个时间点内各个流的播放人数带宽
+* 时间点会对齐到5分钟，所以结果是5分钟内的平均结果
+
+#### 规格
+请求包：
+
+```
+GET /v2/hubs/<Hub>/stat/play/history/detail?time=<Time>
+Host: pili.qiniuapi.com
+Authorization: <QiniuToken>
+```
+* `<Hub>`: 直播空间名
+* `<Time>`: 时间戳，必填。服务端会把该时间对齐到最近的5分钟
+
+返回包:
+
+```
+200   {
+         "items" : [
+            {
+               "time" : <Time>,
+               "key" : "<Key>",
+               "stats" : {
+                  "bandwidth" : <Bandwidth>,
+                  "count" : <Count>
+               }
+            },	
+            ...
+         ]
+      }
+```
+* key: 流名，形如 `rtmp://xxxx/dctest/test`中的`test`
+* stats.bandwidth: 播放带宽，单位bps
+* stats.count: 播放人数
+* time: 时间戳，对齐到5分钟。
+
+#### 返回示例
+
+```
+{
+   "items" : [
+      {
+         "time" : 1480868400,
+         "key" : "fe352d8a5",
+         "stats" : {
+            "bandwidth" : 2139564,
+            "count" : 1
+         }
+      },
+      {
+         "time" : 1480868400,
+         "key" : "fa12341a3",
+         "stats" : {
+            "bandwidth" : 0,
+            "count" : 0
+         }
+      }
+   ]
+}
+```
+
+
+
+> 接口更新的时间是1分钟更新一次在线人数
+
+### 请求的api 
+
+```
+GET /v2/hubs/<Hub>/stat/play
+Host: pili.qiniuapi.com
+Authorization: <QiniuToken>
+```
+#### 实测抓包数据
+
+```
+GET /v2/hubs/huxicongPili/stat/play HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+User-Agent: pili-sdk-php/1.5.4 curl/7.45.0 PHP/7.0.2
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:j9TUVxtRBwuEsE0Rj26W_m35bNc=
+
+
+123.059.063.003.00080-192.168.201.147.57805: HTTP/1.1 200 OK
+Server: nginx/1.8.0
+Date: Wed, 22 Feb 2017 07:03:53 GMT
+Content-Type: application/json
+Content-Length: 110
+Connection: keep-alive
+X-Log: PILI;PILI-LINA:6
+X-Reqid: 2ysAACIkL3sLiqUU
+X-Reqid: 2ysAACIkL3sLiqUU
+
+{"total":{"count":1,"bandwidth":985048},"streams":{"588773c868d03f791b030f4e":{"count":1,"bandwidth":985048}}}
+```
+### Authorization 的签名的方式
+
+```
+// 构造待签名的 Data
+// 1. 添加 Path
+data = "<Method> <Path>"
+// 2. 添加 Query，前提: Query 存在且不为空
+if "<RawQuery>" != "" {
+        data += "?<RawQuery>"
+}
+// 3. 添加 Host
+data += "\nHost: <Host>"
+// 4. 添加 Content-Type，前提: Content-Type 存在且不为空
+if "<Content-Type>" != "" {
+        data += "\nContent-Type: <Content-Type>"
+}
+// 5. 添加回车
+data += "\n\n"
+// 6. 添加 Body，前提: Content-Length 存在且 Body 不为空，同时 Content-Type 存在且不为空或 "application/octet-stream"
+bodyOK := "<Content-Length>" != "" && "<Body>" != ""
+contentTypeOK := "<Content-Type>" != "" && "<Content-Type>" != "application/octet-stream"
+if bodyOK && contentTypeOK {
+        data += "<Body>"
+}
+// 计算 HMAC-SHA1 签名，并对签名结果做 URL 安全的 Base64 编码
+sign = hmac_sha1(data, "Your_Secret_Key")
+encodedSign = urlsafe_base64_encode(sign)  
+// 将 Qiniu 标识与 AccessKey、encodedSign 拼接得到管理凭证
+<QiniuToken> = "Qiniu " + "Your_Access_Key" + ":" + encodedSign
+```
+
+### 返回的数据的含义
+
+```
+{"total":{"count":1,"bandwidth":985048},"streams":{"588773c868d03f791b030f4e":{"count":1,"bandwidth":985048}}}
+
+total.bandwidth: 当前hub总的播放的带宽，单位bps
+total.count: 当前hub总的播放人数
+Key: 流名，例如rtmp://xxxx/dctest/test 中的test
+Key.bandwidth:这个流的播放带宽，单位 bps
+Key.count: 这个流的播放人数            
+```
+
+### shell 的实现 
+
+```
+请求 PLAYCOUNT(你的shell的文件名) vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZu-(ACCESS_KEY) ja76Ne-wCvo-YSc88D3TwKM5O3JtBym5isn-jN （SecretKey）huxicongPili (hub名字)
+```
+#### shell代码
+
+```
+#!/usr/bin/env bash
+: '
+create by sicong
+'
+if [ $# -lt 3 ]
+then
+	echo"参数错误 参数格式 AK SK StreamId convertsdatas 1 "
+	exit 1
+fi
+
+reqpath="http://pili.qiniuapi.com"
+#将要替换掉的转码的参数
+#convertsP="flash_480p"
+BASEPATHS="/v2/hubs/"
+hub=$3
+bashsc=${BASEPATHS}${hub}"/stat/play"
+bks="GET "${bashsc}
+PATHSS=${bks}"\nHost: pili.qiniuapi.com"
+PATHSSSS=${PATHSS}"\n\n"
+PATHSSSSD=${PATHSSSS}
+baseurl=${reqpath}${bashsc}
+echo $baseurl
+auth=$(echo -en $PATHSSSSD | openssl sha1 -hmac $2 -binary | base64 | tr "+/" "-_")
+echo $auth
+AUTHRON=$1":"${auth}
+echo $AUTHRON
+function HTTPPODST(){
+	au=$1
+    curl -i  $2   -H "Authorization: Qiniu "${au}  
+}
+HTTPPODST $AUTHRON $baseurl 
+#e6rMkorCKXybJfCjOrfqS6pJFto=
+```
+
+### php 的代码实现 
+
+```
+<?php
+getplaycount();
+function getplaycount()
+{
+    $HubName ="huxicongPili";//hub名字
+    $url =getUrl($HubName);//获取请求的url
+    $method =array("POST","GET");//设置请求的格式是post 还是get
+    $ak = ''; //账号的	AccessKey
+    $sk = ''; //账号的 SecretKey
+    $da = MACToken($ak,$sk,$method[1],$url);//获取Authorization的内容
+    $va = "Authorization: ".$da;
+    FunctionName($va,$url);//网络请求的打出
+}
+
+function getUrl($HubName){
+    $baseURL = sprintf("%s//%s/%s/hubs/%s/stat/play", "http:", "pili.qiniuapi.com", "v2",$HubName);
+    return $baseURL;
+}
+function FunctionName($va,$url,$xml_data =NULL)
+{
+    $headerArr =array("User-Agent: pili-sdk-php/1.5.4 curl/7.45.0 PHP/7.0.2",$va);
+    $ch = curl_init(); //初始化curl
+
+    curl_setopt($ch, CURLOPT_URL, $url);//设置链接
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//设置是否返回信息
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArr);//设置HTTP头
+
+    if($xml_data){
+        curl_setopt($ch, CURLOPT_POST, 1);//设置为POST方式
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $xml_data);//POST数据
+    }
+    $response = curl_exec($ch);//接收返回信息
+    if(curl_errno($ch)){//出错则显示错误信息
+        print curl_error($ch);
+
+    }
+    curl_close($ch); //关闭curl链接
+    echo $response;//显示返回信息
+}
+
+function base64UrlEncode($str)
+{
+    $find = array('+', '/');
+    $replace = array('-', '_');
+    return str_replace($find, $replace, base64_encode($str));
+}
+
+function base64UrlDecode($str)
+{
+    $find = array('-', '_');
+    $replace = array('+', '/');
+    return base64_decode(str_replace($find, $replace, $str));
+}
+
+function digest($secret, $data)
+{
+    return hash_hmac('sha1', $data, $secret, true);
+}
+
+function sign($secret, $data)
+{
+    return base64UrlEncode(digest($secret, $data));
+}
+function MACToken($ak,$sk,$method, $url, $contentType=null, $body=null)
+{
+    $url = parse_url($url);
+    $data = '';
+    if (!empty($url['path'])) {
+        $data = $method . ' ' . $url['path'];
+    }
+    if (!empty($url['query'])) {
+        $data .= '?' . $url['query'];
+    }
+    if (!empty($url['host'])) {
+        $data .= "\nHost: " . $url['host'];
+        if (isset($url['port'])) {
+            $data .= ':' . $url['port'];
+        }
+    }
+    if (!empty($contentType)) {
+        $data .= "\nContent-Type: " . $contentType;
+    }
+    $data .= "\n\n";
+    if (!empty($body)) {
+        $data .= $body;
+    }
+
+    var_dump($data);
+    return 'Qiniu ' . $ak . ':' . sign($sk, $data);
+}
+```
+
+### python 代码  
+
+```
+AK =""//账号的	AccessKey
+SK =""//账号的 SecretKey
+HUb=""//直播的hub名字
+配置你的个人信息
+```
+
+```
+#!/usr/env/bin python
+import base64
+import hashlib
+import hmac
+import urllib2
+from base64 import urlsafe_b64encode, urlsafe_b64decode
+from urlparse import urlparse
+import json
+AK =""//账号的	AccessKey
+SK =""//账号的 SecretKey
+HUb=""//直播的hub名字
+
+def HTTP_CURL(function):
+    def func(*agrs,**data):
+      req = function(*agrs,**data)
+      data  = urllib2.urlopen(req)
+      return data
+    return func
+@HTTP_CURL
+def getHTTPHeader(url,header = None,value=None):
+    if value ==None:
+        req =urllib2.Request(url)
+    else:
+        data =json.dumps(value)
+        req = urllib2.Request(url,data)
+    for (k,v) in header.items():
+        req.add_header(k,v)
+    return req
+
+def urlsafe_base64_encode(data):
+
+    ret = urlsafe_b64encode(b(data))
+    return s(ret)
+
+
+def urlsafe_base64_decode(data):
+    ret = urlsafe_b64decode(s(data))
+    return ret
+
+
+def s(data):
+    if isinstance(data, bytes):
+        data = data.decode('utf-8')
+    return data
+def MACToken(AK,SK,URL,Conetnt=None,Body=None,Methon=None):
+   PathData =urlparse(URL)
+   pathdir =Methon+" "+ PathData.path
+   if PathData.query != "":
+       pathdir =pathdir +"?"+PathData.query
+
+   pathdirHost =pathdir+"\nHost: "+PathData.netloc
+   if Conetnt != None:
+       pathdirHost = pathdirHost + Conetnt
+
+   pathdirHost=pathdirHost + "\n\n"
+
+   if Body!= None:
+       pathdirHost = pathdirHost+Body
+   print pathdirHost
+   Authdata = __hmac_sha1__(pathdirHost,SK)
+   AUTH="Qiniu "+AK+":"+Authdata
+   return AUTH
+
+def __hmac_sha1__(data, key):
+    """
+    hmac-sha1
+    """
+    hashed = hmac.new(key, data, hashlib.sha1)
+    return base64.urlsafe_b64encode(hashed.digest())
+def main():
+   url="http://pili.qiniuapi.com/v2/hubs/hubname/stat/play"
+   AUTH=MACToken(AK=AK,SK=SK,URL=url.replace("hubname",HUb),Methon="GET")
+   myheader = {"Authorization": str(AUTH), "User-Agent": "Python-urllib/2.7"}
+   data=getHTTPHeader( url=url.replace("hubname",HUb), header=myheader)
+   print data.read()
+if __name__ == '__main__':
+    main()
+```

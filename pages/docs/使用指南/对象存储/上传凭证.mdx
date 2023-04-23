@@ -1,0 +1,111 @@
+客户端上传前需要先从服务端获取上传凭证，并在上传资源时将上传凭证作为请求内容的一部分。不带凭证或带非法凭证的请求将返回 HTTP 错误码 401，代表认证失败。
+
+生成上传凭证时需要指定以下要素：
+
+- 权限。指定上传的目标空间或允许覆盖的指定资源。
+- 凭证有效期。即一个符合[Unix时间戳](/kodo/glossary/1647/u#unixtime)规范的数值，单位为秒。<br> *注意：因为 Unix 时间戳的创建和验证在不同的服务端进行（在业务服务器创建，在<span id="Productname">云存储</span>服务器验证），因此开发者的业务服务器需要尽可能校准时间，否则可能出现凭证刚创建就过期等问题。*
+- 可选择设置的最终用户标识 ID。这是为了让业务服务器在收到结果回调时能够识别产生该请求的最终用户信息。
+
+我们使用[上传策略](/kodo/manual/1206/put-policy)来保存和传递这些设置。上传凭证是<span id="Productname">七牛云存储</span>用于验证上传请求合法性的机制。用户通过上传凭证授权客户端，使其具备访问指定资源的能力。
+<br>
+
+<a id="algorithm"></a>
+# 算法
+
+1.构造[上传策略](/kodo/manual/1206/put-policy)：
+
+用户根据业务需求，确定上传策略要素，构造出具体的上传策略。例如用户要向空间 my-bucket 上传一个名为 sunflower.jpg 的图片，授权有效期截止到 2015-12-31 00:00:00（该有效期指上传完成后在<span id="Productname">七牛</span>生成文件的时间，而非上传的开始时间），并且希望得到图片的名称、大小、宽高和校验值。那么相应的上传策略各字段分别为：
+
+```
+scope = 'my-bucket:sunflower.jpg'
+deadline = 1451491200
+returnBody = '{
+      "name": $(fname),
+      "size": $(fsize),
+      "w": $(imageInfo.width),
+      "h": $(imageInfo.height),
+      "hash": $(etag)
+}'
+```
+
+2.将上传策略序列化成为[JSON](/kodo/glossary/1645/j#json)： 
+
+用户可以使用各种语言的 JSON 库，也可以手工拼接字符串。序列化后，应得到如下形式的字符串（字符串值以外部分不含空格或换行）：
+
+```
+putPolicy = 
+'{
+  "scope": "my-bucket:sunflower.jpg",
+  "deadline":1451491200,
+  "returnBody":
+  "{
+    \"name\":$(fname),
+    \"size\":$(fsize),
+    \"w\":$(imageInfo.width),
+    \"h\":$(imageInfo.height),
+    \"hash\":$(etag)
+   }"
+}'
+```
+
+3.对 JSON 编码的上传策略进行[URL 安全的 Base64 编码](/kodo/manual/1231/appendix#urlsafe-base64)，得到待签名字符串：
+
+```
+encodedPutPolicy = urlsafe_base64_encode(putPolicy)
+
+#实际值为：
+encodedPutPolicy = "eyJzY29wZSI6Im15LWJ1Y2tldDpzdW5mbG93ZXIuanBnIiwiZGVhZGxpbmUiOjE0NTE0OTEyMDAsInJldHVybkJvZHkiOiJ7XCJuYW1lXCI6JChmbmFtZSksXCJzaXplXCI6JChmc2l6ZSksXCJ3XCI6JChpbWFnZUluZm8ud2lkdGgpLFwiaFwiOiQoaW1hZ2VJbmZvLmhlaWdodCksXCJoYXNoXCI6JChldGFnKX0ifQ=="
+```
+
+4.使用[访问密钥（AK/SK）](/kodo/manual/1277/product-introduction#ak-sk)对上一步生成的待签名字符串计算[HMAC-SHA1](/kodo/glossary/1643/h#hmac-sha1)签名：
+
+```
+sign = hmac_sha1(encodedPutPolicy, "<SecretKey>")
+
+#假设 SecretKey 为 MY_SECRET_KEY，实际签名为：
+sign = "c10e287f2b1e7f547b20a9ebce2aada26ab20ef2"
+```
+*注意：签名结果是二进制数据，此处输出的是每个字节的十六进制表示，以便核对检查。*
+
+5.对签名进行[URL安全的Base64编码](/kodo/manual/1231/appendix#urlsafe-base64)：
+
+```
+encodedSign = urlsafe_base64_encode(sign)
+
+#最终签名值为：
+encodedSign = "wQ4ofysef1R7IKnrziqtomqyDvI="
+```
+
+6.将[访问密钥（AK/SK）](/kodo/manual/1277/product-introduction#ak-sk)、encodedSign 和 encodedPutPolicy 用英文符号 : 连接起来：
+
+```
+uploadToken = AccessKey + ':' + encodedSign + ':' + encodedPutPolicy
+
+#假设用户的 AccessKey 为 MY_ACCESS_KEY ，则最后得到的上传凭证应为：
+uploadToken = "MY_ACCESS_KEY:wQ4ofysef1R7IKnrziqtomqyDvI=:eyJzY29wZSI6Im15LWJ1Y2tldDpzdW5mbG93ZXIuanBnIiwiZGVhZGxpbmUiOjE0NTE0OTEyMDAsInJldHVybkJvZHkiOiJ7XCJuYW1lXCI6JChmbmFtZSksXCJzaXplXCI6JChmc2l6ZSksXCJ3XCI6JChpbWFnZUluZm8ud2lkdGgpLFwiaFwiOiQoaW1hZ2VJbmZvLmhlaWdodCksXCJoYXNoXCI6JChldGFnKX0ifQ=="
+```
+*注意：为确保客户端、业务服务器和<span id="Productname">七牛</span>服务器对于授权截止时间的理解保持一致，需要同步校准各自的时钟。频繁返回 401 状态码时请先检查时钟同步性与生成 deadline 值的代码逻辑。*  
+<br>
+
+<a id="uptoken-generator"></a>
+# 上传凭证生成器
+
+[在线示例](https://kodo-utils.qiniu.com/upload-token)
+
+<br>
+
+<a id="upload-token-samples"></a>
+# 示例
+
+上传凭证不需要单独生成，<span id="Productname">七牛</span>支持的服务端语言 SDK 都已经封装好，各 SDK 的对应入口如下：
+
+- [Java](https://github.com/qiniu/java-sdk/blob/master/src/main/java/com/qiniu/util/Auth.java)
+- [PHP](https://github.com/qiniu/php-sdk/blob/master/src/Qiniu/Auth.php)
+- [Python](https://github.com/qiniu/python-sdk/blob/master/qiniu/auth.py)
+- [Ruby](https://github.com/qiniu/ruby-sdk/blob/master/lib/qiniu/auth.rb)
+- [Node.js](https://github.com/qiniu/nodejs-sdk)
+- [C#](https://github.com/qiniu/csharp-sdk/blob/master/src/Qiniu/Util/Auth.cs)
+- [C/C++](https://github.com/qiniu/c-sdk/blob/master/qiniu/rs.c)
+- [Go](https://github.com/qiniu/go-sdk/blob/master/examples/create_uptoken.go)
+
+</span>

@@ -1,0 +1,36 @@
+本文介绍一些因特殊情况需要自行组装上传报文时遇到的问题
+### 正确的报文
+````
+POST  HTTP/1.1
+Host: up.qiniup.com
+Cache-Control: no-cache
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename=""
+Content-Type: 
+
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="token"
+
+FMVCRs2-LO1ivRNi4l7mEZE6ZDvPv-519D12kZCO:TMxdqAM3QilkUuZu6pIfoHa5Y2A=:eyJzY29wZSI6InJ0Y3Rlc3QiLCJkZWFkbGluZSI6MjUwMzI3NDkyOX0=
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+````
+<br>
+### 错误一
+invalid media parameter
+### 可能原因
+1. boundary之间有换行符
+2. boundary中有“=”
+
+### 解决方法
+建议在boundary中不要采用特殊字符
+
+<br>
+### 错误二
+body/mutipart: NextPart: EOF;UP/400
+### 可能原因
+报文中指定的Content-Length值有误
+### 解决方法
+取消报文中的这个字段

@@ -1,0 +1,24 @@
+Q：在其它播放器中，播放内容旋转方向正常，使用 Android 播放 SDK 播放视频旋转不对，如何调整
+
+![](https://dn-odum9helk.qbox.me/FhdGwD4iITYK-ujzf3wUGWupSn5g)
+
+A：首先可以用 ffprobe 等工具查看一下视频信息，
+查看上图旋转方向不对的视频信息，
+
+![](https://dn-odum9helk.qbox.me/Fiog_rKO581RsF8frn90Oge-Tyrf)
+
+在 rotate 属性中可以看到，有 90 的值，此时，需要在播放控件中进行调整
+
+使用 PLVideoTextureView
+```
+private PLMediaPlayer.OnInfoListener mOnInfoListener = new 	PLMediaPlayer.OnInfoListener() {
+        @Override
+        public boolean onInfo(PLMediaPlayer mp, int what, int extra) {
+        	switch (what){
+            	case PLMediaPlayer.MEDIA_INFO_VIDEO_ROTATION_CHANGED:
+                	return mVideoView.setDisplayOrientation(360 - extra);
+            }
+        }
+        return true;
+};
+```

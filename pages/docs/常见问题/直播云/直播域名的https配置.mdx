@@ -1,0 +1,23 @@
+## Q：直播有很多域名，哪些域名可以支持https访问？
+http协议播放的直播域名，例如 `hls域名` `flv域名`
+</br>
+
+## Q：hls 直播域名和 flv 直播域名如何实现https？
+如果要对 hls 和 flv 的直播域名进行 `https支持` 的配置。如上图，进入直播空间后，点击 `域名管理` ，上传自有证书即可配置
+</br>
+![](https://dn-odum9helk.qbox.me/Fqi3UJAV3al8Yl-aqHuqJM6Tkfrl?imageView2/2/h/300)
+</br>
+
+
+## Q：点播域名如何实现https？
+`点播域名 = 直播回看域名`，这个域名配置 https 可以参考 [HTTPS配置](https://developer.qiniu.com/fusion/manual/4952/https-configuration)
+</br>
+
+## Q：截图域名如何实现https？
+a.**如果是调用接口生成的截图,可以按照如下步骤来操作**
+1.登录 [创建域名](https://portal.qiniu.com/domain/create) 自行添加一个 https 的融合 CDN 域名并绑定直播空间对应的存储空间
+2.将新绑定的 https 域名替换掉原来 url 中的 http 域名即可（步骤和回放视频的域名一样，也可以和回放视频的域名使用同一个域名）
+
+b.**如果您是登录控制后开启的实时截图，可以按照如下步骤来操作**
+1.登录 [创建域名](https://portal.qiniu.com/domain/create) 自行添加一个 https 的融合 CDN 域名，这次不不绑定直播空间对应的存储空间，而是将回源域名设置为 snapshot-src.pilidns.com
+2.将新绑定的 https 域名替换掉原来 url 中的 http 域名即可

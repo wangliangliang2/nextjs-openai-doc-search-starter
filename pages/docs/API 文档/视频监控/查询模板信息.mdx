@@ -1,0 +1,76 @@
+# **描述**
+本接口用于查询模版。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/templates/{templateId}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|templateId|是|string|模版ID|
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|name|string|模版名称
+|desc|string|模版描述	
+|bucket|string|模版对应的对象存储的bucket
+|deleteAfterDays|integer|存储过期时间，默认永久不过期
+|fileType|integer|文件存储类型，取值：0（普通存储），1（低频存储）
+|recordFileFormat|integer|录制文件存储格式(多选)，范围：1(001)～7(111)，从左往右的三位二进制数分别代表MP4，FLV，M3U8；0代表不选择该格式，1代表选择；例如：2(010)代表选择FLV格式，6(110)代表选择MP4和FLV格式，1(001)代表选择M3U8格式，7(111)代表三种格式均选择
+|templateType|integer|模板类型，取值：0（录制模版），1（截图模版）
+|recordType|integer|录制模式，取值：0（不录制），1（实时录制），2（按需录制）
+|jpgOverwriteStatus|boolean|开启覆盖式截图(一般用于流封面)
+|jpgSequenceStatus|boolean|开启实时截图
+|jpgOnDemandStatus|boolean|开启按需截图
+|tsFileNameTemplate|string|ts文件命名格式
+|m3u8FileNameTemplate|string|m3u8文件命名格式
+|flvFileNameTemplate|string|flv文件命名格式
+|mp4FileNameTemplate|string|mp4文件命名格式
+|jpgOverwriteFileNameTemplate|string|覆盖式截图文件命名格式
+|jpgSequenceFileNameTemplate|string|实时截图文件命名格式
+|recordInterval|integer|录制文件时长，单位为秒，600~7200
+|snapInterval|integer|截图间隔，单位为秒，1~600，按需截图可以忽略
+|createdAt|integer|模板创建时间
+|updatedAt|integer|模板更新时间
+|zone|string|模板的bucket区域
+
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/templates/2akrars59hm2l \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "id": "2akrars59hm2l",
+  "name": "test0013",
+  "desc": "this is a test",
+  "bucket": "bucket-test1",
+  "deleteAfterDays": 0,
+  "templateType": 1,
+  "fileType": 0,
+  "recordType": 0,
+  "recordFileFormat": 0,
+  "jpgOverwriteStatus": true,
+  "jpgSequenceStatus": true,
+  "jpgOnDemandStatus": true,
+  "jpgOverwriteFileNameTemplate": "snapshot/jpg/${namespaceId}/${streamId}.jpg",
+  "jpgSequenceFileNameTemplate": "snapshot/jpg/${namespaceId}/${streamId}/${startMs}.jpg",
+  "jpgOnDemandFileNameTemplate": "snapshot/jpg/${namespaceId}/${streamId}/ondemand/${startMs}.jpg",
+  "createdAt": 1586847620,
+  "updatedAt": 1586847620,
+  "snapInterval": 5,
+  "zone": "z1"
+}
+```

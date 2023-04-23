@@ -1,0 +1,17 @@
+# 系统对接流程
+![低代码对接流程.png](https://dn-odum9helk.qbox.me/Fto-SQcx-3QMP207zwqWrEpluBPq)
+
+* 第一步：应用创建
+* 第二步：应用配置
+* 第三步：低代码接入，快速上线
+
+# 低代码接入举例
+```
+import com.qlive.sdk.QLive
+
+val config = QLiveConfig("serverURL")
+QLive.init(appContext, config, tokenGetter)
+QLive.auth(callback)
+QLive.setUser(QUserInfo("your avatar", "your nick", extraInfo), callback)
+QLive.getLiveUIKit().launch(context)
+```

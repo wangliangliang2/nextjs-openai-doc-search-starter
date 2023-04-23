@@ -1,0 +1,69 @@
+# **描述**
+本接口用于更新流信息
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：PATCH
+* 接口路径：`/v1/namespaces/{namespacesId}/streams/{streamId}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|流ID
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|operations|是|op数组|op集合，详见：*表一*
+
+*表一：* OP集合参数
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|operations.key|是|string|要修改的参数
+|operations.op|是|string|op操作(目前支持replace和delete)
+|operations.value|是|object|要修改的参数对应的value(当op为delete的时候可以忽略)
+
+*表二：* 可编辑参数说明
+
+|参数名称|字段类型|说明|
+|---|---|---|
+|desc|string|流描述	
+|recordTemplateId|string|录制模版ID
+|snapshotTemplateId|string|截图模版ID
+|diabled|boolean|流是否被禁用
+|pullAddr|string|主动拉流模式的空间下，拉流地址
+
+# **响应参数**
+与创建流接口响应内容一致，请参阅创建流[响应参数](https://developer.qiniu.io/qvs/api/6734/create-flow#3)
+# **示例**
+
+**请求示例**
+
+```
+curl --request PATCH \
+  --url http://qvs.qiniuapi.com/v1/namespaces/d102sni9zryu/streams/device009 \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{"operations":[{"key":"recordTemplateId","op":"replace","value":"d102sns2mwhd"}]
+}'
+```
+
+**响应示例**
+
+```
+{
+  "streamId": "device009",
+  "nsId": "d102sni9zryu",
+  "nsName": "test009",
+  "recordTemplateId": "d102sns2mwhd",
+  "snapshotTemplateId": "",
+  "createdAt": 1586832470,
+  "updatedAt": 1586832470,
+  "status": false,
+  "disabled": false,
+  "lastPushedAt": 0
+}
+```

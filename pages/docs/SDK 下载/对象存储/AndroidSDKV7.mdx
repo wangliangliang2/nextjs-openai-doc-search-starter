@@ -1,0 +1,399 @@
+本文档适用于 v7.x 版本 Android SDK
+Android SDK 只包含了最终用户使用场景中的必要功能。相比服务端 SDK 而言，客户端 SDK 不会包含对云存储服务的管理和配置功能。
+
+- [Android SDK 下载地址](https://github.com/qiniu/android-sdk/releases)
+- [Android SDK 源码地址](https://github.com/qiniu/android-sdk)
+- [Android SDK 历史文档](/kodo/sdk/android-sdk-6)
+
+<a id="install"></a>
+# 安装
+
+
+### Gradle
+
+
+`
+compile 'com.qiniu:qiniu-android-sdk:7.6.4'
+`
+
+
+### 相关链接
+- [qiniu-android-sdk](https://github.com/qiniu/android-sdk/)
+- [okhttp](http://square.github.io/okhttp/)
+
+如果需要下载历史 jar 包，也可以在 maven 上直接下载，请参考[这里](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.qiniu%22%20AND%20a%3A%22qiniu-android-sdk%22)。
+
+<a id="security-mechanism"></a>
+# 安全机制
+
+该 SDK 未包含凭证生成相关的功能。开发者对安全性的控制应遵循[安全机制](/kodo/manual/security)中建议的做法，即客户端应向业务服务器每隔一段时间请求[上传凭证](/kodo/manual/upload-token)，而不是直接在客户端使用 AccessKey / SecretKey 生成对应的凭证。在客户端使用 SecretKey 会导致严重的安全隐患。
+
+开发者可以在生成上传凭证前通过配置[上传策略](/kodo/manual/put-policy)来控制上传的后续动作，例如在上传完成后通过回调机制通知业务服务器。该工作在业务服务器端进行，因此非本 SDK 的功能范畴。
+
+七牛的服务端SDK提供了上传凭证的生成功能，请参考各个服务端语言的SDK文档。
+
+<a id="initialize"></a>
+# 初始化
+
+一般情况下可以直接使用默认设置，不用单独配置。可以配置超时时长、分片上传阀值等。
+
+
+```java
+Configuration config = new Configuration.Builder()
+                    .connectTimeout(10)           // 链接超时。默认10秒
+                    .useHttps(true)               // 是否使用https上传域名
+                    .responseTimeout(60)          // 服务器响应超时。默认60秒
+                    .recorder(recorder)           // recorder分片上传时，已上传片记录器。默认null
+                    .recorder(recorder, keyGen)   // keyGen 分片上传时，生成标识符，用于片记录器区分是那个文件的上传记录
+                    .zone(FixedZone.zone0)        // 设置区域，不指定会自动选择。指定不同区域的上传域名、备用域名、备用IP。
+                    .build();
+
+// 重用uploadManager。一般地，只需要创建一个uploadManager对象
+UploadManager uploadManager = new UploadManager(config, 3);//配置3个线程数并发上传；不配置默认为3，只针对file.size>4M生效。线程数建议不超过5，上传速度主要取决于上行带宽，带宽很小的情况单线程和多线程没有区别
+
+```
+
+# 版本
+| Qiniu SDK 版本 | 最低 Android版本   |       依赖库版本           | 
+|------------ |-----------------|------------------------|
+|  7.6.x        |  Android 5.0+     |        okhttp 4+         |
+|  7.5.x        |  Android 5.0+     |        okhttp 4+         |
+|  7.4.6        |  Android 4.0+     |        okhttp 3.12.6     |
+|  7.3.x        |  Android 2.3+     |        okhttp 3.11.0     |
+|  7.2.x        |  Android 2.3+     |        okhttp 3+         |
+|  7.1.x        |  Android 2.3+     |        okhttp 2.6+       |
+| 7.0.8,7.0.9   |  Android 2.2+     | android-async-http 1.4.9 |
+|  7.0.7        |  Android 2.2+     | android-async-http 1.4.8 |
+
+### 注意
+* 推荐使用最新版：7.6.4，7.6.4使用okhttp4.2.2
+* 7.4.6是在7.6.4版本上降低okhttp版本，其他功能不变，AndroidNetwork.getMobileDbm()可以获取手机信号强度，需要如下权限(API>=18时生效)
+```
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+```
+* 从 7.3.13 开始，不在强制依赖 `happy-dns-android`，默认不再提供 `httpDns`，可以调用 `Configuration.Builder#dns(com.qiniu.android.http.Dns)`方法设置外部 `Dns`，自定义 `Dns` 要求实现 `com.qiniu.android.http.Dns` 接口。
+* 从7.5.0开始增加了DNS预取和缓存策略，减少dns解析错误
+* 如果可以明确 区域 的话，最好指定固定区域，这样可以少一步网络请求，少一步出错的可能。
+
+下方为使用外部 `dns` 组件 `httpDns` 的示例代码：
+
+```
+  import com.qiniu.android.http.Dns;
+
+	public Dns buildDefaultDns() {
+        // 可添加修改 多个 IResolver 
+        // 适当调整不同 IResolver 的加入顺序，比如 223.5.5.5，119.29.29.29，114.114.114.114，8.8.8.8 等  
+        ArrayList<IResolver> rs = new ArrayList<IResolver>(3);
+        try {
+            IResolver r1 = new Resolver(InetAddress.getByName("119.29.29.29"));
+            rs.add(r1);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        try {
+            rs.add(new Resolver(InetAddress.getByName("114.114.114.114")));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        try {
+            // 读取系统相关属性
+            // android 27 及以上 会报错
+            IResolver r2 = AndroidDnsServer.defaultResolver();
+            rs.add(r2);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        if (rs.size() == 0) {
+            return null;
+        }
+
+        final DnsManager happlyDns = new DnsManager(NetworkInfo.normal, rs.toArray(new IResolver[rs.size()]));
+
+        Dns dns = new Dns() {
+            // 若抛出异常 Exception ，sdk 会使用 okhttp 组件默认 dns 解析结果  
+            @Override
+            public List<InetAddress> lookup(String hostname) throws UnknownHostException {
+                InetAddress[] ips;
+                try {
+                    ips = happlyDns.queryInetAdress(new Domain(hostname));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new UnknownHostException(e.getMessage());
+                }
+                if (ips == null || ips.length == 0) {
+                    throw new UnknownHostException(hostname + " resolve failed.");
+                }
+                List<InetAddress> l = new ArrayList<>();
+                Collections.addAll(l, ips);
+                return l;
+            }
+        };
+        return dns;
+    }
+	
+	Configuration config = new Configuration.Builder()
+						// .xxxx(xxxx) // 设置其它属性
+						.dns(buildDefaultDns()).build();
+	uploadManager = new UploadManager(config);
+	
+```
+
+* 部分老本版（7.3.12 及以下版本）默认使用 `happy-dns-android` ，在 android 8 下运行可能报错 `java.io.IOException: cant get local dns server`，可以禁用外部 `dns`，规避错误:
+
+```java
+Configuration config = new Configuration.Builder()
+                    //.xxxx()
+                    .dns(null)
+                    //.yyyy()
+                    .build();
+
+```
+
+
+<a id="io-put"></a>
+# 上传文件
+
+SDK 内置两种上传方式：表单上传和分片上传，并根据具体情况，内部做了自动切换。表单上传使用一个 HTTP POST 请求完成文件的上传，因此比较适合较小的文件和较好的网络环境。相比而言，分片上传更能适应不稳定的网络环境，也比较适合上传比较大的文件（例如数百 MB 或更大）。
+
+若需深入了解上传方式之间的区别，请参阅上传类型中[表单上传](/kodo/manual/form-upload)和[分片上传](/kodo/manual/chunked-upload)接口说明。
+
+UploadManager.put 参数说明：
+
+|参数 | 类型 | 说明 |
+|------|-------|------|
+| data | byte[]/String/File | 数据，可以是 byte 数组、文件路径、文件
+| key | String | 保存在服务器上的资源唯一标识，请参阅[键值对](/kodo/manual/1277/product-introduction#key-value)
+| token |String | 服务器分配的 token
+| completionHandler | UpCompletionHandler | 上传回调函数，必填
+| options | UploadOptions  | 如果需要进度通知、中途取消、指定 mimeType，则需要填写相应字段，详见下面的 UploadOptions 参数说明
+
+
+UploadOptions 参数说明：
+
+|参数 | 类型 | 说明|
+|------|-------|------|
+| params | Map&lt;String, String&gt; |自定义变量，key 必须以 x: 开始
+| mimeType| String | 指定文件的 mimeType
+| progressHandler | UpProgressHandler |上传进度回调
+| cancellationSignal | UpCancellationSignal |取消上传，当 isCancelled() 返回 true 时，不再执行更多上传
+
+<a id="upload-form"></a>
+## 简单上传
+
+可以参考[简单上传demo](https://github.com/JemyCheung/upload_android)
+```
+//指定zone的具体区域 
+//FixedZone.zone0   华东机房
+//FixedZone.zone1   华北机房
+//FixedZone.zone2   华南机房
+//FixedZone.zoneNa0 北美机房
+
+//自动识别上传区域 
+//AutoZone.autoZone
+
+
+//Configuration config = new Configuration.Builder()
+//.zone(Zone.autoZone)
+//.zone(FixedZone.zone0)
+//.build();
+//UploadManager uploadManager = new UploadManager(config);
+data = <File对象、或 文件路径、或 字节数组>
+String key = <指定七牛服务上的文件名，或 null>;
+String token = <从服务端SDK获取>;
+uploadManager.put(data, key, token,
+    new UpCompletionHandler() {
+        @Override
+        public void complete(String key, ResponseInfo info, JSONObject res) {
+            //res包含hash、key等信息，具体字段取决于上传策略的设置
+             if(info.isOK()) {
+                Log.i("qiniu", "Upload Success");
+             } else {
+                Log.i("qiniu", "Upload Fail");
+                //如果失败，这里可以把info信息上报自己的服务器，便于后面分析上传错误原因
+             }
+             Log.i("qiniu", key + ",\r\n " + info + ",\r\n " + res);
+            }
+        }, null);
+
+```
+回调参数说明：
+
+|参数 | 说明|
+|-------|------|
+|key | uploadManager.put(file, key, ...) 方法指定的 key
+|info | http 请求的状态信息等，可记入日志，isOK() 返回 true 表示上传成功
+|response| 七牛反馈的信息。可从中解析保存在七牛服务的 key 等信息，具体字段取决上传策略的设置
+
+**注意：**可能会抛出文件不存在，没有权限访问等异常。
+
+<a id="upload-progress"></a>
+## 上传进度
+
+```
+uploadManager.put(data, key, token,handler,
+    new UploadOptions(null, null, false,
+        new UpProgressHandler(){
+            public void progress(String key, double percent){
+                Log.i("qiniu", key + ": " + percent);
+            }
+        }, null));
+				
+```
+
+**注意：**progress(key, percent) 中的 key 即 uploadManager.put(file, key, ...) 方法指定的 key。
+
+<a id="upload-cancel"></a>
+## 取消上传
+
+内部代码会检测 UpCancellationSignal##isCancelled() 的返回值，当其返回 true 时，将停止上传。可外部维护一个变量 isCancelled，当点击取消按钮时，设置 isCancelled = true; 。例如：
+
+```
+// 初始化、执行上传
+private volatile boolean isCancelled = false;
+
+uploadManager.put(data, key, token,handler,
+    new UploadOptions(null, null, false, progressHandler,
+        new UpCancellationSignal(){
+            public boolean isCancelled(){
+                return isCancelled;
+            }
+        }));
+
+
+// 点击取消按钮，让UpCancellationSignal##isCancelled()方法返回true，以停止上传
+private void cancell() {
+    isCancelled = true;
+}
+
+```
+
+<a id="upload-resumable"></a>
+## 记录断点
+
+分片上传中，可将各个已上传的块记录下来，再次上传时，已上传的部分不用再次上传。断点记录类需实现 com.qiniu.android.storage.Recorder 接口。已提供保存到文件的 FileRecorder 实现。
+
+```
+String dirPath = <断点记录文件保存的文件夹位置>
+Recorder recorder = null;
+try {
+        recorder = new FileRecorder(dirPath);
+}catch (Exception e){
+
+}
+
+//默认使用key的url_safe_base64编码字符串作为断点记录文件的文件名
+//避免记录文件冲突（特别是key指定为null时），也可自定义文件名(下方为默认实现)：
+KeyGenerator keyGen = new KeyGenerator(){
+    public String gen(String key, File file){
+        // 不必使用url_safe_base64转换，uploadManager内部会处理
+        // 该返回值可替换为基于key、文件内容、上下文的其它信息生成的文件名
+        return key + "_._" + new StringBuffer(file.getAbsolutePath()).reverse();
+    }
+};
+
+// 重用uploadManager。一般地，只需要创建一个uploadManager对象
+//UploadManager uploadManager = new UploadManager(recorder);  // 1
+//UploadManager uploadManager = new UploadManager(recorder, keyGen); // 2
+// 或在初始化时指定：
+Configuration config = new Configuration.Builder()
+                    // recorder分片上传时，已上传片记录器
+                    // keyGen分片上传时，生成标识符，用于片记录器区分是哪个文件的上传记录
+                    .recorder(recorder, keyGen)  
+                    .build();
+UploadManager uploadManager = new UploadManager(config);
+
+uploadManager.put(data, key, ...)
+
+```
+
+<a id="io-get"></a>
+# 下载文件
+
+该 SDK 并未提供下载文件相关的功能接口，因为文件下载是一个标准的 HTTP GET 过程。开发者只需理解资源 URI 的组成格式即可非常方便的构建资源 URI，并在必要的时候加上[下载凭证](/kodo/manual/download-token)，即可使用 HTTP GET 请求获取相应资源。
+
+从安全性和代码可维护性的角度考虑，我们建议下载 URL 的拼接过程也在业务服务器进行，让客户端从业务服务器请求。
+
+<a id="thread-safety"></a>
+#  线程安全性
+
+Android 一般情况下会使用一个主线程来控制 UI，非主线程无法控制 UI，在 Android4.0+ 之后不能在主线程完成网络请求，该 SDK 是根据以上的使用场景设计，所有的网络操作均使用独立的线程异步运行，UpCompletionHandler##complete、UpProgressHandler##progress 是在主线程调用的，在回调函数内可以直接操作 UI 控件。
+
+<a id="api-reference"></a>
+# API 参考
+
+- [存储 API 参考](/kodo)
+- [官方数据处理 API 参考](/dora)
+
+<a id="faq"></a>
+# 常见问题
+
+**1. 混淆处理**
+
+对七牛的 SDK 不需要做特殊混淆处理，如果有混淆，请将七牛相关的包都排除。 
+
+- 在 Android Studio 中，混淆配置在 proguard-rules.pro 里面加上下面几行混淆代码就行：
+
+```
+-keep class com.qiniu.**{*;}
+-keep class com.qiniu.**{public <init>();}
+-ignorewarnings
+```
+
+**注意：**-ignorewarnings 这个也是必须加的，如果不加这个，编译的时候可能可以通过，但是 release 的时候还是会出现错误。 
+
+- 在 eclipse 中，混淆配置在 proguard-project.txt 里面加上下面几行混淆代码就行：
+
+```
+-keep class com.qiniu.**{*;}
+-keep class com.qiniu.**{public <init>();}
+-ignorewarnings
+```
+
+**2. 为什么进度会在 95% 停很久？**
+
+因为上传进度是用 sdk 写入 socket 的字节数／总字节数作为进度，但写入 socket 不等于服务器收到并且处理完成，中间还有一段时间，如果只是用字节数就会出现更怪异的情况，在 100% 停留很久，所以综合考虑就使用了 95% 这个值。
+
+如果您发现上传卡在 95% 很长的时间，请检查是否使用了上传回调业务服务器的功能，请确保业务服务器接受到上传回调后可以返回正确的状态码和回复内容。
+
+**3. 如何才能得到下载的 url ？**
+
+上传没有域名概念，只有 bucket ，一个 bucket 可以绑定多个域名。下载的 url 可以用 bucket 里的域名加 key 拼接而成，私有 url 还要加上 token。
+
+**4. 如何跳过 https 证书验证？**
+
+在部分测试环境发生 Trust anchor for certification path not found 异常，可以设置跳过 https 证书验证：在 Configuration 配置 useHttps(false) 开启。
+
+<a id="related-resources"></a>
+# 相关资源
+
+如果您有任何关于我们文档或产品的建议和想法，欢迎您通过以下方式与我们互动讨论：
+
+* [技术论坛](http://segmentfault.com/qiniu) - 在这里您可以和其他开发者愉快的讨论如何更好的使用七牛云服务
+* [提交工单](http://support.qiniu.com/) - 如果您的问题不适合在论坛讨论或希望及时解决，您也可以提交一个工单，我们的技术支持人员会第一时间回复您
+* [博客](http://blog.qiniu.com) - 这里会持续更新发布市场活动和技术分享文章
+* [微博](http://weibo.com/qiniutek)
+* [常见问题](http://support.qiniu.com/)
+
+<a id="contribute-code"></a>
+# 贡献代码
+
+1. Fork
+
+2. 创建您的特性分支 git checkout -b my-new-feature
+
+3. 提交您的改动 git commit -am 'Added some feature'
+
+4. 将您的修改记录提交到远程 git 仓库 git push origin my-new-feature
+
+5. 然后到 github 网站的该 git 远程仓库的 my-new-feature 分支下发起 Pull Request
+
+<a id="license"></a>
+# 许可证
+
+Copyright (c) 2014 qiniu.com
+
+基于 MIT 协议发布:
+
+* [www.opensource.org/licenses/MIT](http://www.opensource.org/licenses/MIT)
+ 

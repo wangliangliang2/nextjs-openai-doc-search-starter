@@ -1,0 +1,53 @@
+使用[音视频转码 (avthumb)](https://developer.qiniu.com/dora/api/audio-and-video-transcoding-avthumb) 进行转码
+
+例子：
+
+使用 php 进行转码操作：
+
+
+```php
+<?php  
+require_once '/---/--/php-sdk-7.0.8/autoload.php';
+
+use Qiniu\Auth;  
+use Qiniu\Processing\PersistentFop;
+
+//对已经上传到七牛的视频发起异步转码操作
+
+$accessKey = ' ';  
+$secretKey = ' ';  
+$auth = new Auth($accessKey, $secretKey);
+
+//要转码的文件所在的空间和文件名  
+$bucket = ' ';  
+$key = ' ';
+
+//转码是使用的队列名称  
+$pipeline = ' ';  
+$pfop = new PersistentFop($auth, $bucket, $pipeline);  
+$fops = "avthumb/mp4/s/640x360/vb/1.25m";  
+$savekey = Qiniu\base64\_urlSafeEncode('目标空间:转码后文件名称');  
+$pfops = $fops.'|saveas/'.$savekey;
+
+list($id, $err) = $pfop-\>execute($bucket, $key, $pfops);  
+echo "\n====\> pfop avthumb result: \n";  
+if ($err != null) {  
+var\_dump($err);  
+} else {  
+echo "PersistentFop Id: $id\n";  
+}
+
+//查询转码的进度和状态  
+list($ret, $err) = $pfop-\>status($id);  
+echo "\n====\> pfop avthumb status: \n";  
+if ($err != null) {  
+var\_dump($err);  
+} else {  
+var\_dump($ret);  
+}
+```
+
+之后使用 `http://api.qiniu.com/status/get/prefop?id=<PersistentFop Id>` 查询转码状态
+
+在空间中也能看到转码后的mp4
+

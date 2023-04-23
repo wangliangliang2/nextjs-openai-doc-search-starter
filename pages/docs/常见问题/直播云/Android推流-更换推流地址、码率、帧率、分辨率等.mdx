@@ -1,0 +1,20 @@
+Q：如何在预览时，等待服务器返回推流地址后，或者其它场景，设置推流地址、码率、帧率、分辨率等参数。
+
+A：目前推流SDK大多数推流参数不支持动态修改，所以修改推流地址需要在非推流状态时进行
+```
+// 停止推流（如果处于推流状态）
+mMediaStreamingManager.stopStreaming();
+
+// 修改配置
+mProfile.setPublishUrl("newURL");
+
+// 设置配置
+mMediaStreamingManager.setStreamingProfile(mProfile);
+
+// 继续推流
+mMediaStreamingManager.startStreaming();
+```
+
+* 停止推流会触发 onStateChanged SHUTDOWN 状态的回调，可在收到该状态后，重新开始推流
+
+更改码率，分辨率等同理。

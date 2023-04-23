@@ -1,0 +1,51 @@
+# 接口描述
+
+创建一个直播流，推流时如果流不存在，系统会自动创建一个流。
+
+# 请求参数
+
+```
+POST /v2/hubs/<Hub>/streams
+Host: pili.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+
+{
+    "key": "<StreamTitle>"
+}
+```
+
+| 参数   | 类型 | 必填 | 描述                     |
+| ----- | ------ | -------- | -------------------------- |
+| hub   | string | 是 | 直播空间名            |
+| key   | string | 是 | StreamTitle 直播流名，需要满足的条件为 `4-200个数字或字母` |
+
+
+# 返回数据
+
+```
+200 {}
+
+614 {
+    "error": "stream already exists"
+}
+```
+
+# 示例
+
+请求体：
+
+```
+POST /v2/hubs/test/streams HTTP/1.1
+Host: pili.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+
+{"key":"testkey"}
+```
+
+返回体：
+
+```
+200 OK
+```

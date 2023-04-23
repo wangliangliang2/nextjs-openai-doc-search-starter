@@ -1,0 +1,14 @@
+线性回归模型尝试从已知数据集中学习得到一个线性模型（y～x），这个模型通过调整变量参数，尽可能准确地反应x和y的对应关系。根据求得的参数，我们可以对新的输入来计算预测的值。
+
+
+**语法：**
+
+```
+..| fit LinearRegression fit_intercept=<True(default) | False> normalize=<True | False(default)> <target_field> from <feature_field_1> <feature_field_2>... 
+
+```
+
+**参数说明：**
+- fit_intercept参数用来是否计算模型的截距。默认为True。
+- normalize参数用来决定是否把X值正则化处理，默认值为False。如果normalize=True，在回归模型之前，先用L2正则化处理X值。
+- 当fit_intercept=False，normalize只能为True，如果normalize设为False，则会被忽略。

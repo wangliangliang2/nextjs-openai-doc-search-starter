@@ -1,0 +1,140 @@
+# 案例一：波士顿房价预测
+
+## **背景介绍**
+
+___数据来源___
+
+该数据集包含马萨诸塞州波士顿郊区的房屋信息数据，来自UCI机器学习知识库（数据集已下线），于1978年开始统计，包括506个样本，每个样本包括12个特征变量和该地区的平均房价。
+
+我们将会使用该数据集训练和测试一个模型，并对模型的性能和预测能力进行测试。通过该数据训练后的好的模型可以被用来对房屋做特定预测，尤其是对房屋的价值。对于房地产商来说，这样的预测模型十分有价值。
+
+
+数据集下载链接：http://pw7x36qrk.bkt.clouddn.com/boston_housing_data.csv
+
+___字段含义___
+
+
+| 特征变量名称      | 特征变量含义    |
+| :---:        | :---: |
+| CRIM      | 城镇人均犯罪率   |
+| ZN   | 住宅用地超过 25000 sq.ft. 的比例  |
+| AGE      | 1940年之前建成的自用房屋比例   |
+| DIS   | 到波士顿5个中心区域的加权距离  |
+| INDUS      | 城镇非零售商用土地的比例       |
+| RAD   | 辐射性公路的靠近指数 |
+| TAX     | 每10000美元的全值财产税率   |
+| CHAS   | 边界是河流为1，否则0       |
+| NOX      | 一氧化氮浓度    |
+| PTRATIO   | 城镇师生比例  |
+| RM      | 住宅平均房间数     |
+| LSTAT   | 人口中地位低下者的比例  |
+
+
+| 目标变量名称      | 目标变量含义    |
+| :---:        | :---: |
+| TARGET      |   自住房的平均房价，单位：千美元     |
+
+## **数据预处理**
+
+___数据质量检查___
+
+在做数据处理之前，我们可以先检查一下数据质量，计算每个字段的统计信息（包含最大值，最小值，平均数，计数，空值数量等），确保没有数据异常的情况存在。
+```
+repo="boston_housing"
+| eval crim_null=if(isNull(crim), 1, 0)
+| eval zn_null=if(isNull(zn), 1, 0)
+| eval indus_null=if(isNull(indus), 1, 0)
+| eval chas_null=if(isNull(chas), 1, 0)
+| eval nox_null=if(isNull(nox), 1, 0)
+| eval rm_null=if(isNull(rm), 1, 0)
+| eval age_null=if(isNull(age), 1, 0)
+| eval dis_null=if(isNull(dis), 1, 0)
+| eval rad_null=if(isNull(rad), 1, 0)
+| eval tax_null=if(isNull(tax), 1, 0)
+| eval ptratio_null=if(isNull(ptratio), 1, 0)
+| eval b_null=if(isNull(b), 1, 0)
+| eval lstat_null=if(isNull(lstat), 1, 0)
+| stats count(crim), avg(crim), max(crim), min(crim), stdev(crim), sum(crim_null), count(zn), avg(zn), max(zn), min(zn), stdev(zn), sum(zn_null),count(indus), avg(indus), max(indus), min(indus), stdev(indus), sum(indus_null),count(chas), avg(chas), max(chas), min(chas), stdev(chas), sum(chas_null),count(nox), avg(nox), max(nox), min(nox), stdev(nox), sum(nox_null),count(rm), avg(rm), max(rm), min(rm), stdev(rm), sum(rm_null),count(age), avg(age), max(age), min(age), stdev(age), sum(age_null),count(dis), avg(dis), max(dis), min(dis), stdev(dis), sum(dis_null),count(rad), avg(rad), max(rad), min(rad), stdev(rad), sum(rad_null),count(tax), avg(tax), max(tax), min(tax), stdev(tax), sum(tax_null),count(ptratio), avg(ptratio), max(ptratio), min(ptratio), stdev(ptratio), sum(ptratio_null),count(b), avg(b), max(b), min(b), stdev(b), sum(b_null),count(lstat), avg(lstat), max(lstat), min(lstat), stdev(lstat), sum(lstat_null)
+```
+举例：城镇人均犯罪率
+由图可见，犯罪率的数值处在0-100之间，且没有空值，符合预期。
+![CRIM_stats_summary.png](https://i.loli.net/2020/10/27/mYbSl32ycjJBCsa.png)
+
+
+___数据清洗___
+
+
+经过验证，该数据集中所有字段都不存在空值，且数据符合预期，不需要额外的数据清洗工程。
+
+
+___特征选择___
+
+
+
+特征选择可以通过多种方式实现，比如说主成分分析（PCA），逐步回归（Stepwise Regression）等，在这里我们可以凭借实际经验选择三个可能对于房价影响最大的特征来做之后的建模工作，分别为：__'RM' （住宅平均房间数）， 'LSTAT'（人口中地位低下者的比例）__，以及__'PTRATIO'（城镇师生比例）__。
+
+## **建模**
+
+___模型选择___
+
+因为预测值（自住房的平均房价）为连续性数据，我们可以选择使用__回归模型__来拟合数据。其中最常用的，也是最具有解释性的模型即为__线性回归（Linear Regression）__。
+
+
+___拆分数据集___
+
+为了保证模型的质量评估不受其训练数据的影响，我们需要把波士顿房屋数据集分成训练和测试两个子集。在这个过程中，数据也会被重排列，以消除数据集中由于顺序而产生的偏差。__默认训练集和测试集的比例为8:2__。
+
+我们通过随机数重新排列这506条数据，并选出其中400条数据为训练集，剩下106条数据为测试集。
+
+
+举例：产生训练集SPL：
+```
+repo="boston_housing"
+| eval temp = random()
+| sort by temp
+| limit 400
+```
+
+另存为数据集：
+![Boston_Dataset.png](https://i.loli.net/2020/10/27/ce83ykuCBTt9JWE.png)
+
+
+
+___训练模型___
+
+在机器学习APP内，我们选定作为训练的子集之后，用fit算子训练线性回归模型, 并将该模型保存到模型库。同时，会产出该模型在训练集上的预测结果：
+```
+| from dataset: boston_housing_training
+| fit LinearRegression target from rm ptratio lstat into bostonLR
+```
+
+
+![Boston_LR_fit.png](https://i.loli.net/2020/10/27/lPG1UyuMQHvcVgO.png)
+
+
+## **预测结果**
+
+___模型预测___
+
+
+在机器学习APP内，我们可以用apply算子将刚刚保存的bostonLR模型应用到目标测试库，并产生该模型在测试集上的预测结果：
+
+```
+| from dataset: boston_housing_test
+| apply bostonLR
+```
+
+
+![Boston_LR_apply.png](https://i.loli.net/2020/10/27/zaN2wKT6PAFYGhX.png)
+
+___模型效果评估（可视化）___
+
+我们可以用可视化的方式评估模型的训练效果。
+
+以下两张散点图分别展示了在训练集和测试集上，真实值和预测值的比较：X轴为真实值，Y轴为预测值，越多的数据靠近45˚斜线，证明模型的拟合效果越好，反之，当有很多数据偏离45˚斜线的时候，就说明模型的拟合效果比较差。由于测试数据是未被训练的数据，模型在测试数据上的预测效果更加重要。由此可见，该模型的预测效果比较理想。
+
+训练集：
+![Boston_Train_Figure.png](https://dn-odum9helk.qbox.me/FjfqIzRjq9oOfQzsgJjdv-ycL8yQ)
+
+测试集：
+![Boston_Test_Figure.png](https://dn-odum9helk.qbox.me/FqHFHugo1lbLx6Rs8bN06XFRcr9V)

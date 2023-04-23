@@ -1,0 +1,90 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文主要介绍连麦过程中添加背景音乐混音的使用场景。</p>
+<blockquote>
+<ul>
+<li>背景音乐混音支持本地文件和在线文件，支持的音频文件格式为：aac、mp3、mp4、ogg、opus、wav、m4a、flac</li>
+<li>请尽量使用本地音乐文件，避免因为网络资源的异常导致的混音卡顿等情况</li>
+</ul>
+</blockquote>
+<p>使用方式如下：</p>
+
+# 创建 QNAudioMusicMixer
+<p>SDK 当前仅支持基于 <a href="/rtc/api/11210/QNMicrophoneAudioTrack-Linux">QNMicrophoneAudioTrack</a> 的混音功能，可以通过 <a href="/rtc/api/11210/QNMicrophoneAudioTrack-Linux#CreateAudioMusicMixer">QNMicrophoneAudioTrack.CreateAudioMusicMixer</a> 来创建 <a href="/rtc/api/11989/QNAudioMusicMixer-Linux">QNAudioMusicMixer</a> 对象</p>
+<pre><code class="language-cpp">std::string file_path = <span class="hljs-string">&quot;../example.mp3&quot;</span>;
+<span></span>QNAudioMusicMixer* audio_mixer = microphone_audio_track-&gt;<span class="hljs-built_in">CreateAudioMusicMixer</span>(file_path, listener);
+<span></span></code></pre>
+<p>其中，<a href="/rtc/api/11990/QNAudioMusicMixerListener-Linux">QNAudioMusicMixerListener</a> 为混音状态监听器，监听回调定义如下：</p>
+<pre><code class="language-cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">QINIU_EXPORT_DLL</span> QNAudioMusicMixerListener {
+<span></span> <span class="hljs-keyword">public</span>:
+<span></span>  <span class="hljs-comment">/**
+<span></span>   * 错误回调
+<span></span>   * 
+<span></span>   * @param error_code 错误码
+<span></span>   * @param error_message 错误信息
+<span></span>   */</span>
+<span></span>  <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">OnAudioMusicMixerError</span><span class="hljs-params">(<span class="hljs-type">int</span> error_code,
+<span></span>                                      <span class="hljs-keyword">const</span> std::string& error_message)</span> </span>= <span class="hljs-number">0</span>;
+<span></span>  <span class="hljs-comment">/**
+<span></span>   * 背景音乐混音状态变化回调
+<span></span>   *
+<span></span>   * @param music_state_ 背景音乐混音状态
+<span></span>   */</span>
+<span></span>  <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">OnAudioMusicMixerStateChanged</span><span class="hljs-params">(QNMusicMixerState music_state)</span> </span>= <span class="hljs-number">0</span>;
+<span></span>
+<span></span>  <span class="hljs-comment">/**
+<span></span>   * 背景音乐播放进度回调
+<span></span>   *
+<span></span>   * @param current_pos 背景音乐播放当前进度
+<span></span>   */</span>
+<span></span>  <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">OnAudioMusicMixing</span><span class="hljs-params">(<span class="hljs-type">int64_t</span> current_pos)</span> </span>= <span class="hljs-number">0</span>;
+<span></span>
+<span></span> <span class="hljs-keyword">protected</span>:
+<span></span>  ~<span class="hljs-built_in">QNAudioMusicMixerListener</span>(){};
+<span></span>};
+<span></span></code></pre>
+<p>其中，混音状态的改变都会通过 <a href="/rtc/api/11990/QNAudioMusicMixerListener-Linux#onStateChanged">QNAudioMusicMixerListener.OnAudioMusicMixerStateChanged</a> 回调通知到上层。回调的监听状态可参考 <a href="/rtc/api/11991/QNMusicMixerState-Linux">QNMusicMixerState</a>。混音场景下的错误码可参考<a href="/rtc/development_guidelines/11369/error-code-linux">混音相关错误码</a></p>
+
+# 混音控制
+<p>在创建了 <a href="/rtc/api/11989/QNAudioMusicMixer-Linux">QNAudioMusicMixer</a> 实例后，可以通过该实例提供的混音控制接口进行混音操作的控制，使用代码参考如下：</p>
+<pre><code class="language-cpp"><span class="hljs-comment">// 开始混音，成功后会触发 QNMusicMixerState.kStateMixing 状态的回调</span>
+<span></span>mAudioMixer-&gt;<span class="hljs-built_in">Start</span>();
+<span></span><span class="hljs-comment">// 停止混音，成功后会触发 QNMusicMixerState.kStateStopped 状态的回调</span>
+<span></span>mAudioMixer-&gt;<span class="hljs-built_in">Stop</span>();
+<span></span><span class="hljs-comment">// 恢复混音，成功后会触发 QNMusicMixerState.kStateMixing 状态的回调</span>
+<span></span>mAudioMixer-&gt;<span class="hljs-built_in">Resume</span>();
+<span></span><span class="hljs-comment">// 暂停混音，成功后会触发 QNMusicMixerState.kStatePaused 状态的回调</span>
+<span></span>mAudioMixer-&gt;<span class="hljs-built_in">Pause</span>();
+<span></span><span class="hljs-comment">// 跳到指定位置进行混音，成功后回触发 QNMusicMixerState.kStateMixing 状态的回调</span>
+<span></span>mAudioMixer-&gt;<span class="hljs-built_in">SeekTo</span>(position_ms);
+<span></span></code></pre>
+<p>上述为混音基本流程的控制，更多控制方式请参考 <a href="/rtc/api/11989/QNAudioMusicMixer-Linux">QNAudioMusicMixer</a>。</p>
+
+# 音量控制
+<p>混音场景下，主要包含两种音量设置：<strong>麦克风混音音量</strong>、<strong>背景音乐混音音量</strong>。音量的设置方式参考如下：</p>
+<ul>
+<li><strong>麦克风混音音量</strong>：可以通过 <a href="/rtc/api/11210/QNMicrophoneAudioTrack-Linux#SetVolume">QNMicrophoneAudioTrack.SetVolume</a> 接口进行配置。</li>
+<li><strong>背景音乐混音音量</strong>：可以通过 <a href="/rtc/api/11989/QNAudioMusicMixer-Linux#SetMixingVolume">QNAudioMusicMixer.SetMixingVolume</a> 接口进行配置。</li>
+</ul>
+<p>参考代码如下：</p>
+<pre><code class="language-java">microphone_audio_track-&gt;SetVolume(<span class="hljs-number">0.5f</span>);          <span class="hljs-comment">// 设置麦克风采集(混音)音量</span>
+<span></span>audio_music_mixer-&gt;SetMixingVolume(<span class="hljs-number">0.5f</span>);         <span class="hljs-comment">// 设置背景音乐的混音音量</span>
+<span></span></code></pre>
+
+# 切换音乐
+<p>背景音乐混音<strong>仅支持同时混合一路背景音乐</strong>，若需要切换背景音乐，可通过重新调用 <a href="/rtc/api/11210/QNMicrophoneAudioTrack-Linux#CreateAudioMusicMixer">QNMicrophoneAudioTrack.CreateAudioMusicMixer</a> 创建 <a href="/rtc/api/11989/QNAudioMusicMixer-Linux">QNAudioMusicMixer</a> 实例实现。参考代码如下：</p>
+<pre><code class="language-cpp"><span class="hljs-comment">// 使用 music-1 进行混音</span>
+<span></span>QNAudioMusicMixer* audio_music_mixer = microphone_audio_track-&gt;<span class="hljs-built_in">CreateAudioMusicMixer</span>(music1_file_path, listener); <span class="hljs-comment">// 创建基于 music-1 的混音控制器</span>
+<span></span>audio_music_mixer-&gt;<span class="hljs-built_in">Start</span>();  <span class="hljs-comment">// 开始 music-1 的混音</span>
+<span></span>audio_music_mixer-&gt;<span class="hljs-built_in">Stop</span>();   <span class="hljs-comment">// 停止 music-1 的混音</span>
+<span></span>microphone_audio_track-&gt;<span class="hljs-built_in">DestroyAudioMusicMixer</span>(audio_music_mixer);  <span class="hljs-comment">// 销毁第一个 mixer</span>
+<span></span><span class="hljs-comment">// 切换音乐到 music-2 进行混音</span>
+<span></span>audio_music_mixer = microphone_audio_track-&gt;<span class="hljs-built_in">CreateAudioMusicMixer</span>(music2_file_path, listener); <span class="hljs-comment">// 创建基于 music-2 的混音控制器</span>
+<span></span>audio_music_mixer-&gt;<span class="hljs-built_in">Start</span>();  <span class="hljs-comment">// 开始 music-2 的混音</span>
+<span></span>audio_music_mixer-&gt;<span class="hljs-built_in">Stop</span>();   <span class="hljs-comment">// 停止 music-2 的混音</span>
+<span></span></code></pre>
+
+# 注意事项
+<ol>
+<li><strong>混音</strong>功能会将混音音乐与当前已发布的音频 Track 数据混合并推送出去，若当前的音频 Track 尚未发布，则混音操作将失效。</li>
+</ol></div></div>

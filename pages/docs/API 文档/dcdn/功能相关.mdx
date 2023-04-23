@@ -1,0 +1,273 @@
+# 缓存策略
+
+## 结构
+
+```
+    {
+	    cacheControls: [
+		    {
+			    time: <CCTime>,
+			    timeunit: <CCTimeUnit>,
+			    type: <CCType>,
+			    rule: <CCRule>
+		    }
+	    ],
+	    ignoreParam: <IgnoreParam>
+    }
+
+```
+
+| 参数          | 类型     | 必填     | 含义                                       |
+| ----------- | ------ | ---- |---------------------------------------- |
+| CCTime      | int    | 是     | 缓存时间，注意不论哪种时间单位，总时间都不能超过1年,type为follow，本字段配为 -1              |
+| CCTimeUnit  | int    | 是     |缓存时间单位：0(秒)/1(分钟)/2(小时)/3(天)/4(周)/5(月)/6(年)，type为follow，本字段配为0 |
+| CCType      | string | 是     | 缓存类型：`all`(默认全局规则)/`path`(路径匹配)/`suffix`(后缀匹配)/`follow`(遵循源站) |
+| CCRule      | string | 是     | 缓存路径规则：以分号;分割的字符串，每个里面类型一致，比如CCType为path的话，这里每个分号分割的都是以`/`开头，suffix的话，以点号`.`开头，如果是`all`类型，或者`follow`，统一只要填一个星号`*` |
+| IgnoreParam | bool   | 是     | 是否开启去问号缓存，默认为false                |
+
+## 注意
+
+- 缓存配置优先级依从配置数组的前后顺序依次从高到低
+- `全局配置要放到最后`，不然自定义规则缓存配置优先级最低
+- 如果是遵循源站配置`follow`，只能有一条，即全部遵循源站
+
+## 例子
+
+```
+	// .abc, .jpg后缀文件缓存1分钟，/def, /auth 目录下文件不缓存，全局缓存一个月
+	// url参数不缓存
+	{
+	    cacheControls: [
+		    {
+			    time: 1,
+			    timeunit: 1,
+			    type: "suffix",
+			    rule: ".abc;.jpg"
+			},
+			{
+			    time: 0,
+			    timeunit: 0,
+			    type: "path",
+			    rule: "/def;/auth"
+			},
+			{
+			    time: 1,
+			    timeunit: 5,
+			    type: "all",
+			    rule: "*"
+			},
+	    ],
+	    ignoreParam: true
+	}
+
+```
+
+```
+	// 遵循源站
+	{
+	    cacheControls: [
+		    {
+			    time: 0,
+			    timeunit: 0,
+			    type: "follow",
+			    rule: "*"
+			}
+	    ],
+	    ignoreParam: false
+	}
+
+```
+
+# 回源配置
+
+## 结构
+
+```
+	{
+	    sourceType: <SourceType>,
+		  sourceHost: <SourceHost>,
+	    sourceIPs: [<SourceIP>, ...],
+	    sourceDomain: <SourceDomain>,
+	    sourceQiniuBucket: <SourceQiniuBucket>,
+	    sourceURLScheme: <SourceURLScheme>,
+	    advancedSources: [
+	        {
+	            addr: <ASAddr>,
+	            weight: <ASWeight>,
+	            backup: <ASBackup>
+	        }
+	    ],
+	    testURLPath: <TestURLPath>
+	}
+
+```
+
+| 参数                | 类型     | 必填    | 含义                                       |
+| ----------------- | ------ | ---- |---------------------------------------- |
+| SourceType        | string | 是    |源站类型: `domain`(域名)/`ip`(ip地址)/`advanced`(高级) |
+| SourceHost        | string | 否     |回源Host, 普通域名默认`SourceHost`为域名本身，泛域名默认`SourceHost`为用户请求时的域名 |
+| SourceIP          | string | 否     |回源ip, sourceType为ip时sourceIPs`必填`          |
+| SourceDomain      | string | 否     |回源域名, sourceType为domain时此字段`必填`            |
+| SourceURLScheme   | string | 否     |回源协议, 仅用于https域名，可选值: `http`/`https`, 回源七牛bucket时本值无效,默认不填是follow请求协议 |
+| ASAddr            | string | 否     |高级回源的回源地址, 可以是IP或者域名, sourceType为advanced时advancedSources字段`必填` |
+| ASWeight          | int    | 否     |高级回源的回源addr权重, 0 ~ 100, 按照权重比例回源，sourceType为advanced时advancedSources字段`必填`   |
+| ASBackup          | bool   | 否     |高级回源的回源addr是否为备源地址，sourceType为advanced时advancedSources字段`必填`                   |
+| TestURLPath       | string | 是     |用于测试的URL Path, 检测源站是否可访问, 大小建议`小于1KB`，采用静态资源，并请`不要删除`, 后面域名任何配置更改都会测试该资源, 用以保证域名的访问性 |
+
+## 注意
+
+- 高级回源模式中如配置了主备回源域名时，只有所有的主源都访问不了，才会访问备源
+- 高级回源模式中如设置了源站权重，请求概率=权重/权重总和，eg：有两个主线路A和B，A权重1 和 B权重3，那么四次请求，1次是A，3次是B
+
+# referer 防盗链
+
+## 结构
+
+### 请求结构
+
+```
+	{
+	    refererType: <RefererType>,
+	    refererValues: [<RefererValue>,...],
+	    nullReferer: <NullReferer>
+	}
+
+```
+
+| 参数           | 类型     | 必填    |含义                            |
+| ------------ | ------ | ------ |----------------------------- |
+| RefererType  | string | 是     |Referer防盗链类型： `black`/`white` |
+| RefererValue | string | 是     |Referer防盗链黑白名单                |
+| NullReferer  | bool   | 否     |Referer防盗链, 是否支持空referer，不填为false      |
+
+### 响应结构
+
+```
+	{
+	    refererType: <RefererType>,
+	    refererValues: [<RefererValue>, ...],
+	    nullReferer: <NullReferer>
+	}
+
+```
+
+| 参数           | 类型     | 含义                            |
+| ------------ | ------ | ----------------------------- |
+| RefererType  | string | Referer防盗链类型： `black`/`white` |
+| RefererValue | string | Referer防盗链黑白名单                |
+| NullReferer  | bool   | Referer防盗链, 是否支持空referer      |
+
+## 注意
+
+- 请求结构和响应结构不同, 请求结构是指`创建域名`和`修改referer防盗链`的请求采用的结构，响应结构是指, 获取`域名信息`和`获取域名列表`中返回结果中采用的结构
+
+# IP黑白名单
+
+## 结构
+
+### 请求结构
+
+```
+	{
+	    ipACLType: <IpACLType>,
+	    ipACLValues: [<IpACLValue>,...],
+	}
+
+```
+
+| 参数         | 类型     | 必填    | 含义                            |
+| ---------- | ------ | ------ |----------------------------- |
+| IpACLType  | string | 是     |ip黑白名单控制控制类型, `black`/`white`/`""`；其中空字符串`""`代表关闭本功能，此时请注意`ipACLValues`需要为空 |
+| IpACLValue | string | 是     |ip黑白名单，ip格式为：127.0.0.1/24     |
+
+### 响应结构
+
+```
+	{
+	    ipACLType: <IpACLType>,
+	    ipACLValues: [<IpACLValue>, ...]
+	}
+
+```
+
+| 参数          | 类型     | 含义                          |
+| ----------- | ------ | --------------------------- |
+| ipACLType   | string | ip黑白名单控制类型, `black`/`white` |
+| IpACLValues | string | ip黑白名单, ip格式为：127.0.0.1/24  |
+
+## 注意
+
+- 请求结构和响应结构不同, 请求结构是指`创建域名`和`修改ip黑白名单`的请求采用的结构，响应结构是指, 获取`域名信息`和`获取域名列表`中返回结果中采用的结构
+
+# HTTPS
+
+## 结构
+
+```
+	{
+		certId: <CertID>,
+		forceHttps: <ForceHttps>,
+		http2Enable: <Http2Enable>
+	}
+
+```
+
+| 参数         | 类型     | 必填      |含义                                   |
+| ---------- | ------ | ------ | ------------------------------------ |
+| CertID     | string | 是     |证书ID, 如果`Protocol`是https, 则需要填写该证书id |
+| ForceHttps | bool   | 是|    是否开启强制https访问，即http访问时30x到https      |
+| Http2Enable | bool   | 是|    http2功能是否启用，false为关闭，true为开启      |
+
+
+## 注意
+
+- 证书id `CertID` 是通过上传证书获取的，也可以通过query自己的证书列表拿取证书id
+
+
+# 证书配置
+
+## 结构
+
+### 请求结构
+
+```
+	{
+		"name": <CertName>,
+		"common_name":<CommonName>,
+		"pri": <Pri>,
+		"ca": <Ca>,
+	}
+
+```
+
+| 参数         | 类型     | 必填      | 含义   |
+| ---------- | ------ | ------ |---- |
+| CertName   | string | 是     |证书名称 |
+| CommonName | string | 否     |相关域名 |
+| Pri        | string | 是     |证书私钥 |
+| Ca         | string | 是     |证书内容 |
+
+### 响应结构
+
+```
+	{
+		"id": <CertID>,
+		"name": <CertName>,
+		"common_name":<CommonName>,
+		"pri": <Pri>,
+		"ca": <Ca>
+	}
+
+```
+
+| 参数         | 类型     | 含义   |
+| ---------- | ------ | ---- |
+| CertID     | string | 证书id |
+| CertName   | string | 证书名称 |
+| CommonName | string | 相关域名 |
+| Pri        | string | 证书私钥 |
+| Ca         | string | 证书内容 |
+
+## 注意
+
+- 请求结构和响应结构不同, 请求结构是指`上传证书`的请求采用的结构，响应结构是指, `获取证书`和`获取证书列表`中返回结果中采用的结构

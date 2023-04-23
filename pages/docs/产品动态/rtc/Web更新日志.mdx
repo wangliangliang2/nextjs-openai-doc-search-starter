@@ -1,0 +1,173 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文提供 QNRTC Web SDK 4.x 以上版本的发布说明。</p>
+<blockquote>
+<ul>
+<li>若您想要查看 4.x 版本之前的发布说明，可查看 <a href="https://doc.qnsdk.com/rtn/web/docs/sdk_overview.html">2.x 及之前版本</a></li>
+<li>若您正在使用 2.x 或者更低版本的 SDK，并且想要升级至最新版本，则可参考 <a href="/rtc/development_guidelines/9531/migration-guide-web">4.x 版本迁移指南</a> 进行版本升级。</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.1.9">4.1.9</a></p>
+<ul>
+<li>修复远端音频无法设置音量问题</li>
+<li>修复远端音频订阅问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.1.8">4.1.8</a></p>
+<ul>
+<li>改善弱网下音频通话质量</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.1.7">4.1.7</a></p>
+<ul>
+<li>混音新增 setMixingVolume 接口</li>
+<li>修复混音设置播放音量造成远端无法听到声音的问题</li>
+<li>修复部分 ios safari 浏览器无法播放发布的本地音乐的问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.1.6">4.1.6</a></p>
+<ul>
+<li>新增部分日志打点</li>
+<li>修复 Firefox 大小流兼容性问题</li>
+<li>修复部分移动端浏览器 audiobuffer 回调无响应问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.1.5">4.1.5</a></p>
+<ul>
+<li>调整声明文件部分类型描述</li>
+<li>修复部分事件报错问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.1.4">4.1.4</a></p>
+<ul>
+<li>房间名与房间用户 ID 最低长度限制调整为 1 位</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.1.3">4.1.3</a></p>
+<ul>
+<li>修复 iOS 上使用合流/单路转推时播放画面旋转问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.1.2">4.1.2</a></p>
+<ul>
+<li>修复日志上传偶现 http 400 错误</li>
+<li>修复日志错误误报上传问题</li>
+<li>调整重连失败错误码</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.1.1">4.1.1</a></p>
+<ul>
+<li>修复断网重连失败后再次进房特定状态未清空的问题</li>
+<li>修复偶现蓝牙耳机断开导致没有声音的问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.1.0">4.1.0</a></p>
+<ul>
+<li>新增跨房媒体转发功能</li>
+<li>兼容服务端 delete room 接口</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.0.9">4.0.9</a></p>
+<ul>
+<li>增加新版本大小流</li>
+<li>支持 Electron 环境</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.0.8">4.0.8</a></p>
+<ul>
+<li>修复 Firefox 中创建 canvas track 失败的问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.0.7">4.0.7</a></p>
+<ul>
+<li>增加新版本大小流</li>
+<li>增加设置音频输出设备</li>
+<li>增加自定义视频和 canvas track 的初始传输模式设置</li>
+<li>修复外部设备移除后销毁 track 报错的问题</li>
+<li>修复离开房间后特定状态未清空的问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.0.6">4.0.6</a></p>
+<ul>
+<li>修复与小程序端互通时听不到声音的问题</li>
+<li>修复更新合流 pending 的问题</li>
+<li>修复 play 方法老版本兼容问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.0.5">4.0.5</a></p>
+<ul>
+<li>增加视频活动检测功能</li>
+<li>增加单路转推添加 sei 信息功能</li>
+<li>远端 track ended 时日志优化</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.0.4">4.0.4</a></p>
+<ul>
+<li>修复 user-publish 事件 userID 异常的问题</li>
+<li>修复 QNVideoConfig 类型不准确的问题</li>
+<li>修复特定设备 sdp 数据异常问题</li>
+<li>修复远端 track mute 后本地状态未更新的的问题</li>
+<li>信令新增备用域名</li>
+<li>新增检测音频轨道是否活跃事件</li>
+<li>track 对象添加获取原生 mediaStreamTrack 的方法</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.0.3">4.0.3</a></p>
+<ul>
+<li>修复页面切入后台单路转推中断的问题</li>
+<li>修复获取远端用户发布 tracks 数据异常的问题</li>
+<li>修复偶现蓝牙耳机导致无声音问题</li>
+<li>修复特定设备 sdp 数据异常问题</li>
+<li>优化了部分手机浏览器的兼容性</li>
+<li>track ended 时自动取消发布</li>
+<li>仅在播放 CameraTrack 时默认开启镜像模式</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.0.2">4.0.2</a></p>
+<ul>
+<li>修复特定条件下大小流设置失败的问题</li>
+<li>增加 QNCanvasVideoTrack</li>
+<li>增加视频流播放镜像配置</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.0.1">4.0.1</a></p>
+<ul>
+<li>修复特定机型可用性检测兼容问题</li>
+<li>修复合流背景设置失败问题</li>
+<li>修复偶现播放失败问题</li>
+<li>修复外部导入 track 报错</li>
+<li>修复牛会议进入直播页面导致 admin 用户被踢出</li>
+<li>支持设置混音音频的本地播放音量</li>
+<li>增加默认合流支持</li>
+<li>增加系统声音 tag 设置</li>
+<li>统一错误码</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Web/releases/tag/v4.0.0">4.0.0</a></p>
+<ul>
+<li>新增核心类 <code>QNRTC</code> 和 <code>QNRTCClient</code>，移除 <code>TrackModeSession</code> 类</li>
+<li>新增 <code>QNLocalTrack</code> 和 <code>QNRemoteTrack</code> 及其衍生的子类，对不同类型的音视频轨道做了区分，并提供了丰富的控制接口</li>
+</ul>
+</li>
+</ul></div></div>

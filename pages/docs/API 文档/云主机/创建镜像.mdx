@@ -1,0 +1,383 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `POST` /v1/vm/image
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>地域 ID。</p>
+        <p>您可以调用 DescribeRegions 查看最新的七牛云地域列表。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>snapshot_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>根据指定的快照创建自定义镜像</p>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>实例 ID</p>
+        <p>InstanceID 与 SnapshotID 必须传入一个</p>
+      </td>
+    </tr>
+    <tr>
+      <td>image_name</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>镜像名称。</p>
+        <p>长度为 2~128 个英文或中文字符。必须以大小字母或中文开头，不能以 <code>http://</code> 和 <code>https://</code> 开头。可以包含数字、半角冒号（:）、下划线（_）或者连字符（-）。</p>
+        <p>默认值：空</p>
+      </td>
+    </tr>
+    <tr>
+      <td>image_version</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>镜像版本号</p>
+      </td>
+    </tr>
+    <tr>
+      <td>description</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>镜像的描述信息。长度为 2~256 个英文或中文字符，不能以 <code>http://</code> 和 <code>https://</code> 开头。
+          默认值：空</p>
+      </td>
+    </tr>
+    <tr>
+      <td>client_token</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>保证请求幂等性， 客户端生成的一个唯一值</p>
+      </td>
+    </tr>
+    <tr>
+      <td>cost_charge_type</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>付费方式, 只支持PostPaid</td>
+    </tr>
+    <tr>
+      <td>cost_charge_mode</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>计费方式, 只支持PayByDisk</td>
+    </tr>
+    <tr>
+      <td>cost_period_unit</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>计费单位, 可填Hour, 只有根据主机创建镜像时会产生额外的快照费用</td>
+    </tr>
+    <tr>
+      <td>cost_period</td>
+      <td>integer</td>
+      <td>body</td>
+      <td>否</td>
+      <td>计费周期</td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string | 请求 ID
+data | Image | 镜像
+
+### Image
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>cost_charge_type</td>
+      <td>string</td>
+      <td>
+        <p>付费方式</p>
+      </td>
+    </tr>
+    <tr>
+      <td>cost_charge_mode</td>
+      <td>string</td>
+      <td>
+        <p>计费方式</p>
+      </td>
+    </tr>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>
+        <p>实例所属的地域 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>created_at</td>
+      <td>string</td>
+      <td>
+        <p>创建时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>updated_at</td>
+      <td>string</td>
+      <td>
+        <p>更新时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_id</td>
+      <td>string</td>
+      <td>
+        <p>实例 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_name</td>
+      <td>string</td>
+      <td>
+        <p>实例名称</p>
+      </td>
+    </tr>
+    <tr>
+      <td>image_id</td>
+      <td>string</td>
+      <td>
+        <p>镜像 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>image_name</td>
+      <td>string</td>
+      <td>
+        <p>镜像的名称</p>
+      </td>
+    </tr>
+    <tr>
+      <td>description</td>
+      <td>string</td>
+      <td>
+        <p>镜像描述</p>
+      </td>
+    </tr>
+    <tr>
+      <td>os_type</td>
+      <td>string</td>
+      <td>
+        <p>操作系统类型。可能值：windows, linux</p>
+      </td>
+    </tr>
+    <tr>
+      <td>os_name</td>
+      <td>string</td>
+      <td>
+        <p>操作系统的中文显示名称。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>architecture</td>
+      <td>string</td>
+      <td>
+        <p>镜像的体系架构。取值范围：<code>i386</code>, <code>x86_64</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td>image_owner_alias</td>
+      <td>string</td>
+      <td>
+        <p>镜像来源。取值范围：</p>
+        <ul>
+          <li><code>system</code> ：七牛云提供的公共镜像。</li>
+          <li><code>self</code> ：您创建的自定义镜像。</li>
+          <li><code>others</code> ：其他七牛云用户共享给您的镜像。</li>
+          <li><code>marketplace</code> ：镜像市场提供的镜像。您查询到的云市场镜像可以直接使用，无需提前订阅。您需要自行留意云市场镜像的收费详情。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>progress</td>
+      <td>string</td>
+      <td>镜像完成的进度，单位为百分比。</td>
+    </tr>
+    <tr>
+      <td>usage</td>
+      <td>string</td>
+      <td>
+        <p>镜像是否已经运行在 ECS 实例中。取值范围：</p>
+        <ul>
+          <li>instance：镜像处于运行状态，有 ECS 实例使用。</li>
+          <li>none：镜像处于闲置状态，暂无 ECS 实例使用。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>image_version</td>
+      <td>string</td>
+      <td>
+        <p>镜像版本</p>
+      </td>
+    </tr>
+    <tr>
+      <td>status</td>
+      <td>string</td>
+      <td>
+        <p>镜像的状态。可能值：</p>
+        <ul>
+          <li>UnAvailable：不可用</li>
+          <li>Available：可用</li>
+          <li>Creating：创建中</li>
+          <li>CreateFailed：创建失败</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>is_self_shared</td>
+      <td>string</td>
+      <td>
+        <p>是否共享过该自定义镜像给其他用户</p>
+      </td>
+    </tr>
+    <tr>
+      <td>platform</td>
+      <td>string</td>
+      <td>
+        <p>操作系统平台</p>
+      </td>
+    </tr>
+    <tr>
+      <td>size</td>
+      <td>integer</td>
+      <td>
+        <p>镜像大小，单位 GiB</p>
+      </td>
+    </tr>
+    <tr>
+      <td>is_support_cloudinit</td>
+      <td>boolean/td>
+      <td>
+        <p>是否支持 Cloud Init</p>
+      </td>
+    </tr>
+    <tr>
+      <td>is_support_io_optimized</td>
+      <td>boolean/td>
+      <td>
+        <p>是否可以在 I/O 优化实例上运行</p>
+      </td>
+    </tr>
+    <tr>
+      <td>is_copied</td>
+      <td>boolean/td>
+      <td>
+        <p>是否是拷贝的镜像</p>
+      </td>
+    </tr>
+    <tr>
+      <td>is_subscribed</td>
+      <td>boolean/td>
+      <td>
+        <p>是否订阅了该镜像的商品码对应的镜像商品的服务条款</p>
+      </td>
+    </tr>
+    <tr>
+      <td>snapshot_id</td>
+      <td>string</td>
+      <td>
+        <p>根据某一快照 ID 创建的自定义镜像</p>
+      </td>
+    </tr>
+    <tr>
+      <td>min_disk_size</td>
+      <td>string</td>
+      <td>
+        <p>镜像要求的最小系统盘盘容量</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+## 返回值示例
+```json
+{
+  "data": {
+    "region_id": "cn-beijing",
+    "created_at": "2020-12-23T16:19:59.85137226+08:00",
+    "updated_at": "2020-12-23T16:19:59.85137226+08:00",
+    "image_id": "m-2ze8jm3cz10uvrlwlhlf",
+    "description": "",
+    "product_code": "",
+    "os_type": "",
+    "architecture": "",
+    "os_name": "",
+    "image_owner_alias": "",
+    "progress": "",
+    "usage": "",
+    "image_version": "",
+    "status": "Creating",
+    "image_name": "dw_89_centos_610_sys_disk_20201223",
+    "is_self_shared": "",
+    "platform": "",
+    "size": 0,
+    "is_support_cloudinit": false,
+    "is_support_io_optimized": false,
+    "is_copied": false,
+    "is_subscribed": false,
+    "disk_device_mappings": null,
+    "snapshot_id": "s-2ze4o6q4kz6aio3mew5x",
+    "min_disk_size": "",
+    "cost_period_unit": "Hour",
+    "cost_period": 0,
+    "cost_seconds": 0,
+    "instance_id": "",
+    "root_image_id": "",
+    "instance_name": "",
+    "cost_charge_type": "PostPaid",
+    "cost_charge_mode": "PayByDisk"
+  },
+  "request_id": "ScKvEYV6XfOsSlMW"
+}
+```

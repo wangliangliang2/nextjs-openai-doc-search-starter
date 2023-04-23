@@ -1,0 +1,73 @@
+# 请求路径
+>`GET` /v1/security/waf/:region/instances
+
+# 请求参数 ([查看付费参数](https://developer.qiniu.com/qvm/8006/common-params))
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region | string | path | 是 | 区域信息，只能填cn，国内区域 |
+| X-Qiniu-Regionid | string | header | 否 | 地域 ID, 取值: cn-hangzhou |
+| page | int | body | 否 | 查询页码 |
+| size | int | body | 否 | 分页大小 |
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| data | []WAFInstance | 是 | WAF实例列表 |
+| page | int | 是 | 页码 |
+| size | int | 是 | 分页大小 |
+| total | int | 是 | 总数 |
+
+### WAFInstance WAF实例详情
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| region_id | string | 是 | 地域 ID |
+| resource_id | string | 是 | WAF实例ID |
+| status | string | 是 | WAF实例状态 |
+| expire_time | string | 是 | 到期时间 |
+| package_code | string | 是 | 版本类型，取值: version_3（内地高级版）, version_4（内地企业版）, version_4（内地旗舰版） |
+| ext_domain_package | int |  是 | 域名扩展包个数 |
+| exclusive_ip_package | int | 是 | 域名独享资源包个数, 范围: 0-100, 粒度为1 |
+| ext_bandwidth | int |  是 | 带宽扩展包大小，单位: Mbps |
+| app_sdk | bool | 是 | APP防护是否开启 |
+| anti_bot | bool | 是 | Bot管理是否开启 |
+| waf_gslb | bool | 是 | 智能负载均衡是否开启 |
+| professional_service | bool | 否 | 专家服务是否开启 |
+| big_screen | string | 是 | 0: 未开启， 1: 单屏服务, all: 多屏服务 |
+| waf_log | bool | 是 | 是否开启日志服务 |
+| log_storage | int | 是| 日志存储大小, 单位: TB |
+| log_time | int | 是 | 日志存储时间, 单位: 天 |
+| service_bandwidth | int | 是 | 业务带宽大小，单位: Mbps |
+| qps | int | 是 | 业务QPS大小 |
+| source_ipv4_segment | string | 是 | ipv4回源网段 |
+| source_ipv6_segment | string | 是 | ipv6回源网段 |
+
+
+# 示例
+### 返回结果示例
+```json
+{
+    "data": [
+        {
+            "region_id":"cn-hangzhou",
+            "resource_id":"waf-cn-m7r22is373v",
+            "status":"normal",
+            "expire_time": "2021-10-21 00:00:00.000",
+            "package_code": "version_3",
+            "exclusive_ip_package": 0,
+            "ext_bandwidth": 0,
+            "ext_domain_package": 0,
+            "app_sdk": false,
+            "anti_bot": false,
+            "waf_gslb": false,
+            "source_ipv4_segment": "101.200.106.0/24,106.15.101.96/27,112.124.159.0/24",
+            "source_ipv6_segment": "2408:400a:3c:4800::/56",
+            "service_bandwidth": 100,
+            "qps": 5000
+        }
+    ],
+    "page":1,
+    "size":10,
+    "total":1
+}
+```

@@ -1,0 +1,190 @@
+# QNIMPushServiceProtocol Protocol Reference
+
+Conforms to | NSObject
+---|---
+Declared in | QNIMPushServiceProtocol.h
+  
+### `- pushStartDidFinished:`
+
+Push初始化完成通知。
+
+`- (void)pushStartDidFinished:(NSString *) _QNIMToken_`
+
+#### Parameters
+
+QNIMToken |QNIMToken
+---|---
+   |
+
+  
+#### Discussion
+
+Push初始化完成通知。
+
+#### Declared In
+
+`QNIMPushServiceProtocol.h`
+
+### `- pushStartDidStopped`
+
+Push功能停止通知。
+
+`- (void)pushStartDidStopped`
+
+#### Discussion
+
+Push功能停止通知。
+
+#### Declared In
+
+`QNIMPushServiceProtocol.h`
+
+### `- certRetrieved:`
+
+Push初始化完成后获取推送证书。
+
+`- (void)certRetrieved:(NSString *) _certification_`
+
+#### Parameters
+
+certification |推送证书
+---|---
+   |
+
+  
+#### Discussion
+
+Push初始化完成后获取推送证书。
+
+#### Declared In
+
+`QNIMPushServiceProtocol.h`
+
+### `- setTagsDidFinished:`
+
+设置用户推送标签成功回调。
+
+`- (void)setTagsDidFinished:(NSString *) _operationId_`
+
+#### Parameters
+
+operationId |操作id
+---|---
+   |
+
+  
+#### Discussion
+
+设置用户推送标签成功回调。
+
+#### Declared In
+
+`QNIMPushServiceProtocol.h`
+
+### `- getTagsDidFinished:`
+
+获取用户推送标签成功回调。
+
+`- (void)getTagsDidFinished:(NSString *) _operationId_`
+
+#### Parameters
+
+operationId |操作id
+---|---
+   |
+
+  
+#### Discussion
+
+获取用户推送标签成功回调。
+
+#### Declared In
+
+`QNIMPushServiceProtocol.h`
+
+### `- deleteTagsDidFinished:`
+
+删除用户推送标签成功回调
+
+`- (void)deleteTagsDidFinished:(NSString *) _operationId_`
+
+#### Parameters
+
+operationId |操作id
+---|---
+   |
+
+  
+#### Discussion
+
+删除用户推送标签成功回调
+
+#### Declared In
+
+`QNIMPushServiceProtocol.h`
+
+### `- clearedTags:`
+
+清空用户推送成功回调。
+
+`- (void)clearedTags:(NSString *) _operationId_`
+
+#### Parameters
+
+operationId |操作id
+---|---
+   |
+
+  
+#### Discussion
+
+清空用户推送成功回调。
+
+#### Declared In
+
+`QNIMPushServiceProtocol.h`
+
+### `- receivedPush:`
+
+接收到新的Push通知
+
+`- (void)receivedPush:(NSArray<QNIMMessageObject*> *) _messages_`
+
+#### Parameters
+
+messages |Push通知列表
+---|---
+   |
+
+  
+#### Discussion
+
+接收到新的Push通知
+
+#### Declared In
+
+`QNIMPushServiceProtocol.h`
+
+### `- pushMessageStatusChanged:error:`
+
+发送Push上行消息状态变化通知。
+
+`- (void)pushMessageStatusChanged:(QNIMMessageObject *) _message_
+error:(QNIMError *) _error_`
+
+#### Parameters
+
+message |发生状态变化的上行消息
+---|---
+error |状态错误码
+  
+#### Discussion
+
+发送Push上行消息状态变化通知。
+
+#### Declared In
+
+`QNIMPushServiceProtocol.h`
+
+
+

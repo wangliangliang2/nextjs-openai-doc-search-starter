@@ -1,0 +1,68 @@
+您的域名接入 CDN 后，系统会为您自动分配一个 CNAME 域名，要启用CDN加速服务，需要在域名服务提供商处将加速域名指向分配的CNAME地址，配置生效后，即可享受CDN加速服务。
+
+# 获取加速域名的CNAME
+
+* 在 **七牛开发者平台** 页面选择 [**CDN**](https://portal.qiniu.com/cdn/overview) ，选择 [**域名管理**](https://portal.qiniu.com/cdn/domain) ，将鼠标悬停在对应的 **cname** 后，会出现蓝色字样 **复制** ，如下图所示，点击即可复制CNAME值。
+<img src="https://dn-odum9helk.qbox.me/FsXcbPis0zt0EiiGscr2VMQ3KeHd" width=800></img>
+
+* 或者您也可以通过在 [**七牛开发者平台**](https://portal.qiniu.com/create) 页面选择 [**CDN**](https://portal.qiniu.com/cdn/overview) ，选择 [**域名管理**](https://portal.qiniu.com/cdn/domain) ，点击您需要配置的 **域名** 后的 **配置** 字样，进入 **配置** 界面，在基本信息中查看CNAME值 ，如下图所示。
+<img src="https://dn-odum9helk.qbox.me/FnXEhW58hEqoCGs0DTg7OxGAJQtS" width=800></img>
+ <img src="https://dn-odum9helk.qbox.me/Fo4sC99JUBJnFGrQvM7g465HO_BM" width=800></img>
+
+
+-----
+
+# 添加CNAME记录
+
+* 添加CNAME记录需要在您的 **`域名厂商`** 处配置，比如您在阿里云/腾讯云/新网等处购买的域名，您需要前往 **`购买域名的厂商`** 的相应控制台配置做域名解析。
+1.在域名列表中找到您加速域名对应的 **`主域名`**，进入解析设置页。
+2.依次填写主机记录，记录类型以及记录值，其他可设为默认值。
+
+   <img src="https://oi2ix6x26.qnssl.com/attachments/download/1073669/00157dfa3bb59f2916e851536da6890/?filename=blob.png" width=800 />
+
+
+| 记号 | 说明 |
+|----|----|
+|A|记录类型为CNAME|
+|B|主机记录处填子域名|
+|C|线路类型（默认为必填项，否则会导致部分用户无法解析；在上图中，默认的作用为：除了联通用户之外的所有用户，都会指向 1.com）|
+|D|记录值填写七牛提供的cname值，记录生成后会自动在域名后面补一个 “.”，这是正常现象|
+|E|MX优先级不需要填写|
+|F|TTL 不需要填写，添加时系统会自动生成，默认为 600 秒（TTL 为缓存时间，数值越小，修改记录各地生效时间越快）|
+
+例如，记录类型请选择为CNAME，主机记录为主域名的前缀，假设购买的域名为‘qiniu.com’，这是一个一级域名：
+* 您创建的加速`普通域名`为 qiniu.com ，主机值为@
+* 您创建的加速`普通域名`为 cdn.qiniu.com ，主机值为 cdn
+* 您创建的加速`普通域名`为 img.cdn.qiniu.com ，主机值为 img.cdn
+* 您创建的加速`泛域名` .qiniu.com ，主机值为*
+* 您创建的加速`泛域名` .img.qiniu.com ，主机值为*.img
+
+记录值填写在七牛控制台`复制的CNAME值`，解析线路和TTL保持默认值即可。
+
+* CNAME配置生效时间：新增CNAME记录会实时生效，而修改CNAME记录需要等待生效时间。
+
+<p>
+
+# 验证CNAME是否配置正确
+
+* 在空间内查看 CDN 加速域名 的状态，如果是成功，即解析成功，如果是等待CNAME，则未正确解析。
+   <img src="https://dn-odum9helk.qbox.me/Fsd7ewXNwak6XbnX0clLwHRa62Rj" width=800 />
+* 如果您在域名厂商处已经正确配置CNAME解析后，但还是“等待CNAME”状态。
+ linux/mac系统您可以通过dig命令查看，第一条是否解析到您配置的CNAME值，如果已经解析成功，则可以忽略不计。
+   <img src="https://dn-odum9helk.qbox.me/FpqjWyiiCInCQp7ZS2HpIW_jcTnT" width=600 />
+ windows系统可以通过Win+R 或 点击左下角的“开始”按钮打开“开始”菜单，从中打开“运行”，输入cmd回车，在命令行模式下输入`nslookup 您的加速域名`
+	 示例如图，如果图中可以看到您复制的cname值即可。
+
+   <img src="https://dn-odum9helk.qbox.me/FgeCvjPMtpw4csmNtK3cSvuS-Pzr" width=400 />
+
+
+
+-----
+
+
+
+如果您同时需要对源站进行[镜像存储](https://developer.qiniu.com/kodo/kb/1376/seven-cattle-image-storage-instruction-manuals)，您还需要进行如下操作：
+1. 如原指向资源的域名是 pic.abc.com ，要把该域名 CNAME 到 portal平台“成功”状态的新域名。
+2. 重新配置一个二级域名（比如叫：image.abc.com ）指向资源存放目录
+3. 设置镜像为 `http://image.abc.com`
+以上三步完成后，不需要更改代码及数据库，即可用 `http://pic.abc.com/path/10.jpg`

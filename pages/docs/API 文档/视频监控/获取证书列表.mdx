@@ -1,0 +1,24 @@
+# **描述**
+本接口用于查询用户已购买或已上传的自有证书的列表
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/domains/{domain}/certs`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间名称ID
+|domain|是|string|域名
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|items|证书数组|证书数组
+|items.certid|string|证书id
+|items.name|string|证书名称
+|items.notBefore|int64|证书有效期起始时间
+|items.notAfter|int64|证书有效期截止时间

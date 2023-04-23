@@ -1,0 +1,34 @@
+`<pandora-module>`定义平台为 APP 提供的功能模块
+
+## 属性
+
+#### `module`：必填，用于区分不同类型功能模块
+
+- `dataset`: 数据集
+- `repo`: 仓库管理
+- `sourcetype`: 来源管理
+- `field`: 解析管理
+- `report`: 报表管理
+- `alertRules`: 告警规则
+- `alertEvents`: 告警事件
+- `alertConfig`: 告警配置
+- `search`: 搜索分析
+- `dashboard`: 仪表盘管理
+- `taskExport`: 仪表盘定时任务
+- `monitorManage`: 监控收集器管理
+- `logdbTaskExport`: logdb 导出任务
+
+## 子元素 {docsify-ignore-all}
+
+- `<module-router-map>`：模块中要跳转的其它模块的路由。
+- `<module-router-base>`：pandora-module 中要跳转的其它 pandora-module 的路由是相对于本页面还是相对于整个 app。如果要跳转的其它 pandora-module 和本 pandora-module 在一个 xml 中，则配置 page；不在一个 xml 中则配置 app。默认是 page。
+
+### 示例
+
+```xml
+<pandora-module module="datasetModule">
+  <module-router-map>
+    <option name="dataset">/dataservice</option>
+  </module-router-map>
+</pandora-module>
+```

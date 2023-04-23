@@ -1,0 +1,97 @@
+欢迎查看 DCDN 帮助文档。您可以在任意时间地点使用七牛云全站加速，以提供稳定快速的网络访问质量。使用七牛云全站资源加速的整个流程共分以下几步：
+- [注册七牛云](#step1)
+- [添加自定义域名](#step2)
+- [配置域名](#step3)
+- [配置CNAME](#step4)
+
+
+七牛云为空间资源提供测试域名，该类域名的源站为域名所在空间，默认缓存设置时间 1个月，无法自定义配置，也无法用于全站加速产品，建议您添加自定义域名使用。
+
+为了顺利完成快速入门，您需要一个七牛云账号。如果您还没有七牛云账号，请通过以下步骤创建七牛云账号。
+
+<a id="step1"></a>
+# 1. 注册七牛云
+
+（1）打开 [七牛开发者平台](https://portal.qiniu.com/)，选择 **注册**。
+（2）遵循在线使用说明，完成实名认证。
+
+
+
+<a id="step2"></a>
+# 2. 添加自定义域名
+## 2.1 配置要求
+配置域名不产生任何费用，要求具备：
+- 已备案域名，且允许做域名解析，可在[域名信息备案系统](http://beian.miit.gov.cn/state/outPortal/loginPortal.action)查询
+- 账号已完成实名认证；
+
+## 2.2 配置入口
+方式1：登陆[七牛开发者平台](https://portal.qiniu.com/signin)，选择 **添加加速域名** 。
+	<img src="https://dn-odum9helk.qbox.me/Frn0OUW1uAgOMPVyQJhDkZGoIX3Qpw" width=600></img>
+
+**方式2**:登陆[七牛开发者平台](https://portal.qiniu.com/signin)，点击 **所有产品** ，选择 **DCDN**，点击添加域名。
+   
+<img src="https://dn-odum9helk.qbox.me/Ftm_052PVN0eBsuGn1nIdIKw7Q6e" width=600></img>
+
+<img src="https://dn-odum9helk.qbox.me/Fke7WI3gVvBBUSp3Z9yvfl8Wy9Yx" width=600></img>
+
+**注意**：如果您界面上方显示的是 **未完成实名认证** ，如下图所示：
+	
+<img src="https://dn-odum9helk.qbox.me/Fj7_zEw1dLUwApw57tXGgqtqdjwX" width=600></img>
+
+此时您需要在 **个人中心** 进行实名认证
+<img src="https://dn-odum9helk.qbox.me/FnyEISZbsazeBtdjJQ0riPXw4oIr1" width=600></img>
+
+
+## 2.3 配置项说明  
+（1）**域名类型** 
+- 普通域名，是指您的主域名下的子域名。例如主域名qiniu.com，developer.qiniu.com是其二级域名，a.developer.qiniu.com是其三级域名,.....,这些都属于普通域名。
+- 泛域名，是指域名\*.主域名，配置成功后可任意指定前缀进行访问；可基于该泛域名创建多个泛子域名来指定不同源站，例如泛域名 \*.qiniu.com。
+
+（2）**加速域名**：要求填写**已备案**的域名
+（3）**通信协议**：支持http或https通信协议
+如果您选择 https协议，您还需上传有效期≥30天的 HTTPS 证书。（注：为不影响正常使用，证书到期后请及时续期）
+（4）**覆盖范围**：分为国内、海外、全球，根据业务范围选择节点覆盖区域。不同区域流量价格不同，可参考[官网价格](https://www.qiniu.com/prices/qcdn)。
+（5） **IP协议**
+- IPv4/IPv6，同时支持IPv4和IPv6的请求，该协议支持国内/全球，海外默认仅支持ipv4，海外IPv6的需求可联系[工单](https://support.qiniu.com/tickets/new)配置。
+- IPv4，仅支持IPv4请求，不支持IPv6请求。
+
+（6）**源站配置**
+ -  源站域名，填写您的源站域名，不能与**加速域名**相同。**源站测试**中需要您填写您需要加速的资源名，通过源站测试，表明源站配置正确。
+ -  IP地址，填写您源站的IP地址，**源站测试**中需要您填写您需要加速的资源名，通过源站测试，表明源站配置正确。
+
+（7）**缓存配置**
+- 关闭，默认关闭状态，即纯动态加速场景，不做任何缓存。
+- 开启，适用动静态资源混合的场景，开启后可配置不同后缀或目录的静态缓存规则，命中规则部分遵循静态边缘缓存逻辑，未命中部分使用最优链路动态回源。
+
+（8）**忽略 URL 参数**
+- 关闭，默认关闭状态，完全按照参数缓存
+- 开启，适用于提高边缘命中率且URL「?」后的参数不影响文件内容的场景。可配置「忽略全部参数」或「忽略指定参数」，静态资源会去除 URL「?」后的全部参数或指定参数进行缓存。
+
+## 2.4 点击「创建」，提交配置
+
+<a id="step3"></a>
+# 3. 配置域名
+若除创建域名的基础配置外，您还有其他配置需求，**返回域名管理**，在域名管理页面单击目标域名对应配置，此时您可以设置：
+
+   - [回源配置](http://developer.qiniu.com/dcdn/development_guidelines/10778/dcdn-back-to-the-source-configuration)
+   - [缓存配置](http://developer.qiniu.com/dcdn/development_guidelines/10786/dcdn-cache-configuration)
+   - [访问控制](http://developer.qiniu.com/dcdn/development_guidelines/10791/dcdn-ip-black-and-white-list)
+   - [HTTPS配置](http://developer.qiniu.com/dcdn/development_guidelines/10792/dcdn-https-configuration)
+   - [HTTP响应头](http://developer.qiniu.com/dcdn/development_guidelines/10793/dcdn-the-http-response-header-configuration)
+
+<img src="https://dn-odum9helk.qbox.me/Fi98wMxdmDLtz6D6NXYw09znaULC" width=600></img>
+<img src="https://dn-odum9helk.qbox.me/FjGUcMZY39wNkELLnswAz2aIGQGV" width=600></img>
+<img src="https://dn-odum9helk.qbox.me/FiAwx0FMIhb0mUiWHV_ZhhvSAkAZ" width=600></img>
+<img src="https://dn-odum9helk.qbox.me/FkPYYYbuXGe1nBOtWXyn5_2chqnV" width=600></img>
+<img src="https://dn-odum9helk.qbox.me/FvH7JePyttkDJoQ4AopicHf3ysc6" width=600></img>
+
+
+<a id="step4"></a>
+# 4. 配置CNAME
+(1)获取cname地址
+方式1：创建加速域名成功后，七牛云会提供cname地址。
+方式2：在 **域名管理** 界面选择创建好的 【域名】 ，点击 【配置】 ，提供的cname在红框中标注。
+<img src="https://dn-odum9helk.qbox.me/FhI0yjFMLtK2g9MAaBMFGklSUYYB" width=600></img>
+
+（2）配置cname，详情见文档[如何配置域名的CNAME](https://developer.qiniu.com/fusion/kb/1322/how-to-configure-cname-domain-name)。
+

@@ -1,0 +1,194 @@
+# 接口简介
+
+翻译狗文档翻译接口提供多格式、多语种、高质量的文档翻译服务，支持pdf、doc、docx、ppt、pptx、xls、xlsx等格式，支持源语言自动检测，只需指定文档链接并指定目标语言、文档格式、需要存储至七牛kodo的bucket等参数，即可在七牛云存储kodo中获取翻译后的文档。
+
+
+# 调用链路
+
+![image.png](https://dn-odum9helk.qbox.me/FlZN-t_OiBANPysS44sm2Rd4Zpv9)
+
+# 接口规格
+
+## 翻译请求接口
+
+**请求URL**: `https://ap-gate-z0.qiniuapi.com/translate/v1/document/translate`
+
+**字符编码格式**: 请求及返回结果都使用 UTF-8 字符集进行编码
+
+**请求方法**: POST
+
+**建议超时时长**: 3s
+
+**请求头部**: 
+
+| 字段          | 取值                                                         |
+| ------------- | ------------------------------------------------------------ |
+| Content-Type  | application/json                                             |
+| Authorization | Qiniu \<AccessKey>:\<Sign> </br>注意: 用户请根据 AccessKey 和 SuccessKey 生成鉴权，以便进行身份验证。\<Sign> 的取值请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken) |
+
+**请求参数**: 放在 HTTP Body 中，采用 json 格式，具体参数如下:
+
+| 参数名称         | 类型   | 是否必选 | 说明                                                         |
+| ---------------- | ------ | -------- | ------------------------------------------------------------ |
+| url              | string | Y        | 需要翻译的资源的链接<br>注意：<br>1. 文件格式限定为: pdf、doc、docx、ppt、pptx、xls、xlsx<br>2. 文件最大限制问50M<br>3. 不支持扫描件、图纸、纯图片文档，加密文件请先去除密码 |
+| from             | string | Y        | 源语言，支持自动检测。具体见语言列表                         |
+| to               | string | Y        | 目标语言，不支持自动检测。具体见语言列表                     |
+| dType            | int    | Y        | 翻译后的文件类型， 取值 2 或者 3<br>2: 翻译后的pdf文件，支持格式：word、pdf、img<br>3: 翻译后的word文件（支持格式：word、pdf)；ppt文件（支持格式：img、ppt）；<br> excel文件（支持格式：excel） |
+| bucket           | string | Y        | 翻译后的文件，转存到kodo的哪个bucket                         |
+| callback         | string | Y        | 翻译完成后的回调，支持http、https                            |
+| industryId       | int    | N        | 行业代码。具体见行业列表                                     |
+| excelMode        | int    | N        | 指定excel翻译模式 <br>0：只翻译当前打开sheet（默认）<br>1：翻译全部sheet（页数按全部sheet字符数来计算） |
+| bilingualControl | int    | N        | 指定翻译模式 <br>0：译文单独为一个文档（默认）<br>1：双语对照（原文和译文在一个文档） |
+
+**返回参数**: 放在 HTTP Body 中，采用 json 格式，具体参数如下:
+
+| 参数名称 | 类型        | 是否必选 | 说明                                        |
+| -------- | ----------- | -------- | ------------------------------------------- |
+| code     | int         | Y        | 结果码，100表示调用成功。具体详见状态码列表 |
+| msg      | string      | Y        | 结果信息的文本描述                          |
+| data     | json_object | Y        | 返回数据结果集                              |
+
+其中data的具体内容如下
+
+| 参数名称 | 类型   | 是否必选 | 说明           |
+| -------- | ------ | -------- | -------------- |
+| entryId  | string | Y        | 请求的唯一标识 |
+
+
+
+## 异步回调获取结果接口
+
+**说明**：该接口需要服务调用方实现，对应翻译请求接口中的`callback`参数。七牛服务器会在翻译完成后调用该接口
+
+**字符编码格式：** 请求及返回结果都使用 UTF-8 字符集进行编码 
+
+**请求方法：** POST 
+
+**回调参数：** 放在 HTTP Body 中，采用 json 格式，具体参数如下：
+
+| 参数名称 | 类型        | 是否必选 | 说明                                        |
+| -------- | ----------- | -------- | ------------------------------------------- |
+| code     | int         | Y        | 结果码，200表示调用成功。具体详见状态码列表 |
+| msg      | string      | Y        | 结果信息的文本描述                          |
+| data     | json_object | Y        | 返回数据结果集                              |
+
+其中data的具体内容如下
+
+| 参数名称        | 类型   | 是否必选 | 说明                                |
+| --------------- | ------ | -------- | ----------------------------------- |
+| entryId         | string | Y        | 请求的唯一标识                      |
+| fileKey         | string | Y        | 翻译后的文件在kodo指定kucket中的key |
+| pageCount       | int    | Y        | 翻译的有效页数                      |
+| translationDone | bool   | Y        | 翻译是否完成的判断字段              |
+
+
+
+## 查询翻译结果接口
+
+**说明** ：除了接收回调之外，使用者还可以通过该接口主动查询翻译进度和结果
+
+**请求URL**: `https://ap-gate-z0.qiniuapi.com/translate/v1/document/query`
+
+**字符编码格式**: 请求及返回结果都使用 UTF-8 字符集进行编码
+
+**请求方法**: GET
+
+**建议超时时长**: 3s
+
+**请求头部**: 
+
+| 字段          | 取值                                                         |
+| ------------- | ------------------------------------------------------------ |
+| Content-Type  | application/json                                             |
+| Authorization | Qiniu \<AccessKey>:\<Sign> </br>注意: 用户请根据 AccessKey 和 SuccessKey 生成鉴权，以便进行身份验证。\<Sign> 的取值请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken) |
+
+**请求参数**: 放在 QueryString 中，具体参数如下:
+
+| 参数名称 | 类型   | 是否必选 | 说明           |
+| -------- | ------ | -------- | -------------- |
+| entryId  | string | Y        | 请求的唯一标识 |
+
+**返回参数**: 放在 HTTP Body 中，采用 json 格式，具体参数如下:
+
+| 参数名称 | 类型        | 是否必选 | 说明                                                         |
+| -------- | ----------- | -------- | ------------------------------------------------------------ |
+| code     | int         | Y        | 结果码，100表示翻译完成。102代表正在翻译中。<br>具体详见状态码列表 |
+| msg      | string      | Y        | 结果信息的文本描述                                           |
+| data     | json_object | Y        | 返回数据结果集                                               |
+
+其中data的具体内容如下
+
+| 参数名称        | 类型   | 是否必选 | 说明                                |
+| --------------- | ------ | -------- | ----------------------------------- |
+| entryId         | string | Y        | 请求的唯一标识                      |
+| fileKey         | string | N        | 翻译后的文件在kodo指定kucket中的key |
+| pageCount       | int    | N        | 翻译的有效页数                      |
+| translationDone | bool   | Y        | 翻译是否完成的判断字段              |
+
+# 示例
+
+## 翻译请求示例
+
+```shell
+POST /translate/v1/document/translate HTTP/1.1
+Host: ap-gate-z0.qiniuapi.com
+Content-Type: application/json
+Authorization: Qiniu YnxrxOSvGotRZpqkZnMzl_euuoqRzOKUd6zwbRju:r6a-o2UpBg6A4puIMnkCExH8lE8=
+
+{
+    "url": "http://xx.emm/trans-min.docx",
+    "dType": 2,
+    "from": "auto",
+    "to": "en",
+    "industryId": 0,
+    "excelMode": 0,
+    "bilingualControl": 0,
+    "bucket": "test-bucket",
+    "callback": "http://test.emm/callback"
+}
+```
+
+## 翻译请求成功返回示例
+
+```shell
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "code": 100,
+    "msg": "请求成功",
+    "data": {
+        "entryId": "61446e07000000003a4b6d31703f790c"
+    }
+}
+```
+
+## 查询翻译结果接口示例
+
+```shell
+GET /translate/v1/document/query?entryId=61446e07000000003a4b6d31703f790c HTTP/1.1
+Host: ap-gate-z0.qiniuapi.com
+Authorization: Qiniu YnxrxOSvGotRZpqkZnMzl_euuoqRzOKUd6zwbRju:r6a-o2UpBg6A4puIMnkCExH8lE8=
+```
+
+# 接口规则
+
+## 支持的语言列表
+
+<table class="my-table table-bordered">                    <thead>                        <tr><th>语言代码</th><th>语言</th></tr>                    </thead>                    <tbody><tr><td>auto</td><td>自动检测</td></tr><tr><td>sq</td><td>阿尔巴尼亚语</td></tr><tr><td>ga</td><td>爱尔兰语</td></tr><tr><td>est</td><td>爱沙尼亚语</td></tr><tr><td>ara</td><td>阿拉伯语</td></tr><tr><td>am</td><td>阿姆哈拉语</td></tr><tr><td>or</td><td>奥里亚语</td></tr><tr><td>az</td><td>阿塞拜疆语</td></tr><tr><td>be</td><td>白俄罗斯语</td></tr><tr><td>bul</td><td>保加利亚语</td></tr><tr><td>ba</td><td>巴什基尔语</td></tr><tr><td>eu</td><td>巴斯克语</td></tr><tr><td>is</td><td>冰岛语</td></tr><tr><td>pl</td><td>波兰</td></tr><tr><td>bs</td><td>波斯尼亚语</td></tr><tr><td>fa</td><td>波斯语</td></tr><tr><td>af</td><td>布尔语(南非荷兰语)</td></tr><tr><td>tt</td><td>鞑靼语</td></tr><tr><td>dan</td><td>丹麦语</td></tr><tr><td>de</td><td>德语</td></tr><tr><td>ru</td><td>俄语</td></tr><tr><td>fra</td><td>法语</td></tr><tr><td>fj</td><td>斐济语</td></tr><tr><td>tl</td><td>菲律宾语</td></tr><tr><td>fin</td><td>芬兰语</td></tr><tr><td>fy</td><td>弗里西语</td></tr><tr><td>km</td><td>高棉语</td></tr><tr><td>ka</td><td>格鲁吉亚语</td></tr><tr><td>gu</td><td>古吉拉特语</td></tr><tr><td>ht</td><td>海地克里奥尔语</td></tr><tr><td>kor</td><td>韩语</td></tr><tr><td>ha</td><td>豪萨语</td></tr><tr><td>kk-kz</td><td>哈萨克语</td></tr><tr><td>kk</td><td>哈萨克语(西里尔)</td></tr><tr><td>nl</td><td>荷兰语</td></tr><tr><td>gl</td><td>加利西亚语</td></tr><tr><td>ca</td><td>加泰罗尼亚语</td></tr><tr><td>cs</td><td>捷克语</td></tr><tr><td>ky</td><td>吉尔吉斯语</td></tr><tr><td>kn</td><td>卡纳达语</td></tr><tr><td>otq</td><td>克雷塔罗奥托米语</td></tr><tr><td>tlh</td><td>克林贡语</td></tr><tr><td>hr</td><td>克罗地亚语</td></tr><tr><td>co</td><td>科西嘉语</td></tr><tr><td>ku</td><td>库尔德语</td></tr><tr><td>la</td><td>拉丁语</td></tr><tr><td>lo</td><td>老挝语</td></tr><tr><td>lv</td><td>拉脱维亚语</td></tr><tr><td>lt</td><td>立陶宛语</td></tr><tr><td>rom</td><td>罗马尼亚语</td></tr><tr><td>lb</td><td>卢森堡语</td></tr><tr><td>rw</td><td>卢旺达语</td></tr><tr><td>mg</td><td>马尔加什语</td></tr><tr><td>mt</td><td>马耳他语</td></tr><tr><td>ms</td><td>马来语</td></tr><tr><td>mr</td><td>马拉提语</td></tr><tr><td>ml</td><td>马拉雅拉姆语</td></tr><tr><td>mi</td><td>毛利语</td></tr><tr><td>mk</td><td>马其顿语</td></tr><tr><td>mo</td><td>蒙古语</td></tr><tr><td>mn</td><td>蒙古语(西里尔)</td></tr><tr><td>bn</td><td>孟加拉语</td></tr><tr><td>hmn</td><td>苗语</td></tr><tr><td>xh</td><td>南非科萨语</td></tr><tr><td>zu</td><td>南非祖鲁语</td></tr><tr><td>ne</td><td>尼泊尔语</td></tr><tr><td>no</td><td>挪威语</td></tr><tr><td>pa</td><td>旁遮普语</td></tr><tr><td>pap</td><td>帕皮阿门托语</td></tr><tr><td>ps</td><td>普什图语</td></tr><tr><td>pt</td><td>葡萄牙语</td></tr><tr><td>ny</td><td>齐切瓦语</td></tr><tr><td>jp</td><td>日语</td></tr><tr><td>swe</td><td>瑞典语</td></tr><tr><td>sr-Latn</td><td>塞尔维亚语(拉丁文)</td></tr><tr><td>sr</td><td>塞尔维亚语(西里尔)</td></tr><tr><td>st</td><td>塞索托语</td></tr><tr><td>sm</td><td>萨摩亚语</td></tr><tr><td>si</td><td>僧加罗语</td></tr><tr><td>eo</td><td>世界语</td></tr><tr><td>sk</td><td>斯洛伐克语</td></tr><tr><td>slo</td><td>斯洛文尼亚语</td></tr><tr><td>sw</td><td>斯瓦希里语</td></tr><tr><td>gd</td><td>苏格兰盖尔语</td></tr><tr><td>so</td><td>索马里语</td></tr><tr><td>ceb</td><td>宿务语</td></tr><tr><td>te</td><td>泰卢固语</td></tr><tr><td>ta</td><td>泰米尔语</td></tr><tr><td>th</td><td>泰语</td></tr><tr><td>tg</td><td>塔吉克语</td></tr><tr><td>to</td><td>汤加语</td></tr><tr><td>ty</td><td>塔希提语</td></tr><tr><td>tr</td><td>土耳其语</td></tr><tr><td>tk</td><td>土库曼语</td></tr><tr><td>cy</td><td>威尔士语</td></tr><tr><td>ug</td><td>维吾尔语</td></tr><tr><td>udm</td><td>乌德穆尔特语</td></tr><tr><td>ur</td><td>乌尔都语</td></tr><tr><td>uk</td><td>乌克兰语</td></tr><tr><td>uz</td><td>乌兹别克语</td></tr><tr><td>haw</td><td>夏威夷语</td></tr><tr><td>spa</td><td>西班牙语</td></tr><tr><td>iw</td><td>希伯来语</td></tr><tr><td>el</td><td>希腊语</td></tr><tr><td>sd</td><td>信德语</td></tr><tr><td>hu</td><td>匈牙利语</td></tr><tr><td>sn</td><td>修纳语</td></tr><tr><td>hy</td><td>亚美尼亚语</td></tr><tr><td>ig</td><td>伊博语</td></tr><tr><td>it</td><td>意大利语</td></tr><tr><td>yi</td><td>意第绪语</td></tr><tr><td>hi</td><td>印地语</td></tr><tr><td>en</td><td>英语</td></tr><tr><td>su</td><td>印尼巽他语</td></tr><tr><td>id</td><td>印尼语</td></tr><tr><td>jw</td><td>印尼爪哇语</td></tr><tr><td>ii</td><td>彝语</td></tr><tr><td>yua</td><td>尤卡坦玛雅语</td></tr><tr><td>yo</td><td>约鲁巴语</td></tr><tr><td>vie</td><td>越南语</td></tr><tr><td>zh</td><td>中文</td></tr><tr><td>cht</td><td>中文繁体</td></tr><tr><td>yue</td><td>中文粤语(繁体)</td></tr><tr><td>za</td><td>壮语</td></tr></tbody>                    </table>
+
+
+## 行业列表
+
+<table class="my-table table-bordered">                    <thead>                        <tr><th>行业代码</th><th>行业</th></tr>                    </thead>                    <tbody>                    <tr><td>1</td><td>法律</td></tr>                    <tr><td>2</td><td>金融</td></tr>                    <tr><td>3</td><td>农林牧渔</td></tr>                    <tr><td>4</td><td>医药卫生</td></tr>                    <tr><td>5</td><td>建筑建材</td></tr>                    <tr><td>6</td><td>冶金矿产</td></tr>                    <tr><td>7</td><td>石油化工</td></tr>                    <tr><td>8</td><td>水利水电</td></tr>                    <tr><td>9</td><td>交通运输</td></tr>                    <tr><td>10</td><td>信息产业</td></tr>                    <tr><td>11</td><td>机械机电</td></tr>                    <tr><td>12</td><td>轻工食品</td></tr>                    <tr><td>13</td><td>服装纺织</td></tr>                    <tr><td>14</td><td>专业服务</td></tr>                    <tr><td>15</td><td>安全防护</td></tr>                    <tr><td>16</td><td>环保绿化</td></tr>                    <tr><td>17</td><td>旅游休闲</td></tr>                    <tr><td>18</td><td>办公文教</td></tr>                    <tr><td>19</td><td>电子电工</td></tr>                    <tr><td>20</td><td>玩具礼品</td></tr>                    <tr><td>21</td><td>家居用品</td></tr>                    <tr><td>22</td><td>物资</td></tr>                    <tr><td>23</td><td>包装</td></tr>                    <tr><td>24</td><td>体育</td></tr>                    <tr><td>25</td><td>办公</td></tr>                    <tr><td>26</td><td>其他</td></tr>                    </tbody>                    </table>
+
+# 状态码列表
+
+| 状态码 | 状态描述 |
+| ------ | -------- |
+| 200    | 请求成功 |
+| 400    | 参数错误 |
+| 500    | 内部错误 |
+# 价格
+
+0.5元/页 

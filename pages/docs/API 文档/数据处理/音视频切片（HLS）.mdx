@@ -1,0 +1,174 @@
+# **简介**
+
+音视频切片接口，用于支持[HTTP Live Streaming](https://developer.apple.com/streaming/)播放。HTTP Live Streaming 是由 Apple 提出的基于 HTTP 的流媒体传输协议。它将一整个音频、视频流切割成可由 HTTP 下载的一个个小的音视频流，并生成一个 M3U8 播放列表，客户端只需要获取资源的 M3U8 播放列表即可播放音视频。以下用 HLS 代指 HTTP Live Streaming。
+
+
+# **接口规格**
+
+```
+avthumb/m3u8/noDomain/<NoDomain>
+            /domain/<Domain>
+            /segtime/<SegSeconds>
+            /ab/<BitRate>
+            /aq/<AudioQuality>
+            /ar/<SamplingRate>
+            /r/<FrameRate>
+            /vb/<VideoBitRate>
+            /vcodec/<VideoCodec>
+            /acodec/<AudioCodec>
+            /scodec/<SubtitleCodec>
+            /subtitle/<SubtitleURL>
+            /ss/<SeekStart>
+            /t/<Duration>
+            /s/<Resolution>
+            /stripmeta/<StripMeta>
+            /rotate/<Degree>
+            /hlsKey/<HLSKey>
+            /hlsKeyType/<HLSKeyType>
+            /hlsKeyUrl/<HLSKeyUrl>
+            /hlsIVType/<HLSIVType>
+            /hlsIV/<HLSIV>
+            /hlsDurationModify/<HLSDurationModify>
+            /pattern/<Pattern>
+            /multiAudio/<MultiAudio>
+            /segmentType/<SegmentType>
+            /segmentInit/<SegmentInit>
+            /refine/<Refine>
+            /gop/<GroupOfPictures>
+```
+
+
+| 参数名称                                             | 类别 | 必填 | 说明                                                         |
+| :--------------------------------------------------- | :--- | :--- | :----------------------------------------------------------- |
+| `/noDomain/<NoDomain>`                               | A/V  | 是   | 取值 0 或 1，默认为 0，**推荐取值为 1**。表示切片索引中的切片列表，是否使用相对地址，设置为 0 则使用绝对地址，设置为 1 则使用相对地址。 |
+| `/domain/<Domain>`                                   | A/V  |      | 指定ts文件域名、基于base64编码。<br>**注意**：不可与 noDomain/1 同时使用。 |
+| `/segtime/<SegSeconds>`                              | A/V  |      | 用于 HLS 自定义每一小段视频流及其包含的音频流的播放时间长度，取值范围为: 2 - 120（秒），默认值为 10秒。 |
+| `/ab/<BitRate>`                                      | A    |      | 静态码率 (CBR)，单位为比特每秒 (bit/s)，常用的码率有：64k,128k,192k,256k,320k等。 |
+| `/aq/<AudioQuality>`                                 | A    |      | 动态码率 (VBR)，取值范围为0-9，值越小码率越高。不能与静态码率参数共用。 |
+| `/ar/<SamplingRate>`                                 | A    |      | 音频采样频率，单位为赫兹 (Hz)，常用的采样频率有：8000,12050,22050,44100等。 |
+| `/r/<FrameRate>`                                     | V    |      | 视频帧率，每秒显示的帧数，单位为赫兹 (Hz)，常用的帧率有：24,25,30等，一般用默认值。 |
+| `/vb/<VideoBitRate>`                                 | V    |      | 1、视频比特率，单位为比特每秒 (bit/s)，常用的视频比特率有：128k,1.25m,5m等。<br> 2、参数末尾使用 ! ，如 128k!，可以强制使用指定码率转码, 使平均码率不高于指定值，会牺牲一些视频播放质量；不使用!强制，会在码率与视频质量之间自动平衡。 |
+| `/vcodec/<VideoCodec>`                               | V    |      | 视频编码方案，支持的方案有：libx264,libx265,libvpx,libtheora,libxvid等，默认为libx264。 |
+| `/acodec/<AudioCodec>`                               | A    |      | 音频编码方案，支持的方案有：libmp3lame,libfdk_aac,libvorbis等。 |
+| `/scodec/<SubtitleCodec>`                            | V    |      | 字幕编码方案，支持的方案有：mov_text。该参数仅用于修改带字幕视频的字幕编码。 |
+| `/subtitle/<SubtitleURL>`                            | V    |      | 添加字幕，支持：srt格式字幕 (uft-8编码和和utf-8 BOM编码)，带有字幕的mkv文件，embed (将原视频的字幕流嵌入目标视频)。基于base64编码。 |
+| `/ss/<SeekStart>`                                    | V    |      | 指定视频截取的开始时间，单位为秒，支持精确到毫秒，例如3.345s。用于视频截取，从一段视频中截取一段视频。 |
+| `/t/<Duration>`                                      | V    |      | 指定视频截取的长度，单位为秒，支持精确到毫秒，例如1.500s。用于视频截取，从一段视频中截取一段视频。 |
+| `/s/<Resolution>`                                    | V    |      | 指定视频分辨率，格式为：`<width>x<height>`，或者预定义值。   |
+| <a id="m3u8-strip-meta"></a>`/stripmeta/<StripMeta>` | A/V  |      | 是否清除文件的metadata，1为清除，0为保留。                   |
+| <a id="m3u8-rotate"></a>`/rotate/<Degree>`           | V    |      | 指定顺时针旋转的度数，取值可为：90,180,270,auto，默认为不旋转。 |
+| `/hlsKey/<HLSKey>`                                   | A/V  |      | AES128加密视频的秘钥，必须是16个字节。                       |
+| `/hlsKeyType/<HLSKeyType>`                           | A/V  |      | 密钥传递给我们的方式，0或不填。1.x(1.0, 1.1, ...)：见下面详细解释。 |
+| `/hlsKeyUrl/<HLSKeyUrl>`                             | A/V  |      | 密钥的访问ur   |                                           
+| `/hlsIVType/<HLSIVType>`    | A/V  |      | 默认值为 0，使用系统生成的动态 iv 值；值为 1 时，必须使用 hlsIV 指定的固定 iv 值。 |
+| `/hlsIV/<HLSIV>`    | A/V  |      | 指定的固定 iv 值，使用 base64_urlsafe 编码，编码前长度必须为 16 个字节。只有 hlsIVType 为 1 值，才可使用该参数。 |
+| `/hlsDurationModify/<HLSDurationModify>`| A/V  |       | vcodec 方式为 copy 的情况下，是否修正 m3u8 中记录的切片文件时长；可选值为 0 或者 1，当选择为 1 时，计算真实的切片 duration，而不是根据估计帧率计算出的时长；建议运用在视频帧率不稳定的情况。 |
+| `/pattern/<Pattern>`                                 | A/V  |      | 为各音视频流ts文件自定义命名。<br>因为一整段音视频流音视频切片后会生成一个M3U8播放列表和多个默认命名的音视频流ts文件。示例：`avthumb/m3u8/noDomain/1/pattern/eGlhb3hpYW8kKGNvdW50KQ==`，其中 `eGlhb3hpYW8kKGNvdW50KQ==` 是自定义ts文件名，如：qiniu$(count)的[URL安全的Base64编码](/kodo/manual/appendix#urlsafe-base64)，其中$(count)是必须存在的六位占位符数字串，qiniu可以自己定义。最后得到类似：qiniu000000,qiniu000001,……,qiniu000006命名的ts文件。 |
+| `/multiAudio/<MultiAudio>`                         | A/V  |      | 指定支持多音轨，默认为 0，若存在多音轨，则输出只含第一条音轨，置 1 后将保留所有音轨，对于有多条音轨的源视频，本参数会让输出改变。**注意**，与 `segmentType/fmp4` 、 `domain`、`pattern` 参数不兼容。 |
+| `/segmentType/<SegmentType>`                         | A/V  |      | 指定分片的格式，支持 mpegts 与 fmp4，默认为 mpegts。         |
+| `/segmentInit/<SegmentInit>`                         | A/V  |      | 当分片格式为 fmp4 时，指定初始化文件的名称，也即由 EXT-X-MAP 指定的 URI 名称，需要 base64_urlsafe 编码。**注意**，使用该参数指定的输出文件的文件名后缀如果不是输出文件的真实格式，可能使某些媒体播放器不兼容。 |
+| `/refine/<Refine>`                                   | V    |      | 选择高效转码或者高质量转码，可选值为 0 或 1。默认为 0，即高效转码，当选择值 1 时，即为高质量转码。 |
+| `/gop/<GroupOfPictures>`                                   | V    |      | 1、GOP参数，即视频流关键帧间的间隔帧数，取值[0,3000]的整数，默认为0表示采用指定视频编码格式的默认GOP值。<br>2、例如libx264格式默认GOP值为250。GOP取值过小会影响视频编码压缩率，码率变大，过大会使图像群组的时长跨度过大，影响播放随机性，故一般建议采用默认值。 |
+
+
+**注意**：
+
+- `avthumb` 切片的结果会保存在原文件的空间中，包含多个小的 ts 文件和 m3u8 playlist 文件，但是 m3u8 playlist 文件名按照默认规则生成，为了方便获取切片后的 m3u8 资源链接，建议自定义处理结果资源的名称，请参考[处理结果另存 (saveas)](/dora/api/processing-results-save-saveas)。
+- 当`<VideoCodec>`和`<AudioCodec>`值同时为`copy`，即不进行音视频编解码操作时以`音视频转封装`计费。
+
+<a id="segtime-samples"></a>
+
+# **操作方式**
+
+可以通过 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 的方式来调用：
+
+- `资源上传时自动触发`：可以在上传时指定[persistentOps](/kodo/manual/put-policy#put-policy-persistent-ops-explanation)参数
+- `对已有资源手动手动触发`：调用[pfop]()命令
+
+以 Python Sdk 为例，具体可以看下[音视频转码的示例](/dora/api/audio-and-video-transcoding-avthumb)。需要在[音视频转码的示例](/dora/api/audio-and-video-transcoding-avthumb)的基础修改数据处理命令 `fops` ，将其修改为：
+
+```
+fops = avthumb/m3u8/noDomain/1/vb/500k/t/10
+```
+
+**注意**：其他语言 Sdk 可在[官方 Sdks ](/sdk)下载，可以通过查看 Sdk 使用指南中`资源上传时自动触发`，`对已有资源手动触发`使用。
+
+
+
+# **示例**
+
+- 以 [资源上传时自动触发 ]()形式，将 mp4 视频按 vb/240k 预设规格切片（15秒一片）：
+
+  ```
+  {
+          "scope":                "qiniu-ts-demo:sample.mp4",
+          "deadline":             1390528576,
+          "persistentOps":        "avthumb/m3u8/noDomain/1/segtime/15/vb/240k",
+          "persistentNotifyUrl":  "http://fake.com/qiniu/notify"
+  }
+  ```
+
+
+- 以 [对已有资源手动手动触发]() 形式，将 mp4 视频切片，静态码率为 320K，帧率为 24fps：
+
+  ```
+  POST /pfop/ HTTP/1.1
+  Host: api.qiniu.com
+  Content-Type: application/x-www-form-urlencoded
+  Authorization: QBox <AccessToken>
+
+  bucket=qiniu-ts-demo
+  &key=sample.mp4
+  &fops=avthumb%2Fm3u8%2Fab%2F320k%2Fr%2F24
+  &notifyURL=http%3A%2F%2Ffake.com%2Fqiniu%2Fnotify
+  ```
+
+​        **注意**：要在 Authorization 头部的`<AccessToken>`前添加 QBox 和半角空格。
+
+
+
+# **hls加密**
+
+hls加密是利用AES-128位对每个ts文件进行加密，播放器在取得PlayList文件的时候，会根据里面的`#EXT-X-KEY`标签请求获得解密的URL，再请求解密密钥，之后会用密钥对获取的ts文件解密。用户可以对密钥的URL做cookie验证等方法来对用户做认证。
+例子：[PlayList文件](http://ogn0m4it0.bkt.clouddn.com/58IzAY_GglrObBBbbD98wrHIbLk%3D/llhpmYRGVWfZL8dyCPXwCwKovI9R.m3u8) （复制链接，查看文件内容或直接用vlc播放器播放）
+
+**参数解释**：
+
+- `hlsKey`: base64_urlsafe编码或加密过后的密钥
+- `hlsKeyUrl`: 指定了密钥放置的url，经过base64_urlsafe编码，这是生成m3u8 PlayList会使用到的
+- `hlsKeyType`: 指定了传送秘钥的方式
+ - 不指定或者指定为0，则仅仅是以base64_urlsafe编码的方式传送。
+ - 指定为1.x(1.0, 1.1, ...)，以RSA的OAEP加密方式，再以<urlsafe_base64_encode>编码传送密钥，x表示密钥的版本
+ - 公钥：[1.0](http://ogtoywd4d.bkt.clouddn.com/hls_rsa1.0.pub)
+
+
+
+# **如何加密RSA**
+
+可以编程的方法，或者使用`openssl`，下面提供`openssl`的版本：
+
+```
+$ echo -n [AES128KEY] | openssl rsautl -encrypt -oaep -inkey [QINIU_PUB_KEY_FILE] -pubin | openssl base64 -A | tr "+/" "-_"
+```
+
+**参数解释**：
+- AES128Key：HLS_AES128加解密密钥(用户定义的加解密密钥)
+- QINIU_PUB_KEY_FILE：加密上述AES128Key的RSA算法公钥文件（前文七牛提供的公钥1.0）
+
+
+## 示例
+
+- 不使用rsa加密：
+
+  ```
+  avthumb/m3u8/noDomain/1/s/720x480/vb/640k/hlsKey/ZXhhbXBsZWtleTEyMzQ1Ng==/hlsKeyUrl/aHR0cDovL29ndG95d2Q0ZC5ia3QuY2xvdWRkbi5jb20vaGxzMTI4LmtleQ==
+  ```
+
+
+- 使用rsa加密：
+
+  ```
+  avthumb/m3u8/noDomain/1/s/720x480/vb/640k/hlsKey/lsLFcVEISp-1iCoKCMRii6EgqAuUJs-f3FupKlFlbYnAjst5tsZ5U5cttUHp6TKIwW3eNMoBjjTgBnFlBoOku_DR0RMmFDgRxADf7vKRaaISSK0-rm3E4PzMiGybIpf9WIGzmQZLNpCcHOG1ThQU_8j3H4qQAX0nd7HxPcPEaPk=/hlsKeyType/1.0/hlsKeyUrl/aHR0cDovL29ndG95d2Q0ZC5ia3QuY2xvdWRkbi5jb20vaGxzMTI4LmtleQ==
+  ```
+
+  ​

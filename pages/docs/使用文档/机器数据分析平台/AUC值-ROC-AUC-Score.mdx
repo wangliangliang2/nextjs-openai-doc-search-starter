@@ -1,0 +1,18 @@
+用 roc_auc_score 可以计算真实值和预测值之间的 AUC 值，即 ROC 曲线下的面积。AUC 值越高，分类器越好。
+
+**语法：**
+
+```
+score roc_auc_score pos_label=<str | int> <actual_field_1> ... <actual_field_n> against <predicted_field_1> ... <predicted_field_n>
+```
+
+**使用场景：**
+
+- 只能用于二元数据的分析。如果原始数据是多元的，必须通过 pos_label 参数把多元数据转变成二元数据。
+- 输入值必须为连续性数据（int 或者 float）。
+
+**参数说明：**
+
+- pos_label 参数用来指定数据中的正样本。
+  - 当数据是二元的时候，pos_label 可以不提供。
+  - 当数据是多元的时候，pos_label 必须提供，且存在于预测值或者真实值之中。在这种情况下，pos_label 指定的正样本会被识别为 1，其他所有类都会被识别为 0。

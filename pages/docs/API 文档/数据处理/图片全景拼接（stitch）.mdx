@@ -1,0 +1,62 @@
+# **简介**
+图片全景拼接服务（stitch），可以帮助您将多张图像拼接起来，拼成一幅大的图像来创建全景图像。
+
+## **限制说明**
+
+- 原图限制
+
+  - 输入格式仅支持 ` jpg`、`png`
+  - 输入图片最大分辨率 3200*2400
+  - 只支持 20MB 以内的图片
+
+- 最多可拼接10张图片（含源文件）
+
+  ​
+
+# **接口规格**
+```
+stitch/format/<Format>/images/<image0>/<image1>/...
+```
+
+| 参数名称 | 必填 | 说明                                                         |
+| -------- | ---- | ------------------------------------------------------------ |
+| format   | 是   | 输出文件格式，支持 jpg、png                                  |
+| images   | 是   | 1、目前支持 kodo 资源。kodo 资源可由 `kodo://<bucketname>/<key> `表示（此时 bucketname 需要与输入源在同一区域），均需要经过`urlsafe_base64_encode`。<br> 2、需要和源文件一块拼接的多张图片, 最多 9 张。 |
+
+# **示例**
+```
+POST /pfop/ HTTP/1.1
+Host: api.qiniu.com  
+Content-Type: application/x-www-form-urlencoded  
+Authorization: QBox <AccessToken>  
+
+bucket=test&key=boat1_1280x720.jpg&fops=stitch%2Fformat%2Fjpg%2Fimages%2FaHR0cDovL3Eyeng3YTB3Ny5ia3QuY2xvdWRkbi5jb20vYm9hdDJfMTI4MHg3MjAuanBn%2FaHR0cDovL3Eyeng3YTB3Ny5ia3QuY2xvdWRkbi5jb20vYm9hdDNfMTI4MHg3MjAuanBn&notifyURL=http%3A%2F%2Ffake.com%2Fqiniu%2Fnotify
+```
+
+- 原图1：
+  ![查看效果图](https://dn-odum9helk.qbox.me/FjrKdVO3a18Z83thRRgmf13FE0oh)
+- 原图2：
+  ![查看效果图](https://dn-odum9helk.qbox.me/FsKv0MHulo7NB4jadBKDK-B1pE5t)
+- 原图3：
+  ![查看效果图](https://dn-odum9helk.qbox.me/Fka1rcchu7GuznVVIWvf9m76me-O)
+- 拼接效果图：  
+```
+https://dn-odum9helk.qbox.me/FgrMnstM96oChWztgjcylF4VET1C
+```
+![查看效果图](https://dn-odum9helk.qbox.me/FgrMnstM96oChWztgjcylF4VET1C)
+​		
+# **操作方式**
+
+您可以通过[持久化处理](/dora/api/1291/persistent-data-processing-pfop)，暂不支持`同步处理`，详情介绍请参见[图片处理操作方式](/dora/api/8234/the-image-processing1)。
+
+
+
+# **计费说明**	
+
+| 图片规格       | 价格         |
+| :------------- | :----------- |
+| 800×600 以下   | 0.28 元/百张 |
+| 1600×1200 以下 | 0.46 元/百张 |
+| 3200×2400 以下 | 1.48 元/百张 |
+
+**计费示例：** 某用户拼接 800×600 以下尺寸的图片1000张，费用为`2.8元= 0.28*10`.

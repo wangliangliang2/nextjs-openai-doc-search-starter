@@ -1,0 +1,57 @@
+在[上一篇文档](https://developer.qiniu.com/insight/manual/4678/syslog-scene) 中，我们介绍了如何使用logkit 进行syslog日志采集，但是这种采集方式在实际应用中会有种种限制。
+
+1. UDP 不能够保证消息到达对方服务器，当logkit实例重启的时候，这部分数据不会重发，可能导致数据会发生丢失
+2. 如果使用单一的UDP/TCP端口进行数据发送，来源于不同设备（如防火墙、网络设备）等不同的数据格式数据只能输入到一个仓库中，无法根据数据源类型做良好的区分
+
+所以这里我们将介绍使用日志服务器的方式进行syslog 采集。主要的采集原理和流程如下：
+
+![syslog 日志服务器收集](https://dn-odum9helk.qbox.me/Fuz44-oMg3eAcIwL00c2EU68t4Jy)
+
+如流程图所示，我们首先设置rsyslog 日志服务器作为中转服务器，可以支持将不同来源的数据存储在本地磁盘上，并且通过不同的设备来源作为目录。同时我们在日志服务器上安装logkit-pro 监控每个数据来源的日志文件目录，由于logkit-pro 有着非常完善的容错机制，可以在日志平台和本地服务器中使用缓冲层避免数据丢失。极大地提升了数据的可用性。
+
+下面我们就来介绍如何设置rsyslog 日志服务器：
+
+第一步，需要安装rsyslog 服务：
+
+```
+$ sudo yum update && yum install rsyslog 	#CentOS 7+
+$ sudo apt update && apt install rsyslog	#Ubuntu 16.04, 18.04
+```
+
+第二步，修改rsyslog的配置文件：
+
+```
+vim /etc/rsyslog.d/10-remote.conf 
+
+#在文件中加入以下内容
+$ModLoad imudp
+$UDPServerRun 514
+$AllowedSender UDP, 192.0.2.0/24
+
+$template RemoteStore, "/var/log/remote/%HOSTNAME%/%timegenerated:1:10:date-rfc3339%"
+$template logFormat, "%rawmsg%\n"
+:source, !isequal, "localhost" -?RemoteStore;logFormat
+:source, isequal, "last" ~
+```
+
+这段配置的含义是，监听514端口接收UDP请求，并且允许192.0.2.0/24 子网下的设备进行数据发送，这块可以替换成你的来源设备IP。
+同时将syslog 归档到 `/var/log/remote` 目录下，并且每个子目录都用来源`%HOSTNAME%`进行区分，每个来源设备的日志都用时间进行命名。
+接下来我们就如同[上一篇文档](https://developer.qiniu.com/insight/manual/4678/syslog-scene) 中介绍的步骤，将服务器日志通过rsyslog 发送到本台服务器的514端口即可。
+
+目录效果如下：
+
+```
+$ pwd
+/var/log/remote
+$ ls 
+device1 device2
+$ ls device1
+2019-07-01
+2019-07-02
+2019-07-03
+2019-07-04
+```
+
+接下来我们就可以使用logkit-pro 中的文件收集方法分别创建不同的收集器监听`/var/log/remote/device1` 和 `/var/log/remote/device2` 目录，可以选择将两个目录收集到同一个仓库，也可以收集到不同的仓库。
+
+这样我们就可以灵活的对不同设备数据进行隔离，同时支持高可用的数据发送。

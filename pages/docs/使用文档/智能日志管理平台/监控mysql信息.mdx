@@ -1,0 +1,26 @@
+mysql监控主要用于监控mysql各类信息。
+
+mysql监控配置界面如下：
+![](https://dn-odum9helk.qbox.me/FrWEHEvoj0bJCrDhZV6PDQQvFItB)
+需要填写以下参数：
+1. `服务器连接地址(逗号分隔多个)`：默认为 tcp(127.0.0.1:3306)/。
+2. `perf events statements digest text limit`：默认为 120。
+3. `perf events statements limit`：默认为 250。
+4. `perf events statements time limit`：默认为 86400。
+5. `table schema database(逗号分隔多个)`：默认为空，收集所有数据库和表。
+6. `interval slow`：默认为 30m
+目前支持收集的指标有:
+1. `gather table schema`：默认为false，不收集。
+2. `gather process list`：默认为true，收集。
+3. `gather info schema auto inc`：默认为true，收集。
+4. `gather user statistics`：默认为true，收集。
+5. `gather innodb metrics`：默认为true，收集。
+6. `gather slave status`：默认为true，收集。
+7. `gather binary logs`：默认为false，不收集。
+8. `gather table io waits`：默认为false，不收集。
+9. `gather index io waits`：默认为false，不收集。
+10. `gather file events stats`：默认为false，不收集。
+11. `gather binary logs`：默认为false，不收集。
+12. `gather table lock waits`：默认为false，不收集。
+13. `gather event waits`：默认为false，不收集。
+14. `gather perf events statements`：默认为false，不收集。

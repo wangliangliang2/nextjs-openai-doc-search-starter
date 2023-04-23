@@ -1,0 +1,91 @@
+# 发送国际/港澳台短信 (POST Oversea Message)
+
+## 请求定义
+
+```
+POST /v1/message/oversea HTTP/1.1
+Host: sms.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+```
+
+### 请求头
+
+> 请参考 [请求认证](/sms/api/5842/sms-api-authentication)
+
+### 请求数据
+
+> 该接口定义以下请求数据:
+
+```json
+{
+    "template_id": string,
+    "mobiles": []string,
+    "parameters": map[string]string|number,
+    "sender_id": string
+}
+```
+
+参数名称 | 类型 | 必填 | 说明
+--------|------|-----|-------
+template_id | string | 是 | 模板 ID
+mobiles | []string | 是 | 手机号列表，例如：["+17245678901", "+17245678902"]
+parameters | map[string]string|否| 自定义魔法变量，变量设置在创建模板时，参数template指定
+sender_id | string | 否 | SenderID，用于在国际短信中标识发送者
+
+
+## 响应定义
+
+### 该接口正确处理请求时返回如下 JSON 数据
+
+```json
+{
+    "message_id": string
+}
+```
+
+# 全文发送国际/港澳台短信 (POST Oversea Fulltext Message)
+
+## 请求定义
+
+```
+POST /v1/message/oversea_fulltext HTTP/1.1
+Host: sms.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+```
+
+### 请求头
+
+> 请参考 [请求认证](/sms/api/5842/sms-api-authentication)
+
+### 请求数据
+
+> 该接口定义以下请求数据:
+
+```json
+{
+    "content": string,
+    "mobiles": []string,
+    "template_type": string,
+    "sender_id": string
+}
+```
+
+参数名称 | 类型 | 必填 | 说明
+--------|------|-----|-------
+content | string | 是 | 消息内容
+mobiles | []string | 是 | 手机号列表，例如：["+17245678901", "+17245678901"]
+template_type | string|否| 短信类型，支持的值：notification(通知类)、verification(验证码类)、marketing(营销推广类)、voice(语音类)
+sender_id | string | 否 | SenderID，用于在国际短信中标识发送者
+
+
+## 响应定义
+
+### 该接口正确处理请求时返回如下 JSON 数据
+
+```json
+{
+    "message_id": string
+}
+```

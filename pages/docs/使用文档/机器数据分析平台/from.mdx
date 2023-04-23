@@ -1,0 +1,34 @@
+from命令将数据集的搜索结果追加到当前搜索结果。
+
+**语法:**
+
+```from dataset:<dataset-name>```
+
+
+**参数说明:**
+
+<dataset-name>：数据集名字。如：from dataset:test。
+
+**用法示例:**
+
+原有数据集test的输出结果：
+
+| userid | name | age |
+|:---|:---|:---|
+| 1 | James | 25 |
+| 2 | Bond | 30 |
+| 3 | Gates | 40 |
+
+从统计结果中除掉userid字段
+```
+| from dataset:test
+| fields - userid
+```
+
+结果如下：
+
+| name | age |
+|:---|:---|
+| James | 25 |
+| Bond | 30 |
+| Gates | 40 |

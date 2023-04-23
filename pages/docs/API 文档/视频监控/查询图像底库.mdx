@@ -1,0 +1,43 @@
+# **描述**
+本接口用于获取图像底库列表。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/imagelibs/{libId}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|libId|是|string|图像库ID。
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|id|string|库id
+|name|string|库名称
+|desc|string|备注描述	
+|createdAt|integer|库创建时间
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/imagelibs/xxxx \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+
+      "id": "xxxx",
+      "name": "test0016",
+      "desc": "this is a test",
+      "createdAt": 1586850533
+}
+```

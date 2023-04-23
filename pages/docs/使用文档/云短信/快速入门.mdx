@@ -1,0 +1,133 @@
+本文旨在介绍七牛云短信如何快速接入服务。
+
+# **基本概念**
+
+**短信格式**：短信由签名和正文内容组成，发送短信前必须申请审核至少一个短信签名和一个短信正文模板，审核通过方可使用。
+以验证码短信为例，短信格式如下：
+
+```
+【七牛云服务】您正在申请绑定手机，验证码为：${code}，5分钟内有效！
+```
+
+其中：
+
+- 短信签名：【七牛云服务】
+- 短信模板：您正在申请绑定手机，验证码为：${code}，5分钟内有效！
+- 模板变量：${code}
+
+**短信签名：**发送短信必备，是附加在短信内容前面的标识，用于标识公司或业务；申请时企业用户需要上传资质证明。
+**短信模板：**即具体发送的短信正文内容；支持验证码、短信通知、推广短信三种模式，短信内容可以通过模板参数实现个性化定制。
+
+# **使用流程**
+
+![](https://dn-odum9helk.qbox.me/FvWNIFpE2Q8xAIFzWt82TFoEGDcs)
+<br />
+云短信的基本使用流程，包含以下几个步骤：
+
+- [01 开通短信服务](#step1)
+- [02 申请短信签名](#step2)
+- [03 申请短信模板](#step3)
+- [04 购买短信资源包](#step4)
+- [05 发送短信](#step5)
+- [06 查看发送状态](#step6)
+
+
+
+<a id="step1"></a>
+
+# 01 开通短信服务
+
+您需要一个七牛云账号才能使用云短信服务：
+
+1. 如果还没有账号[注册七牛云账号](https://portal.qiniu.com/signup/choice)，并按照要求完成[实名认证]。(https://developer.qiniu.com/af/manual/4057/the-identity-authentication)。
+2. 如果您已有实名认证的七牛云账号，请直接进行下一步操作。
+
+访问[云短信控制台](https://portal.qiniu.com/sms)，如果是首次使用云短信服务，需要进行服务开通操作，开通好后即可进入云短信 dashboard 界面。
+![](https://dn-odum9helk.qbox.me/Ftel60Xsv6-GV1HwYBWrUKqqd0m0)
+
+
+
+备注：
+
+1. 实名认证后可享受共 300 条的免费测试短信（验证码短信 100 条、通知短信 100 条和推广短信 100 条）。激活当月的1号生效，12月内有效。
+
+
+
+<a id="step2"></a>
+
+# 02 申请短信签名
+
+短信服务发送的短信中包括短信签名和短信模板，所以您需要至少申请一个短信签名并通过审核方可正常发送短信。
+短信签名可直接在[云短信控制台](https://portal.qiniu.com/sms/signature)申请，选择【签名】->【新建】。
+![](https://dn-odum9helk.qbox.me/FkNIznGTcjvwsaD6ZPwdqdTrwFX6)
+在新建签名时，您可根据实际情况填写以下参数：
+
+1. 短信签名：填写全称或者简称，无须添加【】、()、[]符号，签名发送会自带【】符号。
+2. 用途：企业、网站、App、公众号或小程序、电商店铺名、商标名或者其他。
+3. 签名归属：自用或者代理他人，如选择“代理他人”，即签名归属与七牛账号归属主体不一致时需[上传授权委托书](https://developer.qiniu.com/sms/manual/5916/power-of-attorney)。
+4. 上传证明：根据实际用途上传相关证明文件。
+5. 申请说明：根据实际情况填写相关说明。
+
+备注：
+
+1. 海外短信签名需符合[该地区语言支持](https://developer.qiniu.com/sms/kb/6295/the-international-message-template)，如七牛海外短信签名为[Qiniu]，只需要提交签名内容“Qiniu”。
+2. 审核时间为工作日2小时以内，如需加急请[提交工单](https://support.qiniu.com/tickets/new)或者联系对应商务经理。
+
+
+
+<a id="step3"></a>
+
+# 03 申请短信模板
+
+短信模板是具体发送的短信正文内容；国内短信模板可直接在[云短信控制台](https://portal.qiniu.com/sms/template)申请，选择【模板】->【新建】。
+![](https://dn-odum9helk.qbox.me/FqItyuqKkweN_4tB_y7AepYNsj_y)
+在新建模板时，您可根据实际情况填写以下参数：
+
+1. 名称：自定义模板名，用于标识。
+2. 类型：验证码、通知、推广和语音类，根据实际需要选择。
+3. 短信签名：短信模板必须关联对应短信签名。
+4. 内容：参考[短信模板审核标准](https://developer.qiniu.com/sms/manual/5814/template-specification)。
+5. 申请说明：根据实际情况填写相关说明。
+
+备注：
+
+1. 海外短信模板需符合[该地区语言支持](https://developer.qiniu.com/sms/kb/6295/the-international-message-template)，并提交[提交工单](https://support.qiniu.com/tickets/new)或者联系对应商务经理加急。
+
+
+
+<a id="step4"></a>
+
+# 04 购买短信资源包
+
+完成申请短信签名和短信模板后，可在[资源包](https://portal.qiniu.com/sms/resource)界面购买套餐包。
+
+
+
+<a id="step5"></a>
+
+# 05 发送短信
+
+确认短信签名和短信正文模板均已通过审核后，您可通过云短信[控制台批量发送](https://developer.qiniu.com/sms/manual/5823/the-console-send-sms)或 [API 方式](https://developer.qiniu.com/sms/manual/5824/through-the-api-send-text-messages)发送短信，本文以使用控制台为例，选择【发送群发】->【批量发送】。
+![](https://dn-odum9helk.qbox.me/FqtBA4L2gQS0-yO8midW52QHLoQN)
+新建群发短信任务时，您可根据实际情况填写以下参数：
+
+1. 任务名称:自定义群发短信任务名，用于标识。
+2. 短信模板：批量发送只支持推广、通知短信模板，其他类型请提交[提交工单](https://support.qiniu.com/tickets/new)或者联系对应商务经理。
+3. 定时发送（可选）：选择群发短信任务发送时间。
+4. 号码输入：支持文件导入和文本框填写，文本框输入时号码间以英文逗号“,”分隔。
+
+备注：
+
+1. 群发功能需要企业用户认证，且保证您的账号有10万条资源包余量或5000元余额。
+2. 用户发送短信可利用[API方式](https://developer.qiniu.com/sms/manual/5824/through-the-api-send-text-messages)。
+
+
+
+<a id="step6"></a>
+
+# 06 查看发送状态
+
+无论是通过控制台或API方式发送短信，都会在控制台显示。
+七牛云提供“发送量统计”和“发送记录查询”功能，待发送短信步骤完成后，可直接在云短信控制台左侧导航栏打开。
+![](https://dn-odum9helk.qbox.me/FlvrO0zDpn0gJt-0sqgAnp_F6M2u)
+若短信发送失败，请参考[错误定义](https://developer.qiniu.com/sms/api/5849/sms-error-code)排除故障，再重新发送短信。

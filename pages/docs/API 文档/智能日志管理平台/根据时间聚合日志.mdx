@@ -1,0 +1,18 @@
+**请求语法**
+
+```
+GET /v5/repos/<RepoName>/histogram?q=<QueryString>&from=<StartTimestamp>&to=<EndTimestamp>&field=<AggregationField>
+Authorization: Pandora <auth>
+```
+
+**请求内容**
+
+|参数|类型|必填|说明|
+|:---|:---|:---|:---|
+|RepoName|string|是|日志仓库名称|
+|q|string|否|查询表达式，参照[查询语法](/insight/api/5240/query-log#1)|
+|from|long|是|聚合的开始时间戳，例如： `1470163291000`|
+|to|long|是|聚合的结束时间戳，例如： `1470336091000`|
+|field|string|是|聚合的字段，该字段必须为`date`|
+
+`注意：` `根据时间聚合日志`返回的是用户选择的时间段内日志的分布情况。

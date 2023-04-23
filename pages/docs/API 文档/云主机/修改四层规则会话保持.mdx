@@ -1,0 +1,41 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+>`PUT` /v1/security/bgpip/resource/:resource_id/level4rule_v2/:rule_id/keep_time
+
+# 请求参数
+
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| X-Qiniu-Regionid | string | header | 是 | 地域 id, 取值：shanghai (大陆通用地域) |
+| resource_id | string | path | 是 | 高防实例 id |
+| rule_id | string | path | 是 | 规则 id, 可通过四层规则列表接口获取 |
+| keep_time | int | body | 是 | 会话保持时间，单位：秒 |
+| keep_enable | int | body | 是 | 会话保持开关，取值：0(关闭)，1(开启) |
+
+
+注：如果有部分参数无需修改，则填入修改前的参数值即可。
+
+
+# 返回值
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| request_id | string | 是 | 请求记录 id |
+
+<br>
+
+# 示例
+### Body参数示例
+```json
+{
+    "keep_time": 10,
+    "keep_enable": 1
+}
+```
+
+### 正常返回示例
+```json
+{
+    "request_id": "04F0F334-AC1"
+}
+```

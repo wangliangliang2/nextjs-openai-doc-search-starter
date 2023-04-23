@@ -1,0 +1,68 @@
+# **MPEG2-TS 封装和上传使用说明**
+
+MPEG2-TS 封装和上传模块主要应用场景为将经过 IP Camera 编码后的视频数据(H.264，H.265 格式)和音频数据(AAC，G711.A，G711.U 格式)封装为 MPEG2-TS 数据流，用于保存到本地和上传至服务端，其中保存到本地以 TS文件为基本操作单元，上传到服务端以视频片段为基本操作单元。上传至服务端的 TS数据流 通过 七牛 IoT视频云 平台提供的各类接口进行操作。
+
+
+## **相关概念**
+* **TS文件**: (MPEG2-TS Format File) 按照 MPEG-2 Transport Stream 格式封装的文件。
+* **视频片段**: (Segment) 由一个或多个TS文件组成，为一个上传周期内所有TS文件的集合，在服务端通过 HLS 的方式体现。典型应用场景: 一个移动侦测时间段内的视频。
+* **视频片段标签**: (Segment Meta) 用于标记视频片段的类型。典型应用场景：在移动侦测场景，由使用者标记区分移动侦测类型，例如 人形移动，物体移动。
+* **视频缩略图**: (Frame Picture) 每个视频片段对应一个视频缩略图，用于预览当前视频片段。
+* **DAK/DSK**: (Device Access Key / Device Secret Key) 是一对密钥对，DAK 和 DSK 的长度为 40 字节，用于设备端与服务端通信过程的鉴权。
+
+## **MPEG2-TS 封装和上传模块调用时序说明**
+MPEG2-TS 封装和上传模块调用时序图
+
+![](https://dn-odum9helk.qbox.me/Fk-J8c723LZvNV484zHoOChQi3pk)
+
+接口调用流程说明：
+
+1. Link_Login 会与服务端校验 DAK/DSK 是否正确，需要在联网状态下调用。
+2. 可以先通过 Link_Create 创建实例，然后再调用 Link_Login 注册 IoT视频云 业务。注意：在注册成功前，所有生成的 TS文件不会上传到服务器。
+3. Link_SegmentStart 会将当前已经缓存中的TS开始生成视频片段；Link_SegmentEnd 将立即结束当前的TS封装并触发输出和上传。
+
+## **接口列表**
+序号 |接口名称 | 接口说明 
+:-: | :-: |:-: 
+1 | Link_Login | 登录 IoT视频云 业务 
+2 | Link_Logout | 注销 IoT视频云 业务 
+3 | Link_Create | 创建实例 
+4 | Link_Destroy | 注销实例 
+5 | Link_PushVideo | 推送视频数据 
+6 | Link_PushAudio | 推送音频流数据 
+7 | Link_PushPicture | 推送图片 
+8 | Link_SegmentStart | 开始生成视频片段 
+9 | Link_SegmentEnd | 结束当前视频片段 
+10 | Link_SetLog | 设置 SDK 日志输出 
+
+接口说明：
+
+1. 除 Link_Login 外，其他接口函数均为非阻塞类型。
+
+## **回调函数列表**
+
+序号 | 回调函数名称 | 回调函数说明 
+:-: | :-: |:-: 
+1 | Link_DeviceConfig | 设备自定义配置回调函数类型，通过 Link_Login 设置 
+2 | Link_GetPicture | 图片上传信号回调函数类型，通过 Link_Create 设置 
+3 | Link_UploadResult | 上传结果回调函数类型，通过 Link_Create 设置 
+4 | Link_TsOutput | 输出TS文件回调函数类型，通过 Link_Create 设置 
+5 | Link_LogCallback | 日志回调函数类型，通过 Link_SetLog 设置
+
+回调函数说明：
+
+1. 所有回调函数均为非必须参数，如果不设置回调函数，在调用相关接口时需要使用 NULL 填充。
+2. 回调函数必须为非阻塞类型，如果阻塞执行将导致不可预期结果。
+
+## **业务场景说明**
+
+### **数据推送**
+
+Link_PushVideo 和 Link_PushAudio 可以在创建和注销实例周期内推送数据，也可以在 开始和结束视频片段周期内推送数据。
+Link_PushPicture 将推送图片信息作为视频片段的截图信息。关于何时调用 Link_PushPicture 可以通过两种方式：
+1. 在一个视频片段的周期内，即 Link_SegmentStart 和 Link_SegmentEnd 之间调用；
+2. 通过 Link_GetPicture 回调函数信号调用。Link_GetPicture 回调函数会在每开始封装一个TS文件时调用，可以通过参数中的 isSegmentStart 判断是否为一个新的视频片段来决定是否调用 Link_PushPicture；
+
+### **多通道模式**
+
+可以通过创建多个上传实例的方式来实现多通道模式，多通道模式时需要保证每个实例在创建时的 channel id 唯一，最大支持 64 个实例，channel id 取值范围为 [0, 63]，多通道模式时在IoT视频云平台中创建的设备类型应为网关类型，并且实例的 channel id 应小于创建网关设备时的最大通道数。

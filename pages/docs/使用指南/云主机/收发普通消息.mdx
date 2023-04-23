@@ -1,0 +1,51 @@
+# 发送普通消息
+
+您可以运行以下代码进行消息发送。 请按说明正确设置相关参数。
+```
+using System;
+using ons;
+public class ProducerExampleForEx
+{
+    public ProducerExampleForEx()
+    {
+    }
+    static void Main(string[] args) {
+        // 配置账号, 从控制台获取设置
+        ONSFactoryProperty factoryInfo = new ONSFactoryProperty();
+        // AccessKey 身份验证，在消息队列管理控制台创建
+        factoryInfo.setFactoryProperty(ONSFactoryProperty.AccessKey, "Your access key");
+        // SecretKey 身份验证，在消息队列管理控制台创建
+        factoryInfo.setFactoryProperty(ONSFactoryProperty.SecretKey, "Your access secret");
+        // 您在控制台创建的 Group ID
+        factoryInfo.setFactoryProperty(ONSFactoryProperty.ProducerId, "GID_example");
+        // 您在控制台创建的 Topic
+        factoryInfo.setFactoryProperty(ONSFactoryProperty.PublishTopics, "T_example_topic_name");
+        // 设置 TCP 接入域名，进入控制台的实例管理页面的“获取接入点信息”区域查看
+        factoryInfo.setFactoryProperty(ONSFactoryProperty.NAMESRV_ADDR, "NameSrv_Addr");
+        // 设置日志路径
+        factoryInfo.setFactoryProperty(ONSFactoryProperty.LogPath, "C://log");
+        // 创建生产者实例
+        // 说明：生产者实例是线程安全的，可用于发送不同 Topic 的消息。基本上，您每一个线程
+        // 只需要一个生产者实例
+        Producer producer = ONSFactory.getInstance().createProducer(factoryInfo);
+        // 启动客户端实例
+        producer.start();
+        // 创建消息对象
+        Message msg = new Message(factoryInfo.getPublishTopics(), "tagA", "Example message body");
+        msg.setKey(Guid.NewGuid().ToString());
+        for (int i = 0; i < 32; i++) {
+            try
+            {
+                SendResultONS sendResult = producer.send(msg);
+                Console.WriteLine("send success {0}", sendResult.getMessageId());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("send failure{0}", ex.ToString());
+            }
+        }
+        // 在您的线程即将退出时，关闭生产者实例
+        producer.shutdown();
+    }
+}
+```

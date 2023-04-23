@@ -1,0 +1,99 @@
+# 教程简介
+本教程用于命令行初学者下载及添加环境变量，且能够运行简单的命令测试能否正常使用。
+* `注明`：涉及不同windows版本的操作系统，在添加环境变量操作有差异时，可以自行搜索如何在对应的操作系统中添加环境变量。
+* 本教程仅供示范，其他命令及详细操作请参考命令的[**说明文档**](https://developer.qiniu.com/kodo/tools/1302/qshell#9)。
+
+# 安装操作步骤
+1.   在七牛开发者中心的sdk&工具中，选择并打开[**qshell文档**](https://developer.qiniu.com/kodo/tools/1302/qshell)
+
+<img src="https://dn-odum9helk.qbox.me/FhGhldO0-UiHtc5MEu8azNduJl9E" width=800 />
+<p> </p> 
+
+2.   压缩包下载到本地后，将本操作系统对应的文件解压到文件夹中。
+
+	<img src="https://dn-odum9helk.qbox.me/FixcDzzNK9boVsNDmWt7BoH9hSNb" width=400 />
+ <p> </p> 
+ 
+3.   右键打开文件属性，复制qshell文件所在目录。
+
+	 <img src="https://dn-odum9helk.qbox.me/FmowYXMB1dTM-x1zi5jChWA4sc7N" width=400 />
+<p> </p> 
+
+4.   为了方便文件的使用，可以对文件重命名为 qshell.exe（如果显示时隐藏了后缀，修改为qshell即可）
+
+ <img src="https://dn-odum9helk.qbox.me/FhuYNtZn2_AHGcpmkdaifAeC7Q14" width=400 />
+ <p> </p> 
+ 
+5.   按下键盘左下角的windows徽标键，打开搜索框输入 环境变量，选择编辑系统环境变量。（操作系统不符的情况下，此步骤也可以通过其他方式打开编辑）
+
+	<img src="https://dn-odum9helk.qbox.me/Fu1XObfpuI6imQ1TtSX3t5cO76Ot" width=400 />
+  <p> </p> 
+	
+6.   点击 编辑变量。
+
+	<img src="https://dn-odum9helk.qbox.me/Fr9JRfH6N5BiTc8D65wX1JVDckVD" width=400 />
+<p> </p> 
+
+7.   点击新建，输入变量名PATH，变量值为在第3步复制的qshell所在目录。添加后确认保存环境变量，保存系统设置。
+
+	<img src="https://dn-odum9helk.qbox.me/FhhrMABX82Et3Gb_eJuRlI8zeiwb" width=400 />
+<p> </p> 
+
+8.   在搜索中输入cmd，打开cmd窗口。
+
+	<img src="https://dn-odum9helk.qbox.me/FvCX-nSzwEbFOWmhFcqzs0PG6GCb" width=400 />
+<p> </p> 
+
+9.   正确安装并配置qshell后，输入qshell -v可以查看版本号。
+`注意：`
+如果没有对文件进行重命名，需要完整输入 qshell文件名 -v。
+如果报错无法识别的命令，请重新检查环境变量是否配置正确。
+
+	<img src="https://dn-odum9helk.qbox.me/FsuNHZI8i9lEGRwJba_evLEgoHgn" width=600 />
+<p> </p> 
+
+10.   使用qshell命令操作对应账号前需要进行登陆操作，登陆时需要ak sk信息，获取密钥对ak sk可以在控制台复制。
+
+	 <img src="https://dn-odum9helk.qbox.me/FhBB4cC2AHTmW7QwRCE6I0ZncuSJ" width=800 />
+<p> </p> 
+
+11.   登陆时使用命令
+```
+qshell account  填写您的ak  填写您的sk   name
+```
+注意：如果ak, sk, name首字母是"-"，需要使用命令qshell account --  填写您的ak  填写您的sk  name（如图），可以避免把该项识别成命令行选项。
+	
+	<img src="https://dn-odum9helk.qbox.me/FsipD0lRY5nZQ46Rm3Uflf_lic_a" width=800 />
+
+# rput命令的使用
+rput命令用于上传大文件使用，命令参数详解参考[**rput说明文档**](https://github.com/qiniu/qshell/blob/master/docs/rput.md)
+1.  使用该命令行前需要先进行**登陆**，登陆命令参考本教程第二部分安装操作步骤。
+2.  执行命令 
+  ```
+	qshell  rput  bucket名  上传后文件名   E:\qshelltool\download\amrts.amr
+	```
+
+	<img src="https://dn-odum9helk.qbox.me/FiVKn7JMr5dOFtHzSD2ZSYo3xA1j" width=500 />
+
+
+
+# qdownload命令的使用
+ qdownload用于批量下载空间内文件，命令参数详解参考[**qdownload说明文档**](https://github.com/qiniu/qshell/blob/master/docs/qdownload.md)
+1.  使用该命令行前需要先进行**登陆**，登陆命令参考本教程第二部分安装操作步骤。
+2.  创建本地配置文件，配置文件的书写可以参考命令文档。
+**注意**：windows环境的配置文件中涉及的路径需要两个\防止被转义，例如 E:\\\qshelltool\\\download
+
+	 <img src="https://dn-odum9helk.qbox.me/FruBRmWKnS9cp0o75ar3ldIhjwQN" width=500 />
+ 
+3.  执行命令 
+```
+qshell  qdownload  qdownload.txt
+```
+ 注意：配置文件参数在当前cmd命令行所在目录下时，可以直接输入文件名
+ 如果非本目录下，需要输入完整路径，如qshell  qdownload  E:\qshelltool\download\qdownload.txt
+ 
+	 <img src="https://dn-odum9helk.qbox.me/FtbW7UKuroNlZEj4DH_Q7Wt9VDJo" width=500 />
+ 
+4.  运行结果，保存路径不变的情况下会进行增量下载，详细日志信息可以在输出的log路径查看。
+
+	<img src="https://dn-odum9helk.qbox.me/FlGpwxmQ0lvojtb-U27UWGO7XWeF" width=500 />

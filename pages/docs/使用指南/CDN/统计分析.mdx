@@ -1,0 +1,22 @@
+ CDN 统计分析模块提供[用量统计](https://portal.qiniu.com/cdn/statistics-v2/usage/flow)和[日志分析](https://portal.qiniu.com/cdn/statistics-v2/log/access)两大分析模块。
+ 
+# 用量统计
+ 用量统计基于服务端访问数据统计，提供流量、带宽、请求次数等产品用量相关的统计数据。
+ 
+ | 模块  | 说明 |
+| ------------ | ------------ |
+| [流量统计](https://developer.qiniu.com/fusion/manual/5029/usage-statistics#traffic)  |提供全量、日间、闲时的流量统计，主要给流量计费型（默认）客户提供用量参考。 |
+| [带宽统计 ](https://developer.qiniu.com/fusion/manual/5029/usage-statistics#width)| 提供峰值带宽、95峰值带宽统计，主要给带宽计费型客户提供用量参考。 |
+| [请求次数统计 ](https://developer.qiniu.com/fusion/manual/5029/usage-statistics#querry) |  提供静态、动态请求次数统计，其中仅动态请求次数收费。 |
+# 日志分析
+ 日志分析功能基于用户访问数据统计，提供以下用户访问的统计分析数据，便于您进行业务洞察分析：
+
+| 模块  | 说明 |
+| ------------ | ------------ |
+| [地区运营商分布 ](/fusion/manual/7445/distribution-of-regional-operators) | 提供终端用户的地区分布和运营商分布的数据统计。  |
+| [ 状态码](/fusion/manual/5031/status-code) | 提供用户访问的状态码的数据统计。  |
+| [命中率](/fusion/manual/5032/shooting)  |  命中率提供了域名的请求与流量两个维度的域名访问命中情况数据统计。 |
+| [TOP URL/IP ](/fusion/manual/7446/top-url-ip) | 提供热点资源 URL 和用户 IP 的相关数据统计。  |
+|  [独立 IP ](/fusion/manual/5033/independent-ip) | 独立IP提供了域名的UV的统计数据分析。  |
+
+由于日志分析数据采用客户端 ip 统计，相关数据仅用于业务分析，具体账单相关计量数据参考[用量统计](https://portal.qiniu.com/cdn/statistics/usage/flow)模块。

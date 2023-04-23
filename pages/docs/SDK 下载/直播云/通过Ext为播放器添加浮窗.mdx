@@ -1,0 +1,146 @@
+# 通过Ext为播放器添加浮窗
+
+在播放器场景中，播放器上层的浮窗承载了绝大多数播放器的业务逻辑：选集、倍速、清晰度等等，如何处理浮窗的样式，动画，层级，需要有一个统一的架构来处理，Ext中的浮窗部分完美的统一了这些。
+
+
+## 定义一个浮窗
+
+所有浮窗都继承`BaseFunctionWidget`
+
+```kotlin
+class BufferingFunctionWidget(context: Context):
+    BaseFunctionWidget<LongLogicProvider, LongPlayableParams, LongVideoParams>(context)
+{
+    //播放器核心对象
+    private lateinit var mPlayerCore: CommonPlayerCore<LongLogicProvider, LongPlayableParams, LongVideoParams>
+
+    override val tag: String
+        get() = "BufferingFunctionWidget"
+
+    //配置浮窗
+    override val functionWidgetConfig: FunctionWidgetConfig
+        get() {
+            val builder = FunctionWidgetConfig.Builder()
+            builder.persistent(true)
+            builder.dismissWhenVideoCompleted(true)
+            builder.dismissWhenVideoChange(false)
+            builder.dismissWhenScreenTypeChange(false)
+            builder.dismissWhenActivityStop(false)
+            builder.launchType(FunctionWidgetConfig.LaunchType.Normal)
+            return builder.build()
+        }
+
+    //浮窗显示时回调
+    override fun onWidgetShow() {
+    }
+
+    //浮窗隐藏时回调
+    override fun onWidgetDismiss() {
+    }
+
+    //创建时回调，在这里提供layout创建
+    override fun createContentView(context: Context): View {
+        return LayoutInflater.from(mContext).inflate(R.layout.function_buffering, null)
+    }
+
+    //销毁时回调
+    override fun onRelease() {
+    }
+
+    //用户外部通知的回调
+    override fun onConfigurationChanged(configuration: Configuration) {
+    }
+
+    //创建后回调，记得保存playerCore
+    override fun bindPlayerCore(playerCore: CommonPlayerCore<LongLogicProvider, LongPlayableParams, LongVideoParams>) {
+        mPlayerCore = playerCore
+    }
+```
+
+其中关于浮窗的配置
+
+```kotlin
+//配置构造器
+val builder = FunctionWidgetConfig.Builder()
+/**
+* 当浮窗隐藏时，是否浮窗需要被销毁
+* @param p true，无需销毁 false 需要销毁
+*/
+builder.persistent(true)
+/**
+* 当浮窗显示时，是否禁用屏幕旋转
+* @param disable true，禁用屏幕旋转 false 不禁用屏幕旋转
+*/
+builder.changeOrientationDisableWhenShow(false)
+/**
+* 当 CommonVideoParams 切换时，是否浮窗需要被移除
+* @param remove ture 需要移除 false 无需移除
+*/
+builder.removeWhenVideoChange(false)
+/**
+* 当CommonVideoParams播放完时，是否浮窗需要隐藏
+* @param dismiss ture 需要隐藏 false 无需隐藏
+*/
+builder.dismissWhenVideoCompleted(true)
+/**
+* 当 CommonVideoParams 切换时，是否浮窗需要隐藏
+* @param dismiss ture 需要隐藏 false 无需隐藏
+*/
+builder.dismissWhenVideoChange(false)
+/**
+* 当 @see[ScreenType] 改变时，是否浮窗需要隐藏
+* @param dismiss ture 需要隐藏 false 无需隐藏
+*/
+builder.dismissWhenScreenTypeChange(false)
+/**
+* 当Activity stop时，是否浮窗需要隐藏
+* @param dismiss ture 需要隐藏 false 无需隐藏
+*/
+builder.dismissWhenActivityStop(false)
+/**
+* 启动类型 
+* Singleton：显示时其他浮层会隐藏 
+* Normal: 普通
+*/
+builder.launchType(FunctionWidgetConfig.LaunchType.Normal)
+/**
+* 构造完成
+*/
+builder.build()
+```
+
+## 显示一个浮窗
+完整代码请查阅com.qiniu.qplayer2.ui.page.longvideo.service.buffering.PlayerBufferingService
+```kotlin
+//浮窗的布局约束
+val layoutParams = FunctionWidgetLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+//对齐类型，总共有5个位置，上下左右中
+            layoutParams.layoutType = FunctionWidgetLayoutParams.LayoutAlignType.CENTER
+//展示的层级，总共有4个层级，从下至上分别为EMBEDDED_VIEW/NORMAL/POPUP_WINDOW/DIALOG
+
+            layoutParams.functionType = FunctionWidgetLayoutParams.FunctionType.EMBEDDED_VIEW
+            
+//显示时的动画资源，如果不配置则用默认的，如果配置了NO_ANIMATION那么就没有动画，
+            layoutParams.enterAnim = FunctionWidgetLayoutParams.NO_ANIMATION
+//隐藏时的动画资源，如果不配置则用默认的，如果配置了NO_ANIMATION那么就没有动画
+            layoutParams.exitAnim = FunctionWidgetLayoutParams.NO_ANIMATION
+//点击非此widget区域，是否隐藏该widget
+            layoutParams.touchOutsideDismiss(false)
+//展示widiget 并获得该widiget的token，通过token可以做一些其他操作
+            mBufferingToken = mPlayerCore.playerFunctionWidgetContainer?.showWidget(BufferingFunctionWidget::class.java, layoutParams)
+            
+```
+
+## 如何在外部操作widget
+可以针对某个widget实现一个继承自`Configuration`接口的类
+```
+/**
+* 浮窗配置
+* 如果某个浮窗需要配置，则继承该接口
+*/
+interface Configuration {
+	fun different(other: Configuration): Boolean
+}
+```
+然后通过
+`mPlayerCore.playerFunctionWidgetContainer?showWidget`方法将`Configuration`的派生类对象传递进去，如果Configuration的different方法返回true,那么就会触发onConfigurationChanged方法，在此方法中做对应的逻辑操作即可。

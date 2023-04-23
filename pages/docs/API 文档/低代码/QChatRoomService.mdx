@@ -1,0 +1,372 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>interface com.qlive.chatservice.QChatRoomService</p>
+                <p>聊天室服务</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#addServiceListener`)'>addServiceListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#removeServiceListener`)'>removeServiceListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#sendCustomC2CMsg`)'>sendCustomC2CMsg</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#sendCustomGroupMsg`)'>sendCustomGroupMsg</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#kickUser`)'>kickUser</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#muteUser`)'>muteUser</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getBannedMembers`)'>getBannedMembers</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#blockUser`)'>blockUser</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getBlockList`)'>getBlockList</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#addAdmin`)'>addAdmin</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#removeAdmin`)'>removeAdmin</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="addServiceListener">
+addServiceListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void addServiceListener(QChatRoomServiceListener chatServiceListener)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>添加聊天室监听</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            chatServiceListener: <a href='https://developer.qiniu.com/lowcode/api/12103/QChatRoomServiceListener'>QChatRoomServiceListener</a>
+        </div>
+                <p>监听</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="removeServiceListener">
+removeServiceListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void removeServiceListener(QChatRoomServiceListener chatServiceListener)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>移除聊天室监听</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            chatServiceListener: <a href='https://developer.qiniu.com/lowcode/api/12103/QChatRoomServiceListener'>QChatRoomServiceListener</a>
+        </div>
+                <p>监听</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="sendCustomC2CMsg">
+sendCustomC2CMsg</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void sendCustomC2CMsg(boolean isCMD,String msg,String memberID,QLiveCallBack callBack)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>发c2c消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            isCMD: boolean
+        </div>
+                <p>是不是信令消息</p>
+    </li>
+    <li>
+        <div>
+            msg: String
+        </div>
+                <p>消息内容</p>
+    </li>
+    <li>
+        <div>
+            memberID: String
+        </div>
+                <p>成员im ID</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="sendCustomGroupMsg">
+sendCustomGroupMsg</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void sendCustomGroupMsg(boolean isCMD,String msg,QLiveCallBack callBack)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>发群消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            isCMD: boolean
+        </div>
+                <p>是不是信令消息</p>
+    </li>
+    <li>
+        <div>
+            msg: String
+        </div>
+                <p>消息内容</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="kickUser">
+kickUser</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void kickUser(String msg,String memberID,QLiveCallBack callBack)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>踢人</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msg: String
+        </div>
+                <p>消息内容</p>
+    </li>
+    <li>
+        <div>
+            memberID: String
+        </div>
+                <p>成员im ID</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="muteUser">
+muteUser</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void muteUser(boolean isMute,String msg,String memberID,long duration,QLiveCallBack callBack)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>禁言</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            isMute: boolean
+        </div>
+                <p>是否禁言</p>
+    </li>
+    <li>
+        <div>
+            msg: String
+        </div>
+                <p>消息内容</p>
+    </li>
+    <li>
+        <div>
+            memberID: String
+        </div>
+                <p>成员im ID</p>
+    </li>
+    <li>
+        <div>
+            duration: long
+        </div>
+                <p>禁言时常</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getBannedMembers">
+getBannedMembers</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void getBannedMembers()</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>禁言列表</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="blockUser">
+blockUser</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void blockUser(boolean isBlock,String memberID,QLiveCallBack callBack)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>拉黑</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            isBlock: boolean
+        </div>
+                <p>是否拉黑</p>
+    </li>
+    <li>
+        <div>
+            memberID: String
+        </div>
+                <p>成员im ID</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getBlockList">
+getBlockList</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void getBlockList(boolean forceRefresh,QLiveCallBack callBack)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>黑名单列表</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            forceRefresh: boolean
+        </div>
+                <p>是否强制拉服务端数据否则缓存</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="addAdmin">
+addAdmin</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void addAdmin(String memberID,QLiveCallBack callBack)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>添加管理员</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            memberID: String
+        </div>
+                <p>成员im ID</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="removeAdmin">
+removeAdmin</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void removeAdmin(String msg,String memberID,QLiveCallBack callBack)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>移除管理员</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msg: String
+        </div>
+                <p></p>
+    </li>
+    <li>
+        <div>
+            memberID: String
+        </div>
+                <p>成员im ID</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+

@@ -1,0 +1,28 @@
+# 1 首先要有 linux 系统或者 mac 系统
+
+# 2 下载日志到本地
+
+# 3 统计最热资源的访问次数排名前 20
+
+    $ zcat qwe.gz | awk '{a[$7]+=1} END{for (i in a) print a[i] " ==> " i}' | sort -rn | head -20
+
+# 4 统计访问 ip 的前 20
+
+    $ cat part01.txt | awk '{a[$1]+=1} END{for (i in a) print a[i] " ==> " i}' | sort -rn | head -20
+
+# 5 查看某个文件的 ip 访问次数统计（例如文件名字叫 windows）
+
+    $ cat part01 |grep Windows| awk '{a[$1]+=1} END{for (i in a) print a[i] " ==> " i}' | sort -rn | head -20
+
+# 6 cdn 下载统计访问错误码分布
+
+    $ cat install.banban.im.cn.log |awk '{if ($10!=20000) {a[$10]++;s=NR}} END {for (i in a) {print a[i],i,a[i]/s*100 "%"}}'|sort -rn
+
+# 7 IO 下载统计访问错误码分布
+
+    $ cat 14.215.165.50.log |awk -F '\t' '{if ($8!~/20000/) {a[$8]++}} END {for (i in a) {print a[i],i,a[i]/NR*100 "%"}}'|sort -rn
+
+# 结果演示
+
+![这里写图片描述](http://img.blog.csdn.net/20150312162841827)
+

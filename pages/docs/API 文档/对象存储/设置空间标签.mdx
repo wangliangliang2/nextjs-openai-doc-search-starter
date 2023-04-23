@@ -1,0 +1,119 @@
+<a id="putbucketTagging-description"></a>
+# **描述** 
+
+本接口用于设置空间标签，包括新增和修改。
+
+<br>
+
+<a id="putbucketTagging-requests"></a>
+# **请求**
+<a id="putbucketTagging-requests-syntax"></a>
+### **请求语法**
+
+```
+PUT /bucketTagging?bucket=<BucketName> HTTP/1.1
+Host: uc.qiniuapi.com
+Content-Type: application/json
+X-Qiniu-Date: 20060102T150405Z
+Authorization: Qiniu <AccessToken>
+
+{
+    "Tags":[  
+            {"Key":xx, "Value": xx},
+            {"Key":xx, "Value": xx},
+            ...
+        ]
+}
+```
+使用说明：
+* 标签（tag）是 Key-Value的结构，同一个Bucket下，Key必须是唯一的, 且一个Key只能有1个Value，Key设置重复时服务端会返回400: tag contain duplicate key。
+
+* 每个Bucket最多可以设置10对标签，超出限制时服务端会返回400: tag num exceed limit。
+
+* API是覆盖语义，调用时会替换整个Bucket的标签，比如：原来Bucket有10对标签, 想更新其中1对，request.body应该包含9对old tag + 1对 new tag。
+
+
+
+<br>
+
+<a id="putbucketTagging-request-parameters"></a>
+### **请求参数**
+
+| 参数名称 | 必填 | 说明 |
+| --- | --- | --- |
+| BucketName | 是 | 空间名称|
+| Key | 是 |  标签名称，最大64Byte，不能为空且大小写敏感，不能以kodo为前缀(预留), 不支持中文字符，可使用的字符有：字母，数字，空格，+ - = . _ : / @ |
+| Value | 是 |  标签值，最大128Byte，不能为空且大小写敏感，不支持中文字符，可使用的字符有：字母，数字，空格，+ - = . _ : / @ |
+
+<br>
+
+<a id="putbucketTagging-request-headers"></a>
+### **请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](/kodo/api/3924/common-request-headers)。
+
+<br>
+
+<a id="putbucketTagging-request-elements"></a>
+### **请求内容**
+该请求操作的请求体为空。
+
+<br>
+
+<a id="putbucketTagging-responses"></a>
+# **响应**
+
+<a id="putbucketTagging-request-headers"></a>
+### **响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](/kodo/api/3924/common-response-headers)。
+
+<br>
+
+<a id="putbucketTagging-response-elements"></a>
+### **响应内容**
+该请求操作的响应体为空。
+
+<br>
+
+<a id="putbucketTagging-special-errors"></a>
+### **响应状态码**
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误响应](/kodo/api/3928/error-responses)。
+
+<br>
+
+<a id="putbucketTagging-examples"></a>
+# **示例**
+<a id="putbucketTagging-request-examples"></a>
+### **请求示例**
+```
+PUT /bucketTagging?bucket=temp-bucket-jnacytgvzwpgiotaprp1z0 HTTP/1.1
+Host: uc.qiniuapi.com
+User-Agent: Go-http-client/1.1
+Content-Length: 0
+X-Qiniu-Date: 20060102T150405Z
+Authorization: Qiniu HwFOxpYCQU6oXoZXFOTh1mq5ZZig6Yyocgk3BTZZ:yfdfCaZNBlgi2HACEXRSgycc8IY=
+Content-Type: application/json 
+
+{
+	"Tags": [
+		{
+			"Key": "KODO-BUKCET-TAGS-key-qyxvhJ0b3l",
+			"Value": "KODO-BUKCET-TAGS-value-tUwjRvCVzz"
+		}
+	]
+}
+```
+
+<br>
+
+<a id="putbucketTagging-response-examples"></a>
+### **响应示例**
+```
+HTTP/1.1 200 OK
+Content-Length: 2
+Connection: keep-alive
+Content-Type: application/json
+Date: Mon, 02 Jan 2006 15:04:05 GMT
+X-Reqid: rWkAAFTxT13GrdYV
+
+{}
+```

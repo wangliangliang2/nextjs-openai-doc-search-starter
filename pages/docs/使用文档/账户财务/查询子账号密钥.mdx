@@ -1,0 +1,115 @@
+## 描述
+
+用户登录父账号后，通过本接口查询指定子账户的密钥信息。
+
+仅限于父账号使用。
+
+### 请求语法
+
+使用 `uid` 查询：
+
+    GET /user/child_key?uid=<Uid> HTTP/1.1
+    Host: acc.qbox.me
+    Content-Type: application/x-www-form-urlencoded
+    Authorization: Bearer <AccessToken>
+
+或者使用 `email` 查询：
+
+    GET /user/child_key?email=<Email> HTTP/1.1
+    Host: acc.qbox.me
+    Content-Type: application/x-www-form-urlencoded
+    Authorization: Bearer <AccessToken>
+
+注意：二者任选一个即可。
+
+### 访问权限
+
+[账号管理凭证](http://developer.qiniu.com/docs/v6/api/reference/acc/access-token.html#oauth-token-description)。
+
+### 头部信息
+
+| 头部名称 | 必填 | 说明 |
+| --- | --- | --- |
+| Host | 是 | 固定为`acc.qbox.me`，必须以 **HTTPS 方式** 访问。 |
+| Content-Type | 是 | 固定为`application/x-www-form-urlencoded`。 |
+| Authorization | 是 | 账号管理凭证。<br>该参数应严格按照账号管理凭证格式进行填充，否则会返回 401 错误码<br>一个合法的 Authorization 值应类似于：`Bearer QNJi_bYJlmO5LeY08FfoNj9w_r7...` |
+
+## 响应
+
+### 响应语法
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Cache-Control: no-store
+    
+    <ChildKeyResponseContent>
+
+### 头部信息
+
+| 头部名称 | 必填 | 说明 |
+| --- | --- | --- |
+| Content-Type | 是 | 正常情况下该值将被设为`application/json`，表示返回 JSON 格式的文本信息。 |
+| Cache-Control | 是 | 正常情况下该值将被设为`no-store`，表示不缓存。 |
+
+### 响应内容
+
+■ 如果请求成功，返回包含如下内容的 JSON 字符串（已格式化，便于阅读）：
+
+    {
+        "key": "<AccessKey string>",
+        "secret": "<SecretKey string>",
+        "state": <State int64>,
+    
+        "key2": "<AccessKey2 string>",
+        "secret2": "<SecretKey2 string>",
+        "state2": <State2 int64>
+    }
+
+| 字段名称 | 必填 | 说明 |
+| --- | --- | --- |
+| key | 是 | 第 1 对有效密钥的 AccessKey。 |
+| secret | 是 | 第 1 对有效密钥的 SecretKey。 |
+| state |  | 第 1 对有效密钥的状态，0 表示启用状态，1 表示禁用状态，未填表示处于启用状态。 |
+| key2 |    | 第 2 对有效密钥的 AccessKey。 |
+| secret2 |    | 第 2 对有效密钥的 SecretKey。 |
+| state2 |    | 第 2 对有效密钥的状态，取值同 `state` 字段。 |
+
+■ 如果请求失败，返回包含如下内容的 JSON 字符串（已格式化，便于阅读）：
+
+    {
+        "error": "<ErrTitle string>",
+        "error_code": <ErrCode int>,
+        "error_description": "<ErrMsg string>"
+    }
+
+| HTTP 状态码 | error\_code | error | error\_description |
+| --- | --- | --- | --- |
+| 405 | 1 | invalid\_request\_method | 请求方式错误，非预期的 POST 请求。 |
+| 400 | 2 | invalid\_client | client\_id, client\_secret 参数无效。 |
+| 400 | 3 | invalid\_token | 错误的、非预期的 AccessToken 或 RefreshToken。 |
+| 400 | 4 | invalid\_email | E-Mail 地址格式不正确。 |
+| 400 | 5 | invalid\_grant\_type | grant\_type 参数值错误或不在服务端所支持的列表中。 |
+| 400 | 6 | invalid\_without\_params | 缺少相应的必要参数。 |
+| 400 | 7 | invalid\_empty\_params | 参数的值不能为空。 |
+| 400 | 8 | invalid\_bad\_request | 错误的请求。 |
+| 401 | 9 | expired\_token | 提供的 AccessToken 或 RefreshToken 已过期 (视具体情况而定)。 |
+| 409 | 10 | record\_exists | 记录已经存在。 |
+| 401 | 11 | failed\_authentication | 验证失败, 比如用户名或密码错误。 |
+| 417 | 12 | failed\_request | 请求失败。 |
+| 403 | 13 | unauthorized\_client | 应用未授权。 |
+| 400 | 14 | record\_not\_found | 记录不存在，比如 email 未注册等等。 |
+| 401 | 15 | permission\_denied | 缺少操作权限，跟用户类型有关。 |
+| 403 | 11321 | cant\_get\_child\_key | 无法获取子账号密钥信息。 |
+| 400 | 10905 | user\_not\_exist | 查询目标子账号不存在。 |
+| 400 | 11314 | not\_your\_child | 非本账号下的子账号。 |
+
+### 响应状态码
+
+| HTTP 状态码 | 含义 |
+| --- | --- |
+| 200 | 授权成功。 |
+| 4xx | 参考上方消息列表。 |
+| 599 | 服务端操作失败。  
+如遇此错误，请将完整错误信息（包括所有 HTTP 响应头部）[通过邮件发送](mailto:support@qiniu.com?subject=599%E9%94%99%E8%AF%AF%E6%97%A5%E5%BF%97)给我们。 
+
+

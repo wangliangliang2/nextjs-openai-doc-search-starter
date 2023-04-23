@@ -1,0 +1,20 @@
+主成分分析（PCA）通过计算协方差矩阵分解特征向量，通过线性投影，将高位的数据映射到地位的空间中表示，并期望在投影的维度上数据的方差最大，以此实现尽可能用少的特征数据解释最多的信息。
+
+**语法：**
+
+```
+..| fit PCA n_components=<int | float | mle | none(default) | > svd_solver=<auto(default) | full | arpack | randomized> <feature_field_1> <feature_field_2> [into model_name]...  
+```
+
+**参数说明：**
+- n_components参数，用来指定保留多少个特征，即要降维到的维度数。如不提供，n_components默认为None。
+	+ n_components=int，即直接指定降维到的维度数目。
+	+ n_components=float, 即使用输入的值作为主成分的方差和所占的最小比例阈值，让PCA类自己去根据样本特征方差来决定降维到的维度数。
+	+ n_components=mle, 即PCA使用MLE算法自行决定将维到的维度数。
+	+ n_components=None（默认值）, 使用min(样本数，特征数)作为维度数目。
+
+- svd_solver参数，用来指定奇异值分解SVD的方法，由于特征分解是奇异值分解SVD的一个特例，一般的PCA库都是基于SVD实现的。
+	+ svd_solver=auto（默认值），PCA方法自行从以下三种选项选择一种最合适的方法。
+	+ svd_solver=full, 使用传统意义上的SVD LAPACK分解。
+	+ svd_solver=arpack，使用加快的SVD ARPACK分解没适用于数据维度多同时主成分数目比例又较低的PCA降维。在这种场景下，n_components必须要小于样本量和特征量中偏小的一个。
+	+ svd_solver=randomized，使用Halko等人提出的分解方法。

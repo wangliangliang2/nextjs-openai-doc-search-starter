@@ -1,0 +1,31 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `PATCH` /api/rio/v1/compute/image/:id
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id  | string | header| 是 | 地域 ID
+id            | string | path | 是 | 镜像 ID
+image_name    | string | body | 否 | 名称
+version       | string | body | 否 | 版本
+description   | string | body | 否 | 描述
+client_token  | string | body | 否 | 保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+
+## 请求值示例
+```json
+{
+    "image_name":"modify_image_name"
+}
+```
+
+## 返回值示例
+```json
+```

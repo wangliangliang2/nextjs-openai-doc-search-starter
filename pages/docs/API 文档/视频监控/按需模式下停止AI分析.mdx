@@ -1,0 +1,35 @@
+# **描述**
+本接口用于对指定流停止AI分析。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}/ai/stop`
+* 本接口需要空间绑定运行模式为`按需`类型的AI模板，或者流本身绑定运行模式为`按需`的AI模板。当用户想停止AI分析，可使用本接口。当用户想开启AI分析，可以使用[按需模式下开启AI](https://developer.qiniu.com/qvs/12355/start-ai-on-demand)组合使用。
+
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|流Id
+
+# **响应参数**
+200
+
+# **示例**
+
+**请求示例**
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarvzvyijd/streams/31011500991320000028/ai/stop \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' 
+```
+
+**响应示例**
+```
+{
+  "code": 200
+}
+```

@@ -1,0 +1,39 @@
+# **简介**
+动图合成接口（animate）用于将多张图片合成 GIF 动图。
+
+## **使用限制**
+- 目前仅适用于存储在七牛的图片
+- 原图限制：
+  - 支持的格式有 jpeg 和 png
+  - 支持的最大帧数为 20
+  - 支持的最大图片尺寸为 1080*1080
+
+
+
+
+# **接口规格**
+
+```
+animate/duration/<duration>
+       /merge/key/<encodedImageKey>
+             /key/<encodedImageKey>
+             ...
+       /effect/<effectType>
+```
+## 参数说明
+| 名称                | 必填 | 说明                                                         |
+| ------------------- | :--: | ------------------------------------------------------------ |
+| `<duration>`        |  Y   | GIF动图的每帧间隔时间(单位: 0.01s)，取值要求为大于0的整数。  |
+| `<encodedImageKey>` |  N   | 合成GIF动图的源图片key(经过Base64编码)，保证所有的源图都来源于同一个bucket。 |
+| `<effectType>`      |  N   | 定义播放顺序，取值：0，1。（0:正序循环播放；1:倒序循环播放；）默认为0。 |
+
+# **操作方式**
+
+您可以通过 [同步处理](/dora/api/8266/synchronous-processing)、[持久化处理](/dora/api/1291/persistent-data-processing-pfop)、[图片样式设置](/dora/api/8264/the-picture-style) 等方式，暂不支持`CDN中间源处理`，对图片进行处理，详情介绍请参见[图片处理操作方式](/dora/api/8234/the-image-processing1)。
+
+
+
+# **服务价格**
+
+计费方式：按调用次数计费。
+价格：0.2元/千次。

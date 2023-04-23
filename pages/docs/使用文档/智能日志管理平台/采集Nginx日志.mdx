@@ -1,0 +1,93 @@
+我们用 Pandora 智能日志管理平台的日志收集工具 logkit-pro 开始本次教程。
+
+步骤：
+
+1.安装 logkit-pro。
+
+2.用 logkit-pro 采集 Nginx 日志。
+
+3.去日志分析平台搜索日志验证采集是否成功。
+
+# **步骤 1:安装 logkit-pro 到机器**
+
+首先需要在机器上安装 logkit-pro。
+
+1.登录 [logkit-pro](http://logkit-pro.qiniu.com/)，进入机器管理页面，点击添加机器。
+
+![](https://pandora-kibana.qiniu.com/k8s/add_machine.png)
+
+2.手动安装：根据您机器的操作系统版本选择对应的命令，复制到命令行工具即可，如图所示：
+
+![](https://pandora-kibana.qiniu.com/k8s/addbyhand.png)
+
+![](https://pandora-kibana.qiniu.com/logkit/running.png)
+
+详细的安装文档可以阅读 [logkit-pro 安装](/insight/manual/4682/download-and-install) 。
+
+3. 安装完毕后，您可以在机器列表页面看到您安装的机器:
+
+![](https://dn-odum9helk.qbox.me/FpmPwc2L2arnlHd9OpBEXkJs0rbx)
+
+# **步骤 2:收集数据**
+
+在机器上安装好 logkit-pro 之后就可以开始收集数据。在这里我们引入一个`收集器`的概念，`收集器`是 logkit-pro 进行数据收集的封装容器，通过`添加收集器`完成数据的收集。
+
+进入数据收集页面，点击 **添加收集器** -> **日志收集**。
+
+![](https://pandora-kibana.qiniu.com/k8s/collect.png)
+
+## **添加数据源**
+
+第一步是添加数据源，logkit-pro 支持多种数据源，这里选择从文件读取，填写您的 Nginx 日志所在路径即可。
+
+填写好配置信息之后，点击【获取数据】，验证获取数据是否成功。
+
+![](https://pandora-kibana.qiniu.com/logkitPro/nginx.png)
+
+## **数据解析**
+
+这一步根据日志格式配置合适解析方式，抽取日志中的字段。logkit-pro 支持多种格式的日志解析，这里我们选择按 grok 格式解析。logkit-pro 提供了一些默认表达式的支持，其中``` %{COMMON_LOG_FORMAT}``` 就可以解析 Nginx 日志。然后点击解析样例数据，查看解析是否成功。
+
+![](https://pandora-kibana.qiniu.com/logkitPro/nginx_parser.png)
+
+## **数据转换**
+
+这一步可以做一些更精细的字段解析。在这里，我们将 nginx 日志里的时间字段转换为 date 类型，方便在日志分析平台使用自带时间字段筛选日志内容。同时添加 IP 转换功能将 IP 地址转换为 IP 对应的省份、城市、运营商等信息。
+
+date 转换器：选择需要进行转换的时间字段，点击解析即可一键查看解析结果，点击添加将转换器应用到样例数据。
+
+![](https://pandora-kibana.qiniu.com/nginx/date_transformer.png)
+
+ip 转换：选择需要进行转换的 ip 字段，从本地上传 ip 数据库即可，填好配置信息点击添加。
+
+![](https://pandora-kibana.qiniu.com/nginx/ip_transformer.png)
+
+转换后的数据：
+
+![](https://pandora-kibana.qiniu.com/after_transform.png)
+
+## **发送数据**
+
+将数据发送至日志分析平台，填写工作流（pipeline）名称和智能日志平台的实时仓库名称即可。日志仓库名称无需填写，开启`自动创建并导出到日志分析`，系统将会自动创建与实时仓库同名的日志仓库。
+
+![](https://pandora-kibana.qiniu.com/nginx_collect/nginx_send.png)
+
+## **确认收集**
+
+填写收集器名称确认添加数据收集器。
+
+![](https://pandora-kibana.qiniu.com/logkitPro/nginx_confirm.png)
+
+## **分发收集器到机器**
+
+确认添加收集器之后系统会提示您是否需要分发到当前机器，选择确认分发。
+
+![](https://pandora-kibana.qiniu.com/k8s/k8s_distribute.png)
+
+# **步骤3:到日志分析平台搜索数据**
+
+打开[日志分析平台](https://portal.qiniu.com/insight/logdb/overview)，进入实时日志输出页面，选择在 logkit-pro 发送数据时填写的实时仓库，查看采集的数据。
+
+![](https://pandora-kibana.qiniu.com/quickstart_nginx_collect/nginx_search.png)
+
+可以看到，日志已经被采集到日志分析平台啦，并且完成了解析。

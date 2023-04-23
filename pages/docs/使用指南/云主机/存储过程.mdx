@@ -1,0 +1,274 @@
+* [实例内复制数据库](#section-os1-3g3-v2b)
+* [设置数据库在线](#section-xzd-nr3-v2b)
+* [数据库全局授权](#section-zxg-gs3-v2b)
+* [删除数据库](#section-ycd-4s3-v2b)
+* [设置更改跟踪](#section-mtt-bt3-v2b)
+* [开启数据库变更捕获](#section-vkq-rt3-v2b)
+* [关闭数据库变更捕获](#section-pf3-453-v2b)
+* [配置实例参数](#section-exf-v53-v2b)
+* [增加链接服务器](#section-ckn-jv3-v2b)
+* [设置跟踪标志](#section-xxq-5v3-v2b)
+* [重命名数据库](#section-llf-fw3-v2b)
+
+本文适用于RDS for SQL Server 2012/2016/2017。
+
+## 实例内复制数据库
+
+**T-SQL命令**
+
+sp_rds_copy_database
+
+**支持的实例**
+
+* 高可用版
+* 基础版
+
+**描述**
+
+在实例内复制一个数据库。
+****说明** 实例剩余空间不得小于当前数据库大小的1.3倍。
+**使用方法**
+
+    EXEC sp_rds_copy_database 'db','db_copy'
+
+* 第一个参数是被拷贝的数据库。
+* 第二个参数是拷贝的目标数据库。
+
+## 设置数据库在线
+
+**T-SQL命令**
+
+sp_rds_set_db_online
+
+**支持的实例**
+
+* 高可用版
+* 基础版
+
+**描述**
+
+您将数据库设置为OFFLINE后，不能直接通过ALTER DATABASE设置为ONLINE，请使用本存储过程设置为ONLINE。
+
+**使用方法**
+
+    EXEC sp_rds_set_db_online 'db'
+
+参数是指定要被设置ONLINE的数据库。
+
+## 数据库全局授权
+
+**T-SQL命令**
+
+sp_rds_set_all_db_privileges
+
+**支持的实例**
+
+* 高可用版
+* 基础版
+
+**描述**
+为一个用户授予所有或多个用户数据库的权限。 
+****说明** 授权时，当前用户对被授权数据库的权限必须大于或等于被授予的权限。
+**使用方法**
+
+    sp_rds_set_all_db_privileges 'user','db_owner','db1,db2...'
+
+* 第一个参数是被授权的用户。
+* 第二个参数是授予该用户的数据库角色。
+* 第三个参数是数据库，可以指定一个或者多个，用逗号分隔，也可以不指定该参数（不指定表示全部用户数据库）。
+
+## 删除数据库
+
+**T-SQL命令**
+
+sp_rds_drop_database
+
+**支持的实例**
+高可用版 
+****说明** 基础版暂时不支持本存储过程，请使用 `DROP DATABASE db`。
+**描述**
+
+删除实例中的数据库。删除时会将关联的对象移除掉，高可用版会自动将镜像移除，并且KILL在该数据库上的连接。
+
+**使用方法**
+
+    EXEC sp_rds_drop_database 'db'
+
+参数是要被删除的数据库。
+
+## 设置更改跟踪
+
+**T-SQL命令**
+
+sp_rds_change_tracking
+
+**支持的实例**
+
+高可用版
+
+**描述**
+
+设置数据库的更改跟踪标记。
+
+**使用方法**
+
+    EXEC sp_rds_change_tracking 'db',1
+
+* 第一个参数是数据库名称
+* 第二个参数表示是否启用。 
+    * 1：启用。
+    * 0：禁用。
+
+## 开启数据库变更捕获
+
+**T-SQL命令**
+
+sp_rds_cdc_enable_db
+
+**支持的实例**
+高可用版 
+****说明** 与AlwaysOn共存时，需要移除可用性组，不建议使用。
+**描述**
+
+启用数据库的数据变更捕获。
+
+**使用方法**
+
+    USE db
+    GO
+    sp_rds_cdc_disable_db
+
+## 关闭数据库变更捕获
+
+**T-SQL命令**
+
+sp_rds_cdc_disable_db
+
+**支持的实例**
+高可用版 
+****说明** 与AlwaysOn共存时，需要移除可用性组，不建议使用。
+**描述**
+
+关闭数据库的数据变更捕获。
+
+**使用方法**
+
+    USE db
+    GO
+    sp_rds_cdc_disable_db
+
+## 配置实例参数
+
+**T-SQL命令**
+
+sp_rds_configure
+
+**支持的实例**
+
+* 高可用版
+* 基础版
+
+**描述**
+
+设置实例参数。若有主备实例，会自动同步。
+目前支持的参数： 
+* fill factor (%)
+* max worker threads
+* cost threshold for parallelism
+* max degree of parallelism
+* min server memory (MB)
+* max server memory (MB)
+* blocked process threshold (s)
+
+**使用方法**
+
+    EXEC sp_rds_configure 'max degree of parallelism',4
+
+* 第一个参数是要设置的实例配置参数项。
+* 第二个参数是该实例参数的值。
+
+## 增加链接服务器
+
+**T-SQL命令**
+
+sp_rds_add_linked_server
+
+**支持的实例**
+
+* SQL Server 2012/2016标准版高可用系列
+* SQL Server 2012/2016企业版高可用系列
+
+**描述**
+
+增加实例的链接服务器。支持分布式事务，实例主备自动创建，切换不需要再配置。
+
+**使用方法**
+
+    DECLARE
+    @linked_server_name sysname = N'yangzhao_slb',
+    @data_source sysname = N'****.sqlserver.rds.aliyuncs.com,3888', --style: 10.1.10.1,1433
+    @user_name sysname = N'ay15' ,
+    @password nvarchar(128) = N'******',
+    @source_user_name sysname = N'test',
+    @source_password nvarchar(128) = N'******',
+    @link_server_options xml
+    = N'
+                <rds_linked_server>
+                    <config option="data access">true</config>
+                    <config option="rpc">true</config>
+                    <config option="rpc out">true</config>
+                </rds_linked_server>
+    '
+    
+    EXEC sp_rds_add_linked_server
+    @linked_server_name,
+    @data_source,
+    @user_name,
+    @password,
+    @source_user_name,
+    @source_password,
+    @link_server_options
+
+## 设置跟踪标志
+
+**T-SQL命令**
+
+sp_rds_dbcc_trace
+
+**支持的实例**
+
+* 高可用版
+* 基础版
+
+**描述**
+
+设置实例的跟踪标记。目前只支持部分跟踪标记，若有主备实例，会自动同步。
+
+**使用方法**
+
+    EXEC sp_rds_dbcc_trace '1222',1/0
+
+* 第一个参数是跟踪标记。
+* 第二个参数表示打开或关闭。 
+    * 1：打开。
+    * 0：关闭。
+
+## 重命名数据库
+
+**T-SQL命令**
+
+sp_rds_rename_database
+
+**支持的实例**
+
+基础版
+
+**描述**
+重命名数据库。 
+****说明** 重命名时，并不对物理文件做重命名。
+**使用方法**
+
+    EXEC sp_rds_rename_database 'db','new_db'
+
+* 第一个参数是要被重命名的数据库。
+* 第二个参数是重命名后的数据库。

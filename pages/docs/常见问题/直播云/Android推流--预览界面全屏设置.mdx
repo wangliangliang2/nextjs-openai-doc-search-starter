@@ -1,0 +1,8 @@
+要实现推流端预览界面全屏显示，可以参考修改我们github上面的demo的如下代码：
+```
+AspectFrameLayout afl = (AspectFrameLayout) findViewById(R.id.cameraPreview_afl);
+        afl.setShowMode(AspectFrameLayout.SHOW_MODE.FULL); // REAL modify to FULL
+        CameraPreviewFrameView cameraPreviewFrameView =
+                (CameraPreviewFrameView) findViewById(R.id.cameraPreview_surfaceView);
+        cameraPreviewFrameView.setListener(this);
+```

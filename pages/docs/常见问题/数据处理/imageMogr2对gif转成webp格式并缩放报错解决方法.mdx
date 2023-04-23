@@ -1,0 +1,27 @@
+#### 报错：error: "The original image abnormal"
+> imageMogr2将gif转为web并且缩放时，使用imageMogr2/format/webp|imageMogr2/thumbnail/100x报错
+
+**报错链接** ：[https://dn-odum9helk.qbox.me/test.gif?imageMogr2/format/webp|imageMogr2/thumbnail/100x](https://dn-odum9helk.qbox.me/test.gif?imageMogr2/format/webp%7CimageMogr2/thumbnail/100x)
+
+![blob.png](https://dn-odum9helk.qbox.me/Fl5eNfaKeFhQ2Wvh6jnRWfeAE-Sn)
+
+**报错原因** ：imageMogr2参考工具[imageMagick](http://www.imagemagick.com.cn/ "imagemagick")，由于 imageMagick 对 animated webp 进行缩放处理不支持，导致在imageMogr2将.gif转成.webp格式的文件时缩放报错
+
+**解决方法** ：2种。
+
+1）使用管道符，使用imageMogr2缩放.gif图片后再转成.webp格式文件
+
+如：[https://dn-odum9helk.qbox.me/test.gif?imageMogr2/thumbnail/100x|imageMogr2/format/webp](https://dn-odum9helk.qbox.me/test.gif?imageMogr2/thumbnail/100x%7CimageMogr2/format/webp)
+
+![blob.png](https://dn-odum9helk.qbox.me/FspfjQHf8LQW0XPCyHD77KEB_7UA)
+
+2）不使用管道符，在缩放.gif图片时直接指定目标格式为.webp，
+
+如：[https://dn-odum9helk.qbox.me/test.gif?imageMogr2/thumbnail/100x/format/webp](https://dn-odum9helk.qbox.me/test.gif?imageMogr2/thumbnail/100x/format/webp)
+
+![blob.png](https://dn-odum9helk.qbox.me/FnTR-neYs6nvRC6qbwIfU_uq7on0)
+
+**参考** ：
+
+[高级图片处理imageMogr2](https://developer.qiniu.com/dora/api/1270/the-advanced-treatment-of-images-imagemogr2)
+

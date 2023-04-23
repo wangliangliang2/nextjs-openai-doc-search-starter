@@ -1,0 +1,53 @@
+# 接口描述
+
+修改目标直播空间绑定的存储空间，以及直播存储保存时间，绑定的存储空间需要预先在七牛云存储中创建
+
+# 请求参数
+
+```
+POST /v2/hubs/<hub>/persistence
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+
+{
+    "storageBucket":"<storageBucket>",
+    "liveDataExpireDays":<liveDataExpireDays>
+}
+```
+
+|      参数         |      类型          |  必填   |                  描述                      |
+| -------------------- | -------------------- | ----------- | ------------------------------------------ |
+|       Hub           |    string           | 是    |       直播空间名                                |
+|StorageBucket        |    string           | 是    |       存储空间，与直播空间绑定的存储空间需要满足以下两个条件<br>- 存储区域为华北<br>- 存储空间的访问控制设置为公开         |
+|LiveDataExpireDays    |      uint           | 是    |      存储过期时间，单位：天，取值范围为60 ~ 1095 <br>根据国家相关规定，电商直播客户的直播存储时长需要为1095天        |
+
+# 返回数据
+
+空
+
+# 示例
+
+请求体:
+
+```
+POST /v2/hubs/testhub/persistence HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+
+{
+    "storageBucket":"test1z0",
+    "liveDataExpireDays":60
+}
+```
+
+返回体:
+
+```
+200 OK
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

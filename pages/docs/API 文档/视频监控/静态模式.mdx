@@ -1,0 +1,84 @@
+# **描述**
+本接口用于获得使用配置域名的方式接入到七牛视频监控的推拉流地址。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}/domain`
+* 当空间类型为GBT28181时，设备类型为`摄像头`时，流ID就是设备国标ID；设备类型为`平台`时，流ID就是`设备国标ID_通道ID`的形式
+* 对于本地录像回放，如果希望播放任意时间段内的录像，需要手动构造流ID。当设备类型为`摄像头`时，流ID格式为`设备国标ID_history_开始时间戳_结束时间戳`；当设备类型为`平台`时，流ID格式为`设备国标ID_通道ID_history_开始时间戳_结束时间戳`；假设目前有一个NVR国标ID为`31011500991320020874`，通道ID为`34020000001310000001`，希望观看`2022-12-12 00:00:00`到`2022-12-12 23:59:59`时间段内的录像，则流ID为:`31011500991320020874_34020000001310000001_history_1671638400_1671724799`，通过请求此接口可以获取到回放的流地址。注意这里的时间戳指的是`unix时间戳`，单位秒。
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|[`流id规则详情参考`](https://developer.qiniu.com/qvs/11878/use-the-stream-interface-is-required)
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|domain|是|string|域名
+|domainType|是|string|域名类型，取值："publishRtmp":rtmp推流, "liveRtmp": rtmp播放, "liveHls": hls播放, "liveHdl": flv播放, "liveWebrtc": webrtc播放
+|~~urlExpireSec~~|否|integer|流地址过期时间(单位为秒)
+注：
+1. `urlExpireSec`已废弃，可在对应域名配置中，配置防盗链时长
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|publishUrl|string|rtmp推流地址
+|playUrls.rtmp|string|rtmp播放地址
+|playUrls.flv|string|flv播放地址
+|playUrls.hls|string|hls播放地址
+|playUrls.webrtc|string|webrtc播放地址
+|publishUrlExpired|integer|流地址过期时间点(unix时间戳，单位second)
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/d102sni9zryu/streams/device005/domain \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{
+	"domain": "qvs-live-hdl.qiniu.com",
+	"domainType": "liveHdl"
+}'
+```
+
+**响应示例**
+
+```
+{
+  "playUrls": {
+    "flv": "http://qvs-live-hdl.qiniu.com:2045/d102sni9zryu/device005.flv?e=1587956536&token=6301b0c1a5cfa6a67c2249c4f9eedfd2"
+  },
+  "publishUrlExpired": 1587956536
+}
+```
+
+**请求示例**
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/d102sni9zryu/streams/device005/domain \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{
+	"domain": "qvs-publish.qiniu.com",
+	"domainType": "publishRtmp"
+}'
+```
+
+**响应示例**
+
+```
+{
+  "publishUrl": "rtmp://qvs-publish.qiniu.com:2045/d102sni9zryu/device005",
+  "publishUrlExpired": 1587956536
+}
+```

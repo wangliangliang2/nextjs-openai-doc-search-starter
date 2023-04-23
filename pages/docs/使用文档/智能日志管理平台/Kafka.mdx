@@ -1,0 +1,17 @@
+* broker 的 host 地址(`kafka_host`): 必填项，kafka broker 的服务地址，多个可以用逗号连接。如："192.168.31.201:9092,192.168.31.202:9092"
+
+* 打点的 topic 名称(`kafka_topic`): 必填项，发送到的 kafka topic 名称。还可以用数据路由的方式，填写格式如：%{[kafka_topic_field]}, default_topic 此时会从发送的数据中寻找字段为"kafka_topic_field"的string类型数据，并将至作为topic发送，否则就使用填写的default_topic名称作为发送目的地。
+
+* 压缩模式(`kafka_compression`): 非必填项，kafka 发送的数据压缩方式，默认不压缩。(`LZ4压缩模式只支持kafka 0.10.0.0及以上版本`)
+
+* Gzip压缩策略(`gzip_compression_level`):此选项只在压缩模式为Gzip时可用，非必填项，当使用时Gzip压缩模式时的压缩策略，默认使用kafka的默认压缩比。
+
+**高级选项**
+
+* kafka 客户端标识 ID(`kafka_client_id`): 非必填项，kafka client 的 ID，默认使用 hostname。
+
+* kafka 最大错误重试次数(`kafka_retry_max`): 非必填项，kafka 发送的失败重试时间，默认重试 3 次。
+
+* kafka 连接超时时间(`kafka_timeout`): 非必填项，超时时间，默认 30s。
+
+* kafka 的 keepalive 时间(`kafka_keep_alive`): 非必填项，keep_alive 的时间，默认不开启。

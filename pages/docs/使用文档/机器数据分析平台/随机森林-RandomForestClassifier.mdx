@@ -1,0 +1,39 @@
+随机森林分类器通过随机抽取样本和特征，建立多棵相互不关联的决策树，通过并行的方式获得预测结果。每棵决策树都能通过抽取的样本和特征得出一个预测结果，通过综合所有”树“的结果，得到整个“森林”的分类预测结果。可适用于二分类或者多分类的场景。*在没有很明确的偏好算法的情况下，建议可以使用随机森林算法来得出初步的模型*。
+
+**语法：**
+
+```
+..| fit RandomForestClassifier n_estimators=<int> criterion=<gini(default) | entropy> max_features=<auto(default) | sqrt | log2 | None | int | float> max_depth=<int> min_samples_split=<int | float> min_samples_leaf=<int | float> max_leaf_nodes=<int> oob_score=<True | False(default)> random_state=<int> <target_field> from <feature_field_1> <feature_field_2>... 
+```
+
+**参数说明：**
+
+- n_estimators用来决定建模中使用的数的数量，必须为正整数。若不设定，默认为100。
+- criterion用来决定CART树做划分时对特征的评价标准。
+	+ criterion=gini（默认值），使用基尼系数。
+	+ criterion=entropy，使用信息增益。
+
+- max_features用来决定划分时考虑的最大特征数。
+	+ max_features=int，代表直接使用max_features为最大特征数量，必须在(0,n_features]之间。n_features即为建模时使用的特征字段的数量。
+	+ max_features=float，代表使用max_features\*n_features为最大特征数量。必须使max_features\*n_features向下取整的结果在(0,n_features]之间。
+	+ max_features=sqrt, 代表使用sqrt(n_features)，即n_features的平方根值为最大特征数量。
+	+ max_features=log2, 代表使用log2(n_features)。
+	+ max_features=auto（默认值），和max_features=sqrt一样。
+
+- max_depth用来决定数的最大深度。若不提供，即为不设限。在数据量大以及使用的特征数量也很大的情况，可以考虑将max_depth设为[0,100]之间。
+
+- min_samples_split用来决定分割一个内部节点所需要的最小样本数量。如果某节点的样本数少于min_samples_split，则不会再继续划分。在数据量非常大的情况，建议增大这个值。
+	+ min_samples_split=int，必须为正整数。代表直接使用min_samples_split作为最小样本数量。
+	+ min_samples_split=float，必须在(0, 1.0]范围之间。代表使用min_samples_split\*n_samples向上取整的结果作为最小样本数量。n_samples即为建模时使用的样本数据量。
+	+ min_samples_split默认为2。
+	
+- min_samples_leaf用来决定需要在叶子节点上的最小样本数量。如果某叶子节点数目小于样本数，则会和兄弟节点一起被剪枝。在数据量非常大的情况，建议增大这个值。
+	+ min_samples_leaf=int，必须为正整数。代表直接使用min_samples_leaf作为最小样本数量。
+	+ min_samples_leaf=float，必须在(0, 0.5]范围之间。代表使用min_samples_leaf\*n_samples向上取整的结果作为最小样本数量。n_samples即为建模时使用的样本数据量。
+	+ min_samples_leaf默认为1。
+
+- max_leaf_nodes用来决定最大叶子结点数量。若不提供，则不设限。通过限制最大叶子节点数，可以防止过拟合。在特征数量非常大的情况，建议增大这个值。
+
+- oob_score用来决定是否采用袋外样本来评估模型的好坏。设置为True时，袋外分数反应了一个模型拟合后的泛化能力。默认为False。
+
+- random_state为随机数种子，用来控制样本自助抽样的随机性和特征抽样的随机性。如果给定特定值，重新跑模型的时候，可以得出同样的结果。

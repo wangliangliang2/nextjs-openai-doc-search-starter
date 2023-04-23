@@ -1,0 +1,28 @@
+**请求语法**
+
+```
+GET /v2/repos/<RepoName>
+Authorization: Pandora <auth>
+```
+
+**响应报文** 
+
+```
+Content-Type: application/json
+{
+    "region": <Region>,
+    "derivedFrom": <TransformName>,
+    "schema": [
+      {
+        "key": <Key>,
+        "valtype": <ValueType>,
+        "elemtype": <ElemType>,
+        "required": <Required>,
+        "schema": [
+            ...
+        ]
+      },
+      ...
+    ]
+}
+```

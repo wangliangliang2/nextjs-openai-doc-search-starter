@@ -1,0 +1,117 @@
+本文为您介绍使用 .NET SDK 方式接入消息队列 RocketMQ 的准备工作，以便后续使用 .NET SDK 收发消息。
+**注意：**
+代码里涉及到的 Topic 和 Group ID，需要到控制台上创建。Message Tag 可以完全由应用自定义，具体创建过程可参考快速入门中的创建资源。
+使用消息队列 RocketMQ 服务的应用程序需要部署在七牛云 ECS 上
+
+# 下载 SDK
+
+## Windows .NET 版本:
+我们提供的.NET 版本是基于消息队列 RocketMQ 的 CPP 版本的托管封装，这样能保证 .NET 完全不依赖于 Windows .NET 公共库。内部采用 C++ 多线程并发处理，保证.NET 版本的高效稳定。
+在使用 VS 开发 .NET 的应用程序和类库时，默认的目标平台为 “Any CPU”，即运行时可根据 CPU 类型自动选择 X86 或 X64。 在运行时，CLR 才会将其 JIT 发射为 X86 或 X64 的机器码。 而 C 或 C++ 编译生成的 DLL 就是机器码。 所以，其平台的决策是在编译时决定的。 通过编译选项的设置，我们将 C/C++ 项目编译为 X64 的 64 位 dll，因此我们提供了包含 VS2015 和 .NET Framework 4.5.2 编译的 release64 位版本 DLL。其他 VS 版本也可以使用。
+[旧版 Windows .NET SDK 下载](http://docs-aliyun.cn-hangzhou.oss.aliyun-inc.com/assets/attach/29561/cn_zh/1480663102278/aliyun-mq-windows-net-sdk.zip)
+
+## 注意：
+- 基于托管封装的 SDK 存在诸多问题，并且无法稳定在 ASP.NET 上正常工作，因此在2016/12/29号开始推出新版本的 SDK。
+- 新版 SDK 基于 C# PINVOKE 调用底层的 dll，利用开源软件 SWIG 生成 PINVOKE 封装代码。新版 SDK 相比于托管版本的 SDK 更稳定，部署安装更简单。
+- 托管版本的 SDK 不再维护，只提供最后一次的稳定版本。
+
+## 新用户或者不考虑升级成本的老用户请下载新版 SDK。
+关于 .NET SDK 最新版本的下载链接，请查看版本说明。
+下载完成后进行解压，会有如下目录结构:
+- example/
+- lib/
+- demo/
+- interface/
+- SDK_GUIDE.pdf
+- changelog
+
+上面的目录和文件的作用如下:
+- example： 包含了普通消息发送、Oneway 消息发送、顺序消息发送、普通消息消费、顺序消息消费等例子。
+- lib：底层的 C++ DLL 相关文件，以及 Virtual C++ 2015 运行时环境安装包。
+```
+  64/
+      NSClient4CPP.lib
+      ONSClient4CPP.dll
+      ONSClient4CPP.pdb
+  vc_redist.x64.exe
+```
+- SDK_GUIDE.pdf：SDK 环境准备文档和 FAQ。
+- changelog：新版本发布解决的问题和引入的新特性列表。
+- interface: 封装 PINVOKE 调用的代码，需要包含到用户项目代码中。
+
+# .NET SDK 配置说明
+
+## Visual Studio 2015 使用 .NET SDK 配置说明
+1. 使用 Visual Studio 2015 创建自己的项目。
+![](https://dn-odum9helk.qbox.me/Fn0JbpNGNdnArV_BevYxOF_OEwU0)
+2. 右键单击项目选择添加 > 现存在项 将下载的 SDK 中的 interface 目录下的所有文件都添加进去。
+![](https://dn-odum9helk.qbox.me/Fh6psWtzllL0vePR58rr-jnP76V0)
+3. 右键单击项目选择属性，选择配置管理器。 设置活动解决方案配置为 release；设置活动解决方案平台为 x64。
+4. 编写测试程序，然后进行编译，最后将 SDK 下的 dll 放到和可执行文件同一级目录下，或者系统目录下即可运行。
+![](https://dn-odum9helk.qbox.me/FmHLex_UdhXz9DH90aDSs9Y0aX0-)
+**说明：**
+SDK 提供了设置好的 Demo，直接打开工程进行编译即可。 运行的时候将相关的 DLL 文件拷贝到和可执行文件同级目录下，如下图:
+![](https://dn-odum9helk.qbox.me/FuLX8gNa1WMh1_XM9zgO2PsXu1zB)
+
+## Visual Studio 2015 配置 ASP.NET 使用消息队列 RocketMQ SDK
+1. 使用 VS2015 创建一个 ASP.NET 的 Web Forms 项目。
+![](https://dn-odum9helk.qbox.me/FvqmeAah5rzW3eTWKhDko-cHndwe)
+2. 右键单击项目选择属性，选择配置管理器。 设置活动解决方案配置为 release；设置活动解决方案平台为 x64。
+![](https://dn-odum9helk.qbox.me/Fnv_-IweTQwE4VMbswsF3jaih7Nh)
+3. 右键单击项目选择添加 > 现存在项，将下载的 SDK 中的 interface 目录下的所有文件都添加进去。
+请参考上文中配置普通的 .net 项目的步骤 2。
+4. 在 Global.asax.cs 文件中添加启动和关闭 SDK 的代码。
+**注意：**
+建议将 SDK 的代码封装成一个单例类，这样可以避免因为作用域的问题被垃圾回收器回收。SDK 的 example 目录下提供了一个 Example.cs，实现了一个简单的单例实现。 您需要把 Example.cs 包含到自己的项目中才能使用。
+```
+sing System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Optimization;
+using System.Web.Routing;
+using System.Web.Security;
+using System.Web.SessionState;
+using ons;    // 这个命名空间是 SDK 所在的命名空间
+using test;    // 这是一个简单封装 SDK 的类所在命名空间，见 SDK 的 example 目录下的 Example.cs
+namespace WebApplication4
+{
+    public class Global : HttpApplication
+    {
+        void Application_Start(object sender, EventArgs e)
+        {
+            // Code that runs on application startup
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
+            try
+            {
+                // 启动 SDK 的代码,下面是简单封装 SDK 后的代码
+                OnscSharp.CreateProducer();
+                OnscSharp.StartProducer();
+            }
+            catch (Exception ex)
+            {
+                    //处理异常
+            }
+        }
+        protected void Application_End(object sender, EventArgs e)
+        {
+            try
+            {
+               // 关闭 SDK 的代码
+              OnscSharp.ShutdownProducer();
+            }
+            catch (Exception ex)
+            { 
+              // 处理异常
+            }
+        }
+    }
+}
+```
+
+5. 编写测试程序，然后进行编译。
+6. 将 SDK 下的 dll 放到和可执行文件同一级目录下，或者系统目录下即可运行。
+![](https://dn-odum9helk.qbox.me/FmJ8l4BGrqcmG_KCuCZsB2GxkaD7)
+依次点击工具 > 选项 > 项目和解决方案 > Web 项目，然后勾选对网站和项目使用 IIS Express 的 64 位版。
+![](https://dn-odum9helk.qbox.me/FjfVQZ6uZKM5M-Y_mGCR4I83EfL2)

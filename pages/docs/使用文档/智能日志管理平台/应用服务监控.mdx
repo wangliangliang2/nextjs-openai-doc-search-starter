@@ -1,0 +1,60 @@
+在基于云的服务中，服务正常运行是最为重要的运维指标之一。服务如果频繁地中断，不仅会导致业务的中断，还会对企业带来负面影响。因此，服务监控系统往往需要极高的查询性能，快速返回分析结果，方便运维人员处理问题，维持服务的健康运转。数据立方极高的查询性能适用于此类服务监控场景。步骤如下：
+
+**前提：**通过 logkit-pro 将日志发送到智能日志平台实时仓库。发送步骤请参考 [Nginx 日志采集](/insight/manual/4679/nginx-log-collection)。
+# **创建立方**
+进入[立方管理](https://portal.qiniu.com/insight/cube/list)页面，点击添加数据立方。
+
+![](https://pandora-kibana.qiniu.com/datacube/add_cube.png)
+
+填写数据立方的信息，这里注意，填写的信息将会限制数据的分析，下面一一说明：
+
+![](https://pandora-kibana.qiniu.com/datacube/auditlog.png)
+
+1.填写基本属性
+ 
+* 名称：为数据立方设置一个名字。
+
+* 实时仓库：选择要分析的数据所在的实时仓库，数据立方将从实时仓库拉取最新数据进行数据预计算。
+
+* 时间字段：选择聚合的时间字段，此字段名称将在数据立方中被重命名为 __time。
+
+* 聚合窗口：此时间聚合窗口为对数据进行聚合计算的最细粒度，创建完成后不能使用更细时间粒度进行分析计算。
+
+* 存储时限：数据存储在数据立方中的时间限制，过期的数据将被删除。
+
+2.分析维度：按需添加分析字段（维度），此字段可用来作为对数据分析的分组字段和过滤字段。
+
+3.计算指标：可以按维度和时间窗口对字段进行计数、求和、去重计数等预聚合计算。
+
+如：统计每分钟打点数量，可添加指标为对 response_batch_size 求和，在立方分析力选择此指标即可。
+
+# **服务监控**
+
+1.统计请求次数，选择图表类型为折线图，添加指标为 count，分字段为 _time:
+
+![](https://pandora-kibana.qiniu.com/datacube/count_datacube.png)
+
+2.统计全部事件的平均响应时间，选择图表类型为单值图，指标添加 count(日志计数)、responsetime(预聚合响应时间总和)，添加 _time 分组字段，并且添加数值运算条件(responsetime/count)，如图：
+
+![](https://pandora-kibana.qiniu.com/datacube/cal.png)
+
+注：这里的 `“/10000”` 运算是将时间单位换算成 ms。
+
+3.统计打点点数，选择图表类型为折线图，分组字段为 _time，指标为对 response_batch_size 字段求和。
+
+![](https://pandora-kibana.qiniu.com/datacube/batch_size.png)
+
+4.统计流量，选择图表类型为折线图，分组字段为 _time，指标为对 request_Content_Length 字段求和 。
+
+![](https://pandora-kibana.qiniu.com/datacube/content_length.png)
+
+5.统计响应时间变化趋势，选择图表类型为折线图，指标添加 count(日志计数)、responsetime(预聚合响应时间总和)，添加 _time 分组字段，并且添加数值运算条件（responsetime/count），如图：
+
+![](https://pandora-kibana.qiniu.com/datacube/responsetime_.png)
+
+注：这里的 `“/10000”` 运算是将时间单位换算成 ms。
+
+6.将图表添加到仪表盘，对图表进行统一监控。
+
+![](https://pandora-kibana.qiniu.com/datacube/dashboard.png)
+

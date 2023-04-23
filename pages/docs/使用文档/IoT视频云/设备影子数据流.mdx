@@ -1,0 +1,166 @@
+本章主要介绍设备影子数据通过Topic进行流转，过程包括：设备上报状态到设备影子，应用程序更改设备状态和设备离线再上线后主动获取设备影子信息。
+
+# **设备影子Topic**
+
+IoT视频云平台预定义以下Topic用于实现数据流转：
+
+-   `linking/v1/${appid}/${device}/shadow/update/` 
+
+    设备端和应用程序发布消息到此Topic，IoT视频云平台收到该Topic的消息后，将消息的状态更新到设备影子中。
+
+-   `linking/v1/${appid}/${device}/result/accepted/` 
+-   `linking/v1/${appid}/${device}/result/rejected/` 
+
+    设备影子更新状态到上述Topic，设备订阅此Topic获取最新消息。
+    
+-   `linking/v1/${appid}/${device}/result/control/` 
+   
+    设备影子通过此Topic反控设备
+    
+
+# **使用示例** 
+
+示例主要讲解三大部分内容：设备主动上报状态、应用程序改变设备状态和设备主动获取影子内容。
+
+## **一、设备主动上报状态**
+
+设备使用Topic `linking/v1/${appid}/${device}/shadow/update/` 上报最新状态到设备影子服务端，SDK提供相应的API发送update消息，
+业务层只需指定stateReported字段的内容。消息内容使用特定的JSON字串格式，发送的JSON消息格式如下：
+```
+    "method": "update",
+    "stateReported": {
+        "microphone": "off"
+    },
+    "version": 1
+```
+
+当设备影子服务端收到此消息时，设备影子首先检查消息中的版本信息，只有当消息中的 version 大于设备影子服务端中的 version 时，设备影子才会更新设备影子版本。
+若影子文件更新成功，使用Topic `linking/v1/<appid>/<devicename>/result/accepted/`, 发送的JSON消息格式如下：
+```
+{
+    "status": "success",
+    "payload": {
+        "stateReported": {
+            "microphone": "off"
+        },
+        "lastReportUpdateTime":{
+            "microphone": 1573701412,
+        }
+    },
+    "version": 1,
+    "timestamp": 1573701412
+}
+```
+
+否则代表设备上的数据是旧的。此时服务端将发送失败消息，其中的返回码会明确告知 SDK 本次 update 失败，原因是 version 版本过低，同时在 payload 中携带最新的内容一同下发给设备端。
+使用Topic `linking/v1/<appid>/<devicename>/result/rejected/`, 发送的JSON消息格式如下：
+
+```
+{
+    "status": "error",
+    "code": "$errorCode",
+    "errorMessage":"$errorMessage",
+    "payload": {
+        "stateReported": {
+            "microphone": "on"
+        },
+        "lastReportUpdateTime":{
+            "microphone": 1573701412,
+        }
+    },
+    "version": 1,
+    "timestamp": 1573701412
+}
+```
+
+## **二、应用程序改变设备状态**
+
+应用程序通过调用云端API修改设备状态，设备影子接收到更新请求更新设备影子文档，完成后发送消息到设备订阅的Topic `linking/v1/<appid>/<devicename>/result/control/`，要求更改设备状态，发送的JSON消息格式如下：
+```
+{
+    "stateDesired": {
+        "microphone": "off"
+    },
+    "version": 1, 
+    "timestamp": 1573701412
+}
+```
+
+设备端收到消息，根据请求文档中的stateDesired的值更改设备状态，设备状态更新完成以后上报最新状态到影子文件，并清空stateDesired属性，
+使用topic `linking/v1/<appid>/<devicename>/shadow/update/` 上报状态, 发送的JSON消息格式如下：
+```
+    "method": "update",
+    "stateReported": {
+        "microphone": "off"
+    },
+    "stateDesired": null,
+    "version": 2
+```
+
+影子文件接收上报状态并更新影子文件，影子文件更新完成，返回结果给设备，发送消息到设备订阅的topic
+
+更新成功，发送到Topic `linking/v1/<appid>/<devicename>/result/accepted/`, 发送的JSON消息格式如下：
+```
+{
+    "status": "success",
+    "payload": {
+        "stateReported": {
+            "microphone": "off"
+        },
+        "lastReportUpdateTime":{
+            "microphone": 1573701512
+        }
+    },
+    "version": 1,
+    "timestamp": 1573701512
+}
+```
+
+更新失败：发送到Topic `linking/v1/<appid>/<devicename>/result/rejected/`, 发送的JSON消息格式如下：
+```
+{
+    "status": "error",
+    "code": "$errorCode",
+    "errorMessage":"$errorMessage",
+    "payload": {
+        "stateReported": {
+            "microphone": "on"
+        },
+        "lastReportUpdateTime":{
+            "microphone": 1573701512,
+        }
+    },
+    "version": 1,
+    "timestamp": 1573701512
+}
+```
+
+## **三、设备主动获取影子内容**
+
+若应用程序发送指令时，设备离线。设备再次上线后，将主动获取设备影子内容。
+
+设备主动发送以下消息到topic `linking/v1/<appid>/<devicename>/shadow/update/` 中，获取设备影子中保存的最新状态，发送的JSON消息格式如下：
+```
+{
+    "method": "get"
+}
+```
+
+当设备影子收到这条消息时，发送最新状态到Topic `linking/v1/<appid>/<devicename>/result/accepted/`。
+
+设备通过订阅该Topic获取最新状态，发送的JSON消息格式如下：
+```
+{
+    "status": "success",
+    "payload": {
+        "stateReported": {
+            "microphone": "off"
+        },
+        "lastReportUpdateTime":{
+            "microphone": 1573701412,
+        }
+    },
+    "version": 1,
+    "timestamp": 1573701412
+}
+```

@@ -1,0 +1,81 @@
+当文件不存在或者访问不到时，返回一个404页面，如果要求响应状态码必须是非404时应如何操作呢？
+
+这里举一个返回 301 状态码的例子。
+
+# 步骤一 404页面设置
+点击空间设置 -> 404 页面设置，如下图：
+
+<img src="https://dn-odum9helk.qbox.me/FsViFJIbwFtUK-1PRCrVECJT4b5G" width="800" />
+
+设置完成后，内容管理会自动生成一个叫 errno-404 的文件
+
+注：errno-404 是在空间设置的 404 文件的文件名，为系统默认，不可修改。
+
+<img src="https://dn-odum9helk.qbox.me/FjhnHJ3L3-TOFqA88M9NdwEcPdZx" width="800" />
+
+这时候再访问不存在的资源会返回设置好的 404 图片，如图：
+
+<img src="https://dn-odum9helk.qbox.me/FqXDxeyvWAst2NyVc_RW0Bc07Bq2" width="800" />
+
+
+
+# 步骤二 下载工具
+下载 [qrsctl 工具](/kodo/tools/1300/qrsctl)，加入系统环境参考如下：
+
+```
+# LINUX 系统
+➜  Downloads mv qrsctl-v3.2.20170501 qrsctl
+➜  Downloads chmod +x qrsctl
+➜  Downloads sudo mv qrsctl /usr/local/bin
+
+# 新打开一个终端执行
+➜  ~ qrsctl
+
+Usage:
+  qrsctl [-l|d|lan|it|-f <hostFile>] -v login <User> <Passwd>                                               - Login
+  qrsctl [-l|d|lan|it|-f <hostFile>] -v info                                                                - Show user information
+  qrsctl [-l|d|lan|it|-f <hostFile>] -v appinfo [<AppName>]                                                 - Get application info
+  qrsctl [-l|d|lan|it|-f <hostFile>] -v put -c <Bucket> <Key> <SrcFile>                                     - Put file
+  qrsctl [-l|d|lan|it|-f <hostFile>] -v get <Bucket> <Key> <DestFile>                                       - Get file
+  qrsctl [-l|d|lan|it|-f <hostFile>] -v stat <Bucket> <Key>                                                 - Stat file
+  qrsctl [-l|d|lan|it|-f <hostFile>] -v cat <Bucket> <Key>                                                  - Cat file
+  qrsctl [-l|d|lan|it|-f <hostFile>] -v del <Bucket> <Key>                                                  - Delete a file
+(省略部分，更多命令请自行查看。)
+```
+
+这里我们用到的命令是：
+
+```
+qrsctl [-l|d|lan|it|-f <hostFile>] -v redirect <Bucekt> <Key> <RedirectUrl> [<RedirectCode>]              - Redirec
+```
+
+# 步骤三 设置跳转
+
+# 1. 登陆账号
+首先需要用您的开发者帐号登录七牛云存储，登录成功后，才能进行接下来所有其他指令操作。
+
+登录成功后，会话的有效期是 3600 秒（一个小时），一个小时后需要重新登录。
+
+```
+qrsctl login <User> <Passwd>
+```
+
+| 参数 | 说明 |
+| ---- | ---- |
+|User | 注册邮箱 |
+|Passwd | 登录密码 |
+
+
+# 2. 设置跳转
+命令格式：
+```
+qrsctl redirect <bucketname> errno-404 <finalurl> 301
+```
+
+例子：
+
+```
+qrsctl redirect bucket01 errno-404 http://otshsz9r2.bkt.clouddn.com/apple.png 301
+```
+
+操作完后，curl 文件可以看到，返回了301

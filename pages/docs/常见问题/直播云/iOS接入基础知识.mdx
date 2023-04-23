@@ -1,0 +1,68 @@
+## Q：IOS 接入需要哪些准备？
+
+1. 设备要求：iPhone 4s 及以上
+2. 系统要求：iOS 7 及以上
+3. 已注册七牛账号
+4. 一个已经备案的域名
+5. 通过官网申请并已开通直播权限
+
+<br/>
+
+## Q：iOS 的 SDK 在哪里下载？
+
+- iOS 推流 SDK：https://github.com/pili-engineering/PLMediaStreamingKit
+- iOS 播放 SDK：https://github.com/pili-engineering/PLPlayerKit
+
+<br/>
+
+## Q：iOS 的 sdk 文档在哪？
+
+- iOS 推流 SDK 的文档：https://github.com/pili-engineering/PLMediaStreamingKit/wiki
+- iOS 播放 SDK 的文档：https://github.com/pili-engineering/PLPlayerKit/wiki
+
+<br/>
+
+## Q：当前 iOS 支持的功能特性有哪些？
+
+- 支持硬件编码
+- 多码率可选
+- 支持 H.264 视频编码
+- 支持 AAC 音频编码
+- 支持前后摄像头
+- 支持自动对焦
+- 支持手动调整对焦点
+- 支持闪光灯操作
+- 支持多分辨率编码
+- 支持 HeaderDoc 文档
+- 支持构造带安全授权凭证的 RTMP 推流地址
+- 支持 ARMv7, ARM64, i386, x86_64 架构
+- 支持 RTMP 协议直播推流
+- 支持音视频配置分离
+- 支持推流时可变码率
+- 提供发送 buffer
+- 支持 Zoom 操作
+- 支持音频 Mute 操作
+- 支持视频 Orientation 操作
+- 支持自定义 DNS 解析
+- 支持弱网丢帧策略
+- 支持纯音频或纯视频推流
+- 支持后台音频推流
+- 支持自定义滤镜功能
+- 内置水印功能
+- 内置美颜功能
+- 支持返听功能
+- 支持内置音乐播放器混音功能
+- 支持内置音效功能
+- 内置动态帧率功能
+- 内置自适应码率功能
+- 内置断线及网络切换自动重连功能
+- 支持预览与直播流分别镜像
+- 支持自定义音视频处理
+- 提供两种层次的 API，灵活选择，高可定制性与简单两不误
+
+<br/>
+
+## Q：iOS 接入注意事项有哪些？
+从 v1.1.6 开始，在使用 SDK 之前，需要保证 PLStreamingEnv 被正确初始化 ，否则在初始化核心类 PLStreamingSession 的阶段会抛出异常。
+
+`[PLStreamingEnv initEnv];`

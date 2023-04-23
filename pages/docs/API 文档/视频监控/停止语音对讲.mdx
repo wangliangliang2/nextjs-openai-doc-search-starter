@@ -1,0 +1,40 @@
+# **描述**
+本接口用于结束国标设备对讲。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/devices/{gbId}/talkstop`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|gbId|是|string|设备国标Id
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|channels|否|string数组|用于终止`平台`类型设备(例如NVR)的语音对讲，需指定通道ID列表
+
+# **响应参数**
+200
+
+# **示例**
+
+**请求示例**
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarvzvyijd/devices/31011500991320000028/talkstop\
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json'
+```
+
+**响应示例**
+```
+{
+  "code": 200
+}
+```

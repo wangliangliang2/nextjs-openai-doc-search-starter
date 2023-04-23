@@ -1,0 +1,15 @@
+vsphere metric用于监控vsphere内虚拟机和宿主机的各项指标。
+
+正确安装logkit之后可以在系统信息收集界面看到相应的vsphere监控选项。
+
+![](https://dn-odum9helk.qbox.me/Fu88OnHwMT0Fn_pDg94idZZ1_xAt)
+
+打开相应的开关之后可以看到如下配置项。
+
+![](https://dn-odum9helk.qbox.me/FkKtIHbG2FxbQBKhWcZ0QM_mHlZF)
+
+其中，`是否收集宿主机信息(host_system)`,`是否收集存储信息(data_store)`,`是否收集网络信息(network)`,`是否收集虚拟机信息(virtual_machine)`代表是否收集相应指标的信息。
+
+`需要监控的虚拟机地址(vsphere_url)`:`必填`,填写vsphere ESXI机器的IP或host地址。
+`登录虚拟机的用户名(vsphere_user)`:`必填`,填写登录vsphere ESXI机器的用户名。
+`登录虚拟机的密码(vsphere_password)`:`必填`,填写登录vsphere ESXI机器的密码。

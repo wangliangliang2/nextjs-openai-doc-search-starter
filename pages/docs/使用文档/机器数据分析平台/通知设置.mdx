@@ -1,0 +1,202 @@
+Pandora 2.0 支持为每个系统用户配置邮件、企业微信、钉钉联系方式，配置以上联系方式需选择对应的 SMTP 服务、企业微信服务、钉钉服务。
+
+点击设置->通知设置进入 SMTP 服务、企业微信服务、钉钉服务配置页面。
+
+![](http://pw7x36qrk.bkt.clouddn.com/noticification_service.png)
+
+# 配置 SMTP 服务
+
+
+配置SMTP服务，您需要填写如下信息：
+* 服务名称：定义SMTP服务名称
+* SMTP服务器：填写SMTP服务器域名或者IP
+* 端口号
+* 加密协议：SSL/TLS或者无
+* 发信箱账户
+* 发信箱密码
+
+# 配置企业微信服务
+
+配置企业微信需要填写企业微信的配置名称、企业 ID、应用 ID、应用秘钥，获取方式如下：
+
+第一步，注册企业微信获取企业 ID(corpid)：
+
+ 注册链接：<https://work.weixin.qq.com/wework_admin/register_wx>
+	 
+ 点击链接注册企业微信，填好下列信息。
+
+![](https://dn-odum9helk.qbox.me/FgATaOanUdezl22XWjw-M8Flefea)
+
+注册好后在管理后台“我的企业”－“企业信息”下查看**企业 ID**（需要有管理员权限）。
+
+![](https://dn-odum9helk.qbox.me/FvE47gYMSdNNHP3ycuthTOO1cZ0j)
+
+第二步，创建应用，获取应用 ID(AgentId) 以及秘钥(Secret)：
+
+点击进入应用与小程序。
+
+![](https://dn-odum9helk.qbox.me/FlC5m4QIAoZY4eXJC4XiXlbQj0kb)
+	
+在**应用**一栏里点击**创建应用。**
+
+![](https://dn-odum9helk.qbox.me/FokB88XIPX9494R-ZFt0iMpXEqYX)
+
+填好应用基本信息，注意选择好可见范围**为公司根部门**
+
+![](https://dn-odum9helk.qbox.me/Fu5x1HeTEiKjBwGIOGfY3H-wSpVD)
+
+点击**创建应用**即创建成功，即可看到该应用对应的 **Secret** 及 **AgentId**。请留意 **Secret** 参数，后面有用到，不再赘述。
+
+![](https://dn-odum9helk.qbox.me/FuZBsQ56dkXskMb6y5saahvEZ1Ac)
+	
+第三步，创建群聊获取群聊 ID(chatid)：
+
+ 企业微信创建群聊有一个限制，通过客户端创建的群聊即使是管理员账号也无法获取它的群聊 id，这意味着我们之前通过客户端创建的群聊都无法接入自建应用发送消息，因此，这里我们首先要做的就是通过调用接口新建一个群聊。只要两个 curl 命令即可，步骤及命令如下：
+	
+* 获取token
+	
+```
+	curl -XGET https://qyapi.weixin.qq.com/cgi-bin/gettoken\?corpid\=wwde7de534ea0085bf\&corpsecret\=eT3KaFIyn7egjsCe2b0QIX6yPF_7-KO29tBYVoX1GoE
+```
+	
+这里需要两个参数 corpid ，corpsecret。分别对应的是企业 Id，企业应用 Secret，上面均有介绍。
+返回内容如下，其中 access_token 我们后面要用到：
+
+```
+   {
+		"access_token":"ZphmO1UJz4c1lj7Fr8JU_qs16EL1Utxaas01cHJJrXTkLYZm4lTCC",
+		"expires_in":7200,
+		"errcode":0,
+		"errmsg":"ok",
+   }
+```
+
+
+	
+* 新建群聊，获取群聊 Id
+
+```
+   curl -XPOST https://qyapi.weixin.qq.com/cgi-bin/appchat/create\?access_token\=ZphmO1UJz4c1lj7Fr8JU_qs16EL1Utxaas01cHJJrXTkLYZm4lTCC -d '{"name":"chatName","owner":"mrLee","userlist":["mrLee","mrLiu"]}'
+ ```
+	 
+这里 access_token 为上一步获取的，name 为群聊名称，owner 为群主，userlist 为群聊成员，必须大于等于两人，建议就填两人，群聊创建后可以客户端可以继续添加。
+返回内容如下：
+```
+   {
+		"errcode":0,
+		"errmsg":"ok",
+		"chatid":"12659900028568218222"
+   }
+```
+	
+至此，群聊创建完毕，拿到群聊 Id(chatid)，这是群的唯一标识，后面要用到。
+	
+第四步，获取用户 ID(userid)
+	
+每个成员都有唯一的 userid，即所谓“帐号”。在管理后台->“通讯录”->点进某个成员的详情页，可以看到。
+	
+第五步，获取标签 ID(tagid)
+	
+每个标签都有唯一的标签id，在管理后台->“通讯录”->“标签”，选中某个标签，在右上角会有“标签详情”按钮，点击即可看到。
+	
+第六步，获取部门 ID(partyid)
+	
+每个部门都有唯一的id，在管理后台->“通讯录”->“组织架构”->点击某个部门右边的小圆点可以看到
+	
+关于企业微信的更多使用说明，可阅读官方文档 [https://work.weixin.qq.com/api/doc#90000/90135/90665](https://work.weixin.qq.com/api/doc#90000/90135/90665)。
+
+获取到上述信息后，在企业微信配置里填写相关的配置信息。并在企业微信通知方式里选择创建好的配置名称，输入用户/部门/标签/群组 ID 即可。
+
+# 配置钉钉服务
+
+通过钉钉方式通知，您需要填写钉钉的应用信息，选择给用户、群组还是部门发通知，以及对应的 id 信息。钉钉的应用信息在其他通知配置里配置。如图，配置企业微信需要填写配置名称、应用 ID、应用 key、应用秘钥，获取方式如下：
+![](https://pandora-kibana.qiniu.com/dingding_config.png)
+
+第一步，注册钉钉并创建应用获取应用ID
+
+注册链接： [https://oa.dingtalk.com/register.html](https://oa.dingtalk.com/register.html)
+		 
+点击链接注册钉钉，填写下列信息。
+		 
+![](https://pandora-kibana.qiniu.com/dingding_register.png)
+		 
+第二步，注册之后进入工作台，点击自建应用跳转到开发者后台创建应用。
+		 
+![](https://pandora-kibana.qiniu.com/dingding_workbench.png)
+	
+填写应用基本信息，选择“企业内部自主开发”。
+	
+![](https://pandora-kibana.qiniu.com/dingding_createApp.png)
+	
+选择“开发应用”这个开发模式，输入服务端出口IP等信息，完成创建应用步骤。
+	
+![](https://pandora-kibana.qiniu.com/dingding_createApp2.png)
+	
+登入钉钉管理后台，点击“工作台”，找到您的应用，点击“设置”按钮。
+	
+![](https://pandora-kibana.qiniu.com/dingding_setting.png)
+	
+页面会跳转到开发者后台的应用详情页，点击“查看详情”，可以找到 AgentID(应用 ID)、appKey（应用 key） 和 appSecret(应用秘钥)。
+	
+![](https://pandora-kibana.qiniu.com/dingding_appDetail.png)
+	
+![](https://pandora-kibana.qiniu.com/dingding_information.png)
+	
+至此，您已经获取到了配置钉钉需填写的应用信息。下面我们介绍如何获取 chatid、userid、deptid。
+	
+第三步，获取 token（获取 chatid 需要用到）
+
+```
+	 curl -XGET https://oapi.dingtalk.com/gettoken?appkey=key&appsecret=secret
+```
+
+这里需要两个参数 appkey ，appsecret，在上一步已经获取到了。
+
+返回内容示例：
+
+```
+{
+    "errcode": 0,
+    "errmsg": "ok",
+    "access_token": "fw8ef8we8f76e6f7s8df8s"
+}
+```
+
+ 其中 access_token 我们后面要用到。
+
+ > 注意：正常情况下access_token有效期为7200秒，有效期内重复获取返回相同结果，并自动续期。
+
+第四步，创建群聊，获取 chatid。步骤及命令如下：
+
+```
+	curl -XPOST https://oapi.dingtalk.com/chat/create?access_token=ACCESS_TOKEN -d  '{"name":"groupName","owner":"zhangsan","userlist":["zhangsan","lisi"]}'
+```
+	
+这里 access_token 为上一步获取的，name 为群聊名称，owner 为群主，userlist 为群聊成员，必须大于等于两人。建议就填两人，群聊创建后可以客户端可以继续添加。
+	
+返回内容如下：
+	
+```
+	{
+    "errcode": 0,
+    "errmsg": "ok",
+    "chatid": "chatxxxxxxxxxxxxxxxxxxx",
+    "conversationTag": 2
+}
+```
+
+至此，群聊创建完毕，拿到群聊 Id(chatid)。
+
+第五步，获取 userid。
+
+每个成员都有唯一的 userid。在管理后台->“通讯录”->点进某个成员的详情页，可以看到。
+
+![](https://pandora-kibana.qiniu.com/dingding_userid.png)
+	 
+第六步，获取 deptid。
+
+每个部门都有唯一的id，在管理后台->“通讯录”->“部门管理”->点击编辑部门可看到部门 ID。
+
+获取到上述信息后，在企业微信通知方式里选择创建好的应用名称，输入用户/部门/群组 ID 即可。
+
+![](https://pandora-kibana.qiniu.com/dingding_deptid.png)

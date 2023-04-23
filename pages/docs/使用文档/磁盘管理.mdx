@@ -1,0 +1,50 @@
+# 查看云磁盘
+- 登录 [EVM管理控制台](https://evm.qiniu.com/signin) <br>
+ 
+- 点击左侧导航栏的 **磁盘管理** 进入云磁盘管理界面，如下图：
+
+	![](https://dn-odum9helk.qbox.me/FnV6bZU7QNA-sPMEyLMTp9Wa9hri)
+
+- 点击上图对应磁盘后的 **详情** 将进入该磁盘具体信息展示界面，如下图：
+
+	![](https://dn-odum9helk.qbox.me/FgdN1XYTxoyaIvdxycDe-9_MtQkR)  
+    
+<a id="create_volume"></a>
+# 创建云磁盘
+
+- 进入 **磁盘管理** 界面，点击 **新建磁盘** 按钮，如下图：
+
+	![](https://dn-odum9helk.qbox.me/FkgVmAMadimGBcHSX-7SDR64JS-X)
+
+- 进入 **新建磁盘** 界面后，填写好磁盘名称、类型、容量、计费类型等信息后，点击 **确认创建**。如下图：
+
+	![](https://dn-odum9helk.qbox.me/FlFGMCmNXgI72Euxknlqa0c0cssP)
+
+- 完成创建后就可以在磁盘列表页看到刚创建好的磁盘
+
+# 删除磁盘
+
+- 点击左侧导航栏的 **磁盘管理** 进入云磁盘管理界面，如下图：
+
+	![](https://dn-odum9helk.qbox.me/FnV6bZU7QNA-sPMEyLMTp9Wa9hri)
+    
+   
+- 在磁盘列表选择要删除的磁盘，点击 **操作** 按钮， 选择它弹出的 **删除** 按钮。 
+
+	![](https://dn-odum9helk.qbox.me/FujtoZQ8fWuN260-WGpU893uNl-D)
+
+- 在弹出的对话框中输入需要删除云磁盘的名称，点击确定
+	![](https://dn-odum9helk.qbox.me/FoD7SuLbp_Hzx7c6GsUAkCHnFAa1)
+    
+- 最后输入用户的账号密码确定删除
+	![](https://dn-odum9helk.qbox.me/FqdNO2L48pI1NiMQFwTX5wQ3a9d6)
+   
+- 删除成功后，可以看到删除的磁盘已经从磁盘列表中移除
+
+**【注意事项】**
+
+1. 创建包月的磁盘在包月周期内无法删除和弹性的调整磁盘容量
+
+2. 删除磁盘前请先删除该磁盘的磁盘快照（如果存在），否则无法删除云磁盘
+
+2. 删除或卸载一个已经挂载的云磁盘注意清理 ```/etc/fstab``` 里面的挂载记录，否则重启云主机可能会导致主机的系统无法正确的引导

@@ -1,0 +1,166 @@
+
+
+Bucket Policy是基于资源的授权策略,常见的应用场景如下：
+- 向其他账号授权访问。
+您可以授予其他账号访问您对象存储资源的权限。
+- 授予带特定IP条件限制的访问权限。
+某些场景下，您需要授予带IP限制的访问策略。例如，企业内部的机密文档，只允许在企业内部访问，不允许在其他区域访问。由于企业内部人员较多，如果针对每个人配置子账号，工作量非常大。此时，您可以基于Bucket Policy设置带IP限制的访问策略，从而高效方便地进行授权。
+
+Bucket Policy使用限制
+- 只有Bucket拥有者可以设置Bucket Policy
+- 每个Bucket默认最多设置20条Bucket Policy，超出限制服务端返回400：too many statement in policy
+- 每个Bucket的Policy总内容大小限制为20KB，超出限制服务端返回400：EntityTooLarge
+
+
+# **策略模型** 
+Bucket Policy是一组规定谁能以什么样的权限访问Bucket/Object的策略。Policy定义的内容包括：
+- 资源（Resource）
+	- Bucket
+	- 资源/Object：单个Object key或Prefix指定
+- 权限（Action）：每个Action对应一组API
+	- 分别定义有Bucket级别和Object级别的Action
+	- 详见 [支持的权限列表](#ActionList)
+- 委托人（Principal）：被授权者
+	- 全部用户（不含匿名账户）
+	- 指定用户
+- 效果（Effect）
+	- Deny，禁止权限，优先级高于Allow
+	- Allow，允许权限
+- 条件（Condition）
+	- IpAddress：IP列表，支持指定地址或地址段
+	- NotIpAddress：排除的IP列表，支持指定地址或地址段
+	- StringLike：字符串匹配（大写小敏感），支持 aws:Referer 和 aws:Host 字段，用于请求的 Referer/Host 校验
+
+<a id="Statement"></a>
+# **策略声明格式**
+Bucket Policy声明样例如下：
+```
+{
+"Version":"s3.v1", 
+"Id": "samplepolicy",
+"Statement" : [
+    {
+        "Sid":"AddPerm",  
+        "Effect":"Allow", 
+        "Principal" : {  
+            "AWS":["111122223333","444455556666","iam::111122223333:3984935484"]
+         },
+        "Action":["s3:*"],  
+        "Resource":"arn:aws:s3:::bucket/*",    
+        "Condition": {   
+           "IpAddress": {"aws:SourceIp": ["54.240.143.0/24","2001:DB8:1234:5678::/64","1.1.1.1"]},
+           "NotIpAddress": {"aws:SourceIp": "54.240.143.188/32"},
+           "StringLike": {
+				     "aws:Referer": ["*.uuci.net",""],
+				     "aws:Host": ["fly.uuci.net",""]			        
+           }
+    },
+   {},...
+ ]
+}
+```
+字段说明：
+
+| 字段 | 必填 | 说明 |样例 |
+| --- | --- | --- |  --- |
+| Resource | 是 | 授权资源，可以是Bucket或Object，以字符串或字符串列表表示，大小写敏感：`"arn:aws:s3:::<bucket>"`，`"arn:aws:s3:::<bucket>/<key_regex>"`。<br>Object支持正则表达式。<br>如果不带/ 认为是bucket形式, 否则认为是object形式。<br>指定为Bucket时, 要求包含至少一个Bucket级别的Action；指定为Object时，则要求包含至少一个Object级别的Action。| `"Resource":["arn:aws:s3:::examplebucket"]`<br>`"Resource":["arn:aws:s3:::examplebucket/abc/*"]`<br>`"Resource":"arn:aws:s3:::examplebucket/* "`<br>`"Resource":"arn:aws:s3:::examplebucket/ab?df* "` | 
+| Action | 是 |  权限，仅限使用系统定义的Action名来设置，支持指定多个Action，格式为字符串 | `"Action":["s3:PutObject","s3:GetObject","s3:DeleteObject"]`<br>`"Action":"s3:*"` | 
+| Principal | 是 | 被授权者，以七牛云账号的用户id表示，支持指定多个用户：`"AWS":<id>`，`"AWS":<id list>`。AWS必须大写。<br>IAM 用户id的格式为 `iam::<root_id>:<iamid>`。<br>当Bucket拥有者被 Principal 指定时，Bucket 拥有者也会被策略限制；但是Bucket拥有者可以修改Policy来解除限制。|`"Principal":{"AWS":["11","22"]}`<br>`"Principal":{"AWS":["iam::111111:123123"]}`<br>`"Principal":{"AWS":"*"}` |
+| Effect | 是 | 效果，可以设置为允许（Allow）或拒绝（Deny），大小写敏感。<br>拒绝优先级高于允许；其他字段都匹配成功后，Effect字段才生效。|`"Effect":"Allow"`|
+| Condition | 否 | 策略生效条件，目前支持「IpAddress」、「NotIpAddress」和 「StringLike」3种。<br>1、IpAddress 和 NotIpAddress 支持指定多个IP地址或地址段：`"IpAddress":{"aws:SourceIp":<IP>}`,`"IpAddress":{"aws:SourceIp":<IP segment>}`。<br>IpAddress、NotIpAddress、aws:SourceIp 大小写敏感。<br>2、StringLike 支持设定`"aws:Referer"`和`"aws:Host"`，来实现对请求 Referer 和 Host 的校验。`"aws:Referer"`和`"aws:Host"`的设置支持空 Referer/Host，每个值最多包含1个多字符匹配的通配符`*`。<br>StringLike、aws:Host、aws:Referer 大小写敏感。|`"Condition": {`<br>`"IpAddress": {"aws:SourceIp":["54.240.143.0/24", "1.1.1.1"] },`<br>`"NotIpAddress": {"aws:SourceIp": "54.240.143.188/32"},`<br>`"StringLike": {`<br>`"aws:Referer": ["*.uuci.net",""],`<br>`"aws:Host": ["fly.uuci.net",""]`<br>`}`<br>`}`|
+
+<a id="ActionList"></a>
+# **支持的权限列表**
+Bucket Policy的权限分为Bucket和Object两类，对应的API相互独立，目前支持的权限列表如下：
+
+| Action | API | Level |
+| --- | --- | --- |
+| s3:DeleteBucket | DELETE Bucket | Bucket | 
+| s3:ListBucket | GET Bucket(List Objects)，HEAD Bucket | Bucket | 
+| s3:GetBucketLocation | Get bucket location | Bucket | 
+| s3:ListBucketMultipartUploads | List Multipart Uploads | Bucket |
+| s3:DeleteObject | DELETE Object, DELETE Multiple Object | Object | 
+| s3:GetObject | GET Object, HEAD Object | Object | 
+| s3:PutObject | PUT Object, POST Object, Initiate Multipart Upload, Upload Part, Complete Multipart Upload, PUT Object-Copy | Object |  
+| s3:AbortMultipartUpload | Abort Multipart Upload | Object | 
+| s3:ListMultipartUploadParts | List Parts | Object | 
+| s3:* | All API above | Bucket、Object | 
+
+说明：
+
+- 不支持Upload Part-copy 授权；PUT Object-Copy 需要对src object 有读权限，对dst object 有写权限 
+- Action和Resource需要匹配，否则无法设置，服务端返回错误：Action does not apply to any resource(s) in statement
+	- Level为Bucket时，Resource必须指定Bucket
+	- Level为Object时，Resource必须指定具体的Object或是Prefix
+- 想要授予空间及其对象的完全控制权限时，
+	- 针对Bucket设置Action为`s3:* `
+	- 同时针对Bucket下所有的Object设置Action为`s3:* `
+
+# **Bucket Policy API**
+## **设置Bucket Policy**
+本接口支持Bucket Policy的新增和修改操作。
+### **请求**
+**语法**
+
+```
+PUT /?policy HTTP/1.1
+Host: <s3空间名>.s3-cn-east-1.qiniucs.com
+Date: Tue, 04 Apr 2019 20:34:56 GMT  
+Authorization: authorization string
+
+{ Policy in JSON format }
+```
+
+**请求元素**
+Policy声明。
+<br>
+### **响应**
+**响应码**
+与AWS一致。
+
+**响应元素**
+该请求操作的响应体为空。
+<br>
+## **查询Bucket Policy**
+本接口支持查询指定空间已设置的Policy信息。
+### **请求**
+**语法**
+
+```
+GET /?policy HTTP/1.1
+Host: <s3空间名>.s3-cn-east-1.qiniucs.com
+Date: Tue, 04 Apr 2019 20:34:56 GMT  
+Authorization: authorization string
+```
+
+**请求元素**
+该请求操作的请求体为空。
+<br>
+### **响应**
+**响应码**
+与AWS一致。
+
+**响应元素**
+Policy in JSON format。可参见 [Bucket Policy声明样例](#Statement)
+<br>
+## **删除Bucket Policy**
+本接口支持一键删除指定空间的所有Policy信息。
+### **请求**
+**语法**
+
+```
+DELETE /?policy HTTP/1.1
+Host: <s3空间名>.s3-cn-east-1.qiniucs.com
+Date: Tue, 04 Apr 2019 20:34:56 GMT  
+Authorization: authorization string
+```
+
+**请求元素**
+该请求操作的请求体为空
+<br>
+### **响应**
+**响应码**
+与AWS一致。
+
+**响应元素**
+该请求操作的响应体为空。

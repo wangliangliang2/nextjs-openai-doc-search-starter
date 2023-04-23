@@ -1,0 +1,20 @@
+# 外网流出流量
+外网流出流量的费用属于对象存储的费用。
+如果使用了七牛测试域名或者融合 CDN 域名访问资源，是**不会计算**外网流出流量的。
+只有以下五种情况会计算外网流出流量：
+1. 使用第三方 CDN 回源七牛对象存储空间的回源请求。
+2. 使用 [qshell](/kodo/tools/1302/qshell) 工具的 [qdownload](https://github.com/qiniu/qshell/blob/master/docs/qdownload.md) 命令下载，但没有指定 cdn_domain 。 
+3. 使用 [kodo-browser](/kodo/5972/kodo-browser) 工具不使用自有域名下载资源。
+4. 调用 [AWS S3协议](/kodo/4086/aws-s3-compatible) 下载空间资源。
+5. 使用 [空间源站域名](/kodo/6320/sourceDomain) 下载资源。
+
+
+# GET 请求
+七牛对象存储的 GET 请求次数与 HTTP 协议中的 GET 方法的请求不是同一个概念，不是说对域名发起了一次 GET 请求，就会计算一次 GET 请求次数。 
+如果使用七牛的测试域名或者融合 CDN 域名访问资源，是**不会计算** GET 请求数的。
+只有以下五种情况会计算 GET 请求次数：
+1. 使用第三方 CDN 回源七牛对象存储空间的回源请求。
+2. 使用 [qshell](/kodo/tools/1302/qshell) 工具的 [qdownload](https://github.com/qiniu/qshell/blob/master/docs/qdownload.md) 命令下载，但没有指定 cdn_domain 。
+3. 使用 [空间源站域名](/kodo/6320/sourceDomain) 下载资源。
+4. 使用 [kodo-browser](/kodo/5972/kodo-browser) 工具不使用自有域名下载资源。
+5. 调用 [AWS S3协议](/kodo/4086/aws-s3-compatible) 下载空间资源。

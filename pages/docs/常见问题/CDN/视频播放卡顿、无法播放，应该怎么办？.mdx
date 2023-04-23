@@ -1,0 +1,41 @@
+# 视频播放卡顿
+
+视频播放缓冲时间长，播放卡顿。
+
+问题分析：
+
+1：检查播放的域名是否是测试域名，比如 `*.bkt.clouddn.com`。测试域名访问有限制，不适合在正式环境中使用，建议绑定自定义域名：https://developer.qiniu.com/fusion/manual/1228/fusion-quick-start
+
+2：通过avinfo查看视频元信息的码率：`bit_rate`，avinfo使用详情参考：https://developer.qiniu.com/dora/manual/1247/audio-and-video-metadata-information-avinfo 
+
+码率与带宽的换算：bit_rate/1024/1024
+
+再用 http://www.speedtest.net/ 测试网络的下行带宽，然后与上面的码率换算后的带宽进行比较。
+
+如果是码率过高造成的视频播放卡，可以使用多媒体处理的音视频转码，将码率设置低一点。音视频转码请参考：https://developer.qiniu.com/dora/manual/1248/audio-and-video-transcoding-avthumb
+
+# 视频无法播放
+
+
+问题分析：
+
+1：最常见的就是的浏览器或者播放器不支持该视频的编码格式，例如谷歌浏览器不支持编码格式为mpeg4的视频，需要特定的播放器才能正常播放。编码格式可以通过avinfo查看视频元信息的编码格式(codec_name)，avinfo详情参考：https://developer.qiniu.com/dora/manual/1247/audio-and-video-metadata-information-avinfo 
+
+如果是编码格式造成的无法播放，可以使用多媒体处理的音视频转码，将音视频转成播放器或者浏览器支持的编码格式。音视频转码请参考：https://developer.qiniu.com/dora/manual/1248/audio-and-video-transcoding-avthumb
+
+2：音视频本身文件损坏，你可以将上传之前的文件拿到播放器去播放，观察是否正常的播放。如果不能正常的播放，说明该音视频可能损坏。
+
+3：如果上述的问题都是正常的，可以提交工单，需提供以下信息：
+
+一：ping 自定义加速域名的截图；
+
+二：完整的资源url链接
+
+七牛工程师会在工单上帮你分析无法正常播放的原因。
+
+
+
+
+
+
+

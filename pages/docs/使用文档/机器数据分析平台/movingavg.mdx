@@ -1,0 +1,103 @@
+movingavg 命令在时序数据中滑动指定大小的窗口，并对窗口中的数据进行聚合统计。例如，对[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]这样一组数据，以5为窗口的大小简单计算每个窗口的移动平均值，结果如下：
+
+* (1 + 2 + 3 + 4 + 5) / 5 = 3
+* (2 + 3 + 4 + 5 + 6) / 5 = 4
+* (3 + 4 + 5 + 6 + 7) / 5 = 5
+* etc
+
+movingavg是一种平滑有序数据的方法，通过消除时序数据中的高频波动或随机噪声，从而使时序数据中的低频趋势更易被发现。例如在股票价格或服务器时序指标图中使用movingavg命令对数据进行平滑，得到一组更趋近于真实水平的平均趋势以供预测参考。
+
+**语法：**
+
+```
+ movingavg [options] <field> [AS <alias_field>][BY field_list]
+```
+
+**参数说明：**
+
+必填参数：
+
+* `field`:必填，待分析的数值字段。
+
+可选参数：
+
+* `options`:
+
+  * `window=<N>`:可选参数，要在时序数据中滑动的窗口长度，默认值是5。
+	
+ * `model=<simple|linear|ewma|holt|holt_winters>`:可选参数，通过model参数指定聚合模型，movingavg默认聚合模型为simple模型。关于每种聚合模型的详细描述，阅读下文【movingavg聚合模型】。
+
+* `AS <alias_field>`:使用 as 子句将聚合结果放入指定的新字段。
+
+* `BY field_list`：指定分组字段列表。
+
+**movingavg聚合模型**
+
+moving_avg聚合包括四种不同的移动平均值“模型”，主要区别在于窗口中的值加权方式不同。 随着数据点在窗口中变得“更旧”，它们的权重可能会有所不同，从而影响该窗口的最终平均值。 
+
+* `model=simple`：计算窗口中所有值的总和，然后除以窗口大小。 它实际上是计算窗口的简单算术平均值。窗口大小可以更改移动平均值的结果。 例如，小窗口（"window"：5）仅消除小范围的波动：
+	
+```
+* | timechart span=1h avg(value) as v | movingavg window=5 model=simple v as mv  
+```
+
+![](http://pw7x36qrk.bkt.clouddn.com/movingavg_simple1.png)
+
+具有较大窗口（"window"：15）的移动平均结果将消除所有高频波动，仅留下低频的、长期的趋势。
+
+```
+* | timechart span=1h avg(value) as v | movingavg window=15 model=simple v as mv  
+```
+
+![](http://pw7x36qrk.bkt.clouddn.com/movingavg_simple2.png)
+
+* `model=linear`：linear模型将线性权重分配给序列中的数据点，以使“较旧的”数据点（例如，窗口起始处的那些数据）对总平均值的贡献较小。像simple模型一样，窗口大小可以更改移动平均值的结果。 例如，小窗口（"window"：5）仅消除小范围的波动：
+ 
+```
+* | timechart span=1h avg(value) as v | movingavg window=5 model=linear v as mv  
+```
+
+![](http://pw7x36qrk.bkt.clouddn.com/movingavg_linear1.png)
+
+具有较大窗口（"window"：15）的移动平均结果将消除所有高频波动，仅留下低频的、长期的趋势。
+
+```
+* | timechart span=1h avg(value) as v | movingavg window=15 model=linear v as mv 
+```
+
+![](http://pw7x36qrk.bkt.clouddn.com/movingavg_linear3.png)
+
+* `model=ewma`：ewma模型与linear模型相似，不同的是，较旧的数据点的权重指数下降，而不是线性下降。
+
+```
+* | timechart span=1h avg(value) as v | movingavg window=5 model=ewma v as mv  
+```
+
+![](http://pw7x36qrk.bkt.clouddn.com/movingavg_ewma2.png)
+
+ewma模型里window的意义同simple模型。
+
+* `model=holt`：当数据具有基本线性趋势时，ewma 模型对数据平滑效果不佳。holt 模型结合了数据值的指数加权计算（类似ewma模型）和数据斜率（计算当前值和末尾值之间的差值）的指数加权计算。通过将数据的指数加权值和斜率指数加权分别乘以相应的系数，得出最终平滑值。
+
+```
+* | timechart span=1h avg(value) as v | movingavg window=5 model=holt v as mv  
+```
+
+![](http://pw7x36qrk.bkt.clouddn.com/movingavg_holt.png)
+
+* `model=holt_winters`：holt_winters 模型除了对数据值进行指数加权计算（类似ewma模型）、对数据斜率进行指数加权计算以外，增加了数值的周期性计算（关注当前点和一个周期前的点之间的差异）。holt_winters 模型适用于分析数据的周期性变化。 
+
+![](http://pw7x36qrk.bkt.clouddn.com/movingavg_holtwinters.png)
+
+**示例**
+
+对数据库每1小时内的cpu均值，选择`linear`算法且窗口长度为`10`进行平滑，得到数据库每1小时内经过平滑处理的cpu移动均值，并在此基础上检测cpu指标的平均异常值:
+
+```
+search *
+| timechart span=1h avg(value) as v 
+| movingavg window=5 model=linear v as mv  
+| eval upper=mv*1.5, lower=mv*0.5
+```
+
+![](http://pw7x36qrk.bkt.clouddn.com/movingavg&anomaly.png)

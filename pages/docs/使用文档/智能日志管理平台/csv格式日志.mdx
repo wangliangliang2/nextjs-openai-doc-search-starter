@@ -1,0 +1,21 @@
+CSV Parser 是一种按分隔符解析日志的解析方式，生成默认字段名与字段内容一一对应，字段名与字段类型可修改。
+
+![](https://pandora-kibana.qiniu.com/csv_analysis.png)
+
+CSV parser 是按行读取日志的，对于每一行，以分隔符分隔，然后通过 `csv_schema` 命名分隔出来的字段名称以及字段类型。
+
+默认情况下 CSV 是按 \t 分隔日志的，可以配置的分隔符包括但不限于, 各类字母、数字、特殊符号(#、!、*、@、%、^、...)等等。
+
+* `labels` 填一些额外的标签信息，同样逗号分隔，每个部分由空格隔开，左边是标签的key，右边是value。
+* 分隔符(`csv_splitter`): csv文件的分隔符定义，默认为'\t'。
+* `csv_schema` 是按照逗号分隔的字符串，每个部分格式按照字段名、字段类型构成，相邻的字段名如果字段类型相同，可以使用 `|` 分隔字段名，例如 `a string,b string` 可以写成 `a|b string`。字段类型现在支持 `string`, `long`, `jsonmap`, `float`, `date`。
+* 类型说明
+  * `string`：字符串
+  * `long`：整型
+  * `float`：浮点型
+  * `date`：时间类型，具体参见[grok date 字段解析类型](/insight/manual/4759/grok-parser)
+  * `jsonmap` 将 解析json的map格式，key 必须为字符串格式，value 为 string, long 或者 float。如果 value 不属于这三种格式, 将会强制将 value 转成 string 类型。
+  * jsonmap 如果要指定 jsonmap key 的类型并且选定一些 jsonmap 中的 key，那么只要用花括号包含选定的 key 以及其类型即可，里面的语法与外部相同也是以逗号","分隔不同的 key 和类型。目前不支持嵌套的 jsonmap，如果除了选定的 key，其他的 key也要，就以"..."结尾即可。
+* Parser中解析出的字段就是`csv_schema`中命名的字段，还包括`labels`中定义的标签名，可以在sender中选择需要发送的字段和标签。
+* `disable_record_errdata` 默认为`false`，解析失败的数据会默认出现在"pandora_stash"字段，该选项可以禁止记录解析失败的数据。
+* `keep_raw_data` 默认为`false`，配置此选项之后会保留原始数据在`raw_data`字段下。

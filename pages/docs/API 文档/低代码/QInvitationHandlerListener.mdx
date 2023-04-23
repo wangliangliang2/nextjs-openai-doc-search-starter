@@ -1,0 +1,136 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>interface com.qlive.core.QInvitationHandlerListener</p>
+                <p>邀请监听</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReceivedApply`)'>onReceivedApply</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onApplyCanceled`)'>onApplyCanceled</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onApplyTimeOut`)'>onApplyTimeOut</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onAccept`)'>onAccept</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReject`)'>onReject</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReceivedApply">onReceivedApply</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void onReceivedApply(QInvitation invitation);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到申请/邀请</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            invitation: <a href='https://developer.qiniu.com/lowcode/api/12060/QInvitation'>QInvitation</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onApplyCanceled">onApplyCanceled</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void onApplyCanceled(QInvitation invitation);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>对方取消申请</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            invitation: <a href='https://developer.qiniu.com/lowcode/api/12060/QInvitation'>QInvitation</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onApplyTimeOut">onApplyTimeOut</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void onApplyTimeOut(QInvitation invitation);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>申请/邀请 超时</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            invitation: <a href='https://developer.qiniu.com/lowcode/api/12060/QInvitation'>QInvitation</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onAccept">onAccept</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void onAccept(QInvitation invitation);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>被接受</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            invitation: <a href='https://developer.qiniu.com/lowcode/api/12060/QInvitation'>QInvitation</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReject">onReject</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void onReject(QInvitation invitation);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>被拒绝</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            invitation: <a href='https://developer.qiniu.com/lowcode/api/12060/QInvitation'>QInvitation</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

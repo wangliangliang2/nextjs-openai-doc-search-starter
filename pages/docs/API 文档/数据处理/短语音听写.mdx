@@ -1,0 +1,156 @@
+短语音听写接口可将时长不超过60秒的音频文件转写成文字，可适用于手机语音输入、智能语音交互、语音指令、语音搜索等短语音交互场景。
+
+### 使用限制
+- 使用前请联系技术支持开通使用权限
+
+### 支持格式
+- 支持的音频文件格式：mp3、wav、ogg、wma、aac、ac3、m4a、ts、g722
+- 包含音频的视频文件格式：avi、flv、mp4、mpg、asf、wmv、mov、rmvb、rm
+**注意**: 仅转写双声道音频文件中第一声道的内容
+
+### 支持音频文件详情
+- 音频时长不超过60秒
+- 音频大小不超过20 MB
+- 音频声道：单声道、双声道
+- 采样率：16000、44100和48000 Hz
+- 采样精度：16 bits、8 bits
+**注意**: 
+- opus编码的音频不支持44100 Hz的采样率
+- 仅 wav封装的pcm格式音频支持 8 bits采样精度
+
+# 请求参数
+
+**请求方式**: POST
+**请求URL**: `http://yitu-audio.qiniuapi.com/v2/asr`
+**请求 Header**:
+
+| 字段          | 取值                                                         |
+| :------------ | :----------------------------------------------------------- |
+| Content-Type  | application/json                                             |
+| Authorization | Qiniu \<AccessKey>:\<Sign> </br>注意: 用户请根据 AccessKey 和 SuccessKey 生成鉴权，以便进行身份验证。\<Sign> 的取值请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken) |
+
+**请求 Body**:
+
+| 参数名            | 类型             | 是否必须 | 描述                                                         |
+| :---------------- | :--------------- | :------- | :----------------------------------------------------------- |
+| audioUrl          | string           | 否       | audioUrl和audioBase64必须二选一。 音频文件的URL，支持http和https |
+| audioBase64       | string           | 否       | audioUrl和audioBase64必须二选一。音频数据，采用符合urlenco标准的Base64编码 |
+| lang              | string           | 否       | 仅支持“MANDARIN”普通话                                       |
+| scene             | string           | 否       | 通用情景模式GENERAL，即针对不同应用场景的定制模型。当前默认支持GENERAL |
+| customWords       | array（string）  | 否       | 热词优化转写能力，可添加100个词。支持每个热词中文2-4个字。   |
+| useCustomWordsIds | array（integer） | 否       | 使用已创建的热词词库ID词库个数不得超过10个                   |
+| clientInfo        | JSON Object      | 否       | 客户端的信息，填写后可通过返回进行透传                       |
+
+clientInfo
+
+| 参数名    | 类型   | 是否必须 | 描述             |
+| :-------- | :----- | :------- | :--------------- |
+| userId    | string | 否       | 用户ID，唯一标识 |
+| roomId    | string | 否       | 房间ID           |
+| userNick  | string | 否       | 用户昵称         |
+| mac       | string | 否       | mac地址          |
+| imei      | string | 否       | 硬件设备码       |
+| imsi      | string | 否       | 运营商设备码     |
+| umid      | string | 否       | 设备指纹         |
+| uip       | string | 否       | 用户IP           |
+| deviceId  | string | 否       | 设备ID           |
+| audioName | string | 否       | 音频名称         |
+
+# 返回参数
+
+| 参数名     | 类型        | 说明                                          |
+| :--------- | :---------- | :-------------------------------------------- |
+| rtn        | integer     | 请求处理结果的状态码，0表示成功，否则表示异常 |
+| message    | string      | 请求处理结果的debug提示信息                   |
+| requestId  | string      | 请求的唯一标示符                              |
+| resultText | string      | 转写结果                                      |
+| clientInfo | JSON Object | 客户端的信息，填写后可通过返回进行透传        |
+
+# 调用示例-Python
+
+下载依赖:
+
+```
+pip install qiniu
+pip install requests
+```
+
+```
+# -*- coding: utf-8 -*-
+
+import json
+
+import requests
+import qiniu
+from qiniu import QiniuMacAuth, http, config
+
+# Please paste your ak and sk here.
+access_key = 'ak'
+secret_key = 'sk'
+auth = QiniuMacAuth(access_key, secret_key)
+
+def _post_with_qiniu_mac(url, data, auth):
+    qn_auth = qiniu.auth.QiniuMacRequestsAuth(auth) if auth is not None else None
+
+    timeout = config.get_default('connection_timeout')
+
+    try:
+        r = requests.post(
+            url,
+            json=data,
+            auth=qn_auth,
+            timeout=timeout,
+            )
+        
+        print(r.json())
+    except Exception as e:
+        return None, http.ResponseInfo(None, e)
+
+    return http.__return_wrapper(r)
+
+def asr_request(data):
+    url = "http://yitu-audio.qiniuapi.com/v2/asr"
+
+    body = {
+        "audioUrl": data,
+    }
+
+    ret, res = _post_with_qiniu_mac(url, body, auth)
+
+    return ret, res
+ 
+if __name__ == '__main__':
+
+    audio_url = "http://r3dg6y3l0.hd-bkt.clouddn.com/Temp/sample_1.wav"
+
+    ret, res = asr_request(audio_url)
+
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
+
+    print(json.dumps(headers, indent=4, ensure_ascii=False))
+
+
+```
+
+# 状态码
+
+| rtn  | 说明                                 | message                                                      |
+| :--- | :----------------------------------- | :----------------------------------------------------------- |
+| 1000 | 超时                                 | SAAS_TIME_OUT                                                |
+| 1101 | 无法解析请求中的Json                 | SAAS_JSON_CONFIG_HELPER_READ_ERROR                           |
+| 1102 | 输入的字段错误，根据提示更换字段参数 | SAAS_INVALID_SCENE_ERROR   SAAS_INVALID_PARAMETER_ERROR      |
+| 1103 | 输入中缺少某个域                     | SAAS_JSON_CONFIG_HELPER_GIVEN_KEY_NOT_EXIST_ERROR            |
+| 1999 | 未知错误                             | SAAS_UNEXPECTED_ERROR                                        |
+| 4201 | 音频文件错误                         | Audio DownLoad Error   SAAS_SPEECH_AUDIOFILE_INCORRECT       |
+| 4202 | 无法下载的文件                       | SAAS_SPEECH_FILEDOWNLOAD_ERROR                               |
+| 4203 | 文件处理异常，请联系管理员           | SAAS_SPEECH_ASR_BUSY                                         |
+| 4204 | 不支持的编码格式                     | SAAS_AUE_NOT_MEET_REQUIREMENT_ERROR                          |
+| 4208 | 不存在的TASKID                       | SAAS_SPEECH_INVALID_TASKID_ERROR                             |
+| 4209 | 音频片缺失，无法解析                 | SAAS_SPEECH_MISSING_SLICE_ERROR                              |
+| 4210 | 文件长度太大                         | audio length too long...SAAS_SPEECH_AUDIO_LENGTH_TOO_LONG_ERROR |
+| 4211 | 文件长度过短                         | SAAS_SPEECH_AUDIO_LENGTH_TOO_SHORT_ERROR                     |
+| 4214 | 无法解析的内容，请联系管理员         | SAAS_SPEECH_ASR_RECOGNI                                      |
+
+# 价格
+
+1.8元/千次

@@ -1,0 +1,30 @@
+为了防止数据被其他人盗链，用户可以设置防盗链功能，包括以下参数：
+
+- Referer 白名单，仅允许指定的域名访问资源；或黑名单，指定域名禁止访问资源
+- 是否允许空 Referer。如果不允许空 Referer，则只有 HTTP 或 HTTPS header 中包含 Referer 字段的请求才能访问资源。
+例如，对于一个名为 test-example 的 Bucket，设置其 Referer 白名单为 http://www.mytest.com/。则所有 Referer 为 http://www.mytest.com/ 的请求才能访问 test-example 这个 Bucket 中的 Object。
+<br>
+
+
+# **具体说明**
+
+- Referer 验证
+   - 一旦开启 Referer 防盗链，所有请求都会做防盗链验证。
+- Referer 配置
+   - 一个 Bucket 可以支持多个 Referer 参数。通过控制台设置时使用回车作为换行符分隔.
+   - 无需填写 http:// ，https:// .
+   - 支持域名前使用通配符「 * 」：*.example.com 可用于指代所有 example.com 下的多级子域名，比如 a.example.com 等，但是不包括 example.com，如需要请额外填写一条 example.com.
+   - 支持完全通配符，即规则是一个「 * 」
+- Referer 效果
+   - Referer 白名单为空时，不会检查 Referer 字段是否为空（否则所有的请求都会被拒绝）。黑名单为空时，会检查 Referer 字段是否允许为空。
+   - 如果 Referer 白名单不为空，且不允许 Referer 字段为空，则只有 Referer 属于白名单的请求被允许，其他请求（包括 Referer 为空的请求）会被拒绝。
+   - 如果白名单不为空，但允许 Referer 字段为空，则 Referer 为空的请求和符合白名单的请求会被允许，其他请求都会被拒绝。
+
+<br>
+
+
+# **操作方式**
+Kodo 支持通过控制台方式设置防盗链。
+|支持的操作方式|参考文档|
+|-|-|
+|控制台	|[设置 Referer 防盗链](/kodo/development_guidelines/8538/set-the-referer-hotlinking-prevention)|

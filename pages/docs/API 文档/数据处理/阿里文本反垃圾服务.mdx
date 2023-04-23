@@ -1,0 +1,170 @@
+文本反垃圾服务能够有效帮助您检测出您的文本中是否存在违规的风险内容，本文指导您如何接入文本反垃圾服务。
+
+本接口支持存储在七牛云的文件，也支持存储在其他地方的文件。
+
+注意
+* 服务地域：（存储在七牛云）华东、华北、华南；（存储在其他地方）华东。
+* 单条检测文本的长度不超过10000个字符。
+* 一次请求最多不超过50条文本。
+* 待检测的文本内容的编码格式支持：UTF-8、GBK、GB2312、GB18030、Big5（繁体中文）等常用编码类型。
+* 资源的 Mime 文件格式仅支持文本类型：text/*，如：text/plain、text/html。
+* 请求接口的并发（qps）不超过100。
+* 请求接口为标准的HTTP/HTTPS 协议。
+
+<a id="Text antispam-open"></a>
+# 如何开启
+如果您的文件存储在七牛云，则需先开启本服务。点此进入[七牛开发者平台](https://portal.qiniu.com/dora/thirdparty/create/ali_textscan/quickstart)，点击右上角**开始使用**按钮。
+如果您的文件存储在其他地方，则直接调用本接口。
+<a id="quick strat"></a>
+# 快速使用(存储在七牛云的资源)
+
+### 第一步
+
+    获取到您存在bucket里面的文本的 url，例如：https://dora-doc.qiniu.com/con1.txt
+
+### 第二步
+
+    在您的文本的url后加上 ali_textscan，例如：https://dora-doc.qiniu.com/con1.txt?ali_textscan
+
+<a id="request-grammar"></a>
+# 请求语法
+
+# 同步请求(存储在七牛云的资源)
+```
+GET <scanRquestUrl>?ali_textscan/biztype/<bizType>
+Host: <BucketHost>
+```
+# 请求参数
+| 字段          |  类型  | 是否必选 |                       说明                       |
+| ------------- | :----: | :------: | :----------------------------------------------: |
+| scanRquestUrl | string |    Y     | 用于线上文档的请求会在请求成功之后对文档进行处理 |
+| bizType       | string |    N     | 特殊配置业务场景, 如有需要请通过工单联系技术支持 |
+
+
+# 同步请求(存储在其他地方的资源)
+
+**请求接口** 
+```
+POST http://ali_textscan.apistore.qiniu.com/handler
+Authorization: <token>
+
+<body>
+```
+
+**请求Header**
+
+|字段|取值|
+| :--- | :--- |
+|Authorization|Qiniu &lt;AccessKey&gt;:&lt;Sign&gt; <br>注意: 用户请根据AccessKey和SecretKey后生成鉴权，以便进行身份验证。`Sign`的取值以及`Authorization`签名方法请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken)|
+| body | 文本内容 |
+
+
+
+
+# 响应语法
+```
+HTTP/1.1 200 OK
+X-Reqid: <reqid>
+Date: <respTime>
+Content-Length: <contentLength>
+Content-Type: text/plain; charset=utf-8
+{
+    // respDate
+}
+```
+
+<a id="Text antispam-samples"></a>
+# 示例
+在Web浏览器中输入以下视频地址：
+```
+https://dora-doc.qiniu.com/con1.txt?ali_textscan
+```
+
+返回结果
+```
+HTTP/1.1 200 OK
+X-Reqid: _YEBAICNYlSPpbQV
+Date: Thu, 25 Jul 2019 12:16:45 GMT
+Content-Length: 266
+Content-Type: text/plain; charset=utf-8
+{
+    "code": 200,
+    "data": [
+        {
+            "code": 200,
+            "content": "七牛云存储\n",
+            "msg": "OK",
+            "results": [
+                {
+                    "label": "normal",
+                    "rate": 99.91,
+                    "scene": "antispam",
+                    "suggestion": "pass"
+                }
+            ],
+            "taskId": "txt4CP9r0g5XdV74qlfLV6gNO-1r7hCy"
+        }
+    ],
+    "msg": "OK",
+    "requestId": "D10CC413-03E1-44E1-B1C9-D1CC49D8FD78"
+}
+```
+
+**公共头响应头参数说明**
+
+| 字段          |  类型  | 是否必选 |                       说明                       |
+| ------------- | :----: | :------: | :----------------------------------------------: |
+| code        | 整型 |   Y   | 错误码，和HTTP状态码一致（但有扩展）。<br>• 2xx 表示成功。<br>• 4xx 表示请求有误。<br>• 5xx 表示后端有误。<br>具体参照公共错误码说明           |
+| msg         | 字符串 |   Y     | 错误的进一步描述。 |
+| requestId      | 字符串 |   Y     | 错误的进一步描述。 |
+| msg     | 字符串 |   Y     | 唯一标识该请求的ID，可用于定位问题。 |
+| data     | JSON对象 |   Y     | API（业务）相关的返回数据。出错情况下，该字段可能为空。一般来说，该字段为一个JSON结构体或数组，参见下表 |
+
+**响应返回的data参数说明**
+
+| 字段          |  类型  | 是否必选 |                       说明                       |
+| ------------- | :----: | :------: | :----------------------------------------------: |
+| code        | 整型 |   Y   | 错误码，和HTTP的status code一致。 |
+| msg         | 字符串 |   Y     | 错误的进一步描述。 |
+| taskId        | 字符串 |   Y     | 该检测任务的ID。 |
+| content        | 字符串 |    N    | 对应请求的内容。 |
+| results       | JSON数组|    N    | 返回结果。调用成功时（code=200），返回结果中包含一个或多个元素。每个元素是个结构体，具体结构描述见result结构表。 |
+
+**响应返回的results中JSON对象结构说明**
+
+| 字段          |  类型  | 是否必选 |                       说明                       |
+| ------------- | :----: | :------: | :----------------------------------------------: |
+| label       | 字符串 |   Y   | 检测结果的分类，与具体的scene对应。取值范围参考scene和label说明。 |
+| scene        | 字符串 |   Y     | 检测场景，和调用请求中的场景对应（antispam）。 |
+| suggestion      | 字符串 |   Y     | 建议的结果，取值范围：<br>• pass：正常<br>• review：疑似违规<br>• block：确认违规 |
+| rate        |浮点数 |   Y   | 结果为该分类的概率，取值范围为[0.00-100.00]。值越高，表示越有可能属于该分类。说明 分值仅供参考，建议关注label和suggestion内容。 |
+| details      | JSON数组|    N    | 命中风险的详细信息。具体结构描述见detail结构体说明。 |
+
+**detail结构体说明**
+
+| 字段          |  类型  | 是否必选 |                       说明                       |
+| ------------- | :----: | :------: | :----------------------------------------------: |
+| label       | 字符串 |   Y   | 文本命中风险的分类，与具体的scene对应。取值范围参考scene和label说明。 |
+| contexts    | 数组   |   N   | 命中该风险的上下文信息。具体结构描述见context说明。 |
+
+**scene和label说明**
+
+|功能          |  scene           | label                   |
+| ------------- | :----:          | :------:               |
+| 垃圾文本检测      | antispam      | • normal：正常文本<br>• spam：含垃圾信息<br>• ad：广告<br>• politics：涉政<br>• terrorism：暴恐<br>• abuse：辱骂<br>• porn：色情<br>• flood：灌水<br>• contraband：违禁<br>• meaningless：无意义<br>• customized：自定义（比如命中自定义关键词） |
+
+# 计费说明
+
+**服务价格**
+
+| 调用量（ 次/月）                       | 单价（元/千次）                            |
+| :------------------------------------|:--------------------------------------- |
+| <15万                                 | 1.38 |
+| <150万                                | 1.30 |
+| <500万                                | 1.22 |
+| <1000万                               | 1.15 |
+| <2000万                               | 1.08 |
+| 2000万条以上                           | 1.00 |
+
+**计费示例**
+某公司2019年5月使用该服务，共发起25万次请求，则当月使用该服务的费用为`150*1.38+100*1.30=337.0元`

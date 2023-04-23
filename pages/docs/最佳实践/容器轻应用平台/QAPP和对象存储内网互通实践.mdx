@@ -1,0 +1,146 @@
+七牛云容器轻应用平台QAPP和七牛对象存储KODO，在特定场景下可以使用 **内网域名** 访问 ，避免绕行公网带来网络质量不稳定问题。
+
+
+
+# **准备**
+
+如何通过内网方式上传下载文件，在执行操作前，你需要准备：
+
+- **存储空间(Bucket)：** 选择区域，创建存储空间，并上传需要处理的资源。您可以查考文档 [创建空间](https://developer.qiniu.com/kodo/manual/console-quickstart#1)。
+- **绑定域名**：准备一个 ICP 备案的域名，本文以  `developer.qiniu.com ` 为例。
+- **AK/SK：** 你可以在七牛云控制台的[密钥管理](https://portal.qiniu.com/user/key)页面查看你的密钥。
+
+
+
+# **上传文件**
+
+## **Region 对照表**
+
+- 目前仅支持 **华东**、**华北**、**华南** 的QAPP服务可以访问同区域的对象存储服务，可以使用如下的 **内网域名** 访问：
+
+  | QAPP区域 | 对象存储区域 | 协议  | 对象存储内网访问域名                                       |
+  | -------- | ------------ | ----- | ---------------------------------------------------------- |
+  | 华东     | 华东-浙江    | HTTPS | 上传：[https://up-xs.qiniup.com](https://up-xs.qiniup.com) |
+  | 华北     | 华北-河北    | HTTPS | 上传：[https://up-zz.qiniup.com](https://up-zz.qiniup.com) |
+  | 华南     | 华南-广东    | HTTPS | 上传：[https://up-fn.qiniup.com](https://up-fn.qiniup.com) |
+
+
+
+## **场景示例1**
+
+- 用户可以使用同机房的内网上传域名来进行上传文件。
+
+**步骤**
+
+- 通过七牛云[命令行工具(qshell)](https://developer.qiniu.com/kodo/tools//qshell#7)的`fput`命令执行上传操作：
+
+```
+# HTTPS协议
+/qshell-linux-x64 fput qapp-test qapp.txt qapp.txt -u https://up-xs.qiniup.com
+```
+
+**参数解析**
+
+- `qapp-test`：存储空间名
+- `qapp.txt`：上传文件名
+- `https://up-xs.qiniup.com`：华东对应的内网上传域名
+
+**上传完成后**，您可以[登录控制台](https://portal.qiniu.com/bucket)查看文件上传成功。
+
+
+
+## **场景示例2**
+
+- 对qapp 的应用访问入口，设置为 `开启fop请求入口`，对处理结果作为资源保存到指定空间，使用saveas 接口进行上传（该接口是走内网），您可以参考文档 [处理结果另存(saveas)](https://developer.qiniu.com/dora/1305/processing-results-save-saveas)。
+
+- 可以使用管道|拼接 `saveas/<encodedEntryURI>`，指示七牛服务器使用EncodedEntryURI格式中指定的 Bucket 与 Key 来保存处理结果。 
+
+  ```
+  # 示例：对音视频进行转码，并对处理后结果另存
+  "persistentOps":"avthumb/mp4|saveas/cWJ1Y2tldDpxa2V5"
+  
+  # 其中cWJ1Y2tldDpxa2V5是bucket:key的URL安全的Base64编码结果
+  ```
+
+
+
+# **下载文件**
+
+## **Region 对照表**
+
+- 目前仅支持 **华东**、**华北**、**华南** 的QAPP服务可以访问同区域的对象存储服务，可以使用如下 **内网域名** 访问：
+
+| QAPP区域 | 对象存储区域 | 协议 | 对象存储内网访问域名                                         |
+| -------- | ------------ | ---- | ------------------------------------------------------------ |
+| 华东     | 华东-浙江    | HTTP | 下载：[http://ufop-xsio.qiniu.com](http://ufop-xsio.qiniu.com) |
+| 华北     | 华北-河北    | HTTP | 下载：[http://ufop-zzio.qiniu.com](http://ufop-zzio.qiniu.com) |
+| 华南     | 华南-广东    | HTTP | 下载：[http://ufop-fnio.qiniu.com](http://ufop-fnio.qiniu.com) |
+
+- 将源文件空间上绑定自定义源站域名、然后将域名解析 cname到对应区域的内网访问域名上，关于如何 CNAME 请参考文档 [如何配置域名的 CNAME](https://developer.qiniu.com/fusion/kb/1322/how-to-configure-cname-domain-name)，再通过以下命令下载文件：
+
+  ```
+  # HTTP协议
+  curl http://developer.qiniu.com/qapp.txt  -o t.txt
+  ```
+
+  或者通过以下命令下载文件：
+
+  ```
+  # HTTP协议
+  curl -H "Host: developer.qiniu.com" http://ufop-xsio.qiniu.com/qapp.txt  -o t.txt
+  ```
+
+  **参数解析**
+
+  - 将空间绑定域名 `developer.qiniu.com`，然后将域名 **CNAME** 到`ufop-xsio.qiniu.com`
+  - `t.txt`：本地保存文件名
+
+
+
+## **场景示例**
+
+用户指定七牛对象存储空间中的多个资源文件，进行压缩处理，并将生成的压缩文件以指定的key存储到指定的bucket中。
+
+**第一步：部署应用实例**
+
+- 在QAPP中快速部署应用实例，需要完成的准备工作，包括注册七牛账号、制作镜像、创建应用、部署实例。如果你还没有对应的应用，请参考文档 [快速部署一个应用实例](https://developer.qiniu.com/qapp/12307/rapid-deployment-of-an-application-example) 。
+
+**第二步：指定应用访问方式 -> 开通fop请求入口**  
+
+- 通过开启 `Fop请求入口` 实现对存储在七牛对象存储的文件调用。
+
+![img](https://dora-doc.qiniu.com/WX20221104-114423%402x.png)
+
+- fop请求入口的数据处理机制分为以下三种场景，需要自行选择适合自己业务场景的处理方式，您可以参考文档 [数据处理机制介绍](https://developer.qiniu.com/dora/6217/directions-for-use-pfop)。
+
+  | 触发场景             | 处理类别   | 说明                                                         | 超时                |
+  | :------------------- | :--------- | :----------------------------------------------------------- | ------------------- |
+  | 访问资源时           | 同步处理   | 只需要在资源URL后加上具体数据操作指令和参数。                | 同步处理超时30s     |
+  | 资源上传时，自动触发 | 持久化处理 | 上传过程中自动触发数据处理，可在上传策略中设置 `persistentOps` 和` persistentNotifyUrl` 字段，在资源上传完成后七牛云存储会以异步的方式执行数据处理操作，并持久化存储数据处理结果。支持查询数据处理操作的进度。具体请参考[状态查询](https://developer.qiniu.com/dora/1294/persistent-processing-status-query-prefop)。 | 持久化处理超时2小时 |
+  | 对已有资源，手动触发 | 持久化处理 | 针对已存在空间中的资源手动触发处理流程，与上传时的数据处理支持相同，这个过程也为异步且可查询操作进度。具体请参考[状态查询](https://developer.qiniu.com/dora/1294/persistent-processing-status-query-prefop)。 | 持久化处理超时2小时 |
+
+**第三步：对已有资源手动触发**
+
+- 使用场景是多文件压缩，同步处理30s会超时，所以需要选择持久化处理的方式，请参考文档[持久化处理(pfop)](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop)。
+
+- 请求参数以表单形式组织，作为请求内容提交，格式如下：
+
+  `fops  `是用户定义的应用处理 cmd，里面至少需要包含打包压缩的命令、压缩源文件、指定需要被压缩的资源、打包压缩结果文件名字等信息，需要被压缩的资源可以通过指定一系列URL的方式，在请求中需要经过[URL安全的Base64编码](https://developer.qiniu.com/kodo/manual/appendix#urlsafe-base64) 。
+
+```
+ bucket=<urlEncodedBucket>&key=<urlEncodedKey>&fops=<urlEncodedFops>&notifyURL=<urlEncodedPersistentNotifyUrl>&force=<Force>&pipeline=<Pipeline Name>
+```
+
+| 参数名称  | 必填 | 需要URL编码: | 说明                                                         |
+| :-------- | :--- | :----------- | :----------------------------------------------------------- |
+| bucket    | 是   | 是           | 资源空间                                                     |
+| key       | 是   | 是           | 源资源名                                                     |
+| fops      | 是   | 是           | 数据处理命令，以`;`分隔，可以指定多个数据处理命令。<br>如： `avthumb/mp4|saveas/<encodedEntryURI>`，是将源文件转码成mp4后另存。 <br>可以使用管道`|`拼接`saveas/<encodedEntryURI>`，指示七牛服务器使用[EncodedEntryURI](https://developer.qiniu.com/kodo/api/1276/data-format)格式中指定的 Bucket 与 Key 来保存处理结果。 |
+| notifyURL | 否   | 是           | 处理结果通知接收 URL，七牛将会向你设置的 URL 发起 `Content-Type: application/json` 的 POST 请求。请参考[持久化处理结果通知](https://developer.qiniu.com/dora/api/1294/persistent-processing-status-query-prefop)。 |
+| force     | 否   | 否           | 强制执行数据处理。 当服务端发现 **fops** 指定的数据处理结果已经存在，那就认为已经处理成功，避免重复处理浪费资源。 force设为 1，则可强制执行数据处理并覆盖原结果。 |
+| pipeline  | 否   | 否           | 为空则表示使用默认队列。建议指定[队列](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop)，转码时与其他队列分别使用独立的计算资源。 |
+
+**第四步：下载文件使用内网访问域名：**
+
+- 将文件空间上绑定自定义源站域名、然后将域名解析 cname到对应区域的内网访问域名上。
+- 空间绑定域名，如果是公有空间，不需要签名；如果是私有空间资源访问，使用自定义源站域名作为Host，并使用 [下载凭证](https://developer.qiniu.com/kodo/1202/download-token)。

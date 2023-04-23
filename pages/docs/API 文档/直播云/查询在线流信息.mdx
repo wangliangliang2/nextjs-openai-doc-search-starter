@@ -1,0 +1,85 @@
+# 接口描述
+
+查询直播开始时间、主播IP、当前码率、当前帧率等信息
+
+# 请求参数
+
+```
+GET /v2/hubs/<hub>/streams/<encodedStreamTitle>/live
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/x-www-form-urlencoded 
+```
+
+| 参数             | 类型 | 必填 | 描述                     |
+| ------------------ | ------ | -------- | -------------------------- |
+| hub                | string | 是   | 直播空间名            |
+| encodedStreamTitle | string | 是   | 经过[base64编码](/kodo/manual/appendix)的直播流名   |
+
+# 返回数据
+
+| 参数         | 类型   | 描述                            |
+| ------------ | ------ | ------------------------------- |
+| startAt      | int64  | 推流开始时间，Unix 时间戳       |
+| clientIP     | string | 推流端IP                        |
+| serverIP     | string | 服务端IP                        |
+| bps          | int    | 推流码率                        |
+| fps          | object | 帧率                            |
+| ├─ audio     | int    | 音频帧率                        |
+| ├─ video     | int    | 视频帧率                        |
+| ├─ data      | int    | metadata帧率                    |
+| maxGop       | int    | 最近30秒内GOP最大值，单位：毫秒 |
+| avgGop       | int    | 最近30秒内GOP平均值，单位：毫秒 | 
+| videoBitRate | int    | 视频码率，单位：bps             |
+| audioBitRate | int    | 音频码率，单位：bps             |
+| location     | string | 推流端所在地区                  |
+| isp          | string | 推流端所在运营商                |
+| playCount    | int64  | 播放人数                        |
+| bandwidth    | int64  | 播放带宽，单位：bps             |
+
+# 示例
+
+请求体:
+
+```
+GET /v2/hubs/test/streams/dGltZXN0YW1w/live HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/x-www-form-urlencoded 
+```
+
+返回体:
+
+```
+200 OK
+
+{
+    "startAt": 1635162331,
+    "clientIP": "127.0.0.1:19866",
+    "serverIP": "127.0.0.1:1935",
+    "bps": 601344,
+    "videoBitRate": 601251,
+    "audioBitRate": 14148,
+    "maxGop": 1000,
+    "avgGop": 1000,
+    "location": "上海",
+    "isp": "电信",
+    "playCount": 10,
+    "bandwidth": 6012510,
+    "fps": {
+        "audio": 43,
+        "video": 60,
+        "data": 0
+    }
+} // 流不在线时返回也为200，各值为零值
+
+404 {
+    "error": "not found" // 未找到流
+}
+
+
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

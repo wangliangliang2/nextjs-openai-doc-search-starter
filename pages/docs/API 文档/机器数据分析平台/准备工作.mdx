@@ -1,0 +1,59 @@
+# 1. 步骤介绍
+
+在使用 API 调用 Pandora 2.0 接口之前，我们先介绍一下需要做的基础准备工作。一般来说调用 API 的基本步骤包括以下几步：
+
+1. 完整安装 Pandora 2.0 所有依赖组件，可以参考[安装手册](https://developer.qiniu.com/express/manual/6001/installation_manual)，获得请求路径
+2. 在访问控制中生成 API 访问 Token，可以参考[访问控制](https://developer.qiniu.com/express/manual/6352/access_control)
+3. 参考相应 API 手册，撰写脚本或者 curl 命令，调用 Restful 接口，具体接口格式可以参考接口文档
+
+
+# 2. 步骤详解：
+
+## 2.1 请求路径
+
+如果我们安装了单机版本的 Pandora 2.0，我们可以通过本机ip和端口进行访问。例如 `http://localhost:9999/api/v1/` 或者 `http://127.0.0.1:9999/api/v1/` 都可以作为请求url 前缀。如果安装的是分布式版本的，则需要选择具体实例的ip 作为请求路径，进行调用访问。
+
+## 2.2 访问控制
+
+为了保护 API 受控制的进行访问，我们需要使用访问控制来生成有一定时效性的 Token，对接口访问进行鉴权。可以参考 [访问控制](https://developer.qiniu.com/express/manual/6352/access_control)
+
+具体示例如下：
+
+### 2.2.1 点击创建Token
+
+![创建Token](https://dn-odum9helk.qbox.me/Fo_F8NQIC1blJYmGtPiN27fyWk5p)
+
+
+### 2.2.2 设置请求用户、Token用途、和生效时间。请将 Token 保存，妥善保管
+
+![保存Token](https://dn-odum9helk.qbox.me/FgLuYDwc66tcVAbmeSZNAYpOXDOh)
+
+
+## 2.3 访问接口
+
+
+访问接口有两种方式：
+
+### 2.3.1 方式1 url中设置查询参数
+
+可以在请求url中增加 `?token=<Token>` 参数，`<Token>` 处填写上一步骤中保存的Token。
+
+**注意**：因为大部分 HTTP服务器会在日志中保存请求路径，容易造成Token泄露，不推荐使用这种方式。如果不得已要使用这种模式的话，建议缩短Token的有效期，并注意定期更新。
+
+```
+curl -XGET http://localhost:9999/api/v1/repos\?token\=eyJhbGciOiJIUzUxMiIsInppcCI6IkRFRiJ9.eJwdykkKgDAMQNG7ZG2lqakmrrxKaltQcAAVBPHuDpu_ePwLxn2AFkR7FdZsEG1tSL0YVXZGMHOgShNGhAK2I7yzxmmYu79lv0yvzyFDi75hsZUjV0A61w_Ykmcidz_6HxyA.5wD7geM6DIAg3nbS7y1WCLWPgOWzJSjWqSxoPW-CXo9lNobRZnbWD4yADuQmLAy_U4560QQzjfS576cQEh-Xrg 
+-H 'Content-Type: application/json'
+```
+
+### 2.3.2 方式2 设置自定义Header
+
+可以在 HTTP Header中增加 `Authorization: <Token>`，`<Token>` 处填写上一步骤中保存的Token。
+
+```
+curl -XGET http://localhost:9999/api/v1/repos \
+-H 'Content-Type: application/json' \
+-H 'Authorization: eyJhbGciOiJIUzUxMiIsInppcCI6IkRFRiJ9.eJwdykkKgDAMQNG7ZG2lqakmrrxKaltQcAAVBPHuDpu_ePwLxn2AFkR7FdZsEG1tSL0YVXZGMHOgShNGhAK2I7yzxmmYu79lv0yvzyFDi75hsZUjV0A61w_Ykmcidz_6HxyA.5wD7geM6DIAg3nbS7y1WCLWPgOWzJSjWqSxoPW-CXo9lNobRZnbWD4yADuQmLAy_U4560QQzjfS576cQEh-Xrg'
+```
+
+
+> 注意：如果请求体为json 格式的话，Header 中必须添加 'Content-Type: application/json'

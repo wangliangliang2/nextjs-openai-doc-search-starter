@@ -1,0 +1,99 @@
+浏览器web播放器支持的格式是比较标准的，所以部分的不是标准格式的视频会在 web 端播放不出来
+
+# 解决方案 
+
+使用代码，调用七牛的接口转为标准的 MP4 。参考：[音视频转码](/dora/api/audio-and-video-transcoding-avthumb)
+
+`fops = 'avthumb/mp4'`  设置为标准的 mp4
+
+python
+```
+from qiniu import Auth, put_file, etag, urlsafe_base64_encode
+import qiniu.config
+
+# access_key，secret_key在个人面板的密钥管理处获得，非个人账号密码
+access_key = '...'
+secret_key = '...'
+
+# 初始化Auth状态
+q = Auth(access_key, secret_key)
+
+# 你要测试的空间， 并且这个key在你空间中存在
+bucket_name = '...'
+key = '...'
+
+# 是使用的队列名称,不设置使用默认队列。
+pipeline = 'your_pipeline'
+
+# 设置转码参数
+fops = 'avthumb/mp4'
+
+# 通过添加'|saveas'参数，指定处理后的文件保存的bucket和key，不指定默认保存在当前空间，bucket_saved为目标bucket，bucket_saved为目标key
+saveas_key = urlsafe_base64_encode('bucket_saved:bucket_saved')
+
+fops = fops+'|saveas/'+saveas_key
+
+# 在上传策略中指定fobs和pipeline
+policy={
+  'persistentOps':fops,
+  'persistentPipeline':pipeline
+ }
+
+token = q.upload_token(bucket_name, key, 3600, policy)
+
+# 视频所在的本地路径
+localfile = './python_video.flv'
+
+ret, info = put_file(token, key, localfile)
+print(info)
+assert ret['key'] == key
+assert ret['hash'] == etag(localfile)
+
+```
+
+php
+
+```
+  <?php
+  require_once 'path_to_sdk/vendor/autoload.php';
+
+  use Qiniu\Auth;
+  use Qiniu\Storage\UploadManager;
+
+  $accessKey = 'Access_Key';
+  $secretKey = 'Secret_Key';
+  $auth = new Auth($accessKey, $secretKey);
+
+  $bucket = 'Bucket_Name';
+  
+  //转码时使用的队列名称 
+  $pipeline = 'abc';
+
+  //要进行转码的转码操作 
+  $fops = "avthumb/mp4";
+  
+  //可以对转码后的文件进行使用saveas参数自定义命名，当然也可以不指定文件会默认命名并保存在当间
+  $savekey = Qiniu\base64_urlSafeEncode('目标Bucket_Name:自定义文件key');
+  $fops = $fops.'|saveas/'.$savekey;
+ 
+  $policy = array(
+    'persistentOps' => $fops,
+    'persistentPipeline' => $pipeline
+  );
+  $uptoken = $auth->uploadToken($bucket, null, 3600, $policy);
+
+  //上传文件的本地路径
+  $filePath = './php-logo.png';
+
+  $uploadMgr = new UploadManager();
+
+  list($ret, $err) = $uploadMgr->putFile($uptoken, null, $filePath);
+  echo "\n====> putFile result: \n";
+  if ($err !== null) {
+      var_dump($err);
+  } else {
+      var_dump($ret);
+  }
+
+```
+

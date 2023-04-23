@@ -1,0 +1,40 @@
+### **访问的限制**
+当出现存储空间被恶意攻击、流量被恶意盗刷时，此时会出现高带宽或者大流量突发的情况。为尽量避免此类特殊情况发生、且尽可能杜绝由此带来的重大影响，Kodo 支持了多种访问相关的功能设置，如针对空间访问权限的控制、设置 Referer 防盗链、跨域资源共享。
+
+其中，空间的[访问控制](/kodo/development_guidelines/8603/dev-access-control)功能，能够统一的限制对空间中数据的访问权限。Kodo 支持设置空间访问权限为公开或私有，设置私有空间可有效降低空间被恶意访问的风险。
+- 公开空间，可通过文件对象的 URL 直接访问。
+- 私有空间，文件对象的访问则必须获得拥有者的授权才能访问。
+
+更多设置详情请参考[设置访问控制](/kodo/development_guidelines/8502/set-access-control)。
+
+<br>
+
+[Referer 防盗链](/kodo/development_guidelines/8618/dev-preventing-hotlinking)功能，支持用户对访问来源自定义黑、白名单，以避免数据被非预期来源访问、盗用。具体的，Kodo 支持在 Referer 防盗链中配置以下参数：
+- Referer 白名单，仅允许指定的域名访问资源；或 Referer 黑名单，指定域名禁止访问资源
+- 是否允许空 Referer。如果不允许空 Referer，则只有 HTTP 或 HTTPS header 中包含 Referer 字段的请求才能访问资源。
+
+如下图为 Referer 防盗链设置界面，更多设置详情请参考[设置 Referer 防盗链](/kodo/development_guidelines/8538/set-the-referer-hotlinking-prevention)。
+
+![image.png](https://dn-odum9helk.qbox.me/FqSYk1ixX5J7lm1OD2MnVc9DX3Id)
+
+<br>
+
+此外，[跨域资源共享](/kodo/development_guidelines/8608/dev-cross-domain-resource-sharing)功能，跨域访问 CORS（Cross-Origin Resource Sharing）是 HTML5 提供的标准跨域解决方案，也是浏览器出于安全考虑而设置的一个限制、用于隔离潜在的对文件的恶意访问。
+
+在实际应用中，经常会有跨域访问的需求，比如用户的网站 a.website.com，后端使用了七牛云对象存储 Kodo 系统。在网页中提供了使用 JavaScript 实现的上传功能，但是在该页面中，只能向 a.website.com 发送请求，向其他网站发送的请求都会被浏览器拒绝。这样就导致用户上传的数据必须从 a.website.com 中转。如果设置了跨域访问的话，用户就可以直接上传到七牛云存储而无需从 a.website.com 中转。
+
+Kodo 支持根据需求灵活配置跨域访问规则，实现允许或者拒绝相应的跨域请求，从而也能降低数据被恶意访问的风险。如下图为跨域资源共享设置界面，更多设置详情请参考[设置跨域资源共享](/kodo/development_guidelines/8539/set-the-cross-domain-resource-sharing)。
+
+![image.png](https://dn-odum9helk.qbox.me/Flpy3Duy0CsIv6B_9lkkOclN73NK)
+
+如果您通过 CDN 域名访问资源，七牛云也提供了在 CDN 域名上开启访问安全控制功能，详情请参考 [CDN 访问控制配置](https://developer.qiniu.com/fusion/4960/access-control-configuration)。
+
+<br>
+
+### **资源的审核**
+为有效防止因不预期的资源导致的盗量，我们还建议您开启存储空间的存量和增量内容审核功能，以便于及时发现、处理敏感资源。
+
+七牛云针对 Kodo 云存储用户，提供了一键式的图片、视频内容审核服务。您可以将保存在 Kodo 中的图片、视频进行鉴黄、鉴暴恐、政治敏感人物识别等内容审核服务，并对增量违规数据使用自动封禁的功能。七牛云还提供对审核结果的自助复核功能，用户可以自行对图片、视频进行删除、封禁和通过等操作。详情请参考[内容审核操作指南](https://developer.qiniu.com/censor/8066/censor-portal-stream)。
+![image.png](https://dn-odum9helk.qbox.me/FvU3guGPklxcNALGPrUEFd25HCAD)
+
+

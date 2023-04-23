@@ -1,0 +1,71 @@
+**必填项**
+* region:S3服务所在区域(region)，例如`us-east-1`。
+* s3_access_key: 必填项, AWS 的 access key ID。为了不在配置中明文存储，我们在 1.0.4 版本及以后支持使用环境变量的方式填写该字段，填写方式为：`${YOUR_ENV}`，其中 `YOUR_ENV` 为环境变量，需要在机器上将该环境变量设置为原先要填写的值，`YOUR_ENV`可以根据您的实际使用需求进行修改。
+* s3_secret_key: 必填项, AWS 的 secret key。为了不在配置中明文存储，我们在 1.0.4 版本及以后支持使用环境变量的方式填写该字段，填写方式为：`${YOUR_ENV}`，其中 `YOUR_ENV` 为环境变量，需要在机器上将该环境变量设置为原先要填写的值，`YOUR_ENV` 可以根据您的实际使用需求进行修改。
+* s3_bucket: 必填项, S3存储桶名称。
+* object_key:支持写一个` Pattern `作为路径，例如 `"file_send_path":"data-%Y-%m-%d.txt"` ，此时数据就会根据当前时间渲染出日期。渲染变量列表见sender中本地文件系统文档。
+
+**选填**
+
+* 单个文件最大行数:达到最大行数，发送文件，默认10000行。
+* 单个文件最大大小:达到最大大小，发送文件，默认500MB，单位MB。
+
+**高级选项**
+* Endpoint:终端节点地址，如`s3-REGION.amazonaws.com`。
+* 文件压缩: 对文件进行`gzip`或者`snappy`压缩，默认none，不使用压缩。
+* 文件存储类型: 可以对文件进行`parquet`进行存储，默认none，文本存储。
+* Parquet字段: 存储类型为parquet时，需要填写`schema`字段，否则无法解析存储。
+* 发送间隔:填写1m表示1分钟，10m表示10分钟，默认1m。
+
+【注】
+  1.parquet文件中schema中配置的字段所对应的值不能为空，由于解析数据失败时会导致某些字段的值为空，建议通过在解析器中设置`禁止记录解析失败数据`为`true`解决。
+  2.`parquet schema`填写格式：`json`格式。其中第一个Tag的name为表名，之后Tag的name为parquet字段名。
+	例：
+```
+{
+  "Tag": "name=parquet-go-root, repetitiontype=REQUIRED",
+  "Fields": [
+    {"Tag": "name=name, inname=Name, type=UTF8, repetitiontype=OPTIONAL"},
+    {"Tag": "name=age, inname=Age, type=INT32, repetitiontype=OPTIONAL"},
+    {"Tag": "name=id, inname=Id, type=INT64, repetitiontype=OPTIONAL"},
+    {"Tag": "name=weight, inname=Weight, type=FLOAT, repetitiontype=OPTIONAL"},
+    {"Tag": "name=sex, inname=Sex, type=BOOLEAN, repetitiontype=OPTIONAL"},
+
+    {"Tag": "name=classes, inname=Classes, type=LIST, repetitiontype=REPEATED",
+     "Fields": [{"Tag": "name=element, type=UTF8, repetitiontype=REQUIRED"}]
+    },
+    {
+      "Tag": "name=scores, inname=Scores, type=MAP, repetitiontype=REPEATED",
+      "Fields": [
+        {"Tag": "name=key, type=UTF8, repetitiontype=OPTIONAL"},
+        {"Tag": "name=value, type=LIST, repetitiontype=OPTIONAL",
+         "Fields": [{"Tag": "name=element, type=FLOAT, repetitiontype=OPTIONAL"}]
+        }
+      ]
+    },
+    {
+      "Tag": "name=friends, inname=Friends, type=LIST, repetitiontype=REPEATED",
+      "Fields": [
+       {"Tag": "name=element, repetitiontype=REQUIRED",
+        "Fields": [
+         {"Tag": "name=name, inname=Name, type=UTF8, repetitiontype=OPTIONAL"},
+         {"Tag": "name=id, inname=Id, type=INT64, repetitiontype=OPTIONAL"}
+        ]}
+      ]
+    },
+    {
+      "Tag": "name=teachers, inname=Teachers, repetitiontype=REPEATED",
+      "Fields": [
+        {"Tag": "name=name, inname=Name, type=UTF8, repetitiontype=OPTIONAL"},
+        {"Tag": "name=id, inname=Id, type=INT64, repetitiontype=OPTIONAL"}
+      ]
+    }
+  ]
+}
+```
+
+**注意事项**：
+三种repetitiontype：`REQUIRED, OPTIONAL, REPEATED`。
+**REQUIRED**：必需的，该字段的值不能为空，如果声明了REQUIRED的字段在实际数据中不存在时，该条数据会被**丢弃**。
+**OPTIONAL**：可选的，该字段的值可以为空。
+**REPEATED**：重复的，用于声明嵌套结构，如list,map等

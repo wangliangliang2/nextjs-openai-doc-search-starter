@@ -1,0 +1,40 @@
+[**实时仓库**](/insight/manual/4875/local-upload-log)：实时仓库是实时数据进入智能日志仓库的源头，无论是使用 API、文件上传，还是使用专业的数据收集工具 logkit-pro 上传的数据，都会首先进入到实时仓库。
+
+智能日志分析平台提供实时日志 tail 功能，对进入实时仓库的日志进行滚动输出，帮助您随时了解从各种设备流入的全部日志。
+
+![](https://pandora-kibana.qiniu.com/real/real_search.png)
+
+同时实时日志 tail 支持条件过滤，我们提供筛选条件功能帮您进行字段过滤，在海量实时日志中筛选核心数据，滚动展示。
+
+![](https://pandora-kibana.qiniu.com/real/real_filter.png)
+
+
+您可以切换日志展示模式，目前支持自定义展示、值展示、字段-值展示。
+
+![](https://pandora-kibana.qiniu.com/real/show_mode.png)
+
+* 值展示：默认展示模式，直接展示原始日志。
+
+* 自定义展示：可选择展示日志中哪些字段的值。
+
+* 字段-值展示：按照键值对的方式将字段与值一一对应展示出来。
+
+其他特性：
+
+* 支持切换背景风格。
+
+* 支持全屏展示日志 tail 界面。
+
+* 支持关闭/开启日志 tail 的自动滚动模式。在自动滚动模式下日志会自动滚动到 tail 最新行。
+
+![](https://pandora-kibana.qiniu.com/real/real_full.png)
+
+在[实时日志查看首页](https://portal.qiniu.com/insight/nb/real/overview)，您可以通过`快速查看`模块方便地查看实时仓库的数据，同时支持前往工作流对实时仓库的数据进行计算，深入挖掘数据信息。
+
+![](https://pandora-kibana.qiniu.com/real/quick_search.png)
+
+除了账号本身的仓库以外，支持查看授权仓库的数据。关于授权仓库详情请阅读[权限管理](/insight/manual/4736/authorization)。
+
+![](https://pandora-kibana.qiniu.com/real/quick_search_authorize.png)
+
+

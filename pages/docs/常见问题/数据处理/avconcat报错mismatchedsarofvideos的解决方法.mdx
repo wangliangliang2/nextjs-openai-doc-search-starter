@@ -1,0 +1,20 @@
+# 问题原因
+
+出现该错误的原因是要进行拼接的视频SAR不匹配，即`url?avinfo`信息中的`sample_aspect_ratio`不一致。
+
+# 解决方式
+
+通过`avthumb`[接口](https://developer.qiniu.com/dora/manual/1248/audio-and-video-transcoding-avthumb)中的`aspect`字段转码下，将SAR转为一致即可，其中`aspect`字段控制的是DAR，即`url?avinfo`信息中的`display_aspect_ratio`参数。
+
+如图所示的两个视频进行拼接就会出现上述错误，将视频一通过`avthumb/mp4/aspect/16:9`命令，将`display_aspect_ratio`转为16：9，则`sample_aspect_ratio`为1:1，此时再进行拼接，即可拼接成功。
+
+![](https://dn-odum9helk.qbox.me/FocwQRaXWpj3_5e0ZllwoLUTdHqZ)
+
+![](https://dn-odum9helk.qbox.me/FsBINCEKAFUUaHSYPMC_go6oA_39)
+
+注：SAR * PAR = DAR
+- SAR —— Sample Aspect Ratio
+- PAR —— Pixel Aspect Ratio 
+- DAR —— Display Aspect Ratio 
+
+ 

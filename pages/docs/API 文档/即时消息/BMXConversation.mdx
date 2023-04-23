@@ -1,0 +1,774 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>class im.floo.floolib.BMXConversation</p>
+                <p>会话</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getCPtr`)'>getCPtr</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#finalize`)'>finalize</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#delete`)'>delete</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#conversationId`)'>conversationId</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#type`)'>type</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#lastMsg`)'>lastMsg</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#unreadNumber`)'>unreadNumber</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#messageCount`)'>messageCount</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isMuteNotification`)'>isMuteNotification</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#extension`)'>extension</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setExtension`)'>setExtension</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#editMessage`)'>editMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setEditMessage`)'>setEditMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#searchMessagesByKeyWords`)'>searchMessagesByKeyWords</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#searchMessagesByKeyWords`)'>searchMessagesByKeyWords</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#searchMessagesByType`)'>searchMessagesByType</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#searchMessagesByType`)'>searchMessagesByType</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setMessagePlayedStatus`)'>setMessagePlayedStatus</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setMessageReadStatus`)'>setMessageReadStatus</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setAllMessagesRead`)'>setAllMessagesRead</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#updateMessageExtension`)'>updateMessageExtension</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#insertMessage`)'>insertMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#loadMessage`)'>loadMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#removeAllMessages`)'>removeAllMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#loadMessages`)'>loadMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#loadMessages`)'>loadMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#searchMessages`)'>searchMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#searchMessages`)'>searchMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#searchMessages`)'>searchMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#searchMessages`)'>searchMessages</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#refreshConversation`)'>refreshConversation</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getCPtr">getCPtr</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+protected static long getCPtr(BMXConversation obj);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="finalize">finalize</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+@Override()
+protected void finalize();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="delete">delete</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+@Override()
+public synchronized void delete();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="conversationId">conversationId</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public long conversationId();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>会话Id</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="type">type</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXConversation.Type type();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>会话类型</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>Type</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="lastMsg">lastMsg</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXMessage lastMsg();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>最新消息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span><a href='/IM/api/8239/bmxmessage'>BMXMessage</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="unreadNumber">unreadNumber</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public int unreadNumber();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>未读消息数</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>int</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="messageCount">messageCount</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public int messageCount();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>会话中所有消息的数量</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>int</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isMuteNotification">isMuteNotification</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public boolean isMuteNotification();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>是否提醒用户消息,不提醒的情况下会话总未读数不会统计该会话计数。</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="extension">extension</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String extension();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>扩展信息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setExtension">setExtension</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode setExtension(String ext);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置扩展信息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            ext: String
+        </div>
+                <p>会话扩展消息</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="editMessage">editMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String editMessage();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>编辑消息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setEditMessage">setEditMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode setEditMessage(String editMessage);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置编辑消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            editMessage: String
+        </div>
+                <p>会话正在编辑的文本消息</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="searchMessagesByKeyWords">searchMessagesByKeyWords</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode searchMessagesByKeyWords(String keywords, long refTime, long size, BMXMessageList result, BMXConversation.Direction arg4);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>搜索消息，如果不指定则从最新消息开始</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            keywords: String
+        </div>
+                <p>搜索消息的关键字</p>
+    </li>
+    <li>
+        <div>
+            refTime: long
+        </div>
+                <p>搜索消息的起始时间</p>
+    </li>
+    <li>
+        <div>
+            size: long
+        </div>
+                <p>最大加载消息条数</p>
+    </li>
+    <li>
+        <div>
+            result: BMXMessageList
+        </div>
+                <p>搜索到的消息结果列表</p>
+    </li>
+    <li>
+        <div>
+            arg4: Direction
+        </div>
+                <p>消息搜索方向，默认（Direction::Up）是从更早的消息中搜索</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="searchMessagesByKeyWords">searchMessagesByKeyWords</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode searchMessagesByKeyWords(String keywords, long refTime, long size, BMXMessageList result);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="searchMessagesByType">searchMessagesByType</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode searchMessagesByType(BMXMessage.ContentType type, long refTime, long size, BMXMessageList result, BMXConversation.Direction arg4);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>按照类型搜索消息，如果不指定则从最新消息开始</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            type: ContentType
+        </div>
+                <p>搜索消息的类型</p>
+    </li>
+    <li>
+        <div>
+            refTime: long
+        </div>
+                <p>搜索消息的起始时间</p>
+    </li>
+    <li>
+        <div>
+            size: long
+        </div>
+                <p>最大加载消息条数</p>
+    </li>
+    <li>
+        <div>
+            result: BMXMessageList
+        </div>
+                <p>搜索到的消息结果列表</p>
+    </li>
+    <li>
+        <div>
+            arg4: Direction
+        </div>
+                <p>消息搜索方向，默认（Direction::Up）是从更早的消息中搜索</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="searchMessagesByType">searchMessagesByType</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXErrorCode searchMessagesByType(BMXMessage.ContentType type, long refTime, long size, BMXMessageList result);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>BMXErrorCode</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setMessagePlayedStatus">setMessagePlayedStatus</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setMessagePlayedStatus(final BMXMessage msg, final boolean status, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置消息播放状态（只对语音/视频消息有效）</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msg: <a href='/IM/api/8239/bmxmessage'>BMXMessage</a>
+        </div>
+                <p>需要设置播放状态的消息</p>
+    </li>
+    <li>
+        <div>
+            status: boolean
+        </div>
+                <p>消息是否已经播放</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setMessageReadStatus">setMessageReadStatus</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setMessageReadStatus(final BMXMessage msg, final boolean status, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置消息未读状态，更新未读消息数</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msg: <a href='/IM/api/8239/bmxmessage'>BMXMessage</a>
+        </div>
+                <p>需要设置消息已读状态的消息</p>
+    </li>
+    <li>
+        <div>
+            status: boolean
+        </div>
+                <p>消息是否设置已读</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setAllMessagesRead">setAllMessagesRead</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setAllMessagesRead(final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>把所有消息设置为已读，更新未读消息数</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="updateMessageExtension">updateMessageExtension</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void updateMessageExtension(final BMXMessage msg, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>更新一条数据库存储消息的扩展字段信息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msg: <a href='/IM/api/8239/bmxmessage'>BMXMessage</a>
+        </div>
+                <p>需要更改扩展信息的消息此时msg部分已经更新扩展字椴信息</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="insertMessage">insertMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void insertMessage(final BMXMessage msg, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>插入一条消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msg: <a href='/IM/api/8239/bmxmessage'>BMXMessage</a>
+        </div>
+                <p>插入的消息</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="loadMessage">loadMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void loadMessage(final long msgId, final BMXDataCallBack&lt;BMXMessage&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>读取一条消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msgId: long
+        </div>
+                <p>需要读取的消息的消息id</p>
+    </li>
+    <li>
+        <div>
+            callBack: &lt;any&gt;
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="removeAllMessages">removeAllMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void removeAllMessages(final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>删除会话中的所有消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="loadMessages">loadMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void loadMessages(final long refMsgId, final long size, final BMXConversation.Direction arg3, final BMXDataCallBack&lt;BMXMessageList&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>加载消息，如果不指定则从最新消息开始</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            refMsgId: long
+        </div>
+                <p>加载消息的起始id</p>
+    </li>
+    <li>
+        <div>
+            size: long
+        </div>
+                <p>最大加载消息条数</p>
+    </li>
+    <li>
+        <div>
+            arg3: Direction
+        </div>
+                <p>加载消息的方向，默认是加载更早的消息</p>
+    </li>
+    <li>
+        <div>
+            callBack: &lt;any&gt;
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="loadMessages">loadMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void loadMessages(final long refMsgId, final long size, final BMXDataCallBack&lt;BMXMessageList&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="searchMessages">searchMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void searchMessages(final String keywords, final long refTime, final long size, final BMXConversation.Direction arg4, final BMXDataCallBack&lt;BMXMessageList&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>搜索消息，如果不指定则从最新消息开始</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            keywords: String
+        </div>
+                <p>搜索消息的关键字</p>
+    </li>
+    <li>
+        <div>
+            refTime: long
+        </div>
+                <p>搜索消息的起始时间</p>
+    </li>
+    <li>
+        <div>
+            size: long
+        </div>
+                <p>最大加载消息条数</p>
+    </li>
+    <li>
+        <div>
+            arg4: Direction
+        </div>
+                <p>消息搜索方向，默认（Direction::Up）是从更早的消息中搜索</p>
+    </li>
+    <li>
+        <div>
+            callBack: &lt;any&gt;
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="searchMessages">searchMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void searchMessages(final String keywords, final long refTime, final long size, final BMXDataCallBack&lt;BMXMessageList&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="searchMessages">searchMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void searchMessages(final BMXMessage.ContentType type, final long refTime, final long size, final BMXConversation.Direction arg4, final BMXDataCallBack&lt;BMXMessageList&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>按照类型搜索消息，如果不指定则从最新消息开始</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            type: ContentType
+        </div>
+                <p>搜索消息的类型</p>
+    </li>
+    <li>
+        <div>
+            refTime: long
+        </div>
+                <p>搜索消息的起始时间</p>
+    </li>
+    <li>
+        <div>
+            size: long
+        </div>
+                <p>最大加载消息条数</p>
+    </li>
+    <li>
+        <div>
+            arg4: Direction
+        </div>
+                <p>消息搜索方向，默认（Direction::Up）是从更早的消息中搜索</p>
+    </li>
+    <li>
+        <div>
+            callBack: &lt;any&gt;
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="searchMessages">searchMessages</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void searchMessages(final BMXMessage.ContentType type, final long refTime, final long size, final BMXDataCallBack&lt;BMXMessageList&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="refreshConversation">refreshConversation</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void refreshConversation(final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>读取数据库当前会话所有消息数量，强制更新conversation的消息总数和未读消息数。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

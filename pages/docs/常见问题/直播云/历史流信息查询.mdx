@@ -1,0 +1,54 @@
+查询直播开始时间、主播IP、历史码率、历史帧率等信息。
+
+# 请求包
+
+```
+GET /v2/hubs/<Hub>/streams/<EncodedStreamKey>/historyinfo?start=<Start>&end=<End>
+Host: pili.qiniuapi.com
+Authorization: <QiniuToken>
+```
+
+`<QiniuToken>`: 管理凭证，用于鉴权。其值为符合[管理凭证](/pili/api/2772/http-requests-authentication)的字符串
+
+| 参数名称 | 是 | 说明 |
+| :----------- | :----------- |:--------------------------------------------------------------- |
+| Hub | 是 | 直播空间名 |
+| EncodedStreamTitle | 是 | 对流名做[URL 安全的 Base64 编码](/kodo/manual/appendix)后得到的字符串 |
+| Start | 是 | 查询的起始时间 (查询的时间跨度，只能获取最近 30 天的数据) |
+| End | 是 | 查询的结束时间 (查询的时间跨度，只能获取最近 30 天的数据) |
+
+# 返回包
+
+```
+200 {
+	"items": [
+		{
+			"time": <Time>, 
+			"bps": <Bps>,
+			"fps": {
+				"audio": <Audio>, 
+				"vedio": <Vedio>,
+				"data": <Data>, 
+				"lostFramePermil": <LostFramePermil> 
+			},
+			"client": "clientIP", // 客户端IP
+			"node": "nodeIP" // 服务端IP
+		},
+	...
+	]
+}
+
+612 {
+	"error": "stream not found"
+}
+```
+
+| 参数名称| 说明 |
+| :----------- |:--------------------------------------------------------------- |
+| Time | 整数，Unix 时间戳，表示推流开始的时间。 |
+| clientIP |字符串，表示主播的IP。 |
+| bps | 整数，表示当前码率。 |
+| fps | 结构体，表示当前帧率信息。|
+| audio | 整数，当前音频帧率。 |
+| video |整数，当前视频帧率。 |
+| data | 整数，当前数据帧率。 |

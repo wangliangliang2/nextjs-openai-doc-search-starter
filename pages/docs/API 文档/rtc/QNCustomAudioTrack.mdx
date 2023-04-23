@@ -1,0 +1,271 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                本地音频自定义导入 Track 类</section>
+                <section class="rtc-doc-panel rtc-doc-section-hierarchy">
+        <div class="rtc-doc-title rtc-doc-title-hierarchy">Hierarchy</div>
+            <ul>
+                <li>
+                    <a href='11222/QNTrack-Linux'>QNTrack</a>                    <ul>
+        <li>
+           <a href='11208/QNLocalTrack-Linux'>QNLocalTrack</a>
+               <ul>
+        <li>
+           <a href='11209/QNLocalVideoTrack-Linux'>QNLocalVideoTrack</a>
+               <ul>
+        <li>
+           <a href='11198/QNCameraVideoTrack-Linux'>QNCameraVideoTrack</a>
+        </li>
+        <li>
+           <a href='11205/QNCustomVideoTrack-Linux'>QNCustomVideoTrack</a>
+        </li>
+</ul>
+        </li>
+        <li>
+           <a href='11207/QNLocalAudioTrack-Linux'>QNLocalAudioTrack</a>
+               <ul>
+        <li>
+           <a href='11210/QNMicrophoneAudioTrack-Linux'>QNMicrophoneAudioTrack</a>
+        </li>
+        <li>
+           QNCustomAudioTrack
+        </li>
+</ul>
+        </li>
+</ul>
+        </li>
+        <li>
+           <a href='11213/QNRemoteTrack-Linux'>QNRemoteTrack</a>
+               <ul>
+        <li>
+           <a href='11215/QNRemoteVideoTrack-Linux'>QNRemoteVideoTrack</a>
+        </li>
+        <li>
+           <a href='11212/QNRemoteAudioTrack-Linux'>QNRemoteAudioTrack</a>
+        </li>
+</ul>
+        </li>
+</ul>
+                </li>
+            </ul>
+    </section>
+<div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#GetTrackID`)'>GetTrackID</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#GetUserID`)'>GetUserID</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#GetTag`)'>GetTag</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#IsAudio`)'>IsAudio</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#IsVideo`)'>IsVideo</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#IsMuted`)'>IsMuted</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#SetMuted`)'>SetMuted</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#SetAudioFrameListener`)'>SetAudioFrameListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#SetVolume`)'>SetVolume</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#GetVolumeLevel`)'>GetVolumeLevel</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#PushAudioFrame`)'>PushAudioFrame</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="GetTrackID">GetTrackID</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual const std::string& GetTrackID() = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取 TrackID</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>string</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="GetUserID">GetUserID</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual const std::string& GetUserID() = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取 UserID</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>string</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="GetTag">GetTag</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual const std::string& GetTag() = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取 Tag</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>string</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="IsAudio">IsAudio</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual bool IsAudio() = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>是否为音频 track</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>bool</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="IsVideo">IsVideo</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual bool IsVideo() = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>是否为视频 track</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>bool</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="IsMuted">IsMuted</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual bool IsMuted() = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>是否 muted</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>bool</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="SetMuted">SetMuted</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void SetMuted(bool muted) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置是否静默该 track，静默后，SDK 将会发送静默帧数据</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            muted: bool
+        </div>
+                <p>是否静默</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="SetAudioFrameListener">SetAudioFrameListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void SetAudioFrameListener(<a href='undefined'>QNAudioFrameListener</a>* listener) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置是音频数据监听</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            listener: <a href='undefined'>QNAudioFrameListener</a>
+        </div>
+                <p>音频数据监听接口</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="SetVolume">SetVolume</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void SetVolume(double volume) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置采集音频音量（不改变系统设备的音量）</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            volume: double
+        </div>
+                <p>音量大小，[1.0-10.0], 默认为 1.0</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="GetVolumeLevel">GetVolumeLevel</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual float GetVolumeLevel() = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取音频采集的音量</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>float</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="PushAudioFrame">PushAudioFrame</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual int32_t PushAudioFrame(const uint8_t* data,uint32_t data_size,uint32_t bits_per_sample,uint32_t sample_rate,uint32_t channels) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>推送自定义音频帧</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            data: uint8_t*
+        </div>
+                <p>音频数据</p>
+    </li>
+    <li>
+        <div>
+            data_size: uint32_t
+        </div>
+                <p>数据长度</p>
+    </li>
+    <li>
+        <div>
+            bits_per_sample: uint32_t
+        </div>
+                <p>位宽，即每个采样点占用位数</p>
+    </li>
+    <li>
+        <div>
+            sample_rate: uint32_t
+        </div>
+                <p>采样率</p>
+    </li>
+    <li>
+        <div>
+            channels: uint32_t
+        </div>
+                <p>声道数</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

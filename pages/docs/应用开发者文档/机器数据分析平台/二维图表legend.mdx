@@ -1,0 +1,29 @@
+在二维图表中：`<legend>`元素用于表示图表的图例，包括图例的位置、图例可以展示的数据类型等。
+ 
+### 父元素
+ 
+在 `<chart>`元素下，只有当 type 属性指定如下值时，`<legend>`才代表二维图表图例。
+	
+* `<chart type="line">`
+* `<chart type="bar">`
+*	`<chart type="area">`
+*	`<chart type="scatter">`
+* `<chart type="bubble">`
+
+### 子元素
+	
+|子元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<position>`|图例显示的位置， 可选值为 top、bottom、left、right、none、center|'top'|
+|`<metrics>`|支持配置每个图例的统计选项， 可以配置 0 个或多个， 可选值为 min、max、avg、current、total|无|
+|`<column-width>`|可配置图例统计选项的宽度|无|
+
+示例：
+
+   ```
+<legend>
+  <position>bottom</position>
+  <metrics>['min'， 'max'， 'avg']</metrics>
+  <column-width>{{min: 120, max: 150}}</column-width>
+</legend>
+```

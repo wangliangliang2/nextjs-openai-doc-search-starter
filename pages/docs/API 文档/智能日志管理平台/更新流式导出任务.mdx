@@ -1,0 +1,11 @@
+**请求语法**
+
+```
+PUT /v2/repos/<RepoName>/exports/<ExportName>
+Content-Type: application/json
+Authorization: Pandora <auth>
+{
+    "spec": <Spec>
+}
+```
+**注意:仅支持对 `spec` 的修改（不允许修改`type`、`whence`）** 

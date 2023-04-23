@@ -1,0 +1,62 @@
+<div data-v-md-line="1"><link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                视频采集配置预设，当预设无法满足需求时，可以通过 <a href='/rtc/api/8700/QNVideoCaptureConfig'>QNVideoCaptureConfig</a> 自行配置预期的采集分辨率</section>
+            <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>实际场景中可能会出现实际采集分辨率和 QNVideoCaptureConfig 配置不符的情况，这是因为 Camera 不支持配置中的分辨率导致的，若 SDK 内部策略选择的分辨率不符合您的需求，您可以通过监听 <a href='/rtc/api/8637/QNCameraEventListener#onCameraOpened'>QNCameraEventListener.onCameraOpened</a> 回调并返回指定的索引来选择符合您需求的采集分辨率。</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Properties</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#CAPTURE_640x480`)'>CAPTURE_640x480</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#CAPTURE_1280x720`)'>CAPTURE_1280x720</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#CAPTURE_1920x1080`)'>CAPTURE_1920x1080</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Properties</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="CAPTURE_640x480">
+CAPTURE_640x480</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">CAPTURE_640x480: <a href='/rtc/api/8700/QNVideoCaptureConfig'>QNVideoCaptureConfig</a></li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>预设 480P 采集分辨率(默认值)</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="CAPTURE_1280x720">
+CAPTURE_1280x720</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">CAPTURE_1280x720: <a href='/rtc/api/8700/QNVideoCaptureConfig'>QNVideoCaptureConfig</a></li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>预设 720P 采集分辨率</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="CAPTURE_1920x1080">
+CAPTURE_1920x1080</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">CAPTURE_1920x1080: <a href='/rtc/api/8700/QNVideoCaptureConfig'>QNVideoCaptureConfig</a></li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>预设 1080P 采集分辨率</p>
+    </div>
+</li>
+</ul>
+</section>
+</div>
+
+
+</div>

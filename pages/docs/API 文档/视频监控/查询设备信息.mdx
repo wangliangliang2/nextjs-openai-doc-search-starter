@@ -1,0 +1,47 @@
+# **描述**
+本接口用于查询设备。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/devices/{deviceId}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|deviceId|是|string|设备Id
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|name|string|设备名称
+|desc|string|设备描述
+|type|integer|类型，1：摄像头、2：平台
+|nsId|string|所属的空间ID
+|nsName|string|所属的空间名称
+|gbId|string|设备国标ID
+|state|string|状态（offline：离线，online：在线，notReg：未注册）
+|username|string|用户名
+|password|string|密码
+|pullIfRegister|boolean|注册成功后启动拉流，默认关闭
+|vendor|string|厂商
+|createdAt|integer|创建时间，Unix时间戳，秒	
+|updatedAt|integer|更新时间，Unix时间戳，秒
+|lastKeepaliveAt|integer|最近心跳时间，Unix时间戳，秒	
+|lastRegisterAt|integer|最近注册时间，Unix时间戳，秒
+|alarmEnable|boolen|是否开启国标报警
+|alarmMethods|string|接收报警类型列表。 alarmEnable为`True`时，此字段有效。多个报警类型以`,`分隔。<br>1为电话报警， 2为设备报警， 3为短信报警， 4为GPS报警， 5为视频报警， 6为设备故障报警， 7其他报警。例如同时接收`短信报警`和`视频报警`，传递参数为`"3,5"`
+|localRecordPushEnable|boolean|本地录像上传开关，默认关闭。如果关闭此开关，本地录像上传云端接口无效
+|localRecordTemplate|string|开启本地录像上传开关后，配置录制模板ID
+|deviceId|string|设备id
+|location.enable|boolean|是否开启地理位置信息
+|location.type|int|0表示地理位置手动录入，1表示自动订阅位置信息，当`location.enable`为`True`时有效
+|location.longitude|float|经度，当`location.type`为`0`时有效
+|location.latitude|float|纬度，当`location.type`为`0`时有效
+|location.interval|int|订阅周期，数据范围为1~60秒，默认为5秒，当`location.type`为`1`时有效
+|rtpAudio|boolean|是否开启音频
+|rtpAudioTranscode|boolean|是否开启音频转码
+|onDemandPull|boolean|是否开启按需拉流

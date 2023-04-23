@@ -1,0 +1,290 @@
+# 功能描述
+音频文件审核功能为音频文件的内容审核场景提供涉政，国歌，色情，广告，娇喘，音色标签，唱歌等内容的识别，并且可以依据具体的业务场景进行配置，帮助您提前防御内容风险，提高审核效率，净化网络环境，提升用户体验。
+# 接口规格
+## 提交音频识别请求
+**请求URL**: `https://censor-open.qiniuapi.com/anti_fraud/v2/audio`
+
+**字符编码格式**: 请求及返回结果都使用 UTF-8 字符集进行编码
+
+**请求方法**: POST
+
+**建议超时时长**: 3s
+
+#### 请求参数
+
+放在 HTTP Body 中，采用 Json 格式，具体参数如下:
+
+| 参数名称      | 类型        | 是否必选 | 说明                                                         |
+| :------------ | :---------- | :------- | :----------------------------------------------------------- |
+| type          | string      | Y        | 需要识别的违规类型，可选值: <br>POLITICAL:涉政识别 <br>ANTHEN:国歌识别 <br>PORN:色情识别 <br>AD:广告识别 <br>MOAN:娇喘识别  <br>SING:唱歌识别 <br>如需做组合识别，通过下划线连接即可，例如AD_PORN_POLITICAL用于广告、色情和涉政识别。<br>DEFAULT: 默认取值<br>POLITICAL_PORN_MOAN |
+| data          | json_object | Y        | 请求数据，最长1MB，详细内容参见下表                          |
+| callback      | string      | N        | 异步检测结果回调通知您的URL，支持HTTP和HTTPS。字段为空时，您必须通过查询接口主动查询结果。 |
+| callbackParam | json_object | N        | 透传字段，当callback存在时可选，发送回调请求时服务将该字段内容同音频结果一起返回 |
+
+其中，data的内容如下:
+
+| 参数名称      | 类型   | 是否必选 | 说明                                                         |
+| :------------ | :----- | :------- | :----------------------------------------------------------- |
+| url           | string | Y        | 待识别音频url地址                                            |
+| audioName     | string | N        | 音频文件名称                                                 |
+| tokenId       | string | N        | 用户账号标识                                                 |
+| channel       | string | N        | 业务场景名称，见channel字段说明                              |
+| returnAllText | bool   | N        | 取值为true时，返回所有音频片段识别结果(每10秒一个音频片段);取值为false 时，返回风险片段(riskLevel为REJECT或REVIEW)识别结果。默认为false。 |
+| nickname      | string | N        | 用户昵称                                                     |
+| timestamp     | int    | N        | 时间戳(毫秒级)                                               |
+| room          | string | N        | 房间号                                                       |
+
+channel字段说明
+
+根据客户不同业务场景，配置不同的渠道(channel)，制定针对性的拦截策略，同时也方便客户针对不同业务场景的数据进行筛选、分析。业务场景和渠道取值对应表如下:
+
+| 业务场景 | channel 取值  |       备注       |
+| :------: | :-----------: | :--------------: |
+| 群聊语音 |  GROUP_CHAT   | 群聊中的语音消息 |
+| 私聊语音 |    MESSAGE    | 私聊中的语音消息 |
+| 录播语音 | AUDIO_PROFILE |   语音录播文件   |
+
+#### 返回参数
+
+放在 HTTP Body 中，采用 Json 格式，具体参数如下:
+
+| 参数名称 | 类型   | 是否必选 | 说明           |
+| :------- | :----- | :------- | :------------- |
+| code     | int    | Y        | 返回码         |
+| message  | string | Y        | 返回码详情描述 |
+| entryId  | string | Y        | 请求唯一标识   |
+
+### 异步回调识别结果
+
+用户如果需要服务端主动对音频检测结果进行回调，则需要在请求参数中传入callback参数，服务端审核完成后将识别结果主动回调到该地址。
+
+**支持协议**: HTTP或HTTPS
+
+**字符编码格式**: 请求及返回结果都使用UTF-8字符集进行编码 
+
+**请求方法**: POST
+
+**建议超时时长**: 5s
+
+**返回字段**:
+放在 HTTP Body 中，采用 Json 格式，具体参数如下:
+
+| 参数名称      | 类型        | 是否必选 | 说明                                                         |
+| :------------ | :---------- | :------- | :----------------------------------------------------------- |
+| code          | int         | Y        | 返回码                                                       |
+| message       | string      | Y        | 返回码详情描述                                               |
+| entryId       | string      | Y        | 请求唯一标识                                                 |
+| audioText     | string      | Y        | 音频转译文本结果                                             |
+| audioTime     | int         | N        | 整段音频的音频时长，单位秒，code为1100时存在                 |
+| labels        | string      | N        | 音频片段风险原因汇总                                         |
+| riskLevel     | string      | N        | 识别结果，可能返回值: <br>PASS:正常内容 <br>REVIEW:疑似违规内容 <br>REJECT:违规内容 |
+| detail        | json_array  | N        | 风险详情                                                     |
+| gender        | json_object | N        | 性别标签与概率值                                             |
+| isSing        | int         | N        | 表示该条音频文件是否唱歌，0表示没有唱歌，1表示唱歌。 <br>仅当type传入值包含SING时返回。 |
+| language      | json_array  | N        | 语种标签与概率值列表                                         |
+| tags          | json_array  | N        | 音色标签与概率值列表                                         |
+| callbackParam | json_object | Y        | 客户传入的透传字段                                           |
+
+detail 数组中每一项的具体参数如下:
+
+| 参数名称         | 类型   | 是否必选 | 说明                                                         |
+| :--------------- | :----- | :------- | :----------------------------------------------------------- |
+| audioStarttime   | int    | Y        | 风险音频片段在音频中的起始时间，单位秒                       |
+| audioEndtime     | int    | Y        | 风险音频片段在音频中的结束时间，单位秒                       |
+| audioUrl         | string | Y        | 风险音频片段地址                                             |
+| audioText        | string | Y        | 音频片段对应的文本内容                                       |
+| riskLevel        | string | Y        | 识别结果，可能返回值: <br>REJECT:违规内容 <br>REVIEW:疑似违规内容 |
+| riskType         | int    | N        | 风险类型，可能取值: <br>0:正常 <br>100:涉政 <br>120:国歌 <br>200:色情 <br>210:辱骂 <br>250:娇喘 <br>300:广告 <br>700:黑名单 <br>900:自定义 |
+| audioMatchedItem | string | N        | 音频中可能出现的敏感词                                       |
+| description      | string | Y        | 风险原因描述                                                 |
+
+gender 参数结构如下:
+
+| 参数名称   | 类型   | 是否必选 | 说明                                                  |
+| :--------- | :----- | :------- | :---------------------------------------------------- |
+| label      | string | Y        | 性别标签名称，可能取值: <br>男性 <br>女性             |
+| confidence | int    | Y        | 对应性别可能性大小，取值0-100，数值越高表示概率越大。 |
+
+language 数组中每一项具体参数如下:
+
+| 参数名称   | 类型 | 是否必选 | 说明                                                         |
+| :--------- | :--- | :------- | :----------------------------------------------------------- |
+| label      | int  | Y        | 语种识别类别标识，可能取值: <br>0:普通话 <br>1:英语 <br>2:粤语 |
+| confidence | int  | Y        | 对应语种标签可能性大小，取值0-100，数值越高表示概率越大。    |
+
+tags 数组中每一项具体参数如下:
+
+| 参数名称   | 类型   | 是否必选 | 说明                                                         |
+| :--------- | :----- | :------- | :----------------------------------------------------------- |
+| label      | string | Y        | 音色标签类别，可能取值: <br>大叔音 <br>青年音 <br>正太音 <br>老年音 <br>女王音 <br>御姐音 <br>少女音 <br>萝莉音 <br>大妈音 |
+| confidence | int    | Y        | 对应音色标签可能性大小，取值0-100，数值越高表示概率越大。    |
+
+## 查询识别结果
+**请求URL**: `https://censor-open.qiniuapi.com/anti_fraud/v2/query_audio`
+
+**字符编码格式**: 请求及返回结果都使用UTF-8字符集进行编码 
+
+**请求方法**: POST
+
+**建议超时时长**: 5s
+
+#### 请求参数:
+
+放在 HTTP Body 中，采用 Json 格式，具体参数如下:
+
+| 参数名称 | 类型   | 是否必选 | 说明                           |
+| :------- | :----- | :------- | :----------------------------- |
+| entryId  | string | Y        | 音频唯一标识，用于查询识别结果 |
+
+#### 返回参数:
+
+放在 HTTP Body 中，采用 Json 格式，具体参数如下:
+
+| 参数名称      | 类型        | 是否必选 | 说明                                                         |
+| :------------ | :---------- | :------- | :----------------------------------------------------------- |
+| code          | int         | Y        | 返回码                                                       |
+| message       | string      | Y        | 返回码详情描述                                               |
+| entryId       | string      | Y        | 请求唯一标识                                                 |
+| audioText     | string      | Y        | 音频转译文本结果                                             |
+| audioTime     | int         | N        | 整段音频的音频时长，单位秒，code为1100时存在                 |
+| labels        | string      | N        | 音频片段风险原因汇总                                         |
+| riskLevel     | string      | N        | 识别结果，可能返回值: <br>PASS:正常内容 <br>REVIEW:疑似违规内容 <br>REJECT:违规内容 |
+| detail        | json_array  | N        | 风险详情                                                     |
+| gender        | json_object | N        | 性别标签与概率值                                             |
+| isSing        | int         | N        | 表示该条音频文件是否唱歌，0表示没有唱歌，1表示唱歌。 <br>仅当type传入值包含SING时返回。 |
+| language      | json_array  | N        | 语种标签与概率值列表                                         |
+| tags          | json_array  | N        | 音色标签与概率值列表                                         |
+| callbackParam | json_object | Y        | 客户传入的透传字段                                           |
+
+detail 数组中每一项的具体参数如下:
+
+| 参数名称         | 类型   | 是否必选 | 说明                                                         |
+| :--------------- | :----- | :------- | :----------------------------------------------------------- |
+| audioStarttime   | int    | Y        | 风险音频片段在音频中的起始时间，单位秒                       |
+| audioEndtime     | int    | Y        | 风险音频片段在音频中的结束时间，单位秒                       |
+| audioUrl         | string | Y        | 风险音频片段地址                                             |
+| audioText        | string | Y        | 音频片段对应的文本内容                                       |
+| riskLevel        | string | Y        | 识别结果，可能返回值: <br>REJECT:违规内容 <br>REVIEW:疑似违规内容 |
+| riskType         | int    | N        | 风险类型，可能取值: <br>0:正常 <br>100:涉政 <br>120:国歌 <br>200:色情 <br>210:辱骂 <br>250:娇喘 <br>300:广告 <br>700:黑名单 <br>900:自定义 |
+| audioMatchedItem | string | N        | 音频中可能出现的敏感词                                       |
+| description      | string | Y        | 风险原因描述                                                 |
+
+gender 参数结构如下:
+
+| 参数名称   | 类型   | 是否必选 | 说明                                                  |
+| :--------- | :----- | :------- | :---------------------------------------------------- |
+| label      | string | Y        | 性别标签名称，可能取值: <br>男性 <br>女性             |
+| confidence | int    | Y        | 对应性别可能性大小，取值0-100，数值越高表示概率越大。 |
+
+language 数组中每一项具体参数如下:
+
+| 参数名称   | 类型 | 是否必选 | 说明                                                         |
+| :--------- | :--- | :------- | :----------------------------------------------------------- |
+| label      | int  | Y        | 语种识别类别标识，可能取值: <br>0:普通话 <br>1:英语 <br>2:粤语 |
+| confidence | int  | Y        | 对应语种标签可能性大小，取值0-100，数值越高表示概率越大。    |
+
+tags 数组中每一项具体参数如下:
+
+| 参数名称   | 类型   | 是否必选 | 说明                                                         |
+| :--------- | :----- | :------- | :----------------------------------------------------------- |
+| label      | string | Y        | 音色标签类别，可能取值: <br>大叔音 <br>青年音 <br>正太音 <br>老年音 <br>女王音 <br>御姐音 <br>少女音 <br>萝莉音 <br>大妈音 |
+| confidence | int    | Y        | 对应音色标签可能性大小，取值0-100，数值越高表示概率越大。    |
+
+# 示例
+## 请求示例
+```
+POST /anti_fraud/v2/audio HTTP/1.1
+Host: censor-open.qiniuapi.com
+Content-Type: application/json
+Authorization: Qiniu YnxrxOSvGotRZpqkZnMzl_euuoqRzOKUd6zwbRju:r6a-o2UpBg6A4puIMnkCExH8lE8=
+
+{
+    "type":"DEFAULT",
+    "data":{
+        "tokenId":"test_01",
+        "url":"http://xxxxxxxx.mp3",
+        "channel":"IM_MESSAGE",
+        "returnAllText":true
+    },
+    "callback":"http://xxxxxxxxx",
+    "callbackParam":{
+        "param1":1,
+        "param2":"qew", 
+        "param3":true
+    }
+}
+```
+## 返回示例 
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "code":1100,
+    "message":"成功", 
+    "entryrid":"5564f430ee6a1adb40f06d768b40316b",
+}
+```
+
+## 回调示例 
+```
+POST /xxxx HTTP/1.1
+Host: xxxx
+Content-Type: application/json
+
+{
+    "code":1100,
+    "message":"成功", 
+    "entryId":"b891cf2d82e214de45df33fc2bea4875",
+    "riskLevel":"REJECT",
+    "audioText":"法轮大法好",
+    "labels":"涉政-音频",
+    "detail":[{
+        "audioStarttime":10,
+        "audioEndtime":20,
+        "audioUrl":"http://xxxxxxxx.wav",
+        "audioText":"法轮大法好",
+        "riskLevel":"REJECT",
+        "audioMatchedItem":"法轮",
+        "riskType":100,
+        "description":"涉政-音频"
+    }],
+    "tags":[
+        {
+            "label":"男性",
+            "confidence":90
+        },
+        {
+            "label":"大叔音",
+            "confidence”:91
+        },
+        {
+            "label":"正太音",
+            "confidence":21
+        },
+        {
+            "label":"老年音",
+            "confidence":11
+        },
+        {
+            "label":"青年音",
+            "confidence":31
+        }
+    ],
+    "callbackParam":{
+        "param1":1,
+        "param2":"qew", 
+        "param3":true
+    }
+}
+```
+# 错误码
+
+| Code | Message |
+| :---: | :---: |
+| 1100 | 成功| 
+| 1901 | QPS受限 |
+| 1902 | 参数不合法 |
+| 1903 | 服务失败 |
+| 1911 | 下载超时 |
+| 91xx | 内部错误 |

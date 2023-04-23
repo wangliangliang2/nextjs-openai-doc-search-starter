@@ -1,0 +1,9 @@
+(1) 推流startStreaming 调用需要在 StreamingState#READY 之后 并且需要在非UI线程中 ；
+
+(2) 已经处于推流状态，调用开始推流；
+
+(3) 推流url无效；
+
+(4) camera未启用；
+
+(5) 网络方面的请求和链接失败，会引起StreamingState#IOERROR；

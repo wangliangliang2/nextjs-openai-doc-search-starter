@@ -1,0 +1,100 @@
+## 接口说明
+    POST /putb64/<Fsize>/key/<EncodedKey>/mimeType/<EncodedMimeType>/crc32/<Crc32>/x:user-var/<EncodedUserVarVal>
+    Host: upload.qiniup.com
+    Authorization: UpToken <UpToken>
+    Content-Type: application/octet-stream
+    
+    <Base64EncodedFileContent>
+
+| 参数名称 | 必填 | 说明 |
+| --- | --- | --- |
+| `/<Fsize>` | 是 | 文件大小。支持传入 -1 表示文件大小以 http request body 为准。 |
+| `/<EncodedKey>` | 否 | 如果没有指定则：如果 uptoken.SaveKey 存在则基于 SaveKey 生产 key，否则用 hash 值作 key。EncodedKey 需要经过 base64 编码。具体可以参照：[URL 安全的 Base64 编码](/kodo/manual/appendix#urlsafe-base64)。 |
+| `/<EncodedMimeType>` | 否 | 文件的 MIME 类型，默认是 application/octet-stream。EncodedMimeType 需要经过 base64 编码。具体可以参照：[URL 安全的 Base64 编码](/kodo/manual/appendix#urlsafe-base64)。  |
+| `/<Crc32>` | 否 | 文件内容的 crc32 校验值，不指定则不进行校验。 |
+| `Host` |  | upload.qiniup.com(华东区域加速上传域名) ，不同区域的http 和 https 域名详见[不同存储区域对应的上传域名](https://developer.qiniu.com/kodo/manual/region-endpoint)  |
+| `UpToken` | 是 | 上传凭证，需要自行使用七牛算法单独构造生成，具体参考文档[上传凭证](https://developer.qiniu.com/kodo/manual/1208/upload-token) |
+
+返回包：
+
+    200 OK {
+      hash: <ETag>
+    }
+
+### 通过javascript方式上传
+
+javascript代码：
+
+    function putb64(){
+      var pic = "填写你的base64后的字符串";
+      var url = "http://upload.qiniup.com/putb64/20264"; //非华东空间需要根据注意事项 1 修改上传域名
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange=function(){
+        if (xhr.readyState==4){
+          document.getElementById("myDiv").innerHTML=xhr.responseText;
+        }
+      }
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Content-Type", "application/octet-stream");
+      xhr.setRequestHeader("Authorization", "UpToken 填写你从服务端获取的上传token");
+      xhr.send(pic);
+    }
+
+**注意事项：**
+
+- upload.qiniup.com 上传域名适用于华东空间。华北空间使用 upload-z1.qiniup.com，华南空间使用 upload-z2.qiniup.com，北美空间使用 upload-na0.qiniup.com。
+- `var url = "http://upload.qiniup.com/putb64/20264";`这里的 20264 是图片没经过 base64 处理的原图字节大小。
+- `xhr.setRequestHeader("Authorization", "UpToken 填写你从服务端获取的上传token");`这里的 UpToken 与后面的字符串保留一个空格。后面跟上服务端请求的 token 字符串。
+- 获取文件大小的时候，切记要通过文件流的方式获取。而不是通过图片标签然后转换后获取。
+- `var url = "http://upload.qiniup.com/putb64/20264";`中可以扩展为以下方式：`http://upload.qiniup.com/putb64/Fsize/key/EncodedKey/mimeType/EncodedMimeType/x:user-var/EncodedUserVarVal`。
+
+举例：
+
+上传后并指定自定义的 key：`http://upload.qiniup.com/putb64/12345/key/usxxeigng=`
+
+### 通过java后台方式上传
+
+    import java.io.File;
+    import java.io.FileInputStream;
+    import com.qiniu.util.*;
+    import okhttp3.*;
+    public class put64 {
+        String ak = "";
+        String sk = "";    // 密钥配置
+        Auth auth = Auth.create(ak, sk);    // TODO Auto-generated constructor stub 
+        String bucketname = "";    //空间名
+        String key = "";    //上传的图片名
+    
+        public String getUpToken() {        
+            return auth.uploadToken(bucketname, null, 3600, new StringMap().put("insertOnly", 1));
+        }    
+        public void put64image() throws Exception {
+            String file = "D:\\Documents\\Pictures\\1.png";//图片路径
+            FileInputStream fis = null;        
+            int l = (int) (new File(file).length());        
+            byte[] src = new byte[l];
+            fis = new FileInputStream(new File(file));
+            fis.read(src);
+            String file64 = Base64.encodeToString(src, 0);
+            String url = "http://upload.qiniup.com/putb64/" + l+"/key/"+ UrlSafeBase64.encodeToString(key);      
+       //非华东空间需要根据注意事项 1 修改上传域名
+            RequestBody rb = RequestBody.create(null, file64);
+            Request request = new Request.Builder().
+                    url(url).
+                    addHeader("Content-Type", "application/octet-stream")
+                    .addHeader("Authorization", "UpToken " + getUpToken())
+                    .post(rb).build();
+            System.out.println(request.headers());
+    
+            OkHttpClient client = new OkHttpClient();
+            okhttp3.Response response = client.newCall(request).execute();
+            System.out.println(response);
+        }   
+         public static void main(String[] args) throws Exception {   
+              new put64().put64image();
+        }
+    }
+
+demo：  
+http://dn-odum9helk.qbox.me/base64-demo.html
+

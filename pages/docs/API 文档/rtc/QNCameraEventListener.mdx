@@ -1,0 +1,42 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                摄像头开启，采集异常通知</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnCameraError`)'>OnCameraError</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnCameraError">OnCameraError</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnCameraError(int error_code, const std::string& error_message)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>相机失败回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            error_code: int
+        </div>
+                <p>详见错误码 <a href='/rtc/development_guidelines/11350/error-code-windows'>QNErrorCode</a></p>
+    </li>
+    <li>
+        <div>
+            error_message: string
+        </div>
+                <p>错误描述</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

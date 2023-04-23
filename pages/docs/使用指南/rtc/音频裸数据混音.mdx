@@ -1,0 +1,103 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文主要介绍连麦过程中添加 PCM 音频裸数据混音的使用场景。</p>
+<blockquote>
+<ul>
+<li>v5.2.0 版本开始支持使用 <a href="/rtc/api/12270/QNAudioSourceMixer-iOS">QNAudioSourceMixer</a> 进行 PCM 裸数据的混音操作</li>
+<li>PCM 混音不支持存储格式为大端的裸数据，即音频数据源的 <code>AudioStreamBasicDescription</code> 的 <code>mFormatFlags</code> 不能为 <code>kAudioFormatFlagIsBigEndian</code></li>
+</ul>
+</blockquote>
+<p>使用方式如下：</p>
+
+# 创建和销毁 QNAudioSourceMixer
+<p>SDK 当前仅支持基于 <a href="/rtc/api/8855/QNMicrophoneAudioTrack-iOS">QNMicrophoneAudioTrack</a> 的混音功能，可以通过 <a href="/rtc/api/8855/QNMicrophoneAudioTrack-iOS#createAudioSourceMixer">QNMicrophoneAudioTrack.createAudioSourceMixer</a> 来创建 <a href="/rtc/api/12270/QNAudioSourceMixer-iOS">QNAudioSourceMixer</a> 对象</p>
+<pre><code class="language-objc">QNAudioSourceMixer *audioSourceMixer = [microphoneAudioTrack createAudioSourceMixer:<span class="hljs-keyword">self</span>];
+<span></span></code></pre>
+<p>其中，<a href="/rtc/api/12271/QNAudioSourceMixerDelegate">QNAudioSourceMixerDelegate</a> 为 PCM 混音回调代理，回调方法定义如下：</p>
+<pre><code class="language-objc">
+<span></span><span class="hljs-comment">/*!
+<span></span> * @abstract 音源混音发生错误的回调
+<span></span> *
+<span></span> * @param audioSourceMixer 音源混音实例
+<span></span> *
+<span></span> * @param error 错误
+<span></span> *
+<span></span> * @since v5.2.0
+<span></span> */</span>
+<span></span>- (<span class="hljs-keyword">void</span>)audioSourceMixer:(QNAudioSourceMixer *)audioSourceMixer didFailWithError:(<span class="hljs-built_in">NSError</span> *)error;
+<span></span>
+<span></span></code></pre>
+<p>混音场景下的错误码可参考<a href="/rtc/development_guidelines/10084/rtc-error-code-iOS#3">混音相关错误码</a></p>
+<p>确认后续不再需要使用或者需要重新创建 <a href="/rtc/api/12270/QNAudioSourceMixer-iOS">QNAudioSourceMixer</a>，可以通过 <a href="/rtc/api/8855/QNMicrophoneAudioTrack-iOS#destroyAudioSourceMixer">QNMicrophoneAudioTrack.destroyAudioSourceMixer</a> 接口进行销毁，使用代码参考如下：</p>
+<pre><code class="language-objc">[microphoneAudioTrack destroyAudioSourceMixer];
+<span></span></code></pre>
+
+# 创建和销毁 QNAudioSource
+<p><a href="/rtc/api/12273/QNAudioSource-iOS">QNAudioSource</a> 为音源配置类，支持两种构造方法：</p>
+<ol>
+<li><a href="/rtc/api/12270/QNAudioSourceMixer-iOS#createAudioSourceWithSourceID%5B1/2%5D">QNAudioSourceMixer.createAudioSourceWithSourceID[1/2]</a>：通过非阻塞模式创建 <code>QNAudioSource</code></li>
+<li><a href="/rtc/api/12270/QNAudioSourceMixer-iOS#createAudioSourceWithSourceID%5B2/2%5D">QNAudioSourceMixer.createAudioSourceWithSourceID[2/2]</a>：通过指定阻塞模式创建 <code>QNAudioSource</code></li>
+</ol>
+<p>使用代码参考如下：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// 非阻塞模式</span>
+<span></span>QNAudioSource *audioSource = [audioSourceMixer createAudioSource:sourceID];
+<span></span>
+<span></span><span class="hljs-comment">// 阻塞模式</span>
+<span></span>QNAudioSource *audioSource = [audioSourceMixer createAudioSource:sourceID blockingMode:<span class="hljs-literal">YES</span>];
+<span></span></code></pre>
+<blockquote>
+<p>阻塞模式的配置决定了 SDK 是否会阻塞数据导入的线程：</p>
+<ul>
+<li>非阻塞模式下，外部数据需要按照每次送入音频数据的时长间隔依次送入，或者直接使用播放器解码后的回调数据来送入，但不宜送入过快，以免丢弃过多的数据。</li>
+<li>阻塞模式下，外部数据需要持续送入 SDK，但不宜送入太多，以免阻塞导入线程的时间过长。</li>
+</ul>
+</blockquote>
+<p>确认后续不再使用某音源，可以通过 <a href="/rtc/api/12270/QNAudioSourceMixer-iOS#destroyAudioSourceWithSourceID">QNAudioEffectMixer.destroyAudioSourceWithSourceID</a> 接口进行销毁，使用代码参考如下</p>
+<pre><code class="language-objc">[audioSourceMixer destroyAudioSourceWithSourceID:sourceID];
+<span></span></code></pre>
+<p><strong>其中，sourceID 为音源文件的唯一标识符，可自行生成并维护，该标识符为控制一系列音源混音操作的依据，需保证唯一。</strong></p>
+
+# 音量控制
+<p>混音场景下，主要包含三种音量设置：<strong>麦克风混音音量</strong>、<strong>音源混音音量</strong>、<strong>本地播放音量</strong>。三种音量的设置方式参考如下：</p>
+<ul>
+<li><strong>麦克风混音音量</strong>：可以通过 <a href="/rtc/api/8855/QNMicrophoneAudioTrack-iOS#setVolume">QNMicrophoneAudioTrack.setVolume</a> 接口进行配置。</li>
+<li><strong>音源混音音量</strong>：可以通过 <a href="/rtc/api/12270/QNAudioSourceMixer-iOS#setVolume">QNAudioSourceMixer.setVolume</a> 和 <a href="/rtc/api/12270/QNAudioSourceMixer-iOS#setAllSourcesVolume">QNAudioSourceMixer.setAllSourcesVolume</a> 接口分别对指定音源和所有音源进行音量配置。</li>
+<li><strong>本地播放音量</strong>：可以通过 <a href="/rtc/api/8855/QNMicrophoneAudioTrack-iOS#setPlayingVolume">QNMicrophoneAudioTrack.setPlayingVolume</a> 接口进行配置，需要注意的是，播放音量是基于混音后的音频进行调整的，会受到混音音量调整的影响。</li>
+</ul>
+<p>参考代码如下：</p>
+<pre><code class="language-objc">[microphoneAudioTrack setVolume:<span class="hljs-number">0.5</span>];                   <span class="hljs-comment">// 设置麦克风采集(混音)音量</span>
+<span></span>[microphoneAudioTrack setPlayingVolume:<span class="hljs-number">0.5</span>];            <span class="hljs-comment">// 设置混音后本地播放的音量</span>
+<span></span><span class="hljs-keyword">int</span> sourceID = [audioSource getID];
+<span></span>[audioSourceMixer setVolume:<span class="hljs-number">0.5</span> sourceID:sourceID];     <span class="hljs-comment">// 设置指定音源的混音音量</span>
+<span></span>[audioSourceMixer setAllSourcesVolume:<span class="hljs-number">0.5</span>];             <span class="hljs-comment">// 设置所有音源的混音音量</span>
+<span></span></code></pre>
+
+# 数据导入
+<p>PCM 裸数据导入需要对应 <code>sourceID</code> 及音频数据格式 <code>asbd</code></p>
+<p>参考代码如下：</p>
+<pre><code class="language-objc">[audioSourceMixer pushAudioBuffer:&buffer asbd:&asbd sourceID:sourceID];
+<span></span></code></pre>
+<p><strong>注意：目前音频裸数据格式，还不支持 <code>kAudioFormatFlagIsBigEndian</code> 大端</strong></p>
+
+# 发布
+<p>混音场景下，默认音源全部发布到远端，即 <code>publishEnabled</code> 均为 YES。可使用 <a href="/rtc/api/12270/QNAudioSourceMixer-iOS#setPublishEnabled">QNAudioSourceMixer.setPublishEnabled</a> 指定 <code>sourceID</code> 选择是否发布到远端，设置 <code>publishEnabled</code> 为 NO 时，仅在本地播放，不会发布到远端。</p>
+<p>参考代码如下：</p>
+<pre><code class="language-objc">[audioSourceMixer setPublishEnabled:<span class="hljs-literal">NO</span> sourceID:sourceID];      <span class="hljs-comment">// 设置指定音源的不发布到远端，仅在本地播放</span>
+<span></span></code></pre>
+
+# 返听
+<p>若您在混音场景下，有开启返听的需要，则可以通过 <a href="/rtc/api/8855/QNMicrophoneAudioTrack-iOS#setEarMonitorEnabled">QNMicrophoneAudioTrack.setEarMonitorEnabled</a> 接口进行开启，参考代码如下：</p>
+<pre><code class="language-objc">[microphoneAudioTrack setEarMonitorEnabled:<span class="hljs-literal">YES</span>]; <span class="hljs-comment">// 开启返听</span>
+<span></span></code></pre>
+<blockquote>
+<p>为达到最佳体验，建议在<strong>佩戴耳机</strong>的情况下使用该功能</p>
+</blockquote>
+
+# 注意事项
+<ol>
+<li><strong>混音</strong>功能会将混音音频与当前已发布的音频 Track 数据混合并推送出去，若当前的音频 Track 尚未<a href="/rtc/development_guidelines/9260/publish-and-subscribe-iOS">发布</a>，则混音操作将失效。</li>
+<li>混音功能建议在<strong>佩戴耳机</strong>的情况下使用以获得更好的体验。</li>
+</ol>
+
+# 示例代码
+<p>多音源混音场景的示例代码可参考 <a href="https://github.com/pili-engineering/QNRTC-iOS/blob/master/QNRTC-API-Examples/Api-Examples-iOS/Module/Other/AudioSourceMix/AudioSourceMixExample.m">API-Examples-iOS</a></p></div></div>

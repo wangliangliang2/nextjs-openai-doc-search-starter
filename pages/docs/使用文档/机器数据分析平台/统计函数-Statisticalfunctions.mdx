@@ -1,0 +1,25 @@
+**使用场景及限制：**
+
+- 统计函数帮助计算和提供数据相关的统计信息。
+- 支持 1-1，1-n，n-n 的比较。
+- 数据必须为 int 或者 float，不支持 str。
+- 需要提前将空值行去除，不然会影响计算的结果。
+- 有一些函数支持两组字段，有一些函数只支持一组字段。
+- 在一组字段的情况下，支持使用模糊搜索（\*)
+
+**通用语法：**
+
+```
+ ..| score <scoring-method-name> [options] a_field_1 a_field_2 ... a_field_n [against b_field_1 b_field_2 ... b_field_m]
+
+```
+
+目前支持以下统计函数算法：
+
+- [描述性统计 - Describe](/express/manual/11094/descriptive-statistics-the-describe)
+- [矩 - Moment](/express/manual/11095/moment-a-moment)
+- [皮尔逊相关系数 - Pearson Correlation](/express/manual/11096/pearson-correlation-coefficient-pearson-correlation)
+- [斯皮尔曼等级相关系数 - Spearman Correlation](/express/manual/11097/spearman-rank-correlation-coefficient-to-spearman-correlation)
+- [截尾均值 - Tmean](/express/manual/11098/average-truncated-tmean)
+- [截尾 - Trim](/express/manual/11099/the-cut-off-trim)
+- [截尾方差 - Tvar](/express/manual/11100/tvar-truncated-variance)

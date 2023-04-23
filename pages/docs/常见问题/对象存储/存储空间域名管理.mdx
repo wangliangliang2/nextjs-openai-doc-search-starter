@@ -1,0 +1,78 @@
+用户可以绑定自定义域名到存储空间，添加 CNAME 记录指向相应域名，然后通过自定义域名来访问存储空间里的文件。
+* 自定义 CDN 加速域名：为空间绑定自定义 CDN 加速域名，可以通过 CDN 边缘节点缓存数据，提高存储空间内的文件访问响应速度。
+* 自定义源站域名：绑定自定义域名为空间的源站域名，即可通过该域名直接访问存储空间内的文件。
+
+**注意：按照中华人民共和国《互联网管理条例》的要求，所有需要绑定自定义域名的用户，必须提前将域名在工信部备案。**
+
+<a id="CDNDomain"></a>
+# **自定义 CDN 加速域名**
+
+Bucket 可以绑定 CDN 加速域名，利用 CDN 节点缓存数据，来实现存储空间内文件的加速访问。
+
+* 从空间列表点击任一空间名，进入空间管理界面。
+* 点击「域名管理」，在「自定义 CDN 加速域名」设置卡片单击「绑定域名」，即可打开空间的 CDN 加速域名绑定界面。
+
+![](https://dn-odum9helk.qbox.me/FlbOmcInXftkuh4NEEhW8bOGzYfp)
+
+* 域名需要能通过 ICP 备案检测，然后按需设置域名的通信协议、使用范围、应用场景和缓存策略即可。域名需要添加 CNAME 记录解析到指定的域名。
+
+![](https://dn-odum9helk.qbox.me/Fg-tpNBrUyaT2PZV7QntfvkjlPyB)
+
+* 绑定好的域名，会在空间的自定义 CDN 加速域名列表中展示。
+
+
+<a id="SrcDomain"></a>
+# **自定义源站域名**
+
+
+Bucket创建后，用户可以绑定自定义域名为其源站域名，然后使用自定义域名直接访问存储空间内的文件。
+
+* 从空间列表点击任一空间名，进入空间管理界面。
+* 点击「域名管理」，在「自定义源站域名」设置卡片单击「绑定域名」，即可打开空间的源站域名绑定界面。
+
+![](https://dn-odum9helk.qbox.me/Fuzeg8miehYnbruL8TSB4eDq8PAY)
+
+* 域名通过 ICP 备案检测后即可绑定成功。域名需要添加 CNAME 记录指向存储空间所在区域对应的 CNAME 域名，才能通过自定义域名访问存储空间，各区域 CNAME 域名如下：
+	* 华东-浙江  iovip.qiniuio.com
+	* 华东-浙江2 iovip-cn-east-2.qiniuio.com
+	* 华北-河北  iovip-z1.qiniuio.com
+	* 华南-广东  iovip-z2.qiniuio.com
+	* 北美-洛杉矶  iovip-na0.qiniuio.com
+	* 亚太-新加坡  iovip-as0.qiniuio.com
+	* 亚太-首尔  iovip-ap-northeast-1.qiniuio.com
+* 绑定好的域名，会在空间的自定义源站域名列表中展示。
+
+
+## **开启HTTPS访问**
+
+用户可以为源站域名开通HTTPS访问并绑定SSL证书，证书需要先行托管至七牛云的 [SSL证书服务](https://portal.qiniu.com/certificate/ssl)
+
+![](https://dn-odum9helk.qbox.me/FmwnXgR37Hiy11vy9B93iAo0ENyG)
+
+
+## **设置防盗链**
+
+为了防止数据被其他人盗链，可以设置空间防盗链功能：
+
+* Referer白名单，仅允许指定的域名访问资源；或黑名单，指定域名禁止访问资源。
+* 是否允许空Referer。如果不允许空Referer，则只有HTTP或HTTPS header中包含Referer字段的请求才能访问资源。
+
+![](https://dn-odum9helk.qbox.me/FjJxOebNeTaahmRGeNZA0N-6KLVs)
+
+## **验证域名所有权**
+当您的域名被其他用户绑定时，可以通过验证域名所有权，强制解绑此域名。
+**说明：此步骤仅在绑定自定义源站域名提示域名冲突时可查看和操作。**
+
+1、域名绑定冲突时，界面会提示系统依据域名信息生成的 TXT 记录。
+![](https://dn-odum9helk.qbox.me/Ftrx0QPKNYd3S-pPxpKWGp-NTfl0)
+2、在域名解析商处添加对应的 TXT 记录，信息如下：
+![](https://dn-odum9helk.qbox.me/FtfgdMD5mahs2U_96SNwUuPNs-Jd)
+* 记录类型：TXT
+* 主机记录：填写步骤1中显示的主机记录。
+* 记录值：填写步骤1中显示的值
+* 其他值保持默认
+3、在**绑定域名**弹窗中，单击**我已添加TXT验证记录，提交**，若系统验证检测信息通过，则会执行解绑。
+
+
+
+

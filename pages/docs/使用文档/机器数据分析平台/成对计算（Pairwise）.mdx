@@ -1,0 +1,30 @@
+**使用场景及限制：**
+
+- 成对计算可用来计算两组字段之间的成对距离。
+- 支持 1-1，1-n，n-n 的比较。
+- 数据必须为 int 或者 float，不支持 str。
+- 支持使用模糊搜索（\*)
+
+**通用语法：**
+
+```
+ ..| score <scoring-method-name> [options] a_field_1 a_field_2 ... a_field_n against b_field_1 b_field_2 ... b_field_m
+
+```
+
+以下算法评估方式可以用来实现成对距离的计算
+<h3 id="4.1"><strong>成对距离 - Pairwise Distances</strong></h3>
+
+用 pairwise_distances 计算两组数据之间的成对距离。
+
+**语法：**
+
+```
+...|score pairwise_distances metric= <euclidean(default) | cityblock | cosine | l1 | l2 | manhattan | braycurtis | canberra | chebyshev | correlation | hamming | matching | minkowski | sqeuclidean | ks_2samp | wasserstein_distance> output=<matrix(default) | list> <a_field_1> ... <a_field_n> against <b_field_1> ... <b_field_m>
+```
+
+**参数说明：**
+
+- metric 用来设定计算样本间距离的方式，默认为 euclidean（欧式距离）。
+- output 用来设定输出的数据格式，支持 matrix 或者 list，默认为 matrix。
+- 仅支持列和列之间的成对距离计算。如果想要计算行之间的成对距离，请先转置数据集，再做 pairwise_distance 计算。

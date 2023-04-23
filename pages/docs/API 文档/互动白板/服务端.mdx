@@ -1,0 +1,322 @@
+# 1.基础部分:
+- Host地址为: https://rtc.qiniuapi.com
+- 请求参数中的{appId}替换为 实时音视频下，应用列表中对应的应用ID，比如 d8lk7l4ed
+- Qiniu-Auth 认证方式介绍：https://developer.qiniu.com/rtc/8814/api-app，可以选择自己实现，也可以使用服务端SDK。
+
+# 2.服务端接口
+
+## 2.1 创建meeting接口:
+### 请求方法
+``` language
+POST:           /v4/apps/{appId}/board/meeting
+Content-Type:   application/json
+认证方式:        Qiniu-Auth
+```
+
+### 请求参数
+``` json
+{
+    "type":1,
+    "url":"https://qrnlrydxa.hn-bkt.clouddn.com/%E6%9D%AD%E5%B7%9E%E5%B8%82.pdf",
+    "aspectRatio":1.0,
+    "userIds":["user1","user2","user3"]
+}
+
+或者
+
+{
+    "type":0,
+    "aspectRatio":1.0,
+    "zoomScale":2,
+    "userIds":["qiniu-user"]
+}
+```
+### 参数解释
+
+| 参数 | 类型 |  取值 | 备注 |
+| :-----| :---- | :---- |  :---- |
+| type | 整形  |  [0,1,2] | 0 标准模式，1 ppt模式，2 pdf模式 
+| url | 字符串 | https://www.example.com/hello.pdf | 资源的地址，必须为https开头，ppt、pdf模式下必填, 标准模式下不需要此参数
+|  aspectRatio | 浮点类型  |   [0.5~2.2] | 宽高比, 必填
+| zoomScale |  整形 | [1 ~ 5] | 扩展倍数，如果为 标准模式，必填
+|  userIds  | 字符串数组 | 可为空 | 非必填，如果传，会在返回值中返回用户加入房间的token
+
+
+### 返回值:
+
+HttpCode: 200为成功:
+``` json
+{
+    "appId": "29d3757f29d14138949f2c17ae14e957",
+    "meetingId": "651d60b7f6ec4681b2ead09f8f3b1b93",
+    "bucketId": "b13a3623-c5d2-481b-830d-e92ebd349cd5",
+    "userTokens": {
+        "user1": "db3ea2110093fb88561562a920498788",
+        "user2": "c4110b673d2e477d5d1e4db3cc8b7cf3",
+        "user3": "995e581583d2ccbb729616a10e776621"
+    }
+}
+```
+
+httpcode非200失败:
+``` json
+{
+    "error": "invalid args"
+}
+```
+
+## 2.2 删除meeting接口:
+### 请求方法
+``` json
+DELETE:         /v4/apps/{appId}/board/meeting
+Content-Type:   application/json
+认证方式:        Qiniu-Auth    
+```
+### 请求参数
+``` json
+{
+    "meetingId": "2c03d88f46f3468faab89f2fe0164a97"
+}
+```
+### 参数解释
+
+| 参数 | 类型 |  取值 | 备注 |
+| :-----| :---- | :---- |  :---- |
+| meetingId | 字符串   |    | 创建meeting接口返回的meetingId字段。
+
+### 返回值
+HttpCode: 200为成功:
+``` json
+{}
+```
+
+httpcode非200失败:
+``` json
+{
+    "error": "invalid args"
+}
+```
+
+## 2.3 创建bucket接口:
+### 请求方法
+``` language
+POST:           /v4/apps/{appId}/board/bucket
+Content-Type:   application/json
+认证方式:        Qiniu-Auth   
+```
+### 请求参数
+``` json
+{
+    "type":1,
+    "url":"https://qrnlrydxa.hn-bkt.clouddn.com/%E6%9D%AD%E5%B7%9E%E5%B8%82.pdf",
+    "aspectRatio":1.0,
+    "zoomScale":2,
+    "meetingId":"2c03d88f46f3468faab89f2fe0164a97"
+}
+```
+### 参数解释
+
+| 参数 | 类型 |  取值 | 备注 |
+| :-----| :---- | :---- |  :---- |
+| type | 整形  |  [0,1,2] | 0 标准模式，1 ppt模式，2 pdf模式 
+| url | 字符串 | https://www.example.com/hello.pdf | 资源的地址，必须为https开头，ppt、pdf模式下必填, 标准模式下不需要此参数
+|  aspectRatio | 浮点类型  |   [0.5~2.2] | 宽高比, 必填
+| zoomScale |  整形 | [1 ~ 5] | 扩展倍数，如果为 标准模式，必填
+|  meetingId  | 字符串数组 | 创建meeting返回的meetingId  | 
+
+### 返回值
+HttpCode: 200为成功:
+``` json
+{
+     "appId": "29d3757f29d14138949f2c17ae14e957",
+     "bucketId":"bce75b80-2077-4d70-a4a1-b6fc49c22f4f"
+}
+```
+
+httpcode非200失败:
+``` json
+{
+    "error": "invalid args"
+}
+```
+
+## 2.4 删除bucket接口:
+### 请求方法
+``` language
+DELETE:         /v4/apps/{appId}/board/bucket
+Content-Type:   application/json
+认证方式:        Qiniu-Auth     
+```
+### 请求参数
+``` json
+{
+    "bucketId":"bce75b80-2077-4d70-a4a1-b6fc49c22f4f"
+}
+```
+### 参数解释
+
+| 参数 | 类型 |  取值 | 备注 |
+| :-----| :---- | :---- |  :---- |
+| bucketId | 字符串   |   创建meeting或者创建bucket返回的bucketId | 
+
+### 返回值
+HttpCode: 200为成功:
+``` json
+{}
+```
+
+httpcode非200失败:
+``` json
+{
+    "error": "invalid args"
+}
+```
+
+## 2.5 切换bucket接口:
+### 请求方法
+``` language
+POST:           /v4/apps/{appId}/board/bucket/switch
+Content-Type:   application/json
+认证方式:        Qiniu-Auth   
+```
+### 请求参数
+``` json
+{
+    "meetingId": "2c03d88f46f3468faab89f2fe0164a97",
+    "bucketId":"bce75b80-2077-4d70-a4a1-b6fc49c22f4f"
+}
+```
+### 参数解释
+
+| 参数 | 类型 |  取值 | 备注 |
+| :-----| :---- | :---- |  :---- |
+| meetingId | 字符串   | 创建meeting接口返回的meetingId字段  | 
+| bucketId | 字符串   |   创建meeting或者创建bucket返回的bucketId | 
+
+### 返回值
+HttpCode: 200为成功:
+``` json
+{}
+```
+
+httpcode非200失败:
+``` json
+{
+    "error": "invalid args"
+}
+```
+
+## 2.6 获取用户加入房间token接口:
+### 请求方法
+``` language
+GET:            /v4/apps/{appId}/board/user/token?userId=11111aa&meetingId=2c03d88f46f3468faab89f2fe0164a97&userIds=111,bbb
+认证方式:        无需认证
+```
+### 参数解释
+
+| 参数 | 类型 |  取值 | 备注 |
+| :-----| :---- | :---- |  :---- |
+| meetingId | 字符串   |   创建meeting时候返回的meetingId | 
+| userId | 字符串   |   11111aa |  userId和userIds至少传一个
+| userIds | 字符串   |   111,bbb |  userId和userIds至少传一个，userIds支持多个，用“,"分割
+
+
+### 返回值
+HttpCode: 200为成功:
+``` json
+{
+    "appId": "29d3757f29d14138949f2c17ae14e957",
+    "userTokens": {
+        "111": "4816f965459d103dcfc7262b4753d01d",
+        "11111aa": "cbe13d01bf36a14518d09c48fa6fde1b",
+        "bbb": "b534903041c2cc8105dcb7cbedb73331"
+    }
+}
+
+```
+
+httpcode非200失败:
+``` json
+{
+    "error": "invalid args"
+}
+```
+
+## 2.7 开启录制接口:
+### 请求方法
+``` language
+POST:           /v4/apps/{appId}/board/startrecord
+Content-Type:   application/json
+认证方式:        Qiniu-Auth    
+```
+### 请求参数
+``` json
+{
+    "meetingId": "2c03d88f46f3468faab89f2fe0164a97"
+}
+```
+### 参数解释
+
+| 参数 | 类型 |  取值 | 备注 |
+| :-----| :---- | :---- |  :---- |
+| meetingId | 字符串   |   创建meeting时候返回的meetingId | 
+
+### 返回值
+HttpCode: 200为成功:
+``` json
+{
+    "recordId": "3d88f46f3468faab89f2fe016"
+}
+
+```
+
+httpcode非200失败:
+``` json
+{
+    "error": "invalid args"
+}
+```
+
+## 2.7  停止录制接口:
+所有用户离开meeting后，录制自动暂停。
+### 请求方法
+``` language
+POST:           /v4/apps/{appId}/board/stoprecord
+Content-Type:   application/json
+认证方式:        Qiniu-Auth    
+```
+### 请求参数
+``` json
+{
+    "meetingId": "2c03d88f46f3468faab89f2fe0164a97",
+    "recordId":"3d88f46f3468faab89f2fe016"
+}
+```
+### 参数解释
+
+| 参数 | 类型 |  取值 | 备注 |
+| :-----| :---- | :---- |  :---- |
+| meetingId | 字符串   |   创建meeting时候返回的meetingId | 
+| recordId | 字符串 |  startrecord返回的 recordId |
+
+### 返回值
+HttpCode: 200为成功:
+``` json
+{}
+```
+
+httpcode非200失败:
+``` json
+{
+    "error": "invalid args"
+}
+```
+
+# 3.使用指南
+1. 如果要使用白板，在对应的实时音视频下，应用列表中的app信息中，点击查看详情，互动白板中选择开启白板。
+2. 关于标准Meeting和bucket的概念
+    a. meeting表示一个白板房间，有N个用户，如果进入同一个房间，则能同时看到房间内的变化。
+    b. Bucket的概念，是指meeting中的内容，可以选择看PPT，也可以是PDF，也可以是一个空白的
+    c. 一个meeting可以使用多个bucket，支持在SDK和服务端进行切换。
+3.  创建Meeting中，创建type=0标准meeting的时候，会默认创建一个空白的bucket，创建type=1｜2的meeting的时候，会创建对应资源的bucket。
+4. 用户加入房间token，可以在创建meeting的时候，由服务端传输要加入房间的用户ID，来获取加入meeting的token后下发给client的SDK进行加入房间操作，也可以选择在SDK上直接调用获取token的get方法来获取

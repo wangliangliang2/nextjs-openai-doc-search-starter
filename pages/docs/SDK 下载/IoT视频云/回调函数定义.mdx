@@ -1,0 +1,75 @@
+# **MPEG2-TS 封装和上传回调函数定义**
+### **设备自定义配置回调函数类型**
+
+```c
+/**
+ * 设备自定义配置回调函数类型
+ *
+ * @param[in] pDeviceConfig 配置信息
+ * @param[in] size 配置信息长度
+ * @param[in] context 回调参数
+ */
+typedef void Link_DeviceConfig(const char *pDeviceConfig, size_t size, void *context);
+
+```
+
+### **图片上传信号回调函数类型**
+
+```c
+/**
+ * 图片上传信号回调函数类型
+ *
+ * @param[in] handle 实例句柄
+ * @param[in] channelid 视频通道索引
+ * @param[in] isSegmentStart 是否为视频片段开始
+ * @param[in] context 回调参数
+ */
+typedef void Link_GetPicture(LinkInstance handle, int channelid, int isSegmentStart, void *context);
+```
+
+### **上传结果回调函数类型**
+
+```c
+/**
+ * 上传结果回调函数类型
+ *
+ * @param[in] handle 实例句柄
+ * @param[in] channelid 视频通道索引
+ * @param[in] info TS文件信息
+ * @param[in] uploadResult 上传结果, 1:上传成功，0:上传失败
+ * @param[in] context 回调参数
+ */
+typedef void Link_UploadResult(LinkInstance handle, int channelid,
+        Link_TSInfo *info, int uploadResult, void *context);
+
+```
+
+### **输出TS文件回调函数类型**
+
+```c
+/**
+ * 输出TS文件回调函数类型
+ *
+ * @param[in] handle 实例句柄
+ * @param[in] channelid 视频通道索引
+ * @param[in] pBuffer TS内容
+ * @param[in] size TS内容长度
+ * @param[in] info TS信息
+ * @param[in] context 回调参数
+ */
+typedef void Link_TsOutput(LinkInstance handle, int channelid,
+        const void *pBuffer, size_t size, Link_TSInfo *info, void *context);
+```
+
+### **日志回调函数类型**
+
+```c
+/**
+ * 日志回调函数类型
+ *
+ * @param[in] Level 日志级别
+ * @param[in] Log 日志内容，NULL terminate string
+ * @param[in] LogLen 日志长度
+ */
+typedef void Link_LogCallback(int Level, char *Log, size_t LogLen);
+```

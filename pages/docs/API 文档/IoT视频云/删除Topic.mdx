@@ -1,0 +1,49 @@
+# 描述
+该接口用于删除指定的Topic，删除后将不可恢复。
+
+# 请求
+**请求语法**
+
+```
+DELETE /v1/apps/<appid>/topics/<encodeTopic> HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization: <QiniuToken>
+```
+**请求参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|appid|是|string|设备所属应用的appid，设备名称只能由 4-200 位英文字母和数字组成|
+|encodeTopic|是|string|topic名称进行[URL安全的Base64编码](https://developer.qiniu.com/kodo/manual/1231/appendix#1)后得到的字符串|
+
+**请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+
+**请求元素**
+该请求操作的请求体为空
+# 响应
+**响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+**响应元素**
+
+```
+200 {
+}
+```
+# 示例
+
+**请求示例**
+```
+DELETE /v1/apps/2akrar93dqurh/topics/dWRmL2xpbmtpbmcvdjEvMmFrcmFyOTNkcXVyaC8ke2RldmljZX0vdGVzdDExMS8= HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization:QiniuStub uid=1810757928
+```
+**响应示例**
+
+```
+HTTP/1.1 200 OK
+Content-Length: 2
+Content-Type: application/json
+X-Reqid: 5TIAACgml2m-j8sV
+Date: Tue, 08 Oct 2019 03:55:43 GMT
+```

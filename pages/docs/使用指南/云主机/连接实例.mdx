@@ -1,0 +1,19 @@
+完成创建实例、设置白名单和创建账号等操作后，您可以使用数据库客户端连接到RDS实例。
+
+## 使用客户端连接实例
+
+下面以Microsoft SQL Server Management Studio（SSMS）客户端为例介绍如何连接到RDS实例。
+
+1. 在ECS或本地电脑上启动Microsoft SQL Server Management Studio客户端。
+2. 选择连接
+    >数据库引擎 。
+3. 在弹出的连接到服务器对话框中输入登录信息。
+    参数说明服务器类型选择数据库引擎。服务器名称输入RDS实例的连接地址和端口号，连接地址与端口号之间用英文逗号隔开，如`rm-bptest.sqlserver.rds.aliyuncs.com,3433`。
+    
+    查看RDS实例的内外网地址及端口信息的步骤如下：
+    
+    1. 登录[RDS管理控制台](https://portal.qiniu.com/qvm/db/rds)。
+    2. 单击目标实例的ID。
+    3. 在基本信息栏中，即可查看内外网地址及内外网端口信息。  
+    身份验证选择SQL Server身份验证。登录名RDS实例的账号名称。密码RDS实例的账号密码。
+4. 单击连接，即可连接到实例。

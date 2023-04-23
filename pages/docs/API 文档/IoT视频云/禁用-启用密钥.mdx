@@ -1,0 +1,73 @@
+# 描述
+该接口用于禁用、启用设备的密钥。密钥预先为每个设备烧录其唯一的设备证书（DAK和DSK）。当设备与平台建立连接时，平台对其携带的设备证书信息进行认证。认证通过，设备与平台间才可传输数据；如需要更换密钥需要重新烧录。
+
+# 请求
+**请求语法**
+
+```
+POST /v1/apps/<appid>/devices/<encodeDeviceName>/keys/<deviceAccessKey>/state HTTP/1.1
+Host: linking.qiniuapi.com
+Content-Type: application/json
+Authorization: <QiniuToken>
+
+{
+  "state": "<state>" 
+}
+```
+
+**请求参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|appid|是|string|设备所属应用的appid，设备名称只能由 4-200 位英文字母和数字组成|
+|encodeDeviceName|是|string|设备名称进行[URL安全的Base64编码](https://developer.qiniu.com/kodo/manual/1231/appendix#1)后得到的字符串|
+|deviceAccessKey|是|string|设备的access key|
+
+**请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+**请求元素**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|state|是|int|设备状态, 1表示禁用，0表示恢复|
+
+# 响应
+**响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+**响应元素**
+```
+200 {
+}
+```
+
+
+# 示例
+
+**请求示例**
+```
+POST /v1/test/devices/dGVzdGRldmljZTE=/keys/Ves3WTXC8XnEHT0I_vacEQQz-9jrJZxNExcxxxxx/state HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=
+Content-Type: application/json
+
+{
+  "state":  0
+}
+```
+
+**响应示例**
+```
+HTTP/1.1 200 OK
+Access-Control-Allow-Origi: *
+Connection: keep-alive
+Content-Length: xxx
+Content-Type: application/json
+Date: Wed, 26 Sep 2018 11:42:10 GMT
+Server: nginx/1.8.0
+Vary: Accept-Encoding
+X-Reqid: 6SAAABDWHM1o8FcV
+X-Whom: cs1
+
+200 {
+}
+```

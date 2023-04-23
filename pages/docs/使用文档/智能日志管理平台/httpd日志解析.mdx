@@ -1,0 +1,8 @@
+httpd 日志解析可以自动解析httpd日志格式,目前支持 common log,combined log,error log
+![](https://dn-odum9helk.qbox.me/FlNAbkQdkL61BbNC7n0be2lCsPM5)
+
+* httpd 日志类型(`category`): 支持 common log,combined log,error log
+
+* 禁止记录解析失败数据(`disable_record_errdata`)：默认为 false，解析失败的数据会默认出现在`pandora_stash`字段，该选项可以禁止记录解析失败的数据。
+
+* 保留原始数据（`keep_raw_data`):默认为`false`，配置此选项之后会保留原始数据在`raw_data`字段下。 

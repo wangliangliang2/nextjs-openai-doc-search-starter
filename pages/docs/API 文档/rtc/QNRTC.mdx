@@ -1,0 +1,351 @@
+<div data-v-md-line="1"><link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Method</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#configRTC`)'>configRTC</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createCameraVideoTrack`)'>createCameraVideoTrack</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createClient`)'>createClient</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createMicrophoneAudioTrack`)'>createMicrophoneAudioTrack</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createScreenVideoTrack`)'>createScreenVideoTrack</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#deinit`)'>deinit</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#enableFileLogging`)'>enableFileLogging</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isScreenCaptureSupported`)'>isScreenCaptureSupported</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#off`)'>off</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#on`)'>on</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#requestPermission`)'>requestPermission</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setAudioRouteToSpeakerphone`)'>setAudioRouteToSpeakerphone</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Method</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="configRTC">
+<span class="rtc-static">Static</span>
+configRTC</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">configRTC(config: <a href='11385/UniappQNRTCConfiguration'>QNRTCConfiguration</a>): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>初始化 SDK</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>必须在使用其它接口前调用</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            config: <a href='11385/UniappQNRTCConfiguration'>QNRTCConfiguration</a>
+        </div>
+                <p>初始化配置项
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createCameraVideoTrack">
+<span class="rtc-static">Static</span>
+createCameraVideoTrack</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">createCameraVideoTrack(config: <a href='11394/UniappQNCameraVideoTrackConfig'>QNCameraVideoTrackConfig</a>): <a href='11433/UniappQNCameraVideoTrack'>QNCameraVideoTrack</a></li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建摄像头视频轨</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>默认 tag 为 ""</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            config: <a href='11394/UniappQNCameraVideoTrackConfig'>QNCameraVideoTrackConfig</a>
+        </div>
+                <p>摄像头 Track 的配置，可设置视频的采集配置、编码配置等</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='11433/UniappQNCameraVideoTrack'>QNCameraVideoTrack</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createClient">
+<span class="rtc-static">Static</span>
+createClient</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">createClient(): <a href='11402/UniappQNRTCClient'>QNRTCClient</a></li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建 QNRTCClient 对象</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>全局只可存在一个</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-returns-title">Returns <span><a href='11402/UniappQNRTCClient'>QNRTCClient</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createMicrophoneAudioTrack">
+<span class="rtc-static">Static</span>
+createMicrophoneAudioTrack</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">createMicrophoneAudioTrack(config: <a href='11431/UniappQNMicrophoneAudioTrackConfig'>QNMicrophoneAudioTrackConfig</a>): <a href='11388/UniappQNMicrophoneAudioTrack'>QNMicrophoneAudioTrack</a></li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建麦克风音频轨</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>默认 tag 为 ""</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            config: <a href='11431/UniappQNMicrophoneAudioTrackConfig'>QNMicrophoneAudioTrackConfig</a>
+        </div>
+                <p>采集音频的配置，可指定音频质量等级与开关通讯模式</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='11388/UniappQNMicrophoneAudioTrack'>QNMicrophoneAudioTrack</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createScreenVideoTrack">
+<span class="rtc-static">Static</span>
+createScreenVideoTrack</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">createScreenVideoTrack(config: <a href='11434/UniappQNScreenVideoTrackConfig'>QNScreenVideoTrackConfig</a>): <a href='11421/UniappQNScreenVideoTrack'>QNScreenVideoTrack</a></li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建屏幕录制轨</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>默认 tag 为 ""</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            config: <a href='11434/UniappQNScreenVideoTrackConfig'>QNScreenVideoTrackConfig</a>
+        </div>
+                <p>屏幕录制 Track 的配置，可设置视频的编码配置与开关大小流功能</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='11421/UniappQNScreenVideoTrack'>QNScreenVideoTrack</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="deinit">
+<span class="rtc-static">Static</span>
+deinit</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">deinit(): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>反初始化操作</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>在确认不再使用实时音视频后调用此接口释放其占用的资源，此后如果再使用需要再次调用 configRTC 方法
+</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="enableFileLogging">
+<span class="rtc-static">Static</span>
+enableFileLogging</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">enableFileLogging(): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置是否开启本地日志保存</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>设置是否开启本地日志保存
+</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isScreenCaptureSupported">
+<span class="rtc-static">Static</span>
+isScreenCaptureSupported</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">isScreenCaptureSupported(): number</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>判断屏幕录制功能是否可用</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>建议创建 QNScreenVideoTrack 前先调用次接口确认是否支持录屏</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-returns-title">Returns <span>number</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="off">
+<span class="rtc-static">Static</span>
+off</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">off(name: event, listener: <a href='11413/UniappQNRTCEngineEvent'>QNRTCEngineEvent</a>[event]): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>取消监听对应的事件</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            name: event
+        </div>
+                <p>事件名</p>
+    </li>
+    <li>
+        <div>
+            listener: <a href='11413/UniappQNRTCEngineEvent'>QNRTCEngineEvent</a>[event]
+        </div>
+                <p>事件句柄
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="on">
+<span class="rtc-static">Static</span>
+on</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">on(name: event, listener: <a href='11413/UniappQNRTCEngineEvent'>QNRTCEngineEvent</a>[event]): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>监听对应的事件</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>支持多次调用同一事件</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            name: event
+        </div>
+                <p>事件名</p>
+    </li>
+    <li>
+        <div>
+            listener: <a href='11413/UniappQNRTCEngineEvent'>QNRTCEngineEvent</a>[event]
+        </div>
+                <p>事件句柄
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="requestPermission">
+<span class="rtc-static">Static</span>
+requestPermission</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">requestPermission(callback: <a href='11575/UniappQNScreenPermissionResultCallback'>QNScreenPermissionResultCallback</a>): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>请求录屏权限</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>只支持安卓，创建 QNScreenVideoTrack 前安卓需要调用此接口获取对应权限</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            callback: <a href='11575/UniappQNScreenPermissionResultCallback'>QNScreenPermissionResultCallback</a>
+        </div>
+                <p>请求录屏权限后回调
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setAudioRouteToSpeakerphone">
+<span class="rtc-static">Static</span>
+setAudioRouteToSpeakerphone</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">setAudioRouteToSpeakerphone(audioRouteToSpeakerphone: boolean): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音频路由切换</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>设置是否将音频路由切换到扬声器，默认音频路由为扬声器</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            audioRouteToSpeakerphone: boolean
+        </div>
+                <p>初始化配置项
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+
+</div>

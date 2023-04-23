@@ -1,0 +1,208 @@
+logkit-pro 可以帮助用户简单地通过可视化界面采集各类数据源的日志。在此之前，您需要安装 logkit-pro agent，操作步骤请阅读[安装 logkit-pro](/insight/manual/4682/logkit-pro-install)。
+
+使用 logkit-pro 收集数据包括如下四个步骤：
+
+1. 添加[数据源](/insight/manual/4750/logkit-pro-readers)
+
+2. 数据[解析](/insight/manual/4755/parsers)
+
+3. 数据[转换](/insight/manual/4767/transformers)
+
+4. 数据[发送](/insight/manual/4782/senders)
+
+5. 保存配置与[任务分发](/insight/manual/4935/configuration-distribution-and-batch-management)
+
+进入 <数据收集> 页面，点击 **添加收集器** 开始配置收集器。
+
+![](https://dn-odum9helk.qbox.me/FuDQanzfX9076zpKstk32-OE-4i9)
+
+大多数请求下点击日志收集，对于监控类的数据收集需求，才选择监控信息收集。下面先介绍添加日志收集的完整流程。
+
+# **添加日志收集**
+
+## **步骤1:添加数据源**
+
+第一步是选择收集的数据源类型，logkit-pro 支持多种数据来源和读取模式，根据需要在左侧列表选取。
+
+填写好配置信息之后，选择您希望获取数据的 agent，点击【获取数据】，系统将使用您的配置去获取实际的数据，并且展示出获取的第一条实际数据作为样例以便于验证您后续的配置。
+
+> 选择的agent只是用于获取数据，整个收集过程全部配置完后不会立即应用于该agent，需要在分发处统一分发配置才能生效。
+
+![](https://dn-odum9helk.qbox.me/FkLAlpq7-nsQ3fbDengSlHaohxEg)
+
+* 读取起始位置：在创建新文件或meta信息损坏的时候(即历史读取记录不存在)，将从数据源的哪个位置开始读取，最新或最老。
+
+* 默认不需要配置高级选项，高级选项保持默认值即可。
+
+**logkit-pro 支持的采集数据源**
+
+* File: 读取文件中的日志数据，包括 csv 格式的文件，kafka-rest 日志文件， nginx 日志文件等，并支持多种读取模式（fileauto、dir、file、tailx）
+* MySQL: 读取 MySQL 中的数据。
+* MSSQL: 读取 Microsoft SQL Server中的数据。
+* Postgre SQL: 读取 PostgreSQL 中的数据。
+* ElasticSearch: 读取 ElasticSearch 中的数据。
+* MongoDB: 读取 MongoDB 中的数据。
+* Kafka: 读取 Kafka 中的数据。
+* Redis: 读取 Redis 中的数据。
+* Socket: 读取 tcp\udp\unixsocket 协议中的数据。
+* Http: 作为 http 服务端，接受 POST 请求发送过来的数据。
+* Script: 支持执行脚本，读取执行结果中的数据。
+* Snmp: 主动抓取 Snmp 服务中的数据。
+* AWS CloudWatch: 主动抓取 AWS CloudWatch 接口中的数据。
+* AWS S3: 主动抓取 AWS S3 中的数据。
+...
+
+
+关于数据源类型以及高级选项详细介绍，请阅读[数据源](/insight/manual/4750/logkit-pro-readers)。
+
+## **步骤2:解析数据**
+
+第二步，根据数据源配置合适解析方式，抽取数据中的字段，转化为结构化数据，充分保障您的配置一定能在实际场景中生效。logkit-pro 支持多种格式的日志解析，按需选取并填写相应的配置信息即可。
+
+csv 是一种常见的日志格式，通过某种固定的分隔符将不同的字段分隔，让我们以此为例看看使用logkit-pro如何解析：
+
+### **按 csv 格式解析**
+
+![](https://dn-odum9helk.qbox.me/FlgLKJ_W_KXoI5GlwgoojlpaAakL)
+
+可以看到，只要简单的选择分隔符，logkit-pro就帮你自动解析了样例日志。
+
+
+其他解析方式如下：
+
+* 按原始日志逐行发送：直接按行读取日志内容。
+
+* 按 json 格式解析：通过 json 反序列化解析日志内容，无需任何配置，系统根据日志内容自动解析。
+
+* 按 grok 格式解析：按grok规则解析。
+
+* 按 nginx 日志解析：专门解析 Nginx 日志。仅需指定 nginx 的配置文件地址，即可进行 nginx 日志解析。
+
+* 按 syslog 格式解析:自动解析系统日志
+
+* 七牛日志库格式解析: 七牛开源的 golang 日志库日志格式解析
+
+* 按 kafkarest 日志解析: Kafkarest 日志解析
+
+* 通过解析清空数据：清空读取的数据
+
+* 按 mysql 慢请求日志解析: mysql 慢请求日志解析
+
+关于其他数据解析方式的详细解说，请阅读[数据解析方式](/insight/manual/4755/parsers)。
+
+## **步骤3:转换数据**
+
+logkit-pro 提供数据转换功能来满足一些更精细的字段解析需求。
+
+在大多数场景下，用 Parser 解析就解决了问题，但是有些场合，用 Parser 来做数据解析可能过于简单，如 json parser。如果数据里面有一部分字段您希望做一些扩展，比如有个 IP 字符串，您希望将其扩展为 IP 对应的区域、城市、省份、运营商等信息，此时您就可以配置一个 Transformer，对 IP 字段进行转换。
+
+![](https://dn-odum9helk.qbox.me/Fr1cC7_UY688z_YKQEFwinEFG8dt)
+
+再比如，当您希望做一些字符串替换的时候，只针对某个字段做一个字符串替换处理，那就可以配置一个 replace transformer。
+
+* urlparam: 将指定字段的内容按照 url 参数的格式转换为键值对。
+* arrayexpand: 将数组字段展开并转换为键值对。
+* convert: 转换数据格式。点击`新增转化字段`，选择需要转换的字段名，给它指定字段类型即可完成数据格式的转换，也可手动书写 dsl 描述将数据类型转换为指定的格式。
+* discard: 将指定字段的数据抛弃，可以同时选择多个字段一键删除。
+* date: 将 string/long 数据转换成指定的时间格式, 如 1523878855 变为 2018-04-16T19:40:55+08:00。或者对时间字段进行时区转换。系统根据用户选择的 key 自动解析。   
+* trim: 去掉字符串多余的字符。
+* json: 将一个符合json格式的字符串字段，反序列化为对应结构体类型。
+* rename: 将字段名称重命名，解决不同下游系统对字段名称中特殊字符不支持的问题。 
+* split: 将指定字段的数据切分为字符串数组。
+* xml: 将一个符合xml格式的字符串字段，反序列化为对应 map[string]interface{} 结构体类型。
+* lua: 执行lua脚本函数进行数据变换。
+* pandora_key_convert: 将不符合 Pandora 字段命名规则的 key 字符转化为下划线。
+* cloudtrail: 针对 AWS CloudTrail 的数据做格式转换，将 CloudTrail 的 json 格式中的 Records 逐条变为数据。
+* IP: 针对 ip 做运营商信息字段扩展。
+* replace: 替换原有的字符串内容。
+* UserAgent: 浏览器中的 user agent 信息解析，可以解析出包括设备、操作系统、版本号在内的多种信息。
+* k8stag: 从 kubernetes 存储的文件名称中获取 pod、containerID 之类的 tags 信息进行转换。
+* label: 增加标签，添加一个带有固定值的字段到数据中。
+...
+
+更多数据转换方式的详细介绍，请阅读[数据转换](/insight/manual/4767/transformers)。
+
+## **步骤4:发送数据**
+
+logkit-pro 支持多种数据发送平台如七牛智能日志管理平台、MongoDB、InfluxDB 等，根据需要在左侧列表选取。完成这一步就可以在数据平台进行后续数据计算、分析、查看。典型地，发送数据至七牛智能日志平台后，数据可以日志分析平台进行日志分析，同时发送到工作流（pipeline）进行数据计算和导出。
+
+![](https://pandora-kibana.qiniu.com/SEND2.png)
+
+**logkit-pro 支持的数据发送平台**
+
+* Pandora Sender: 发送到七牛云智能日志管理平台(Pandora)。
+* File Sender: 发送到本地文件。
+* Kodo Sender: 发送到七牛云存储。
+* MongoDB Accumulate Sender: 聚合后发送到 MongoDB 服务。
+* InfluxDB Sender: 发送到 InfluxDB 服务。
+* 消费数据但不发送：不执行发送行为。
+* Elasticsearch Sender: 发送到 ElasticSearch 服务。
+* Kafka Sender: 发送到 Kafka 服务。
+* Http Sender: 以 Http POST 请求的方式发送数据。
+...
+
+关于数据发送平台配置的详细介绍，请阅读[数据发送](/insight/manual/4782/senders)。
+
+#### **步骤5:确认配置**
+
+在填写完发送配置后，进入最后确认阶段。
+
+其中 "名称" 填写收集器的名称，用于后续分发到具体的agent。
+
+"最长发送间隔" 指无论收集的数据量是多少，如果等待时间到这个发送间隔，就会发送。
+
+"单次读取最大数据量" 指数据读取到该数据量就会发送。
+
+"添加额外系统信息" 指单条记录里添加 hostname、系统版本等信息。
+
+下面的配置展示框除了展示配置，也可以直接进行修改。
+
+![](https://dn-odum9helk.qbox.me/Frt9-zk1mOx_zq9oiU8UHWrh3mP9)
+
+确认后，可以在收集器列表查看。
+
+![](https://dn-odum9helk.qbox.me/FjkLSDalNdUzd8wuHZ3zqKfBIwtO)
+
+> 注： 对于配置为本地访问的logkit-pro，配置完成后会直接应用于本地的agent运行，无需进行后续步骤。
+
+## **步骤6: 保存于分发配置**
+
+在收集器列表，您可以再次编辑修改; 或者正式使用，将配置批量分发到机器上收集日志。
+
+![](https://dn-odum9helk.qbox.me/FuguMuJ6Cd3qHzoAiNzJb_n-1OaN)
+
+分发成功后，您可以在【机器列表】或者【收集器】列表看到收集的情况。
+
+**【机器列表】视角下，看到的是该机器上所有运行的收集器运行状态**
+
+![](https://dn-odum9helk.qbox.me/FoJX7X_kHYDWOskSOE0D3TG252LF)
+
+
+** 【收集器列表】视角下，看到的是该收集器运行在所有机器上的运行状态。**
+![](https://dn-odum9helk.qbox.me/FlgZaraHWkRO4_6PasiSxUvvpiss)
+
+** 收集状态 **
+
+![](https://dn-odum9helk.qbox.me/FmZmrK4o4C3hnd_g6NH9w_6uFjpj)
+
+
+至此，您的收集日志的过程就全部体验完毕。
+
+更多agent管理的细节可以阅读文档[配置分发与批量管理](/insight/manual/4935/configuration-distribution-and-batch-management)
+
+
+# **添加监控信息收集**
+
+添加监控信息收集需要保证您的agent版本都在 `0.3.0` 或以上，与添加日志采集类似。
+在 <数据收集> 栏目右上角，点击 <添加收集器>，选择 <监控信息收集> ，即可进入到添加监控信息采集的界面。
+
+
+![](https://dn-odum9helk.qbox.me/FpcZOOJUnZAdaRuK69gwNDKe95WN)
+
+
+选择您需要的监控项，打开右侧开关，表示开启该监控项，然后可以打开下拉，看到具体的监控内容，如下图所示。
+
+![](https://dn-odum9helk.qbox.me/FnqmwUCcaskiKTVvP3vcgcAJ6hEP)
+
+之后配置发送、保存配置以及分发，与日志收集类似，我们不再赘述。
+

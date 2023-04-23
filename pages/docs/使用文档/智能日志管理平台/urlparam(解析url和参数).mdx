@@ -1,0 +1,67 @@
+将带有 url 格式的字符串（如 `https://developer.qiniu.com/urlparam-transformer?uid=123&name=tom&age=10`或`/mytest?uid=123&name=tom&age=10`），并将其转化为键值对填充到原数据中。
+
+* 要进行Transform变化的键(`key`): 指定要解析的数据所在字段，支持多级嵌套，多级间用 *.* 符号连接，如 abc.xyz，表示 data["abc"]["xyz"]中的数据。
+* 选中收集的参数名(`select_keys`): 指定要收集的请求参数名称，多个参数名之间使用用逗号(,)连接，收集所有参数则留空，如 `key1,key2,key3`。如果想要忽略所有参数，则可以设置一个绝对不会出现的名称，如 `xxx`。
+
+### **示例**：
+
+parser 解析后的数据为:
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "params": "https://www.qiniu.com/mytest?uid=123&name=tom&age=10"
+}
+
+```
+经过 urlparam transformer 变换后的数据将变为:
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "params": "https://www.qiniu.com/mytest?uid=123&name=tom&age=10",
+		"params_url_param_host":"www.qiniu.com",
+		"params_url_param_path": "/mytest",
+    "params_uid": "123",
+    "params_name": "tom",
+    "params_age": "10"
+}
+```
+
+如果此时又设置了 `select_keys` 为 `uid,name`，则会在变换后会得到如下数据：
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "params": "/mytest?uid=123&name=tom&age=10",
+    "params_uid": "123",
+    "params_name": "tom",
+    "params_url_param_path": "/mytest"
+}
+```
+
+>注意：当 url param 中扩展开来的字段名与数据中原有的字段名称冲突时，该 transformer 会在其扩展名后面添加数字以便区分。
+
+示例：
+
+```
+{
+ 	"params_uid": "aaaa",
+ 	"field2": "bbbb",
+ 	"params": "uid=123&name=tom&age=10"
+ }
+```
+解析后数据将变成：
+```
+{
+ 	"params_uid": "aaaa",
+ 	"field2": "bbbb",
+ 	"params": "uid=123&name=lily&age=10",
+ 	"params_uid1": "233",
+ 	"params_name": "lily",
+ 	"params_age": "10"
+ }
+```

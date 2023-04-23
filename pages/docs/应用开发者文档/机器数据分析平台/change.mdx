@@ -1,0 +1,23 @@
+`<change>` 定义表单如何对用户输入作出响应。用户做出选择或者键入输入时，将执行 `<change>` 中定义的动作。
+
+### 父元素 {docsify-ignore-all}
+
+* `<input>`
+
+### 子元素
+
+|子元素|说明|
+|:--:|:--:|
+|`<set>`|设置或更新标记值， 参见 [set](/xml_set)。|
+|`<eval>`|设置或更新标记值，支持表达式计算， 参见 [eval](/xml_eval)。|
+|`<link>`|链接到目标网站，如另一个仪表盘、报表、搜索或外部网站，参见 [link](/xml_link)。|
+|`<condition>`|对用户输入做出条件响应，参见 [condition](/xml_condition)。|
+
+### 元素层次
+```
+<input>
+  <change>
+    ( <set> | <link> | <eval> ) (1..n)
+      <condition> (0..n)
+        ( <set> | <link> | <eval> ) (1..n)
+```

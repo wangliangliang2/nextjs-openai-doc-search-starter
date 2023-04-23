@@ -1,0 +1,46 @@
+# 请求包
+```
+POST /v1/static/casters/<CasterID>/monitors
+Host: pili-caster.qiniuapi.com
+Authorization: <StaticKey>
+Content-Type: application/json
+{
+  "channel": 0,
+  "url": "",
+  "vol": 0,
+  "muted": false
+}
+```
+
+# 请求参数
+
+参数名称 | 必填 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---|---
+CasterID | 是 | string | - | 云导播唯一ID
+channel | 否 | int | [0,7] | 监视器频道
+url | 否 | string | - | 监视器源流地址，支持直播流、静态视频、图片等
+vol | 否 | int | [0,300] | 音量
+muted | 否 | bool | - | 是否静音
+
+# 返回包
+```
+200 OK
+```
+
+
+# 返回参数
+
+- 详细参数说明见[云导播参数说明](/pili/api/4735#caster)
+
+
+# 相关接口
+
+- [云导播信息 GET /v1/static/casters/<CasterID\>](/pili/api/4717)
+- [更新PVW监视器频道 POST /v1/static/casters/<CasterID\>/pvw](/pili/api/4718)
+- [更新PGM监视器频道 POST /v1/static/casters/<CasterID\>/pgm](/pili/api/4719)
+- [PVW切换至PGM POST /v1/static/casters/<CasterID\>/switch](/pili/api/4720)
+- [更新监视器配置 POST /v1/static/casters/<CasterID\>/monitors](/pili/api/4721)
+- [更新输出配置 POST /v1/static/casters/<CasterID\>/publish](/pili/api/4722)
+- [更新PVW布局ID POST /v1/static/casters/<CasterID\>/pvw/layouts](/pili/api/4723)
+- [更新布局配置 POST /v1/static/casters/<CasterID\>/layouts](/pili/api/4724)
+

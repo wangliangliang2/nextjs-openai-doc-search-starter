@@ -1,0 +1,277 @@
+　　本文介绍了异步调用音频内容审核 `/v3/audio/censor` 的接口，帮助您正确使用此 API 进行音频内容审核，支持基于API URL发起HTTP/HTTPS POST请求的方式调用。
+
+# 使用限制
+
+* 音频大小不超过200M。
+* 音频格式支持 MP3、WAV、AAC、WMA、OGG、M4A、AMR、AUDIO、M3U8。
+* 接口响应时间依赖音频的下载时间。请保证被审核音频所在的存储服务稳定可靠，建议您使用七牛云存储或者CDN缓存等。
+
+# 功能描述
+
+音频内容审核 API 主要用于检测或识别音频中的不良信息，并给出审核结果管控建议。支持的审核类型包括：音频反垃圾。
+
+**审核类型 scenes 与相应的 label**
+
+在提交内容审核任务时，您需要指定审核类型 **scenes** ；而在返回结果中，则包含了您指定的类型对应的 label 结果分类参数。
+
+|审核类型|说明|scenes|label|
+| :--- | :--- | :--- | :--- |
+|音频反垃圾|识别音频中是否包含垃圾信息。|antispam|normal：正常文本</br>politics：涉政</br>porn：色情</br>abuse：辱骂</br>contraband：违禁|
+
+# 请求说明
+
+请求方式：POST
+
+请求url：http://ai.qiniuapi.com/v3/audio/censor
+
+**请求Header**
+
+|字段|取值|
+| :--- | :--- |
+|Content-Type|application/json|
+|Authorization|Qiniu &lt; AccessKey&gt; :&lt; Sign&gt; <br>注意: 用户请根据 AccessKey 和 SecretKey 后生成鉴权，以便进行身份验证， `Sign` 的取值以及 `Authorization` 签名方法请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken)。|
+
+**请求参数**
+
+|字段|类型|是否必选|说明|
+| :--- | :--- | :--- | :--- |
+|data.uri|string|Y|音频URL地址，目前支持http、https和[qiniu协议](/censor/7299/censor-params#2)的资源。|
+|data.id|string|N|调用者设置的音频唯一标识，异步处理的返回结果中会带上该信息。|
+|params.scenes|array|Y|审核类型，必填字段，当前唯一可选项： `antispam` 。|
+|params.hook_url|string|N|音频检测结束后的回调地址。|
+|params.hook_auth|Boolean|N|true/false，默认为false，设置回调请求中加入请求头authorization，用于回调服务器鉴权|
+
+**请求示例**
+
+``` 
+POST /v3/audio/censor HTTP/1.1
+Host: ai.qiniuapi.com
+Content-Type: application/json
+Authorization: Qiniu YnxrxOSvGotRZpqkZnMzl_euuoqRzOKUd6zwbRju:r6a-o2UpBg6A4puIMnkCExH8lE8=
+
+{
+    "data": {
+        "uri": "http://xxx.mp3",
+        "id": "audio-censor-demo"
+    },
+    "params": {
+        "scenes": [
+            "antispam"
+        ],
+        "hook_url":"http://xxx.com"
+    }
+}
+```
+
+注意： 请把 Authorization 换成您的账号七牛鉴权 QiniuToken
+
+## 系统接受到请求后，会立即返回异步任务 id，音频审核结果通过任务 id 获得。
+
+``` 
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "id": <id>
+}
+```
+
+| 参数 | 类型 | 必选 | 说明 |
+| :--- | :--- | :---: | :--- |
+| `id` | string | 是 | 服务器返回的，唯一标识该音频审核任务的ID。  |
+
+# 通过任务id获取音频审核结果
+
+**请求语法**
+
+``` 
+GET /v3/jobs/audio/<id> HTTP/1.1
+Host: ai.qiniuapi.com
+Authorization: Qiniu <AccessKey>:<Sign>
+```
+
+**注意：** 需要在请求的 head 部分添加[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken)，以进行用户身份验证。
+
+| 参数 | 类型 | 必选 | 说明 |
+| :--- | :--- | :---: | :--- |
+| `id` | string | 是 | 服务器返回的，唯一标识该音频任务的ID。 |
+
+**返回参数说明**
+
+|字段|取值|说明|
+| :------------- | :--- | :--- |
+|id|string|服务器返回的，唯一标识该音频任务的ID。|
+|status|string|任务状态， `WAITING/DOING/FINISHED/FAILED` 。|
+|request|json结构体|音频审核请求中的body。|
+|response|json结构体|音频内容审核的返回结果，详情请查看 `*表. 音频内容审核的返回结果*` 。|
+|error|string| 任务错误信息。 |
+|created_at|string| 任务创建时间，如：2021-05-18T15:03:04.123Z。 |
+|updated_at|string| 任务更新时间，如：2021-05-18T15:03:14.123Z。 |
+
+*表. 音频内容审核的返回结果*
+
+|字段|取值|说明|
+| :------------- | :--- | :--- |
+|code|int|处理状态：200 调用成功|
+|message|string|与code对应的状态描述信息|
+|audio_text|string|音频文本|
+|result.suggestion|string|音频的审核结果管控建议说明</br>根据内容审核中各种审核类型的返回结果，系统会将审核结果转换成对应的管控建议，取值包括：[“block”, ”review”, ”pass”]。</br>suggestion=block：表示系统确认审核内容违规，建议您将其删除。</br>suggestion=review：表示系统无法确认审核内容是否违规，建议您进行人工复核。</br>suggestion=pass：表示系统确认审核内容正常，建议您忽略该文件。 |
+|result.scenes. `<type>` |json结构体|审核类型, 目前仅支持 `antispam` |
+|result.scenes. `<type>` .suggestion|string|该审核类型的结果管控建议，参见result.suggestion|
+|result.scenes. `<type>` .cuts[]|array|该审核类型的音频段审核结果数组|
+|result.scenes. `<type>` .cuts[].suggestion|string|该审核类型的音频段审核结果管控建议，参见result.suggestion|
+|result.scenes. `<type>` .cuts[].start_time|int|该审核类型的音频段在原始音频中的起始位移，单位s|
+|result.scenes. `<type>` .cuts[].end_time|int|该审核类型的音频段在原始音频中的结束位移，单位s|
+|result.scenes. `<type>` .cuts[].audio_text|string|该审核类型的音频段文本|
+|result.scenes. `<type>` .cuts[].details[]|array|该审核类型的音频段审核详细信息数组|
+|result.scenes. `<type>` .cuts[].details[].suggestion|string|该审核类型的音频段审核结果详细的结果管控建议，参见result.suggestion|
+|result.scenes. `<type>` .cuts[].details[].label|string|该审核类型的音频段审核结果标签|
+|result.scenes. `<type>` .cuts[].details[].score|string|该审核类型的音频段审核结果置信度|
+
+**返回示例**
+
+``` 
+{
+    "id":"5c416b7afb09fe00089e37be",
+    "request":{
+        "data":{
+            "uri":"http://xxx.mp3",
+             "id":"audio-censor-demo"
+        },
+        "params":{
+            "scenes":[
+                "antispam"
+            ],
+            "hook_url":"http://xxx.com"
+        }
+    },
+    "status":"FINISHED",
+    "result":{
+        "code":200,
+        "message":"OK",
+        "audio_text":"当地时间八月二十八号...当务之急是...",
+        "result":{
+            "suggestion":"block",
+            "scenes":{
+                "antispam":{
+                    "suggestion":"block",
+                    "cuts":[
+                        {
+                            "suggestion":"block",
+                            "start_time":0,
+                            "end_time":20,
+                            "audio_text":"当地时间八月二十八号...",
+                            "details":[
+                                {
+                                    "suggestion":"block",
+                                    "label":"politics",
+                                    "score":0.9991
+                                }
+                            ]
+                        },
+                        {
+                            "suggestion":"block",
+                            "start_time":20,
+                            "end_time":42,
+                            "audio_text":"当务之急是...",
+                            "details":[
+                                {
+                                    "suggestion":"block",
+                                    "label":"politics",
+                                    "score":0.982
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "created_at":"2021-05-18T15:03:04.123Z",
+    "updated_at":"2021-05-18T15:03:14.123Z"
+}
+```
+
+# 音频审核结果回调
+
+## 使用限制须知
+
+* API调用音频审核支持不设置回调
+* 若设置了回调，进行了一次API调用音频审核，则触发一次回调
+* 若回调失败，会重试三次
+
+## API调用音频审核回调格式
+
+| 字段 | 取值 | 说明 |
+| :--- | :--- | :--- |
+| id | string | 服务器返回的，唯一标识该音频审核任务的ID。 |
+| request | json结构体 | 音频审核请求中的body。 |
+| status | string | 任务状态， `WAITING/DOING/FINISHED/FAILED` 。 |
+| response | json结构体 | 音频审核返回结果，详情请查看 *表. 音频内容审核的返回结果* |
+| error | string | 任务错误信息。 |
+| created_at | string | 任务创建时间，如：2021-05-18T15:03:04。 |
+| updated_at | string | 任务更新时间，如：2021-05-18T15:03:14。 |
+
+**返回示例**
+
+``` 
+{
+    "id":"5c416b7afb09fe00089e37bf",
+    "request":{
+        "data":{
+            "uri":"http://xxx.mp3",
+            "id":"audio-censor-demo"
+        },
+        "params":{
+            "scenes":[
+                "antispam"
+            ],
+            "hook_url":"http://xxx.com"
+        }
+    },
+    "status":"FINISHED",
+    "response":{
+        "code":200,
+        "message":"OK",
+        "audio_text":"当地时间八月二十八号...当务之急是...",
+        "result":{
+            "suggestion":"block",
+            "scenes":{
+                "antispam":{
+                    "suggestion":"block",
+                    "cuts":[
+                        {
+                            "suggestion":"block",
+                            "start_time":0,
+                            "end_time":20,
+                            "audio_text":"当地时间八月二十八号...",
+                            "details":[
+                                {
+                                    "suggestion":"block",
+                                    "label":"politics",
+                                    "score":0.9991
+                                }
+                            ]
+                        },
+                        {
+                            "suggestion":"block",
+                            "start_time":20,
+                            "end_time":42,
+                            "audio_text":"当务之急是...",
+                            "details":[
+                                {
+                                    "suggestion":"block",
+                                    "label":"politics",
+                                    "score":0.982
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "created_at":"2021-05-18T15:03:04",
+    "updated_at":"2021-05-18T15:03:14"
+}
+```

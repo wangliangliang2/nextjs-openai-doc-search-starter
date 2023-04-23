@@ -1,0 +1,80 @@
+通常推流的编码配置应该根据 app 的需求调整设置，不同的场景可能会需要不同的配置，以下我们列出几种不同的档次配置供参考。再次强调，**不同的场景需要根据自身产品需求调整**。
+
+
+<br>
+# 基本概念
+<br>
+
+
+关于 分辨率、帧率、码率 等编码基本概念可以参考以下文档
+
+[H.264 一般规范](http://www.lighterra.com/papers/videoencodingh264/)
+
+[分辨率、帧率、码率的相互关系](https://developer.qiniu.com/pili/kb/3636/streaming-VideoProfile)
+
+<br>
+# 一组建议值
+ <br>
+
+关于分档的【标清、高清、超清】，目前并不是通用标准，多数视频站点使用各自的标准，一般只是作为区分的不同视频质量的标识。
+
+| 画质 | 码率     | 分辨率   | 帧率 |
+| :--- | -------- | -------- | ---- |
+| 标清 | 800 kbps | 360x640  | 15   |
+| 高清 | 1.2 mbps | 540x960  | 20   |
+| 超清 | 1.8 mbps | 720x1280 | 20   |
+
+
+ <br>
+# 对应在 sdk 中的配置
+ <br>
+## android
+
+
+```java
+// 标清
+StreamingProfile.AudioProfile aProfile=newStreamingProfile.AudioProfile(44100,48*1024);
+StreamingProfile.VideoProfile vProfile=newStreamingProfile.VideoProfile(15,800*1024,15,StreamingProfile.H264Profile.BASELINE);
+StreamingProfile.AVProfile avProfile=newStreamingProfile.AVProfile(vProfile,aProfile);
+mProfile.setPreferredVideoEncodingSize(360,640)
+				.setAVProfile(avProfile)
+  
+// 高清
+StreamingProfile.AudioProfile aProfile=newStreamingProfile.AudioProfile(44100,48*1024);
+StreamingProfile.VideoProfile vProfile=newStreamingProfile.VideoProfile(20,1.2*1024*1024,20,StreamingProfile.H264Profile.BASELINE);
+StreamingProfile.AVProfile avProfile=newStreamingProfile.AVProfile(vProfile,aProfile);
+mProfile.setPreferredVideoEncodingSize(540,960)
+				.setAVProfile(avProfile)
+  
+// 超清
+StreamingProfile.AudioProfile aProfile=newStreamingProfile.AudioProfile(44100,48*1024);
+StreamingProfile.VideoProfile vProfile=newStreamingProfile.VideoProfile(20,1.8*1024*1024,20,StreamingProfile.H264Profile.HIGH);
+StreamingProfile.AVProfile avProfile=newStreamingProfile.AVProfile(vProfile,aProfile);
+mProfile.setPreferredVideoEncodingSize(720,1280)
+				.setAVProfile(avProfile) 
+```
+
+ <br>
+
+## iOS
+<br>
+
+```objective-c
+
+// 标清
+videoCaptureConfiguration = [[PLVideoCaptureConfiguration alloc] initWithVideoFrameRate:15 sessionPreset:AVCaptureSessionPreset1280x720 previewMirrorFrontFacing:YES previewMirrorRearFacing:NO streamMirrorFrontFacing:NO streamMirrorRearFacing:NO cameraPosition:AVCaptureDevicePositionBack videoOrientation:AVCaptureVideoOrientationPortrait];
+videoStreamConfiguration =  [[PLVideoStreamingConfiguration alloc]initWithVideoSize:CGSizeMake(360, 640) expectedSourceVideoFrameRate:15 videoMaxKeyframeInterval:30 averageVideoBitRate:800*1024 videoProfileLevel:AVVideoProfileLevelH264BaselineAutoLevel videoEncoderType:PLH264EncoderType_VideoToolbox];
+
+// 高清
+videoCaptureConfiguration = [[PLVideoCaptureConfiguration alloc] initWithVideoFrameRate:20 sessionPreset:AVCaptureSessionPreset1280x720 previewMirrorFrontFacing:YES previewMirrorRearFacing:NO streamMirrorFrontFacing:NO streamMirrorRearFacing:NO cameraPosition:AVCaptureDevicePositionBack videoOrientation:AVCaptureVideoOrientationPortrait];
+videoStreamConfiguration =  [[PLVideoStreamingConfiguration alloc]initWithVideoSize:CGSizeMake(540, 960) expectedSourceVideoFrameRate:20 videoMaxKeyframeInterval:30 averageVideoBitRate:1.2*1024*1024 videoProfileLevel:AVVideoProfileLevelH264HighAutoLevel videoEncoderType:PLH264EncoderType_VideoToolbox];
+
+// 超清
+videoCaptureConfiguration = [[PLVideoCaptureConfiguration alloc] initWithVideoFrameRate:20 sessionPreset:AVCaptureSessionPreset1280x720 previewMirrorFrontFacing:YES previewMirrorRearFacing:NO streamMirrorFrontFacing:NO streamMirrorRearFacing:NO cameraPosition:AVCaptureDevicePositionBack videoOrientation:AVCaptureVideoOrientationPortrait];
+videoStreamConfiguration =  [[PLVideoStreamingConfiguration alloc]initWithVideoSize:CGSizeMake(720, 1280) expectedSourceVideoFrameRate:20 videoMaxKeyframeInterval:30 averageVideoBitRate:1.8*1024*1024 videoProfileLevel:AVVideoProfileLevelH264HighAutoLevel videoEncoderType:PLH264EncoderType_VideoToolbox];
+
+
+```
+<br>
+
+以上为编码相关的主要配置，其他的配置可以根据需要调整。

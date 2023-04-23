@@ -1,0 +1,86 @@
+# 描述
+本接口用于在指定的应用下创建自定义的topic。
+
+# 请求
+**请求语法**
+```
+POST /v1/apps/<appid>/topics HTTP/1.1
+
+Host: linking.qiniuapi.com
+Content-Type: application/json
+Authorization: <QiniuToken>
+{
+  "topic": "<Topic>",
+   "auth": <Auth>
+}
+```
+
+**请求参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|appid|是|string|设备所属应用的appid，从portal中|
+
+**请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+**请求元素**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|topic|是|string|自定义Topic的名称,必须以"udf/linking/v1//${device}" 开始, 并且必须以“/” 结束<br>说明：<br>其中 ${device} 为占位符, 用户如果sub单个设备信息，需要对deviceName做 base64 编码代替, 如果希望sub app 下所有设备的消息用 “+” 通配符代替|
+|auth|是|int|设备对该Topic的操作权限<br>0:发布（pub）<br>1:订阅（sub）<br>2:发布和订阅（pub,sub）|
+
+
+# 响应
+**响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)
+
+**响应元素**
+```
+{
+  "topic": "<Topic>",
+   "auth": <Auth>,
+   "createdAt": "<createdTimestamp>", 
+   "updatedAt": "<updatedTimestamp>" 
+}
+```
+
+|参数名称|参数名称|
+|---|---|
+|topic|Topic的名称|
+|auth|设备对该Topic的操作权限<br>0:发布（pub）<br>1:订阅（sub）<br>2:发布和订阅（pub,sub）|
+|createdAt|创建时间|
+|updatedAt|更新时间|
+
+
+# 示例
+
+**请求示例**
+
+```
+POST /v1/apps/2akrar93dqurh/topics HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization: QiniuStub uid=1810757928
+Content-Type: application/x-www-form-urlencoded
+{
+"topic":"udf/linking/v1/2akrar93dqurh/${device}/test111/",
+"auth":1	
+}
+```
+
+**响应示例**
+
+```
+HTTP/1.1 200 OK
+Content-Length: 114
+Content-Type: application/json
+X-Reqid: 5TIAAKevjDhXK8kV
+Date: Mon, 30 Sep 2019 08:53:18 GMT
+
+{
+  "topic": "udf/linking/v1/2akrar93dqurh/${device}/test110/",
+  "auth": 1,
+  "createdAt": 1569833598,
+  "updatedAt": 1569833598
+}
+```

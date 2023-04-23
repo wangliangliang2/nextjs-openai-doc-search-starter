@@ -1,0 +1,25 @@
+在 Linux 系统中安装 NFS 客户端后，即可以挂载 NFS 文件系统。
+
+您可以使用文件系统的 DNS 名称或挂载目标的 DNS 名称，将 NAS 的 NFS 文件系统挂载至 ECS 实例。文件系统的 DNS 名称会自动解析为所连接 ECS 实例的可用区中挂载目标的 IP 地址。
+
+## 挂载命令
+您可以运行以下命令，挂载 NFS 文件系统：
+- 如果要挂载的是 NFSv4 文件系统，运行以下命令：
+```
+sudo mount -t nfs -o vers=4.0,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport file-system-id-xxxx.region.nas.aliyuncs.com:/ /mount-point
+```
+说明 不同版本的客户端，使用的 vers参数不同。如果输入 vers=4.0出错，请使用 vers=4。
+- 如果要挂载的是 NFSv3 文件系统，运行以下命令：
+```
+sudo mount -t nfs -o vers=3,nolock,proto=tcp, rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport file-system-id-xxxx.region.nas.aliyuncs.com:/ /mount-point
+```
+ 
+## 查看挂载信息
+挂载完成后，您可以运行以下命令查看已挂载的文件系统：
+```
+mount -l
+```
+您也可以查看已挂载文件系统的当前容量信息：
+```
+df -h
+```

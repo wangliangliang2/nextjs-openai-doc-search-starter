@@ -1,0 +1,36 @@
+核主成分分析是类似于主成分分析(PCA)的一种方法，它解决了PCA无法处理线性不可分数据的问题，我们先用一个非线性映射(也就是核函数)把所有样本映射到一个高维甚至是无穷维的空间，使其线性可分，然后在这个高维空间进行PCA降维。
+
+
+
+语法：
+
+```
+..| fit KernelPCA n_components=<int | float | mle | none(default) | > kernel=<linear(default) | poly | rbf | sigmoid | cosine | precomputed> gamma=float <feature_field_1> <feature_field_2> [into model_name]...
+```
+
+
+
+参数说明：
+
+- n_components参数，用来指定保留多少个特征，即要降维到的维度数。如不提供，n_components默认为None。在核主成分分析中，核函数会升高数据的维度，因此n_components有可能大于特征数。
+
+  - n_components=int，即直接指定降维到的维度数目。
+  - n_components=float, 即使用输入的值作为主成分的方差和所占的最小比例阈值，让PCA类自己去根据样本特征方差来决定降维到的维度数。
+  - n_components=mle, 即PCA使用MLE算法自行决定将维到的维度数。
+  - n_components=None（默认值）, 使用min(样本数，特征数)作为维度数目。
+
+- kernel参数，用来指定核变换函数。
+
+  - kernel=linear，即采用线性核函数。
+
+  - kernel=poly，即采用多项式核函数。
+
+  - kernel=rbf，即采用径向基核函数。（默认值）
+  - kernel=sigmoid，即采用sigmoid核函数。
+
+  - kernel=cosine，即采用余弦相似度作为核函数。
+
+- gamma参数，用于指定多项式核函数、径向基核函数或sigmoid核函数中的参数。如果不设定，默认为1/特征数。
+
+
+

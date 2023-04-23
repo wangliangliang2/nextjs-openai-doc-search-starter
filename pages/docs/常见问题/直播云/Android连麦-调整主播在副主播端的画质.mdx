@@ -1,0 +1,19 @@
+Q：主播的画面在副主播端显示不够清晰／晃动时有马赛克，如何调整？
+
+A：在 SDK demo 中，连麦的画面显示在小窗中，对画质要求不是很高，使用默认参数即可。
+
+但在其它部分场景中，如主播在副主播的手机界面是以全屏显示时，原来的配置产生的画质可能会不满足要求。
+
+```
+RTCConferenceOptions options = new RTCConferenceOptions();
+options.setVideoEncodingSizeRatio(RTCConferenceOptions.VIDEO_ENCODING_SIZE_RATIO.RATIO_4_3);
+options.setVideoEncodingSizeLevel(RTCConferenceOptions.VIDEO_ENCODING_SIZE_HEIGHT_480);
+options.setVideoEncodingFps(20);
+mRTCStreamingManager.setConferenceOptions(options);
+```
+
+主播在副主播端的画质主要由以上代码影响，同时上调 setVideoBitrateRange 方法中参数可以有效提高显示在副主播的画面画质；
+
+在晃动时如果有马赛克的情况下，同时可以适当调低帧率 setVideoEncodingFps ，减少马赛克。
+
+需要特别注意的是，由于连麦的架构设计，主播端承担了合流和推流的工作，对于网络带宽会有较高的要求，如果在本身网络不是很好的情况下，仍然会有画质问题。

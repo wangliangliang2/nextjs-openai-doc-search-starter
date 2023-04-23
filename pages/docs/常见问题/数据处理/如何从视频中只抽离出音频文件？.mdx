@@ -1,0 +1,24 @@
+在 音视频转码（avthumb）中可以设置`/vn/<VideoNo>`参数。 &nbsp;有关视频转码（avthumb）文档链接：[音视频转码](http://developer.qiniu.com/code/v6/api/dora-api/av/avthumb.html)
+
+**参数设置**
+
+| 参数名称            | 类别   | 说明                      |
+| --------------- | ---- | ----------------------- |
+| `/vn/<VideoNo>` | V    | 是否去除视频流，0为保留，1为去除。默认值为0 |
+
+**使用方法**
+
+命令可以根据需要自定义，如：
+
+    avthumb/vn/1
+
+命令的调用，可以在上传时指定[persistentOps](/kodo/manual/1206/put-policy#3)参数（即 **预转持久化** ），或者调用[pfop](/dora/manual/1291/persistent-data-processing-pfop)命令（即 **触发持久化** ）。
+
+以 Python Sdk 为例，具体可以看下[音视频转码示例](http://developer.qiniu.com/code/v6/api/dora-api/av/avthumb.html#avthumb-samples)。需要在[音视频转码示例](http://developer.qiniu.com/code/v6/api/dora-api/av/avthumb.html#avthumb-samples)的基础修改数据处理命令 **fops** ，将其修改为：
+
+    fops = avthumb/mp4/vn/1
+
+**注意**
+
+其他语言 Sdk 可在[官方Sdks](http://developer.qiniu.com/resource/official.html#sdk)下载，可以通过查看 Sdk 使用指南中 **触发持久化** ， **预转持久化** 使用。
+

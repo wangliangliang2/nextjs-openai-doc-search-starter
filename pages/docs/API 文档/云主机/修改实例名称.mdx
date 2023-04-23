@@ -1,0 +1,36 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+>`PATCH` /v1/security/bgpip/resource/:resource_id/name
+
+
+# 请求参数
+| 名称 | 类型 | 位置 | 必须 | 描述 |
+----- | ----- | ----- | ----- | -----
+| X-Qiniu-Regionid | string | header | 是 | 地域 id, 取值：shanghai (大陆通用地域) |
+| resource_id | string | path | 是 | 高防实例 id |
+| name | string | body | 是 | 新实例名称，不能以数字开头，长度不超过32个字符 |
+
+
+
+# 返回值
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| request_id | string | 是 | 请求记录 id |
+
+<br>
+
+# 示例
+### Body示例
+```json
+{
+	"name": "new_name"
+}
+```
+
+### 正常返回示例
+```json
+{
+    "request_id": "04F0F334-AC1"
+}
+```

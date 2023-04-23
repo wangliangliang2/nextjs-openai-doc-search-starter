@@ -1,0 +1,42 @@
+`streamstats` 以流方式计算累积统计信息, 并添加到搜索结果中。
+
+**语法：**
+
+```
+streamstats [<options>] <stats-func>... [by field...]
+```
+
+**参数说明：**
+
+- `<stats-func>`: 必填，统计函数，[链接](/express/manual/6013/stats)。
+- `by field...`: 可选参数，分组字段列表。
+- `<options>`: 可选参数
+  - `window=<int>`: 指定基于事件数量的计算窗口大小。默认为 0，表示所有事件均计算在内。
+  - `time_window=<span-length>`: 指定基于时间长度的计算窗口大小。`time_window` 使用 `_time` 字段作为时间依据，计算时，必须保证事件的时间有序（升序或降序）。例如，要指定1天，可以使用 `time_window=1d`; 指定1小时，可以用 `time_window=1h`; `time_window` 可以与 `window` 一起使用，默认，时间窗口内的事件数量会被限制在 10000 内.
+  - `global=<bool>`: 当包含分组字段且指定了窗口参数时，`global=true` 表示使用单一一个窗口来计算结果; `global=false` 表示为每个分组使用一个独立的窗口来计算结果。默认为 `true`。
+  - `current=<bool>`: 如果为 `true`，则计算中包含当前事件。 如果为 `false`，则不包括。默认为 `true`。
+  - `reset_on_change=<bool>`: 当分组字段的值发生变化时，重置计算结果。只有当前事件包含所有的分组字段时，重置才会被触发。当重置发生时，窗口也一并被重置。默认为 `false`。
+  - `reset_before="<eval-expression>"`: 指定一个布尔表达式, 在计算当前事件流信息之前，如果表达式计算为 `true`, 则重置计算结果。当重置发生时，窗口也一并被重置。默认为 `false`。
+  - `reset_after="<eval-expression>"`: 指定一个布尔表达式, 在计算当前事件流信息之后，如果表达式计算为 `true`, 则重置计算结果。当重置发生时，窗口也一并被重置。默认为 `false`。
+
+**示例用法：**
+
+对字段 f1 累计求和
+```
+streamstats sum(f1)
+```
+
+以 10 为大小的窗口内, 对字段 f1 计算平均值
+```
+streamstats avg(f1) window=10
+```
+
+以 1h 的时间范围为窗口, 对窗口内的字段 f1 计算平均值
+```
+streamstats avg(f1) time_window=1h
+```
+
+以字段 f2 为分组, 每一个分组内使用独立的窗口, 对窗口内的 f1 字段计算和
+```
+streamstats sum(f1) by f2 window=10 global=false
+```

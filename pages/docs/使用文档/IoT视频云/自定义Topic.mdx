@@ -1,0 +1,47 @@
+# **什么是Topic**
+IoT视频云平台中服务端和设备端通过Topic来实现消息通信，消息流转Topic分为自定义Topic和系统Topic，应用下的Topic会自动映射到应用下的所有设备中，自动填入设备对应的appid和device信息生成用于消息通信的具体设备Topic。
+
+# **自定义Topic**
+
+自定义Topic有三种权限: 发布权限, 订阅权限和发布订阅权限, 发布权限表示设备可以往该Topic发布消息, 订阅权限表示设备可以订阅该Topic获取消息，发布订阅权限表示设备可以同时订阅Topic消息和往Topic发布消息。
+说明：
+* 用户在IoT视频云平台中对应的应用下添加的Topic会自动映射到该应用下的所有设备上，您无需单独为每个设备创建Topic。
+* 用户定义新的topic需要设备端同步更新，故需要替换新的SDK。
+
+### **服务端订阅Topic示例**
+* 如果希望订阅应用下所有设备的数据, 订阅的Topic中device字段请使用通配符+, 如:
+udf/linking/v1/3nm4x087b30o3/+/status/
+* 如果希望订阅单个设备的数据, 订阅的Topic中请使用base64安全编码的设备名称, 如:
+udf/linking/v1/3nm4x087b30o3/SVBDLTA1RDY=/status/  
+
+### **设备端订阅Topic示例**
+* 设备端订阅Topic时，appid、devicename均为通配符, 如:
+udf/linking/v1/${appid}/${device}/bind/
+# **系统Topic**
+系统Topic为IoT视频云平台预定义的Topic, 用户无需单独创建；系统Topic均以linking/v1/${appid}/${device}/ 作为前缀, 以/为结尾。其中, ${appid}, ${device}为系统占位符, IoT视频云平台会自动填入设备对应的appid和device信息。
+系统Topic具体功能请参考下述表格:
+
+|Topic|权限|功能说明|
+|---|---|---|
+|linking/v1/${appid}/${device}/rpc/request/+/|订阅|⽤于设备订阅RPC请求|
+|linking/v1/${appid}/${device}/rpc/response/+/|发布|⽤于设备响应RPC请求|
+|linking/v1/${appid}/${device}/result/accepted/|订阅|用于设备获取设备影子更新成功的最新消息|
+|linking/v1/${appid}/${device}/result/rejected/|订阅|用于获取设备影子更新失败的最新消息|
+|linking/v1/${appid}/${device}/result/control/|订阅|用于设备影子反控设备|
+|linking/v1/${appid}/${device}/shadow/update/|发布|用于设备端发布消息后将消息的状态更新到设备影子中|
+# **创建Topic**
+### **操作说明**
+1.登录[七牛开发者平台](https://sso.qiniu.com/?client_id=PIapUKqa3u6S24H868BelwrG0OFu8dS7AxVQ8oz8HznLXhgrl2BnjaO9cs9LzxK2&redirect_url=https:%2F%2Fportal.qiniu.com%2Fapi%2Fgaea%2Fsso%2Fsignin%3Fredirect%3D%252Fcreate)。
+
+2.选择IoT视频云产品，进入产品控制台，选择**我的应用**进入应用列表。
+3.选择需要创建topic的**应用**，点击**配置**进入应用配置页面。
+4.选择**自定义Topic**，点击**创建Topic**进行添加，输入**Topic名称**与**设备操作权限**，点击**确定**完成添加。
+![](https://dn-odum9helk.qbox.me/FqF4C7yC8xWL2KKQwNQgwq_2KPuX)
+![](https://dn-odum9helk.qbox.me/FvfVaQ05Plh-yvwBDZfOPKO2BsC_)
+
+**配置项说明**
+
+|配置项|说明|
+|---|---|
+|Topic名称|Topic名称只能由 1-56 位字母数字下划线组成|
+|设备操作权限|设备对该Topic的操作权限，可设置为**发布、订阅、发布和订阅**。|

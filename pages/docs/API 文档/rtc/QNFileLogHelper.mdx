@@ -1,0 +1,79 @@
+<div data-v-md-line="1"><link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                日志文件辅助类，提供查询日志文件与上传日志文件功能。</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getInstance`)'>getInstance</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getLogFiles`)'>getLogFiles</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#reportLogFile`)'>reportLogFile</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getInstance">
+getInstance</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">static synchronized <a href='8653/QNFileLogHelper'>QNFileLogHelper</a> getInstance()</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获得 QNFileLogHelper 全局唯一实例，单例实现</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span><a href='8653/QNFileLogHelper'>QNFileLogHelper</a> 全局唯一实例</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getLogFiles">
+getLogFiles</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">List&lt;String&gt; getLogFiles()</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取 SDK 已保存的日志名称列表</p>
+    </div>
+<section class="rtc-doc-panel rtc-doc-describe-note">
+    <blockquote class="blockquote-warning">
+    <p>可能返回为 null</p>
+    </blockquote>
+</section>
+    <div class="rtc-doc-returns-title">Returns <span>SDK 已保存的日志名称列表</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="reportLogFile">
+reportLogFile</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">void reportLogFile(String logName, <a href='10007/LogReportCallback'>LogReportCallback</a> callback)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>上报日志文件到七牛服务</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            logName: String
+        </div>
+                <p>日志文件名称</p>
+    </li>
+    <li>
+        <div>
+            callback: <a href='10007/LogReportCallback'>LogReportCallback</a>
+        </div>
+                <p>上传结果回调，见 <a href='10007/LogReportCallback'>LogReportCallback</a></p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+
+</div>

@@ -1,0 +1,45 @@
+简介：
+
+使用 RTMP 发起推流的地址。
+**注意：** 以下是针对限时鉴权方式生成的推流地址，有关 expiry 和 dynamic 鉴权方式生成推流地址的方法请参考[这里](https://developer.qiniu.com/pili/api/6678/push-the-current-authentication)。
+
+格式：
+
+```
+rtmp://<RTMPPublishDomain>/<Hub>/<streamTitle>?e=<ExpireAt>&token=<Token>
+```
+
+说明：
+
+| 参数名称| 说明 |
+| :----------- |:--------------------------------------------------------------- |
+| RTMPPublishDomain | 直播空间绑定的 RTMP 推流域名 |
+| Hub | 直播空间名称 |
+| streamTitle | 直播流名称 |
+| ExpireAt | [Unix 时间戳](/kodo/glossary/u)，表示推流地址的过期时间。 |
+| Token | 推流凭证 注:鉴权参数一定是放置在最后  |
+
+生成推流凭证：
+
+```
+// 构造RTMP推流Path
+path = "/<Hub>/<streamTitle>"
+
+// 为推流Path加上过期时间
+path = "/<Hub>/<streamTitle>?e=<ExpireAt>"
+
+// 计算HMAC-SHA1签名，并对签名结果做URL安全的Base64编码
+sign = hmac_sha1(path, "Your_Secret_Key")
+encodedSign = urlsafe_base64_encode(sign)
+
+// 将AccessKey与sign拼接得到推流凭证
+token = "Your_Access_Key" + ":" + encodedSign
+```
+
+* [URL 安全的 Base64 编码](/kodo/manual/appendix)
+
+示例：
+
+```
+rtmp://publish-rtmp.test.com/PiliSDKTest/streamTitle?e=1463023142&token=7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII:-5IVlpFNNGJHwv-2qKwVIakC0ME=
+```

@@ -1,0 +1,82 @@
+# 接口描述
+
+录制目标直播流一段时间内的直播为回放文件保存在存储空间中，并指定保存时间，可选回放文件的格式有m3u8、flv和mp4。其中录制为 flv、mp4 格式需要使用多媒体处理转码服务，录制过程需要一定时间。多媒体处理服务独立计费，使用会额外产生费用，详细费用请参考[价格表](https://portal.qiniu.com/financial/price)
+
+# 请求参数
+
+```
+POST /v2/hubs/<hub>/streams/<encodedStreamTitle>/saveas
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/json
+
+{
+    "fname": <fname>,
+    "start": <start>,
+    "end": <end>,
+    "format": "<format>",
+    "pipeline": "<pipeline>",
+    "notify": "<notify>",
+    "expireDays": <expireDays>,
+    "persistentDeleteAfterDays": <persistentDeleteAfterDays>,
+    "firstTsType": <firstTsType>
+}
+```
+
+| 参数                | 类型   | 必填  | 描述                                             |
+| ------------------ | ------ | ---- | ------------------------------------------------ |
+| hub                | string | 是   | 直播空间名                                         |
+| encodedStreamTitle | string | 是   | 经过[base64编码](/kodo/manual/appendix)的直播流名   |
+| start              | int64  | 否   | 开始时间，Unix 时间戳，默认为第一次直播开始时间         |
+| end                | int64  | 否   | 结束时间，Unix 时间戳，默认为当前时间                  |
+| fname	             | string | 否   | 文件名，为空时会随机生成一个文件名                     |
+| format	         | string | 否   | 文件格式，可选文件格式为：<br> m3u8: HLS格式，默认值 <br> flv: FLV格式，将回放切片转封装为单个flv文件，异步模式 <br> mp4: MP4格式，将回放切片转封装为单个mp4文件，异步模式 <br>异步模式下，生成回放文件需要一定时间  |
+| pipeline           | string | 否   | 异步模式时，指定数据处理的队列，可以将优先级较高的任务配置到独立的队列中进行执行，参考文档：[流媒体队列](https://developer.qiniu.com/dora/kb/2500/streaming-media-queue-about-seven-cows)  |
+| notify             | string | 否   | 回调地址，异步模式完成任务后的回调通知地址，不指定表示不做回调，参考文档：[状态查询](https://developer.qiniu.com/dora/1294/persistent-processing-status-query-prefop)<br>同步模式下录制结果直接由接口返回，回调不生效  |
+| expireDays         | int    | 否   | 切片文件的生命周期：<br> 0: 默认值，表示修改ts文件生命周期为永久保存 <br> >0: 表示修改ts文件的的生命周期为 ExpireDays 参数值 <br> -1: 表示不修改ts文件的expire属性，可显著提升接口响应速度     |
+| persistentDeleteAfterDays       | int    | 否   | 生成文件的生命周期：<br> 0: 默认值，表示生成文件（m3u8/flv/mp4）永久保存 <br> >0: 表示生成文件（m3u8/flv/mp4）的生命周期为 PersistentDeleteAfterDays 参数值 <br>注意，对于m3u8文件，只有当ExpireDays为-1时，persistentDeleteAfterDays才会生效，如果设置了切片文件的生命周期，那生成m3u8文件的生命周期会和切片文件ts的生命周期一致    |
+| firstTsType        | byte   | 否   | 过滤ts切片文件类型，部分非标准的直播流，在推流初期缺少视频帧或音频帧，过滤功能可以剔除这部分切片，<br> 0: 默认值，不做过滤 <br> 1: 第一个ts切片需要是纯视频类型，不符合预期的ts切片将被跳过 <br> 2: 第一个ts切片需要是纯音频类型，不符合预期的ts切片将被跳过 <br> 3: 第一个ts切片需要是音视频类型，不符合预期的ts切片将被跳过  |
+
+# 返回数据
+
+| 参数                | 类型     | 描述                        |
+| ------------------ | -------- | -------------------------- |
+| fname              | string   | 文件名                      |
+| start              | int64    | 开始时间，Unix 时间戳         |
+| end                | int64    | 结束时间，Unix 时间戳         |
+| persistentID       | string   | 异步任务ID                  |
+
+# 示例
+
+请求体:
+
+```
+POST /v2/hubs/test/streams/YWJjZA==/saveas HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/json
+
+{
+    "fname": "test",
+    "start": 1635197745,
+    "end": 1635215745,
+    "expireDays": -1,
+    "firstTsType": 3
+}
+```
+
+返回体:
+
+```
+200 OK
+
+{
+    "fname": "test.m3u8",
+    "start": 1635215356,
+    "end": 1635215752
+}
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

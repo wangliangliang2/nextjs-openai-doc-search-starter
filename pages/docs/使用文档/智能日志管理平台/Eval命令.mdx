@@ -1,0 +1,37 @@
+`eval 命令`通过计算表达式在原有日志中添加一个新的 field，新字段将根据已有字段进行逻辑运算生成，如通过算术运算、字符串运算等方式。
+
+eval 命令支持数学、string 和布尔表达式。
+
+**eval 支持操作符：**
+
+1) ||（逻辑或） 二元操作符，操作数必须为布尔类型。
+2) &&（逻辑与） 二元操作符，操作数必须为布尔类型。
+3) !=（不等于）、==（等于）。
+4) >=、>、<=、<
+5) +、- 算术加、减，支持数值类型，+另支持字符串。
+6) *、/、% 算术乘、除、余，支持整数类型。
+
+**eval 支持函数：**
+
+|函数|描述|参数|
+|:-:|:-:|:-:|
+|case(X,"Y",……)|类似 switch case，根据判断条件生成返回多个枚举值中的一个|X 参数是一组布尔表达式，Y 是一组值。当 X 表达式为 TRUE 时返回 Y 值|
+|match(SUBJECT,"REGEX")|根据 REGEX 是否与 SUBJECT 匹配返回 TRUE 或 FALSE|SUBJECT：字段名，REGEX：正则表达式|
+
+  *  case(X,"Y",……)：此函数根据 X 返回相应的 Y 值。具体来说，X参数是布尔表达式，当 X 表达式为 TRUE 时返回 Y 值。若 X 表达式都为FALSE，则返回 NULL。 
+    * 用例：
+		
+```
+eval description=case(status == 200, "OK", status ==404, "Not found", status == 500, "Internal Server Error") | table status description
+```
+   这段 eval 表达式在数据集中新增一个 description 字段，description 字段的取值由 status 的值决定。status 取值为 200 时，description 的值为ok，status 取值为404时，description 的值为 Not found;status 取值为 500时，description 的值为 Internal Server。
+
+  * match(SUBJECT,"REGEX"):此函数根据 REGEX 是否与 SUBJECT 匹配返回 TRUE 或 FALSE。若正则表达式字符串 REGEX 可以找到与 SUBJECT 的任何子字符串匹配的，则返回 TRUE。
+  用例：
+	
+	```
+	eval match(test, "yes")
+	```
+这段 eval 表达式根据字符串 "yes" 是否与 test 字段的值匹配返回 TRUE 或 FALSE。 
+
+更多函数支持正在开发中，敬请期待。

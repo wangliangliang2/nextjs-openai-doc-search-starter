@@ -1,0 +1,110 @@
+# **描述**
+本接口用于修改文件的存储状态，即禁用和启用状态间的的互相转换。
+处于禁用状态的文件将只能通过签发 Token 的方式访问 [下载凭证](/kodo/manual/1202/download-token)。
+<br>
+
+# **请求**
+
+### **请求语法**
+```
+POST /chstatus/<EncodedEntryURI>/status/<status> HTTP/1.1
+Host:           rs.qiniuapi.com
+Content-Type:   application/x-www-form-urlencoded
+X-Qiniu-Date: 20060102T150405Z
+Authorization:  Qiniu <AccessToken>
+```
+<br>
+
+### **请求参数**
+| 参数名称 | 必填 | 说明 |
+| --- | --- | --- |
+|EncodedEntryURI|是|指定文件信息，详情请参考[EncodedEntryURI](/kodo/api/1276/data-format)|
+|status|是| 值为数字，0表示启用，1表示禁用|
+<br>
+
+### **请求头**
+头部名称      | 必填 | 说明
+:------------ | :--- | :-----------------------------
+Authorization | 是   | 该参数应严格按照[管理凭证](/kodo/manual/1201/access-token)格式进行填充，否则会返回 401 错误码<p>一个合法的 Authorization 值应类似于：`Qiniu QNJi_bYJlmO5LeY08FfoNj9w_r7...`|
+|其他||请查阅[公共请求头](/kodo/api/3924/common-request-headers)|
+<br>
+
+
+<a id="chgm-response"></a>
+### **请求内容**
+该请求操作的请求体为空。
+<br>
+
+# **响应**
+### **响应语法**
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-store
+```
+
+<a id="chtype-response-headers"></a>
+### **响应头**
+头部名称      | 必填 | 说明                              
+:------------ | :--- | :-----------------------------------------------------------------
+Content-Type  | 是   | 正常情况下该值将被设为 `application/json`，表示返回 JSON 格式的文本信息。
+其他||其它可能返回的头部信息，请参考[公共响应头](/kodo/api/3924/common-request-headers)。
+<br>
+
+### **响应内容**
+如果请求成功，不返回任何内容。
+如果请求失败，返回包含如下内容的 JSON 字符串（已格式化，便于阅读）：  
+```
+{
+    "error":   "<errMsg    string>",
+}
+```
+字段名称     | 必填 | 说明                              
+:----------- | :--- | :------
+error      | 是   | 与 HTTP 状态码对应的消息文本
+<br>
+
+
+<a id="chtype-response-status"></a>
+### **响应状态码**
+HTTP状态码 | 含义
+:--------- | :--------------------------
+200        | 更改成功
+400	       | 请求报文格式错误<br>当`<EncodedEntryURI>`解析失败，返回 `400 Bad Request {"error":"invalid argument"}`<br>当`<EncodedEntryURI>`不符合 UTF-8 编码，返回 `400 Bad Request {"error":"key must be utf8 encoding"}`<br>当文件当前状态和设置的状态已经一致，返回 `{"error":"already enabled"}` 或 `{"error":"already disabled"}`
+401        | 管理凭证无效
+612        | 目标文件不存在
+599	   | 服务端操作失败<p>
+其他错误码 |请查阅[错误响应](/kodo/api/3928/error-responses)
+
+如遇 599 错误，请将完整错误信息（包括所有 HTTP 响应头部）[提交工单](https://support.qiniu.com/tickets/category) 给我们。
+<br>
+
+<a id="chtype-samples"></a>
+# **示例**
+
+### **请求示例**
+
+```
+POST /chstatus/aXRpc2F0ZXN0OmdvZ29waGVyLmpwZw==/status/1 HTTP/1.1
+User-Agent: curl/7.30.0
+Host: rs.qiniuapi.com
+X-Qiniu-Date: 20060102T150405Z
+Authorization: Qiniu bt500PzCG9tV0bccCOdnrmCHPXCPLieGSDEprB7M:4wG...(过长已省略)
+```
+
+*注：要在`Authorization`头部的`<AccessToken>`前添加`Qiniu`和半角空格。*
+<br>
+
+<a id="chgm-example1-response"></a>
+### **响应示例**
+
+```
+HTTP/1.1 200 OK
+Server: nginx/1.4.4
+Date: Mon, 02 Jan 2006 15:04:05 GMT
+Content-Type: application/json
+Content-Length: 0
+Connection: keep-alive
+X-Reqid: vDEAAG2lN7zSqpQT
+```

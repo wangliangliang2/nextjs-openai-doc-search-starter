@@ -1,0 +1,67 @@
+<div data-v-md-line="1"><link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                日志文件上传回调的接口类，可作为上传日志功能的参数来监听上传结果，可在调用 <a href='/rtc/api/8653/QNFileLogHelper#reportLogFile'>QNFileLogHelper.reportLogFile</a> 接口时传入。</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReportSuccess`)'>onReportSuccess</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onReportError`)'>onReportError</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReportSuccess">
+onReportSuccess</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">void onReportSuccess(String name)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当日志文件上传成功时回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            name: String
+        </div>
+                <p>上传成功的文件名称</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onReportError">
+onReportError</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">void onReportError(String name, String errorMsg)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当日志文件上传失败时回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            name: String
+        </div>
+                <p>上传失败的文件名称</p>
+    </li>
+    <li>
+        <div>
+            errorMsg: String
+        </div>
+                <p>上传失败的原因</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+
+</div>

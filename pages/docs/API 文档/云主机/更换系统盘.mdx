@@ -1,0 +1,109 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `PUT` /v1/vm/instance/:instance/system_disk
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>地域 ID。</p>
+        <p>您可以调用 DescribeRegions 查看最新的七牛云地域列表。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>主机ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>image_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>镜像 ID，启动实例时选择的镜像资源。您可以通过 DescribeImages 查询您可以使用的镜像资源。</p>
+      </td>
+    </tr>
+     <tr>
+      <td>password</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>实例的密码。长度为 8 至 30 个字符，必须同时包含大小写英文字母、数字和特殊符号中的三类字符。特殊符号可以是：</p>
+        <pre><code>()`~!@#$%^&amp;*-_+=|{}[]:;'&lt;&gt;,.?/</code></pre>
+        <p>其中，Windows 实例不能以斜线号（/）为密码首字符。</p>
+        <p>@GSE:NOTE: 如果传入 Password 参数，建议您使用 HTTPS 协议发送请求，避免密码泄露。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>password_inherit</td>
+      <td>boolean</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>是否使用镜像预设的密码。使用该参数时，Password 参数必须为空，同时您需要确保使用的镜像已经设置了密码。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>key_pair_name</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>密钥对名称。</p>
+        <ul>
+          <li>Windows 实例，忽略该参数。默认为空。即使填写了该参数，仍旧只执行 Password 的内容。</li>
+          <li>Linux 实例的密码登录方式会被初始化成禁止。为提高实例安全性，强烈建议您使用密钥对的连接方式。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>system_disk_size</td>
+      <td>integer</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>系统盘大小，单位为 GiB。取值范围：20~500 该参数的取值必须大于或者等于 max{20, ImageSize}。 默认值：max{40, ImageSize}</p>
+      </td>
+    </tr>
+      <tr>
+      <td>client_token</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>保证请求幂等性， 客户端生成的一个唯一值</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+| 名称 | 类型 | 是否必须 | 描述 |
+| ----- | ----- | ----- | ----- |
+| request_id | string | 是 | 请求 ID
+| data | Order | 否 | 预付费主机重置系统盘如果需要补差价，则会返回订单信息 |
+

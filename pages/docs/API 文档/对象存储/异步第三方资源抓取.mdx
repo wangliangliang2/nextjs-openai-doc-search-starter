@@ -1,0 +1,187 @@
+# **描述**
+本接口用于从指定 URL 抓取资源，并将该资源存储到指定空间中。每次只抓取一个文件，抓取时可以指定保存空间名和最终资源名。
+
+<br>
+
+# **发起任务:**
+# **请求**
+### **请求语法**
+````
+POST /sisyphus/fetch HTTP/1.1
+Host:           api-<Region>.qiniuapi.com
+Content-Type:   application/json
+X-Qiniu-Date: 20060102T150405Z
+Authorization:  Qiniu <AccessToken>
+Body:
+{
+    "url" : "<url>",
+    "host" : "<host>",
+    "bucket": "<bucket>",
+    "key": "<key>",
+    "md5": "<md5>",
+    "callbackurl": "<callbackurl>",
+    "callbackbody": "<callbackbody>",
+    "callbackbodytype": "<callbackbodytype>",
+    "file_type":<file_type>
+    ...
+}
+````
+使用说明：
+- 抓取动作是异步操作，接受到抓取请求后服务端直接返回成功，资源会在后台进行抓取后存入存储，并产生一个回调请求通知业务服务器（如果存在回调参数）。
+- 因为各种原因抓取失败时会产生一个 json 格式的***特殊回调***通知业务服务器。
+- 如果被抓取的源站屏蔽（屏蔽可能是抓取源站有 IP、UA 等限制策略）来自七牛的抓取操作，那么不能确保一定可以抓取成功。
+<br>
+
+
+### **请求参数**
+该请求操作的参数为空，请参考操作内容中的参数。
+
+<br>
+
+### **请求头**
+头部名称      | 必填 | 说明
+:------------ | :--- | :-----------------------------
+Host|是|`api-<Region>.qiniuapi.com` 中的 `<Region>` 为七牛各区域 ID，请参考七牛支持的 [区域列表](/kodo/1671/region-endpoint-fq)
+Authorization | 是   | 该参数应严格按照[管理凭证](/kodo/manual/1201/access-token)格式进行填充，否则会返回 401 错误码<p>一个合法的 Authorization 值应类似于：`Qiniu QNJi_bYJlmO5LeY08FfoNj9w_r7...`|
+|其他||请查阅[公共请求头](/kodo/api/3924/common-request-headers)|
+<br>
+
+### **请求内容**
+
+| 参数名称 | 类型 | 默认值 |必填 | 说明
+| ---- | --- |---|--- | ---
+|url              | string| N/A| 是 | 需要抓取的 url,支持设置多个用于高可用,以';'分隔,当指定多个 url 时可以在前一个 url 抓取失败时重试下一个
+|bucket           | string| N/A| 是 | <Zone> 所在区域的 bucket
+|host             | string| 空 | 否 | 从指定 url 下载数据时使用的 Host
+|key              | string| 空| 否 | 文件存储的 key,不传则使用文件 hash 作为 key
+|md5              | string| 空| 否 | 文件 md5,传入以后会在存入存储时对文件做校验，校验失败则不存入指定空间
+|etag             | string| 空| 否 | 文件 etag,传入以后会在存入存储时对文件做校验，校验失败则不存入指定空间,相关算法参考 https://github.com/qiniu/qetag
+|callbackurl      | string| 空| 否 | 回调 URL，详细解释请参考上传策略中的[callbackUrl](/kodo/manual/1206/put-policy#put-policy-callback-url)
+|callbackbody     | string| 空| 否 | 回调 Body，如果 callbackurl 不为空则必须指定。上传成功后，七牛云向业务服务器发送 Content-Type: application/x-www-form-urlencoded 的 POST 请求。业务服务器可以通过直接读取请求的 query 来获得该字段，支持[魔法变量](/kodo/manual/1235/vars#magicvar)、但不支持自定义变量。callbackBody 要求是合法的 url query string。例如 key=$(key)&hash=$(etag)&w=$(imageInfo.width)&h=$(imageInfo.height)。如果 callbackBodyType 指定为 application/json，则 callbackBody 应为 json 格式，例如:{"key":"$(key)","hash":"$(etag)","w":"$(imageInfo.width)","h":"$(imageInfo.height)"}。
+|callbackbodytype | string|空| 否 | 回调 Body 内容类型,默认为"application/x-www-form-urlencoded"，详细解释请参考上传策略中的[callbackBodyType](/kodo/manual/1206/put-policy#put-policy-callback-body-type)。
+|callbackhost     | string|空| 否 | 回调时使用的 Host
+|file_type        | int|0| 否 | 存储文件类型 0:标准存储(默认), 1:低频存储, 2:归档存储, 3:深度归档存储
+|mode             |string|空|否|可选填⼊ m3u8，此时会解析 m3u8 并下载对应 ts 落存储, 必须指定 key。m3u8 文件的解析，只支持相对路径模式：ts 文件和 m3u8 文件将保存在指定的同一目录下。
+|ignore_same_key  | bool|false| 否 |  如果已存在同名⽂会重试抓取。当为 true 时，如果空间中已经存在同名文件则放弃本次抓取(仅对比 key，不校验文件内容)。
+<br>
+
+<br>
+
+# **响应**
+### **响应语法**
+````
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-store
+Body: 
+{
+}
+````
+<br>
+
+### **响应头**
+头部名称      | 必填 | 说明                              
+:------------ | :--- | :-----------------------------------------------------------------
+Content-Type  | 是   | 正常情况下该值将被设为 `application/json`，表示返回 JSON 格式的文本信息。
+其他||其它可能返回的头部信息，请参考[公共响应头](/kodo/api/3924/common-request-headers)。
+<br>
+
+### **响应内容**
+如果请求成功，则返回
+````
+{"id":"<ID>","wait":<Wait>}
+````
+| 参数名称  | 说明 
+| ---- | --- | --- 
+|id        | 异步任务Id
+|wait       | 当前任务前面的排队任务数量,0表示当前任务正在进行,-1表示任务已经至少被处理过一次（可能会进入重试逻辑）
+
+如果抓取失败，则返回特殊回调消息体格式 （特殊回调消息体包含发起请求时的参数和错误信息,示例不包含所有参数）
+````
+{
+    "url" : "<url>",
+    "bucket": "<bucket>",
+    "key": "<key>",
+    "md5": "<md5>",
+    "callbackurl": "<callbackurl>",
+    "callbackbody": "<callbackbody>",
+    "callbackbodytype": "<callbackbodytype>",
+    "file_type":<file_type>,
+    "err":"<err>",
+    "code":<code>
+}
+````
+| 参数名称  | 说明 
+| ---- | --- | --- 
+|err        | 错误信息
+|code       | 错误码
+<br>
+
+### **响应状态码**
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误响应](/kodo/api/3928/error-responses)。
+<br>
+
+
+
+
+
+# **示例**
+### **请求**
+**发起异步任务**
+````
+POST /sisyphus/fetch HTTP/1.1
+Host:           api-z0.qiniuapi.com
+Content-Type:   application/json
+User-Agent: Go-http-client/1.1
+X-Qiniu-Date: 20060102T150405Z
+Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:FwliyUEz-rL1rb9qVkd0xYosBng=
+Body:
+{
+    "url" : "http://www.qiniu.com",
+    "bucket": "test",
+    "key": "qiniu",
+    "callbackurl": "http://www.qiniu.com/callback",
+    "callbackbody": "$(bucket)"
+}
+````
+*注：要在 `Authorization` 头部的 `<AccessToken>` 前添加 `Qiniu` 和半角空格。*
+
+<br>
+
+### **响应**
+````
+HTTP/1.1 200 OK
+Content-Length: 94
+Connection: keep-alive
+Content-Type: application/json
+Date: Mon, 02 Jan 2006 15:04:05 GMT
+Server: nginx
+X-Reqid: jXwAAH8259lkr-UU
+Body:
+{"id":"eyJ6b25lIjoiejAiLCJwYXJ0X2lkIjo2Mywib2Zmc2V0IjowfQ==","wait":-1}
+
+````
+
+<br>
+
+# **查询任务:**
+# **请求**
+### **请求语法**
+```
+GET /sisyphus/fetch?id=<ID> HTTP/1.1
+Host:           api-<Region>.qiniuapi.com
+Authorization:  Qiniu <AccessToken>
+````
+### **请求参数**
+| 参数名称 | 必填 | 说明 |
+| --- | --- | --- |
+|ID|是|异步任务 ID|
+<br>
+
+
+# **响应**
+### **响应内容**
+````
+{"id":"<ID>","wait":<Wait>}
+````
+<br>

@@ -1,0 +1,27 @@
+| Q1：上传失败，响应非 200 状态码，我应该怎么处理？|
+| ---- |
+| 参考文档：[上传失败常见状态码及解决方法](https://developer.qiniu.com/kodo/kb/3881/upload-the-common-failure-status-code-and-solve-method) |
+
+<br>
+
+| Q2：上传报错 incorrect region Please use up-z(x).qiniu.com ，应该怎么办？|
+| ---- |
+| 报错原因是上传域名与空间所属区域不匹配，目前最新版 SDK 均已支持自动切换区域，所以一般更新 SDK 版本到最新版即可解决。<br>如果不方便更新版本，可以参照 [存储区域和域名的对应关系](https://developer.qiniu.com/kodo/manual/1671/region-endpoint) ，修改上传域名，或者换一个默认的华东区域的空间。|  
+
+<br>
+
+| Q3：我的客户反馈上传速度慢，我应该提供哪些诊断信息给七牛？ |
+| ---- |
+| 参考文档：[上传慢如何诊断？](https://developer.qiniu.com/kodo/kb/2516/slowly-upload) |  
+
+<br>
+
+| Q4：我上传的文件与预期的不符，有图片变大变小、实际大小不符、图片被压缩、文件不完整等情况。|
+| ---- |
+| 首先 [刷新CDN 缓存](https://developer.qiniu.com/fusion/kb/1325/refresh-the-cache-and-the-effect-of-time)，刷新完成后，[验证文件一致性](https://developer.qiniu.com/fusion/kb/3644/refresh-the-cache-fails-consistency-method-validation-file) 。
+
+<br>
+
+| Q5: 我使用第三方插件，确定填写的参数都是对的，但是一直上传不了文件。 |
+| ---- |
+|七牛官方没有提供过任何插件。官方社区收录的插件，经过验证都是可以使用的，但一般更新不太及时，不会支持七牛的最新功能或产品。<br>上传报错，常见的问题是因为上传指定的空间不是华东的存储空间，换成华东的空间一般可以解决。|

@@ -1,0 +1,41 @@
+日志下载可以查询域名日志列表，下载所需的日志数据，。您可以登录**七牛开发者平台**选择**CDN控制台**，进行下载。
+<br/>
+# 操作说明
+登录**七牛开发者平台**后，进入**CDN控制台**，选择【日志下载】，进入管理页面：
+
+![](https://dn-odum9helk.qbox.me/Fj-C99-WqKAWGKWPSIisdRp2Fl3a)
+
+### 日志下载
+
+选择要获取日志的时间及对应的域名，点击【查看日志】，获取可下载的日志，点击【下载】即可。
+
+![](https://dn-odum9helk.qbox.me/FosB1gGvW2jvksbt6JVsQBUZQ53y)
+
+注意事项：
+（1）日志默认保留时间为 30 天；
+（2）日志生成大概延迟 6 小时；
+（3）备选域名列表最多只展示 100 个，其余域名可通过前缀搜索；
+（4）如果日志文件过大，您可以参见[API](https://developer.qiniu.com/fusion/api/1226/download-the-log)文档下载日志。
+（5）日志大概延迟6小时，举例：1月18日0点-1点的日志，会在1月18日8点-10点左右可下载。
+（6）日志文件默认按小时下载，如果单小时内日志过大会进行切分(分片大小128MB)，日志文件采用gzip压缩。
+
+### 日志字段说明
+
+将下载好的日志数据包解压，以文本方式查看日志文件，可以看到各字段信息以空格隔开。部分信息如下图所示。
+![](https://dn-odum9helk.qbox.me/FiqOIe-XJvleRwnpFlR2FNxfmusJ)
+
+**日志中对应的字段顺序及含义如下表所示：**
+
+顺序|日志内容|说明
+-|-
+1|客户端IP|ClientIP
+2|命中率|Hit/Miss/UNKNOWN
+3|响应时长(ms)|ResponseTime(ms)
+4|请求时间|[Time Zone]
+5|请求方法|Method
+6|请求URL|URL
+7|请求协议|Protocol
+8|状态码|StatusCode
+9|响应大小(Byte)|TrafficSize(Byte)
+10|referer|Referer
+11|用户代理|UserAgent

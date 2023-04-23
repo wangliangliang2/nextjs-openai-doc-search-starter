@@ -1,0 +1,80 @@
+通过 xmlpath 可以从 xml 数据中通过路径参数提取相关信息。也可以在 eval 命令中使用 xmlpath() 函数。
+
+**语法：**
+
+xmlpath [input=< field>] [output=< field>] path=< datapath> | < datapath>
+
+**参数说明：**
+
+1.input 是读取数据的字段，默认 input 为 _raw 字段。
+
+2.output 是输出的字段,如果未指定 output，则 path 参数的值将设为提取值的字段名称。
+
+3.path 是要提取数据的位置路径。路径可以指定为 `path=<datapath>` 或可以省略 path 关键字。路径形如 'user.phoneNumbers{1}.number'，由字段名称、大括号标注的索引和句点拼接而成。
+
+4.由大括号引起的索引可以是：
+	
+	* 整数，用于引用数组中数据的位置。 XML数据使用从1开始的索引。如，purchases.book{1} 在 xml 中指 purchases 的第1个 book 元素。  
+		
+	* 由 @ 开头的字符串，以引用 XML 属性，如 'title{@yearPublished}'。
+	
+	* 空，如{}，表示通配符。比如 phoneNumbers.number{} 表示 phoneNumbers 下所有的 number 元素。
+
+**示例：**
+
+假设有以下xml数据 ：
+
+```
+<purchases>
+  <book>
+    <author>Martin, George R.R.</author>
+    <title yearPublished=1996>A Game of Thrones</title>
+    <title yearPublished=1998>A Clash of Kings</title>
+  </book>
+</purchases>
+```
+
+* 从 xml 事件中提取单个标签的值。 
+            
+query: 
+```
+xmlpath output=myfield path=purchases.book.author  
+```
+
+指定 `path=purchases.book.author` 即提取`<purchases>`标签下的`<book>`标签下的`<author>`标签里的值。
+
+output: myfield字段的值为`"Martin, George R.R."`.  
+
+* 从 xml 中提取包含子标签的标签。  
+               
+query: 
+```
+xmlpath output=myfield path=purchases.book 
+```
+
+指定 `path=purchases.book` 即提取`<purchases>`标签下的`<book>`标签下的所有值，所以 output：myfield字段的值为
+
+"`<author>Martin, George R.R.</author><title yearPublished=1996>A Game of Thrones</title><title yearPublished=1998>A Clash of Kings</title>`".
+
+* 查询 xml 事件的具体属性值            
+
+ query:
+
+```
+xmlpath output=myfield path=purchases.book.title{@yearPublished}     
+```
+
+指定 `path=purchases.book.title{@yearPublished}` 即提取`<purchases>`标签下的`<book>`标签下的`<title>`标签里 `yearPublished` 属性的值。
+
+output: myfield字段的值为[1996,1998].        
+
+* xml 事件中，标签里包含值为数组的示例：
+                    
+ query: 
+ ```
+ xmlpath output=myfield path=purchases.book.title{1}   
+ ```
+ 
+ 指定  `path=purchases.book.title{1}` 即提取 `<purchases>` 标签下的 `<book>` 标签下的 `<title>` 标签里值的第一个元素。
+ 
+output: myfield字段的值为"A Game of Thrones".  

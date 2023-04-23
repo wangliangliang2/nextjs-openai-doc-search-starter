@@ -1,0 +1,21 @@
+**使用场景及限制：**
+
+- 建议在测试数据集上运行，通过比较目标变量的真实数据和预测数据，用来评估回归模型的预测效果。
+- 支持 1-1，1-n，n-n 的比较，多用于评估比较不同回归模型在同一数据集上的预测效果。
+- actual_fields 的数量和 predicted_fields 的数量必须相等或者其中一者的数量为 1。
+- 在 1-n 的情况下，参数 multioutput 自动设为 raw_values，如果用户已经设定 multioutput 为其他参数数值，评估算法会报错。
+- 数据必须为 int 或者 float，不支持 str。
+- 模糊搜索（ \*）只能在 1-n 的情况下使用。
+
+**通用语法：**
+
+```
+..| score <scoring-method-name> [options] <actual_field_1> ... <actual_field_n> against <predicted_field_1> ... <predicted_field_n>
+```
+
+以下算法评估方式可以用来评估回归模型的预测效果
+
+- [决定系数 - R2-score](/express/manual/11087/determination-coefficient-r2-score)
+- [均方误差 - Mean Squared Error (MSE)](/express/manual/11088/mean-square-error-mse-and-mean-squared-error-mse)
+- [平均绝对误差 - Mean Absolute Error (MAE)](/express/manual/11089/the-mean-absolute-error-the-mean-absolute-error-mae)
+- [可解释方差 - Explained Variance Score](/express/manual/11090/can-explain-variance-explained-variance-score)

@@ -1,0 +1,166 @@
+案例五：脊椎前移疾病的风险识别
+
+# 背景介绍
+
+## 数据来源
+
+人的脊柱是由很多块脊椎组成的。通常情况下，脊椎就像积木一样叠成一列。如果其中的一小块骨头出了毛病，一块脊椎从正常的位置滑开，就会造成脊椎滑动，也就是脊椎前移。它是一种在老人、儿童、运动员等人群中特别常见的骨科疾病。
+
+本数据集来自欧洲某家医院的100位已康复的骨科住院病人的生物力学特性检测资料，临床医生想从中快速发现为数不多的脊椎前移风险较高的患者。这里，我们运用异常值检测的方法，对这些病人进行初步筛选。
+
+数据集的下载链接如下：
+
+<http://pw7x36qrk.bkt.clouddn.com/vertebral_column.csv>
+
+## 字段含义
+
+| **特征变量名称**           | **特征变量含义** |
+|----------------------------|------------------|
+| pelvic incidence           | 盆腔发病率       |
+| pelvic tilt                | 骨盆倾斜         |
+| lumbar lordosis angle      | 腰椎前凸角       |
+| sacral slope               | 骶部斜坡         |
+| pelvic radius              | 骨盆半径         |
+| grade of spondylolisthesis | 脊椎滑脱分级     |
+
+# 数据预处理
+
+## 数据质量检查
+
+已完成，此处不考虑。
+
+## 数据清洗
+
+已完成，此处不考虑。
+
+## 特征选择
+
+由于该数据集中所有6个字段都有临床分析意义，因此我们将其全部投入使用。
+
+# 建模
+
+## 算法选择
+
+因为建模的目的是在现有的数据中发现异常，即所有的骨科康复病人中有哪些人患脊椎前移的风险高？所以我们可以选择使用**异常值检测**中的**离群点检测**算法来拟合数据。在没有明确倾向性的情况下，我们将采用比较适合做离群点检测的一种通用性算法，即**局部异常因子算法（Local Outlier Factor）**。
+
+## 数据导入
+
+由于异常检测属于无监督型的机器学习，一般不需要划分训练集和测试集，所以我们直接将vertebral_column.csv导入平台，并保存为同名的数据集。
+
+## 数据标准化
+
+由于该数据集中6个生物力学特性的量程范围各不相同，因此最好需要在异常值检测的正式建模前进行数据标准化的处理。这里，使用了最常见的Z-score标准化方法，即将原数值减去所有数值的平均值，再除以所有数值的标准差。
+
+```
+| from dataset:vertebral_column
+
+| eventstats avg(pelvic_incidence) as avg1, stdev(pelvic_incidence) as stdev1,
+avg(pelvic_tilt) as avg2, stdev(pelvic_tilt) as stdev2,
+avg(lumbar_lordosis_angle) as avg3, stdev(lumbar_lordosis_angle) as stdev3,
+avg(sacral_slope) as avg4, stdev(sacral_slope) as stdev4, avg(pelvic_radius) as
+avg5, stdev(pelvic_radius) as stdev5, avg(grade_of_spondylolisthesis) as avg6,
+stdev(grade_of_spondylolisthesis) as stdev6
+
+| eval pelvic_incidence_new=(pelvic_incidence - avg1) / stdev1,
+pelvic_tilt_new=(pelvic_tilt - avg2) / stdev2,
+lumbar_lordosis_angle_new=(lumbar_lordosis_angle - avg3) / stdev3,
+sacral_slope_new=(sacral_slope - avg4) / stdev4,
+pelvic_radius_new=(pelvic_radius - avg5) / stdev5,
+grade_of_spondylolisthesis_new=(grade_of_spondylolisthesis - avg6) / stdev6
+```
+
+![9c8028c5489c8b02393847f6c7110890.png](https://dn-odum9helk.qbox.me/FoxUp9n1eaXORNXaST7jdnh6gn3n)
+
+## 训练模型
+
+在机器学习APP内，我们使用fit算子训练离群点检测。由于进行的是离群点检测，而不是新颖点检测，所以不会产生模型的输出，但是会新产生一列predicted_is_inlier，它记录了该模型在数据集上的离群值检测结果：
+
+```
+| from dataset:vertebral_column
+
+| eventstats avg(pelvic_incidence) as avg1, stdev(pelvic_incidence) as stdev1,
+avg(pelvic_tilt) as avg2, stdev(pelvic_tilt) as stdev2,
+avg(lumbar_lordosis_angle) as avg3, stdev(lumbar_lordosis_angle) as stdev3,
+avg(sacral_slope) as avg4, stdev(sacral_slope) as stdev4, avg(pelvic_radius) as
+avg5, stdev(pelvic_radius) as stdev5, avg(grade_of_spondylolisthesis) as avg6,
+stdev(grade_of_spondylolisthesis) as stdev6
+
+| eval pelvic_incidence_new=(pelvic_incidence - avg1) / stdev1,
+pelvic_tilt_new=(pelvic_tilt - avg2) / stdev2,
+lumbar_lordosis_angle_new=(lumbar_lordosis_angle - avg3) / stdev3,
+sacral_slope_new=(sacral_slope - avg4) / stdev4,
+pelvic_radius_new=(pelvic_radius - avg5) / stdev5,
+grade_of_spondylolisthesis_new=(grade_of_spondylolisthesis - avg6) / stdev6
+
+| fit LocalOutlierFactor pelvic_incidence_new pelvic_tilt_new
+lumbar_lordosis_angle_new sacral_slope_new pelvic_radius_new
+grade_of_spondylolisthesis_new
+```
+
+![8b84b1bfeb5eb6a85c8a89366b0772e6.png](https://dn-odum9helk.qbox.me/Fvs-PqH5ahVbncg3vDtacUMNBeyg)
+
+# 预测结果
+
+## 模型简单应用
+
+根据离群值检测的结果，可以发现所有的骨科住院病人中共有4个脊椎前移风险较高的患者，他们的id分别是：13、15、46、92。
+
+```
+| from dataset:vertebral_column
+
+| eventstats avg(pelvic_incidence) as avg1, stdev(pelvic_incidence) as stdev1,
+avg(pelvic_tilt) as avg2, stdev(pelvic_tilt) as stdev2,
+avg(lumbar_lordosis_angle) as avg3, stdev(lumbar_lordosis_angle) as stdev3,
+avg(sacral_slope) as avg4, stdev(sacral_slope) as stdev4, avg(pelvic_radius) as
+avg5, stdev(pelvic_radius) as stdev5, avg(grade_of_spondylolisthesis) as avg6,
+stdev(grade_of_spondylolisthesis) as stdev6
+
+| eval pelvic_incidence_new=(pelvic_incidence - avg1) / stdev1,
+pelvic_tilt_new=(pelvic_tilt - avg2) / stdev2,
+lumbar_lordosis_angle_new=(lumbar_lordosis_angle - avg3) / stdev3,
+sacral_slope_new=(sacral_slope - avg4) / stdev4,
+pelvic_radius_new=(pelvic_radius - avg5) / stdev5,
+grade_of_spondylolisthesis_new=(grade_of_spondylolisthesis - avg6) / stdev6
+
+| fit LocalOutlierFactor pelvic_incidence_new pelvic_tilt_new
+lumbar_lordosis_angle_new sacral_slope_new pelvic_radius_new
+grade_of_spondylolisthesis_new
+
+| where predicted_is_inlier=-1
+```
+
+![3cd05d39c5e7fe02837b7d7d6f0f1c16.png](https://dn-odum9helk.qbox.me/Fs5mJwXgB9uUyEw5o2deVs4YNmzt)
+
+此外，如有需要，还可以统计脊椎前移高风险患者的比例。这里，最终的比例是0.04。
+
+```
+| from dataset:vertebral_column
+
+| eventstats avg(pelvic_incidence) as avg1, stdev(pelvic_incidence) as stdev1,
+avg(pelvic_tilt) as avg2, stdev(pelvic_tilt) as stdev2,
+avg(lumbar_lordosis_angle) as avg3, stdev(lumbar_lordosis_angle) as stdev3,
+avg(sacral_slope) as avg4, stdev(sacral_slope) as stdev4, avg(pelvic_radius) as
+avg5, stdev(pelvic_radius) as stdev5, avg(grade_of_spondylolisthesis) as avg6,
+stdev(grade_of_spondylolisthesis) as stdev6
+
+| eval pelvic_incidence_new=(pelvic_incidence - avg1) / stdev1,
+pelvic_tilt_new=(pelvic_tilt - avg2) / stdev2,
+lumbar_lordosis_angle_new=(lumbar_lordosis_angle - avg3) / stdev3,
+sacral_slope_new=(sacral_slope - avg4) / stdev4,
+pelvic_radius_new=(pelvic_radius - avg5) / stdev5,
+grade_of_spondylolisthesis_new=(grade_of_spondylolisthesis - avg6) / stdev6
+
+| fit LocalOutlierFactor pelvic_incidence_new pelvic_tilt_new
+lumbar_lordosis_angle_new sacral_slope_new pelvic_radius_new
+grade_of_spondylolisthesis_new
+
+| stats count() as type_count by predicted_is_inlier
+
+| eventstats sum(type_count) as totoal_count
+
+| eval percent=type_count/totoal_count
+
+| where predicted_is_inlier=-1
+```
+
+![3fbe27db54f72cb7218072690557b715.png](https://dn-odum9helk.qbox.me/FsDUSKQUNYXC9h0Mc_Q9EfCjfa8z)

@@ -1,0 +1,84 @@
+# **描述**
+本接口用于获取设备国标报警事件列表
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/devices/{deviceId}/alarms?start=<start>&end=<end>&chId=<chId>&alarmMethod=<alarmMethod>&alarmType=<alarmType>&offset=<offset>&line=<line>&sortBy=<sortBy>`
+* http body为空时, 例如Get请求, 通过`非SDK`方式调用的客户，http头部Content-Type,`要么设置为application/x-www-form-urlencoded`,`要么置空`, `要么不要携带`; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+* 告警事件默认`保存1天`，如果需要延长，请提工单
+
+# **请求参数**
+**路径参数**
+
+| 参数名称 | 必填 | 字段类型 | 说明 |
+| -------- | ---- | -------- | ---- |
+| namespaceId | 是   | string | 空间ID |
+| deviceId | 是   | string | 国标ID |
+| start | 是   | integer | 查询开始时间(unix时间戳,单位为秒) |
+| end  | 是   | integer | 查询结束时间(unix时间戳,单位为秒) |
+| chId | 否   | string | 网关设备时为通道ID(普通设备可以忽略) |
+| alarmMethod | 否 | integer | 报警方式：1为电话报警， 2为设备报警， 3为短信报警， 4为GPS报警， 5为视频报警， 6为设备故障报警， 7其他报警 |
+|  alarmType | 否| integer| 报警类型，详见`报警类型说明`|
+| offset | 否 | integer | 在全部报警事件中的偏移量 |
+| line | 否 | integer | 一次返回多少条 |
+| sortBy | 否 | string | 排序方式， asc: 按报警时间升序 desc: 按报警时间降序 |
+
+## **报警类型说明**
+- 报警方式（alarmMethod）为2时，
+不携带alarmType为默认的报警设备报警；
+携带alarmType取值及对应报警类型：1-视频丢失报警； 2-设备防拆报警； 3-存储设备磁盘满报警； 4-设备高温报警； 5-设备低温报警。
+- 报警方式（alarmMethod）为5时，
+取值如下：1-人工视频报警； 2-运动目标检测报警； 3-遗留物检测报警； 4-物体移除检测报警； 5-绊线检测报警；6-入侵检测报警； 7-逆行检测报警； 8-徘徊检测报警； 9-流量统计报警； 10-密度检测报警； 11-视频异常检测报警； 12-快速移动报警。
+- 报警方式（alarmMethod）为6时，
+取值如下： 1-存储设备磁盘故障报警； 2-存储设备风扇故障报警。
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+| total | integer | 报警条数 |
+|items|事件数组|事件数组|
+| items.chId| string | 通道id |
+| items.chName | string | 通道名称 |
+| items.deviceState | string | 设备状态 “online”/“offline” |
+| items.alarmTime| integer | 报警时间，Unix时间戳,单位秒 |
+| items.alarmMethod | integer| 报警方式：1为电话报警， 2为设备报警， 3为短信报警， 4为GPS报警， 5为视频报警， 6为设备故障报警， 7其他报警 |
+| items.alarmType | integer | 报警类型,详见`报警类型说明` |
+| items.alarmPriority | integer | 报警级别。 取值：1(一级警情),2(二级警情),3(三级警情),4(四级警情) |
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url 'qvs.qiniuapi.com/v1/namespaces/2akrarrzns76w/devices/31011500991180000083/alarms?start=1587899020&end=1587968104&chId=34020000001310000034&alarmMethod=5&alarmType=2&' \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "items": [
+    {
+      "chId": "34020000001310000034",
+      "chName": "ipc1",
+      "deviceState: "online",
+      "alarmTime": "1607311045",
+      "alarmMethod": 5,
+      "alarmType":2,
+      "alarmPriority":3
+    },
+    {
+      "chId": "34020000001310000035",
+      "chName": "ipc2",
+      "deviceState: "offline",
+      "alarmTime": "1607311045",
+      "alarmMethod": 2,
+      "alarmType":3,
+      "alarmPriority":4
+    }
+  ],
+  "total": 2
+}
+```

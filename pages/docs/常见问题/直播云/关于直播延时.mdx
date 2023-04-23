@@ -1,0 +1,30 @@
+## Q：七牛直播的延时一般是多少？
+七牛的直播延时一般都是 3s 左右，如果使用 hls 的播放地址，延时一般在 10s - 30s 左右
+
+<br/>
+
+## Q：为什么我直播的时候使用 rtmp 和 flv ，但是延时确是大于 3秒？
+可能如下原因
+
+1. 推流设备或者工具缓存了推流数据
+2. 播放器缓存了数据，由于缓存，导致播放的是几秒前的
+3. 由于 jitter 抖动或者网络不稳定等因素，造成的直播累加
+ 
+<br/>
+
+## Q：有什么方法可以降低上述三种描述的延时？
+
+#### 针对1，可以更换推流工具。 例如手机端推流的话，可以使用七牛的推流SDK：
+
+- 安卓推流SDK：https://github.com/pili-engineering/PLDroidMediaStreaming
+- IOS推流SDK：https://github.com/pili-engineering/PLMediaStreamingKit
+
+#### 针对2，可以更换播放器，或者如果播放器缓存buffer可以调整的话，可以调低，但是可能造成卡顿。七牛手机端播放器的话缓存都是可以调整的：
+
+- 安卓播放SDK：https://github.com/pili-engineering/PLDroidPlayer
+- iOS播放SDK：https://github.com/pili-engineering/PLPlayerKit
+ 
+同时也有基本无缓存的播放器可以测试播放延时：
+http://www.cutv.com/demo/live_test.swf
+ 
+#### 针对3，重新加载一下播放地址即可恢复到正常延时。

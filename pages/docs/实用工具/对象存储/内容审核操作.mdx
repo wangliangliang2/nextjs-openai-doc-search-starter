@@ -1,0 +1,126 @@
+调用七牛内容审核 API 对图片/视频资源进行内容审核，输出结果为文件对应的 json 格式审核信息。官方文档参考：[七牛内容审核](https://developer.qiniu.com/censor)  
+1. **批量操作需要指定数据源，默认表示从七牛空间列举文件执行操作，如非默认或需更多条件，请先[配置数据源](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md)**  
+2. 支持通过 `-a=<account-name>`/`-d` 使用已设置的账号，则不需要再直接设置密钥，参考：[账号设置](https://github.com/NigelWu95/qiniu-suits-java/blob/master/README.md#账号设置)  
+
+# 1. 审核单个文件
+审核单个文件则使用 qsuits 的 single 模式来完成，必须加上 `-s` 参数才能使用该模式，命令举例如下： 
+审核图片操作使用 process=imagecensor：
+```
+➜ ~ qsuits -d -s -process=imagecensor -url="http://xxx.bkt.clouddn.com/1568621317685_2561217040d45e3-ef50-400b-929a-11ac01cc745b.png?e=1883981319&token=Lix9HHSQrTTVYqLG3aaUvJPNB3uBoz9GtxCqMS5G:cv3i7pmLfq6oM_3Q-bXvrZkGYS8="  -scenes=ads -s
+http://xxx.com/1568621317685_2561217040d45e3-ef50-400b-929a-11ac01cc745b.png?e=1883981319&token=Lix9HHSQrTTVYqLG3aaUvJPNB3uBoz9GtxCqMS5G:cv3i7pmLfq6oM_3Q-bXvrZkGYS8=	{"code":200,"message":"OK","result":{"suggestion":"pass","scenes":{"ads":{"suggestion":"pass"}}}}
+```  
+审核视频操作使用 process=videocensor：
+```
+➜ ~ qsuits -d -s -process=videocensor -url="http://xxx.bkt.clouddn.com/-YVzTgC_I8zlDYIm8eCcPnA76pU=/ltSP7XPbPGviBNjXiZEHX7mpdm6o" -scenes=pulp
+http://xxx.bkt.clouddn.com/-YVzTgC_I8zlDYIm8eCcPnA76pU=/ltSP7XPbPGviBNjXiZEHX7mpdm6o	5d9c6fefbc499b000874793b
+```  
+视频审核请求为异步操作，返回的结果为 jobid，因此需要根据 jobid 查询实际结果：
+```
+➜ ~ qsuits -d -s -process=censorresult -id=5d9c6fefbc499b000874793b
+{"id":"5d9c6fefbc499b000874793b","vid":"","request":{"data":{"uri":"http://xxx.bkt.clouddn.com/-YVzTgC_I8zlDYIm8eCcPnA76pU=/ltSP7XPbPGviBNjXiZEHX7mpdm6o"},"params":{"sync":false,"scenes":["pulp"]}},"status":"DOING","created_at":"2019-10-08T19:15:59.943+08:00","updated_at":"2019-10-08T19:16:21.923+08:00","rescheduled_at":"2019-10-08T19:15:59.943+08:00"}
+```  
+
+# 2. 批量图片审核
+审核 image 类型的资源，同步审核，审核结果输出为文件名和对应 json：[七牛图片审核响应 json](https://developer.qiniu.com/censor/api/5588/image-censor#4)，如果数据源的资源类型不确定（如云存储数据源），需要设置 filter 选项：f-mime=image：  
+```
+process=imagecensor
+ak=
+sk=
+protocol=
+domain=
+indexes=
+url-index=
+queries=
+scenes=
+private=
+```  
+|参数名|参数值及类型 | 含义|  
+|-----|-------|-----|  
+|process| 图片审核时设置为imagecensor | 表示图片资源的内容审核操作|  
+|ak、sk|长度 40 的字符串|七牛账号的ak、sk，通过七牛控制台个人中心获取，当数据源为 qiniu 时无需再设置|  
+|protocol| http/https| 使用 http 还是 https 访问资源进行抓取（默认 http）|  
+|domain| 域名字符串| 当数据源数据为文件名列表时，需要设置进行访问的域名（七牛存储空间域名可以使用[ domainsfrom 命令查询](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/domainsofbucket.md)），当指定 url-index 时无需设置|  
+|indexes|字符串| 设置输入行中 key 字段的下标（有默认值），参考[数据源 indexes 设置](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#1-公共参数)|  
+|url-index| 字符串| 通过 url 操作时需要设置的 [url 索引（下标）](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/censor.md#%E5%85%B3%E4%BA%8E-url-index)，未设置任何索引和 domain 时根据 parse 类型默认为 0 或 "url"，支持[需要私有签名的情况](https://developer.qiniu.com/kodo/tools/6289/content-audit-operation#4)|  
+|queries| 字符串| url 的 query 参数或样式后缀，如 `-w480` 或 `?v=1.1&time=1565171107845`（这种形式请务必带上 ? 号，否则无效）[关于 queries 参数](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/censor.md#%E5%85%B3%E4%BA%8E-queries-%E5%8F%82%E6%95%B0)|  
+|scenes| 审核类型字符串| pulp/terror/politician，鉴黄、鉴暴恐、鉴政，多种类型同时审核可用 `,` 拼接，如：`pulp,terror` 或 `pulp,terror,politician` 等|  
+|private| 数据源私有类型|是否是对私有空间资源进行审核，选择对应的私有类型，参考[私有访问](https://developer.qiniu.com/kodo/tools/6289/content-audit-operation#4)|  
+
+## 1、关于 url-index
+当使用 file 源且 parse=tab/csv 时 [xx-]index(ex) 设置的下标必须为整数。url-index 表示输入行含 url 形式的源文件地址，未设置的情况下则使用 key 字段加上 domain 的方式访问源文件地址，key 下标用 indexes 参数设置，参见[ indexes 索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-indexes-索引)及[关于 parse 和索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-parse)。  
+
+## 2、关于 queries 参数
+queries 参数用于设置 url 的后缀或 ?+参数部分，内容审核可能会出现大图超过尺寸或大小导致失败，因此可以通过一些图片处理样式或参数来设置对处理之后的图片进行审核。当设置 private（私有签名）的情况下，该参数会使用在 privateurl 操作中（因为 privateurl 操作在前，当前操作在后）。  
+
+# 3. 批量视频审核
+审核 video 类型的资源，异步审核，审核结果输出为 jobId，要获取进一步的实际审核结果需要通过 id 查询，参考该工具的 [censorresult 操作](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/censorresult.md)，七牛官网文档见：[通过jobid获取视频审核结果](https://developer.qiniu.com/censor/api/5620/video-censor#4)，如果数据源的资源类型不确定（如云存储数据源），需要设置 filter 选项：f-mime=video：
+```
+process=videocensor
+ak=
+sk=
+protocol=
+domain=
+indexes=
+url-index=
+scenes=
+interval=
+saver-bucket=
+saver-prefix=
+callback-url=
+check-url=
+private=
+```  
+|参数名|参数值及类型 | 含义|  
+|-----|-------|-----|  
+|process| 视频审核时设置为videocensor | 表示视频资源的内容审核操作|  
+|ak、sk|长度 40 的字符串|七牛账号的ak、sk，通过七牛控制台个人中心获取，当数据源为 qiniu 时无需再设置|  
+|protocol| http/https| 使用 http 还是 https 访问资源进行抓取（默认 http）|  
+|domain| 域名字符串| 当数据源数据为文件名列表时，需要设置进行访问的域名（七牛存储空间域名可以使用[ domainsfrom 命令查询](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/domainsofbucket.md)），当指定 url-index 时无需设置|  
+|indexes|字符串| 设置输入行中 key 字段的下标（有默认值），参考[数据源 indexes 设置](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#1-公共参数)|  
+|url-index| 字符串| 通过 url 操作时需要设置的 [url 索引（下标）](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/censor.md#%E5%85%B3%E4%BA%8E-url-index)，未设置任何索引和 domain 时根据 parse 类型默认为 0 或 "url"，支持[需要私有签名的情况](https://developer.qiniu.com/kodo/tools/6289/content-audit-operation#4)|  
+|scenes| 审核类型字符串| pulp/terror/politician，鉴黄、鉴暴恐、鉴政，多种类型同时审核可用 `,` 拼接，如：`pulp,terror` 或 `pulp,terror,politician` 等|  
+|interval| 整型，单位 ms| 视频审核需要截帧，此参数设置截帧间隔，默认为5000（5s)|  
+|saver-bucket| bucket名称|视频截帧产生的帧图进行保存的空间，不设置则不保存，默认不保存|  
+|saver-prefix| 字符串| 视频截帧产生的帧图进行保存的文件名前缀，默认无|  
+|callback-url| 公网可访问的 url 字符串| 设置回调地址|  
+|check-url| true/false|表示是否在提交任务之前对回调地址进行简单的 post 请求验证（无body的纯post请求），默认为 true，如果无需验证则设置为 false|  
+|private| 数据源私有类型|是否是对私有空间资源进行审核，选择对应的私有类型，参考[私有访问](https://developer.qiniu.com/kodo/tools/6289/content-audit-operation#4)|  
+
+## 1、关于 url-index
+当使用 file 源且 parse=tab/csv 时 [xx-]index(ex) 设置的下标必须为整数。url-index 表示输入行含 url 形式的源文件地址，未设置的情况下则使用 key 字段加上 domain 的方式访问源文件地址，key 下标用 indexes 参数设置，参见[ indexes 索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-indexes-索引)及[关于 parse 和索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-parse)。  
+
+# 4. 私有空间审核
+当进行内容审核的资源来自于私有存储空间，那么 url 需要通过私有鉴权访问，本工具支持串联操作，即先进行对应的私有签名再提交审核，使用如下的 private 参数设置即可，如不需要进行私有访问则不设置，目前支持以下几类签名：  
+`private=qiniu` [七牛云私有签名](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/privateurl.md#七牛配置参数)  
+`private=tencent` [腾讯云私有签名](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/privateurl.md#其他存储配置参数)  
+`private=aliyun` [阿里云私有签名](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/privateurl.md#其他存储配置参数)  
+`private=s3` [AWS S3 私有签名](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/privateurl.md#其他存储配置参数)  
+`private=huawei` [华为云私有签名](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/privateurl.md#其他存储配置参数)  
+`private=baidu` [百度云私有签名](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/privateurl.md#其他存储配置参数)  
+
+## 命令行参数方式
+```
+-process=imagecensor/videocensor -ak= -sk= -protocol= -domain= ...
+```
+
+# 5. 审核结果查询
+对（视频）内容审核返回的 jobId 查询 censorresult（审核的结果查询）操作。参考：[七牛内容审核结果查询](https://developer.qiniu.com/censor/api/5620/video-censor#4)。  
+```
+process=censorresult
+ak=
+sk=
+id-index=
+```  
+|参数名|参数值及类型 | 含义|  
+|-----|-------|-----|  
+|process=censorresult| 查询censor 内容审核结果时设置为censorresult| 表示查询 censor 内容审核结果操作|  
+|ak、sk|长度 40 的字符串|七牛账号的ak、sk，通过七牛控制台个人中心获取|  
+|id-index| 字符串| 转码结果查询所需 jobId 的索引（下标），未设置任何索引时根据 parse 类型默认为 0 或 "id"|  
+
+### 命令行方式
+```
+-process=censorresult -id-index=
+```
+
+## 备注
+censorresult 操作是 file 源下的操作，从 every line of fileinput 的 id-index 索引获取 jobId，参见[关于 parse 和索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-parse)。

@@ -1,0 +1,56 @@
+# 请求路径
+> `GET` /v1/vpc/common_bandwidth/:cb_id/eip_list
+
+# 请求参数
+
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region_id | string | query | 是 | 地域 ID |
+| cb_id | string | path | 是 | 共享带宽包 ID |
+| page | int | query | 否 | 页码 |
+| size | int | query | 否 | 分页大小 |
+
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| request_id | string | 是 | 请求记录 ID |
+| data | []EipInfo | 是 | EIP 列表|
+| page | int | 是 | 页码 |
+| size | int | 是 | 分页大小 |
+| total | int | 是 | 查询到的总数 |
+
+
+### EipInfo 弹性 IP 详情
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| ip | string | 是 | IP 地址 |
+| eip_id | string | 是 | EIP 实例 ID |
+| name | string | 是 | EIP 实例名称 |
+| bandwidth | int | 是 | 带宽大小 |
+| status | string | 是 | EIP 状态, 取值: Available: 可用, InUse: 使用中 |
+| bind_instance_id | string | 是 | 绑定实例 ID |
+| bind_instance_type | string | 是 | 绑定实例类型, 取值: EcsInstance: 云主机, SlbInstance: 负载均衡, Nat: nat 网关 |
+
+# 示例
+### 正常返回示例
+```json
+{
+    "request_id": "04F0F334-AC1",
+     "data": [
+        {
+            "ip": "1.2.3.4",
+            "eip_id": "eip-xxx",
+            "name: "eip测试",
+            "bandwidth": 2,
+            "status": "Available",
+            "bind_instance_id": "",
+            "bind_instance_type": ""
+        }
+    ],
+    "page": 1,
+    "size": 10,
+    "total": 1
+}
+```

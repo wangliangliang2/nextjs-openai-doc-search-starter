@@ -1,0 +1,186 @@
+日志分析平台提供`快速报表`和`自定义报表`功能对日志查询结果进行可视化。
+
+`说明：`使用可视化图表之前，请先阅读[搜索分析](/insight/manual/4629/search-analysis)了解日志搜索分析相关功能。
+
+## **快速报表**
+
+日志分析平台提供`快速报表`功能帮助您快速获取字段的统计图表，快速报表的统计信息包括字段的高频值、低频值、时序平均值、时序最大值、时序最小值等。如图，点击具体字段后面的可视化按钮即可看到该字段相关的统计信息并跳转查看相关报表。
+
+![](https://pandora-kibana.qiniu.com/report/quick_report4.png)
+
+如：快速查看字段 lag 的时序平均值。
+
+![](https://pandora-kibana.qiniu.com/report/lag_avg.png)
+
+详情请阅读<a href="/insight/manual/4879/rapid-analysis" title="字段统计分析报表">快速分析 </a>。
+
+## **自定义报表**
+
+日志分析服务提供自定义配置报表功能对日志搜索结果进行可视化分析。自定义报表不限于统计单个字段，通过配置指标与分组字段，可以配置多维度的复杂图表。
+
+![](https://pandora-kibana.qiniu.com/report/report-setting.png)
+
+**操作步骤**
+
+1.在搜索栏输入搜索条件，点击右侧的查询按钮；
+
+2.点击`可视化` tab；
+
+3.选择图表类型；
+
+4.在`数据`模块配置指标、分组字段、过滤值；
+
+5.在`样式`模块设置图表样式。
+
+**操作说明**
+
+* 数据模块
+
+ <a href="#1">指标说明</a>
+<a href="#2">分组字段说明</a>
+<a href="#3">过滤说明</a>
+* 样式模块
+
+ <a href="#4">样式设置说明</a>
+
+<a name="1"></a>
+
+**指标**：
+
+1. 支持对字段的计数、去重计数、求和、平均值、中位数、最大值、最小值、分位数、变化率以及日志计数进行统计。其中，选择变化率指标时，是对字段的平均值、最大值、最小值、求和结果计算变化率；
+
+![](https://pandora-kibana.qiniu.com/report/rate1.png)
+
+2. 字段的平均值、求和、最大值、最小值指标支持数学运算:输入类似 `_value * (60 * 60)` 等计算公式统计计算后的指标值。
+
+3. 去重计数支持 string，long，boolean 字段，其他指标只支持 long 类型的字段；
+
+4. 单个图表可添加多个指标，通过样式配置指定图表中展示的指标。
+
+![](https://pandora-kibana.qiniu.com/datacube/metrics_choice.png)
+
+<a name="2"></a>
+
+**分组字段：**
+
+1.分组字段分为`时间字段`与`普通字段`两种；
+
+2.当分组字段里出现时间字段时，时间字段表现为 x 轴，即事件首先按照时间粒度聚合，其他分组字段呈现为多系列数据。
+
+3.若分组字段里没有时间字段，则第一个添加的分组字段呈现为 x 轴，后续添加的分组字段呈现为多系列数据。
+
+4.对于时间分组字段，系统支持自动 interval 或者用户输入 interval 对搜索结果聚合。
+
+![](https://pandora-kibana.qiniu.com/report/interval1.png)
+
+5.普通分组字段支持 string、long、boolean 字段类型。
+
+  - 可选排序依据，支持按照该字段的统计指标、该字段的值、该字段的记录总数排序。
+  - 可以选择按升序或者降序排列。
+  - 可选呈现的分组数量。
+
+![](https://pandora-kibana.qiniu.com/report/group2.png)
+
+6.对 long 字段类型的分组字段，支持对字段设置分组方式，包括按字段值分组、按指定间隔分组、自定义间隔分组。
+
+![](https://pandora-kibana.qiniu.com/report/long_group1.png)
+
+您可以通过指标与分组字段自由组合配置多维度的图表来分析日志。
+
+<a name="3"></a>
+
+**过滤：**
+
+对分组计算后的指标值进行过滤，只显示满足条件的计算指标结果。如：对 lag 按照时间字段分组计算平均值，过滤指标值大于 1.5 M 小于 3M 的值。
+
+![](https://pandora-kibana.qiniu.com/report/filter.png)
+
+<a name="4"></a>
+
+**样式配置**
+
+![](https://pandora-kibana.qiniu.com/report/style.png)
+
+在可视化的样式配置里可以设置图表的通用样式，如：图例位置、指标刻度、空值模式、堆叠模式、标签样式等，在每种图表类型详解里均有对应的样式配置说明。这里我们说明其他几种样式配置。
+
+1.图例数值
+
+对于时序图，除了当前值以外，统计每个指标的时序平均值、最小值、最大值、总和。
+
+2.指标筛选
+ 
+对于添加了多个指标的图表，可筛选显示的指标。
+
+3.数值单位
+
+支持完整的单位体系，对图表的单位进行切换。
+
+![](https://pandora-kibana.qiniu.com/report/with_unit.png)
+
+4.对比分析
+
+通过在图表样式设置里选择对比时间，在同一张图表上实现同比分析、环比分析和自定时间偏移分析。
+
+![](https://pandora-kibana.qiniu.com/report/compare_analysis2.png)
+
+**多系列数据如何只观察感兴趣的数据**
+
+在数据系列太多的情况下，您可以通过我们的图例选择功能，只观察您感兴趣的数据系列。
+
+1. 如果您感兴趣的数据系列比较少，您可以点击取消全选，再点击自己感兴趣的图例即可将它们显示在图表中。
+
+![](https://pandora-kibana.qiniu.com/report/tuli11.png)
+
+2. 如果您感兴趣的数据系列比较多，您可以点击全选，再点击图例中不感兴趣的数据系列以取消它们的显示。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/tuli2%20%281%29.png)
+
+
+## **图表类型**
+
+目前日志分析服务支持如下图表类型：
+
+折线图、区域图、柱状图、饼图、中国地图、世界地图、单值图、雷达图、散点图、气泡图、数据表格、富文本、气泡地图、迁徙图、桑基图、关系图。
+
+![](https://pandora-kibana.qiniu.com/report/chart_type1.jpg)
+
+每种图表使用方式参考如下文档：
+
+* [折线图](/insight/manual/4861/the-line-chart)
+
+* [区域图](/insight/manual/4862/the-pie-chart)
+
+* [柱状图](/insight/manual/4860/a-histogram)
+
+* [饼图](/insight/manual/4862/the-pie-chart)
+
+* [中国地图](/insight/manual/4864/statistical-map)
+
+* [世界地图](/insight/manual/5471/the-world-map)
+
+* [单值图](/insight/manual/4865/single-value-figure)
+
+* [雷达图](/insight/manual/5466/radar-map)
+
+* [散点图](/insight/manual/5467/a-scatter-diagram)
+
+* [气泡图](/insight/manual/5590/bubble-chart)
+
+* [数据表格](/insight/manual/4866/the-data-table)
+
+* [富文本](/insight/manual/5862/the-rich-text)
+
+* [气泡地图](/insight/manual/5863/map-bubble-chart)
+
+* [迁徙图](/insight/manual/5864/migration-figure)
+
+* [桑基图](/insight/manual/5884/the-sankey-diagram)
+
+* [关系图](/insight/manual/5885/the-diagram)
+
+
+
+
+
+
+

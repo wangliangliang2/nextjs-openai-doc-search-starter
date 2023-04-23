@@ -1,0 +1,591 @@
+# **简介**
+
+普通音视频转码接口方便用户对音频、视频资源进行编码和格式转换。  
+
+注意：接口规格不含任何空格与换行符，下列内容经过格式化以便阅读。  
+
+
+```
+avthumb/<Format>
+       /vcodec/<VideoCodec>
+       /avsmart/<0|1>
+       /smtQuality/<Quality>
+       /refine/<Refine>
+       /maxrate/<Maxrate>
+       /r/<FrameRate>
+       /ref/<Ref>
+       /hr/<HighFrameRate>
+       /vb/<VideoBitRate>
+       /stripmeta/<StripMeta>
+       /crf/<Crf>
+       /h264Profile/<H264Profile>
+       /h264Level/<H264Level>	
+       /s/<Resolution>
+       /s/<Resolution>>
+       /s/<Resolution><
+       /aspect/<Aspect>
+       /autoscale/<Autoscale>
+       /padW/<PadW>
+       /padH/<PadH>
+       /padVideoX/<PadVideoX>
+       /padVideoY/<PadVideoY>
+       /gop/<GroupOfPictures>
+       /colorspace/<ColorSpace>	
+       /keyFramePosition/<KeyFramePosition>
+       /rotate/<Degree>
+       /flip/<Flip>
+       /compressLevel/<level>	
+       /ss/<SeekStart>
+       /t/<Duration>
+       /gifHighColor/<GIFHighColor>
+       /deinterlace/<Deinterlace>
+       /wmImage/<Encodedkodocheme>
+       /wmVideo/<Encodedkodocheme>
+       /wmGravity/<Gravity>
+       /wmScale/<Scale>
+       /wmScaleType/<ScaleType>
+       /wmConstant/<Constant>
+       /wmAlpha/<Alpha>
+       /wmIgnoreLoop/<WmIgnoreLoop>
+       /wmText/<EncodedText>
+       /wmGravityText/<GravityText>
+       /wmFont/<font>
+       /wmFontColor/<fontcolor>
+       /wmFontSize/<fontsize>
+       /wmOffsetX/<offsetX>
+       /wmOffsetY/<offsetY>
+       /wmPos/<Position>
+       /wmDuration/<Duration>
+       /wmShortest/<WmShortest>
+       /mosaic/<Mosaic>
+       /mosaicGravity/<MosaicGravity>
+       /mosaicOffsetX/<MosaicOffsetX>
+       /mosaicOffsetY/<MosaicOffsetY>
+       /mosaicSize/<MosaicSize>
+       /mosaicStart/<MosaicStart>
+       /mosaicDuration/<MosaicDuration>
+       /stream/<Stream>
+       /cut/<Cut>
+       /vn/<VideoNo> 
+       /sn/<SubtitleNo>
+       /scodec/<SubtitleCodec>
+       /subtitle/<SubtitleURL>
+       /stFont/<SubtitleFont>
+       /stFontSize/<SubtitleFontSize>
+       /stOffsetX/<SubtitleOffsetX>
+       /stOffsetY/<SubtitleOffsetY>
+       /stripmeta/<StripMeta>
+       /acodec/<AudioCodec>
+       /ab/<BitRate>
+       /ac/<ChannelNum>
+       /ar/<SamplingRate>
+       /aq/<AudioQuality>
+       /audioProfile/<profile>
+       /volume/<Volume>
+       /loudnorm/<LoudNorm>
+       /loudnormI/<LoudNormI>
+       /loudnormLRA/<LoudNormLRA>
+       /loudnormTP/<LoudNormTP>
+       /loudnormF/<LoudNormF>
+       /loudnormG/<LoudNormG>
+       /loudnormRefine/<LoudNormRefine
+       /an/<AudioNo>
+       /speex/<Speex>
+       /writeXing/<0|1>
+       /amix/<AmixURL>
+       /amixOffset/<AmixOffset>
+       /amixStart/<AmixStart>
+       /amixDuration/<AmixDuration>
+       /multiArep/<MultiAudioReplaceURL>
+       /multiArepOffset/<MultiAudioReplaceOffset>
+       /multiArepStart/<MultiAudioReplaceStart>
+       /multiArepDuration/<MultiAudioReplaceDuration>
+       /sdr/<SDR>
+       /pixFmt/<PixFmt>
+
+```
+
+
+
+# **封装参数**
+
+| 分类                 | 参数名称           | 类别 | 必填 | 说明                                                         |
+| :------------------- | :----------------- | :--- | :--- | :----------------------------------------------------------- |
+| **封装格式**         | `<Format>`         | A/V  | Y    | 封装格式，具体细节请参考[支持转换的封装格式](https://support.qiniu.com/hc/kb/article/182125/?from=draft)。 |
+| **去除视频流**       | `/vn/<VideoNo>`    | V    | N    | 是否去除视频流，0为保留，1为去除。 默认值为0。               |
+| **去除音频流**       | `/an/<AudioNo>`    | A    | N    | 是否去除音频流，0为保留，1为去除。 默认值为0。               |
+| **去除字幕流**       | `/sn/<SubtitleNo>` | V    | N    | 是否去除字幕，0为保留，1为去除。默认值为0。                  |
+| **保留or去除媒体流** | `/stream/<Stream>` | A/V  | N    | 从输入源中选择要保留的或者要去除的媒体流，假设输入源有 n 个流（编号从 0 开始，n > 2），则保留媒体流的合法参数有 0、(n-1)、0…2、0…0、0,1,2 等，去除媒体流的合法参数有 -0、-(n-1)、-0…(n-2)、-1…1、-1,2 等，其中形如 a…b 表示保留编号为 [a,b] 流，a,b,c 表示保留编号为 a、b 和 c 的流，-a…b 表示去除编号为 [a,b] 流，-a,b,c 表示去除编号为 a、b 或 c 的流。流的编号可以通过 [avinfo](https://developer.qiniu.com/dora/manual/1247/audio-and-video-metadata-information-avinfo) 来查看。 |
+
+
+
+# **视频参数**
+
+| 分类                 | 参数名称                               | 类别 | 必填 | 说明                                                         |
+| :------------------- | :------------------------------------- | :--- | :--- | :----------------------------------------------------------- |
+| **编码格式**         | `/vcodec/<VideoCodec>`                 | V    | N    | 视频编码格式，具体细节请参考[支持转换的视频编码格式](https://developer.qiniu.com/dora/kb/1385/avthumb-parameter-vcodec-format-and-explanation)。 |
+| **锐智转码**         | `/avsmart/<avsmart>`                   | V    | N    | 0、是否启用锐智转码，设置为 1 时开启。<br>1、支持使用H.264和H.265编码，默认使用H.264。<br>2、`使用 avsmart 的计费和 avthumb 有区别`，[价格参考](https://www.qiniu.com/prices/dora?source=dora)。<br/>3、默认使用锐智转码2.0，[锐智转码2.0](https://www.qiniu.com/products/avsmart) 是基于 锐智转码1.0 的升级版本，1.0和2.0 支持的[参数范围详情](https://developer.qiniu.com/dora/api/12158/1-0-and-2-0-perceptive-transcoding-parameter-scope-of-support)，建议使用锐智转码1.0的客户咨询客服进行升级。 |
+|                      | `/smtMaxvbr/<maxvbr>`                  | V    | N    | 开启 `avsmart`时生效。最大平均码率, 单位：比特每秒（bit/s），常用视频比特率：128k 1.25m 5m 等。小于 1k 会默认使用 1k。暂时对 H.265 无效。 |
+|                      | `/smtQuality/<quality>`                | V    | N    | 开启`avsmart`时生效。瘦身时的转码质量等级，值越大，画质越好。整数，取值范围[-7,9]。 |
+| **GPU转码**          | `/prehw/<PreHW>`                       | V    | N    | 是否倾向启用GPU硬件转码(编码)，设置为 1 时，在GPU环境下开启，默认关闭采用软件转码。<br>1、AV1编解码不支持<br>2、HDR输入输出不支持<br/>3、输出分辨率：最大分辨率H.264 是 4096x4096，H.265是 8192x4320，最小分辨率  150x150<br/>4、锐智转码不支持<br/>**注意**：当前公测阶段，GPU转码价格跟普通转码收费一样，后续可能会调整价格。 |
+| **码率控制**         | `/refine/<Refine>`                     | V    | N    | 是否启用高质量转码，设置为 1 时开启。保证在视频内优化码率分配。 |
+|                      | `/maxrate/<Maxrate>`                   | V    | N    | 1、使用 `/refine/1` 高质量转码时，使用该参数限制输出视频流的峰值码率。当不使用 /vb/<VideoBitRate> 时，该值不可低于输入视频码率；当使用 /vb/<VideoBitRate> 时，该值不可低于由 /vb/<VideoBitRate> 指定的视频码率。<br/>2、不使用`/refine/1` 时，无使用限制，但该值不可低于由 /vb/<VideoBitRate> 指定的视频码率，否则会以 /vb/<VideoBitRate>为准。 |
+|                      | `/vb/<VideoBitRate>`                   | V    | N    | 1、视频码率，单位：比特每秒（bit/s），常用视频码率：128k，1.25m，5m等。<br/> 2、在不改变视频编码格式时，若指定码率大于原视频码率，则使用原视频码率进行转码。 <br/>3、参数末尾使用 `!` ，如 128k!，可以强制使用指定码率转码, 使平均码率不高于指定值，会牺牲一些视频播放质量；不使用`!`强制，会在码率与视频质量之间自动平衡。 |
+|                      | `/crf/<Crf>`                           | V    | N    | 1、设置 crf 值，为整数，其不可与 vb 共用；<br/> 2、vcodec 为 libx264 时取值为范围 [18,36]，vcodec 为 libx265 时取值范围为 [23,41]，默认取值为范围 [18,36]；<br/> 3、其值越小，输出视频质量越好，输出文件可能变大。 |
+| **帧率控制**         | `/r/<FrameRate>`                       | V    | N    | 1、视频帧率，每秒显示的帧数，单位：赫兹（Hz），常用帧率：24，25，30 等。 <br/>2、默认等于源视频帧率，HighFrameRate=0，取值[1,30]，超出范围取25帧；HighFrameRate=1时允许高帧率，取值[1,60]，超出范围取60帧。 |
+|                      | `/ref/<Ref>`                           | V    | N    | 设置参考帧数量，取值范围[1,16]。注：暂不支持输出为 libx265 设置该参数。 |
+|                      | `/hr/<HighFrameRate>`                  | V    | N    | 视频高帧率，与`r`配合使用，默认为`HighFrameRate=0`，即常规帧率；`HighFrameRate=1`表示保留高帧率。 |
+| **分辨率**           | `/s/<Resolution>`                      | V    | N    | 指定视频目标分辨率，格式：`w`x`h`，指定宽高强制进行缩放，可能会导致视频变形。<br/>1、`w` 和 `h` 都为空时，则和原视频保持一致。<br/>2、`w`为空，`h`不为空，则按`h`的值对原视频等比例缩放。<br/>3、`w`不为空，`h`为空时，则按`w`的值对原视频等比例缩放。<br/>4、 `w`、和`h`都不为空时，则根据`w`、`h`来缩放。<br />**取值范围说明：**<br>1、`vcodec`为libx265 或 libx264时，长边取值范围[20,8192]，短边取值范围[20,4320]；`vcodec`取其他值时,长边范围[20,3840]，短边取值范围[20,2160]。<br>2、`/prehw/1/`开启时，在GPU转码情况下，当且仅当该宽高缩放的功能开启时，会经由GPU加速；264长边取值范围[150,4096]，短边取值范围[150,4096]。265长边取值范围[150,8192]，短边取值范围[150,4320]。 |
+|                      | /s/<Resolution>>                       | V    | N    | 指定视频目标分辨率，格式：`w`x`h`>，指定宽高强制缩小不放大。取值范围和`/s/<Resolution>`一致。<br>1、`w`不为空且小于原视频宽，`h`为空时，指定宽，高随宽等比缩小；<br>2、`w`为空，`h`不为空且小于原视频高时，指定高，宽随高等比缩小。<br>3、`w` 和 `h` 都为空时，则和原视频保持一致。<br>4、 `w`和`h`都不为空时，且都小于原视频宽高时，则根据`w`、`h`来缩小。<br/>**备注**：如果目标宽和高都大于原视频宽和高，则不处理，跟原视频保持一致。 |
+|                      | /s/<Resolution><                       | V    | N    | 指定视频目标分辨率，格式：`w`x`h`<，指定宽高强制放大不缩小。取值范围和`/s/<Resolution>`一致。<br/>1、`w`不为空且大于原视频宽，`h`为空时，指定宽，高随宽等比放大；<br/>2、`w`为空，`h`不为空且大于原视频高时，指定高，宽随高等比放大。<br/>3、`w` 和 `h` 都为空时，则和原视频保持一致。<br/>4、 `w`和`h`都不为空，且都大于原视频宽高时，则根据`w`、`h`来放大。<br>**备注**：如果目标宽和高都小于原视频宽和高，则不处理，跟原视频保持一致。 |
+| **GOP长度**          | `/gop/<GroupOfPictures>`               | V    | N    | 1、GOP参数，即视频流关键帧间的间隔帧数，取值[0,3000]的整数，默认为0表示采用指定视频编码格式的默认GOP值。<br/> 2、例如libx264格式默认GOP值为250。GOP取值过小会影响视频编码压缩率，码率变大，过大会使图像群组的时长跨度过大，影响播放随机性，故一般建议采用默认值。 |
+| **在播放器中宽高比** | `/aspect/<Aspect>`                     | V    | N    | 该参数为视频在播放器中显示的宽高比，格式为`<width>:<height>`。例如：取值`3:4`表示视频在播放器中播放是`宽:高`=`3:4`（注：此处取值仅为体现演示效果）。 |
+| **视频按比例缩放**   | `/autoscale/<Autoscale>`               | V    | N    | 0、autoscale/0 或者不指定时，会强制缩放到目标分辨率，可能造成视频变形。<br/>1、autoscale/1，原视频比例（A)和目标分辨率比例(B)进行比对，比例=宽/高；<br/>1) 若A<B，原视频按照目标分辨率的`高`进行缩放 <br/>2) 若A>B，原视频按照目标分辨率的`宽`进行缩放<br/>2、autoscale/2，原视频比例（A)和目标分辨率比例(B)进行比对,比例=宽/高；<br/>1)  若A<B，原视频按照目标分辨率的`高`进行缩放，再放到目标分辨率矩形框内，并填充黑边 <br/>2)  若A>B，原视频按照目标分辨率的`宽`进行缩放，再放到目标分辨率矩形框内，并填充黑边。 <br/>**示例：原视频（1280x 720），A(1.78);目标分辨率（800x400）,B(2)** <br/>1) 使用autoscale/1，A<B,此时按照`高`进行缩放，结果文件分辨率为710x400; <br/>2) 使用autoscale/2，A<B,此时按照`高`进行缩放，原视频缩放为710x400，再放入800x400的矩形框，并填充黑边。 |
+| **编码属性**         | `/compressLevel/<level>`               | V    | N    | 设置视频编码时压缩的等级，选项为1,1.5,2,4，等级越高压缩效果越好，更耗CPU。 |
+|                      | `/h264Profile/<H264Profile>`           | V    | N    | 设置 h264 的 profile等级，支持 baseline、main、high。        |
+|                      | `/h264Level/<H264Level>`               | V    | N    | 设置 h264 的 level 值，合法的值有 3.0、3.1、4.0、4.1、4.2。  |
+| **HDR to SDR**       | `/sdr/<SDR>`                           | V    | N    | 是否启用 HDR 转 SDR，设置为 “1” 时开启。<br/>1、当输入源为HDR时，设置为 “1” 时，转为SDR视频，不支持hdr的设备上也能尽可能还原hdr效果。 <br/>2、默认关闭，跟随源视频，即hdr到hdr，sdr到sdr。 <br>3、使用 HDR to SDR 的收费跟普通转码有区别，请参考 [音视频增强](https://www.qiniu.com/prices/dora?source=dora)。<br>**注意**： 不支持hdr的设备播放hdr视频，没有hdr效果。 |
+|                      | `/colorspace/<ColorSpace>`             | V    | N    | 指定 SDR 的色彩空间，暂时只支持取值 bt709，若不设置则输出的色彩空间同输入源。<br/>**注意**：若输入源是 HDR 视频，必须设置 sdr/1 才会生效。 |
+| **SDR to HDR**       | `/hdr/<HDR>`                           | V    | N    | 是否启用 SDR 转 HDR，设置为 "1" 时开启，默认值为 0，即关闭跟随源视频。当输入源为 SDR 时，设置为 "1" 且指定输出为 H.265 编码时，转为 HDR 视频。<br/>1、该参数不能与锐智转码相关参数（avsmart、smtMaxvbr、smtQuality）和 pixFmt 同时使用。 <br/>2、使用 SDR to HDR 的收费跟普通转码有区别，请参考 [音视频增强](https://www.qiniu.com/prices/dora?source=dora)。 |
+|                      | `/maxLuminance/<MaxLuminance>`         | V    | N    | 设置输出 HDR 视频最大亮度，单位 nit，参数范围 500 nit ~ 1000 nit，默认值为 0，即根据视频内容自适应调整，必须设置 hdr/1 才会生效。 |
+| **视频颜色格式**     | `/pixFmt/<PixFmt>`                     | V    | N    | 指定视频像素格式，目前仅支持设置yuv420p。                    |
+| **高画质gif**        | `/gifHighColor/<GIFHighColor>`         | V    | N    | 输出为 gif 时，值为 1 表示选择输出高画质的 gif 文件，默认值为 0。只支持与以下参数共用：`<SeekStart>`、`<Duration>`、`<Resolution>`、`<FrameRate>`、`<Autoscale>`。<br/>输出 gif 的帧数最多为 4500。 |
+| **去交错**           | `/deinterlace/<Deinterlace>`           | V    | N    | 是否启用去交错功能。 <br/>1、 默认值为 1，表示开启，即将视频从隔行扫描调整为逐行扫描。<br/>2、值为 0 则表示关闭，即保持原有模式，保留视频为隔行扫描模式。<br/>3、不支持将视频从逐行扫描调整为隔行扫描。 |
+| **清除文件metadata** | /stripmeta/<StripMeta>                 | A/V  | N    | 是否清除文件的`metadata`，1为清除，0为保留。                 |
+| **自定义黑框**       | `/padW/<PadW>`                         | V    | N    | 1、用于给视频添加自定义黑框，不能跟autoscale/2 共用。<br/>2、添加黑框后的视频的宽,取值范围[20,3840]且取值大于或等于原视频宽, 和 padH 同时有效时启用 pad。 |
+|                      | `/padH/<PadH>`                         | V    | N    | 1、用于给视频添加自定义黑框，不能跟autoscale/2 共用。 <br/>2、添加黑框后的视频高,取值范围[20,3840]且取值大于或等于原视频宽, 和 padW 同时有效时启用 pad。 |
+|                      | `/padVideoX/<PadVideoX>`               | V    | N    | 1、用于给视频添加自定义黑框，不能跟autoscale/2 共用。 <br/>2、当 padW、padH 有效时生效，添加黑框后的视频中的横向偏移, 即原视频在添加黑框后视频左上角的 x 坐标, 默认0 |
+|                      | `/padVideoY/<PadVideoY>`               | V    | N    | 1、用于给视频添加自定义黑框，不能跟autoscale/2 共用。 <br/>2、当 padW、padH 有效时生效，添加黑框后的视频中的纵向偏移, 即原视频在添加黑框后视频左上角的 y 坐标, 默认0 |
+|                      | `/keyFramePosition/<KeyFramePosition>` | V    | N    | 设置多个关键帧出现的时间点，以.分隔，个数范围[1,5]，单位：秒，时间范围[1,10]，且时间采用增长趋势，例如：keyFramePosition/1.3.5.8.10 |
+| **视频旋转/翻转**    | `/rotate/<Degree>`                     | V    | N    | 指定顺时针旋转的度数，可取值为`90`、`180`、`270`、`auto`，默认为 auto。 |
+|                      | `/flip/<Flip>`                         | V    | N    | 视频翻转, 水平翻转 `horizontal`, 垂直翻转 `vertical`         |
+| **截取片段**         | `/ss/<SeekStart>`                      | A/V  | N    | 指定音视频截取的开始时间，单位：秒，支持精确到毫秒，例如3.345s。用于视频截取，从一段视频中截取一段视频。 |
+|                      | `/t/<Duration>`                        | A/V  | N    | 指定音视频截取的长度，单位：秒，支持精确到毫秒，例如1.500s。用于视频截取，从一段视频中截取一段视频。 |
+| **去掉多段合成**     | `/cut/<Cut>`                           | A/V  | N    | 1、对单个视频去掉多段合成一个视频； <br/>2、从输入源中选择要去除的时间段，每个要去除的时间段由起止绝对时间表示，单位为 s，精确到 ms。例如，`0.5,1.0` 表示去除时间范围为 `[0.5,1.0]` 上的音视频； `0.5,1.0;1.5,2.0` 表示去除时间范围为 `[0.5,1.0]`、`[1.5,2.0]` 上的音视频。 <br/>3、注意，其中时间范围不可有重叠，且需按起始点的位置顺序组织。参数值需要经过 `urlsafe_base64_encode`，例如 `cut/MC41LDEuMDsxLjUsMi4w` 是合法的。 |
+| **加/减速视频**      | `/vspeed/<vspeed>`                     | V    | N    | 加/减速视频，小数，取值范围[0.01,100]，大于1时表示加速，小于1表示减速，默认为1，源视频速度不变。 |
+| **视频马赛克**       | `/mosaic/<Mosaic>`                     | V    | N    | 是否启用马赛克，固定为 `1`,且后续马赛克参数必须连续，支持添加多个马赛克。 |
+|                      | `/mosaicGravity/<MosaicGravity>`       | V    | N    | 马赛克的位置，参考锚点参数表，默认值为`NorthEast`（右上角）  |
+|                      | `/mosaicOffsetX/<MosaicOffsetX>`       | V    | N    | 马赛克位置的相对横向偏移量 ，正数则向右偏移，负数向左偏移，当`mosaic/1`时必填 |
+|                      | `/mosaicOffsetY/<MosaicOffsetY>`       | V    | N    | 马赛克位置的相对纵向偏移量 ，正数则向下偏移，负数向上偏移，当`mosaic/1`时必填 |
+|                      | `/mosaicSize/<MosaicSize>`             | V    | N    | 马赛克区域大小，即指定马赛克的宽和高，例如：`100x200`, 当`mosaic/1`时必填 |
+|                      | `/mosaicStart/<MosaicStart>`           | V    | N    | 马赛克起始时间 默认为0 e.g. `12.3`                           |
+|                      | `/mosaicDuration/<MosaicDuration>`     | V    | N    | 马赛克持续时间 默认直到片尾 e.g. `21.3`                      |
+
+
+
+# **视频水印参数**
+
+| 分类              | 参数名称                       | 类别 | 必填 | 说明                                                         |
+| :---------------- | :----------------------------- | :--- | :--- | :----------------------------------------------------------- |
+| **视频/图片水印** | `/wmImage/<Encodedkodocheme>`  | V    | N    | 1、图片水印的源路径，目前支持 kodo 资源。kodo 资源可由 `kodo://<bucketname>/<key>` 表示（此时 bucketname 需要与输入源在同一区域），均需要经过 `urlsafe_base64_encode`。<br> 2、支持的格式有：图片、部分动图（GIF、APNG）。 |
+|                   | `/wmVideo/<Encodedkodocheme>`  | V    | N    | 1、视频水印的源路径，目前支持kodo 资源。kodo 资源可由 `kodo://<bucketname>/<key>` 表示（此时 bucketname 需要与输入源在同一区域），均需要经过 `urlsafe_base64_encode`。<br/> 2、无法和`autoscale`以及`rotate`同时使用,不支持 HLS 格式的视频作为水印。 |
+|                   | `/wmScale/<Scale>`             | V    | N    | 指定图片或视频水印的短边、长边、宽、高与输入视频之间的比例，取值为(0,1]，默认值时不进行自适应缩放水印。 |
+|                   | `/wmScaleType/<ScaleType>`     | V    | N    | 选择图片或视频水印自适应缩放的方式，取值0、1、2、3分别表示为自适应原图的短边、长边、宽、高，默认值为0。 |
+|                   | `/wmConstant/<Constant>`       | V    | N    | 1、用于设置图片或视频水印是否随源视频 DAR（display aspect ratio）变化而产生形变。<br/> 2、值为 0 时，水印会随源视频 DAR 变化而产生形变；值为 1 时，水印保持原有宽高比。 |
+|                   | `/wmIgnoreLoop/<WmIgnoreLoop>` | V    | N    | 是否忽略水印动图的循环属性，可取值 `0（使用）、1（忽略）`，默认为1。 |
+| **文字水印**      | `/wmText/<EncodedText>`        | V    | N    | 1、水印文本内容,需要经过`urlsafe_base64_encode`。<br/> 2、水印文本支持预定义变量和自定义变量替换，变量引用格式为{{.meta.var}}，详情查看[变量](https://developer.qiniu.com/dora/6502/upload-video-files) 。<br/> 3、水印文本内容可以是字符串+变量的组合，如：七牛云{{.meta.fname}}。 |
+|                   | `/wmAlpha/<Alpha>`             | V    | N    | 文字水印透明度。范围 (0.0,1.0]，越小越透明。默认值为1.0，即不透明。 |
+|                   | `/wmFont/<Font>`               | V    | N    | 文本字体（详见支持[字体列表](https://developer.qiniu.com/dora/1379/image-and-video-text-watermarking-support-font-list) ），需要经过`urlsafe_base64_encode`。存在`/wmText/`时生效。 注意：默认为方正黑体。 |
+|                   | `/wmFontColor/<FontColor>`     | V    | N    | 水印文字颜色，需要经过`urlsafe_base64_encode`，RGB格式，可以是颜色名称（例如红色）或十六进制（例如#FF0000），参考RGB颜色编码表。存在`/wmText/`时生效，默认为黑色。 |
+|                   | `/wmFontSize<FontSize>`        | V    | N    | 水印文字大小，单位: px。存在`/wmText/`时生效，默认值为16px。 |
+| **水印位置**      | `/wmGravity/<Gravity>`         | V    | N    | 视频或者图片水印位置。存在``/wmImage/` or `/wmVideo/``时生效。 |
+|                   | `/wmGravityText/<GravityText>` | V    | N    | 文本位置，存在`/wmText/`时生效，默认 NorthEast。             |
+|                   | `/wmOffsetX/<offsetX>`         | V    | N    | 设置图片、文字、视频水印位置的相对横向偏移量，当值为正数时则向右偏移，反之向左。位置里包含West时，默认有+10的固定偏移，位置里包含East时，默认有-10的固定偏移，中间位置则固定偏移为0。 |
+|                   | `/wmOffsetY/<offsetY>`         | V    | N    | 设置图片、文字、视频水印位置的相对纵向偏移量，当值为正数时则向下偏移，反之向上。位置里包含North时，默认有+10的固定偏移，位置里包含South时，默认有-10的固定偏移，中间位置则固定偏移为0。 |
+| **水印时间线**    | `/wmPos/<Postion>`             | V    | N    | 指定图片、文字、视频水印显示的起始时间，单位：秒，不填表示全时长。支持魔法变量`$(end)表示视频结束时间点`，注：需要和wmDuration同时存在。 |
+|                   | `/wmDuration/<Duration>`       | V    | N    | 指定图片、文字、视频水印显示的持续时间，单位：秒，正数表示时间增长方向，负数表示时间递减方向。不填表示全时长。支持魔法变量`$(lte)`(小于wmPos的区间)、`$(gte)`(大于wmPos的区间)。注：需要和wmPos同时存在。 |
+|                   | `/wmShortest/<WmShortest>`     | V    | N    | wmPos在视频duration内，在添加wmDuration后超出视频duration后是否自动调整wmDuration大小，1 调整到视频duration内，0 不处理, 默认为0。 |
+
+# **音频参数**
+
+| 分类              | 参数名称                                          | 类别 | 必填 | 说明                                                         |
+| :---------------- | :------------------------------------------------ | :--- | :--- | :----------------------------------------------------------- |
+| **编码格式**      | `/acodec/<AudioCodec>`                            | A    | N    | 音频编码格式，具体细节请参考[支持转换的音频编码格式](https://developer.qiniu.com/dora/kb/1432/avthumb-parameter-acodec-format-and-explanation)。 |
+| **profile等级**   | `/audioProfile/<profile>`                         | A    | N    | 设置音频的profile等级，支持：aac_he。**注：**需配合 `libfdk_aac` 编码方案使用，如 `avthumb/m4a/acodec/libfdk_aac/audioProfile/aac_he`。 |
+| **码率控制**      | `/ab/<BitRate>`                                   | A    | N    | 1、音频码率，单位：比特每秒（bit/s），常用码率：64k，128k，192k，256k，320k等。<br/> 2、在不改变音频编码格式时，若指定码率大于原音频码率，则使用原音频码率进行转码。<br/> 3、参数末尾使用 `!`, 可以以强制使用指定码率转码, 如 64k! |
+|                   | `/aq/<AudioQuality>`                              | A    | N    | 1、音频质量，取值范围为0-9（mp3），10-500（aac），仅支持mp3和aac，值越小越高。<br/> 2、不能与上述`码率`参数共用。 |
+| **声道数**        | `/ac/<ChannelNum>`                                | A    | N    | 音频声道数量，单位：整数值，不大于输入源的声道数量。<br/>1、目前 acodec 为 libfdk_aac 时，支持的声道数量为 1、2、4、5、6、8；<br/>2、为 aac 时，支持的声道数量为 1、2、3、4、5、6、7、8；<br/>3、为 libmp3lame 时，支持的声道数量为 1、2。其他数值不合法。 |
+| **采样率**        | `/ar/<SamplingRate>`                              | A    | N    | 音频采样频率，单位：赫兹（Hz），常用音频采样频率有 8000, 11025、12000、16000、22050、24000、32000、44056、44100、47250、48000、50000、64000、88200、96000 等。其它特定限制请参考注意项。 |
+| **音频响应度**    | `/loudnorm/<LoudNorm>`                            | A    | N    | 1、是否使用音频响度标准化调整，0为不使用，1为使用。默认值为0；<br/> 2、不可与`volume`共用。 |
+|                   | `/loudnormI/<LoudNormI>`                          | A    | N    | 音频整体响度值，当 loudnorm 为1时有效，取值范围 [-70.0, -5.0], 默认为 -24.0 |
+|                   | `/loudnormLRA/<LoudNormLRA>`                      | A    | N    | 音频响度范围，当 loudnorm 为1时有效， 取值范围 [1.0, 20.0], 默认为 7.0 |
+|                   | `/loudnormTP/<LoudNormTP>`                        | A    | N    | 音频最高峰值，当 loudnorm 为1时有效， 取值范围 [-9.0, 0.0], 默认为 -2.0 |
+|                   | `/loudnormF/<LoudNormF>`                          | A    | N    | 单个文件存在音量忽大忽小时，设置片段时长大小（毫秒），当 loudnorm 为1时有效，取值范围 [10, 8000]，取值越小拉平越明显，默认为 500，建议与 /loudnormG 一起使用。 |
+|                   | `/loudnormG/<LoudNormG>`                          | A    | N    | 单个文件存在音量忽大忽小时，设置平滑窗口大小（帧），当 loudnorm 为1时有效，取值范围为 [3, 301]的奇数, 取值越小拉平越明显，默认为 31，建议与 /loudnormF 一起使用。 |
+|                   | `/loudnormRefine/<LoudNormRefine>`                | A    | N    | 是否使用增强音频响度标准化，0为不使用。<br/>1为使用音质优先，2为使用响度优先。默认值为0。推荐使用 loudnormRefine 时不设置 loudnormLRA 和 loudnormTP。 |
+| **音频音量**      | `/volume/<Volume>`                                | A    | N    | 1、调整音频音量为原音频音量的倍数, 精确到小数点后2位 ，默认值为 1.0, 范围 [0.01, 3]；<br/> 2、不可与``loudnorm`` 共用。 |
+| **音频混音**      | `/amix/<AmixURL>`                                 | A    | N    | 1、期望混音的音视频文件，目前支持kodo 资源。 <br/>2、kodo 资源可由 `kodo://<bucketname>/<key>` 表示（此时 bucketname 需要与输入源在同一区域），需要经过 `urlsafe_base64_encode`。<br/> 3、源音视频、混音输入音视频都仅支持单音轨；混音的两个音频的channel数必须一致。 |
+|                   | `/amixOffset/<AmixOffset>`                        | A    | N    | 混音效果起始位置，相对于混音后视频起始位置计算，单位为秒，精确到毫秒，默认取0，即混音后音视频从起始位置起有混音效果 |
+|                   | `/amixStart/<AmixStart>`                          | A    | N    | 目标混音文件截取的开始时间，单位为秒，精确到毫秒，默认取0，即目标混音文件从起始开始混入源音视频 |
+|                   | `/amixDuration/<AmixDuration>`                    | A    | N    | 目标混音文件截取的时长，单位为秒，精确到毫秒，默认为目标混音文件音轨原始长度，即全部混入源音视频 |
+| **音频替换**      | `/multiArep/<MultiAudioReplaceURL>`               | A    | N    | 1、用于替换原视频中音频的目标音频文件。<br/> 2、目前支持 kodo 资源，kodo 资源可由 `kodo://<bucketname>/<key>` 表示（此时 bucketname 需要与输入源在同一区域），需要经过 `urlsafe_base64_encode`。<br/> 3、多个文件以英文逗号分隔。 |
+|                   | `/multiArepOffset/<MultiAudioReplaceOffset>`      | A    | N    | 目标音频相对于原视频的起始位置，相对于原视频视频起始位置计算，单位为秒，精确到毫秒，默认取0，从结果视频的起始位置起有指定音频，多个文件以参数指定使用英文逗号分隔，且必须与multiArep文件顺序对应 |
+|                   | `/multiArepStart/<MultiAudioReplaceStart>`        | A    | N    | 目标音频文件截取的开始时间，单位为秒，精确到毫秒，默认取0，即目标音频文件从起始开始添加到原视频中，多个文件以参数指定使用英文逗号分隔，且必须与multiArep文件顺序对应 |
+|                   | `/multiArepDuration /<MultiAudioReplaceDuration>` | A    | N    | 目标音频文件截取的时长，单位为秒，精确到毫秒，默认为目标音频文件音轨原始长度，即全部目标音频替换原视频音频，多个文件以参数指定使用英文逗号分隔，且必须与multiArep文件顺序对应 |
+| **支持speex文件** | `/speex/<Speex>`                                  | A    | N    | 取值为1时，把源音频文件作为微信版speex处理，版本为1.2rc1，不支持其他音频格式转speex。默认取值为0。 |
+| **Xing信息**      | `/writeXing/<Xing>`                               | A    | N    | 转码成mp3时是否写入xing header，默认值为1，表示写入，写入会导致 `file`，`avinfo` 等命令识别出错误的码率。好处是在需要音频时长、帧数的时候只需要获取header。 |
+
+
+
+# **字幕参数**
+
+| **分类**     | **参数名称**                     | **类别** | **必填** | **说明**                                                     |
+| ------------ | -------------------------------- | -------- | -------- | ------------------------------------------------------------ |
+| **编码格式** | `/scodec/<SubtitleCodec>`        | V        | N        | 字幕编码方案，支持方案：`mov_text`。该参数仅用于修改带字幕视频的字幕编码。 |
+| **添加字幕** | `/subtitle/<SubtitleURL>`        | S        | N        | 1、添加字幕，支持 srt 格式字幕（uft-8 编码和和 utf-8 BOM编码）、带有字幕的 mkv 文件、embed（将原视频的字幕流嵌入目标视频）。 2、目前支持 kodo 资源。kodo 资源可由 `kodo://<bucketname>/<key>` 表示（此时 bucketname 需要与输入源在同一区域），需要经过 `urlsafe_base64_encode` |
+| **字幕字体** | `/stFont/<SubtitleFont>`         | S        | N        | 设置字幕的字体，详见支持[字体列表](https://developer.qiniu.com/dora/1379/image-and-video-text-watermarking-support-font-list) ，需要经过 urlsafe_base64_encode。 |
+| **字幕大小** | `/stFontSize/<SubtitleFontSize>` | S        | N        | 设置字幕文字大小。取值为整数，范围 （0,280]，单位：磅。      |
+| **字幕位置** | `/stOffsetX/<SubtitleOffsetX>`   | S        | N        | 设置字幕的左右位置。<br/>默认值为居中，取值为整数，值大于0时向右偏移，小于0时向左偏移，单位：px。 |
+| **字幕高度** | `/stOffsetY/<SubtitleOffsetY>`   | S        | N        | 设置字幕的高度，与地底边框之间的距离。<br/>默认值为10px。 取值为整数，范围 (0,280]，单位：px。 |
+
+
+
+
+
+# **音视频转封装**
+
+- 当`<VideoCodec>`和`<AudioCodec>`值同时为`copy`，即不进行音视频编解码操作，以`音视频转封装计费`，[价格参见](https://www.qiniu.com/prices/dora?source=dora)。
+
+
+
+# **加密参数**
+
+| 参数名称                     | 类别 | 必填 | 说明                                                         |
+| :--------------------------- | :--- | :--- | :----------------------------------------------------------- |
+| `/drmComKey/<DrmCompanyKey>` | V    | N    | QPlayer 中使用的用于区别用户的秘钥，由长度为[1,8]的字符串表示，需要经过`urlsafe_base64_encode`，需要与 `DrmFileKey`同时使用。目前仅支持输出为 mp4。 |
+| `/drmFileKey/<DrmFileKey>`   | V    | N    | QPlayer 中使用的进行视频文件加密的秘钥，由长度为[1,8]的字符串表示，需要经过`urlsafe_base64_encode`，需要与 `DrmCompanyKey` 同时使用。目前支持输出格式 mp4。 |
+
+对视频内容进行私有加密，只能通过七牛云播放器解码播放。关于输出视频解密以及播放的要求可参考 [qplayer 说明](https://github.com/qiniu/qplayer-sdk/blob/master/README.md)。
+
+- 视频私有加密单独计费，服务价格为：0.018 元/分钟。
+- 如果只希望对视频加密而不进行转码操作，需要将`<VideoCodec>`和`<AudioCodec>的`值同时指定为`copy` ，且指定了加密参数时，服务价格 = 视频加密价格。
+- 当`<VideoCodec>和<AudioCodec>` 的值都不为`copy，`时，且指定了加密参数时，服务价格 = 视频转码价格 + 视频加密价格。
+
+
+
+# **使用限制**
+
+- `avthumb`转码的结果会保存在原文件的空间中，但是文件名按照默认规则生成，为了方便获取转码后资源链接，建议自定义处理结果资源的名称，请参考[处理结果另存 (saveas)](https://developer.qiniu.com/dora/1305/processing-results-save-saveas)。
+
+- 转码操作若未指定音视频码率，转码结果的码率会小于等于原音视频码率，若指定码率大于原音视频码率，转码操作会使用原视频码率进行转码。
+
+- 视频转码时，当视频实际处理帧率在`(30, 60]`时，按视频高帧率转码计费，[价格参见](<https://www.qiniu.com/prices/dora?source=dora>)。
+
+- 我们为一些预设集设置了默认参数，如果用户觉得某些参数不适合自己的业务场景可以在后面加参数覆盖。如： `avthumb/mp3/ab/64k` 会把默认码率128k调整为64k。
+
+- 不同格式的默认转码参数列表：
+
+  | 格式  | 视频编码器 | 视频码率 | 音频编码器 | 音频码率 | 音频采样率 |
+  | ----- | ---------- | -------- | ---------- | -------- | ---------- |
+  | flash | flv        | 512k     | libmp3lame | 64k      | 44100      |
+  | webm  | libvpx     | 700k     | libvorbis  | 128k     | 48k        |
+  | mp3   | -          | -        | libmp3lame | 128k     | 44100      |
+  | amr   | -          | -        | amr_nb     | 12.20k   | 8000       |
+
+
+
+- `<Format>` 为 mp4 且 `acodec` 为 libmp3lame 时，`ar的值不可小于 16000；另外，特定音频编码方案 `acodec` 可使用的音频采样频率 `ar` 如下表所示：
+
+  | 音频编码方案 `acodec` | 可使用的音频采样频率 `ar`                                    |
+  | --------------------- | ------------------------------------------------------------ |
+  | libfdk_aac            | 96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000 |
+  | libmp3lame            | 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025       |
+  | libspeex              | 32000, 16000, 8000                                           |
+  | libopencore_amrnb     | 8000                                                         |
+
+
+- 使用`锐智转码`时，为避免转码处理超时，目前对于视频时长有一些限制。不同规格的视频时长限制如下：
+
+  | 规格  | 时长限制（s） |
+  | ----- | ------------- |
+  | 720p  | 9000          |
+  | 1080p | 5400          |
+  | 2K    | 1800          |
+  | 4K    | 600           |
+
+
+- 支持对视频加多个不同类型的水印。以预转持久化形式，将视频转换成mp4格式，对视频资源加2个图片水印和2个文字水印，示例如下：
+
+  ```
+   {
+    "scope":               "test:sample.mp4",
+    "deadline":             1608652800,
+    "persistentOps":        
+      "avthumb/mp4/
+      /wmImage/aHR0cDovL3Rlc3QtMi5xaW5pdWRuLmNvbS9sb2dvLnBuZw/wmGravity/NorthWest==
+      /wmImage/aHR0cDovLzd4bHY0Ny5jb20wLnowLmdsYi5jbG91ZGRuLmNvbS_kuoznu7TnoIEucG5n==
+      /wmText/d2Vsb3ZlcWluaXU=/wmFontColor/cmVk/wmFontSize/60/wmGravityText/North==
+      /wmText/d2Vsb3ZlcWluaXU=/wmFontColor/cmVk/wmFontSize/20/wmGravityText/South
+      |saveas/dGVzdDpzYW1wbGVfdGFyZ2V0Lm1wNA==",
+    "persistentPipeline":   "newtest",
+    "persistentNotifyUrl": "http://fake.com/qiniu/notify"
+   }
+  ```
+
+
+- 水印锚点参数表
+
+  ```
+  NorthWest     |     North     |     NorthEast
+               |               |    
+               |               |    
+  --------------+----------------+--------------
+               |               |    
+  West         |     Center     |         East 
+               |               |    
+  --------------+----------------+--------------
+               |               |    
+               |               |    
+  SouthWest     |     South     |     SouthEast
+  ```
+
+  ## <a id="avthumb-setting-samples"></a>
+
+# **操作方式**
+
+- **API方式**：可以通过 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 的方式来调用：
+  -  `资源上传时自动触发`：可以在上传时指定[persistentOps](/kodo/manual/put-policy#put-policy-persistent-ops-explanation)参数
+  - `对已有资源手动手动触发`：调用[pfop]()命令
+
+- **控制台方式**：您可以使用[智能多媒体平台](https://portal.qiniu.com/dora/media-gate)，可视化创建任务，使用详情请参考 [任务](https://developer.qiniu.com/dora/6488/task-01)。
+	
+# **示例**
+
+## **资源上传时触发**
+
+以Python Sdk为例，本例中将上传的视频转码为MP4的视频文件，保存到`目标Bucket_Name`,且文件名为`自定义文件key`，原上传视频保存到`bucket_name`空间，且文件名为`key`。
+
+**注意**:
+其他语言 Sdk 可在[官方 Sdks ](/sdk)下载，可以通过查看 Sdk 使用指南中 `资源上传时触发`使用。
+
+```
+from qiniu import Auth, put_file, etag, urlsafe_base64_encode
+import qiniu.config
+
+# access_key，secret_key在个人面板的密钥管理处获得，非个人账号密码
+access_key = '...'
+secret_key = '...'
+
+# 初始化Auth状态
+q = Auth(access_key, secret_key)
+
+# 你要测试的空间， 并且这个key在你空间中存在
+bucket_name = '...'
+key = '...'
+
+# 是使用的队列名称,不设置代表不使用私有队列，使用公有队列。
+pipeline = 'your_pipeline'
+
+# 设置转码参数
+fops = 'avthumb/mp4/vcodec/libx264'
+
+# 通过添加'|saveas'参数，指定处理后的文件保存的bucket和key，不指定默认保存在当前空间，bucket_saved为目标bucket，bucket_saved为目标key
+saveas_key = urlsafe_base64_encode('bucket_saved:bucket_saved')
+
+fops = fops+'|saveas/'+saveas_key
+
+# 在上传策略中指定fobs和pipeline
+policy={
+  'persistentOps':fops,
+  'persistentPipeline':pipeline
+ }
+
+token = q.upload_token(bucket_name, key, 3600, policy)
+
+# 视频所在的本地路径
+localfile = './python_video.flv'
+
+ret, info = put_file(token, key, localfile)
+print(info)
+assert ret['key'] == key
+assert ret['hash'] == etag(localfile)
+```
+
+
+
+- 以 `资源上传时自动触发` 形式，将wav音频转换为mp3格式：
+
+  ```
+   {
+        "scope":                "qiniu-ts-demo:sample.wav",
+        "deadline":             1390528576,
+        "persistentOps":        "avthumb/mp3",
+        "persistentNotifyUrl":  "http://fake.com/qiniu/notify"
+    }
+  ```
+
+  
+
+
+- 以 `资源上传时自动触发` 形式，将wav音频转换为mp3格式，比特率为192k：
+
+  ```
+  {
+        "scope":                "qiniu-ts-demo:sample.wav",
+        "deadline":             1390528576,
+        "persistentOps":        "avthumb/mp3/ab/192k",
+        "persistentNotifyUrl":  "http://fake.com/qiniu/notify"
+    }
+  ```
+
+  
+
+
+- 以 `资源上传时自动触发` 形式，将mp4视频转换为flv格式，帧率为24，使用x264进行视频编码：  
+
+  ```
+   {
+        "scope":                "qiniu-ts-demo:thinking-in-go.mp4",
+        "deadline":             1390528576,
+        "persistentOps":        "avthumb/flv/r/24/vcodec/libx264",
+        "persistentNotifyUrl":  "http://fake.com/qiniu/notify"
+    }
+  ```
+
+  
+
+
+- 以 `资源上传时自动触发` 形式，将mp4视频转换为avi格式，使用mp3进行音频编码，且音频比特率为64k：
+
+  ```
+  {
+        "scope":                "qiniu-ts-demo:thinking-in-go.mp4",
+        "deadline":             1390528576,
+        "persistentOps":        "avthumb/avi/ab/64k/acodec/libmp3lame",
+        "persistentNotifyUrl":  "http://fake.com/qiniu/notify"
+    }
+  ```
+
+  
+
+
+## **对已有资源手动触发**
+
+以Python Sdk为例，本例将空间名为`bucket_name`中的视频 `key`转码为MP4的视频文件，并且保存到`目标Bucket_Name`,且文件名为`自定义文件key`。
+
+**注意**:
+其他语言 SDK 可在[官方 SDK](https://developer.qiniu.com/sdk)下载，可以通过查看 SDK 使用指南中`对已有资源手动触发`使用。
+
+```
+from qiniu import Auth, PersistentFop, build_op, op_save, urlsafe_base64_encode
+
+# 对已经上传到七牛的视频发起异步转码操作
+# access_key，secret_key在个人面板的密钥管理处获得，非个人账号密码
+access_key = '...'
+secret_key = '...'
+q = Auth(access_key, secret_key)
+
+# 要转码的文件所在的空间和文件名。
+bucket_name = '...'
+key = '...'
+
+# 是使用的队列名称,不设置代表不使用私有队列，使用公有队列。
+pipeline = 'your_pipeline'
+
+# 要进行转码的转码操作。
+fops = 'avthumb/mp4/s/640x360/vb/1.25m'
+
+# 可以对转码后的文件进行使用saveas参数自定义命名，当然也可以不指定文件会默认命名并保存在当前空间
+saveas_key = urlsafe_base64_encode('目标Bucket_Name:自定义文件key')
+fops = fops+'|saveas/'+saveas_key
+
+pfop = PersistentFop(q, bucket_name, pipeline)
+ops = []
+ops.append(fops)
+ret, info = pfop.execute(key, ops, 1)
+print(info)
+assert ret['persistentId'] is not None
+
+```
+
+- 以 `对已有资源手动触发` 形式，将wav音频转换为mp3格式，VBR参数为3，采样频率为44100：
+
+  ```
+  POST /pfop/ HTTP/1.1
+    Host: api.qiniu.com  
+    Content-Type: application/x-www-form-urlencoded  
+    Authorization: QBox <AccessToken>  
+  
+    bucket=qiniu-tsdemo
+    &key=sample.wav
+    &fops=avthumb%2Fmp3%2Far%2F44100%2Faq%2F3
+    &notifyURL=http%3A%2F%2Ffake.com%2Fqiniu%2Fnotify
+  ```
+
+  
+
+
+- 以 `对已有资源手动触发` 形式，将mp4视频进行锐智转码（即视频瘦身），设置视频编码格式为x264，分辨率为480x260，默认开启视频增强：
+
+  ```
+  POST /pfop/ HTTP/1.1
+    Host: api.qiniu.com  
+    Content-Type: application/x-www-form-urlencoded  
+    Authorization: QBox <AccessToken>  
+  
+    bucket=qiniu-ts-demo
+    &key=thinking-in-go.mp4
+    &fops=avthumb%2Fmp4%2Fvcodec%2Flibx264%2Fs%2F480x360%2Favsmart%2F1
+    &notifyURL=http%3A%2F%2Ffake.com%2Fqiniu%2Fnotify
+  ```
+
+  
+
+
+
+- 以 `对已有资源手动触发` 形式，将mp4视频转换为flv格式，帧率为30，视频比特率为256k，使用x264进行视频编码，音频采样频率为22050，音频比特率为64k，使用mp3进行音频编码：  
+
+  ```
+   POST /pfop/ HTTP/1.1
+    Host: api.qiniu.com  
+    Content-Type: application/x-www-form-urlencoded  
+    Authorization: QBox <AccessToken>  
+  
+    bucket=qiniu-ts-demo
+    &key=thinking-in-go.mp4
+    &fops=avthumb%2Fflv%2Fr%2F30%2Fvb%2F256k%2Fvcodec%2Flibx264%2Far%2F22050%2Fab%2F64k%2Facodec%2Flibmp3lame
+    &notifyURL=http%3A%2F%2Ffake.com%2Fqiniu%2Fnotify
+  ```
+
+  
+
+
+
+- 以 `对已有资源手动触发` 形式，将mp4视频转换为`ogv`格式，帧率为30，视频比特率为1800k，使用`libtheora`进行视频编码，音频采样频率为44100，音频比特率为128k，使用`libvorbis`进行音频编码：
+
+  ```
+  POST /pfop/ HTTP/1.1
+    Host: api.qiniu.com  
+    Content-Type: application/x-www-form-urlencoded  
+    Authorization: QBox <AccessToken>  
+  
+    bucket=qiniu-ts-demo
+    &key=thinking-in-go.mp4
+    &fops=avthumb%2Fogv%2Fr%2F30%2Fvb%2F1800k%2Fvcodec%2Flibtheora%2Far%2F44100%2Fab%2F128k%2Facodec%2Flibvorbis
+    &notifyURL=http%3A%2F%2Ffake.com%2Fqiniu%2Fnotify
+  ```
+
+    
+
+
+
+- 以 `对已有资源手动触发` 形式，为指定视频资源打上图片水印`http://78re52.com1.z0.glb.clouddn.com/resource%2Flogo.jpg`, 位置是右上角；同时给视频打上文字水印`weloveqiniu`，颜色为红色，大小为3磅（60缇），字体为黑体，位置为正上方；生成文件名为为`sample_target.mp4`的新`mp4`视频资源：
+
+  ```
+  POST /pfop/ HTTP/1.1
+  Host: api.qiniu.com  
+  Content-Type: application/x-www-form-urlencoded  
+  Authorization: QBox <AccessToken>  
+      
+  bucket=test&key=sample.mp4&fops=avthumb%2fmp4%2fwmImage%2faHR0cDovL3Rlc3QtMi5xaW5pdWRuLmNvbS9sb2dvLnBuZw==%2fwmText%2fd2Vsb3ZlcWluaXU=%2fwmFontColor%2fcmVk%2fwmFontSize%2f60%2fwmGravityText%2fNorth%2csaveas%2fdGVzdDpzYW1wbGVfdGFyZ2V0Lm1wNA==&notifyURL=http%3A%2F%2Ffake.com%2Fqiniu%2Fnotify
+  ```
+
+  
+
+**注意**：要在`Authorization`头部的`<AccessToken>`前添加`QBox`和半角空格。
+
+以 Python Sdk 为例，需要在音视频转码的示例的基础修改数据处理命令 `fops` ，将其修改为：
+
+```
+fops = avthumb/mp4/wmImage/aHR0cDovL3Rlc3QtMi5xaW5pdWRuLmNvbS9sb2dvLnBuZw==/wmText/d2Vsb3ZlcWluaXU=/wmFontColor/cmVk/wmFontSize/60/wmGravityText/North
+```

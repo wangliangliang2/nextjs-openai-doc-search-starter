@@ -1,0 +1,47 @@
+本接口用于预置位的管理
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/devices/{deviceId}/presets`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|deviceId|是|string|设备ID
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|cmd|是|string|set(新增预置位), goto(设置),remove(删除)|
+|name|否|string|预置位名称(cmd为set时有效,支持中文)
+|presetId|cmd为goto,remove 时必须指定|int|预置位ID
+|chId|否|string|如果设备是普通摄像头，该字段置空字符串即可，如果设备是平台类型，该字段为子设备国标ID
+|presetToken|设备类型为ONVIF是必须指定|string|预置位令牌
+
+# **响应参数**
+200
+
+**请求示例**
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarxtmpned/devices/31011500991320000137/presets \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{
+	"cmd":"set",
+	"name":"test001"
+}'
+```
+**响应示例**
+
+```
+{
+  "name":"test001",
+  "id":1
+}
+```

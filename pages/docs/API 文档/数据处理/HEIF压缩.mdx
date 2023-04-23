@@ -1,0 +1,84 @@
+# **简介**
+
+提供图片高级压缩功能，可以更加高效地将图片转化为 `HEIF高压缩比格式`。
+- HEIF 能够大幅节省带宽，得益于其出色的压缩效率：既不降低图片的画质，同时大幅降低图片的体积。
+- 降低体积后的图片也有利于加快网站打开速度，提升用户体验。
+- 目前 IOS 11以上及 Android P 系统已原生支持HEIF格式。您可以根据客户端类型灵活选择图片格式，有效压缩成本。
+
+
+
+
+## **使用限制**
+
+- 图片文件无大小限制
+- 处理后的图片w和h参数不能超过9999像素, 总像素不能超过 30720000 像素
+- 处理前的图片`w`和`h`参数不能超过3万像素，总像素不能超过1.5亿像素
+- 原图为 HEIF 的请求，假如不明确指定输出格式为 heic， 则会输出为jpg，将不会按图片高级压缩来收费
+
+
+
+
+# **接口规格**
+
+当使用 **基本图片处理、图片高级处理、图片水印处理** 时, 指定输出格式为 `HEIF`:
+
+```
+	imageView2/<mode>/format/heic/...
+	imageMogr2/format/heic/...
+	watermark/<1..4>/format/heic/...  // 1..4 表示水印mode 1 2 3 4 可以使用 5 6 不能使用
+```
+
+
+
+
+# **示例**
+- 将 JPG 格式的原图转化为 HEIF 格式：  
+
+  ```
+  POST /pfop/ HTTP/1.1
+  Host: api.qiniu.com  
+  Content-Type: application/x-www-form-urlencoded  
+  Authorization: QBox <AccessToken>  
+      
+  bucket=test&key=gogopher.jpg&fops=imageMogr2%2fformat%2fheic&notifyURL=http%3A%2F%2Ffake.com%2Fqiniu%2Fnotify
+  ```
+
+![查看效果图](https://dn-odum9helk.qbox.me/resource/gogopher.jpg)
+
+- 将 JPG 格式的原图转化为 HEIF 格式，并缩放为200x200：  
+
+  ```
+  POST /pfop/ HTTP/1.1
+  Host: api.qiniu.com  
+  Content-Type: application/x-www-form-urlencoded  
+  Authorization: QBox <AccessToken>  
+      
+  bucket=test&key=gogopher.jpg&fops=imageView2%2f1%2fformat%2fheic%2fw%2f200%2fh%2f200&notifyURL=http%3A%2F%2Ffake.com%2Fqiniu%2Fnotif
+  ```
+
+  
+
+## 压缩率比对
+下表列出了 JPG 原图和转化成 HEIF 图片的大小。从表中可以看出，HEIF 格式图片具有超高的压缩率，能够大幅节省带宽。
+
+| 格式 | 分辨率    | 大小               |
+| ---- | --------- | ------------------ |
+| 原图 | 640 x 427 | 209k               |
+| HEIF | 640 x 427 | 75k（压缩率64%）   |
+| HEIF | 200 x 200 | 20k（压缩率90.4%） |
+
+# **操作方式**
+
+图片高级压缩功能，目前只能以 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 形式来使用
+
+# **服务价格**
+
+图片高级压缩功能按照图片的输出规格计费，如下：
+
+| 输出规格         | 价格         |
+| ---------------- | ------------ |
+| 800 x 600 以下   | 0.025元/千次 |
+| 1600 x 1200 以下 | 0.1元/千次   |
+| 3200 x 2400以下   | 0.4元/千次 |
+| 6400 x 4800 以下 | 1.6元/千次   |
+

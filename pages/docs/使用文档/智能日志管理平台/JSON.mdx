@@ -1,0 +1,54 @@
+解析 json 并加入到数据中，如 json 为 {"a":123}，加入后变为 {"myNewKey":{"a":123}}。
+
+* 要进行 Transform 变化的键(`key`)：指定要解析的json数据所在的字段，支持多级嵌套，多级间用 *.* 符号连接，表示data["abc"]["xyz"] 中的数据。
+
+* 解析后数据的字段名(`new`)：指定要解析 json 数据字段的新字段，必须指定新字段。
+
+### **示例**：
+
+例如， parser 解析后的数据为:
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "myOldKey": "{"uid":123,"name":"tom","age":10}"
+}
+```
+经过 json 变换后的数据将变为:
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "myOldKey": "{\"uid\":123,\"name\":\"tom\",\"age\":10}",
+    "myNewKey": {"uid":123,"name":"tom","age":10}
+}
+```
+
+### **高级选项**：
+* json转换器支持提取出字段
+例如， 选择提取出字段后的数据为:
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "myOldKey": "{"uid":123,"name":"tom","age":10}",
+    "uid":123,
+    "name":"tom",
+    "age":10
+}
+```
+
+
+* 解析完成后删除原始字段
+例如， 选择删除原始字段后的数据为:
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "myNewKey": {"uid":123,"name":"tom","age":10}
+}
+```

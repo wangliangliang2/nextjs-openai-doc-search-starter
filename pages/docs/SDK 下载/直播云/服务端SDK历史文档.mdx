@@ -1,0 +1,179 @@
+<a id="work-model"></a>
+# 直播工作流模型
+
+Client (iOS/Android/PC/Camera) 向 Server (业务逻辑服务器) 请求推流授权
+
+- Server 颁发带授权信息的 Stream 给 Client 
+- Client 通过 RTMP 推流 给 Pili Streaming Cloud
+- Client 向 Server 请求播放授权
+- Server 向 Client 颁发播放地址
+- Client 调用 播放器 SDK 打开播放地址进行播放
+
+三方交互的业务逻辑可以借鉴如下示意图进行理解：
+
+![Pili SDK 调用逻辑](https://dn-odum9helk.qbox.me/Flnrw78yb0UDDEyoBO9bRqEGGtlH)
+
+<a id="overview"></a>
+# 功能介绍
+
+目前提供的服务端 SDK 有：Go, NodeJS, Ruby, Python, PHP, Java
+
+下载地址:
+
+- <https://github.com/pili-engineering/pili-sdk-go.v2>
+- <https://github.com/pili-engineering/pili-sdk-nodejs>
+- <https://github.com/pili-engineering/pili-sdk-ruby>
+- <https://github.com/pili-engineering/pili-sdk-python>
+- <https://github.com/pili-engineering/pili-sdk-php.v2>
+- <https://github.com/pili-engineering/pili-sdk-java>
+- <https://github.com/pili-engineering/pili-sdk-csharp>
+- <https://github.com/pili-engineering/pili-sdk-c>
+
+服务端 SDK 用于颁发带授权凭证的 RTMP 推流地址、RTMP/HTTP-FLV/HLS/封面的直播地址给客户端，以及对直播流（Live Streaming）进行创建、查询、禁播等管理。服务端 SDK 功能包括但不限于：
+
+```
+- RTMPPublishURL()         #生成带授权凭证的 RTMP 推流地址
+- RTMPPlayURL()            #生成 RTMP 播放地址
+- HLSPlayURL()             #生成 HLS 播放地址
+- HDLPlayURL()             #生成 HDL(HTTP-FLV) 播放地址
+- SnapshotPlayURL()        #生成直播封面地址
+- hub.Create()             #创建流
+- hub.Stream()             #获得流
+- hub.List()               #查询流列表
+- hub.ListLive()           #查询直播列表
+- stream.Info()            #查询流信息
+- stream.Disable()         #禁播流（秒级禁推/禁播）
+- stream.Enable()          #启用流
+- stream.LiveStatus()      #查询直播实时信息
+- stream.Save()            #保存直播回放
+- stream.HistoryActivity() #查询直播历史记录
+```
+
+<a id="go-sdk-sample"></a>
+# 使用样例
+
+拿 GO SDK 举例，接入步骤如下：
+
+<a id="integration-sdk"></a>
+## 集成SDK
+
+
+```
+// SDK 下载地址：https://github.com/pili-engineering/pili-sdk-go
+import "github.com/pili-engineering/pili"
+
+// 配置企业开发者密钥
+// 密钥使用七牛账号登录 https://portal.qiniu.com/user/key 获取
+mac := &pili.MAC{
+    AccessKey: "Your_Qiniu_AccessKey",
+    SecretKey: "Your_Qiniu_SecretKey",
+}
+
+// 直播空间名称
+// 直播空间必须事先存在，可以在 portal.qiniu.com 上创建
+hubName := "Your_Hub_Name"
+```
+
+<a id="access-rtmp"></a>
+## 获取 RTMP 推流地址
+
+```
+// 生成 RTMP 推流地址
+// publishDomain: 与直播空间绑定的 RTMP 推流域名，可以在 portal.qiniu.com 上绑定
+// streamKey: 流名，流不需要事先存在，推流会自动创建流
+// mac: 授权信息
+// expireAfterSeconds: 生成的推流地址的有效时间
+publishURL := pili.RTMPPublishURL(publishDomain, hub, streamKey, mac, expireAfterSeconds)
+/*
+rtmp://publish-rtmp.test.com/PiliSDKTest/streamkey?e=1463023142&token=7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII:-5IVlpFNNGJHwv-2qKwVIakC0ME=
+*/
+```
+
+<a id="creat-play-address"></a>
+## 获取直播播放地址
+
+```
+// 生成 RTMP 播放地址
+// rtmpDomain: 直播空间绑定的 RTMP 直播域名，可以在 portal.qiniu.com 上绑定
+rtmpURL := pili.RTMPPlayURL(rtmpDomain, hubName, streamKey)
+/*
+rtmp://live-rtmp.test.com/PiliSDKTest/streamkey
+*/
+
+// 生成 HLS 播放地址
+// hlsDomain: 直播空间绑定的 HLS 直播域名，可以在 portal.qiniu.com 上绑定
+hlsURL := pili.HLSPlayURL(hlsDomain, hubName, streamKey)
+/*
+http://live-hls.test.com/PiliSDKTest/streamkey.m3u8
+*/
+
+// 生成 HDL 播放地址
+// hdlDomain: 直播空间绑定的 HDL 直播域名，可以在 portal.qiniu.com 上绑定
+hdlURL := pili.HDLPlayURL(hdlDomain, hubName, streamKey)
+/*
+http://live-hdl.test.com/PiliSDKTest/streamkey.flv
+*/
+
+// 生成直播封面地址
+// snapshotDomain: 直播空间绑定的直播封面域名，可以在 portal.qiniu.com 上绑定
+snapshotURL := pili.SnapshotPlayURL(snapshotDomain, hubName, streamKey)
+/*
+http://live-snapshot.test.com/PiliSDKTest/streamkey.jpg
+*/
+```
+
+<a id="stream-manage"></a>
+## 流管理
+
+```
+// 初始化授权客户
+client := pili.New(mac, nil)
+
+// 初始化直播空间
+hub := client.Hub(hubName)
+
+// 初始化流对象
+stream := client.Stream(streamKey)
+```
+<a id="stream-disabled-enable"></a>
+## 禁播/启用流
+
+```
+// 流立即禁推、禁播
+stream.Disable()
+
+// 恢复可以推流、播流
+stream.Enable()
+
+// 禁用该流一段时间
+// stream.DisableTill(10) 表示禁用 10 分钟
+stream.DisableTill(time.Now().Add(time.Minute).Unix())
+
+// 永久禁用
+stream.DisableTill(-1)
+```
+
+<a id="stream-history"></a>
+## 查询直播历史记录
+
+```
+// start、end 指定查询的时间范围，指定为 0 值表示查询所有时间段的直播历史记录
+records, _ := stream.HistoryActivity(0, 0)
+/*
+[{1463382401 1463382441}]
+*/
+```
+
+<a id="stream-saveas"></a>
+## 保存直播回放
+
+```
+// start、end 指定要保存的直播的时间范围，start: Unix 时间戳, 起始时间, 0 值表示不指定, 则不限制起始时间，end: Unix 时间戳, 结束时间, 0 值表示当前时间.都传 0 表示获取这路流所有的直播回看
+// 直播数据保存在所绑定的 Qiniu 存储空间中，文件名由系统生成
+// 文件可以通过存储空间所绑定的下载域名进行访问，形如 http://<DomainOfStorageBucket>/<Fname>
+fname, _ := stream.Save(0, 0)
+/*
+recordings/z1.PiliSDKTest.streamkey/1463382401_1463382441.m3u8
+*/
+```
+

@@ -1,0 +1,105 @@
+# **简介**
+
+音视频元信息接口(avinfo)用于获取指定音频、视频资源的元信息。  
+
+<a id="avinfo-request-syntax"></a>
+
+# **接口规格**
+```
+avinfo
+```
+
+# **操作方式**
+
+- 可以通过 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 的方式来调用：
+  -  `资源上传时自动触发`：可以在上传时指定[persistentOps](/kodo/manual/put-policy#put-policy-persistent-ops-explanation)参数
+  - `对已有资源手动手动触发`：调用[pfop]()命令
+- 可以通过 [同步处理](/dora/api/8266/synchronous-processing) 的方式来调用。
+
+<a id="avinfo-samples"></a>
+# **示例**
+
+```
+http://78re52.com1.z0.glb.clouddn.com/resource%2Fthinking-in-go.mp4?avinfo
+```
+
+将返回如下元信息（已经经过格式化，以便阅读）：
+
+```
+{
+    "streams": [
+        {
+            "index": 0,    流索引号
+            "codec_name": "h264",   编码器名
+            "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",    编码器名全称
+            "codec_type": "video",    编码器类型
+            "codec_time_base": "1/30",    编码器每帧时长
+            "codec_tag_string": "avc1",    编码器标签名
+            "codec_tag": "0x31637661",    编码器标签
+            "width": 1152,   宽度
+            "height": 864,   高度
+            "has_b_frames": 0,   记录帧缓存大小
+            "sample_aspect_ratio": "1:1",   采样率
+            "display_aspect_ratio": "4:3",
+            "pix_fmt": "yuv420p",   像素个数
+            "level": 40,   级别
+            "is_avc": "1",
+            "nal_length_size": "4",
+            "r_frame_rate": "15/1",   真实基础帧率
+            "avg_frame_rate": "15/1",   平均帧率
+            "time_base": "1/15000",   每帧时长
+            "start_time": "0.000000",   首帧时间
+            "duration": "6413.333333",   文件总时间
+            "nb_frames": "96200",   帧数
+            "tags": {    标签
+                "creation_time": "2013-01-07 12:58:08",     创建时间
+                "language": "eng",   语言
+                "handler_name": "Video Media Handler"    处理器名字
+            }
+        },
+        {
+            "index": 1,   流索引号
+            "codec_name": "aac",   编码器名
+            "codec_long_name": "Advanced Audio 编码器全名Coding",   编码器名全称
+            "codec_type": "audio",   编码器类型
+            "codec_time_base": "1/44100",   编码器每帧时长
+            "codec_tag_string": "mp4a",   编码器标签名
+            "codec_tag": "0x6134706d",   编码器标签
+            "sample_fmt": "s16",   采样格式
+            "sample_rate": "44100",   采样率
+            "channels": 2,   音频数
+            "bits_per_sample": 0,   采样码率
+            "r_frame_rate": "0/0",   真实基础帧率
+            "avg_frame_rate": "0/0",   平均帧率
+            "time_base": "1/44100",   每帧时长
+            "start_time": "0.000000",   首帧时间
+            "duration": "6413.374694",   文件总时间
+            "nb_frames": "276201",   帧数
+            "tags": {   标签信息
+                "creation_time": "2013-01-07 12:58:08",   创建时间
+                "language": "eng",   语言
+                "handler_name": "Sound Media Handler"   处理器名字
+            }
+        }
+    ],
+    "format": {
+        "nb_streams": 2,   流的数目
+        "format_name": "mov,mp4,m4a,3gp,3g2,mj2",   格式名  
+        "format_long_name": "QuickTime/MPEG-4/Motion JPEG 2000 format",   格式名全称
+        "start_time": "0.000000",   首帧时间
+        "duration": "6413.359589",   时长
+        "size": "101416337",   文件大小
+        "bit_rate": "126506",   码率
+        "tags": {   标签信息
+            "major_brand": "mp42",   主品牌
+            "minor_version": "1",   次要版本
+            "compatible_brands": "M4V mp42isom",   兼容性品牌
+            "creation_time": "2013-01-07 12:58:08"   创建时间
+        }
+    }
+}
+```
+
+- [点击查看示例结果](http://78re52.com1.z0.glb.clouddn.com/resource%2Fthinking-in-go.mp4?avinfo)
+
+- [视频元信息响应内容的属性及说明](https://developer.qiniu.com/dora/kb/1678/video-meta-information-response-content-properties-and-instructions?category=kb)

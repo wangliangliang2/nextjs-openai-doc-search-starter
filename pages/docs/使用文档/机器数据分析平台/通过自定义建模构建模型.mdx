@@ -1,0 +1,146 @@
+用户可以通过Pandora MLTK的SPL语句，用自定义建模的方式，实现模型构建。更多详情请见[机器学习SPL算子介绍](https://developer.qiniu.io/express/manual/7422/the-algorithm-provided-by-the-app-and-spl-operator) (or not)。
+
+为了方便您有效的使用Pandora机器学习工具包，本文档将继续通过泰坦尼克号乘客的幸存预测案例向您演示使用SPL实现模型构建的使用流程。为了模型的训练效果，请在模型构建之前完成数据准备工作，可以参考[通过SPL准备数据](https://developer.qiniu.io/express/7689/spl-data-preparation)或者[通过数据集准备数据](https://developer.qiniu.io/express/7688/dataset-preparation)，选择偏好的方式提前做好数据准备。
+
+## **第一步、特征加工**
+
+首先、我们看一下经过处理之后的数据结果。由图可见，我们可以尝试加工的字段有：sex、age、parch、sib_sp、和name。
+
+![model_building.png](https://dn-odum9helk.qbox.me/FmqdWwUlTeqCP50D5c2h8NvUHQtM)
+
+### 数据编码
+sex字段中只有female或者male用来指代乘客性别，因为字符串的数据类型有些算法不支持，所以我们可以用数据编码的方式来将字符串的数据转变成数值型的。
+
+在这里，我们可以选择用LabelEncoder的方式做数据编码转变。LabelEncoder会将目标字段标成[0,字段内类别数量-1]的int。
+
+```
+| eval sex_transformed = case(sex=="male",1,sex=="female",0,"")
+```
+
+处理结果如下图。
+![data_encoder.png](https://dn-odum9helk.qbox.me/FtcGktQiYw5OZTBiTR3jip5VPvHr)
+
+
+### 连续变量分桶
+age字段代表的是乘客的年龄，我们可以将其分桶，来预测存活率是否与年龄段有关。桶的数量我们可以凭借经验来分，也可以通过公式计算出来：** K=1+3.322*LOG（N）** = 10.59。因此，在该案例中，我们选择将age字段分成10。
+
+```
+| bin age as age_transformed bins=10
+| eval age_transformed = split(age_transformed, "-")
+| eval age_transformed = arr_index(age_transformed,1)
+```
+
+由此，我们将age转换成了10个年龄段，用各个年龄段的最大值来表示这个年龄段。
+
+### 字段组合
+parch和sibsp字段分别表示的是同伴中父母孩子的数量、和配偶兄弟姐妹的数量，我们可以将这两个字段组合，来预测存活率是否与同行的家人数量有关。
+
+```
+| eval family_size = parch + sibsp
+```
+
+### 关键信息提取
+name这个字段本身意义不大，因为存活率与乘客的姓名有关的可能性非常低。但是name这个字段中隐藏着乘客的称谓（mr. mrs. miss. don. master），有些称谓和乘客的社会地位有明确关系，因此我们可以通过正则表达式从name中提出称谓信息，成为一个新的变量。
+
+```
+| rex field=name ".+\s(?<title>.+\.).+"
+```
+
+## **第二步、特征筛选**
+
+特征筛选一般包括两种含义，一种是特征选择，一种是特征降维。在该案例中，因为特征数量比较少，我们可以只做特征选择。很明显，passenger_id和ticket这种随机性非常高、也没什么实际意义的字段，可以不用来做建模。同时，我们也可以把加工之前的原始字段一起移除（name，sex），因为在后续建模的时候不会再使用了。
+
+```
+| fields - passenger_id, ticket, name, sex
+```
+
+## **第三步、模型训练**
+
+在特征已经加工完成之后，我们可以正式进入模型训练的过程，但在此之前，我们需要拆分数据集，将其分成训练集和测试集，防止模型过拟合（过度匹配训练的数据，导致对其他数据的预测结果不佳）。
+
+我们可以用random和join算子实现75:25的数据拆分。
+首先，用random算子将整个数据集随机排序，并且选出其中75%的数据另存为数据集（titanic_train_trainset），作为训练数据集。
+```
+| from dataset:titanic_train
+| eval sex_transformed = case(sex=="male",1,sex=="female",0,"")
+| bin age as age_transformed bins=10
+| eval age_transformed = split(age_transformed, "-")
+| eval age_transformed = arr_index(age_transformed,1)
+| eval family_size = parch + sib_sp
+| rex field=name ".+\s(?<title>.+\.).+"
+| fields- ticket, name, sex
+| eval rand = random()
+| sort by rand asc
+| limit 670
+```
+
+再通过join算子选出原始数据（titanic_train)和训练数据集(titanic_train_trainset)的差集，即为测试数据集(titanic_train_testset)。
+
+```
+| from dataset:titanic_train
+| eval sex_transformed = case(sex=="male",1,sex=="female",0,"")
+| bin age as age_transformed bins=10
+| eval age_transformed = split(age_transformed, "-")
+| eval age_transformed = arr_index(age_transformed,1)
+| eval family_size = parch + sib_sp
+| rex field=name ".+\s(?<title>.+\.).+"
+| fields - ticket, name, sex
+| join type=diff passenger_id [
+| from dataset: titanic_train_trainset]
+```
+
+模型训练包括四个关键步骤：问题定义、选择算法、和选择算法参数。
+在该案例中，我们的训练目的是要预测乘客是否能存活（是/否），因此这是一个二分类问题。我们可以选择相应的分类算法来实现这个训练目的。分类算法的使用请参考[算法及SPL算子的使用](https://developer.qiniu.io/express/manual/7422/the-algorithm-provided-by-the-app-and-spl-operator)和[fit算子使用详述--预测离散变量](https://developer.qiniu.io/express/manual/7459/categorical_value_prediction)。
+
+我们可以尝试使用两种分类器：随机森林（RandomForestClassifier）和逻辑回归（LogisticRegression），比较哪种分类器的效果比较好。
+
+用以下SPL命令执行随机森林分类器的结果如图。
+```
+| fit RandomForestClassifier survived from "*" into RF_model
+```
+![rf_prediction.png](https://dn-odum9helk.qbox.me/FnzUI6AXOCT62ATi5hC6uF6xzJyh)
+
+
+用以下SPL命令执行逻辑回归分类器的结果如图。
+
+```
+| fit LogisticRegression survived from "*" into LR_model
+```
+![ls_prediction.png](https://dn-odum9helk.qbox.me/Fndto_r9EEEA2ZRp7LdUKmQ_1Fru)
+
+
+## **第四步、模型评估**
+
+我们可以通过计算诊断指标的方式来评估比较模型的训练结果。常用的分类模型的诊断指标有AUC值和混淆矩阵。AUC值在[0,1]之间波动，其值越大，表明模型效果越好。混淆矩阵中，在正向对角线上的数据量越多，其他位置的数据量越少，证明判断准确的数据越多，表明模型效果越好。
+
+首先，我们需要重新选择数据集。之前用来做模型训练的是训练集(titanic_train_trainset)，我们需要在测试集（titanic_train_testset)上运行之前保存的模型，做模型比较。预测结果如下：
+
+```
+| from dataset:titanic_train_testset
+| apply RF_model as survived_RF
+| apply LR_model as survived_LR
+```
+![titanic_test.png](https://dn-odum9helk.qbox.me/FgVTy9FIgLQXTSmuKBb-Vo0LWmCd)
+
+
+可以用以下SPL命令分别计算比较两个模型的AUC值和混淆矩阵。
+
+比较两个模型的AUC值：
+```
+| score roc_auc_score survived against "survived_*"
+```
+![titanic_auc.png](https://dn-odum9helk.qbox.me/Fl2YLIK4aIkImeoVjkk2fOK52rYT)
+
+计算随机森林分类器的混淆矩阵：
+```
+| score confusion_matrix survived against survived_RF
+```
+![titanic_sm_rf.png](https://dn-odum9helk.qbox.me/FtgSSffI_PSCibwHJU2gF_LOHJOV)
+
+计算逻辑回归分类器的混淆矩阵：
+```
+| score confusion_matrix survived against survived_LR
+```
+![titanic_sm_lr.png](https://dn-odum9helk.qbox.me/Fs9BhUZmgAXmHKk90a-PdF5MC4fM)
+
+从这两个指标看起来，都是随机森林分类器的模型预测效果更好。如果不满意，我们可以回到上一步训练模型的步骤，更改默认的参数配置，重新训练模型。

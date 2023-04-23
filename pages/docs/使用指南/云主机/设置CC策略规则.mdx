@@ -1,0 +1,84 @@
+我们需要配置CC策略才可以让高防IP进行CC防护，下面将介绍如何设置CC策略。
+
+<br />
+
+#### 首先从列表首页进入高防IP详情
+
+<br />
+![](https://dn-odum9helk.qbox.me/FhYp5mywlDyyRAZAZeVoGHPsTZ0-)
+<br />
+
+#### 检查CC防护阈值是否已经开启
+<br />
+如果没有开启，需要设置为开启，并且设置对应的防护阈值
+<br />
+在高防IP详情的“防护设置”页面中，左下角有个CC防护的区块，点击“修改”可以进入设置CC防护阈值
+
+![](https://dn-odum9helk.qbox.me/FltTdunRlFrU5zhMbdNY_ffArYxO)
+<br />
+点击滑条按钮使得功能开启
+<br />
+![](https://dn-odum9helk.qbox.me/FqiEF968ldNsjtIaq_zSsTahD2U6)
+<br />
+并且设置CC防护的阈值，设置完成后，点击“确定”按钮
+<br />
+![](https://dn-odum9helk.qbox.me/FopkIvcT8R8wo1Y3MPcogG-RD-78)
+<br />
+开启后会显示防护阈值和开启状态
+<br />
+![](https://dn-odum9helk.qbox.me/Fl1FFyF0z00e29JODYKX0L01tzih)
+
+<br />
+#### 进入CC策略列表
+<br />
+
+在高防详情的顶部导航栏中点击“自定义策略”即可进入列表
+
+<br />
+![](https://dn-odum9helk.qbox.me/Fhr4vTchytE0egmX7VXJ_2qAT9H2)
+<br />
+
+<br />
+#### 添加策略
+<br />
+
+点击添加策略按钮
+
+<br />
+![](https://dn-odum9helk.qbox.me/Fuqsvc3IVUQ61C_XDtabv7MQigfw)
+<br />
+
+* 名称： 策略的名称，中英文、数字、空格、标点符号都可以，最长20个字，1个中文或者全角字符算1个字
+* 模式： 触发规则的模式
+	* 匹配模式——匹配相关条件后，就会触发，对应策略有4个匹配字段和3种匹配方式。设置多个条件时，需要同时满足才触发。
+		* 匹配字段
+			* Host： 匹配Host字段（访问的域名信息）
+			* CGI： 匹配CGI字段
+			* User-Agent： 匹配User-Agent字段（用户浏览器信息）
+			* Referer： 匹配Referer字段（Http引用页面，链接的点击来源地址）
+		* 匹配规则：
+			* 包含： 对应字段包含指定内容时触发
+			* 不包含： 对应字段不包含指定内容时触发
+			* 等于： 对应字段跟指定内容相等时触发
+	* 限速模式——请求速度到达指定阈值后，就会自动拦截请求。<span style="color: red;font-weight: bold">限速模式只能够配置1条</span>。
+* 执行： 执行方式，有“验证码”和“阻断”两种模式
+	* 验证码： 弹出验证码页面，输入验证码正确后会跳转回原来目标页面。（验证码方式会对POST形式的DataBody带有数据的请求产生影响，建议不要在包含数据的请求上使用）
+	* 阻断： 直接出现请求失败，不转发对应的请求包到后端服务器。
+
+
+
+可以通过设置匹配模式来进行条件判断
+<br />
+![匹配模式](https://dn-odum9helk.qbox.me/FvU6iirZyBoF3uz14BB9AygAM5ho)
+<br />
+
+也可以通过设置限速模式进行请求速度限制（<span style="color: red;font-weight: bold">限速模式只能够配置1条</span>）
+<br />
+![限速模式](https://dn-odum9helk.qbox.me/FrZ44elIoFszqhEJE1oK7qnBVD7R)
+<br />
+
+配置完成后，点击“确定”，会马上生效
+
+<br />
+![](https://dn-odum9helk.qbox.me/FlC30NZ_AO7pVu5emyFDiwoORjmr)
+<br />

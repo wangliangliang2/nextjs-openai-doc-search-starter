@@ -1,0 +1,45 @@
+在一维图表中：`<legend>`元素用于表示一维图表的图例，包括图例的位置、图例可以展示的数据类型等。
+
+### 父元素
+
+在`<chart>`元素下，只有当 type 属性指定如下值时，`<legend>`才代表一维图表图例。
+
+* `<chart type="pie-bucket">`
+* `<chart type="pie-metric">`
+* `<chart type="pie-ring-bucket">`
+*	`<chart type="pie-ring-metric">`
+*	`<chart type="pie-rose-bucket">`
+* `<chart type="pie-rose-metric">`
+* `<chart type="pie-nest">`
+* `<chart type="single-value">`
+* `<chart type="single-gauge">`
+*	`<chart type="single-percent">`
+*	`<chart type="map-china">`
+* `<chart type="map-world">`
+* `<chart type="city-bubble">`
+* `<chart type="migration-china">`
+*	`<chart type="migration-world">`
+* `<chart type="radar-bucket">`
+*	`<chart type="radar-metric">`
+* `<chart type="sunburst">`
+
+
+### 子元素
+
+|子元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<position>`|图例显示的位置， 可选值为 top、bottom、left、right、none、center|'top'|
+|`<metrics>`|支持以百分比或数值的形式在图例上呈现指标，可以配置 0 个或多个，可选值为 value、percent|无|
+|`<percent-decimals>`|当在图例上以百分比的形式呈现指标时，百分比显示的精度|2|
+|`<column-width>`|可配置图例统计选项的宽度|无|
+
+示例：
+
+```
+<legend>
+  <position>bottom</position>
+  <metrics>['value', 'percent']</metrics>
+  <percent-decimals>2</percent-decimals>
+  <column-width>{{value: 120, percent: 150}}</column-width>
+</legend>
+```

@@ -1,0 +1,16 @@
+redhat audit用于解析redhat审计日志，生成的字段名与字段内容一一对应。
+
+![](https://dn-odum9helk.qbox.me/Fuq3HSKyT1GtogdXLqEmN2KUDQPX)
+
+redhat audit 按行读取日志。
+
+样例日志：
+
+![](https://dn-odum9helk.qbox.me/Fo-kQFyf_JXXtN6JggghAuUel_rb)
+
+解析后：
+
+![](https://dn-odum9helk.qbox.me/FrNR5b70DutYxXZNTnYOgHKu0pIY)
+
+* `disable_record_errdata` 默认为`false`，解析失败的数据会默认出现在"pandora_stash"字段，该选项可以禁止记录解析失败的数据。
+* `keep_raw_data` 默认为`false`，配置此选项之后会保留原始数据在`raw_data`字段下。

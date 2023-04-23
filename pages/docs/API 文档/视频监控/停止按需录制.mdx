@@ -1,0 +1,35 @@
+# **描述**
+本接口用于对指定流停止按需录制， 和[开始按需录制](https://developer.qiniu.com/qvs/6743/start-record-stream)配套使用。
+
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}/record/stop`
+* 本接口需要空间绑定`"按需录制"类型的模板`，或者流本身绑定`按需录制`模板。当用户想在每天9：00到12：00进行流录制，可分别在对应时间点通过[启动按需录制](https://developer.qiniu.com/qvs/6743/start-record-stream)和本接口组合使用。
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|流Id
+
+# **响应参数**
+200
+
+# **示例**
+
+**请求示例**
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarvzvyijd/streams/31011500991320000028/record/stop \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' 
+```
+
+**响应示例**
+```
+{
+  "code": 200
+}
+```

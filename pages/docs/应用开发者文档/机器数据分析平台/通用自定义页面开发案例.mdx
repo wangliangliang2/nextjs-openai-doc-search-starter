@@ -1,0 +1,149 @@
+本文档以开发搜索结果展示 APP 为例，介绍在 Pandora 2.0 应用平台开发自定义页面 App 的最佳实践。
+
+开发步骤
+
+#### 一. 使用 `create-pandora-app` 创建自定义页面应用模板。
+
+``` bash
+$ npx create-pandora-app search -t view-html
+```
+
+![](../../static/img/pandora/custom-page/search-create.png)
+
+#### 二. 在 `search/develop` 目录下开发自定义页面逻辑。
+
+1. 安装相关依赖
+
+``` bash
+npm install
+```
+
+2. 启动项目用于本地开发
+
+``` bash
+npm run start
+```
+
+3. 上传示例数据
+
+请参考[文件上传](/file_upload)文档，上传示例数据[data.json](http://7xtfy5.com2.z0.glb.clouddn.com/data.json)，到您的Pandora环境。假设我们将数据上传到名为app_doc的仓库。
+
+4. 实现代码逻辑，将搜索结果显示以表格形式展示
+
+新增 `Search.tsx` 文件，将搜索结果以表格的形式展示，需要使用到 `app-sdk` 的 `SearchManager SDK` ，具体请参考[https://www.npmjs.com/package/@qn-pandora/app-sdk](https://www.npmjs.com/package/@qn-pandora/app-sdk)
+
+``` typescript
+import React, { useEffect, useState } from "react";
+import {
+  LoginManager,
+  ELoginType,
+  SearchManager,
+  EEventName,
+} from "@qn-pandora/app-sdk";
+import { Table } from "@qn-pandora/pandora-component";
+import "./App.css";
+import "@qn-pandora/pandora-component/lib/index.css";
+
+function Search() {
+  const [dataset, setDataset] = useState({
+    fields: [] as Array<{ name: string }>,
+    rows: [] as Array<Array<any>>,
+  });
+
+  useEffect(() => {
+    mainEffect();
+  }, []);
+
+  async function mainEffect() {
+    // 从Pandora平台搜索数据
+    const searchCondition = {
+      queryString: `
+        repo="app_doc" 
+        | fields _time, request.url, request.method, response.statusName, action.name 
+        | limit 10
+      `, // 搜索条件
+      time: {
+        start: 0, // 起始时间
+        end: 1597588690623, // 结束时间
+      },
+    };
+    const option = {
+      task: {
+        event: true,
+        summary: false,
+        timeline: false,
+        result: true,
+      },
+    };
+    const searchManager = new SearchManager({
+      option: option,
+    });
+    searchManager.on(EEventName.DONE, ({ result }) => {
+      setDataset(result);
+    });
+    searchManager.search(searchCondition);
+  }
+
+  const columns = dataset.fields.map((field) => ({
+    title: field.name,
+    dataIndex: field.name,
+    key: field.name,
+    width: 120,
+  }));
+  const dataSource = dataset.rows.map((row) => {
+    const item: { [key: string]: string } = {};
+    row.forEach((ele, i) => {
+      item[dataset.fields[i].name] = ele;
+    });
+    return item;
+  });
+  return (
+    <div className="App">
+      <h1>这是一个自定义页面Demo</h1>
+      <Table columns={columns} dataSource={dataSource}></Table>
+    </div>
+  );
+}
+
+export default Search;
+```
+
+在 `App.tsx` 中使用 `Search` 组件
+
+``` typescript
+import * as React from 'react'
+import { Switch, Route, HashRouter } from 'react-router-dom'
+import { Boot } from './Boot'
+import Search from './Search'
+
+import * as style from './style.module.less'
+
+export default function App() {
+  return (
+    <HashRouter>
+      <Boot />
+      <div className={style.content}>
+        <Switch>
+          <Route exact path="/">
+            <Search />
+          </Route>
+        </Switch>
+      </div>
+    </HashRouter>
+  )
+}
+
+```
+
+5. 编译打包
+
+``` bash
+$ npm run package
+```
+
+> 您可以选择任意自己擅长的前端开发技术栈开发页面，最终您所开发的页面会被以iframe的方式嵌入的Pandora平台。模板提供使用 React 的方式开发，其他方式在 `develop` 目录下修改脚手架即可
+> Pandora平台为您提供了以下SDK和组件库方便您快速构建自己的应用，具体请参考[APP开发工具库](/app-tools)
+
+#### 3. 上传应用至平台
+
+将打包完成的 `search.tar.gz` 应用包上传至平台。

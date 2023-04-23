@@ -1,0 +1,38 @@
+# **描述**
+本接口用于对指定流立即截图一次。对于不在线的流，会启动设备拉流，不需要调用启动设备拉流API。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}/snap`
+* 本接口要求截图模板类型为`按需截图`，如用户想在某时刻进行流截图操作，可在对应时间点通过调用本接口即可。
+* 本接口是异步过程，截图后的地址，可以通过两种方式获取
+   1. 我们会回调,主动通知客户截图完成后的地址，客户需要解析我们的[截图状态回调](https://developer.qiniu.com/qvs/10240/the-message-callback)
+   2. 客户也可以通过主动查询[截图列表](https://developer.qiniu.com/qvs/6749/list-stream-snapshots)获取
+
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|流Id
+
+# **响应参数**
+200
+
+# **示例**
+
+**请求示例**
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarvzvyijd/streams/31011500991320000028/snap \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```	
+
+**响应示例**
+```
+{
+  "code": 200
+}
+```

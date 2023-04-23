@@ -1,0 +1,77 @@
+鉴权机制用于QVS服务的授权，通过授权客户端，使其具备访问服务的能力。访问 API 需要带一个合法的凭证。不带凭证或带非法凭证的请求将返回 HTTP 错误码 401，代表认证失败。
+
+每一个API请求均需在 HTTP 请求头部增加一个 Authorization 字段，形式如下：
+```
+Authorization: <QiniuToken>
+```
+
+`<QiniuToken>`:管理凭证，用于鉴权。
+
+**管理凭证计算方式：**
+```
+// 构造待签名的 Data
+// 1. 添加 Path
+data = "<Method> <Path>"
+// 2. 添加 Query，前提: Query 存在且不为空
+if "<RawQuery>" != "" {
+        data += "?<RawQuery>"
+}
+// 3. 添加 Host
+data += "\nHost: <Host>"
+// 4. 添加 Content-Type，前提: Content-Type 存在且不为空
+if "<Content-Type>" != "" {
+        data += "\nContent-Type: <Content-Type>"
+}
+// 5. 添加回车
+data += "\n\n"
+// 6. 添加 Body，前提: Content-Length 存在且 Body 不为空，同时 Content-Type 存在且不为空或 "application/octet-stream"
+bodyOK := "<Content-Length>" != "" && "<Body>" != ""
+contentTypeOK := "<Content-Type>" != "" && "<Content-Type>" != "application/octet-stream"
+if bodyOK && contentTypeOK {
+        data += "<Body>"
+}
+// 计算 HMAC-SHA1 签名，并对签名结果做 URL 安全的 Base64 编码
+sign = hmac_sha1(data, "Your_Secret_Key")
+encodedSign = urlsafe_base64_encode(sign)  
+// 将 Qiniu 标识与 AccessKey、encodedSign 拼接得到管理凭证
+<QiniuToken> = "Qiniu " + "Your_Access_Key" + ":" + encodedSign
+```
+[URL 安全的 Base64 编码](https://developer.qiniu.com/kodo/manual/1231/appendix)
+**python 计算Authorization管理凭证示例：**
+```
+以[获取流地址](https://developer.qiniu.com/qvs/6800/static-model)为例
+
+import hmac
+import base64
+import hashlib
+
+// 拼接规则
+//data=方法+" "+接口路径+"\nHost: "+ "qvs.qiniuapi.com" + "\nContent-Type: "+"application/json\n\n"+"json body"
+
+// 具体实现
+
+# -*- coding:utf-8 -*-
+
+import hmac
+import base64
+import hashlib
+#具体实现 python2
+data = "POST"+ " " + "/v1/namespaces/2xenzw32d1rf9/streams/31011500991180001471_34020000001320000001/domain" + \
+"\nHost: " + "qvs.qiniuapi.com" + \
+"\nContent-Type: " + "application/json" + "\n\n" + \
+'{"domain":"qvs-live-hls.cpgroup.cn","domainType":"liveHls"}'
+accessKey = '替换成自己的accessKey'
+secretKey = '替换成自己的secretKey'
+sign = hmac.new(secretKey, data, hashlib.sha1).digest()
+encodedSign = base64.urlsafe_b64encode(sign)
+authorization = 'Qiniu ' + accessKey + ':' + encodedSign
+print(authorization)
+
+```
+**API请求示例：**
+```
+GET /v1/apps/test/devices/dGVzdGRldmljZTE= HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=
+Content-Type: application/json
+```

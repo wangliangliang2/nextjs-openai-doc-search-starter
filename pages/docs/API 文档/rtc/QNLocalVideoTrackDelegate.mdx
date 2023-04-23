@@ -1,0 +1,48 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                本地视频 Track 回调代理，可通过 <a href='8849/QNLocalVideoTrack-iOS#delegate'>QNLocalVideoTrack.delegate</a> 进行设置，本地视频 Track 视频数据的回调。</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didGetPixelBuffer`)'>didGetPixelBuffer</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didGetPixelBuffer">
+didGetPixelBuffer</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)localVideoTrack:(<a href='8849/QNLocalVideoTrack-iOS'>QNLocalVideoTrack</a> *)localVideoTrack didGetPixelBuffer:(CVPixelBufferRef)pixelBuffer;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>本地视频 Track 的数据回调</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>该回调在视频数据的输出线程，请不要做过于耗时的操作，否则可能会导致编码帧率下降。</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            localVideoTrack: <a href='8849/QNLocalVideoTrack-iOS'>QNLocalVideoTrack</a>
+        </div>
+                <p>本地视频 Track</p>
+    </li>
+    <li>
+        <div>
+            pixelBuffer: CVPixelBufferRef
+        </div>
+                <p>具体的视频数据格式，可通过 CVPixelBufferGetPixelFormatType 获取</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

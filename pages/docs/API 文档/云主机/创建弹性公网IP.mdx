@@ -1,0 +1,150 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `POST` /v1/vm/eip
+
+
+# 请求参数 ([查看付费参数](https://developer.qiniu.com/qvm/8006/common-params))
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>    
+  </thead>
+  <tbody>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>地域 ID。您可以调用 DescribeRegions 查看最新的七牛云地域列表</p>
+      </td>
+    </tr>
+    <tr>
+      <td>allocation_name</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>分配名称</p>
+      </td>
+    </tr>
+    <tr>
+      <td>bandwidth</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>EIP 的带宽峰值，取值范围：1~200，单位为 Mbps。 默认值为 5。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>isp</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>线路类型<br>目前支持BGP线路和BGP精品线路，默认为BGP线路，在选择精品线路的时候该参数必填。</p>
+        <ul>
+          <li><code>BGP_PRO</code>: BGP（多线）精品线路</li>
+          <li><code>BGP</code>: BGP（多线）线路</li>
+          <li><code>5_telcom</code>: 电信</li>
+          <li><code>5_union</code>: 联通</li>
+          <li><code>5_bgp</code>: 全动态 BGP</li>
+          <li><code>5_sbgp</code>: 静态 BGP</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>client_token</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>enable_auto_renew</td>
+      <td>boolean</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>是否打开自动续费</p>
+      </td>
+    </tr>
+    <tr>
+      <td>customized_release_time</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>后付费定时删除的时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>cost_charge_type</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>付费方式</td>
+    </tr>
+    <tr>
+      <td>cost_charge_mode</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>计费方式</td>
+    </tr>
+    <tr>
+      <td>cost_period_unit</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>计费单位</td>
+    </tr>
+    <tr>
+      <td>cost_period</td>
+      <td>integer</td>
+      <td>body</td>
+      <td>是</td>
+      <td>计费周期</td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID
+data       | object{} | 创建 EIP 返回信息
+data.allocation_id | string | 按量创建返回 ID
+data.order | string | 预付费创建返回订单号
+
+
+
+## 返回值示例
+```json
+{
+  "data": {
+    "order": "edc5413cc610305704a8aaddca"
+  },
+  "request_id": "N8cGF-xihhWd5VMW"
+}
+```
+
+```json
+{
+  "data": {
+    "allocation_id": "eip-6wexqbul13ouh13"
+  },
+  "request_id": "ScKvERYKCVyN4lMW"
+}
+```

@@ -1,0 +1,60 @@
+**请求语法**
+
+```
+POST /v2/repos/<RepoName>/exports/<ExportName>
+Content-Type: application/json
+Authorization: Pandora <auth>
+{
+  "type": <tsdb>,
+  "whence": <ExportWhence>,
+  "spec": {
+        "destRepoName": <DestRepoName>,
+        "series": <SeriesName>,
+        "omitInvalid": <OmitInvalid>,
+        "omitEmpty": <OmitEmpty>,
+        "tags": {
+            "tag1": <#key1>,
+            "tag2": <#key2>,
+            ...
+        },
+        "fields": {
+            "field1": <#key1>,
+            "field2": <#key2>,
+            ...
+        },
+        "timestamp": <#key1>,   
+     }
+}
+```
+**请求内容**
+
+|参数|类型|必填|说明|
+|:---|:---|:---:|:---|
+| destRepoName |string|是|数据库名称|
+| series |string|是|序列名称|
+| omitInvalid |bool|否|是否忽略无效数据，默认值为false|
+| omitEmpty |bool|否|当某条数据的字段取值全部为null时是否忽略该条数据，默认值为false，设置为true时可避免导出没有意义的数据|
+| tags |map|是|索引字段|
+| fields |map|是|普通字段|
+| timestamp |string|否|时间戳字段</br>会用rfc3339日期格式进行解析</br>如果格式不正确则会抛弃这一条数据</br>如果此项为空，则默认使用当前时间|
+
+> 时序数据库中的timestamp字段的类型必须为 date；
+> 消息队列中字段类型为:Long/String/Date 的字段都可以导出至时序数据库中的 timestamp 字段
+
+**示例**
+
+```
+curl -X POST https://pipeline.qiniu.com/v2/repos/test_Repo/exports/export_job4 \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Pandora 2J1e7iG13J66GA8vWBzZdF-UR_d1MF-kacOdUUS4:NTi3wH_WlGxYOnXsvgUrO4XMD6Y=' \
+-d '{
+  "type": "tsdb",
+  "spec":{
+      	"destRepoName": "test_tsdb",
+		"series": "req_io",
+		"tags": {"type": "#type","src": "#src","zone": "#zone","time": "#time","bucket": "#bucket","domain": "#domain"
+		},
+		"fields": {"hits": "#hits","flow": "#flow"},            
+	}
+}'
+```

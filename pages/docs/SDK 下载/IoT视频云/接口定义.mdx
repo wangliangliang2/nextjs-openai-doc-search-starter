@@ -1,0 +1,183 @@
+# **MPEG2-TS 封装和上传接口定义**
+### **登陆 IoT视频云 平台**
+
+```c
+/**
+ * 登录 IoT视频云 平台
+ *
+ * @note 超时时间内阻塞执行
+ * @param[in] init_options 登录参数
+ * @param[in] nTimeout 登录超时返回时间，单位:秒，取值范围 [1,120]
+ * @return 0:success, else:error code
+ * Possible Return Code:
+ *      QNLINK_UPLOAD_REGISTING 正在注册中
+ *      QNLINK_UPLOAD_REGIST_FAIL 注册失败
+ *      QNLINK_UPLOAD_REGISTED 已经注册
+ *      QNLINK_UPLOAD_INIT_FAILD 初始化失败
+ */
+int Link_Login(Link_InitOptions *init_options, int nTimeout);
+```
+
+### **注销 IoT视频云 平台**
+
+```c
+/**
+ * 注销 IoT视频云 平台
+ *
+ * Possible Return Code:
+ *      QNLINK_UPLOAD_REGISTING 正在注册中
+ *      QNLINK_UPLOAD_UNREGISTED 未注册
+ */
+int Link_Logout(void);
+```
+
+### **创建并启动 MPEG2-TS 封装和上传实例**
+
+```c
+/**
+ * 创建实例
+ *
+ * @param[out] handle 实例句柄
+ * @param[in] create_options 创建参数
+ * @return 0:success, else:error code
+ * Possible Return Code:
+ *      QNLINK_UPLOAD_ARG_ERROR 参数错误
+ *      QNLINK_UPLOAD_INIT_FAILD 全局初始化失败
+ *      QNLINK_UPLOAD_CHANNELID_EXIST 参数中的 channelid 重复
+ *      QNLINK_UPLOAD_NO_MEMORY 内存申请错误
+ *      QNLINK_UPLOAD_CREATE_HTTP_ERROR 创建上传实例失败
+ *      QNLINK_UPLOAD_CREATE_TSMUX_ERROR 创建TS封装实例失败
+ */
+int Link_Create(LinkInstance *handle, const Link_CreateOptions *create_options);
+```
+
+### **注销 MPEG2-TS 封装和上传实例**
+
+```c
+/**
+ * 注销实例
+ *
+ * @param[in,out] handle 实例句柄
+ * @return 0:success, else:error code
+ * Possible Return Code:
+ *      QNLINK_UPLOAD_ARG_ERROR 参数错误
+ *      QNLINK_UPLOAD_INSTANCE_NO_EXIST 实例不存在
+ */
+int Link_Destroy(LinkInstance *handle);
+```
+
+### **推送视频流数据**
+
+```c
+/**
+ * 推送视频数据
+ *
+ * @param[in] handle 实例句柄
+ * @param[in] pData 视频数据
+ * @param[in] nDataLen 视频数据大小
+ * @param[in] nTimestamp 视频时间戳, 必须和音频时间戳对应同一个基点
+ * @param[in] nIsKeyFrame 是否是关键帧
+ * @return 0:success, else:error code
+ * Possible Return Code:
+ *      QNLINK_UPLOAD_ARG_ERROR 参数错误
+ *      QNLINK_UPLOAD_INSTANCE_NO_EXIST 实例不存在
+ *      QNLINK_UPLOAD_NEED_I_FRAME 需要传入I帧
+ *      QNLINK_UPLOAD_NO_MEMORY 内存申请错误
+ *      QNLINK_UPLOAD_TSMUX_ERROR TS封装错误
+ *
+ */
+int Link_PushVideo(LinkInstance handle, const void *pData, size_t nDataLen,
+        int64_t nTimestamp, int nIsKeyFrame);
+```
+
+### **推送音频流数据**
+
+```c
+/**
+ * 推送音频流数据
+ *
+ * @param[in] handle 实例句柄
+ * @param[in] pData 音频数据
+ * @param[in] nDataLen 音频数据大小
+ * @param[in] nTimestamp 音频时间戳，必须和视频时间戳对应同一个基点
+ * @return 0:success, else:error code
+ * Possible Return Code:
+ *      QNLINK_UPLOAD_ARG_ERROR 参数错误
+ *      QNLINK_UPLOAD_INSTANCE_NO_EXIST 实例不存在
+ *      QNLINK_UPLOAD_NEED_I_FRAME 需要传入I帧
+ *      QNLINK_UPLOAD_NO_MEMORY 内存申请错误
+ *      QNLINK_UPLOAD_TSMUX_ERROR TS封装错误
+ */
+int Link_PushAudio(LinkInstance handle, const void *pData, size_t nDataLen,
+        int64_t nTimestamp);
+
+```
+
+### **推送图片数据**
+
+```c
+/**
+ * 推送图片
+ *
+ * @param[in] handle 实例句柄
+ * @param[in] pBuf 图片内容
+ * @param[in] nBuflen 图片内容长度
+ * @return 0:success, else:error code
+ * Possible Return Code:
+ *      QNLINK_UPLOAD_ARG_ERROR 参数错误
+ *      QNLINK_UPLOAD_INSTANCE_NO_EXIST 实例不存在
+ *      QNLINK_UPLOAD_NO_MEMORY 内存申请错误
+ */
+int Link_PushPicture(LinkInstance handle, const void *pData, size_t nDataLen);
+
+```
+
+### **开始生成视频片段**
+
+```c
+/**
+ * 开始视频片段
+ *
+ * @param[in] handle 实例句柄
+ * @param[in] metas 视频片段标签,可以为空，最大支持8个标签
+ *                  视频片段标签中 key 和 val 分别最大支持 63 字节，val 可以为空;
+ * @param[in] meta_count 视频片段标签个数
+ * @return 0:success, else:error code
+ * Possible Return Code:
+ *      QNLINK_UPLOAD_ARG_ERROR 参数错误
+ *      QNLINK_UPLOAD_INSTANCE_NO_EXIST 实例不存在
+ *      QNLINK_UPLOAD_NO_MEMORY 内存申请错误
+ */
+int Link_SegmentStart(LinkInstance handle, const LinkSegmentMeta *meta, int nMetaCount);
+```
+
+### **结束当前视频片段**
+
+```c
+/**
+ * 结束视频片段
+ *
+ * @param[in] handle 实例句柄
+ *
+ * @return 0:success, else:error code
+ * Possible Return Code:
+ *      QNLINK_UPLOAD_ARG_ERROR 参数错误
+ *      QNLINK_UPLOAD_INSTANCE_NO_EXIST 实例不存在
+ *      QNLINK_UPLOAD_NO_MEMORY 内存申请错误
+ */
+int Link_SegmentEnd(LinkInstance handle);
+```
+
+### **设置 SDK 日志输出**
+
+```c
+/**
+ * 设置输出日志
+ *
+ * @param[in] Level 设置日志级别，默认级别为 LINK_LOG_INFO
+ * @param[in] LogCB 日志回调函数，默认或输入为 NULL 时从 STDOUT 输出
+ * Possible Return Code:
+ *      QNLINK_UPLOAD_ARG_ERROR 参数错误
+ */
+int Link_SetLog(int Level, Link_LogCallback* LogCB);
+```

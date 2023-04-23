@@ -1,0 +1,19 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `DELETE` /v1/vm/disk/:disk_id/attach
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+disk_id     | string | path  | 是 | 磁盘 ID
+region_id   | string | body | 是 | 实例所属的地域 ID
+instance_id | string | body| 是 | 目标ECS实例的ID
+
+
+# 返回值
+| 名称 | 类型 | 描述 |
+| ----- | ----- | ----- |
+| request_id | string | 请求 ID

@@ -1,0 +1,84 @@
+# 描述
+本接口用于获取指定批次的所有设备信息。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/batches/{id}/devices`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|id|是|string|批次ID
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|devices|array|`device`类型数组，具体结构如下
+|devices.name|string|设备名称
+|devices.desc|string|设备描述
+|devices.type|integer|类型, 1: 摄像头, 2: 平台
+|devices.nsId|string|所属的空间ID
+|devices.nsName|string|所属的空间名称
+|devices.gbId|string|设备国标ID
+|devices.state|string|状态（offline: 离线, online: 在线,notReg: 未注册, locked: 锁定）
+|devices.username|string|用户名
+|devices.password|string|密码
+|devices.pullIfRegister|boolean|注册成功后启动拉流, 默认关闭
+|devices.vendor|string|厂商
+|devices.createdAt|integer|创建时间，Unix时间戳，秒	
+|devices.updatedAt|integer|更新时间，Unix时间戳，秒
+|devices.lastKeepaliveAt|integer|最近心跳时间, Unix时间戳, 秒	
+|devices.lastRegisterAt|integer|最近注册时间, Unix时间戳, 秒
+|devices.alarmEnable|boolen|是否开启国标报警
+|devices.alarmMethods|string|接收报警类型列表。 alarmEnable为`True`时，此字段有效。多个报警类型以`,`分隔。<br>1为电话报警， 2为设备报警， 3为短信报警， 4为GPS报警， 5为视频报警， 6为设备故障报警， 7其他报警。例如同时接收`短信报警`和`视频报警`，传递参数为`"3,5"`
+|devices.localRecordPushEnable|boolean|本地录像上传开关，默认关闭。如果关闭此开关，本地录像上传云端接口无效
+|devices.localRecordTemplate|string|开启本地录像上传开关后，配置录制模板
+|devices.batchId|string|所属的批次id
+|devices.rtpAudio|boolean|是否开启音频
+|devices.rtpAudioTranscode|boolean|是否开启音频转码
+|devices.onDemandPull|boolean|是否开启按需拉流
+
+
+# **示例**
+
+**请求示例**
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akras1vdttwy/batches/3gzh7xdrfskl6/devices \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+```
+
+**响应示例**
+
+```
+{
+    "devices": [
+        {
+            "name": "31011500991320000212",
+            "type": 1,
+            "nsId": "2akras1vdttwy",
+            "nsName": "gb-test1",
+            "gbId": "31011500991320000212",
+            "state": "notReg",
+            "username": "31011500991320000212",
+            "password": "iL-2",
+            "pullIfRegister": false,
+            "createdAt": 1637652453,
+            "updatedAt": 1637652453,
+            "channels": 1,
+            "lastRegisterAt": 0,
+            "lastKeepaliveAt": 0,
+            "cruiseGroups": [],
+            "alarmEnable": false,
+            "alarmMethods": "",
+            "localRecordPushEnable": false,
+            "localRecordTemplate": "",
+            "batchId": "3gzh7xdrfskl6"
+        }
+    ]
+}
+```

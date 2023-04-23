@@ -1,0 +1,52 @@
+# 一、背景介绍 
+
+1. 七牛提供的加速功能只针对静态文件
+2. 动态文件使用了cdn缓存后影响访问效果，如，登录界面，使用缓存后会串号
+
+# 二、解决方法
+
+## 场景1
+
+自定义域名绑定在七牛空间，建议空间中只存储静态文件，采用动静分离的模式。 
+
+示例：www.qiniu.com 的域名A记录到源站 IP 123.123.123.123，绑定自定义域名为 img.qiniu.com，然后将域名 cname 到七牛提供的域名上。使用时将 img.qiniu.com 的资源链接嵌入到代码中即可。
+
+## 场景2
+
+自定义域名回源到客户源站
+
+## 示例１：在源站配置文件中设置缓存时间为 0，Nginx 为例
+
+```
+server {
+    listen       80;
+    server_name  localhost;
+    location ~* ^(.+\.php)(.*)$ {
+        root     html;
+        expires  -1;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME         $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}
+```
+
+## 示例２：设置自定义域名的缓存时间
+
+- ２.1. 找到缓存设置界面
+![blob.png](https://dn-odum9helk.qbox.me/FodO7jJ6lE26hZ8FAzfGe1QycO2X)
+![blob.png](https://dn-odum9helk.qbox.me/FlvDFkozXoRUOrXeBTZIJm7n6qRC)
+
+- ２.２ 设置的规则和按钮
+![blog.png](https://dn-odum9helk.qbox.me/FiX66pYjeg1-xXvT0VzSjxIix5mU)
+
+- ２.３.添加缓存设置
+- ２.３.１ 推荐配置
+![blog.png](https://dn-odum9helk.qbox.me/FrYrW-wi0pUVx7m29pF5-tRzviNS)
+
+- ２.３.２ 添加后缀
+![blog.png](https://dn-odum9helk.qbox.me/FgQSXNVQu8O4SOqbq_Wq1pY0R2DW)
+
+- ２.３.３ 添加目录
+![blog.png](https://dn-odum9helk.qbox.me/Fo34Tv1zxoSIE2QjDpEJqN1TkEOP)

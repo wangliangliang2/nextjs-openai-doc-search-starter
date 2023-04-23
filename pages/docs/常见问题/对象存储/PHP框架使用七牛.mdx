@@ -1,0 +1,100 @@
+# thinkPHP
+
+具体的 [参考实例](https://dn-odum9helk.qbox.me/logK8HdBqIMjbM8GbU0LhU5FlVtv.zip)
+<br>
+# 1、安装
+将七牛 SDK 解压包完整放入 ThinkPHP 项目的 ThinkPHPLibraryVendor 目录下
+
+# 2、使用
+引入文件并加载相应需要用到的命名空间
+
+```
+<?php
+namespace Home\Controller;
+use Think\Controller;
+Vendor('sdk.autoload'); 
+use \Qiniu\Auth;
+use \Qiniu\Storage\UploadManager;
+class IndexController extends Controller {
+    public function index(){
+        
+        // 用于签名的公钥和私钥
+        $accessKey = 'xxx';
+        $secretKey = 'xxx';
+        
+        // 初始化签权对象
+        $auth = new Auth($accessKey, $secretKey);
+        
+        // 空间名  https://developer.qiniu.io/kodo/manual/concepts
+        $bucket = 'bucket';
+        // 生成上传Token
+        $token = $auth->uploadToken($bucket);
+        // 构建 UploadManager 对象
+        $uploadMgr = new UploadManager();
+        // 上传文件到七牛
+        $filePath = 'php-logo.png';
+        $key = 'php-logo.png';
+        list($ret, $err) = $uploadMgr->putFile($token, $key, $filePath);
+        echo "\n====> putFile result: \n";
+        if ($err !== null) {
+            var_dump($err);
+        } else {
+            var_dump($ret);
+        }
+    }
+}
+
+```
+
+# Yii
+
+具体的 [参考实例](https://dn-odum9helk.qbox.me/li99N2IlbrIcVPRimTiRzklKE-wn)
+<br>
+# 1、安装
+将七牛 SDK 解压包完整放入 Yii 项目的 vendor 目录下
+
+# 2、使用
+引入文件并加载相应需要用到的命名空间
+
+```
+<?php
+
+// comment out the following two lines when deployed to production
+defined('YII_DEBUG') or define('YII_DEBUG', true);
+defined('YII_ENV') or define('YII_ENV', 'dev');
+
+require(__DIR__ . '/../vendor/autoload.php');
+require(__DIR__ . '/../vendor/yiisoft/yii2/Yii.php');
+
+$config = require(__DIR__ . '/../config/web.php');
+
+require(__DIR__ . '/../vendor/sdk/autoload.php');
+
+use Qiniu\Auth;
+use Qiniu\Storage\UploadManager;
+
+$accessKey = 'xxxx';
+$secretKey = 'xxxx';
+$bucket = 'xxx';
+$auth = new Auth($accessKey, $secretKey);
+
+$uptoken = $auth->uploadToken($bucket, null, 3600);
+
+echo $uptoken;
+
+//上传文件的本地路径
+$filePath = 'xxxx';
+
+$uploadMgr = new UploadManager();
+
+list($ret, $err) = $uploadMgr->putFile($uptoken, null, $filePath);
+echo "\n====> putFile result: \n";
+if ($err !== null) {
+    var_dump($err);
+} else {
+    var_dump($ret);
+}
+```
+
+
+

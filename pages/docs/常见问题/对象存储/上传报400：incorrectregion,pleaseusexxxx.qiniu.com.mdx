@@ -1,0 +1,5 @@
+上传的时候，如果遇到类似400：incorrect region, please use xxx.qiniu.com的错误，说明是上传域名和空间所在的区域不匹配，多发生在旧的sdk、工具和插件上。后面的 xxx.qiniu.com是正确的上传域名。
+
+存储区域和上传域名的对应关系见https://developer.qiniu.com/kodo/manual/1671/region-endpoint
+
+出现这种情况，如果是使用的第三方插件，需要更新插件或询问第三方开发人员；如果是使用sdk，可以更新成最新的sdk，如果是使用七牛提供的工具，需要你更新为最新版本的qshell工具

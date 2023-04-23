@@ -1,0 +1,35 @@
+
+* `<x-axis>`元素用于定义二维图表的 x 轴：
+
+### 父元素
+
+在 `<chart>`元素下，只有当 type 属性指定如下值时，可以使用 `<x-axis>`元素。
+	
+* `<chart type="line">`
+* `<chart type="bar">`
+*	`<chart type="area">`
+*	`<chart type="scatter">`
+* `<chart type="bubble">`
+
+### 子元素
+
+|子元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<name>`|x轴名称|无|
+|`<hide-name>`|是否隐藏 x 轴名称|false|
+|`<label-show-mode>`|x 轴上标签的显示形式。支持三种值类型:showauto: 根据数据多少以及空间大小自适应显示; showall: 显示全部的标签; hide: 隐藏标签|'showauto'|
+|`<label-rotation>`|x 轴标签的显示旋转方式， 支持 5 种值类型， 0: 水平显示; -45: 右偏移 45 度; 45: 左偏移 45 度; -90: 右偏移 90 度; 90: 左偏移 90 度|0|
+|`<field>`|x 轴的字段名|无|
+|`<unit>`|当x轴的字段为数值类型时，可设置数值单位，通常应用于散点图、气泡图|['none'， 'short']|
+
+示例：
+```
+<x-axis>
+  <name>host</name>
+  <hide-name>false</hide-name>
+  <label-show-mode>showauto</label-show-mode>
+  <label-rotation>90</label-rotation>
+  <field>host</field>
+  <unit>['none'， 'percentunit']</unit>
+</x-axis>
+```

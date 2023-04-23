@@ -1,0 +1,13 @@
+Lasso回归是一种带有L1正则的线性回归模型。
+
+**语法：**
+```
+..| fit Lasso fit_intercept=<True(default) | False> normalize=<True | False(default)> alpha=<float> from <feature_field_1> <feature_field_2>... 
+
+```
+
+**参数说明：**
+
+- fit_intercept参数用来指定模型是否要拟合截距项，如果数据已经中心化，可以设为False。默认值为True。
+- normalize仅在fit_intercept为True时有效。如果设为True，则自变量X会在做线性回归之前被标准化。
+- alpha用来指定一个常数，用于在损失函数中乘以正则项。该值越高，正则程度越高。默认值为1.0。

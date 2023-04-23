@@ -1,0 +1,334 @@
+# QNIMGroup Class Reference
+
+Inherits from | NSObject
+---|---
+Declared in | QNIMGroup.h
+
+## Overview
+
+聊天室
+
+### `  groupId`
+
+群Id
+
+`@property (nonatomic, assign, readonly) long long groupId`
+
+#### Discussion
+
+群Id
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  myNickName`
+
+在群里的昵称
+
+`@property (nonatomic, copy, readonly) NSString *myNickName`
+
+#### Discussion
+
+在群里的昵称
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  name`
+
+群名称
+
+`@property (nonatomic, copy, readonly) NSString *name`
+
+#### Discussion
+
+群名称
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  groupDescription`
+
+群描述
+
+`@property (nonatomic, copy, readonly) NSString *groupDescription`
+
+#### Discussion
+
+群描述
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  avatarUrl`
+
+群头像
+
+`@property (nonatomic, copy, readonly) NSString *avatarUrl`
+
+#### Discussion
+
+群头像
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  avatarPath`
+
+群头像下载后的本地路径
+
+`@property (nonatomic, copy, readonly) NSString *avatarPath`
+
+#### Discussion
+
+群头像下载后的本地路径
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  avatarThumbnailUrl`
+
+群头像缩略图
+
+`@property (nonatomic, copy, readonly) NSString *avatarThumbnailUrl`
+
+#### Discussion
+
+群头像缩略图
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  avatarThumbnailPath`
+
+群头像缩略图下载后的本地路径
+
+`@property (nonatomic, copy, readonly) NSString *avatarThumbnailPath`
+
+#### Discussion
+
+群头像缩略图下载后的本地路径
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  creatTime`
+
+群创建时间
+
+`@property (nonatomic, readonly) long long creatTime`
+
+#### Discussion
+
+群创建时间
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  jsonextension`
+
+群扩展信息
+
+`@property (nonatomic, copy, readonly) NSString *jsonextension`
+
+#### Discussion
+
+群扩展信息
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  ownerId`
+
+群成员
+
+`@property (nonatomic, assign, readonly) NSInteger ownerId`
+
+#### Discussion
+
+群成员
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  capactiy`
+
+最大人数
+
+`@property (nonatomic, assign, readonly) NSInteger capactiy`
+
+#### Discussion
+
+最大人数
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  membersCount`
+
+群成员数量，包含Owner，admins 和members
+
+`@property (nonatomic, assign, readonly) NSInteger membersCount`
+
+#### Discussion
+
+群成员数量，包含Owner，admins 和members
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  adminsCount`
+
+群管理员数量
+
+`@property (nonatomic, assign, readonly) NSInteger adminsCount`
+
+#### Discussion
+
+群管理员数量
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  sharedFilesCount`
+
+群共享文件数量
+
+`@property (nonatomic, assign, readonly) NSInteger sharedFilesCount`
+
+#### Discussion
+
+群共享文件数量
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  msgPushMode`
+
+群消息通知类型
+
+`@property (nonatomic, assign, readonly) QNIMGroupMsgPushMode msgPushMode`
+
+#### Discussion
+
+群消息通知类型
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  modifyMode`
+
+群信息修改模式
+
+`@property (nonatomic, assign, readonly) QNIMGroupModifyMode modifyMode`
+
+#### Discussion
+
+群信息修改模式
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  joinAuthMode`
+
+入群审批模式
+
+`@property (nonatomic, assign, readonly) QNIMGroupJoinAuthMode joinAuthMode`
+
+#### Discussion
+
+入群审批模式
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  inviteMode`
+
+入群邀请模式
+
+`@property (nonatomic, assign, readonly) QNIMGroupInviteMode inviteMode`
+
+#### Discussion
+
+入群邀请模式
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  enableReadAck`
+
+是否开启群消息已读功能
+
+`@property (nonatomic, assign) BOOL enableReadAck`
+
+#### Discussion
+
+是否开启群消息已读功能
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  historyVisible`
+
+是否可以加载显示历史聊天记录
+
+`@property (nonatomic, assign) BOOL historyVisible`
+
+#### Discussion
+
+是否可以加载显示历史聊天记录
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  msgMuteMode`
+
+群消息屏蔽模式
+
+`@property (nonatomic, assign) QNIMGroupMsgMuteMode msgMuteMode`
+
+#### Discussion
+
+群消息屏蔽模式
+
+#### Declared In
+
+`QNIMGroup.h`
+
+### `  groupStatus`
+
+当前群组的状态。（Normal 正常， Destroyed 以销毁）
+
+`@property (nonatomic, assign) QNIMGroupStatus groupStatus`
+
+#### Discussion
+
+当前群组的状态。（Normal 正常， Destroyed 以销毁）
+
+#### Declared In
+
+`QNIMGroup.h`
+
+
+

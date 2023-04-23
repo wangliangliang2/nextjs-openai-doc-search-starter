@@ -1,0 +1,49 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `PUT` /api/rio/v1/network/loadbalancer_members/:pool_id
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id   | string        | header| 是 | 地域 ID
+pool_id         | string        | path | 是 | 资源池 ID
+members         | []SLBMember   | body | 是 | 后端服务器信息
+
+## SLBMember 后端服务器
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+server_id  | string  | body | 否 | 服务 ID，对应云主机 ID
+adress     | string  | body | 否 | IP 地址，当添加内部虚拟服务器时传值，IP 地址、专有网络 ID 必传，添加外部虚拟服务器的前提是负载均衡实例可通过网络访问
+subnet_id  | string  | body | 否 | 专有网络 ID
+port       | integer | body | 否 | 端口
+weight     | integer | body | 否 | 权重，值范围 0 ~ 100
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+
+## 请求值示例
+```json
+{
+    "pool_id":"a4dc3fd3-b1cf-4222-85b3-afce9f0185b8",
+    "members":[
+        {
+            "adress":"192.168.11.8",
+            "subnet_id":"430ca45c-20d5-4c29-ada4-85379a2e6291",
+            "server_id":"4bf14e90-d3ba-4a9e-94d9-2c1287fd6345",
+            "port":11,
+            "weight":1
+        }
+    ]
+}
+```
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEgtKrwqf_8kW"
+}
+```

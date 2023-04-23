@@ -1,0 +1,100 @@
+# **描述**
+本接口用于获取模板列表。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/templates?offset=<offset>&line=<line>&templateType=<templateType>&match=<match>&sortBy=<sortBy>&zone=<zone>`
+* Get请求，通过`非SDK`方式调用的客户，http头部Content-Type,`要么设置为application/x-www-form-urlencoded`,`要么置空`, `要么不要携带`; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|line|否|integer|一次返回多少条，最多1000,当超过1000条时，需要结合offset 循环读取。
+|offset|否|integer|偏移量，当需要循环读取时,初始值offset = 0, 第N次请求时offset = (N -1) * line
+|sortBy|否|string|默认按创建时间降序排列，sortBy由"asc/desc"和可参与排序的字段组成，其中 asc 表示升序，desc 表示降序，可参与排序的字段有createdAt，updatedAt。asc:updatedAt表示更新时间从小到大排序，desc:updatedAt表示更新时间从大到小排序
+|templateType|否|integer|模板类型，取值：0（录制模版），1（截图模版）3（AI模版）
+|match|否|string|模糊匹配查询(模版名称包含match串时返回)
+|zone|否|string|zone为服务区域，可根据服务区域筛选出对应区域的下模板，可选项为z0，z1，z2。z0表示华东、z1表示华北、z2表示华南
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|items|模版数组|模版数组
+|items.name|string|模版名称
+|items.desc|string|模版描述	
+|items.bucket|string|模版对应的对象存储的bucket
+|items.deleteAfterDays|integer|存储过期时间，默认永久不过期
+|items.fileType|integer|文件存储类型，取值：0（普通存储），1（低频存储）
+|items.recordFileFormat|integer|录制文件存储格式(多选)，范围：1(001)～7(111)，从左往右的三位二进制数分别代表MP4,LV，M3U8；0代表不选择该格式，1代表选择；例如：2(010)代表选择FLV格式，6(110)代表选择MP4和FLV格式，1(001)代表选择M3U8格式，7(111)代表三种格式均选择
+|items.templateType|integer|模板类型，取值：0（录制模版），1（截图模版）, 3（AI模版）
+|items.recordType|integer|录制模式，取值：0（不录制），1（实时录制）
+|items.jpgOverwriteStatus|boolean|开启覆盖式截图(一般用于流封面)
+|items.jpgSequenceStatus|boolean|开启实时截图
+|items.recordInterval|integer|录制文件时长，单位为秒，600~7200
+|items.snapInterval|integer|截图间隔，单位为秒，1~600，按需截图可以忽略
+|items.tsFileNameTemplate|string|ts文件命名格式
+|items.m3u8FileNameTemplate|string|m3u8文件命名格式
+|items.flvFileNameTemplate|string|flv文件命名格式
+|items.mp4FileNameTemplate|string|mp4文件命名格式
+|items.jpgOverwriteFileNameTemplate|string|覆盖式截图文件命名格式
+|items.jpgSequenceFileNameTemplate|string|实时截图文件命名格式
+|items.createdAt|integer|模版创建时间
+|items.updatedAt|integer|模版更新时间
+|items.zone|string|模版对应的bucket区域
+|total|integer|模版总数量
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/templates?templateType=0 \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "items": [
+    {
+      "id": "2akrars5b81f5",
+      "name": "test0016",
+      "desc": "this is a test",
+      "bucket": "bucket-test1",
+      "deleteAfterDays": 0,
+      "templateType": 0,
+      "fileType": 0,
+      "recordType": 0,
+      "recordFileFormat": 1,
+      "tsFileNameTemplate": "record/ts/${namespaceId}/${streamId}/${startMs}-${endMs}.ts",
+			"recordSnapFileNameTemplate": "record/snap/${namespaceId}/${streamId}/${startMs}.jpg",
+      "createdAt": 1586850533,
+      "updatedAt": 1586850533,
+      "interval": 10,
+      "zone": "z1"
+    },
+    {
+      "id": "d102sns2mwhd",
+      "name": "test009",
+      "bucket": "bucket-test1",
+      "deleteAfterDays": 0,
+      "templateType": 0,
+      "fileType": 0,
+      "interval": 5,
+      "recordType": 1,
+      "recordFileFormat": 1,
+      "tsFileNameTemplate": "record/ts/${namespaceId}/${streamId}/${startMs}-${endMs}.ts",
+      "recordSnapFileNameTemplate": "record/snap/${namespaceId}/${streamId}/${startMs}.jpg",
+      "createdAt": 1585104103,
+      "updatedAt": 1586849432,
+      "interval": 10,
+      "zone": "z1"
+    }
+  ],
+  "total": 2
+}
+```

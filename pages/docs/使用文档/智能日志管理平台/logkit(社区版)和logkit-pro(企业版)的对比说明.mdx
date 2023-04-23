@@ -1,0 +1,64 @@
+社区版包含了大部分主要功能，而我们的企业版弥补了社区版在针对企业生产环境使用中的一些功能缺失。企业版和社区版使用的同一份代码内核。
+
+**功能相关**
+
+||logkit (社区版)|logkit-pro (企业版)|
+|:--:|:--:|:--:|
+|主要模块(Metric/Reader/Parser/Transformer/Sender)|支持，包含了所有企业版的功能模块|支持|
+|页面可视化配置|支持|支持，体验更佳|
+|文档|支持，Wiki 为主、相对滞后|支持官方网站实时维护、最新最全、图文并茂|
+|集群管理|不支持|支持|
+|批量操作|不支持|支持|
+|采集任务监控与报警|不支持|支持|
+|机器监控|支持|支持装机自动添加，无需手动操作|
+|服务拨测、进程监控|支持|支持|
+|跨平台支持|支持(Windows、Linux(CentOS Ubuntu)、MacOS)|支持(Windows、Linux所有发行版、MacOS、IBM AIX)|
+|Docker 镜像|支持|支持|
+|Kubernetes 支持|支持|支持，提供完整的解决方案|
+|主流读取插件(文件、Elasticsearch、MongoDB、MySQL、MSSQL、PostgresSQL、Kafka(0.8及以前)、Redis、Socket、HTTP、SNMP、Script)|支持|支持|
+|特殊读取插件(Windows EventLog、WMI、Oracle、AWS S3、Cloudwatch、Lumberjack、Tracing、Kafka(0.9及以后)、HDFS ...)|不支持|支持， 不断增加，可以为企业单独定制读取插件|
+|主流解析插件(csv、json、grok、nginx、raw、syslog ...)|支持|支持|
+|特殊解析插件(thinkphp5、logkfmt ...)|不支持|支持，不断增加，可以为企业单独定制解析插件|
+|主流转换插件(replace、ip、date、discard...)|支持|支持|
+|特殊转换插件(数据脱敏、正则匹配变换、数组聚合、lua脚本自定义 ...)|不支持|支持，不断增加，可以为企业单独定制转换插件|
+|主流发送插件(七牛智能日志平台、Kafka、ES、文件、HTTP、InfluxDB、MongoDB)|支持|支持|
+|特殊发送插件(发送到七牛云存储、发送到日志管理解析 ...)|不支持|支持，可以为企业单独定制发送插件|
+|Bug 修复|支持，仅支持 Master 分支|支持，所有维护的版本|
+
+**测试相关**
+
+|功能相关|logkit (社区版)|logkit-pro (企业版)|
+|:--:|:--:|:--:|
+|单元测试|支持|支持，七牛质量保证部门审核认证|
+|集成测试|支持|支持，七牛质量保证部门审核认证|
+|压力测试|支持|支持|
+|性能测试|不支持|支持|
+|质量保证部门专门测试|不支持|支持，多平台回归测试|
+
+**技术支持相关**
+
+|功能相关|logkit (社区版)|logkit-pro (企业版)|
+|:--:|:--:|:--:|
+|对主线功能的影响(Roadmap)|支持，在 Github 通过 Issue 或 Pull Request 影响|支持，优先为企业需求服务|
+|公共问题|支持，使用 Github Issue 提问|支持，7 * 24 小时技术支持|
+|7 * 24 贴身技术支持|不支持|支持，微信、QQ、手机 （技术专家直接回复），响应时间SLA保证|
+|咨询、培训、私有部署POC|不支持|支持|
+
+**发布周期**
+
+|功能相关|logkit (社区版)|logkit-pro (企业版)|
+|:--:|:--:|:--:|
+|稳定版本发布|支持，通常一个月|支持，一周或两周（按客户需要）|
+|某些客户的紧急需求|不支持|支持，支持立即发一个版本给客户，功能同时会出现在主线分支|
+
+**其他信息**
+
+|功能相关|logkit (社区版)|logkit-pro (企业版)|
+|:--:|:--:|:--:|
+|代码开源|支持，(Apache License)|不开源|
+
+从社区版 logkit 迁移到企业版 logkit-pro 文档请阅读：https://developer.qiniu.com/insight/manual/5040/migrated-from-the-open-source-logkit-logkit-pro
+
+全新安装企业版 logkit-pro 文档请阅读： https://developer.qiniu.com/insight/manual/4682/logkit-pro-install
+
+

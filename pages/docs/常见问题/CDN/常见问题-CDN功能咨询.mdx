@@ -1,0 +1,45 @@
+# 简介
+&emsp;七牛默认使用 CDN 域名访问存储资源，如果您正在使用 CDN 产品，可能会涉及到资源的缓存/预取问题，本文列出了部分您可能需要了解的问题列表。
+<font color=#4671D5><a href="#Q0">Q：CDN 是否支持 websocket 加速？</a></font>
+<font color=#4671D5><a href="#Q1">Q：CDN 是否支持 HTTP2 访问？</a></font>
+<font color=#4671D5><a href="#Q2">Q：微信小程序要求的 TLS 版本必须大于等于1.2怎么处理？</a></font>
+<font color=#4671D5><a href="#Q3">Q：CDN是否支持 Gzip 处理？</a></font>
+<font color=#4671D5><a href="#Q5">Q：CDN 支持 指定端口访问 吗？</a></font>
+<font color=#4671D5><a href="#Q6">Q：CDN 支持 海外访问加速 吗？</a></font>
+
+&emsp;
+&emsp;如果本文仍然无法解决您的问题，您也可以通过 **[工单系统](https://support.qiniu.com/tickets/new)** 将您的问题反馈给我们。
+
+-----
+<div id="Q0"></div>
+**Q:CDN 是否支持 websocket 加速？**
+&emsp;暂不支持 websocket 加速。
+
+<div id="Q1"></div>
+**Q:CDN 是否支持 HTTP2 访问？**
+&emsp;支持，在 控制台 - CDN - 域名管理 中，修改 https 配置可以开启 http2 访问。
+
+<div id="Q2"></div>
+**Q:微信小程序要求的TLS版本必须大于等于1.2怎么处理？**
+&emsp;域名需要先开启 HTTPS，然后开启 HTTP 2 功能，HTTP 2.0 默认使用 TLS1.2 及以上版本。
+
+<div id="Q3"></div>
+**Q:CDN 是否支持 Gzip 处理？**
+&emsp;支持。
+
+<!--
+<div id="Q4"></div>
+**Q:CDN 访问的链接长度限制是多少？**
+&emsp;URL 参数限制为 750 字节内，暂时无法支持更长url。
+-->
+
+<div id="Q5"></div>
+**Q:CDN 支持指定端口访问吗？**
+&emsp;CDN 域名仅支持默认的 80/443 端口访问，不支持自定义端口访问，但是 CDN 配置回源时，支持回源到您的服务器的指定端口。
+
+<div id="Q6"></div>
+**Q:CDN 支持支持海外访问加速吗？**
+&emsp;支持，您可以在创建域名时，选择覆盖范围为 海外/全球 ，如果您的域名已经创建，您可以通过 **[工单系统](https://support.qiniu.com/tickets/new)** 反馈给我们，我们将在后台为您修改。
+&emsp;大陆：仅使用国内的加速节点，海外用户访问将被调度到国内节点。
+&emsp;海外：仅使用海外的加速节点，国内用户访问将被调度到海外节点。
+&emsp;全球：使用覆盖全球的加速节点，根据用户所在位置自动调度到最优加速节点。

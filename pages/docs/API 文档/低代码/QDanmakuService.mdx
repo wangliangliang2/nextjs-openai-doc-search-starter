@@ -1,0 +1,100 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>interface com.qlive.danmakuservice.QDanmakuService</p>
+                <p>弹幕服务</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#addDanmakuServiceListener`)'>addDanmakuServiceListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#removeDanmakuServiceListener`)'>removeDanmakuServiceListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#sendDanmaku`)'>sendDanmaku</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="addDanmakuServiceListener">addDanmakuServiceListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void addDanmakuServiceListener(QDanmakuServiceListener listener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>添加弹幕监听</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            listener: <a href='https://developer.qiniu.com/lowcode/api/12101/QDanmakuServiceListener'>QDanmakuServiceListener</a>
+        </div>
+                <p>弹幕消息监听</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="removeDanmakuServiceListener">removeDanmakuServiceListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void removeDanmakuServiceListener(QDanmakuServiceListener listener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>移除弹幕监听</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            listener: <a href='https://developer.qiniu.com/lowcode/api/12101/QDanmakuServiceListener'>QDanmakuServiceListener</a>
+        </div>
+                <p>弹幕消息监听</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="sendDanmaku">sendDanmaku</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void sendDanmaku(String msg, HashMap&lt;String, String&gt; extension, QLiveCallBack&lt;QDanmaku&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>发送弹幕消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msg: String
+        </div>
+                <p>弹幕内容</p>
+    </li>
+    <li>
+        <div>
+            extension: HashMap
+        </div>
+                <p>扩展字段</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>发送回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

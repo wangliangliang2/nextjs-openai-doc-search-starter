@@ -1,0 +1,189 @@
+回调通知是指客户端在上传时指定服务端在处理完上传请求后，应该通知某个特定服务器，在该服务器确认接收了该回调后才将所有结果返回给客户端。
+	
+因为加入了回调请求和响应的过程，相比简单上传，使用回调通知机制一般会导致客户端花费更多的等待时间。
+
+开发者可以要求<span id="Productname">七牛云存储</span>在某文件上传完成后向特定的 URL 发起一个回调请求。<span id="Productname">七牛云存储</span>会将该回调的响应内容作为文件上传响应的一部分一并返回给客户端。回调的流程如下：
+
+![带回调的上传流程](https://dn-odum9helk.qbox.me/Fu0Ofox1M4AdBub5FeplMQHYn7cP)
+
+要启用回调功能，业务服务器在签发上传凭证时需要设置[上传策略 (PutPolicy)](/kodo/manual/1206/put-policy)中的 callbackUrl 和 callbackBody 字段。
+
+<a id="callback-url"></a>
+## 回调地址
+
+通过设定上传策略中的 callbackUrl 字段为一个有效的地址，即可让<span id="Productname">七牛云存储</span>在文件上传完成后向该地址发起回调请求。该地址可以是一个 HTTP 或者 HTTPS 的 URL，允许公网访问。
+
+如果需要传递自定义的请求内容，开发者可以考虑配合使用上传策略中的 callbackBody 字段。如果只有 callbackUrl 而没有 callbackBody，回调服务器收到的请求内容将为空。
+
+<a id="callback-body"></a>
+## 回调内容
+
+同普通客户端直传和重定向上传一样，用户也可以控制回调中传递到客户回调服务器的反馈信息。callbackBody 的格式如下：
+
+```
+<item>=(<magicvar>|<xvar>)[&<item>=(<magicvar>|<xvar>)...]
+```
+
+一个典型的 callbackBody 设置如下（内容经过格式化方便阅读）：
+
+```
+put_policy = '{
+    ...
+    "callbackBody" : "name=$(fname)&
+                      hash=$(etag)&
+                      location=$(x:location)&
+                      price=$(x:price)&
+                      uid=123"
+    ...
+}'
+```
+	              
+上面的 callbackBody 示例中，混合使用了魔法变量 name、hash，自定义变量 location、price 及自定义常量 uid。
+假设应用客户端发出了如下的上传请求：
+
+```
+<form method="post" action="http://upload.qiniup.com/" enctype="multipart/form-data">
+    <input name="key" type="hidden" value="sunflower.jpg">
+    <input name="x:location" value="Shanghai">
+    <input name="x:price" value="1500.00">
+    <input name="token" type="hidden" value="...">
+    <input name="file" type="file" />
+</form>
+```
+
+其中，客户端发送了自定义变量的值 x:location = Shanghai 和 x:price = 1500.00，<span id="Productname">七牛云存储</span>将根据上传资源的实际情况填写魔法变量 $(fname) 和 $(etag) 的值。
+
+完成上传后，<span id="Productname">七牛云存储</span>便会构造出如下的回调信息（内容经过格式化方便阅读）：
+
+```
+name=sunflower.jpg&
+hash=Fn6qeQi4VDLQ347NiRm- \
+RlQx_4O2&
+location=Shanghai&
+price=1500.00&
+uid=123
+```
+
+<span id="Productname">七牛云存储</span>将这组数据作为请求 Body 发送至用户指定的回调服务器，请求方式为 POST。回调服务器将接收到以下格式的请求内容：
+
+
+```
+POST /callback  HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+User-Agent: qiniu go-sdk v6.0.0
+Host: api.examples.com
+Authorization: QBox iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV:tDK-3f5xF3SJYEAwsll5g=
+
+name=sunflower.jpg&hash=Fn6qeQi4VDLQ347NiRm- \
+RlQx_4O2&location=Shanghai&price=1500.00&uid=123
+```
+
+回调服务器接收到回调请求后，负责生成<span id="Productname">七牛</span>返回给客户端的数据（json 格式），该数据作为此次回调请求的响应内容。如果回调成功，回调服务应对<span id="Productname">七牛云存储</span>作出类似如下的响应（**注意**：回调响应内容由回调服务器生成，以下仅为示例）：
+
+```
+HTTP/1.1 200 OK
+Server: nginx/1.1.19
+Date: Thu, 19 Dec 2013 06:27:30 GMT
+Content-Type: text/html
+Transfer-Encoding: chunked
+Connection: keep-alive
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+
+
+{"success":true,"name":"sunflowerb.jpg"}
+```
+
+<span id="Productname">七牛云存储</span>将上面的回调结果返回给客户端，客户端接收到以下响应：
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-store
+Server: nginx/1.4.4
+Date: Thu, 19 Dec 2013 08:04:56 GMT
+Pragma: no-cache
+X-Log: BDT:4;BDT:2;LBD:13;rs.put:1048;rs-upload.putFile:2514;UP.CB:3088;UP:5603
+X-Reqid: iDYAAPBicOGXLUET
+
+{"success":true,"name":"sunflowerb.jpg"}
+```
+
+如果回调失败，客户端会收到 HTTP 错误码 579，详细的错误信息在 Body 部分给出，如下所示（内容经过格式化方便阅读）：
+```
+{
+    "error":"{
+        "callback_url":"<callbackUrl>",
+        "callback_bodyType":"<callbackBodyType>",
+        "callback_body":"<callbackBody>",
+        "token":"<Token>",
+        "err_code":<回调错误码>,
+        "error":"<回调错误信息>",
+        "hash":"Fn6qeQi4VDLQ347NiRm-RlQx_4O2",
+        "key":"sunflower.jpg"
+    }"
+}
+```
+如果回调服务器返回如下所示的 Json 格式的错误内容：
+```
+{
+    "error":"<错误信息>"
+}
+```
+并且设置 Content-Type 为 application/json，则业务端能解析出 <错误信息> 并填入 <回调错误信息> 字段返回给客户端。错误信息需要是String格式，建议可以是query的方式，如code=400&message='no hedaer'
+
+<a id="callback-security"></a>
+## 安全性
+
+由于回调地址是公网可任意访问的，那如何确认回调是合法的呢?
+
+<span id="Productname">七牛云存储</span>在回调时会对请求数据签名，并将结果包含在请求头 Authorization 字段中，示例如下：
+
+```
+Authorization:QBox iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV:tDK-3f5xF3SJYEAwsll5g=
+```
+
+其中 QBox 为固定值，*iN7Ngw...dCV* 为用户的 Accesskey，*tDK-3f...5g=* 为签名结果 encoded_data。
+
+回调服务器可以通过以下方法验证其合法性：
+
+- 获取 Authorization 字段中的签名结果 encoded_data    
+
+- 根据 Accesskey 选取正确的 SecretKey
+
+- 获取明文 data = Request.URL.Path +"\n" +Request.Body，部分语言或框架无法直接获取请求 body 的原始数据，在自行拼接时应当注意，body 中的数据是经过[URL 安全的 Base64 编码](/kodo/manual/1231/appendix#urlsafe-base64)的。
+
+- 采用 HMAC-SHA1 签名算法，对明文 data 签名，密钥为 SecretKey，比较签名结果是否与 Authorization 字段中的 encoded_data 字段相同，如相同则表明这是一个合法的回调请求。
+
+
+**注意**：业务端服务器回调鉴权的Content-Type类型应该与上传策略中指定的callbackBodyType相同，默认为 application/x-www-form-urlencoded，当 Content-Type 为 application/x-www-form-urlencoded 时，签名内容必须包括请求内容。当 Content-Type 为 application/json 时，签名内容不包括请求内容。签名方式可参考 [Authorization](/kodo/manual/1201/access-token)
+
+以 PHP 语言为例，验证代码如下：
+
+```php
+/**
+<?php
+require_once __DIR__ . '/../autoload.php';
+use Qiniu\Auth;
+$accessKey = getenv('QINIU_ACCESS_KEY');
+$secretKey = getenv('QINIU_SECRET_KEY');
+$bucket = getenv('QINIU_TEST_BUCKET');
+$auth = new Auth($accessKey, $secretKey);
+//获取回调的body信息
+$callbackBody = file_get_contents('php://input');
+//回调的contentType
+$contentType = 'application/x-www-form-urlencoded';
+//回调的签名信息，可以验证该回调是否来自七牛
+$authorization = $_SERVER['HTTP_AUTHORIZATION'];
+//七牛回调的url，具体可以参考：http://developer.qiniu.com/docs/v6/api/reference/security/put-policy.html
+$url = 'http://172.30.251.210/upload_verify_callback.php';
+$isQiniuCallback = $auth->verifyCallback($contentType, $authorization, $url, $callbackBody);
+if ($isQiniuCallback) {
+    $resp = array('ret' => 'success');
+} else {
+    $resp = array('ret' => 'failed');
+}
+echo json_encode($resp);
+```
+
+**注意**：如果回调数据有用户的敏感数据，建议回调地址使用 HTTPS 协议。

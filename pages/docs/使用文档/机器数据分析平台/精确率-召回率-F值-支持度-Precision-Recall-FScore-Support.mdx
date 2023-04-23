@@ -1,0 +1,22 @@
+用 precision_recall_fscore_support 可以同时计算真实值和预测值之间的精确率、召回率、F 值、支持度。支持度为在真实值每一类出现的事件次数。
+
+**语法：**
+
+```
+..| score precision_recall_fscore_support pos_label=<str> average=<str> beta=<float> <actual_field_1> ... <actual_field_n> against <predicted_field_1> ... <predicted_field_n>
+```
+
+**参数说明：**
+
+- average 参数用来指定计算平均值的方式，支持设为 None, Binary, Micro, Macro and Weighted。
+  - average=Binary，只支持二元数据（即数据中只有两个类），输出为定义为 pos_label 的类的平均值。不支持展示 support 值。
+  - average=None（默认值），输出为每一个类分别的平均值。_支持展示 support 值_。
+  - average=micro，计算总体的平均值。不支持展示 support 值。
+  - average=macro，计算每一个类的不加权的平均值，不关心类的数量的不平衡。不支持展示 support 值。
+  - average=weighted，计算每一个类的加权后的平均值，关心类的数量的不平衡。不支持展示 support 值。
+- pos_label 参数用来指定在二元数据中的正样本。
+  - pos_label 必须存在于预测值或者真实值之中。
+  - 当 average 不是 binary 的时候，pos_label 会被忽略。
+- beta 参数用来指定 F 值中召回率和精确率的比重。
+  - beta 越大，召回率所占比重越大。
+  - beta = 1，召回率和精确率所占比重相等，F 值等于 F-1 值。

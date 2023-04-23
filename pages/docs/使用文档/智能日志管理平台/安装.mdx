@@ -1,0 +1,139 @@
+# **当前最新版本: v1.5.1**
+
+# ** 自动下载安装 **
+
+## ** 一、 使用七牛账号登录[logkit-pro官方网站](https://logkit-pro.qiniu.com/)，点击 <开始使用> ，进入 <机器管理页面> **
+
+![](https://dn-odum9helk.qbox.me/FrrAHnqEFpuVFzH68jE5lS--jnVn)
+
+## ** 二、在 <机器管理> 页面点击 <添加机器> **
+
+![](https://dn-odum9helk.qbox.me/FiwJMFP59iuVpD7qu1GalnVqU51k)
+
+## ** 三、根据不同操作系统安装 **
+
+** Linux/Mac 用户安装 **
+
+
+点击 添加机器页面的 <复制地址> 获得如下安装命令：
+
+![](https://dn-odum9helk.qbox.me/Fhap8xQLYpgwf-vqrTPBPhBevr4r)
+
+其中，您需要将 YOUR_ACCESS_KEY 换成您实际的七牛access_key，将 YOUR_SECRET_KEY 换成您实际的七牛secret_key，将 YOUR_EMAIL 换成您实际的账号邮箱。（(在[七牛云网站的<个人面板> <秘钥管理>中](https://portal.qiniu.com/user/key)获取)），替换后您看到的实际命令类似如下：
+
+![](https://dn-odum9helk.qbox.me/FizSskBciDzioN3JZWU4qSJVyJcN)
+
+> 注： 若您不执行上述的信息替换，也可以成功安装，命令执行的下载脚本中会带有token鉴权方式，网络通畅的情况下会自动刷新。若网络长时间(超过1个月)中断，则token会过期，导致安装的logkit-pro无法再连接到服务器，替换为您实际的access_key信息后没有该隐患。
+
+打开一个命令控制台执行上述命令即可安装成功，如下图所示：
+
+![](https://dn-odum9helk.qbox.me/Fq6E06D8ytaMDDaCQIDz1j9btiSS)
+
+** Windows 用户安装 **
+
+点击 <下载文件> ， 在Windows系统中直接鼠标双击执行，即可安装，如下所示。
+
+![](https://dn-odum9helk.qbox.me/FjcQkfTqjvHBtdxHUG0hlt0fNk3-)
+
+> 注： 下载的文件会包含access_key等鉴权信息。
+
+## ** 四、下载成功后可以在logkit-pro公有云界面上看到连接过来的机器已经在线 **
+
+![](https://dn-odum9helk.qbox.me/FmY7RSVu2MzEkbgWcPTZjiIVwdID)
+
+至此，您已经安装成功，可以开始使用啦。
+
+**自动安装到的本地目录**
+
+Linux用户root权限： `/var/local/logkit-pro/agent`
+Linux用户非root权限： `$HOME/logkit-pro/agent` 在当前用户的主目录下。
+Windows用户： `C:\logkit-pro`
+Mac用户： `$HOME/logkit-pro/agent` 在当前用户的主目录下。
+
+对应的日志文件也在安装目录下的`logkit.log`文件。
+
+
+# **手动下载安装**
+
+> 注意： 在 `0.3.0` 及以前的版本只支持手动安装，并且不支持连接到服务器，`0.3.0` 开始，手动安装的logkit-pro不仅可以单机运行，也可以连到服务器运行。
+
+## **Windows 版本 logkit-pro 下载**
+
+[windows 64位版本下载](https://pandora-dl.qiniu.com/logkit-pro-local_windows64_v1.5.1.zip)
+
+[windows 32位版本下载](https://pandora-dl.qiniu.com/logkit-pro-local_windows32_v1.5.1.zip)
+
+
+## **Linux Ubuntu/Debian 版本下载**
+
+[linux 64位版本下载](https://pandora-dl.qiniu.com/logkit-pro-local_linux64_v1.5.1.tar.gz)
+
+[linux 32位版本下载](https://pandora-dl.qiniu.com/logkit-pro-local_linux32_v1.5.1.tar.gz)
+
+
+## **Linux Centos/Redhat 版本下载**
+
+[Centos/Redhat 64位版本下载](https://pandora-dl.qiniu.com/logkit-pro-local_centos64_v1.5.1.tar.gz)
+[Centos/Redhat 32位版本下载](https://pandora-dl.qiniu.com/logkit-pro-local_centos32_v1.5.1.tar.gz)
+
+
+
+## **MacOS 版本下载**
+
+[MacOS 版本下载](https://pandora-dl.qiniu.com/logkit-pro-local_mac_v1.5.1.tar.gz)
+
+
+
+## **启动 logkit-pro**
+
+### **修改配置文件**
+
+注意，手动安装需要修改配置文件，只需将配置文件中 `connect_to_server` 选项改为 `true`, 并在ak、sk位置填入您对应七牛账号的`access_key`和`secret_key`(在[七牛云网站的<个人面板> <秘钥管理>中](https://portal.qiniu.com/user/key)获取)
+
+修改后的配置如图所示：
+
+![](https://dn-odum9helk.qbox.me/FtNMmelnL1ymdq59kpgMe5T3ZPM-)
+
+### **直接启动**
+
+在命令控制台(Console), 进入 logkit-pro 所在的文件夹，然后输入(某些版本可能配置文件的名称可能为`logkit.conf`)：
+
+```
+./logkit-pro -f logkit-pro.conf
+```
+
+### **后台启动**
+
+通过命令行进入 logkit-pro 所在的文件夹，然后输入：
+
+```
+nohup ./logkit-pro -f logkit-pro.conf > logkit.log 2>&1 &
+```
+
+### **[可选]supervisor管理**
+
+我们强烈推荐您使用supervisor管理logkit-pro，具体可以查看文档： [使用supervisor管理logkit-pro](/insight/tools/4970/optional-use-the-supervisor-management-logkit-pro)
+
+
+
+# **其他安装方式**
+## **Docker 镜像版本下载**
+
+```
+docker pull pandora1/logkit:v1.5.1
+docker run -d -p 3000:3000 -e QINIU_ACCESS_KEY='修改为您的七牛access_key' -e QINIU_SECRET_KEY='修改为您的七牛secret_key'  -v /local/logkit/meta:/app/meta -v /local/logkit/.logkitconfs:/app/.logkitconfs -v /local/logkit/dataconf:/app/confs -v /local/log/path:/logs/path pandora1/logkit:v1.5.1
+```
+
+> 镜像中的 logkit-pro 收集 `/logs` 目录下的日志，需要把本地的日志目录也挂载到镜像里面去才能启动，比如本地的日志目录为`/local/log/path`, 挂载到镜像中的 `/logs/path` 目录，那么收集器配置中填写的日志路径必须是 `/logs/path` 。
+
+其他如读取`socket`、`mysql`等，请注意docker启动时的网络模式，选择host模式。
+
+** 可能需要挂载的目录如下：**
+
+* `/app/confs` 这个目录是为了命令行用户准备的，可以通过挂载目录的形式直接往里面放配置文件，热加载，无需页面操作。
+* `/app/.logkitconfs` 这个目录是服务端或本地WEB页面配置的logkit收集器配置保存的目录。
+* `/app/meta` 这个目录记录了当前收集器读取的状态，保证数据读取不重不漏。
+* `/logs/path` 这个目录是您的日志所在目录。
+
+> 如果只用WEB界面添加(分发)的配置，可以不挂载 `/app/confs`。
+

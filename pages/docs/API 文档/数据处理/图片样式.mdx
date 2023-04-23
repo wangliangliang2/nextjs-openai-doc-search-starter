@@ -1,0 +1,100 @@
+# **图片样式**
+
+在存储空间中，开发者可以设置图片的样式，方便管理不同需求的图片。
+
+通过调试命令参数的方式，对使用者并不方便。我们提供了图片处理的图形化编辑界面，通过以下方式进入：
+
+**1**. 登录 [七牛控制台->对象存储](https://portal.qiniu.com/kodo/overview)，选择需操作的存储空间，切换到【图片样式】。
+
+- 通过样式管理服务，您可对现有样式进行管理，如样式**预览**、**编辑**、**删除**操作；
+
+![img](https://dora-doc.qiniu.com/WX20210713-140757.png)
+
+**2、 新建图片样式**
+
+- 可视化编辑：选择常用场景，通过可视化的方式进行图片样式编辑。
+
+  ![img](https://dn-odum9helk.qbox.me/image-processing-editing.png)
+
+
+
+- 手动编辑：您可以通过输入参数进行图片样式编辑。
+
+  ![img](https://dora-doc.qiniu.com/WX20210713-141400.png)
+
+  ​
+
+# **图片分隔符**
+
+样式分隔符是用于连接资源链接和图片样式的特殊符号，为防止访问出错，样式名中不可出现当前所启用的识别符。
+
+## 操作步骤
+
+1. 登录 [七牛控制台->对象存储](https://portal.qiniu.com/kodo/overview)，选择需操作的存储空间，切换到【图片样式】。
+
+   ![img](https://dora-doc.qiniu.com/WX20210713-142456.png)
+
+2. 设置允许使用的样式分隔符集合，每次访问时只能使用集合中的一个字符。分隔符只支持这些半角字符：`~ @ $ ^ & * ( ) - _ / ! + = { } [ ] | : ; " ' < > ,`。
+
+
+
+## **示例**
+
+样式名称为imageFop，样式内容为：imageView2/0/w/48/h/48，样式分隔符为` -`：
+
+- 原始图片链接[http://dn-odum9helk.qbox.me/qiniu-picture1.jpg**](http://dn-odum9helk.qbox.me/qiniu-picture1.jpg)
+- 通过访问[http://dn-odum9helk.qbox.me/qiniu-picture1.jpg-imageFop**](http://dn-odum9helk.qbox.me/qiniu-picture1.jpg-imageFop)  即可获得效果缩放效果
+
+**注意：**
+
+- 创建分隔符时，不建议使用在样式名称中出现的符号作为分隔符。
+- 修改分隔符是个危险操作，全网生效须24小时。
+- 更换分隔符后，变更前的访问地址都将失效，需要使用新设置的分隔符才能保证正常访问。
+
+
+
+
+# **样式别名**
+
+如果觉得 `url?<fop1>|<fop2>|<fop3>|<fopN>` 这样的形式够冗长，还可以为这些串行的 `<fop>` 集合定义一个 `别名`。如此一来，就可以用友好URL风格进行访问。
+
+我们先来熟悉七牛[qrsctl](https://developer.qiniu.com/kodo/tools/qrsctl#8)工具的两个命令行：
+
+```
+// 定义 url 和数据处理之间的分隔符为 separator 
+qrsctl separator <bucket> <separator>
+
+// 定义数据处理的别名为 aliasName
+qrsctl style <bucket> <aliasName> <fop>
+```
+
+## **示例**
+
+```
+// 定义 url 和数据处理之间的分隔符为 "-"
+qrsctl separator <bucket> "-"
+
+// 定义该数据处理样式名为 "iphone" 
+qrsctl style <bucket> "iphone" "imageView/2/h/200|watermark/1/image/aHR0cHM6Ly9vZHVtOWhlbGsucW5zc2wuY29tL3Fpbml1LWxvZ28ucG5n"
+```
+
+
+
+## **原图保护**
+设置原图保护仅限使用 `样式别名` 的友好URL形式来访问目标图片。
+
+- 设置原图保护后，原图不能访问：
+```
+http://<Domain>/<Key>
+```
+
+- 同时也禁止根据图像处理API对原图进行参数枚举：
+```
+ http://<Domain>/<Key>?watermark/2/text/<encodedText>
+```
+
+- 此时只能访问指定规格的图片资源：
+```
+http://<Domain>/<Key>-watermarked.jpg
+```
+

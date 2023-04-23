@@ -1,0 +1,44 @@
+# **描述**
+本接口用于删除录制截图
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：DELETE
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}/snapshots`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|	流ID
+
+**请求 body参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|files|是|string数组|需要删除的文件列表(从[获取截图列表](https://developer.qiniu.com/qvs/api/6749/list-stream-snapshots)file字段获取文件名)
+
+**注意**:
+一次最多可以删除1000条记录
+# **响应参数**
+200 OK
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request DELETE \
+  --url http://qvs.qiniuapi.com/v1/namespaces/3nm4x0u6poax8/streams/31011500991320000007/snapshots \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{
+	"files":["snapshot/jpg/d102sni9zryu/device005/1586828065507.jpg","snapshot/jpg/d102sni9zryu/device005/1586828070507.jpg"]
+}'
+```
+**响应示例**
+
+```
+200 OK
+```

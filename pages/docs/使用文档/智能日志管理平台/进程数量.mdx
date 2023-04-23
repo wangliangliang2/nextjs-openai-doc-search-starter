@@ -1,0 +1,19 @@
+
+processes监控主要用于监控处于各种状态的进程数量, 比如运行中/暂停/可中断/空闲的进程数量等。适用于对各类服务器的监控。
+
+processes监控配置界面如下：
+![](https://dn-odum9helk.qbox.me/FpldS30kipY31q-kF1Y3jbFAWop_)
+监控字段与指标的对应关系如下:
+
+1. `processes_blocked`:不可中断的睡眠状态下的进程数(`'U'`,`'D'`,`'L'`)。
+2. `processes_zombies`:僵尸态进程数(`'Z'`)。
+3. `processes_stopped`:暂停状态进程数(`'T'`)。
+4. `processes_running`:运行中的进程数(`'R'`)。
+5. `processes_sleeping`:可中断进程数(`'S'`)。
+6. `processes_total`:总进程数。
+7. `processes_unknown`:未知状态进程数。
+8. `processes_idle`:挂起的空闲进程数(`'I'`)"。
+9. `processes_wait`:等待中的进程数(`'W'`)。
+10. `processes_dead`:回收中的进程数(`'X'`)。
+11. `processes_paging`:分页进程数(`'P'`)。
+12. `processes_total_threads`:总线程数。

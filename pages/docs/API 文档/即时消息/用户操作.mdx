@@ -1,0 +1,1594 @@
+# 注册用户
+## 基本信息
+```
+POST /user/register/v2
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+注册用户。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "username":"<user name>", //用户名
+    "password":"<password>"   //密码
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "id":<id>,
+        "user_id":<user_id>, //用户ID
+        "auth_mode":0, //验证方式, 0 - 无需验证，任何人可以加为好友, 1 - 需要同意方可加为好友, 2 - 需要回答问题正确方可加为好友, 3 - 拒绝所有加好友申请
+        "auth_question":"<auth question>", //验证问题
+        "auth_answer":"<auth answer>",     //验证问题答案
+        "auto_download":true, //是否自动下载
+        "group_confirm":true, //邀请入群时是否需要用户确认: true - 需要用户同意才可加入， false - 自动同意邀请
+        "no_push":false,         //是否关闭推送消息	
+        "no_push_detail":false,  //是否关闭推送详情
+        "no_push_start_hour":20, //推送免打扰开始时间
+        "no_push_end_hour":23,   //推送免打扰结束时间
+        "no_sounds":false,       //收到消息时是否静音	
+        "push_nick_name":"<nick>", //推送昵称
+        "push_token":"<token>",    //推送token
+        "silence_start_time":20,   //推送不提醒开始时间
+        "silence_end_time":8,      //推送不提醒结束时间
+        "vibratory":false,         //收到消息时否振动
+    }
+}
+```
+
+# 批量注册用户
+## 基本信息
+```
+POST /user/register/batch
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+批量注册用户。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "list": [
+        {
+            "username":"<username>", //用户名
+            "password":"<password>"  //密码
+        }
+    ]
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "user_id":<user_id>,  //用户ID
+            "username":"<username>", //用户名
+            "success":true,       //是否成功
+            "reason":"<reason>"   //失败原因
+        }
+    ]
+}
+```
+
+# 删除用户
+## 基本信息
+```
+POST /user/delete
+DELETE /user/delete
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+删除用户。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+无。
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true    //true 成功
+}
+```
+
+# 修改用户名
+## 基本信息
+```
+POST /user/username
+PUT /user/username
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+修改用户的用户名。
+
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  | 类型    | 必须 | 备注  |
+| -------- | ----   |-----| ------------ |
+| username | string | 是  |  用户名 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+ 
+ # 修改密码
+## 基本信息
+```
+POST /user/change_password
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+修改用户密码。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### body
+```
+{
+    "old_password":"<old password>", //旧密码
+    "new_password":"<new password>"  //新密码
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+# 设置头像
+## 基本信息
+```
+POST /user/avatar
+PUT  /user/avatar
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户头像。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "avatar": "<avatar url>" //头像URL
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+
+# 批量设置头像
+## 基本信息
+```
+POST /user/avatar/batch
+PUT  /user/avatar/batch
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+批量设置用户头像。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "list":[
+        {
+            "user_id":<user_id>, //用户ID
+            "avatar":"<avatar url>" //头像的URL
+        }
+    ]
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "user_id":<user_id>,  //用户ID
+            "success":true,       //是否成功
+            "reason":"<reason>"   //失败原因
+        }
+    ]
+}
+```
+
+# 设置昵称
+## 基本信息
+```
+POST /user/nickname
+PUT  /user/nickname
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户昵称。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  |  类型  | 必须  | 备注  |
+| -------- | ------------ | ------------ | ------------ |
+| nick_name    |  string | 是  |  用户昵称 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+     
+# 设置手机号码
+## 基本信息
+```
+POST /user/mobile
+PUT  /user/mobile
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户手机号码。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  | 类型    | 必须  | 备注  |
+| -------  | ----   |------| ------------ |
+| mobile   | string | 是   |  手机号码 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+# 设置公开扩展信息
+## 基本信息
+```
+POST /user/public
+PUT  /user/public
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户公开的扩展信息。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+| 参数名称  |  类型    | 必须  | 备注  |
+| -------- | ------- | ----- | ------------ |
+|          | string  | 是    |  公开扩展信息 |
+
+**注意** ：body 直接传递字符串，非json 格式。
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+ 
+
+# 设置私有扩展信息
+## 基本信息
+```
+POST /user/private
+PUT  /user/private
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户私有扩展信息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+| 参数名称  |  类型    | 必须  | 备注  |
+| -------- | ------- | ----- | ------------ |
+|          | string  | 是    |  私有扩展信息 |
+
+**注意** ：body 直接传递字符串，非json 格式。
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+# 设置是否自动下载缩略图和文件
+## 基本信息
+```
+POST /user/download
+PUT  /user/download
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户是否自动下载缩略图和文件。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  |  类型.  | 必须  | 备注  |
+| -------- | ------------ | ------------ | ------------ |
+| value    |  boolean | 是  |  true 自动下载 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+            
+
+# 设置加好友验证方式
+## 基本信息
+```
+POST /user/authmode
+PUT  /user/authmode
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户，加好友的验证方式。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  |  类型    | 必须 | 备注  |
+| ------- | -------- | --- | ------------ |
+| value   | integer  | 是  |  验证方式, 0 - 无需验证，任何人可以加为好友, 1 - 需要同意方可加为好友, 2 - 需要回答问题正确方可加为好友, 3 - 拒绝所有加好友申请 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+# 更新用户信息
+## 基本信息
+```
+POST /user/profile
+PUT  /user/profile
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+更新用户的Profile
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "nick_name":"<nick>",   //用户昵称
+    "description":"<desc>", //描述信息
+    "public_info":"<public info>",  //公开信息，好友和陌生人可见	
+    "private_info":"<private info>" //私有信息，仅自己可见	
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+# 批量更新用户信息
+## 基本信息
+```
+POST /user/profile/batch
+PUT  /user/profile/batch
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+批量更新用户信息
+
+## 请求参数
+### headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "list":[
+        {
+            "user_id":<user_id>, //用户ID
+            "nick_name":"<nick>", //昵称
+            "description":"<desc>", //描述信息
+            "public_info":"<public info>", //公开信息，好友和陌生人可见
+            "private_info":"<private info>", //私有信息，仅自己可见
+        }
+    ]
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "user_id":<user_id>,  //用户ID
+            "success":true,       //是否成功
+            "reason":"<reason>"   //失败原因
+        }
+    ]
+}
+```
+
+
+# 获取用户信息
+## 基本信息
+```
+GET /user/profile
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+查询用户信息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "user_id":<user_id>,           //用户ID
+        "username":"<username>",       //用户名
+        "avatar":"<avatar url>",       //用户头像URL
+        "description":"<description>", //描述信息
+        "mobile":"<mobile>",           //手机号码
+        "email":"<email>",             //邮箱
+        "nick_name":"<nick>",          //昵称
+        "public_info":"<public info>", //公开信息，好友和陌生人可见	
+        "private_info":"<private info>" //私有信息，仅自己可见
+    }
+}
+```
+
+            
+
+
+# 修改用户设置
+## 基本信息
+```
+POST /user/settings
+PUT  /user/settings
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+修改用户的配置信息。
+
+## 请求参数
+### headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### body
+```
+{
+    "id":<id>,
+    "user_id":<user_id>, //用户ID
+    "auth_mode":0, //验证方式, 0 - 无需验证，任何人可以加为好友, 1 - 需要同意方可加为好友, 2 - 需要回答问题正确方可加为好友, 3 - 拒绝所有加好友申请
+    "auth_question":"<auth question>", //验证问题
+    "auth_answer":"<auth answer>",     //验证问题答案
+    "auto_download":true, //是否自动下载
+    "group_confirm":true, //邀请入群时是否需要用户确认: true - 需要用户同意才可加入， false - 自动同意邀请
+    "no_push":false,         //是否关闭推送消息	
+    "no_push_detail":false,  //是否关闭推送详情
+    "no_push_start_hour":20, //推送免打扰开始时间
+    "no_push_end_hour":23,   //推送免打扰结束时间
+    "no_sounds":false,       //收到消息时是否静音	
+    "push_nick_name":"<nick>", //推送昵称
+    "push_token":"<token>",    //推送token
+    "silence_start_time":20,   //推送不提醒开始时间
+    "silence_end_time":8,      //推送不提醒结束时间
+    "vibratory":false,         //收到消息时否振动
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+# 获取用户设置
+## 基本信息
+```
+GET /user/settings
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+获取用户的设置信息。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "id":<id>,
+        "user_id":<user_id>, //用户ID
+        "auth_mode":0, //验证方式, 0 - 无需验证，任何人可以加为好友, 1 - 需要同意方可加为好友, 2 - 需要回答问题正确方可加为好友, 3 - 拒绝所有加好友申请
+        "auth_question":"<auth question>", //验证问题
+        "auth_answer":"<auth answer>",     //验证问题答案
+        "auto_download":true, //是否自动下载
+        "group_confirm":true, //邀请入群时是否需要用户确认: true - 需要用户同意才可加入， false - 自动同意邀请
+        "no_push":false,         //是否关闭推送消息	
+        "no_push_detail":false,  //是否关闭推送详情
+        "no_push_start_hour":20, //推送免打扰开始时间
+        "no_push_end_hour":23,   //推送免打扰结束时间
+        "no_sounds":false,       //收到消息时是否静音	
+        "push_nick_name":"<nick>", //推送昵称
+        "push_token":"<token>",    //推送token
+        "silence_start_time":20,   //推送不提醒开始时间
+        "silence_end_time":8,      //推送不提醒结束时间
+        "vibratory":false,         //收到消息时否振动
+    }
+}
+```
+
+
+# 封禁用户
+## 基本信息
+```
+PUT  /user/disable
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+封禁用户，被封禁的用户无法登录IM。
+
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+ ### Body
+
+```
+{
+  "list": [ //用户ID 列表
+    0
+  ]
+}
+```
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+
+# 解禁用户
+## 基本信息
+```
+PUT  /user/enable
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述：
+解除封禁用户，被解禁的用户恢复可以使用IM。
+
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+  "list": [ //用户ID 列表
+    0
+  ]
+}
+```
+
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+
+# 设备列表
+## 基本信息
+
+```
+GET /user/device/list
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+查询用户登录的设备列表。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "version":<version>, //版本
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+	  "cursor": "<cursor>", //游标，返回结果中缺失 cursor，表示已经返回最后一页
+	  "data":[
+	      {
+            "device_sn": 1, //整数，设备序列号
+            "platform": 2,  //平台，1:ios, 2:android, 3:windows, 4:mac, 5:linux, 6:web
+            "user_agent": "", //
+            "user_id": <user_id> //用户ID
+	      }
+	  ]
+}
+```
+
+            
+# 删除device
+## 基本信息
+```
+POST /user/device/remove
+DELETE /user/device/remove
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+删除用户登录设备。
+
+## 请求参数
+### headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称   |  类型    | 必须 | 备注  |
+| --------- | -----   | --- | ------------ |
+| device_sn | integer |  是 |  device_sn |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+# 踢指定设备下线
+## 基本信息
+```
+POST /user/kick
+PUT  /user/kick
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+踢出指定用户设备，使下线。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称    |  类型 | 必须  | 备注  |
+| ----------| ----- | ------------ | ------------ |
+| device_sn |  integer  | 是  |  不传device_sn表示踢所有设备 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+
+
+
+
+
+            
+# 注册推送用户
+## 基本信息
+```
+POST /user/register/push
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+注册推送用户。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "username":"<user name>", //用户名
+    "password":"<password>",  //密码，必填
+    "device_guid":"<device guid>", //设备ID
+    "alias":"<alias>", //别名
+    "push_token":"<push token>", //推送token
+    "sign":"<sign>"  //签名
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "id":<id>,
+        "user_id":<user_id>, //用户ID
+        "auth_mode":0, //验证方式, 0 - 无需验证，任何人可以加为好友, 1 - 需要同意方可加为好友, 2 - 需要回答问题正确方可加为好友, 3 - 拒绝所有加好友申请
+        "auth_question":"<auth question>", //验证问题
+        "auth_answer":"<auth answer>",     //验证问题答案
+        "auto_download":true, //是否自动下载
+        "group_confirm":true, //邀请入群时是否需要用户确认: true - 需要用户同意才可加入， false - 自动同意邀请
+        "no_push":false,         //是否关闭推送消息	
+        "no_push_detail":false,  //是否关闭推送详情
+        "no_push_start_hour":20, //推送免打扰开始时间
+        "no_push_end_hour":23,   //推送免打扰结束时间
+        "no_sounds":false,       //收到消息时是否静音	
+        "push_nick_name":"<nick>", //推送昵称
+        "push_token":"<token>",    //推送token
+        "silence_start_time":20,   //推送不提醒开始时间
+        "silence_end_time":8,      //推送不提醒结束时间
+        "vibratory":false,         //收到消息时否振动
+    }
+}
+```
+            
+            
+         
+# 绑定token
+## 基本信息
+```
+POST /user/token/bind
+PUT  /user/token/bind
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+绑定设备推送的token。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "device_sn":1, //设备SN
+    "device_token":"<token>", //设备的token
+    "notifier_name":"<notifier name>" //证书名称
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+# 解绑token
+## 基本信息
+```
+POST /user/token/unbind
+DELETE /user/token/unbind
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+解绑推送token。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  |  类型    | 必须  | 备注  |
+| -------- | ------- | ----- | ------------ |
+| deviceSn | integer | 是    |  设备序号 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+            
+# 绑定别名
+## 基本信息
+```
+POST /user/push/alias
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+绑定用户的推送别名。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "alias":"<alias>",     //别名
+    "push_token":"<token>" //推送token
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+            
+# 绑定标签
+## 基本信息
+```
+POST /user/push/tag
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+绑定用户的标签。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "tags":["<tag1>", "<tag2>"]  //标签列表，每个标签就是一个字符串。
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+# 解绑标签
+## 基本信息
+```
+DELETE /user/push/tag
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+删除用户的推送标签。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "tags":["<tag1>", "<tag2>"]
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+
+# 删除所有标签
+## 基本信息
+```
+DELETE /user/push/tag/all
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+删除所有标签。
+
+## 请求参数
+### headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+			
+# 获取标签
+## 基本信息
+```
+GET /user/push/tag
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+查询用户的推送标签。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": ["<tag1>", "<tag2>"]
+}
+```
+
+            
+
+
+
+            
+# 设置badge
+## 基本信息
+```
+POST /user/push/badge
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户的推送角标。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "badge":3, //角标数值
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+
+# 设置推送免打扰时间
+## 基本信息
+```
+POST /user/push/limit
+PUT  /user/push/limit
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户推送的免打扰时间。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称            |  类型     | 必须 | 备注  |
+| ------------       | -------- | ---- | ------------ |
+| no_push_end_hour   | integer  |  是  |  不推送结束时间（小时），0~23 |
+| no_push_start_hour | integer  |  是  |  不推送开始时间（小时），0~23 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+            
+# 设置推送昵称
+## 基本信息
+```
+POST /user/push/nickname
+PUT  /user/push/nickname
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户的推送昵称。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称   |  类型  | 必须  | 备注  |
+| --------- | ----- | ------------ | ------------ |
+| nick_name | string |  是 |  用户推送昵称 |
+
+## 返回数据
+
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+            
+# 设置新消息是否关闭声音提醒
+## 基本信息
+```
+POST /user/sounds
+PUT  /user/sounds
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户的新消息提醒，是否关闭声音提醒。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  |  类型    | 必须 | 备注  |
+| ------- | -------  | --- | ------------ |
+| value   | boolean  | 是  |  true 关闭 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+            
+# 设置新消息是否振动
+## 基本信息
+```
+POST /user/vibratory
+PUT  /user/vibratory
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户收到新消息，是否震动提醒。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  |  类型.  | 必须  | 备注  |
+| -------- | ------------ | ------------ | ------------ |
+| value    |  boolean | 是  |  true 震动 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+            
+# 设置是否关闭推送
+## 基本信息
+```
+POST /user/push
+PUT  /user/push
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户是否关闭推送。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  |  类型.  | 必须  | 备注  |
+| -------- | ------------ | ------------ | ------------ |
+| value    |  boolean | 是  |  true 关闭推送 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+            
+# 设置是否关闭推送详情
+## 基本信息
+```
+POST /user/push/detail
+PUT  /user/push/detail
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置用户是否关闭推送详情。
+
+## 请求参数
+### Headers
+
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  |  类型.  | 必须  | 备注  |
+| -------- | ------------ | ------------ | ------------ |
+| value    |  boolean | 是  |  true 关闭推送 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+# 列出APP下所有用户
+
+## 基本信息
+
+```
+GET /user/list
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+
+列出APP 下所有用户。
+
+## 请求参数
+
+### Headers
+
+| 参数名称     | 参数类型 | 必填 | 备注                                                         |
+| ------------ | -------- | ---- | ------------------------------------------------------------ |
+| access-token | string   | 否   | 令牌                                                         |
+| app_id       | int64    | 是   | 应用ID                                                       |
+| group_id     | int64    | 否   | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64    | 否   | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  | 类型. | 必须 | 备注                     |
+| --------- | ----- | ---- | ------------------------ |
+| page_num  | int32 | 否   | 页数：必须大于0，默认为1 |
+| page_size | int32 | 否   | 每页大小：默认每页50条   |
+
+## 返回数据
+
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [{
+        "user_id": 12345,      // 用户ID
+        "username":"zhangsan", // 用户名
+        "status": 0            // 状态：0-正常，1-封禁
+    }]
+}
+```
+

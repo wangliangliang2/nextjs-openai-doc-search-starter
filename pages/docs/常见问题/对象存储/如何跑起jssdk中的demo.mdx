@@ -1,0 +1,35 @@
+## 简介
+官方的js sdk中有相关的实例，但是对于不熟悉node的人来说可能有些难以理解，本文来讲述一下
+<br><br>
+## 1.使用处理好引入关系的压缩包
+http://osp19b87q.bkt.clouddn.com/example.zip <br>
+只需要下载后解压缩，打开index.html即可，效果参考 http://jssdk.demo.qiniu.io/
+
+## 2.使用官方示例中的express来打开
+下载地址 https://github.com/qiniu/js-sdk/tree/master/test
+<br>
+进入根目录，执行以下命令<br>
+1. npm install
+<br>
+2. bower install
+<br>
+3. grunt
+<br>
+4. node demo/server.js
+<br><br>
+
+建议在执行命令前可以全局安装 bower, grunt<br>
+npm install bower -g <br>
+npm install grunt -g <br>
+
+使用这个方法需要配置ak和sk
+```
+module.exports = {
+    'AccessKey': '<Your Access Key>',  // https://portal.qiniu.com/user/key
+    'SecretKey': '<Your Secret Key>',
+    'Bucket': '<Your Bucket Name>',
+    'Port': 19110,
+    'UptokenUrl': 'uptoken',
+    'Domain': '<Your Bucket Name>' // bucket domain eg:http://qiniu-plupload.qiniudn.com/
+};
+```

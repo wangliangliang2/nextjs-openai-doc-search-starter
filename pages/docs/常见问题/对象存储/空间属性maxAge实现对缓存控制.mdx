@@ -1,0 +1,27 @@
+# 使用空间属性maxAge实现对缓存的控制
+
+* 通过配置七牛的空间（如下图）属性中 maxAge, 达到配置 HTTP header 中 Cache-Control:max-age的目的。
+
+
+ <img src="https://dn-odum9helk.qbox.me/FnX3-PPT8CJbBb7MeomQCGPMyQbB" width=800 />
+
+# 什么是Cache-Control？
+
+* Cache-Control 通用消息头被用于在http 请求和响应中通过指定指令来实现缓存机制,是一种缓存控制的方法。 HTTP header中，服务器可以通过对Cache-Control的设置来指定在文档过期之前将其缓存多长时间。 
+* 例如，七牛控制台可以通过配置Cache-Control: max-age的时间表示从服务器传来文档之时起，认为此文档处于新鲜状态的秒数。
+
+
+# maxAge值和CDN缓存时间的区别？
+访问资源链接时，缓存通常分为浏览器缓存和CDN节点缓存。
+用户在浏览器中输入资源链接访问时，优先使用浏览器缓存，缓存失效或禁用本地缓存后，会向CDN节点请求资源，当CDN缓存时间超时后，会向源站发起资源请求。
+* Cache-Control:max-age:设置缓存存储的最大周期，超过这个时间缓存被认为过期(单位秒)，控制用户浏览器端的缓存。
+* CDN缓存：当CDN缓存超时后，节点认为缓存失效，会向源站重新请求资源。
+
+# 如何查看Cache-Control的maxAge值？
+
+* 以chrome控制台为例，打开 开发者工具 或 检查，在network标签页下查看。
+<img src="https://dn-odum9helk.qbox.me/FmFP1Yf577R9H32p6lDhG-4-apiy" width=700 />
+
+
+
+

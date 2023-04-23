@@ -1,0 +1,30 @@
+每个域名仅需做一次归属权校验，子域名无需重复校验。校验方法有两种：
+- DNS解析验证
+- 文件验证
+
+# DNS解析验证
+通过配置待加速域名的txt记录的方式，通过域名校验，具体方式如下
+1. 通过 https://portal.qiniu.com/dcdn/domain/create 创建域名，提交之后系统会判断该域名是否曾经校验过。若校验过则会进入域名创建结果页。若未校验过则会进入域名验证页，如下：
+
+![image.png](https://dn-odum9helk.qbox.me/Fgff5Mc-AKxO5bq6AITsvNIMRXJb)
+
+2. 在您的域名解析服务商，添加TXT记录
+
+3. 等待TXT解析生效，返回CDN控制台，单击「点击验证」，完成验证
+若如果系统提示“验证失败”，请检查TXT记录是否正确填写，并等待DNS记录生效后重新验证
+
+# 文件验证
+通过在域名源站上传验证文件，并保证外网的可访问性，具体方式如下
+1. 在域名验证页面点击「文件验证」，进入获取验证的页面，如下图：
+
+![image.png](https://dn-odum9helk.qbox.me/FhJSK1hq18SG2JLgl4s9v6bc2EAR)
+
+2. 点击下载验证文件 
+
+3. 将验证文件上传到源站服务器的根目录，并确保通过域名根目录可访问
+例如：配置加速域名verify.qiniu.com，需要将文件上传到qiniu.com所在的服务器源站，并确保 http://qiniu.com/verification.html 的外网访问性，我们将根据该文件的访问结果判断是否验证通过
+
+4. 单击「点击验证」，完成验证
+
+
+以上所有功能均可通过接口完成，详见：https://developer.qiniu.com/dcdn/11857/domain-verify-information

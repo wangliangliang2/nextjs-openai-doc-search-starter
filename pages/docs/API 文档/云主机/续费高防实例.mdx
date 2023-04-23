@@ -1,0 +1,39 @@
+# 请求路径
+>`POST` /v1/security/bgpip//resource/:resource_id/renew
+
+# 请求参数
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| resource_id | string | path | 是 | 高防实例ID |
+| X-Qiniu-Regionid | string | header | 是 | 地域 ID, 只能填shanghai, 大陆通用地域|
+| time_span | int | body | 是 | 周期长度 |
+| time_unit | int | body | 是 | 续费周期, 取值: 0表示按月，1表示按年 |
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| data | OrderInfo | 是 | 订单详情 |
+
+### OrderInfo 订单信息
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| order | string | 是 | 订单号 |
+
+# 示例
+### 请求body示例
+```
+{
+    "time_span": 1,
+    "time_uint": 0
+}
+```
+
+### 正常返回示例
+```json
+{
+    "data": {
+        "order": "1QW2F998-8642-2346-I2K3-0OKMNHY65TG4"
+    }
+}
+```

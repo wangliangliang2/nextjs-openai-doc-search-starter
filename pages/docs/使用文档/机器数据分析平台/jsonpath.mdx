@@ -1,0 +1,95 @@
+通过jsonpath可以从json数据中通过路径参数提取相关信息。也可以在eval命令中使用jsonpath()函数。
+
+**语法：**
+
+jsonpath [input=< field>] [output=< field>] path=< datapath> | < datapath>
+
+**参数说明：**
+
+1.input 是读取数据的字段，默认input为_raw字段。
+
+2.output 是输出的字段,如果未指定output，则path参数的值将设为提取值的字段名称。
+
+3.path 是要提取数据的位置路径。路径可以指定为`path=<datapath>`或可以省略path关键字。路径形如'user.phoneNumbers{1}.number'，由字段名称、大括号标注的索引和句点拼接而成。
+
+4.由大括号引起的索引可以是：
+
+  1. 整数，用于引用数组中数据的位置。JSON使用从0开始的索引。如，purchases.book{1} 在json中指purchases的第2个book元素。  
+  2. 空，如{}，表示通配符。比如 phoneNumbers.number{} 表示phoneNumbers下所有的number元素。 在jsonpath中，表示jsonArray必须加上{}，表示jsonObject则不能加上{}。 比如，如果purchases下面有多个book，那么表示purchases下的所有books 必须用purchases.book{} 而不是purchases.book。 
+
+
+
+
+**示例：**
+
+假设有以下json数据：
+
+```
+{
+  "address": {
+    "streetAddress": "21 2nd Street",
+    "city": "New York",
+    "state": "NY",
+    "postalCode": "10021-3100"
+  },
+  "phoneNumbers": [ {
+    "type": "home",
+    "number": "212 555-1234"
+  },
+  {
+    "type": "office",
+    "number": "646 555-4567"
+  },
+  {
+    "type": "mobile",
+    "number": "123 456-7890"
+  } ]
+}
+```
+
+* 从json数据中提取没有子节点的字段信息： 
+            
+query: 
+
+``` 
+……|jsonpath output=myfield path=address.city   
+``` 
+
+output: myfield字段的值为"New York". 
+ 
+* 从json数据中提取有子节点的字段信息： 
+  
+query:
+``` 
+……|jsonpath output=myfield path=address 
+``` 
+output: 
+
+
+output:myfield字段的值为"{"streetAddress":"21 2nd Street","city":"New York","state":"NY","postalCode":"10021-3100"}".        
+
+
+* 从嵌套json数组中提取某个字段的值：         
+
+query:
+
+``` 
+jsonpath output=myfield path=phoneNumbers{1}.type  
+```    
+
+output: myfield字段的值为"office".  
+
+query: 
+
+``` 
+jsonpath output=myfield path=phoneNumbers{}.type  
+``` 
+
+output: myfield字段的值为一个数组：["home","office","mobile"]    
+
+
+注意：如果路径以数字开头、包含特殊符号等，不符合字段的合法格式，可以使用双引号引起
+
+```
+... | jsonpath path="12.value"
+```

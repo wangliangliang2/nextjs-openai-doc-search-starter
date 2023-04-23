@@ -1,0 +1,45 @@
+# **描述**
+本接口用于查询指定时间段的录像记录进行录像回放。
+
+请求
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceid}/streams/{streamId}/records/playback.m3u8?start=<start>&end=<end>`
+* Tips1:回放地址，优先使用七牛存储(kodo)中的自定义域名；如果没有该域名，则使用kodo默认域名；kodo默认域名过期，则无法使用。
+* Tips2:如果需要https的回放地址，需请求`https://qvs.qiniuapi.com`
+* Tips3:Get请求，通过`非SDK`方式调用的客户，http头部Content-Type,  `要么设置为application/x-www-form-urlencoded`, `要么置空`, `要么不要携带`; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|流ID
+|start|是|integer|查询开始时间(unix时间戳，单位为秒)
+|end|是|integer|查询结束时间(unix时间戳，单位为秒）
+
+# **响应参数**
+
+|参数名称|字段类型|说明|
+|---|---|---|
+|url|string|m3u8播放链接
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url 'http://qvs.qiniuapi.com/v1/namespaces/2akrarxtmpned/streams/31011500991320000137/records/playback.m3u8?start=1604028714&end=1604028934' \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "url": "http://prlghu509.test.bkt.clouddn.com/record/playback/2akrarxtmpned/31011500991320000137/1604028714-1604028934.m3u8?pm3u8/0/expire/7200&e=1604313929&token=Ves3WTXC8XnEHT0I_vacEQQz-9jrJZxNExcmarzQ:gQdnnGXGivC4-z1rtnNIF20oQns"
+}
+
+```

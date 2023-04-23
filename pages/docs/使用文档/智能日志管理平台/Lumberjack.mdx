@@ -1,0 +1,72 @@
+ Lumberjack支持收集通过lumberjack协议发送的数据。
+ 
+ # **配置信息**
+ 
+ 
+ * 监听地址(`forwarder_host`):配置需要监听的地址，由`ip地址`和`端口号`组成，若监听的是本地的端口可以采用`:5000`的简便写法来监控`5000`端口，若配置 `127.0.0.1:5000` 配置监听地址将只能接收本地发送过来的信息，如需要接收网络信息请勿使用本地IP。
+ * 是否启用 TLS(`enable_tls`):接收的信息是否经过加密处理，默认为 `true`。
+ * 私钥地址(`key_path`): 私钥的地址，此选项仅在启用了TLS后可用。
+ * 证书地址(`key_certificate`): 证书的地址，此选项仅在启用了TLS后可用。
+ * 每秒最大读取量(`key_certificate`):每秒允许读取的最大数据量，默认为`0`， `0`为不限制。
+ 
+**注：若在配置lumberjack reader时暂时无法获取数据，后台程序会在1分钟内不断尝试获取数据，期间尝试添加该lumberjack reader会出现端口占用的情况，等待一分钟后再添加即可。**
+
+![](https://dn-odum9helk.qbox.me/FqIa5Ue0zlE8DD7ntNLwPlmD7TB-)
+ 
+
+# **使用lumberjack reader收集AIX系统上的信息**
+AIX 是 IBM Power 小型机的一种操作系统，由于系统底层架构支持不同，所以普通的收集工具可能无法支持收集该系统上的信息。logkit 提供的一个解决方案是使用 `logstash-forwarder-java` 采集 AIX 系统上需要收集的信息，发送到logkit 端使用 lumberjack reader 接收数据。
+logstash-forwarder-java 的下载地址为 https://github.com/didfet/logstash-forwarder-java/releases , 下载后可以得到一个 jar 文件。
+
+## **执行方式**
+
+使用如下命令即可开始收集数据，根据版本号修改对应的`X.X.X`字段
+
+```
+java -jar logstash-forwarder-java-X.X.X.jar -config logstash-forwarder.conf
+```
+
+示例的配置文件如下`logstash-forwarder.conf`：
+
+```
+{
+  "network": {
+    "servers": [ "192.168.1.1:5043"],
+    "ssl ca": "/your/config/keystore.jks"
+  },
+  "files": [
+    {
+      "paths": [ "/your/config/2.txt" ]
+    }
+  ]
+}
+```
+
+***注意：servers 配置的是logkit端的地址，可以配置多个（这样 `logstash-forwarder` 如果一个 logkit 连接不上可以连接另外）。***
+
+其余配置信息，可以参考logstash-forwarder，它完全兼容。主要包括下面几个可用配置项：
+
+* `network.servers`: 用来指定远端(即 logstash indexer 角色)服务器的 IP 地址和端口。这里可以写数组，但是 logstash-forwarder 只会随机选一台作为对端发送数据，一直到对端故障，才会重选其他服务器。
+* `network.ssl*`: 网络交互中使用的 SSL 证书路径，证书可以使用[OpenSSL工具生成](https://www.jianshu.com/p/b2a9655fe687)。
+* `files.*.paths`: 读取的文件路径。 logstash-forwarder 只支持两种输入，一种就是示例中用的文件方式，和 logstash 一样也支持 glob 路径，即 * "/var/log/*.log" 这样的写法；一种是标准输入，写法为 "paths": [ "-" ]
+* `files.*.fields`: 给每条日志添加的固定字段，相当于 logstash 里的 add_field 参数。
+
+***需要注意的是配置`ssl ca`选项时应该填入`.jks`文件的地址而非`.crt`文件的地址。否则可能会出现`java.io.IOException: Invalid keystore format`的错误。官方对于该错误的解释为：***
+
+```
+the ssl ca parameter points to a java keystore containing the root certificate of the server, not a PEM file
+```
+
+***即此时你的 logstash-forwarder 端`ssl ca`这个域配置的应该是keystore，而不是PEM，因此需要从你生成的`crt`中创建出 keystore（jks）文件。你可以使用以下命令从已有`.crt`文件中生成出`.jks`文件。***
+
+## ** 从crt中生成jks文件的方法 **
+
+```
+keytool -importcert -trustcacerts -file logstash-forwarder.crt -alias ca -keystore keystore.jks
+```
+
+配置完上述信息之后只需在logkit端配置相应接收信息的`端口`、`私钥`和`证书地址`即可完成对 AIX 系统信息的收集。
+
+# **使用lumberjack reader收集FileBeat的信息**
+
+filebeat也是使用lumberjack协议进行传输数据的，所以使用lumberjack reader也可以接收 filebeat 发送的数据，具体配置将是否启用TLS置为`false`即可。

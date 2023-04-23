@@ -1,0 +1,56 @@
+# 安全机制
+
+数据安全性是云存储服务的重中之重。云存储的安全机制主要需要考虑以下几个因素：
+
+- 如何判断该请求方是否合法，且对目标空间有相应的访问权限。
+- 因为服务的访问协议同时支持HTTP和HTTPS，服务端需要判断收到的请求是否经过篡改。
+- 相比上传新资源，覆盖文件或删除已有资源拥有更高的风险。因此对上传或修改动作，需要确认请求方是否拥有修改或删除的权限。
+
+在使用七牛云存储服务的过程中，需要考虑安全机制的场景主要有如下几种：
+
+- 上传资源
+- 访问资源
+- 管理和修改资源
+
+这三个场景需要考虑不同的安全因素，因此七牛针对性的提供了三种安全机制：[上传凭证](http://developer.qiniu.com/article/developer/security/upload-token.html)、[下载凭证](http://developer.qiniu.com/article/developer/security/download-token.html)和[管理凭证](http://developer.qiniu.com/article/developer/security/access-token.html)。
+
+因为凭证的生成需要用到[SecretKey](http://developer.qiniu.com/article/developer/security/index.html#aksk)，因此该生成动作不应在不受信任的环境中进行。需要注意的是，开发者绝不能将密钥包含在分发给最终用户的程序中，无论是包含在配置文件中还是二进制文件中都会带来非常大的密钥泄漏风险。
+
+SecretKey可在下面这地方获取：
+
+![凭证创建和使用流程](https://dn-odum9helk.qbox.me/Fp5zMuYakcMWYnWR8ZMVyMhFclpH?imageView/2/w/800)
+# 密钥
+
+密钥（AccessKey/SecretKey）用于以上几种凭证的生成。以 SecretKey 为参数，配合适当的签名算法，可以得到原始信息的数字签名，防止内容在传递过程中被伪造或篡改。
+
+密钥通常为成对创建和使用，包含一个AccessKey和一个SecretKey。其中AccessKey会在传输中包含，而用户必须保管好SecretKey不在网络上传输以防止被窃取。若SecretKey被恶意第三方窃取，可能导致非常严重的数据泄漏风险。因此，如发现SecretKey被非法使用，管理员应第一时间在[七牛开发者平台](https://portal.qiniu.com/)上更换密钥。
+
+在具体描述各种凭证的详细生成过程中我们会看到AccessKey和SecretKey是如何被使用的。
+
+**凭证的详细生成** 跳转链接： [http://developer.qiniu.com/article/developer/security/index.html](http://developer.qiniu.com/article/developer/security/index.html)
+
+# 使用场景
+
+七牛推荐客户将 AccessKey和一个SecretKey 放在服务端，由服务端生成令牌后颁发给客户端使用。
+
+比如，上传文件的时候：
+
+1. 业务服务器的服务端生成上传令牌（UploadToken）
+2. 客户端程序（iOS、Android 以及 Web）拿到这个上传令牌之后就可以直接将文件上传到七牛
+
+# 错误案例
+
+把 AK/SK 放在客户端 SDK 中来做签名生成令牌，随 App 被发布出去。
+
+这样做会被人家反编译之后拿到 AK/SK，之后他们就可以对你的账号进行操作。
+
+实际上 Web 端 js 也是可以做签名的，只是你不可能把明文的 AK/SK 放在 Web 端，这样做更加危险。
+
+将 AK/SK 加密后存放在客户端，等用户启动应用的时候再将 AK/SK 解密出来放在内存中，关闭应用后这对 AK/SK 即消失。
+
+这样的做法也是不科学的，因为你的 AK/SK 在 后台 随时可以更改，特别是在被泄漏之后建议使用一对新的 AK/SK。如果你写死在 App 中将其发布，就只能通过发布新版本的 App 来更新这对 AK/SK。
+
+# 最后建议  
+
+出于安全考虑，建议您根据自己的场景周期性地更换密钥。
+

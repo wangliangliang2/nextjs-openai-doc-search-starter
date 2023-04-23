@@ -1,0 +1,43 @@
+# 接口描述
+
+将已经绑定的直播域名从目标直播空间解绑，之后无法使用此域名推流或播放
+
+# 请求参数
+
+```
+DELETE /v2/hubs/<hub>/domains/<domain>
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+```
+
+|      参数         |      类型          |  必填   |                  描述                      |
+| -------------------- | -------------------- | ----------- | ------------------------------------------ |
+|       Hub           |    string           | 是    |   直播空间名                                         |
+|    Domain           |    string           | 是    |    域名                                        |
+
+
+# 返回数据
+
+空
+
+# 示例
+
+请求体:
+
+```
+DELETE /v2/hubs/test-hub/domains/pili-publish.go-sdk.cloudvdn.com HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+```
+
+返回体:
+
+```
+200 OK
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

@@ -1,0 +1,45 @@
+本文介绍如何检查并修复 noresvport 挂载参数问题。
+
+> 说明：只适用于Linux系统的用户，Windows用户请忽略。
+
+# **第一步：检查是否使用 noresvport 挂载参数**
+1. 在 QVM 实例上下载check_noresvport.py检查脚本。
+```
+wget -N https://code.aliyun.com/nas_team/nas-client-tools/raw/master/linux_client/check_noresvport.py -P /tmp/
+```
+
+2. 使用python执行检查脚本。
+```
+python2.7 /tmp/check_noresvport.py
+```
+
+如果脚本输出：本台 ECS 无须处理 noresvport 问题，则无须处理。否则请执行第二步： noresvport 参数修复方法。
+
+# **第二步：noresvport参数修复方法**
+建议在业务低峰进行修复。
+
+1. 如果使用 QVM 直接挂载NAS，请使用参数-r再次执行检查脚本。
+```
+python2.7 /tmp/check_noresvport.py -r
+```
+
+
+
+
+# **第三步：更新自动挂载配置**
+-  如果配置过自动挂载，请更新自动挂载参数，加入 noresvport 挂载参数。详情请参见[Linux自动挂载NFS文件系统](https://developer.qiniu.com/qvm/manual/6913/automatically-mount-nfs-file-systems)。
+- 如果没有配置过自动挂载，跳过此步骤。
+
+修复完成后，**请再次执行第一步：检查是否使用 noresvport 挂载参数**，确认修复生效。如果仍有问题请及时[提交工单](https://support.qiniu.com/tickets/new/form?category=%E5%85%B6%E4%BB%96%E7%B1%BB%E5%92%A8%E8%AF%A2&space=%E4%BA%91%E4%B8%BB%E6%9C%BA)。
+
+
+# **常见问题**
+
+1.为什么要使用 noresvport 参数挂载 NAS？不重新挂载会有什么后果？
+答：如果发生网络切换或者后端服务的 HA 倒换，小概率会造成 NFS 文件系统阻塞，则可能需要几分钟时间连接才会自动恢复，极端情况下甚至需要重启 QVM 才能恢复。使用 noresvport 参数后，恢复几秒即可自动完成恢复。
+
+2.什么情况会引发网络切换或者后端服务的 HA 倒换？
+答：NAS 服务是稳定的，网络切换或者后端服务的HA倒换都是罕见情况。后端服务升级会触发上述切换，但导致客户端阻塞的概率很低，并且在升级之前我们会提前通知相关集群的用户，留出充足时间使用 noresvport 参数。其他可能引发切换的场景，还有负载均衡调整、服务端硬件故障等情况，有一定的不可预测性，所以即使服务端没有升级安排，也请尽快使用 noresvport 参数避免这样的风险。
+
+3.为什么需要重新挂载？还有没有其他的方案？
+答。需要重新挂载的原因是要把之前没有使用 noresvport 参数的 TCP 连接断掉，然后使用 noresvport 参数挂载时，会建立新的 TCP 连接。为了把旧的  TCP 连接断掉，就必须把 NAS 相关的业务都停掉，然后执行umount卸载。如果不希望重新挂载，可以考虑新建NAS挂载点，使用 noresvport 参数挂载到新的本地路径，然后把业务进程逐步迁移过去，最后废弃老的挂载路径和挂载点。

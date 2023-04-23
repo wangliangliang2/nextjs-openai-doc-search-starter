@@ -1,0 +1,24 @@
+### 磁盘扩容
+
+- 防止数据丢失，先做快照
+- 先卸载磁盘， umount /mnt/disk1
+- 控制台卸载磁盘
+- 扩容后，控制台重新挂载磁盘
+- 删除源分区，使用 fdisk 指令，输入 d 来删除原有的分区，依次使用 n, p, 1 新建分区
+
+![](https://dn-odum9helk.qbox.me/2ed3715f2ed998e3ab9529447244fd14)
+
+![](https://dn-odum9helk.qbox.me/86aebd9ab1404d1045c9d96dbf0af2fe)
+
+- 检查文件系统，并变更文件系统大小，使用 e2fsck 和 resize2fs 指令，正确操作情况下，不会造成原有数据丢失的
+
+```
+ e2fsck -f /dev/vdb1
+ resize2fs /dev/vdb1
+```
+
+![](https://dn-odum9helk.qbox.me/d753bf8ab2f6efcdf488f9b280672a99)
+
+- 用 df -h 指令可以查看到磁盘的信息
+
+![](https://dn-odum9helk.qbox.me/c33b9aca741c68d567278d267e33ce45)

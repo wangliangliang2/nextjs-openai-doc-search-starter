@@ -1,0 +1,15 @@
+配置阿里云RDS参数
+![](https://dn-odum9helk.qbox.me/Fj59NjfypbUTp4p3odStO6NROGnX)
+
+参数说明：
+**接入地址**：阿里云RDS的endpoint
+**Action**：DescribeSlowLogRecords 慢查询日志
+						 DescribeErrorLogs 错误日志
+**实例ID**:阿里云RDS的DBInstanceId
+**开始时间**：查询开始时间。格式：yyyy-MM-ddTHH:mmZ（UTC时间)。最早开始抓取的日志，会一直抓取到当前时间，接下来会自动按时抓取。
+**AK**:阿里云RDS的rds_access_key_id
+**SK**:阿里云RDS的rds_secert
+**定时任务**：定时任务触发周期，直接写"loop"循环执行,例如：loop1h。
+
+
+

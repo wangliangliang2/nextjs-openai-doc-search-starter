@@ -1,0 +1,124 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>interface com.qlive.pkservice.QPKServiceListener</p>
+                <p>pk回调</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onStart`)'>onStart</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onStop`)'>onStop</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onStartTimeOut`)'>onStartTimeOut</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onPKExtensionChange`)'>onPKExtensionChange</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onStart">
+onStart</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void onStart(QPKSession pkSession)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>pk开始回调
+ 观众刚进入房间如果房间正在pk也马上会回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            pkSession: <a href='https://developer.qiniu.com/lowcode/api/12064/QPKSession'>QPKSession</a>
+        </div>
+                <p>pk会话</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onStop">
+onStop</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void onStop(QPKSession pkSession,int code,String msg)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>pk 结束回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            pkSession: <a href='https://developer.qiniu.com/lowcode/api/12064/QPKSession'>QPKSession</a>
+        </div>
+                <p>pk会话</p>
+    </li>
+    <li>
+        <div>
+            code: int
+        </div>
+                <p>-1 异常结束 0主动结束 1对方结束</p>
+    </li>
+    <li>
+        <div>
+            msg: String
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onStartTimeOut">
+onStartTimeOut</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void onStartTimeOut(QPKSession pkSession)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>主播主动开始后 收对方流超时 pk没有建立起来</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            pkSession: <a href='https://developer.qiniu.com/lowcode/api/12064/QPKSession'>QPKSession</a>
+        </div>
+                <p>pk会话</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onPKExtensionChange">
+onPKExtensionChange</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public void onPKExtensionChange(QExtension extension)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>有pk扩展字段变化</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            extension: <a href='https://developer.qiniu.com/lowcode/api/12059/QExtension'>QExtension</a>
+        </div>
+                <p>某个自定义字段</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+

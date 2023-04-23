@@ -1,0 +1,10 @@
+#### Base64 上传自定义回调数据
+Base64上传详见https://developer.qiniu.com/kodo/kb/1326/how-to-upload-photos-to-seven-niuyun-base64-code。 <br>
+这里讲一下x:user-var这个参数的使用<br>
+首先需要在生成上传token时指定 saveKey 或者 callbackBody 这类支持自定义变量或者魔法变量的参数，一般通过服务器端生成。以在生成token是指定上传策略时，指定saveKey:name=$(x:extension)。<br>生成的token为<br>FMVCRs2-LO1ivRNi4l7mEZE6ZDvPv-519D12kZCO:RbsOpgGA6p_aJlXHYOvAuBt2fvc=:eyJzYXZlS2V5IjoibmFtZVx1MDAzZCQoeDpleHRlbnNpb24pIiwic2NvcGUiOiJodG1sIiwiZGVhZGxpbmUiOjE0OTg0NDE1NDl9<br>
+#### 通过base64解码上传策略部分
+eyJzYXZlS2V5IjoibmFtZVx1MDAzZCQoeDpleHRlbnNpb24pIiwic2NvcGUiOiJodG1sIiwiZGVhZGxpbmUiOjE0OTg0NDE1NDl9<br>
+{"saveKey":"name\u003d$(x:extension)","scope":"html","deadline":1498441549}
+#### 在上传url中指定x:extension参数
+上传url: http://up-z2.qiniup.com/putb64/-1/x:extension/dGVzdA==
+![](https://dn-odum9helk.qbox.me/FmFKB0XUTqSVP3CO-7GVbSYnOROS)

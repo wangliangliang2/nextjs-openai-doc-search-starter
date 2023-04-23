@@ -1,0 +1,22 @@
+岭回归是一种带有L2正则的线性回归模型。
+核岭回归是先对数据作核变换以适应各种非线性情形，然后再对数据作岭回归的一种模型。
+
+**语法：**
+```
+..| fit KernelRidge alpha=<float> gamma=<float> kernel=<linear(default) | poly | rbf | sigmoid | cosine> <target_field> from <feature_field_1> <feature_field_2>... 
+
+```
+
+**参数说明：**
+
+- alpha用来指定一个正则化强度，该数会用于在损失函数中乘以正则项。该值越高，正则程度越高。默认值为1.0。
+- kernel用来指定核函数类型。
+  - kernel=linear，即采用线性核函数。
+  - kernel=poly，即采用多项式核函数。
+  - kernel=rbf，即采用径向基核函数。（默认值）
+  - kernel=sigmoid，即采用sigmoid核函数。
+  - kernel=cosine，即采用余弦相似度作为核函数。
+- gamma参数仅在kernel为rbf或者poly或者sigmoid时有效，它作为核函数中的一个参数。默认值为scale。
+  + gamma = float，指定一个小数常数作为gamma值。
+  + gamma = 'scale'，gamma值会被设定为1 / (n_features * X.var()) 。（默认值）
+  + gamma = 'auto'，gamma值会被设定1 / n_features。

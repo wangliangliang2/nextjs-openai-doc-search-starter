@@ -1,0 +1,39 @@
+# 域名解析方法
+
+解决方法：在验证域名前加上 `_dnsauth`。
+
+以 jsdemo.gugaobai.top 为例，如果做了 A 记录解析或者 cname 解析，有些域名商是不可以同时再做 TXT 解析的  
+此时解析 _dnsauth.jsdemo.gugaobai.top 这个域名也可以通过验证
+
+<img src="https://dn-odum9helk.qbox.me/FhkyxbjBaqWbkIe4hSUsf4PXnXzp" width=800 />
+
+<br>
+
+证书签发后可以下载至本地使用
+
+<img src= "https://dn-odum9helk.qbox.me/FmM6dXiGoEt5JV9rlNd5eMkpIs29" width=800 />
+
+# 文件验证方法
+
+### 1. 补全证书信息时选择文件验证
+
+<img src="https://dn-odum9helk.qbox.me/FqWeQfcgd88sakOv5oA8CFj-ulAa" width=800 />
+
+
+### 2. 获取验证信息
+
+<img src="https://dn-odum9helk.qbox.me/FtqdhfSBolTtKNhHGw6hAzx0kiA9" width=800 />
+
+### 3. 本地生成一个名为 fileauth.txt 的文件，内容为上面的txt记录值
+
+<img src="https://dn-odum9helk.qbox.me/Fq611qROCWzUcyE8Hcu_kEns9RIj" width=800 />
+
+### 4. 上传至域名对应的七牛空间（或者用户自己的服务器），设置前缀为记录名（如 .well-known/pki-validation/）
+
+<img src="https://dn-odum9helk.qbox.me/FnaDaIjTkFFOYfa6mXS705OvFFap" width=800 />
+
+### 5. 确认文件上传成功
+
+<img src="https://dn-odum9helk.qbox.me/FhQrSm6KUTtMSDbA2WUuX8q184iF" width=800 />
+
+<img src="https://dn-odum9helk.qbox.me/FlNY4XOIFd5MJJsbpZpfzaSgjU7A" width=800 />

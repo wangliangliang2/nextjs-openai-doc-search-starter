@@ -1,0 +1,95 @@
+# **描述**
+本接口用于获取模板列表。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/aitemplates?offset=<offset>&line=<line>&match=<match>&sortBy=<sortBy>&zone=<zone>`
+* Get请求，通过`非SDK`方式调用的客户，http头部Content-Type,`要么设置为application/x-www-form-urlencoded`,`要么置空`, `要么不要携带`; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|line|否|integer|一次返回多少条，最多1000,当超过1000条时，需要结合offset 循环读取。
+|offset|否|integer|偏移量，当需要循环读取时,初始值offset = 0, 第N次请求时offset = (N -1) * line
+|sortBy|否|string|默认按创建时间降序排列，sortBy由"asc/desc"和可参与排序的字段组成，其中 asc 表示升序，desc 表示降序，可参与排序的字段有createdAt，updatedAt。asc:updatedAt表示更新时间从小到大排序，desc:updatedAt表示更新时间从大到小排序
+|match|否|string|模糊匹配查询(模版名称包含match串时返回)
+|zone|否|string|zone为服务区域，可根据服务区域筛选出对应区域的下模板，可选项为z0，z1，z2，cn-east-2。z0表示华东、z1表示华北、z2表示华南、cn-east-2表示华东-浙江2
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|items|模版数组|模版数组
+|items.id|string|模版id
+|items.name|string|模版名称
+|items.algorithms|int数组|算法数组。算法可选 1:安全帽识别 2: 人脸识别; 数组{1, 2} 代表同时选择了1和2, 两种算法
+|items.aiFrameInterval|integer|截帧间隔, 默认为1, 代表每1秒截取1帧进行AI计算。有效范围 500ms~ 3600s
+|items.confidence|integer|置信度。默认 60, 有效范围是1～100
+|items.runningMode|integer|运行模式。0:只要视频流在线就开始AI分析 1: 通过API控制AI分析的开始和结束 2: 自定义区间段内开始AI分析
+|items.aiImageLib|stirng|依赖的基础图像库ID，例如当算法为人脸识别时，需要指定一个基础的图像库。也可以新建一个基础图像库。
+|items.aiTimeRanges|TimeRange数组|AI工作时间范围, 默认数组为空,代表24小时生效；否则按照实际区间段，支持多个区间段
+|timeRange.start|string|AI每天开始时间。形式为00:00:00
+|timeRange.end|string|AI每天结束时间。形式为00:00:00
+|items.aiNeedCallback|boolean|是否回调ai计算结果。默认true
+|items.aiSaveResult|boolean|是否保存ai识别的结构化数据，默认为false。若不保存，可以通过回调的方式得到结构化数据。
+|items.desc|string|模版描述	
+|items.zone|string|模版对应的bucket区域
+|items.bucket|string|模版对应的对象存储的bucket,
+|items.deleteAfterDays|integer|存储过期时间，默认永久不过期
+|items.fileType|integer|文件存储类型，取值：0（普通存储），1（低频存储）
+|items.createdAt|integer|模板创建时间
+|items.updatedAt|integer|模板更新时间
+|total|integer|模版总数量
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/aitemplates \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "items": [
+    {
+      "id": "2akrars5b81f5",
+      "name": "test0016",
+      "desc":"this is a test",
+      "algorithms":[1],
+      "confidence":60,
+      "runningMode":0,
+      "aiFrameInterval":5,
+      "aiSaveResult":true,
+      "zone":"z1",
+      "bucket":"bucket-test1",
+      "deleteAfterDays":7,
+      "fileType":0,
+      "createdAt": 1586847620,
+      "updatedAt": 1586847620
+    },
+    {
+      "id": "d102sns2mwhd",
+      "name": "test009",
+      "desc":"this is a test",
+      "algorithms":[1],
+      "confidence":60,
+      "runningMode":0,
+      "aiFrameInterval":5,
+      "aiSaveResult":true,
+      "zone":"z1",
+      "bucket":"bucket-test1",
+      "deleteAfterDays":7,
+      "fileType":0,
+      "createdAt": 1586847620,
+      "updatedAt": 1586847620
+    }
+  ],
+  "total": 2
+}
+```

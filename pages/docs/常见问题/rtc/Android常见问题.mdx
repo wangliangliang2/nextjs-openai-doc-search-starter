@@ -1,0 +1,123 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文搜集并整理了 Android 通话过程中的常见问题</p>
+<blockquote>
+<p>若您遇到的问题本文未提及，请<a href="https://support.qiniu.com/tickets/new">提交工单</a>或者联系七牛技术支持同学协助解决</p>
+</blockquote>
+
+# 获取 RoomToken
+<p>在正式的业务场景中，<a href="/rtc/quick_start/9909/the-rtc-basic-concept#room_token">RoomToken</a> 需要您的业务服务器根据 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#app">AppID</a>、<a href="/rtc/quick_start/9909/the-rtc-basic-concept#room">RoomName</a> 以及 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#user_ID">UserID</a> 根据一定规则签算生成，签算规则可参考 <a href="/rtc/development_guidelines/8813/roomToken">RoomToken 签发服务</a>。</p>
+<p>若您的服务端还没有实现相关代码，可参考<a href="https://doc.qnsdk.com/rtn/docs/rtn_startup#4">房间的创建和管理</a>文档在 <a href="https://portal.qiniu.com/rtn/app">portal</a> 上生成临时的 <a href="/rtc/quick_start/9909/the-rtc-basic-concept#room_token">RoomToken</a>，需要注意 <strong>UserID 不可重复</strong>。</p>
+
+# SDK 重连机制
+<p>当前 SDK 内部会尝试无限次数的重连，但是，如果 30s 内无法完成一次有效的重连过程，则超时后的有效的重连请求在到达 RTC 服务后会抛出 <code>ERROR_RECONNECT_FAILED</code> 错误。</p>
+
+# 断网重连的处理
+<p>监控房间连接状态的用法，可以参考文档 <a href="/rtc/development_guidelines/8768/room-management-android">房间管理</a>。这里需要注意的点是，断网重连的处理。</p>
+<p>默认情况下，当发生网络异常等情况，SDK 会进入自动重连状态，此时房间连接状态会变为 <code>RECONNECTING</code>，表示重连中。之后就会两种可能：</p>
+<ol>
+<li>SDK 自动重连成功，房间状态变为 <code>RECONNECTED</code>。重连成功后，SDK 会自动恢复原有的发布和订阅状态。也就是说，如果在重连之前有发布过 tracks 或者订阅过 tracks，重连成功后，SDK 会自动重新发布/订阅这些 tracks。</li>
+<li>SDK 自动重连失败，此时 SDK 将自动退出房间，房间状态变为 <code>DISCONNECTED</code>。在断开连接状态时，回调函数中会带有第二个参数 <a href="/rtc/api/8644/QNConnectionDisconnectedInfo">QNConnectionDisconnectedInfo</a>，用来表示断开的原因。此时应当根据断开原因不同，做不同的逻辑处理。</li>
+</ol>
+<p>具体处理见如下代码：</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onConnectionStateChanged</span><span class="hljs-params">(QNConnectionState state, QNConnectionDisconnectedInfo disconnectedInfo)</span> {
+<span></span>    <span class="hljs-keyword">if</span> (QNConnectionState.CONNECTING.equals(state)) {
+<span></span>        <span class="hljs-comment">// 连接中</span>
+<span></span>    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (QNConnectionState.CONNECTED.equals(state)) {
+<span></span>        <span class="hljs-comment">// 连接成功，可以进行发布 track 等行为</span>
+<span></span>    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (QNConnectionState.RECONNECTING.equals(state)) {
+<span></span>        <span class="hljs-comment">// 重连中</span>
+<span></span>    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (QNConnectionState.RECONNECTED.equals(state)) {
+<span></span>        <span class="hljs-comment">// 重连成功，可以进行发布 track 等行为；自动恢复原来的发布订阅状态</span>
+<span></span>    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (QNConnectionState.DISCONNECTED.equals(state)) {
+<span></span>        <span class="hljs-comment">// 监控断开原因</span>
+<span></span>        <span class="hljs-keyword">switch</span>(disconnectedInfo.reason) {
+<span></span>            <span class="hljs-comment">// 当连接失败时</span>
+<span></span>            <span class="hljs-keyword">case</span> QNConnectionDisconnectedReason.ERROR:
+<span></span>                <span class="hljs-keyword">if</span> (disconnectedInfo.errorCode == QNErrorCode.ERROR_RECONNECT_FAILED) {
+<span></span>                    <span class="hljs-comment">// 重连失败</span>
+<span></span>                }
+<span></span>                <span class="hljs-keyword">break</span>;
+<span></span>        }
+<span></span>    }
+<span></span>}
+<span></span></code></pre>
+<p>此时，最需要关注的是异常断开的情况。一般处理模式有两种：</p>
+<ul>
+<li><strong>通知用户</strong>：展示 UI，通知用户网络异常，用户可选择调整网络后重试</li>
+<li><strong>自动重连</strong>：可以在收到异常断开的通知后，主动调用加入房间的方法尝试重新加入房间，此时需注意 token 的实效性，若 token 过期，需要重新获取再加入房间</li>
+</ul>
+<h2 id="断网重连场景下的-cdn-转推处理"><a href="#%E6%96%AD%E7%BD%91%E9%87%8D%E8%BF%9E%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84-cdn-%E8%BD%AC%E6%8E%A8%E5%A4%84%E7%90%86" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>断网重连场景下的 CDN 转推处理</h2>
+<p>若您使用<strong>客户端提供的接口</strong>进行 CDN 转推，那么，若出现断网重连，建议的处理方式如下：</p>
+<h3 id="单路转推"><a href="#%E5%8D%95%E8%B7%AF%E8%BD%AC%E6%8E%A8" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>单路转推</h3>
+<ul>
+<li>若重连成功，则需要判断是否收到 <a href="/rtc/api/8658/QNLiveStreamingListener#onStopped">QNLiveStreamingListener.onStopped</a> 回调：
+<ul>
+<li>未收到回调，则无需重新创建转推任务，转推流将正常进行</li>
+<li>收到回调，则需要重新创建转推任务，否则，转推流将会断开</li>
+</ul>
+</li>
+<li>若重连失败，则需要在重新加入房间后，再次创建转推任务</li>
+</ul>
+<h3 id="合流转推"><a href="#%E5%90%88%E6%B5%81%E8%BD%AC%E6%8E%A8" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>合流转推</h3>
+<ul>
+<li>若重连成功，则不需要重新配置合流布局，服务端会默认将重连后的 Track 重新加入到合流中</li>
+<li>若重连失败，则需要在重新加入房间后，再次创建合流任务，并配置合流布局，否则，转推流将会断开</li>
+</ul>
+
+# 是否支持后台连麦
+<p>基于 <a href="https://developer.android.com/about/versions/pie/android-9.0-changes-all#bg-sensor-access">Android 行为变更</a>的相关声明，我们了解到，从 Android 9 开始，设备将无法后台进行音视频的采集。</p>
+<p>解决方案：</p>
+<ol>
+<li>若您有后台连麦的需求，可参考 <a href="https://developer.android.com/guide/topics/media/camera">Android 官网相关说明</a>在退后台后使用<a href="https://developer.android.com/guide/components/services?hl=zh-cn#Foreground">前台服务</a>让应用正常工作。</li>
+<li>若您不需要后台连麦，可以在 Android <code>onResume</code>、<code>onPause</code> 等生命周期函数中分别调用 <a href="/rtc/api/8640/QNCameraVideoTrack#startCapture">QNCameraVideoTrack.startCapture</a> 和 <a href="/rtc/api/8640/QNCameraVideoTrack#stopCapture">QNCameraVideoTrack.stopCapture</a> 方法进行 Camera 采集的开启和关闭操作。</li>
+</ol>
+
+# 集成三方美颜厂商
+<p>SDK 提供了 <a href="/rtc/api/8663/QNLocalVideoTrack#setVideoFrameListener">QNLocalVideoTrack.setVideoFrameListener</a> 接口进行视频帧数据的回调，具体回调方法如下：</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">QNVideoFrameListener</span> {
+<span></span>    <span class="hljs-comment">/**
+<span></span>     * YUV 视频数据回调
+<span></span>     */</span>
+<span></span>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">onYUVFrameAvailable</span><span class="hljs-params">(<span class="hljs-type">byte</span>[] data, QNVideoFrameType type, <span class="hljs-type">int</span> width, <span class="hljs-type">int</span> height, <span class="hljs-type">int</span> rotation, <span class="hljs-type">long</span> timestampNs)</span>;
+<span></span>
+<span></span>    <span class="hljs-comment">/**
+<span></span>     * 纹理视频数据回调
+<span></span>     */</span>
+<span></span>    <span class="hljs-type">int</span> <span class="hljs-title function_">onTextureFrameAvailable</span><span class="hljs-params">(<span class="hljs-type">int</span> textureID, QNVideoFrameType type, <span class="hljs-type">int</span> width, <span class="hljs-type">int</span> height, <span class="hljs-type">int</span> rotation, <span class="hljs-type">long</span> timestampNs, <span class="hljs-type">float</span>[] transformMatrix)</span>;
+<span></span>}
+<span></span></code></pre>
+<p>在对接三方美颜厂商时，将 <code>onTextureFrameAvailable</code> 回调返回的纹理数据送入三方美颜 SDK，并将其处理后的纹理返回给 RTC SDK 即可。</p>
+
+# 感知用户是否讲话
+<p>可通过定时获取音频 Track 的音量大小来判断用户是否在讲话。</p>
+<p>SDK 提供获取音频 Track 音量的接口如下：</p>
+<ul>
+<li>本地音频 Track：<a href="https://developer.qiniu.com/rtc/8660/QNLocalAudioTrack#getVolumeLevel">QNLocalAudioTrack.getVolumeLevel</a></li>
+<li>远端音频 Track：<a href="https://developer.qiniu.com/rtc/8674/QNRemoteAudioTrack#getVolumeLevel">QNRemoteAudioTrack.getVolumeLevel</a></li>
+</ul>
+<p>其中，在安静的环境下，获取到 0.0x 大小的音量值为环境音的大小，属于预期现象，您可根据您的需求自行决定判断的阈值。</p>
+<p>接口的调用方式也可参考<a href="https://github.com/pili-engineering/QNRTC-Android/blob/master/QNRTC-API-Examples/app/src/main/java/com/qiniu/droid/rtc/api/examples/activity/MicrophoneOnlyActivity.java">麦克风采集纯音频通话</a>场景示例</p>
+
+# 实际采集分辨率与设置不符
+<p>这是因为不同的设备所支持的采集能力是不同的，当前设备的 Camera 可能不支持配置中的分辨率，导致 SDK 基于内部策略选择了一个相近的采集分辨率，若 SDK 内部策略选择的分辨率不符合您的需求，您可以通过监听 <a href="https://developer.qiniu.com/rtc/8637/QNCameraEventListener#onCameraOpened">QNCameraEventListener.onCameraOpened</a> 回调并返回指定的索引来选择符合您需求的采集分辨率</p>
+
+# 实际编码分辨率与设置不符
+<p>硬编场景下，考虑到硬件平台的兼容性，避免出现花屏等问题，SDK 内部将会对编码分辨率做对齐处理，对齐规则如下：</p>
+<ul>
+<li>华为机型 32 对齐</li>
+<li>其他机型 16 对齐</li>
+</ul>
+<p>因此，可能会出现实际编码输出的分辨率和预期不符的情况，属于正常现象。</p>
+
+# 回声问题的处理
+<p>回声现象是指在通话过程中，可以听到自己的声音通过扬声器回放出来，该现象是<strong>远端设备的回声消除处理失效导致的</strong>，需要<strong>在远端设备上检查并修改如下配置项</strong>，再观察通话体验是否有所改善：</p>
+<ol>
+<li>使用单声道音频采集参数，建议使用 <a href="/rtc/api/8635/QNAudioQualityPreset#STANDARD">QNAudioQualityPreset.STANDARD</a> 和 <a href="/rtc/api/8635/QNAudioQualityPreset#LOW">QNAudioQualityPreset.LOW</a> 的音频编码预设</li>
+<li>开启软件回声消除，可通过 <a href="/rtc/api/8686/QNRTCSetting#setAEC3Enabled">QNRTCSetting.setAEC3Enabled</a> 接口进行配置，默认开启</li>
+<li>开启通话模式，通话模式可通过 <a href="/rtc/api/8668/QNMicrophoneAudioTrackConfig#setCommunicationModeOn">QNMicrophoneAudioTrackConfig.setCommunicationModeOn</a> 接口进行配置，默认开启</li>
+</ol>
+
+# 混音格式支持
+<p>混音功能分为<a href="/rtc/development_guidelines/8771/background-music-mix-android">背景音乐混音</a>和<a href="/rtc/development_guidelines/11965/android_audio_effect_mixing">多音效混音</a>两种。</p>
+<p>两种混音场景均支持本地文件和在线文件，支持混合的音频格式为：aac、mp3、mp4、ogg、opus、wav、m4a、flac</p></div></div>

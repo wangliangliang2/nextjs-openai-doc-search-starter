@@ -1,0 +1,53 @@
+# 接口描述
+
+禁播或者解禁目标直播流，支持限时禁播或永久禁播
+
+# 请求参数
+
+```
+POST /v2/hubs/<hub>/streams/<encodedStreamTitle>/disabled
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/json
+
+{
+    "disabledTill": <disabledTill>
+    "disablePeriodSecond": <disablePeriodSecond>
+}
+```
+
+| 参数             | 类型 | 必填 | 描述                     |
+| ------------------ | ------ | -------- | -------------------------- |
+| hub                | string | 是   | 直播空间名            |
+| encodedStreamTitle | string | 是   | 经过[base64编码](/kodo/manual/appendix)的直播流名   |
+| disabledTill | string | 是   | 禁播结束时间，Unix 时间戳，特殊值含义： -1 永久禁播；0 解除禁播   |
+| disablePeriodSecond | string | 否  | 禁播时长，单位：秒，当 disabledTill 为0时，disablePeriodSecond 参数生效，值大于0   |
+
+# 返回数据
+
+空
+
+# 示例
+
+请求体:
+
+```
+POST /v2/hubs/test/streams/dGltZXN0YW1w/disabled HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/json
+
+{
+    "disabledTill": 60
+}
+```
+
+返回体:
+
+```
+200 OK
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

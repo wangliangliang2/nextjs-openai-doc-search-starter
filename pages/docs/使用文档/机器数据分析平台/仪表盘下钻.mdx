@@ -1,0 +1,115 @@
+### 下钻
+
+图表支持您定义一个下钻动作，当您点击图表时，可以根据定义下钻到指定位置
+
+当前支持的下钻类型:
+
+* 下钻到搜索(智能模式)：系统根据用户点击自动生成搜索条件下钻到搜索
+* 下钻到搜索(自定义)：系统根据用户指定的搜索条件下钻到搜索
+* 下钻到仪表盘：系统根据用户指定的仪表盘ID下钻到仪表盘
+* 下钻到报表：系统根据用户指定的报表ID下钻到报表
+* 下钻到URL：系统根据用户指定的URL下钻到自定义页面
+* 下钻到图表：可以自定义搜索条件，配置当前图表多级下钻
+
+#### 下钻预定义变量
+  
+  自定义搜索条件下钻时可以使用的预定义变量
+  
+  ##### 二维图表
+  | 标记 | 描述 |
+  |---|---|
+  | $\<LEVEL\>.click.name$ | 单击位置的 X 轴字段名称 |
+  | $\<LEVEL\>.click.value$ | 单击位置的 X 轴字段值 |
+  | $\<LEVEL\>.click.name1$ | 单击位置的 Y 轴字段名称 |
+  | $\<LEVEL\>.click.value1$ | 单击位置的 Y 轴字段值 |
+  | $\<LEVEL\>.row.\<fieldname\>$ | 单击位置相关字段值 |
+  
+  ##### 饼图(分组)、地图
+  | 标记 | 描述 |
+  |---|---|
+  | $\<LEVEL\>.click.name$ | 单击位置的分组字段名称 |
+  | $\<LEVEL\>.click.value$ | 单击位置的分组字段值 |
+  | $\<LEVEL\>.click.name1$ | 等同于 $\<LEVEL\>.click.name$ |
+  | $\<LEVEL\>.click.value1$ | 等同于 $\<LEVEL\>.click.value$ |
+  | $\<LEVEL\>.row.\<fieldname\>$ | 单击位置相关字段值 |
+  
+  ##### 单值图
+  | 标记 | 描述 |
+  |---|---|
+  | $\<LEVEL\>.click.name$ | 单击位置的指标字段名称 |
+  | $\<LEVEL\>.click.value$ | 单击位置的指标字段值 |
+  | $\<LEVEL\>.click.name1$ | 等同于 $\<LEVEL\>.click.name$ |
+  | $\<LEVEL\>.click.value1$ | 等同于 $\<LEVEL\>.click.value$ |
+  | $\<LEVEL\>.row.\<fieldname\>$ | 单击位置任意字段值 |
+  
+  ##### 网格表
+  | 标记 | 描述 |
+  |---|---|
+  | $\<LEVEL\>.click.name$ | 表格最左边字段(列) 名称 |
+  | $\<LEVEL\>.click.value$ | 单击表行中最左边字段(列) 值 |
+  | $\<LEVEL\>.click.name1$ | 单击字段(列) 名称 |
+  | $\<LEVEL\>.click.value1$ | 单击字段(列) 值 |
+  | $\<LEVEL\>.row.\<fieldname\>$ | 单击表行任意字段(列) 值 |
+  
+  ##### 树状表
+  | 标记 | 描述 |
+  |---|---|
+  | $\<LEVEL\>.click.name$ | 第一个分组字段名称 |
+  | $\<LEVEL\>.click.value$ | 第一个分组字段值 |
+  | $\<LEVEL\>.click.name1$ | 单击字段(列) 名称 |
+  | $\<LEVEL\>.click.value1$ | 单击字段(列) 值 |
+  | $\<LEVEL\>.row.\<fieldname\>$ | 单击表行任意字段(列/分组) 值 |
+  
+  ##### 经纬图
+  | 标记 | 描述 |
+  |---|---|
+  | $\<LEVEL\>.click.name$ | 单击位置的经度字段名称 |
+  | $\<LEVEL\>.click.value$ | 单击位置的经度字段值 |
+  | $\<LEVEL\>.click.name1$ | 单击位置的纬度字段名称 |
+  | $\<LEVEL\>.click.value1 | 单击位置的纬度字段值 |
+  | $\<LEVEL\>.row.\<fieldname\>$ | 单击位置任意字段值 |
+  
+  ##### 关系图
+  | 标记 | 描述 |
+  |---|---|
+  | $\<LEVEL\>.click.name$ | 单击位置的起始节点字段名称 |
+  | $\<LEVEL\>.click.value$ | 单击位置的起始节点字段值 |
+  | $\<LEVEL\>.click.name1$ | 单击位置的目的节点字段名称 |
+  | $\<LEVEL\>.click.value1$ | 单击位置的目的节点字段值 |
+  | $\<LEVEL\>.row.\<fieldname\>$ | 单击位置相关字段值 |
+  
+  
+  ##### 状态矩阵
+  | 标记 | 描述 |
+  |---|---|
+  | $\<LEVEL\>.click.name$ | 第一个分组字段(若有)名称 |
+  | $\<LEVEL\>.click.value$ | 单击位置的第一个分组字段(若有)值 |
+  | $\<LEVEL\>.click.name1$ | 第一个指标字段(若有)名称 |
+  | $\<LEVEL\>.click.value1$ | 单击位置的第一个指标字段(若有)值 |
+  | $\<LEVEL\>.row.\<fieldname\>$ | 单击位置任意字段值 |
+  
+  ##### 雷达图
+  | 标记 | 描述 |
+  |---|---|
+  | 无 | 暂无预定义变量 |
+  
+  ##### 旭日图
+  | 标记 | 描述 |
+  |---|---|
+  | $\<LEVEL\>.click.name$ | 第一个分组字段名称 |
+  | $\<LEVEL\>.click.value$ | 单击位置的第一个分组字段值 |
+  | $\<LEVEL\>.click.name1$ | 指标字段名称 |
+  | $\<LEVEL\>.click.value1$ | 单击位置的指标字段值 |
+  | $\<LEVEL\>.row.\<fieldname\>$ | 单击位置相关字段值 |
+  
+  ##### `<LEVEL>`
+  
+  `<LEVEL>` 表示下钻层级，如定义从顶层点击下钻的搜索条件，则 `<LEVEL>` 为 `L1`；
+  定义从下钻一层后再次点击下钻到第二层的搜索条件，则 `<LEVEL>` 为 `L2`。
+  若省略 `<LEVEL>` ，取默认值 `L1`
+
+
+
+
+
+

@@ -1,0 +1,64 @@
+根据经验，直播播放不了与[直播卡顿的排查方式](https://developer.qiniu.com/pili/kb/why-live-broadcast-caton)类似，从服务端，使用排除法进行拉流测试，具体测试方法如下几点：  
+- 查看推流是否正常  
+- 更换网络拉流播放  
+- 更换播放器播放  
+- 更换播放地址进行播放  
+- dig 命令看一下域名的解析  
+
+# 1.查看推流是否正常
+推流查询有**两种方式**：一种是在`控制台查询`，另一种`调用status()接口查询`  
+
+举个例子：假设播放地址是 rtmp://pili-live-rtmp.qiniuts.com/tron/tecooler  
+
+## 控制台查询
+这个推流地址在控制台的查询截图如下：  
+![](https://inbox2.bz1.me/portal-pili-status.png?imageView/2/h/400 )  
+
+## 调用 status() 接口查询
+服务端有一个 `status()` 接口，可以获取实时的流状态，看下当前直播流是否是连接中，如果是 `disconnected`状态，那么肯定是播放不了的，下面 python 代码示例
+
+```
+# github 链接地址 https://github.com/pili-engineering/pili-sdk-python/tree/v1#get-stream-status
+status = stream.status()
+print status
+```
+
+# 2.更换网络拉流播放
+假如在 wifi 下播放不了，可以切换到 4G 下进行播放测试，不同运营商和不同网络间，我们提供的覆盖节点可能是不相同的，如果说在一个网络下可以播放，另外一个网络下不可以播放，那么可能出在节点问题上，或者是网络解析层面。  
+`如何测试节点？`手机端测试可以使用[手机测试工具](https://developer.qiniu.com/fusion/kb/mobile-terminal-network-test-tool-android-ios)  
+`网络解析查询`访问一下 [ip&dns查询](http://tools.cloudxns.net/index.php/Index/Diag)，可以看到本地的 ip 和 dns 信息  
+将这两个信息截图保存，然后提交一下工单到七牛，这边会进行测试核实，然后进行处理。  
+
+# 3.更换播放器播放
+不同的播放器兼容不同的协议，一般 `rtmp` `flv` 播放协议需要 `flash` 播放器，`hls` 可以在 `safri` 上播放，浏览器是不能直接播放的，最简单的是使用我们`手机播放端的 sdk` ，网页测试可以使用 `video 标签`自己写一个 H5 的播放器；测试使用，这边推荐一个在线的[网页播放器](http://www.cutv.com/demo/live_test.swf)，这个播放器可以播放`rtmp` `hls` `flv`三种格式的播放地址
+
+# 4.更换播放地址进行播放
+这个步骤一般是为了排除，`hls` 没有成功切片的问题，假如出现 `rtmp` 正常播放，但是 `hls` 播放不了，可以使用 `ffprobe` 测试一下，是否是推流端推上来的音视频编码不是标准的 `h264 + aac` ，这个情况出现的话，基本就会是这个问题。  
+
+```
+➜  ~ ffprobe -hide_banner rtmp://pili-live-rtmp.qiniuts.cc/tron/qiniuts-test
+Input #0, flv, from 'rtmp://pili-live-rtmp.qiniuts.cc/tron/qiniuts-test':
+  Metadata:
+    major_brand     : mp42
+    x-reqid         : TwRC8rSeS2cDOiRt
+    compatible_brands: isommp42
+    minor_version   : 0
+    encoder         : Lavf57.56.100
+    cdn_ip          : 61.162.231.198
+  Duration: N/A, start: 0.054000, bitrate: N/A
+    Stream #0:0: Video: h264 (Main), yuv420p(tv, bt709, progressive), 1280x720 [SAR 1:1 DAR 16:9], 30.30 fps, 29.97 tbr, 1k tbn, 59.94 tbc
+    Stream #0:1: Audio: aac (LC), 44100 Hz, stereo, fltp
+```
+
+# 5.dig命令看一下域名的解析
+如果上面的都试过了，还是无法播放，那么建议本地网络下，使用 `linux` 的 `dig` 命令，进行 `dns` 查询，看下是否解析成功，是否和七牛提供的 `CNAME 入口` 解析匹配
+
+```
+➜  ~ dig pili-live-rtmp.qiniuts.cc +short
+10005x3.live-rtmp.v1.pilidns.com. # 这个就是入口
+live-rtmp2.v1.pilidns.com.
+default.play.vdn.pilidns.com.
+```
+
+**七牛 CNAME 入口位置截图：**  
+![](https://inbox2.bz1.me/portal-pili-cname.png?imageView/2/h/400 )

@@ -1,0 +1,179 @@
+智能日志管理平台提供权限管理功能：用户可以将自己账号下资源的部分操作权限，授予**已开通智能日志平台**的其他账户（对子账号而言，只需主账户开通了智能日志平台服务，子账号即默认拥有智能日志平台使用权限）。支持授权的资源类型如下：
+
+**[日志仓库](/insight/manual/4629/search-analysis)：**支持对日志仓库授予查看权限。
+
+**[工作流](/insight/manual/4688/introduction-of-the-pipeline)：**支持对工作流授予查看、写入、更新、删除权限。
+
+**[仪表盘](/insight/manual/4867/the-dashboard)**：支持对仪表盘授予查看权限。
+
+`注意：`对仪表盘进行授权，被授权的用户需要先拥有仪表盘关联的日志仓库的权限才能看到仪表盘数据。
+
+**[视图](/insight/manual/5706/view)：**支持对视图授予查看权限。
+
+**资源组授权**：将资源添加到组批量授权。资源组支持日志仓库、工作流、视图类型的资源。
+
+权限管理适用于不同账户共用一套服务的场景，权限体系下的不同账户可在自己的权限范围内对服务进行操作，降低沟通成本的同时提高了团队成员的工作效率。
+
+![](https://pandora-kibana.qiniu.com/authorization/authorization.png)
+
+# **用户/用户组** 
+
+进行授权的第一步是创建用户/用户组，目前**已开通智能日志平台**的账户都被视为权限管理系统的用户，可直接使用，无需创建。用户分为主账户和普通用户，说明如下：
+
+## **主账户**
+
+主账户具有最高管理权限，包括授权、新建用户组、更改用户/用户组、新建资源组的权限。
+
+## **普通用户**
+
+普通用户是被授予权限的用户，只能对资源执行权限范围内的操作。
+
+## **用户组**
+
+可将多个用户添加到用户组批量授权，简化授权操作。
+
+进入组管理，选择用户组 tab，点击界面右上角的新建用户组：填写组名称以及组内成员，组内成员输入完按下 Enter 键即可。
+
+![](https://pandora-kibana.qiniu.com/authorization/usergroup.png)
+
+# **授权操作**
+
+## **工作流（pipeline）授权**：
+
+进入[业务授权](https://portal.qiniu.com/insight/nb/authorize/) tab，选择工作流授权。点击界面右上角的添加按钮创建工作流授权，支持同时对多个用户/用户组授权：
+
+![](https://pandora-kibana.qiniu.com/pipeline_auth2.png)
+
+点击编辑，可修改授权对象和权限。
+
+![](https://pandora-kibana.qiniu.com/pipiline_auth1.png)
+
+查看权限：被授予工作流查看权限的账户，可以去到工作流查看相应的工作流任务。
+
+![](https://pandora-kibana.qiniu.com/pipeline-auth.png)
+
+同时，被授予工作流查看权限的账户，登录智能日志平台，可以查看经过工作流消息队列的实时日志以及查看实时仓库的 schema。
+
+![](https://pandora-kibana.qiniu.com/pipeline_auth3.png)
+
+![](https://pandora-kibana.qiniu.com/pipeline_auth4.png)
+
+删除权限：被授予工作流更新权限的账户，登录工作流之后，可以对工作流任务进行删除。
+
+更新权限和写入权限正在开发中，敬请期待。
+
+
+## **日志仓库授权**
+
+进入[业务授权](https://portal.qiniu.com/insight/nb/authorize/) tab，选择日志分析服务授权。点击界面右上角的添加按钮创建日志仓库授权，权限包括查看日志内容以及仓库详情：
+
+![](https://pandora-kibana.qiniu.com/log_authorization1.png)
+
+点击编辑，可修改授权对象和权限。
+
+![](https://pandora-kibana.qiniu.com/log_authorization.png)
+
+被授权的账户登录智能日志平台后，在[日志搜索页](https://portal.qiniu.com/insight/logdb/overview)，可查看授权给自己的仓库的日志。
+
+![](https://pandora-kibana.qiniu.com/log_authorization3.png)
+
+在[日志仓库管理页](https://portal.qiniu.com/insight/logdb/repo)，可查看授权给自己的仓库的 schema。
+
+![](https://pandora-kibana.qiniu.com/log_authorization2.png)
+
+## **仪表盘授权**
+
+进入[业务授权](https://portal.qiniu.com/insight/nb/authorize/) tab，选择仪表盘授权。点击界面右上角的添加按钮创建仪表盘授权：
+
+![](https://pandora-kibana.qiniu.com/auth/dashboard_auth.png)
+
+`注意：`若被授权账户没有仪表盘关联的仓库权限，建议先勾选对关联仓库授权，否则将看不到仪表盘内数据。
+
+登录被授权账号，在授权的仪表盘列表可看到被授予的仪表盘的相关信息。
+
+![](https://pandora-kibana.qiniu.com/auth/authorizedDashboard1.png)
+
+点击仪表盘名称可查看仪表盘的图表。
+
+![](https://pandora-kibana.qiniu.com/auth/authorizedDashboard.png)
+
+您可以看到，被授予仪表盘查看权限的账号只允许对仪表盘查看，并不具有编辑功能。
+
+您也可以直接在[仪表盘列表](https://portal.qiniu.com/insight/nb/dashboard)对仪表盘进行授权操作。
+
+![](https://pandora-kibana.qiniu.com/auth/dashboradAuth.png)
+
+## **视图授权**
+
+进入[业务授权](https://portal.qiniu.com/insight/nb/authorize/) tab，选择视图授权。点击界面右上角的添加按钮创建视图授权：
+
+![](https://pandora-kibana.qiniu.com/authorization/view.png)
+
+点击编辑，可修改授权对象和权限。
+
+被授权的账户登录智能日志平台后，在[日志搜索页](https://portal.qiniu.com/insight/logdb/overview)，选择授权给自身的视图，可查看授权给自己的视图数据。
+
+![](https://pandora-kibana.qiniu.com/authorization/authorizedView.png)
+
+## **资源组授权**
+
+为了方便用户操作，我们支持对资源进行批量授权。将资源（如同属于一个业务的资源）添加到资源组后，对资源组授权即可。
+
+首先进入[组管理](https://portal.qiniu.com/insight/nb/authorize/group)页面，切换到资源组 tab，点击添加资源组。
+
+![](https://pandora-kibana.qiniu.com/assetGroup/create_group.png)
+
+进入[业务授权](https://portal.qiniu.com/insight/nb/authorize/)页面，切换到资源组授权 tab，对创建的资源组授予查看权限。
+
+![](https://pandora-kibana.qiniu.com/assetGroup/asset_authorization.png)
+
+登录被授权账号，在相应的资源管理页面可以看到被授予的资源。
+
+以资源组中的日志仓库为例：
+
+![](https://pandora-kibana.qiniu.com/assetGroup/check_asset.png)
+
+点击极速搜索可查看日志内容。
+
+![](https://pandora-kibana.qiniu.com/assetGroup/search_asset.png)
+
+#  **权限管理使用场景**
+
+## **主账号给子账号授权**
+
+子账户管理是七牛专为企业级用户设计制定的管理方式，企业只需开通一个主账号，在主账号下开通若干个子账号，企业成员间即可方便的共用一套服务。只要主账号开通了智能日志平台服务，子账号即可以默认使用智能日志平台的服务。
+
+开通子账号并给子账号授权的过程如下：
+
+1.到七牛[工单系统](https://support.qiniu.com/tickets/new?space=%E8%B4%A6%E6%88%B7%E4%B8%8E%E8%B4%A2%E5%8A%A1&category=%E8%B4%A6%E6%88%B7%E9%97%AE%E9%A2%98)填写工单申请开通子账号功能。
+
+![](https://pandora-kibana.qiniu.com/form_subaccount.png)
+
+2.审核通过之后，进入[七牛资源主页](https://portal.qiniu.com/create)，在个人中心可以看到子账号 tab，点击创建子账号。
+
+![](https://pandora-kibana.qiniu.com/personal.png)
+
+![](https://pandora-kibana.qiniu.com/sub_account.png)
+
+输入自定义域名即可创建子账号。
+
+![](https://pandora-kibana.qiniu.com/create_sub_account.png)
+
+创建成功后，系统将提供一份包含用户名、密码、AK/SK的文件，下载下来保存好，子账号将使用这个密码登录七牛系统。
+
+3.以主账号身份进入授权管理页面，点击添加日志仓库授权，授权人/组填写刚刚创建的子账号即可。
+
+![](https://pandora-kibana.qiniu.com/repo_authorization.png)
+
+4.子账号登录智能日志平台，可以看到授权给自身的日志仓库并搜索其中的日志。
+
+![](https://pandora-kibana.qiniu.com/authorized_repo.png)
+
+如果您的账号之间没有子账号与主账号的关系，只要每个账号都开通了智能日志平台服务，也可以使用授权管理功能。
+
+
+
+
+
+
+

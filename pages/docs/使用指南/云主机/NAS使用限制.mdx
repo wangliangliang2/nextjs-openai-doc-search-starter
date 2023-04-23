@@ -1,0 +1,37 @@
+# 产品规格限制
+|产品规格|限制|
+|-|-|
+|每个账号在单个地域内可创建的文件系统数量|20个|
+|单个文件系统可创建挂载点的数量|2个|
+|单个文件系统最大文件数|10亿|
+|单个文件系统最大目录层级|1000级|
+|单个文件系统容量上限|容量型NAS：10 PiB<br>性能型NAS：1 PiB|
+|单个文件系统最大目录层级|1000级|
+|单个文件系统同一时刻可以挂载计算节点的数量|1000个|
+|单个文件的容量上限|1000级|
+|单个文件支持的硬链接数量|511个|
+
+# 协议类型限制
+## NFS 文件系统
+- 单个文件名的最大长度：255个字节。
+- NFSv4.0 不支持的属性包括：FATTR4_MIMETYPE、FATTR4_QUOTA_AVAIL_HARD、FATTR4_QUOTA_AVAIL_SOFT、FATTR4_QUOTA_USED、FATTR4_TIME_BACKUP、FATTR4_TIME_CREATE、FATTR4_ARCHIVE。如果使用了这些属性，/var/log/messages 中会显示 NFS4ERR_ATTRNOTSUPP 错误。
+- NFSv4.0 不支持的操作命令字包括：OP_DELEGPURGE、OP_DELEGRETURN、NFS4_OP_OPENATTR。如果使用了这些不支持的操作命令字，/var/log/messages 中会显示 NFS4ERR_ATTRNOTSUPP错误。
+- NFSv4.0 暂不支持 Delegation 功能。
+- 不支持 NFSv4.1 协议。
+- 不支持 POSIX SetUID、SetGID、Sticky Bits 功能。
+- UID 与 GID 说明
+   1. 对于 NFSv3 协议，如果 Linux 本地账号中存在文件所属的 UID 或 GID，则根据本地 UID 和 GID 映射关系显示相应的用户名和组名；如果本地账号不存在文件所属的 UID 或 GID，则直接显示 UID和 GID。
+   2. 对于 NFSv4.0 协议，如果本地 Linux 内核版本低于 3.0，则所有文件的 UID 和 GID 都将显示 nobody；如果内核版本高于 3.0，则显示规则与 NFSv3 协议相同。
+
+说明：若使用NFSv4.0协议挂载文件系统，且Linux内核版本低于3.0，建议您不要对文件或目录执行chown或chgrp命令，否则该文件或目录的UID和GID将变为nobody。
+
+## SMB文件系统
+- 单个文件名的最大长度：255个UTF-16字符。
+- 功能限制
+  - 不支持文件扩展属性（Extended attributes）以及基于Lease的客户端缓存。
+  - 不支持Sparse files、文件压缩、网卡状态查询、重解析点（Reparse Point）等IOCTL或FSCTL操作。
+  - 不支持交换数据流（Alternate Data Streams）。
+  - 不支持LDAP身份认证功能。
+  - 不支持SMB文件传输协议的Direct、SMB Multichannel、SMB Directory Leasing及Persistent File Handle功能。
+- 协议版本支持
+  - 支持SMB 2.1及以上版本。

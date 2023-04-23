@@ -1,0 +1,54 @@
+**Topic**
+消息主题，一级消息类型，通过 Topic 对消息进行分类。
+**Message**
+消息，消息队列中信息传递的载体。
+**Message ID**
+消息的全局唯一标识，由消息队列 RocketMQ 系统自动生成，唯一标识某条消息。
+**Message Key**
+消息的业务标识，由消息生产者（Producer）设置，唯一标识某个业务逻辑。
+**Tag**
+消息标签，二级消息类型，用来进一步区分某个 Topic 下的消息分类。详情请参见 Topic 与 Tag 最佳实践。
+**Producer**
+消息生产者，也称为消息发布者，负责生产并发送消息。
+**Producer 实例**
+Producer 的一个对象实例，不同的 Producer 实例可以运行在不同进程内或者不同机器上。Producer 实例线程安全，可在同一进程内多线程之间共享。
+**Consumer**
+消息消费者，也称为消息订阅者，负责接收并消费消息。
+**Consumer 实例**
+Consumer 的一个对象实例，不同的 Consumer 实例可以运行在不同进程内或者不同机器上。一个 Consumer 实例内配置线程池消费消息。
+**Group**
+一类 Producer 或 Consumer，这类 Producer 或 Consumer 通常生产或消费同一类消息，且消息发布或订阅的逻辑一致。
+**Group ID**
+Group 的标识。
+**队列**
+每个 Topic 下会由一到多个队列来存储消息。每个 Topic 对应队列数与消息类型以及实例所处地域（Region）相关。
+**Exactly-Once 投递语义**
+Exactly-Once 投递语义是指发送到消息系统的消息只能被 Consumer 处理且仅处理一次，即使 Consumer 重试消息发送导致某消息重复投递，该消息在 Consumer 也只被消费一次。详情请参见 [Exactly-Once 投递语义](https://developer.qiniu.io/qvm/manual/6134/exactly-once-delivery-semantics)。
+**集群消费**
+一个 Group ID 所标识的所有 Consumer 平均分摊消费消息。例如某个 Topic 有 9 条消息，一个 Group ID 有 3 个 Consumer 实例，那么在集群消费模式下每个实例平均分摊，只消费其中的 3 条消息。详情请参见[集群消费和广播消费](https://developer.qiniu.io/qvm/manual/6135/cluster-consumption-and-radio)。
+**广播消费**
+一个 Group ID 所标识的所有 Consumer 都会各自消费某条消息一次。例如某个 Topic 有 9 条消息，一个 Group ID 有 3 个 Consumer 实例，那么在广播消费模式下每个实例都会各自消费 9 条消息。详情请参见[集群消费和广播消费](https://developer.qiniu.io/qvm/manual/6135/cluster-consumption-and-radio)。
+**定时消息**
+Producer 将消息发送到消息队列 RocketMQ 服务端，但并不期望这条消息立马投递，而是推迟到在当前时间点之后的某一个时间投递到 Consumer 进行消费，该消息即定时消息。详情请参见[定时/延时消息](https://developer.qiniu.io/qvm/manual/6129/timing-and-delay-news)。
+**延时消息**
+Producer 将消息发送到消息队列 RocketMQ 服务端，但并不期望这条消息立马投递，而是延迟一定时间后才投递到 Consumer 进行消费，该消息即延时消息。详情请参见[定时/延时消息](https://developer.qiniu.io/qvm/manual/6129/timing-and-delay-news)。
+**事务消息**
+消息队列 RocketMQ 提供类似 X/Open XA 的分布事务功能，通过消息队列 RocketMQ 的事务消息能达到分布式事务的最终一致。详情请参见[事务消息](https://developer.qiniu.io/qvm/manual/6131/transaction-message)。
+**顺序消息**
+消息队列 RocketMQ 提供的一种按照顺序进行发布和消费的消息类型，分为全局顺序消息和分区顺序消息。详情请参见[顺序消息](https://developer.qiniu.io/qvm/manual/6130/the-order-message)。
+**全局顺序消息**
+对于指定的一个 Topic，所有消息按照严格的先入先出（FIFO）的顺序进行发布和消费。详情请参见[顺序消息](https://developer.qiniu.io/qvm/manual/6130/the-order-message)息。
+**分区顺序消息**
+对于指定的一个 Topic，所有消息根据 Sharding Key 进行区块分区。同一个分区内的消息按照严格的 FIFO 顺序进行发布和消费。Sharding Key 是顺序消息中用来区分不同分区的关键字段，和普通消息的 Message Key 是完全不同的概念。详情请参见[顺序消息](https://developer.qiniu.io/qvm/manual/6130/the-order-message)。
+**消息堆积**
+Producer 已经将消息发送到消息队列 RocketMQ 的服务端，但由于 Consumer 消费能力有限，未能在短时间内将所有消息正确消费掉，此时在消息队列 RocketMQ 的服务端保存着未被消费的消息，该状态即消息堆积。
+**消息过滤**
+Consumer 可以根据消息标签（Tag）对消息进行过滤，确保 Consumer 最终只接收被过滤后的消息类型。消息过滤在消息队列 RocketMQ 的服务端完成。详情请参见[消息过滤](https://developer.qiniu.io/qvm/manual/6133/the-message-filter)。
+**消息轨迹**
+在一条消息从 Producer 发出到 Consumer 消费处理过程中，由各个相关节点的时间、地点等数据汇聚而成的完整链路信息。通过消息轨迹，您能清晰定位消息从 Producer 发出，经由消息队列 RocketMQ 服务端，投递给 Consumer 的完整链路，方便定位排查问题。详情请参见[消息轨迹](https://developer.qiniu.io/qvm/manual/6156/query-message-trajectory)。
+**重置消费位点**
+以时间轴为坐标，在消息持久化存储的时间范围内（默认 3 天），重新设置 Consumer 对已订阅的 Topic 的消费进度，设置完成后 Consumer 将接收设定时间点之后由 Producer 发送到消息队列 RocketMQ 服务端的消息。详情请参见[重置消费位点](https://developer.qiniu.io/qvm/manual/6158/reset-the-consumer-site)。
+**死信队列**
+死信队列用于处理无法被正常消费的消息。当一条消息初次消费失败，消息队列 RocketMQ 会自动进行消息重试；达到最大重试次数后，若消费依然失败，则表明 Consumer 在正常情况下无法正确地消费该消息。此时，消息队列 RocketMQ 不会立刻将消息丢弃，而是将这条消息发送到该 Consumer 对应的特殊队列中。
+消息队列 RocketMQ 将这种正常情况下无法被消费的消息称为死信消息（Dead-Letter Message），将存储死信消息的特殊队列称为死信队列（Dead-Letter Queue）。
+详情请参见[死信队列](https://developer.qiniu.io/qvm/manual/6159/dead-letter-queue)。

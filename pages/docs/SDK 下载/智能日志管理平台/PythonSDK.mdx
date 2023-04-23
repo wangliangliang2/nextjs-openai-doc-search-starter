@@ -1,0 +1,81 @@
+**下载地址：**
+
+GitHub地址：[SDK_Python](https://github.com/qiniu/pandora-python-sdk)
+
+Pandora Python SDK 0.0.1版本。该版本依赖于第三方 HTTP库 requests <https://github.com/kennethreitz/requests>
+
+SDK 主要包含了几个功能：
+
+1. 对 Pandora 的接口签名
+
+2. 封装 Pandora 的打点接口，支持从 SDK 传输数据到 Pandora 的[实时仓库](https://developer.qiniu.com/insight/manual/4881/real-time-analysis-summary)
+
+**操作步骤：**
+
+使用 Python SDK 打点到服务端的流程一般如下：
+
+1. 首先，在服务端创建实时仓库，用来接收 SDK 上报数据
+
+![创建实时仓库](https://dn-odum9helk.qbox.me/FtERjtAcOBGuzVZXpaxo6GYFcWc5)
+
+2. 设置实时仓库的元数据、所属工作流和字段信息等
+
+![设置实时仓库](https://dn-odum9helk.qbox.me/FsDhWSDCeJryV8rtPXWmNp1QrRFM)
+
+3. 参考[工作流管理相关文档](https://developer.qiniu.com/insight/manual/4688/introduction-of-the-pipeline) 将实时仓库数据导出到日志仓库或者云存储等产品
+
+4. 调用 SDK 进行数据发送，示例代码如下：
+
+准备工作如下：
+
+```
+# -*- coding: utf-8 -*-
+
+from pandora import api
+from pandora.models import *
+from pandora.utils import *
+
+endpoint = 'http://pipeline.qiniu.com'
+repo_name = `<你的实时仓库名称>` # 此处是第一步中设置的实时仓库名字
+
+# AccessKey, SecretKey 可以从密钥管理中获得
+# 密钥获得方式具体可以参考 https://developer.qiniu.com/insight/manual/4605/opening-the-product
+client = api.Client(endpoint, `<你的AccessKey>`, `<你的SecretKey>`)
+```
+
+数据打点的示例代码：
+
+```
+# 假设你的消息队列有三个字段，分别是string类型的f1，long类型的f2，float类型的f3
+
+# 打点方式1 从string中上传数据打点
+client.post_data_from_string(repo_name, 'f1="x"\tf2=1234\tf3=1.23')
+
+# 打点方式2 构造数据点上传数据打点，
+f1 = Field("f1", "v1")
+f2 = Field("f2", 330709)
+f3 = Field("f3", 2.2223)
+point = Point([f1, f1])
+client.post_data(repo_name,[point])
+
+# 打点方式3 从元组中构造数据点上传打点
+p1 = [("f1", "v1"), ("f2", 1234567890), ("f3", 3.14)]
+p2 = [("f1", "v2"), ("f2", 9876543210), ("f3", 1.414)]
+client.post_data(repo_name, [to_point(p1), to_point(p2)])
+```
+
+异常处理：
+
+```
+# 一旦出错，Python SDK的接口直接抛出异常，具体的异常定义在pandora.exceptions子模块中。参考例子如下：
+
+
+try:
+    client.post_data(repo_name, points)
+except pandora.exceptions.RequestError as e:
+    print('post data failed: http_status={0}, request_id={1}, message={2}'.format(e.status, e.request_id, e.message))
+```
+
+注意：关于实时仓库、日志仓库和工作流等详细的创建方法可以参考 [实时仓库](https://developer.qiniu.com/insight/manual/4875/local-upload-log)，[日志仓库](https://developer.qiniu.com/insight/manual/5115/logwarehouse)，[工作流介绍相关文档](https://developer.qiniu.com/insight/manual/4688/introduction-of-the-pipeline) 等文档
+
+

@@ -1,0 +1,20 @@
+**按照CA/B Forum规定，域名验证策略将会有如下重大变更：**
+自2021年12月1日起，使用文件验证(HTTP)的域名 只能为被验证域名本身签发证书，不支持签发通配符证书和其下级子域名证书。
+
+目前，行业允许仅对主域名( domain.com )进行域名验证即可，适用于通配符证书(如 *.domain.com 或 *.sub.domain.com 等)和其下级所有子域名(如 sub.domain.com 或 sub2.sub1.domain.com 等)。
+
+2021年12月1日后，对于使用文件(HTTP)方式验证的域名，只能为被验证域名本身签发证书，如 使用文件(HTTP)验证方式验证域名 domain.com，则只能为 domain.com 签发证书，不能为 *.domain.com 或 sub.domain.com 签发证书。
+
+</br>
+七牛云侧调整如下：
+2021年11月01日起，将全面下线DV通配符类证书的文件验证方式，11月01日之后新申请DV通配符证书仅支持DNS验证，11月01日前已颁发的证书不受影响。其他类型证书的验证方式不受影响。
+
+</br>
+
+**DigiCert 公告** : https://knowledge.digicert.com/alerts/domain-authentication-changes-in-2021.html
+**GlobalSign 公告** ：https://www.globalsign.com/en/blog/upcoming-changes-publicly-trusted-tls-certificates
+
+
+
+
+

@@ -1,0 +1,155 @@
+# 流量统计指标查询接口
+## 入口地址
+```
+Host: pili.qiniuapi.com
+```
+注：[QiniuToken 签算方式](https://developer.qiniu.com/pili/api/2772/http-requests-authentication)
+## 通用参数
+
+#### g
+查询的时间粒度，支持5min hour day month四种
+
+#### select
+需要查询的值字段，可有多个，具体见对应table
+
+#### group
+分组名，把结果集按group分组，可选参数
+
+## upflow上行流量
+延迟在5分钟左右
+
+### 条件字段
+- `hub` 可选
+- `domain` 可选
+
+### 值字段
+
+- `flow` 流量 单位byte,带宽数据可以从flow转化，bandwidth=flow*8/300
+
+### 示例
+
+用户在某段时间内每天的上行流量
+```
+GET /statd/upflow?begin=20151201000000&end=20151203000000&g=day&select=flow
+Host: pili.qiniuapi.com
+```
+返回
+```
+[
+    {
+        "time":"2015-12-01T00:00:00+08:00",
+        "values":
+            {
+                "flow":4527162977,
+            }
+    },
+    {
+        "time":"2015-12-02T00:00:00+08:00",
+        "values":
+            {
+                "flow":5407323840,
+            }
+    }
+]
+```
+用户在某段时间内每天的各个hub上行流量
+```
+GET /statd/upflow?begin=20151201000000&end=20151203000000&g=day&select=flow&group=hub
+Host: pili.qiniuapi.com
+```
+返回
+```
+[
+    {
+        "time":"2015-12-01T00:00:00+08:00",
+        "values":
+            {
+                "blued": {"flow":4527162977}
+            }
+    },
+    {
+        "time":"2015-12-02T00:00:00+08:00",
+        "values":
+            {
+                "blued":{"flow":5407323840}
+            }
+    }
+]
+```
+
+
+## 域名级别下行流量(downflow)
+延迟5分钟左右
+
+### 条件字段
+- `hub` 可选
+- `domain` 可选
+- `area` 可选 (中国大陆(cn)、香港(hk)、台湾(tw)、亚太(apac)、美洲(am)、欧洲/中东/非洲(emea))
+
+### 值字段
+- `flow` 流量 单位`byte`,带宽数据可以从`flow`转化，`bandwidth=flow*8/300`  
+
+### 示例
+#### 用户在某段时间内的每天下行流量
+```
+GET /statd/downflow?begin=20151201000000&end=20151203000000&g=day&select=flow
+Host: pili.qiniuapi.com
+```
+#### 返回
+```
+[
+    {
+        "time":"2015-12-01T00:00:00+08:00",
+        "values":
+            {
+                "flow":4527162977
+            }
+    },
+    {
+        "time":"2015-12-02T00:00:00+08:00",
+        "values":
+            {
+                "flow":5407323840
+            }
+    }
+]
+```
+## 查询流级别下行流量(stream_down_flow)
+延迟2天,保留最近90天
+
+### 条件字段
+- `hub` 必选
+- `domain` 可选
+- `area` 可选 (中国大陆(cn)、香港(hk)、台湾(tw)、亚太(apac)、美洲(am)、欧洲/中东/非洲(emea))
+- `scheme` 可选 (http|https|rtmp)
+- `streamTitle` 可选 播放流名，各值意义如下
+
+### 值字段
+- `flow` 流量 单位`byte`,带宽数据可以从`flow`转化，`bandwidth=flow*8/300`
+
+### 示例
+#### 某路流在某段时间内的每天下行流量
+```
+GET /statd/stream_down_flow?begin=20151201000000&end=20151203000000&g=day&$hub=qiniutest&$streamTitle=sid1234&select=flow
+Host: pili.qiniuapi.com
+```
+返回
+
+```
+[
+    {
+        "time":"2015-12-01T00:00:00+08:00",
+        "values":
+            {
+                "flow":4527162977
+            }
+    },
+    {
+        "time":"2015-12-02T00:00:00+08:00",
+        "values":
+            {
+                "flow":5407323840
+            }
+    }
+]
+```

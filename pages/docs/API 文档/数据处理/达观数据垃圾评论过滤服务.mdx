@@ -1,0 +1,104 @@
+文本垃圾评论过滤服务(dg_spam_filter_v1)能够帮您有效判断保存在七牛云的文本是否属于广告以及文本质量如何。
+
+本服务由达而观信息科技（上海）有限公司（以下简称达观数据）提供。启用服务后，您存储在七牛云空间的文件将在您主动请求的情况下被提供给达观数据以供其计算使用。七牛不能保证鉴别结果的正确性，请您自行评估后选择是否启用。服务价格请您参考具体的[服务价格](#dg_spam_filter_v1-price)，您使用本服务产生的费用由七牛代收。启用服务则表示您知晓并同意以上内容。
+
+**注意**
+
+- 服务地域：华东、华北、华南。
+- 资源的 Mime 文件格式仅支持文本类型：text/*，如：text/plain、text/html 等。
+- 资源（文本）的编码格式支持：UTF-8、GBK、GB2312、GB18030、Big5（繁体中文）等常用编码类型。
+
+# 如何开启
+
+如果您的文件存储在七牛云，则需先开启本服务。点此进入[七牛开发者平台](https://portal.qiniu.com/dora/thirdparty/create/dg_spam_filter_v1/quickstart)，点击右上角**开始使用**按钮。
+
+# 请求语法 
+```
+    GET <TextDownloadURI>?dg_spam_filter_v1/<Params> HTTP/1.1
+    Host: <TextDownloadHost>
+```
+
+| 参数           | 必填           | 说明  |
+| ------------- |:-------------:|-----|
+| Params        | 否 | 未设置时，同时显示广告评论和文本质量指数；<br>ad：只显示广告评论指数；<br>nonsense：只显示文本质量指数 |
+
+#示例
+
+资源为[https://mars-assets.qnssl.com/test_spam_filter.txt](https://mars-assets.qnssl.com/test_spam_filter.txt)， 处理样式为 dg_spam_filter_v1。
+```
+    **构造请求URL**
+    RequestUrl = 'https://mars-assets.qnssl.com/test_spam_filter.txt?dg_spam_filter_v1'
+```
+
+# 请求头部 
+
+| 头部名称             | 必填           | 说明  |
+| ------------- |:-------------:|-----|
+| Host        | 是 | 下载服务器域名，必须为七牛三级域名或自定义二级域名，参考七牛[自定义域名的绑定流程](https://developer.qiniu.com/fusion/kb/1322/how-to-configure-cname-domain-name)。 |
+
+
+# 响应语法 
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-store
+{
+   // ...text data...
+}
+```
+
+# 响应头部 
+
+
+| 头部名称             | 必填           | 说明  |
+| ------------- |:-------------:| -----:|
+| Content-Type        | 是 | MIME 类型，固定为 application/json |
+| Content-Control       | 是 | 缓存控制，固定为 no-store，不缓存 |
+
+
+# 响应内容 
+- 如果请求成功，返回包含如下内容的 JSON 字符串（已格式化，便于阅读):
+
+```json
+{
+  "request_id": 1472721238356779,
+  # 请求处理状态
+  "status": "OK",
+  # 是否是广告评论
+  "is_ad": 0,
+  # 广告评论指数
+  "weight_ad": 0.05,
+  # 是否是低质量文本
+  "is_nonsense": 0,
+  # 文本质量指数
+  "weight_nonsense": 0.381835,
+  
+}
+```
+
+- 如果请求失败，请参考 `status` 和 `code` 字段的说明。
+- `status` 执行结果，OK为成功，FAIL为失败，WARN为有部分非重要字段异常，请根据返回错误信息进行排查
+- `is_ad` 0为正常文本，1为广告评论
+- `weight_ad` 广告评论权重， 0到1之间。数值越大，该评论为广告评论的概率越大
+- `is_nonsense` 0为正常文本，1为无意义文本
+- `weight_nonsense` 无意义文本权重， 0到1之间。数值越大，该评论为无意义文本的概率
+
+
+# 示例
+
+- 原文本地址： [https://mars-assets.qnssl.com/test_spam_filter.txt](https://mars-assets.qnssl.com/test_spam_filter.txt)
+- 显示广告和文本质量指数
+[https://mars-assets.qnssl.com/test_spam_filter.txt?dg_spam_filter_v1](https://mars-assets.qnssl.com/test_spam_filter.txt?dg_spam_filter_v1)
+
+<a id="dg_spam_filter_v1-price"></a>
+# 服务价格
+
+| 调用量（次／月） | 单价（元／千次） |
+| :--------------: | :--------------: |
+|  0-20 万（含）   |       1.8        |
+| 20-500 万（含）  |       1.5        |
+|     >500 万      |       1.2        |
+
+**计费示例：**  若一月内进行了21万次文本请求，则当月计费为 `200 * 1.8 + 10 * 1.5 = 375.0 元`
+

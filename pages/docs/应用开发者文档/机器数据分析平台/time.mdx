@@ -1,0 +1,109 @@
+`<time>`元素定义时间对象。支持通过`<earliest>`元素和`<latest>`元素设置初始开始时间、结束时间，通过设置开始时间和结束时间表示出相对时间、绝对时间、和预设的时间范围。
+
+### 父元素
+
+* `<search>`
+* `<operation-bar>`元素的`<initial-value>`子元素
+* `<action-bar>`元素的`<initial-value>`子元素
+
+### 子元素
+
+* `<earliest>`
+* `<latest>`
+
+**绝对时间**
+
+* 通过`<earliest>`和`<latest>`元素指定具体的时间戳，表示两个时间戳之间的绝对时间范围。
+
+ ```
+<earliest>1572524870871</earliest>
+<latest>1572524870891</latest>
+```
+
+* `<earliest>`值为 earliest 或不写`<earliest>`元素， 表示在 `<latest>` 的时间之前:
+
+	 * `<earliest>`值为 earliest
+	 
+   ```
+<earliest>earliest</earliest>
+<latest>1572524870891</latest>
+   ```
+	 
+ * 无`<earliest>`元素
+ 
+	```
+	<latest>1572524870891</latest>
+	```
+	
+* `<latest>`值为 now 或不写`<latest>`元素， 表示在`<earliest>`的时间之后
+
+	* `<latest>`值为 now
+	
+	```
+	<earliest>1572524870891</earliest>
+<latest>now</latest>
+	```
+	
+**相对时间**
+
+通过在`<earliest>`和`<latest>`元素指定时长来表示相对时间，时长可以是正数或负数，均表示向前偏移时间，时间单位支持: s(秒)、m(分)、h(时)、d(天)、w(周)、M(月)、Q(季)、y(年) 。
+
+* `<earliest>`和`<latest>`元素均指定时长，如前三分钟到前两分钟：
+
+ ```
+<earliest>3m</earliest>
+<latest>2m</latest>
+```
+
+* `<earliest>`元素指定时长，不写`<latest>`元素或者`<latest>`值为 now ，如前三分钟到现在：
+
+ *  `<latest>`值为 now：
+	
+   ```	
+<earliest>-3m</earliest>
+<latest>now</latest>
+ ```
+ 
+ * 无`<latest>`元素:
+	
+   ```
+<earliest>-3m</earliest>
+   ```
+	 
+* `<earliest>`元素指定时长，`<latest>`元素指定时间戳 ，如从前三分钟到2019/10/31 21:13:02 的时间范围：
+	
+ ```
+<earliest>3m</earliest>
+<latest>1572527582426</latest>
+```
+	
+**预设时间**
+	
+时间选择器支持一些预设时间，如下，您可以阅读下表以了解每个预设时间的时长字符串。
+	
+|预设时间|时长字符串|
+|:--:|:--:|
+|前 5 分钟|m5 、 5m 、 -5m|
+|前 15 分钟|m15 、 15m 、 -15m|
+|前 30 分钟|m30 、 30m 、 -30m|
+|前 60 分钟|m60 、 60m 、 -60m|
+|前 3 小时|h3 、 3h 、 -3h|
+|前 4 小时|h4 、 4h 、 -4h|
+|前 6 小时|h6 、 6h 、 -6h|
+|前 12 小时|h12 、 12h 、 -12h|
+|前 24 小时|h24 、 24h 、 -24h|
+|前 3 天|d3 、 3d、 -3d|
+|前 7 天|d7 、 7d、 -7d|
+|	前 30 天|d30 、 30d、 -30d|
+|今天|today|
+|本周|week|
+|本月|month|
+|本季度|quarter|
+|本年度|year|
+|昨天|yesterday	|
+|前天	|theDayBeforeYesterday|
+|	上周|previousWeek|
+|上月	|previousMonth|
+|	上季度|previousQuarter|
+|上年度	|previousYear|
+|所有时间	|allTime|

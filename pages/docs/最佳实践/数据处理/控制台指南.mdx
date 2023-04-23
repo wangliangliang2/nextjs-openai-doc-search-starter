@@ -1,0 +1,100 @@
+七牛提供的 自定义数据处理平台 ，为您的数据处理业务提供稳定、可靠、按需弹性缩放的运行平台。自定义数据处理平台全面支持各种主流开发语言，可视化管理界面让您更好的监控各种应用运行和使用状态。
+
+自定义数据处理平台功能：
+
+* 创建自定义数据处理
+* 发布新版本
+* 调整实例数
+* 删除自定义数据处理
+
+<a id="ufop-create"></a>
+# 创建自定义数据处理
+登录[七牛开发者平台](https://portal.qiniu.com/signin)，在左边导航栏点击 __资源主页__ ，然后在该页面的 __七牛官方资源__ 找到 __自定义数据处理__ ，点击 __立即添加__ 。
+
+![https://dn-odum9helk.qbox.me/2145abf633e3fc4e8b983a65cc103c8d](https://dn-odum9helk.qbox.me/2145abf633e3fc4e8b983a65cc103c8d)
+
+进入 __创建自定义数据处理__ 页面，创建自定义数据处理
+![https://dn-odum9helk.qbox.me/9c8a63f145f578c63b14cca9886aacf1](https://dn-odum9helk.qbox.me/9c8a63f145f578c63b14cca9886aacf1)
+
+
+* 填写 自定义数据处理名称，如：hello_world
+* 填写 描述(可选)，如：My First Ufop
+* 点击 确定创建 按钮
+
+<a id="ufop-develop"></a>
+# 发布新版本
+自定义数据处理创建成功后，就可以发布新版本
+![https://dn-odum9helk.qbox.me/cfd0063618c9bb5e7b6bb625b0c0ccf3](https://dn-odum9helk.qbox.me/cfd0063618c9bb5e7b6bb625b0c0ccf3)
+
+* 填写 版本号，如：version1
+* 选择一个镜像，如果没有可供选择的镜像，需要使用[命令行工具 qdoractl](/dora/tools/qdoractl)推送镜像到七牛自定义数据处理镜像仓库；例如，您可以把这个示例[demo](https://github.com/qiniu-ufop/ufop-golang-demo)里的镜像“ufopdemo:v1”按照README.MD的步骤构建一个镜像，然后使用命令行工具 qdoractl推送到七牛自定义数据处理镜像仓库
+* 选择资源配置，例如C1M1
+* 健康配置（可选），高级设置，如果镜像中没有设置健康检查路径，此处可以为空（如果用户对该自定义数据处理的健康状况无特殊需求，可以在镜像中不设置健康检查路径）。如果镜像中配置了健康检查路径，例如[demo](https://github.com/qiniu-ufop/ufop-golang-demo)镜像中配置的健康检查路径是/health，那 __必须__ 在此处填 /health。请确保此处填写的健康检查路径与镜像中设置的健康检查路径一致， __否则会导致镜像无法启动__ 。例如URL填入 /health ，时间间隔 填入 3
+* 填写 设置日志（可选），高级设置，例如 /var/log 。请确保此处填写的日志收集的路径与镜像中设置的日志收集路径保持一致，__否则会导致无法收集到日志信息__。
+* 描述(可选)，如：这是我的第一个发布版本
+* 点击 确定创建 按钮
+![https://dn-odum9helk.qbox.me/3234d1304acc06e0499b04fea2d39100](https://dn-odum9helk.qbox.me/3234d1304acc06e0499b04fea2d39100)
+
+您也可以在版本列表页面发布新版本，点击 “发布新版本” 按钮
+![](https://dn-odum9helk.qbox.me/FoMILHZbmqOwDhSaB7EfLVu0FpVN)
+
+
+<a id="ufop-update"></a>
+# 调整实例数
+根据你的需求调整实例数，
+![](https://dn-odum9helk.qbox.me/FmIDI67KnyjvHqFq9L8HQg0Q_I0M)
+
+点击 “保存” 按钮，
+![](https://dn-odum9helk.qbox.me/FgTIwqCRTudhq_I29mVGCTsfYpQ7)
+
+
+调整实例个数需要一些时间。当实例个数调整到预设值时，此时您的自定义数据处理已经部署成功。
+
+<a id="ufop-varsion"></a>
+# 版本列表
+
+在数据处理概览页面，在版本列表可以看到所有有实例运行中的版本，也可以点击右边的“全部”查看全部的版本。
+![https://dn-odum9helk.qbox.me/dcd605e51e78cdddddf62f0ccb3a93e4](https://dn-odum9helk.qbox.me/dcd605e51e78cdddddf62f0ccb3a93e4)
+
+# 日志查询
+
+在日志查询页面，可以查询各版本在各区域某段时间的日志。
+![https://dn-odum9helk.qbox.me/e19152383cc38afd4c6b92d676682e85](https://dn-odum9helk.qbox.me/e19152383cc38afd4c6b92d676682e85)
+
+<a id="ufop-data"></a>
+# 数据统计
+
+在数据统计页面，可以查看CPU和内存的使用情况，是所有实例在某个时间点的平均值。
+
+![https://dn-odum9helk.qbox.me/db12caa94c671eac1c902196ae3557c5](https://dn-odum9helk.qbox.me/db12caa94c671eac1c902196ae3557c5)
+
+![https://dn-odum9helk.qbox.me/b8295eda23a726396812a1b4be6a7f51](https://dn-odum9helk.qbox.me/b8295eda23a726396812a1b4be6a7f51)
+
+<a id="ufop-delete"></a>
+# 删除自定义数据处理
+
+在设置页面，可以修改这个数据处理的描述，也可以删除这个自定义数据处理（删除自定义数据处理后，该自定义数据处理的所有实例都会自动释放）。
+![https://dn-odum9helk.qbox.me/91c29c20a3c3f8aa84cb1bca7b7395d0](https://dn-odum9helk.qbox.me/91c29c20a3c3f8aa84cb1bca7b7395d0)
+
+<a id="ufop-access"></a>
+# 访问和使用自定义数据处理
+至此，您已经完成了 自定义数据处理 的创建和部署，现在您可以按以下的方式从外部访问您的 自定义数据处理 ，这里以 hello_world 为例：
+
+直接访问方式：
+
+```
+http://resourceurl?hello_world
+```
+使用管道的方式访问（这里以 imageInfo 的输出作为 hello_world 的输入）：
+
+```
+http://resourceurl?imageInfo|hello_world
+
+```
+下面是在浏览器中访问 自定义数据处理 的效果，该 自定义数据处理 的效果是在Response中输出hello world
+
+![https://dn-odum9helk.qbox.me/1b53dd18d42881a1e8c24633d8240f89](https://dn-odum9helk.qbox.me/1b53dd18d42881a1e8c24633d8240f89)
+
+以上示例是同步调用的例子，您也可以使用异步调用的方式调用自定义数据处理。同时，如果使用管道，您可以在七牛的数据处理和您有权访问的所有自定义数据处理 之间自由地组合搭配，得到您想要的处理结果。
+
+

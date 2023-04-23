@@ -1,0 +1,120 @@
+# **上传方式**
+
+七牛云提供多种上传方式，包括命令行，及 11 种语言 SDK，都可以在我们的[七牛开发者中心](http://developer.qiniu.com)找到。
+
+## **准备工作**
+
+在上传之前，你需要在 portal.qiniu.com 注册并激活成功，创建了一个 bucket，并且根据自己的情况将 bucket 设置为公开或者私有。
+
+## **生成上传 token**
+
+为了安全起见，我们所有上传操作都是要有 token 的，各种 SDK 都有 token 生成函数。 生成 token 的必备要素:
+
+- bucket，准备工作完成后已经创建了 bucket
+
+- access key, secret key，我们的 SDK 验证都是通过这个进行验证，而不是账号密码，请到 portal 的账户设置中去查看
+
+- 过期时间，各 SDK 默认是一小时的，您可以加长这个时间
+
+- 上传策略，将 bucket，和过期时间放入上传策略的参数中，就可以生成最简单的策略，为了满足用户的不同需要具体策略还有很多配置，这里我们先不管。
+
+根据上传策略，我们就可以利用 SDK 生成 token 了。从安全的角度考虑，我们不推荐在客户端直接用 access key 和 secret key 直接生成 token 的。您可以根据自己的情况，从我们的服务端 SDK 进行选择，来生成 token。
+
+    package util;
+    import com.qiniu.api.rs.*;
+    import com.qiniu.api.config.Config;
+    import com.qiniu.api.auth.digest.Mac;
+    import com.qiniu.api.net.CallRet;
+    public class Qiniu { 
+        public static String uploadToken(String bucket, String accessKey, String secretKey){ 
+            PutPolicy upPolicy = new PutPolicy(bucket);
+            upPolicy.endUser = user;
+            upPolicy.callbackUrl = callbackUrl;
+            upPolicy.callbackBody = "key=$(key)&hash=$(etag)&width=$(imageInfo.width)&height=$(imageInfo.height)&user=$(endUser)&size=$(fsize)&mime=$(mimeType)"; 
+            String token = null; 
+            Mac mac = new Mac(accessKey, secretKey); 
+            try{
+                token = upPolicy.token(mac);
+            }catch (Exception e){
+                e.printStackTrace();
+            } 
+            return token;
+        }
+    }
+
+
+## **开始上传**
+
+我们有两类上传 API，一种是简便的直接上传，另一种是加入断点续传及重传的 API，我们先从直传上手。如果没有任何报错，证明已经上传成功了。
+
+    PutPolicy putPolicy = new PutPolicy(bucketName);
+    Mac mac = new Mac(accessKey, secretKey);
+    String uptoken = putPolicy.token(mac);
+    String localFile = "test.png";
+    PutExtra extra = new PutExtra();
+    PutRet ret = IoApi.putFile(uptoken, key, localFile, extra);
+
+
+## **浏览已经上传的文件**
+
+可以到 portal 中查看，或者使用列表 API 去下载，使用 stat API 去查看文件
+
+## **如何实现客户服务器能够及时同步文件信息**
+
+使用 callback, 或者 return url 的方式把文件信息通知到自己的服务器，因为七牛云讲究一个快字，所以如果用户上传到您那里，再从您那里上传到七牛就太慢了。所以我们提供了这样一种方式去同步信息，您只要按格式去填写关心的信息字段，生成 token 就好了，简单的说有 4 类字段
+
+1. 文件信息字段
+2. 文件内容信息字段，我们支持将图片文件的元信息传给您，比如宽，高
+3. 自定义字段，上传时使用 x:custorm\_param 就可以传自己的字段。
+4. 进行其他操作的预置字段，比如 endUser。
+
+```
+package util;
+import com.qiniu.api.rs.*;
+import com.qiniu.api.config.Config;
+import com.qiniu.api.auth.digest.Mac;
+import com.qiniu.api.net.CallRet;
+public class Qiniu { 
+    public static String uploadToken(String bucket, String user, String callbackUrl){ 
+        PutPolicy upPolicy = new PutPolicy(bucket);
+        upPolicy.endUser = user;
+        upPolicy.callbackUrl = callbackUrl;
+        upPolicy.callbackBody = "key=$(key)&hash=$(etag)&width=$(imageInfo.width)&height=$(imageInfo.height)&user=$(endUser)&size=$(fsize)&mime=$(mimeType)";
+        String token = null; 
+        Mac mac = new Mac(Config.ACCESS_KEY, Config.SECRET_KEY);
+        try{
+            token = upPolicy.token(mac);
+        }catch (Exception e){
+            e.printStackTrace();
+        } 
+        return token;
+    }
+}
+
+```
+<br>
+
+
+<a id="downloadintro"></a>
+# **下载方式**
+## **公开下载**
+
+对于大部分空间公开用户来说，上传完后，通过通常的 http 直接访问就可以享受到我们的下载加速了。
+具体可以参考：[公开资源下载](https://developer.qiniu.com/kodo/manual/1655/download-public) 
+
+## **私有下载**
+
+对于 bucket 内容不方便开放给所有用户的人来说，我们提供了下载鉴权机制。 生成一段时间内有效的下载 token ， 用户可以下载在下载token有效期内的七牛文件资源。 
+具体可以参考：[私有资源下载](https://developer.qiniu.com/kodo/manual/1656/download-private)
+
+
+<a id="batchdownload"></a>
+## **批量下载**
+
+可以在 portal 上批量下载文件，但是需要在浏览器设置 **允许显示弹出式窗口**
+
+![](https://dn-odum9helk.qbox.me/Fvzr5I55m4wJYsXkTrUlqXIyhdl0)
+
+点击上图中所示的浏览器拦截按钮，在弹窗中勾选 **始终允许显示弹出式窗口** 即可。
+
+![](https://dn-odum9helk.qbox.me/FhU433IIhY94Vu2W5Jr7erM4ctmD)

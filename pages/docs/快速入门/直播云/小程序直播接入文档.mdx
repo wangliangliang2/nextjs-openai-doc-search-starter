@@ -1,0 +1,100 @@
+# 快速开始运行小程序流程
+
+## 1.建立小程序项目
+
+在微信公众平台注册小程序，在 开发设置 上获取 AppID，打开微信开发者工具，为小程序目录打开编辑页面，填写 AppID。
+
+![](https://dn-odum9helk.qbox.me/FkTCGhX2NdamE6DbM218aIjYvJIr)
+
+## 2.获取七牛直播小程序代码
+
+七牛小程序直播的前后端代码都已经开放在 github：https://github.com/pili-engineering/wxapp-live-demo 上面，客户可以自行下载配置。
+
+## 3.更改后端参数
+
+1. 编辑 pili.js：https://github.com/pili-engineering/wxapp-live-demo/blob/master/server/pili.js
+2. 配置七牛的 access key/secret key
+3. 配置七牛的推流和推流播放的地址
+4. 换成自己在七牛直播云上的空间名称
+5. 编辑 utils/wechat.js 改为自己的微信小程序 APPID 和 密钥
+6. 按照server文件夹下的Readme文件开启后端服务 https://github.com/pili-engineering/wxapp-live-demo/blob/master/server/README.md
+
+![](https://sdk-release.qnsdk.com/1545722811576.jpg)
+
+
+## 4.配置微信小程序端；
+
+编辑 app.js 里的 host 参数，修改为上一步后端开启后的服务地址
+
+![](https://dn-odum9helk.qbox.me/FjCo0YSfQPrGpZSFJ6VEDga7kqzM)
+
+注意：调试的时候，打开不校验 https 设置。
+
+![](https://dn-odum9helk.qbox.me/FpOHTv634PsGd1Qft9xZFjudmnTv)
+
+## 5.编译运行
+
+注意 live-player 和 live-pusher 组件都无法在开发者工具上预览，所以请自行用手机扫码使用开发版来测试
+
+![](https://dn-odum9helk.qbox.me/Fl3qXB1D4U9BgSMU7g7LCyCcUmpe)
+
+
+
+
+
+
+
+
+# 关于七牛参数配置可参考以下流程
+
+## 1.如何获得 AK，SK
+
+登录七牛帐号，点击 个人面板 > 密锁管理 ，获得 Access key 和 Secret Key。
+
+![](https://dn-odum9helk.qbox.me/FkkVDt1c4aRAEu4KcX0vV3HEmtPk)
+
+## 2.如何配置七牛的推流和推流播放的地址
+
+### 2.1 创建直播空间
+
+1. 在[七牛开发者平台首页](https://portal.qiniu.com/create)定位到 **七牛官方资源 > 直播空间** 资源卡片；
+![](https://dn-odum9helk.qbox.me/FgLQh05oxpn4cm4j7u9g0Y-DDUio)
+2. 点击立即添加，进入[创建直播空间](https://portal.qiniu.com/hub/create)页面，并填写直播空间基本信息，分别输入直播空间名称和直播域名，系统会自动为您生成直播服务使用的推流域名及播放域名；
+![](https://dn-odum9helk.qbox.me/FrlofXy_KdOM6sYfeNx7nyMihgFr)
+3. 点击下一步，进入存储空间配置页，进行存储空间及存储过期时间配置；若没有存储空间，点击“新建存储空间”进行存储空间的设置；
+![](https://dn-odum9helk.qbox.me/FvsCaqrkNM0LjnDR93_NWXJBHUra)
+4. 点击下一步，进入高级设置，配置直播封面、直播状态通知、直播鉴权等，完成后即可创建直播空间
+![](https://dn-odum9helk.qbox.me/FpTutjJHKVVGJJhBSt73TAb72c65)
+
+## 2.2 CNAME 直播域名
+
+1. 进入直播空间首页，查看直播域名信息及状态。
+2. 鼠标定位至各域名 “不可用” 状态，查看域名 CNAME 信息。
+3. 根据直播域名及 CNAME 信息，到域名所归属的 DNS 管理平台配置 CNAME。
+4. CNAME 配置成功后，域名状态自动更改为 “可用” 状态。
+5. 当域名未备案时，不可用状态提示 “域名未备案，请对xxxx.com进行备案”，CNAME 信息将在域名备案审核成功后生成。
+
+## 2.3 创建直播流
+
+1. 在直播空间首页，点击 直播流管理，进入直播流管理界面。
+
+	![](https://dn-odum9helk.qbox.me/Ft6aOnUHz0KrX07U7kJeaUkTuOSD)
+
+2. 点击 添加流，进入创建直播流界面。
+
+	![](https://dn-odum9helk.qbox.me/FtYyH-oBFASW8uUbAUHL4hiXzGHn)
+
+3. 填写直播流名称，点击确定创建，进行直播流的创建。
+
+	![](https://dn-odum9helk.qbox.me/Fp5A4vkB9OjVRTqOkEYG6LBvztfo)
+
+## 2.4 获取推流播放地址
+
+1. 在直播流管理 > 所有流 中，点击刚才创建的流，查看当前直播流的详细信息。
+
+	![](https://dn-odum9helk.qbox.me/FinrtFySwry_SuhRWMl8SeXEn0dE)
+
+2. 定位到 推流地址 和 播放地址，获取推流地址和播放地址。
+
+	![](https://dn-odum9helk.qbox.me/FukBRHGP8x-w6wum-fbLoKU0ru18)
+

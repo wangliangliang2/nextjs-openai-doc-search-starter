@@ -1,0 +1,435 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+
+> `POST` /v1/cm/price
+
+# 请求参数
+
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th> 
+    </tr>    
+  </thead>
+  <tbody>
+    <tr>
+      <td>infos</td>
+      <td>Enquiry[]</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>询价请求列表</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+### Enquiry
+
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>
+        <p>地域 ID。您可以调用 DescribeRegions 查看最新的七牛云地域列表</p>
+      </td>
+    </tr>
+    <tr>
+      <td>cost_charge_type</td>
+      <td>string</td>
+      <td>
+        付费方式:
+        <ul>
+          <li>PostPaid: 按需计费</li>
+          <li>PrePaid: 预付费</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>cost_charge_mode</td>
+      <td>string</td>
+      <td>
+        计费方式
+        <ul>
+          <li>PayByBandwidth: 按照带宽计费</li>
+          <li>PayByTraffic: 按照流量计费</li>
+          <li>PayByDisk: 按磁盘使用计费</li>
+          <li>PayByInstance: 按主机规格使用计费</li>
+          <li>PayBySlbSpec: 按 SLB 实例规格计费</li>
+          <li>PayByRedis: 按 Redis 实例规格计费</li>
+          <li>PayByMongo: 按 Mongo 实例规格计费</li>
+          <li>PayByVRouterInterface: 按 VRouterInterface 实例规格计费</li>
+          <li>PayBy95: 按增强型95计费</li>
+          <li>PayByRds: 按 RDS 实例规格计费</li>
+          <li>PayByVpn: 按 vpn 规格计费</li>
+          <li>PayByNATGatewaySpec: 按 高速通道 规格计费</li>
+          <li>PayByNewBgpIp: 安全产品新BGP</li>
+          <li>PayByBgpIp: 安全产品高防</li>
+          <li>PayByWaf: 安全产品WAF</li>
+          <li>PayByPolarDB: 按 PolarDB 节点规格计费</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>cost_period_unit</td>
+      <td>string</td>
+      <td>
+        计费单位
+        <br> Hour, Day, Week, Month, Year
+      </td>
+    </tr>
+    <tr>
+      <td>cost_period</td>
+      <td>integer</td>
+      <td>计费周期</td>
+    </tr>
+    <tr>
+      <td>cost_period</td>
+      <td>integer</td>
+      <td>计费周期</td>
+    </tr>
+    <tr>
+      <td>order_type</td>
+      <td>string</td>
+      <td>
+        订单类型
+        <ul>
+          <li>create: 新建</li>
+	        <li>renew: 续费</li>
+	        <li>upgrade: 升配</li>
+	        <li>replace_system_disk: 更换系统盘</li>
+	        <li>to_prepaid_disk: 按需磁盘转包月</li>
+	        <li>renew_with_spec: 续费变配</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>amount</td>
+      <td>integer</td>
+      <td>数量</td>
+    </tr>
+    <tr>
+      <td>info_items</td>
+      <td>EnquiryItem[]</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+### EnquiryItem
+
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>resource_type</td>
+      <td>string</td>
+      <td>
+        资源类型
+        <ul>
+          <li>instance: 主机</li>
+          <li>disk: 磁盘</li>
+          <li>ip: 弹性公网IP</li>
+          <li>snapshot: 快照</li>
+          <li>common_bandwidth：共享带宽</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>resource_id</td>
+      <td>string</td>
+      <td>
+        资源 ID，升配询价时必填
+      </td>
+    </tr>
+    <tr>
+      <td>expire_time</td>
+      <td>int64</td>
+      <td>
+        过期时间，unix时间戳，升配询价时必填
+      </td>
+    </tr>
+    <tr>
+      <td>item_info</td>
+      <td>EnquiryItemInfo</td>
+      <td>
+        资源价格相关参数<br>
+        "ratio": 20 ，共享带宽 增强型95 必填
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+## 请求 Body 示例
+``` 
+{
+  "infos": [
+    {
+      "region_id": "cn-shanghai",
+      "order_type": "create",
+      "amount": 1,
+      "cost_period_unit": "Day",
+      "cost_period": 1,
+      "cost_charge_type": "PostPaid",
+      "cost_charge_mode": "PayBy95",
+      "info_items": [
+        {
+          "resource_type": "common_bandwidth",
+          "item_info": {
+            "bandwidth": 200,
+            "ratio": 20
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+
+### 主机 EnquiryItemInfo
+
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>instance_type</td>
+      <td>string</td>
+      <td>
+      实例规格，您可以通过以下接口查询
+        [实例/查看实例规格详情列表](https://developer.qiniu.com/qvm/5594/openapi-ecs-describe-instance-type)
+        [实例/查看可用资源列表](https://developer.qiniu.com/qvm/5595/openapi-ecs-describe-available-resources)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+### 云硬盘 EnquiryItemInfo
+
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>size</td>
+      <td>int</td>
+      <td>
+        云盘大小，单位 GB
+      </td>
+    </tr>
+    <tr>
+      <td>category</td>
+      <td>int</td>
+      <td>
+        <p>云盘种类</p>
+        <p>资源池一取值范围：</p>
+        <ul>
+          <li>cloud：普通云盘</li>
+          <li>cloud_efficiency：高效云盘</li>
+          <li>cloud_ssd：SSD 云盘</li>
+          <li>cloud_essd：ESSD 云盘</li>
+        </ul>
+        <p>资源池二取值范围：</p>
+        <ul>
+          <li>H_ESSD：极速型 SSD</li>
+          <li>H_SSD：超高 IO</li>
+          <li>H_GPSSD：通用型 SSD</li>
+          <li>H_SAS：高 IO</li>
+          <li>H_SATA：普通 IO</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>performance_level</td>
+      <td>string</td>
+      <td>
+        <p>云盘种类为 ESSD 云盘时必填，指定云盘的性能等级。取值范围：</p>
+        <ul>
+          <li>PL1（默认）：单盘最高随机读写 IOPS 5 万</li>
+          <li>PL2：单盘最高随机读写 IOPS 10 万</li>
+          <li>PL3：单盘最高随机读写 IOPS 100 万
+            有关如何选择 ESSD 性能等级，请参见 ESSD 云盘。</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+### 弹性公网 IP EnquiryItemInfo
+
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>bandwidth</td>
+      <td>int</td>
+      <td>
+        带宽大小，单位 Mbps
+      </td>
+    </tr>
+    <tr>
+      <td>isp</td>
+      <td>string</td>
+      <td>
+        <p>线路类型</p>
+        <p>资源池一取值范围：</p>
+        <ul>
+          <li>BGP：多线BGP</li>
+          <li>BGP_PRO：精品BGP，目前仅香港地域支持</li>
+        </ul>
+        <p>资源池二取值范围：</p>
+        <ul>
+          <li>5_bgp：多线BGP</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+## 请求 Body 示例
+
+```json
+{
+  "infos": [
+    {
+      "region_id": "cn-qingdao",
+      "order_type": "create",
+      "amount": 1,
+      "cost_charge_mode": "PayByInstance",
+      "cost_charge_type": "PrePaid",
+      "cost_period": 1,
+      "cost_period_unit": "Month",
+      "info_items": [
+        {
+          "resource_type": "instance",
+          "item_info": {
+            "instance_type": "ecs.se1ne.2xlarge"
+          }
+        },
+        {
+          "resource_type": "disk",
+          "item_info": {
+            "category": "cloud_efficiency",
+            "size": 40
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+# 返回值
+
+| 名称               | 类型     | 描述                 |
+| ------------------ | -------- | -------------------- |
+| request_id         | string   | 请求 ID              |
+| data               | EnquiryResultItem[] | 价格信息    |
+
+### EnquiryResultItem < EnquiryItem
+
+| 名称               | 类型     | 描述                 |
+| ------------------ | -------- | -------------------- |
+| atomic_items         | EnquiryAtomicItem[] | 计费单元列表              |
+
+### EnquiryAtomicItem
+
+| 名称               | 类型     | 描述                 |
+| ------------------ | -------- | -------------------- |
+| amount | int | 本计费单元实际计费数量 |
+| price | float64 | 本计费单元总价格 |
+| price_item | stirng | 计费单元 key |
+
+
+
+
+## 返回值示例
+
+```json
+{
+  "data": {
+    "infos": [
+      {
+        "amount": 1,
+        "info_items": [
+          {
+            "resource_type": "instance",
+            "item_info": {
+              "instance_type": "ecs.se1ne.2xlarge"
+            }
+          },
+          {
+            "resource_type": "disk",
+            "item_info": {
+              "category": "cloud_efficiency",
+              "size": 40
+            }
+          }
+        ],
+        "atomic_items": [
+          {
+            "price_item": "qvm:instance:ecs.se1ne.2xlarge:for_trade:1month",
+            "product_item": "qvm:instance:ecs.se1ne.2xlarge",
+            "amount": 1,
+            "price": 1321.26,
+            "resource_type": "instance"
+          },
+          {
+            "price_item": "qvm:disk:cloud_efficiency:for_trade:1month",
+            "product_item": "qvm:disk:cloud_efficiency",
+            "amount": 4,
+            "price": 13.3,
+            "resource_type": "disk"
+          }
+        ],
+        "cost_charge_type": "PrePaid",
+        "cost_charge_mode": "PayByInstance",
+        "cost_period_unit": "Month",
+        "cost_period": 1,
+        "cost_seconds": 0,
+        "order_type": "create",
+        "region_id": "cn-qingdao"
+      }
+    ]
+  },
+  "request_id": "ScKvEWjlTG6Ba1kW"
+}
+```

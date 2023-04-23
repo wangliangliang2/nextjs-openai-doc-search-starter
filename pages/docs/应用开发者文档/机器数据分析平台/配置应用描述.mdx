@@ -1,0 +1,64 @@
+应用描述包括您在创建应用时设置的基础信息，例如应用名称、描述、开发者等。
+
+![](http://pw7x36qrk.bkt.clouddn.com/app.png)
+
+每一个应用在其根目录下都必须包含一个app.json文件，该文件描述了应用的基本信息。
+
+app.json的结构如下：
+
+```json
+{
+  // [必选] 应用的标识符，名称规则：大小字符、数字、中划线、下划线，且第一个字符必须是字符。 
+  "name": "dns-insight",
+  // [必选] 应用的显示名称
+  "title": "DNS Insight",
+  // [必选] 应用的描述
+  "description": "DNS Insight应用用于可视化DNS流量、性能、以及其它DNS相关统计信息，并帮助查明错误和异常。",
+  // [必选] 应用的场景分类，可以帮助应用筛选
+  "categories": ["IT运营", "基础设施", "物联网&工业","业务分析","安全合规"，“其他”],
+//【必须】应用的内容分类，可以帮助应用筛选
+"contentTypes": ["可视化"，“采集”，“可视化”，“告警”，“其他”],
+  // [必选] 应用的版本
+  "version": "0.1.0",
+  // [必选] 应用依赖的平台版本，版本的语义化表示遵循[semver](https://semver.org/lang/zh-CN/)规范
+  "platformVersion": ">=0.14.1",
+  // [必选] 应用的开发者
+  "authors": ["pandora"],
+  // [必选] 应用的类型，支持APP、VISUALIZATION、ADD_ON
+  "type": "APP",
+  // [必选] 应用的logo
+  "icon": "static/icon.png",
+  // [可选] 应用的帮助文档链接
+  "docsLink": "https://developer.qiniu.com/insight",
+  // [必选] 应用的可见性，true的时候可直接在应用菜单中查看，一般分类的app填写true，辅助工具类填写true
+
+  "visible": true,
+
+  // [可选] 应用的内容描述，主要用于描述应用内的内容，在平台点击查看应用详情可展示应用内容
+  "contents": [
+    {
+      "key": "overview",
+      "name": "DNS概览",
+      "description": "DNS Insight应用用于可视化DNS流量、性能、以及其它DNS相关统计信息，并帮助查明错误和异常。"
+    }, {
+      "key": "dns_tunneling",
+      "name": "DNS Tunneling",
+      "description": "展示DNS Tunneling状况。"
+    }
+  ],
+  // [可选] 应用的内容预览
+  "preview": [
+    {
+      "title": "DNS概览",
+      "image": "static/preview/overview.png"
+    }
+  ]
+}
+
+```
+
+要更改您的应用的描述信息，请编辑app.json文件。
+
+**新版本的XML格式于0.14.1上线，目前[模板](/express/extend/6554/download-template)已经更新，使用新的模板时，对平台的最低依赖是v0.14.1，也就是说`platformVersion: ">=0.14.1"`是最低要求。**
+
+

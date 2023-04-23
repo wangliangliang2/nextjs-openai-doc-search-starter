@@ -1,0 +1,42 @@
+XGBoost回归树是GBDT回归树的一种优化算法，通过添加正则化、并行处理、内置交叉验证等方法加快计算速度，优化模型表现。
+
+**语法：**
+```
+..| fit XGBRegressor booster=<gbree(default) | gblinear> eta=<float> min_child_weight=<int> max_depth=<int> gamma=<int> subsample=<float> objective=<"reg:squarederror" | "reg:squaredlogerror"> eval_metric=<rmse | mae | rmsle> lambda=<float> alpha=<float> random_state=<int> <target_field> from <feature_field_1> <feature_field_2>... 
+
+```
+
+**参数说明：**
+
+- booster用来选择迭代计算的模型。
+	+ booster=gbtree（默认值），使用基于树的模型进行提升计算
+	+ booster=gblinear，使用线性模型进行提升计算
+
+- eta用来指定收缩步长，即每个弱学习器的权重缩减系数，用于防止对负梯度方向的过拟合，提高模型的泛化能力，必须为(0,1]之间的float。eta通过缩减特征的权重使提升计算过程更加保守。默认为0.3。
+
+- min_child_weight
+	+ 在booster=gbtree的情况下，用来指定子节点中最小的样本权重和，用于避免过拟合。如果一个叶子节点的样本权重和小于min_child_weight则拆分过程结束。
+	+ 在booster=gblinear的情况下，这个参数是指建立每个模型所需要的最小样本数。
+	+ 默认值为1。
+
+- max_depth用来指定数的最大深度，若不提供，则默认值为6。
+
+- gamma用来指定节点分裂所需的最小损失函数下降值。在节点分裂时，只有分裂后损失函数的值下降了，才会分裂这个节点。这个参数的值越大，算法越保守。默认为0。
+
+- subsample用来决定样本采样比例，必须为(0,1]之间的float。算法采用无放回的采样方式，如果subsample=1，则全部样本都使用，等于没有使用子采样。如果取值小于1，则只有一部分样本会去做决策树拟合。默认为1。
+
+- objective用来指定学习任务及相应的学习目标。
+	+ objective=reg:squarederror，用最小二乘法做回归拟合。
+	+ objective=reg:squaredlogerror，用最小对数二乘法做回归拟合，要求所有输入数据的label大于-1。"
+
+- eval_metric用来指定校验数据所需要的评价指标，不同的目标函数会支持不同的评价指标。
+	+ eval_metric=rmse, 均方根误差
+	+ eval_metric=mae, 平均绝对误差
+	+ eval_metric=rmsle, 均方根对数误差
+	+ 在objective=reg:squarederror的情况下，eval_metric默认为rmse，在objective=reg:squaredlogerror的情况下，eval_metric默认为rmsle。
+
+- lambda用来指定L2正则化的惩罚系数，可以用来降低过拟合。
+
+- alpha用来指定L1正则化的惩罚系数，这样有助于提升计算的速度。
+
+- random_state为随机数种子，用来控制样本自助抽样的随机性和特征抽样的随机性。如果给定特定值，重新跑模型的时候，可以得出同样的结果。

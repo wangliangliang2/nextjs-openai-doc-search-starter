@@ -1,0 +1,139 @@
+您可以指定告警触发时的具体操作方式。如：以【邮件】方式通知系统用户xiaoming；以【Webhook】方式将告警发送到您配置的地址页面；以【执行脚本】的方式发送至任意第三方系统，或者通过开发自定义告警触发操作APP，更灵活得实现告警触发后与各种第三方系统的对接。
+
+
+# **设置告警触发操作**
+
+告警触发操作可帮助您对触发的告警事件进行响应，您可以在配置告警规则时添加一个或多个触发操作。
+Pandora支持以下类型的告警触发操作：
+
+|触发操作类型|说明|
+|-|-|
+|发送给系统用户|告警触发时，通过电子邮件、企业微信或钉钉的方式发送给指定的Pandora系统用户。|
+|Webhook|Webhook支持用户在特定的Web资源上实现自定义回调。例如，您可以使告警消息在聊天室页面或在某个系统网页上弹出通知。|
+|执行脚本|告警触发时运行自定义脚本，例如您可以通过配置脚本将告警发送到短信平台，或将告警事件写入Windows事件日志中。|
+|自定义告警触发操作|开发人员可以使用自定义告警触发操作API构建自定义的告警触发操作APP，用户可以从应用市场下载安装并完成配置。自定义触发操作具备更灵活强大和扩展性的框架，可以更好得实现自定义需求、替代执行脚本操作方式。|
+
+## **创建触发操作**
+
+进入告警配置的触发操作方式管理页面，点击“+”添加告警触发操作：
+* 填写触发操作名称、描述；
+* 选择触发操作方式：发送给系统用户、Webhook、执行脚本或通过安装自定义触发操作APP添加的自定义触发操作；
+* 勾选是否发送告警恢复通知；
+* 点击**确定**完成创建。
+
+![创建告警触发操作.png](https://dn-odum9helk.qbox.me/FtFq3xncEWom_AkPG12Wy5La1Cq-)
+
+### **发送给系统用户**
+
+在操作方式中选择“系统用户”，选择具体的用户及通知渠道，通过邮件、企业微信、钉钉来通知（可多选）等通知渠道将告警发送给您需要通知的一个或多个Pandora系统用户。
+> **前提：**
+> - 在[用户管理](https://developer.qiniu.io/express/6354/account-setting)页面创建所需用户。
+> - 在[个人设置](https://developer.qiniu.io/express/6354/account-setting)进行账号的设置，系统支持用户填写邮箱、企业微信、钉钉、手机联系方式。
+
+为了满足用户的告警内容个性化需求，Pandora支持[自定义通知内容模版](http://)。
+	
+![创建告警触发操作-系统用户 .png](https://dn-odum9helk.qbox.me/Fo3xm_Qw4CPPn0WBN5iQvsahkgzT)
+
+### **Webhook**
+
+在“操作方式”下拉框中，选择“Webhook”，输入Webhook的URL和Header（可选）。
+告警触发时，Webhook会发送一个HTTP POST请求，在POST请求体中将告警内容以JSON格式发送到配置的url地址，提醒您日志出现异常。同时支持用户在 HTTP 请求中增加自定义的 Header，用来完成例如鉴权等多种高级需求。您可以使用webhooks测试站点如https://webhook.site来测试webhook是否正常发送。
+
+Webhook POST请求的请求体中包含以下详细信息：
+- 触发告警的告警规则名称、告警时间
+- 触发告警的指标信息
+
+示例：	
+```json
+{
+    "operateType":"notice", 	// 操作类型——通知
+    "events":[ 					// 通知的事件列表
+        {
+            "name":"测试webhook", 		// 事件名称
+            "level":"p4", 				// 事件级别
+            "status":"created", 		// 事件状态
+            "description":"", 			// 事件描述
+            "subject":{"host":"host-945"}, 	// 告警对象
+            "sourceType":"alert",       // 事件来源为告警
+            "phoenixHost":"http://10.34.85.23:11999", // 告警服务地址
+            "mergeCount":0,             // 当事件为聚合事件时的聚合数量
+            "createTime":1655691900152, // 创建时间
+            "details":{
+                "count":1,              // 事件触发的总次数
+                "time":1655691900003,   // 事件详情的时间
+                "status":"abnormal",    // 事件详情的状态描述
+                "tookMillis":148,       // 告警事件触发耗时
+                "alert":{ 				// 告警规则
+                    "name":"测试webhook", // 告警规则名称
+                    "description":"", 	// 告警规则描述
+                    "interval":"每分钟", // 告警规则运行周期
+                    "dataSource":"repo=\"_internal\"\n| stats count() as cnt", // 告警规则数据来源
+                    "timeRange":{ 		// 告警规则数据来源的时间范围
+                        "startRelated":{
+                            "duration":1,
+                            "timeUnit":"h"
+                        },
+                        "endRelated":{
+                            "duration":0,
+                            "timeUnit":"m"
+                        }
+                    }
+                },
+                "additionContents":[ 	// 附加内容
+
+                ],
+                "conditionRecords":[ 	// 触发条件的记录详情
+                    {
+                        "status":"abnormal",
+                        "fields":[
+                            "cnt"
+                        ],
+                        "eventSubjectFields":[
+                            "cnt"
+                        ],
+                        "recoveryFields":[
+
+                        ],
+                        "records":[
+                            {
+                                "status":"abnormal",
+                                "values":[
+                                    "945.0"
+                                ],
+                                "eventSubjectValues":[
+                                    "945"
+                                ],
+                                "recoveryValues":[
+
+                                ],
+                                "rawLogs":[
+                                    "{\"cnt\":\"945\"}"
+                                ],
+                                "statusDetails":[
+                                    "abnormal"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}
+```
+
+
+### **执行脚本**
+
+在“操作方式”下拉框中，选择“执行脚本”，在脚本路径中填写您上传脚本的绝对路径，如/home/qbox/script/script_notice_kafka-1.0-SNAPSHOT.jar。如果您需要动态调用参数，可以在脚本参数配置栏内以“参数名”=“参数值”方式输入，点击“+”添加多个参数，多个参数值以“，”分隔开。
+> 注意：脚本目前仅支持jar。如果您将脚本上传至pandora目录下可能会随平台版本升级而消失，出于安全原因，建议您将所有脚本放置于其他文件位置。
+
+![创建触发操作-执行脚本.png](https://dn-odum9helk.qbox.me/Fh6aHisbDGzgNgrmWbmhNVF57UTR)
+
+
+### **自定义触发操作**
+
+为了更灵活得实现告警触发后与各种第三方系统的对接，借助Pandora平台插件化能力，开发人员可以使用自定义告警触发操作API构建自定义的告警触发操作APP应用，包括触发操作的具体业务逻辑及自定义表单，以实现与Pandora内置的标准告警触发操作一致的使用流程和用户体验。用户可以从应用市场下载安装所需要的告警触发操作APP，当用户在创建触发操作时选择自定义触发操作，将展开对应的自定义表单实现触发操作的交互配置。自定义触发操作具备更灵活强大和扩展性的框架，可以更好得实现自定义需求、替代执行脚本操作方式。
+例如我们可以实现如下自定义触发操作，通过邮件或微信的方式将产生的告警事件发送至用户的业务系统XXX，选择系统中某个租户的角色。
+![屏幕快照 2021-03-05 下午4.35.15.png](https://dn-odum9helk.qbox.me/FsWrhFk8u8LkOaLRSj0T0zJpmveu)
+

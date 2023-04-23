@@ -1,0 +1,33 @@
+以定时任务的形式去执行 PostgreSQL 查询语句，将 PostgreSQL 读取到的内容全部获取则任务结束，等到下一个定时任务的到来，也可以仅执行一次。PostgreSQL reader 输出的内容为 `json` 字符串，须使用 `json parser` 解析。
+
+### **基础配置信息**
+
+  * 数据库地址(`postgres_datasource`)：
+      - 明文填写: 填写的形式如 `host=localhost port=5432`, 属性和实际的值用`=(等于)`符号连接，属性和值中间`不要有空格`，不同的属性用`(空格)隔开`，具体支持的属性如下所示:
+          * `dname`: 数据库名称，若此处填了，下面 postgres_database 可以不填。
+          * `user` : 用户名称
+          * `password` : 用户密码。`！注意：请使用内网方式访问，以免出现安全隐患！`
+          * `host` : PostgreSQL 服务地址
+          * `port` : 要绑定的端口 (默认是 `5432`)
+          * `sslmode` : 使用SSL的模式，默认是开启的，若关闭需要指定 `sslmode=disable`，其他模式还包括`require（SSL、跳过认证）`,`verify-ca`（SSL，证书认证）、`verify-full`( SSL，证书认证、且认证服务器的hostname包含在证书中)
+          * `connect_timeout` : 连接最大超时时间，设置为 `0` 表示无限制。
+          * `sslcert` : 证书路径地址，文件必须包含 `PEM` 编码的数据
+          * `sslkey` : Key 文件路径，文件必须包含 `PEM` 编码的数据
+          * `sslrootcert` : root 证书的文件路径，文件必须包含 `PEM` 编码的数据
+      - 环境变量填写：为了不在配置中明文存储，我们在 `1.0.4` 版本及以后支持使用环境变量的方式填写该字段，填写方式为：`${YOUR_ENV}`，其中 `YOUR_ENV` 为环境变量，需要在机器上将该环境变量设置为原先要填写的值，`YOUR_ENV` 可以根据您的实际使用需求进行修改。
+     
+一个完整的 postgres_datasource 示例:`"host=localhost port=5432 connect_timeout=10 user=pqgotest password=123456 sslmode=disable"`
+
+  * 数据查询语句(`postgres_sql`): 填写要执行的 sql 语句,可以用 `@(var)` 使用魔法变量
+  
+### **高级选项**
+
+  * 递增的列名称(`postgres_offset_key`): 指定一个 PostgreSQL 的`列名`，作为 `offset` 的记录，类型必须是`整型`，建议使用插入(或修改)数据的时间戳(unixnano)作为该字段。每次查询会指定这个 key 做 where 条件限制，避免单次查询性能消耗过大。
+
+  * 分批查询的单批次大小(`postgres_limit_batch`): postgres_sql 的语句，若数据量大，可以填写该字段，针对 postgres_offset_key 分批次查询。
+    * postgres_offset_key 填写为100，则查询范式为 select * from table where postgres_offset_key >= 0 and postgres_offset_key < 0 + 100;
+
+  * 定时任务(`postgres_cron`): 定时任务触发周期，支持三种写法。
+    * 直接写 `"loop"`,任务会不停的循环，执行完一次再接着执行下一次，后面可以跟循环的间歇时间，如 "loop 10s"，表示每次循环间隔10s，支持的单位还有"m（分钟）"，"h(小时)"
+    * crontab 的写法,类似于`* * * * * * `，对应的是秒(0~59)，分(0~59)，时(0~23)，日(1~31)，月(1-12)，星期(0~6)，填*号表示所有遍历都执行。
+    * 描述式写法,类似于 "@midnight", "@every 1h30m"，`必须@符合开头`，目前支持`@hourly`,`@weekly`,`@monthly`,`@yearly`,`@every <time duration>`,`@midnight`

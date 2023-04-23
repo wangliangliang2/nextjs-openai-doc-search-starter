@@ -1,0 +1,50 @@
+## iOS  
+iOS出现崩溃时需要按照以下步骤提供下信息:  
+1. xcode 界面的完整截图，在出现崩溃的时候控制台输入   
+#### image lookup --address （堆栈地址）  
+eg：
+![](https://dn-odum9helk.qbox.me/Fkqp-4w5bkQuogJy3T32OFQ8KI29)
+1. 输入bt，提供下截图  
+eg：
+![](https://dn-odum9helk.qbox.me/FgimWtHf7O_GKMo-MTDfjLBMidxX)
+1. 把日志打开，重现问题，然后提供下日志步骤如下：  
+#### 推流：  
+1） 
+```
+(BOOL)application:(UIApplication *)application didFinishLaunchingW	ithOptions:(NSDictionary *)launchOptions 
+```
+启动时加如下代码：  
+```
+[PLStreamingEnv setLogLevel:PLStreamLogLevelDebug];
+[PLStreamingEnv enableFileLogging];
+```
+2）重现问题；  
+3）提取日志，取日志方法：Xcode->Window->Devices->选中对应的 App->Download Container，下载回来的文件右键选择“显示包内容”，把 App Container/Library/Caches/Pili/Logs 这个目录下的文件打包提供下。  
+#### 播放：  
+1）开启日志 
+```
+[option setOptionValue:@(kPLLogVerbose) forKey:PLPlayerOptionKeyLogLevel];
+```
+2）日志存放在沙盒document下，日志名为core.txt，请复现提供该文件
+（或是按照1开启日之后经控制台内容保存成文本提供）
+
+## Android  
+android 抓取log 的方法：  
+unix-like 系统：  
+```
+adb shell logcat -v time thread | tee ./log.log
+```
+win 系统：
+```
+adb shell logcat -v time thread > log.log
+```
+命令敲上之后，进行复现，复现完成之后，停止命令，然后把对应的 log.log 发过来。
+
+
+导出ANR文件的命令
+anr日志的存放目录：
+\data\anr\traces.txt
+```
+adb pull \data\anr\traces.txt ./traces.txt
+```
+导出到当前目录下

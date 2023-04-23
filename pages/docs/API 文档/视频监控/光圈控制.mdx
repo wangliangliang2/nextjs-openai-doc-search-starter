@@ -1,0 +1,43 @@
+本接口用于摄像头的光圈控制
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/devices/{deviceId}/iris`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|deviceId|是|string|如果设备是普通摄像头，该字段置空字符串即可，如果设备是平台类型，该字段为子设备国标ID
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|cmd|是|string|irisin(光圈变小), irisout(光圈变大),stop(停止)|
+|speed|是|int|调节速度(1~10, 默认位5)
+|chId|否|string|子设备国标ID
+
+# **响应参数**
+200
+**请求示例**
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarxtmpned/devices/31011500991320000137/iris \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{
+	"cmd":"irisin",
+	"speed":1
+}'
+```
+**响应示例**
+
+```
+{
+  "code": 200
+}
+```

@@ -1,0 +1,1987 @@
+# **简介**
+
+此SDK主要帮助您快速接入七牛云的视频监控平台。
+
+主要有如下功能：
+
+- 空间管理
+- 流管理
+- 设备管理
+- 模板管理
+- 录制管理
+- 数据统计管理
+- PTZ管理
+
+# **开源**
+
+- [Java SDK项目地址](https://github.com/qiniu/java-sdk)
+- [Java SDK发布地址](https://github.com/qiniu/java-sdk/releases)
+- [Java SDK使用示例](https://github.com/qiniu/java-sdk/tree/master/src/test/java/test/com/qiniu/qvs)
+
+# **安装**
+
+- <a href="#install-by-gradle">使用Gradle</a>
+- <a href="#install-by-maven">使用Maven</a>
+- <a href="#install-by-yourself">手动安装</a>
+
+## **注意**
+* 从 7.2.24 开始，okhttp3 升级到 3.14.2，其要求 java 1.8 及以上。
+* 若一定 java 1.7 ，请手动指定 okhttp3 依赖 3.12.3。 `com.squareup.okhttp3:okhttp:3.12.3`
+```
+    compile ('com.qiniu:qiniu-java-sdk:7.2.+') {
+        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    }
+    compile 'com.squareup.okhttp3:okhttp:3.12.3'
+```
+
+<a id="install-by-gradle"></a>
+### **Gradle**
+
+```
+compile 'com.qiniu:qiniu-java-sdk:7.2.+'
+```
+
+<a id="install-by-maven"></a>
+### **Maven**
+
+```
+<dependency>
+  <groupId>com.qiniu</groupId>
+  <artifactId>qiniu-java-sdk</artifactId>
+  <version>[7.2.0, 7.2.99]</version>
+</dependency>
+```
+这里的`version`指定了一个版本范围，每次更新`pom.xml`的时候会尝试去下载`7.2.x`版本中的最新版本，你可以手动指定一个固定的版本。
+
+<a id="install-by-yourself"></a>
+### **手动下载**
+
+请尽量使用包管理工具自动解决依赖问题。如果条件实在不满足，只能通过手动下载jar包的方式来解决。本项目自身jar及依赖的第三方库如下：
+
+Java SDK依赖的第三方库及其版本如下：
+
+```
+<dependencies>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>3.14.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.5</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.qiniu</groupId>
+      <artifactId>happy-dns-java</artifactId>
+      <version>0.1.6</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+```
+
+|库名称|库项目地址|库下载地址|
+|----|-----------|-------|
+|qiniu-java-sdk|[链接🔗](https://github.com/qiniu/java-sdk)|[链接🔗](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22qiniu-java-sdk%22)|
+|happy-dns-java|[链接🔗](https://github.com/qiniu/happy-dns-java)|[链接🔗](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22happy-dns-java%22)|
+|okhttp3|[链接🔗](https://github.com/square/okhttp)|[链接🔗](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.squareup.okhttp3%22)|
+|okio|[链接🔗](https://github.com/square/okio)|[链接🔗](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.squareup.okio%22)|
+|gson|[链接🔗](https://github.com/google/gson)|[链接🔗](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.google.code.gson%22)|
+|junit|[链接🔗](http://junit.org/junit4/)|[链接🔗](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22junit%22)|
+可以点击每个库的下载链接，然后选择对应的jar进行下载，然后引入到项目中。
+
+# **鉴权**
+
+七牛 Java SDK 的所有的功能，都需要合法的授权。授权凭证的签算需要七牛账号下的一对有效的`Access Key`和`Secret Key`，这对密钥可以通过如下步骤获得：
+
+1. 点击[注册](https://portal.qiniu.com/signup)开通七牛开发者帐号
+2. 如果已有账号，直接登录七牛开发者后台，点击[这里🔗](https://portal.qiniu.com/user/key)查看 Access Key 和 Secret Key
+
+
+# **空间管理**
+空间管理的所有接口需要先通过`ak`、`sk`创建空间管理对象
+```java
+String accessKey = "<QINIU ACCESS KEY>"; // 替换成自己 Qiniu 账号的 AccessKey.
+String secretKey = "<QINIU SECRET KEY>"; // 替换成自己 Qiniu 账号的 SecretKey.
+Auth auth = Auth.create(accessKey, secretKey);
+NameSpaceManager nameSpaceManager = new NameSpaceManager(auth);
+```
+<br/>
+
+## **创建空间**
+### 说明
+创建空间需要先构造NameSpace对象，NameSpace类方法说明:
+
+| 方法名                    | 是否必须         | 说明                                                         |
+| ------------------------- | ---------------- | ------------------------------------------------------------ |
+| setName                   | 是               | 空间名称(格式"^[a-zA-Z0-9_-]{1,100}$")                       |
+| setDesc                   | 否               | 空间描述                                                     |
+| setAccessType             | 是               | 接入类型(rtmp或者gb28181)                                    |
+| setUrlMode                | 是               | 推拉流地址计算方式，1:static, 2:dynamic                      |
+| setDomains                | urlMode为1时必填 | 直播域名                                                     |
+| setZone                   | 否               | zone为服务区域, 可根据流媒体实时处理、视频录制、截图的存储需求选择对应的区域, 可选项为z0, z1, z2, 默认为z0. z0表示华东, z1表示华北、z2表示华南 |
+| setCallback               | 否               | 回调地址，可用于获取空间内设备/流状态更新时的信息            |
+| setHlsLowLatency          | 否               | hls低延迟开关                                                |
+| setRecordTemplateId       | 否               | 录制模版ID，需要录制功能时输入对应的模板ID，录制模板ID可以模板管理中获取 |
+| setSnapShotTemplateId     | 否               | 截图模版ID，需要截图功能时输入对应的模板ID，截图模板ID可以模板管理中获取 |
+| setRecordTemplateApplyAll | 否               | 录制模版是否应用到全局                                       |
+| setSnapTemplateApplyAll   | 否               | 截图模版是否应用到全局                                       |
+| onDemandPull              | 否               | 按需拉流开关，默认关闭                                       |
+
+
+### 示例
+
+```java
+// 创建空间
+ NameSpace nameSpace = new NameSpace();
+ nameSpace.setName("hugo");// 设置空间类型
+ nameSpace.setAccessType("rtmp");// 接入类型"gb28181"或者“rtmp”
+ nameSpace.setUrlMode(1);
+ nameSpace.setDomains(new String[]{"qtest.com"});
+
+ nameSpaceManager.createNameSpace(nameSpace);
+```
+<br/>
+
+## **查询空间**
+### 说明
+
+```java
+Response queryNameSpace(String namespaceId) throws QiniuException
+```
+
+namespaceId可通过`nameSpace.getId`获取
+
+### 示例
+
+```java
+// 查询空间
+String namespaceId = "2akrarsj8zp0w";
+res = nameSpaceManager.queryNameSpace(namespaceId);
+```
+<br/>
+
+## **更新空间**
+
+```java
+Response updateNameSpace(String namespaceId, PatchOperation[] patchOperation) throws QiniuException
+```
+
+### 参数说明
+
+| 参数           | 说明                                       |
+| -------------- | ------------------------------------------ |
+| namespaceId    | 空间id，可通过`nameSpace.getId`获取 |
+| patchOperation | 操作集，详见`PatchOperation类方法说明`     |
+
+### PatchOperation类方法说明
+
+| 方法名                                              | 说明                                                         |
+| --------------------------------------------------- | ------------------------------------------------------------ |
+| PatchOperation(String op, String key, Object value) | 构造方法，用于创建操作对象。<br>op: 更该或删除某个属性，replace：更改，delete：删除<br>key: 要修改或删除的属性<br>value: 要修改或删除属性的值 |
+| String getOp()                                      | 获取操作类型                                                 |
+| void setOp(String op)                               | 设置操作类型                                                 |
+| String getKey()                                     | 获取要操作的属性                                             |
+| void setKey(String key)                             | 设置要操作的属性                                             |
+| Object getValue()                                   | 获取属性的值                                                 |
+| void setValue(Object value)                         | 设置属性的值                                                 |
+
+### 示例
+```java
+// 更新空间
+PatchOperation[] patchOperation = {new PatchOperation("replace", "recordTemplateApplyAll", true)};
+nameSpaceManager.updateNameSpace(namespaceId, patchOperation);
+```
+<br/>
+
+## **获取空间列表**
+
+```java
+Response listNameSpace(int offset, int line, String sortBy) throws QiniuException 
+```
+
+### 参数说明
+
+| 参数   | 说明                                                         |
+| ------ | ------------------------------------------------------------ |
+| offset | 在全部namespace中的偏移量                                    |
+| line   | 一次返回多少条                                               |
+| sortBy | asc 表示升序<br>desc 表示降序<br>默认按创建时间降序排列(可参与排序的字段有createdAt, updatedAt).<br>asc:updatedAt表示更新时间从小到大排序,<br>desc:updatedAt表示更新时间从大到小排序 |
+
+### 示例
+
+```java
+// 获取空间列表
+int offset = 0;
+int line = 1;
+String sortBy = "asc:updatedAt";
+
+nameSpaceManager.listNameSpace(offset, line, sortBy);
+```
+<br/>
+
+## **禁用空间**
+
+```java
+Response disableNameSpace(String namespaceId) throws QiniuException 
+```
+
+### 示例
+
+```java
+// 禁用空间
+String namespaceId = "2akrarsj8zp0w";
+nameSpaceManager.disableNameSpace(namespaceId);
+```
+<br/>
+
+## **启用空间**
+
+```java
+Response enableNameSpace(String namespaceId) throws QiniuException
+```
+
+### 示例
+
+```java
+// 启用空间
+String namespaceId = "2akrarsj8zp0w";
+nameSpaceManager.enableNameSpace(namespaceId);
+```
+<br/>
+
+## **删除空间**
+
+```java
+Response deleteNameSpace(String namespaceId) throws QiniuException
+```
+
+### 示例
+
+```java
+// 删除空间
+String namespaceId = "2akrarsj8zp0w";
+nameSpaceManager.deleteNameSpace(namespaceId);
+```
+
+# **流管理**
+
+流管理的所有接口需要通过`ak`、`sk`创建流管理对象
+
+```java
+String accessKey = "<QINIU ACCESS KEY>"; // 替换成自己 Qiniu 账号的 AccessKey.
+String secretKey = "<QINIU SECRET KEY>"; // 替换成自己 Qiniu 账号的 SecretKey.
+Auth auth = Auth.create(accessKey, secretKey);
+StreamManager streamManager = new StreamManager(auth);
+```
+<br/>
+
+## **创建流**
+本接口仅用于接入类型为RTMP的空间
+
+```java
+Response createStream(String namespaceId, Stream stream) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                               |
+| ----------- | ---------------------------------- |
+| namespaceId | 空间id                             |
+| stream      | 流相关参数，详见`Stream类方法说明` |
+
+### Stream类方法说明
+
+- 构造方法
+
+```java
+Stream(String streamID)
+Stream(String streamID, String desc, String recordTemplateId, String snapShotTemplateId)
+```
+
+- 参数说明：
+
+| 参数               | 说明                                                         |
+| ------------------ | ------------------------------------------------------------ |
+| streamID           | 流名称, 流名称在空间中唯一，可包含 字母、数字、中划线、下划线；1 ~ 100 个字符长；创建后将不可修改 |
+| desc               | 关于流的描述信息                                             |
+| recordTemplateId   | 录制模版ID，配置流维度的录制模板                             |
+| snapShotTemplateId | 截图模版ID，配置流维度的截图模板                             |
+
+- 设置流名称
+
+```java
+void setStreamID(String streamID)
+```
+
+- 获取流名称
+
+```java
+String getStreamID()
+```
+
+- 获取流描述信息
+
+```java
+String getDesc()
+```
+
+- 设置流描述信息
+
+```java
+void setDesc(String desc)
+```
+
+- 获取所属空间id
+
+```java
+String getNamespaceId()
+```
+
+- 设置所属空间id
+
+```java
+void setNamespaceId(String namespaceId)
+```
+
+- 获取所属空间名称
+
+```java
+String getNamespace()
+```
+
+- 设置所属空间名称
+
+```java
+void setNamespace(String namespace)
+```
+
+- 获取录制模板id
+
+```java
+String getRecordTemplateId()
+```
+
+- 设置录制模板id
+
+```java
+void setRecordTemplateId(String recordTemplateId)
+```
+
+- 获取截图模板id
+
+```java
+String getSnapShotTemplateId()
+```
+
+- 设置截图模板id
+
+```java
+void setSnapShotTemplateId(String snapShotTemplateId)
+```
+
+- 设备是否在线
+
+```java
+boolean isStatus()
+```
+
+- 设置设备在线状态
+
+```java
+void setStatus(boolean status)
+```
+
+- 流是否被禁用
+
+```java
+boolean isDisabled()
+```
+
+- 设置流禁用状态
+
+```java
+void setDisabled(boolean disabled)
+```
+
+- 获取最后一次推流时间
+
+```java
+int getLastPushedAt()
+```
+
+- 设置最后一次推流时间
+
+```java
+void setLastPushedAt(int lastPushedAt) 
+```
+
+- 获取流创建时间
+
+```java
+int getCreatedAt()
+```
+
+- 设置流创建时间
+
+```java
+void setCreatedAt(int createdAt) 
+```
+
+- 获取流更新时间
+
+```java
+int getUpdatedAt()
+```
+
+- 设置流更新时间
+
+```java
+void setUpdatedAt(int updatedAt) 
+```
+
+- 获取在线观看人数
+
+```java
+int getUserCount()
+```
+
+- 设置在线观看人数
+
+```java
+void setUserCount(int userCount)
+```
+
+- 获取推流端ip
+
+```java
+String getClientIp() 
+```
+
+- 设置推流端ip
+
+```java
+void setClientIp(String clientIp)
+```
+
+- 获取直播流的实时音频帧率
+
+```java
+int getAudioFrameRate()
+```
+
+- 设置直播流的实时音频帧率
+
+```java
+void setAudioFrameRate(int audioFrameRate)
+```
+
+- 获取直播流的实时码率
+
+```java
+int getBitrate()
+```
+
+- 设置直播流的实时码率
+
+```java
+void setBitrate(int bitrate)
+```
+
+- 获取直播流的实时视频帧率
+
+```java
+int getVideoFrameRate()
+```
+
+- 设置直播流的实时视频帧率
+
+```java
+void setVideoFrameRate(int videoFrameRate)
+```
+
+### 示例
+
+```java
+// 创建流
+Stream stream = new Stream("teststream004");
+String namespaceId = "2akrarsj8zp0w";
+
+streamManager.createStream(namespaceId, stream);
+```
+<br/>
+
+## **查询流**
+
+```java
+Response queryStream(String namespaceId, String streamId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明   |
+| ----------- | ------ |
+| namespaceId | 空间id |
+| streamId    | 流id   |
+
+### 示例
+
+```java
+// 查询流
+String namespaceId = "2akrarsj8zp0w";
+Stream stream = new Stream("teststream004");
+streamManager.queryStream(namespaceId, stream.getStreamID());
+```
+<br/>
+
+## **更新流**
+
+```java
+Response updateStream(String namespaceId, String streamId, PatchOperation[] patchOperation)
+```
+
+### 参数说明
+
+| 参数           | 说明                                   |
+| -------------- | -------------------------------------- |
+| namespaceId    | 空间id                                 |
+| streamId       | 流id                                   |
+| patchOperation | 操作集，详见`PatchOperation类方法说明` |
+
+### 示例
+
+```java
+// 更新流
+String namespaceId = "2akrarsj8zp0w";
+Stream stream = new Stream("teststream004");
+PatchOperation[] patchOperation = {new PatchOperation("replace", "desc", "test")};
+streamManager.updateStream(namespaceId, stream.getStreamID(), patchOperation);
+```
+<br/>
+
+## **获取流列表**
+
+```java
+Response listStream(String namespaceId, int offset, int line, int qtype, String prefix, String sortBy) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                                                         |
+| ----------- | ------------------------------------------------------------ |
+| namespaceId | 空间id                                                       |
+| offset      | 在全部流中的偏移量                                           |
+| line        | 一次返回多少条                                               |
+| qtype       | 查询流类型， 0:全部,1:在线流,2:离线流                        |
+| prefix      | 流ID 前缀，可以流ID 前缀进行检索查询                         |
+| sortBy      | asc 表示升序<br>desc 表示降序<br>默认按创建时间降序排列(可参与排序的字段有createdAt, updatedAt, lastPushedAt).<br>asc:updatedAt表示更新时间从小到大排序<br>desc:updatedAt表示更新时间从大到小排序 |
+
+### 示例
+
+```java
+// 获取流列表
+int offset = 0;
+int line = 1;
+int qtype = 0;
+String prefix = "test";
+String sortBy = "desc:updatedAt";
+String namespaceId = "2akrarsj8zp0w";
+
+streamManager.listStream(namespaceId, offset, line, qtype, prefix, sortBy);
+```
+<br/>
+
+## **静态模式获取流地址**
+
+```java
+Response staticPublishPlayURL(String namespaceId, String streamId, StaticLiveRoute staticLiveRoute) throws QiniuException
+```
+
+### 参数说明
+
+| 参数            | 说明   |
+| --------------- | ------ |
+| namespaceId     | 空间id |
+| streamId        | 流id   |
+| staticLiveRoute | StaticLiveRoute类静态域名对象 |
+
+### StaticLiveRoute类方法说明
+
+| 方法名                                              | 说明                                                         |
+| --------------------------------------------------- | ------------------------------------------------------------ |
+| StaticLiveRoute(String domain, String domainType) | 构造方法，用于创建静态域名对象。<br>domain:域名<br>domainType:域名类型,取值："publishRtmp":rtmp推流, "liveRtmp": rtmp播放, "liveHls": hls播放, "liveHdl": flv播放;"liveWebrtc": webrtc播放 |
+| StaticLiveRoute(String domain, String domainType, int urlExpireSec) | 构造方法，用于创建静态域名对象。<br>domain:域名<br>domainType:域名类型,取值："publishRtmp":rtmp推流, "liveRtmp": rtmp播放, "liveHls": hls播放, "liveHdl": flv播放;"liveWebrtc": webrtc播放;<br>urlExpireSec:流地址过期时间(单位为秒) |
+| String getDomain()                                     | 获取域名                                                 |
+| void setDomain(String domain)                               | 设置域名                                                 |
+| String getDomainType()                                     | 获取域名类型                                             |
+| void setDomainType(String domainType)                             | 设置域名类型                                             |
+| int getUrlExpireSec()                                  | 获取过期时间                                                 |
+| void setUrlExpireSec(int urlExpireSec)                         | 设置过期时间                                                 |
+
+### 示例
+
+```java
+// 静态模式获取流地址
+StaticLiveRoute staticLiveRoute = new StaticLiveRoute("qvs-publish.qtest.com", "publishRtmp", 3600);
+String namespaceId = "2akrarsj8zp0w";
+Stream stream = new Stream("teststream004");
+
+streamManager.staticPublishPlayURL(namespaceId, stream.getStreamID(), staticLiveRoute);
+```
+<br/>
+
+## **动态模式获取流地址**
+
+```java
+Response dynamicPublishPlayURL(String namespaceId, String streamId, DynamicLiveRoute dynamicLiveRoute) throws QiniuException
+```
+
+### 参数说明
+
+| 参数            | 说明   |
+| --------------- | ------ |
+| namespaceId     | 空间id |
+| streamId        | 流id   |
+| dynamicLiveRoute | DynamicLiveRoute类动态域名对象 |
+
+### DynamicLiveRoute类方法说明
+
+| 方法名                                              | 说明                                                         |
+| --------------------------------------------------- | ------------------------------------------------------------ |
+| DynamicLiveRoute(String publishIP, String playIP) | 构造方法，用于创建动态域名对象。<br>publishIp:推流端对外IP地址<br>playIp:拉流端对外IP地址 |
+| DynamicLiveRoute(String publishIP, String playIP, int urlExpireSec) | 构造方法，用于创建动态域名对象。<br>publishIp:推流端对外IP地址<br>playIp:拉流端对外IP地址<br>urlExpireSec:流地址过期时间(单位为秒) |
+| String getPublishIP()                                     | 获取推流端对外IP地址                                                 |
+| void setPublishIP(String publishIP)                               | 设置推流端对外IP地址                                         |
+| String getPlayIP()                                     | 获取拉流端对外IP地址                                             |
+| void setPlayIP(String playIP)                             | 设置拉流端对外IP地址                                             |
+| int getUrlExpireSec()                                  | 获取过期时间                                                 |
+| void setUrlExpireSec(int urlExpireSec)                         | 设置过期时间                                                 |
+
+### 示例
+
+```java
+// 动态模式获取流地址
+DynamicLiveRoute dynamicLiveRoute = new DynamicLiveRoute("116.236.177.50", "116.236.177.50", 3600);
+String namespaceId = "2akrarsj8zp0w";
+Stream stream = new Stream("teststream004");
+
+streamManager.dynamicPublishPlayURL(namespaceId, stream.getStreamID(), dynamicLiveRoute);
+```
+<br/>
+
+## **查询推流历史记录**
+
+```java
+Response queryStreamPubHistories(String namespaceId, String streamId, int start, int end, int offset, int line) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                                   |
+| ----------- | -------------------------------------- |
+| namespaceId | 空间id                                 |
+| streamId    | 流id                                   |
+| start       | 推流开始时间(unix timestamp in second) |
+| end         | 推流结束时间(unix timestamp in second) |
+| offset      | 在全部流中的偏移量                     |
+| line        | 一次返回多少条                         |
+
+### 示例
+
+```java
+//  查询推流历史记录
+String namespaceId = "2akrarsj8zp0w";
+Stream stream = new Stream("teststream004");
+int start = 1587975463;
+int end = 1587976463;
+int offset = 0;
+int ine = 1;
+streamManager.queryStreamPubHistories(namespaceId, stream.getStreamID(), start, end, offset, line);
+```
+<br/>
+
+## **禁用流**
+
+```java
+Response disableStream(String namespaceId, String streamId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明   |
+| ----------- | ------ |
+| namespaceId | 空间id |
+| streamId    | 流id   |
+
+### 示例
+
+```java
+String namespaceId = "2akrarsj8zp0w";
+Stream stream = new Stream("teststream004");
+streamManager.disableStream(namespaceId, stream.getStreamID());
+```
+<br/>
+
+## **启用流**
+
+```java
+Response enableStream(String namespaceId, String streamId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明   |
+| ----------- | ------ |
+| namespaceId | 空间id |
+| streamId    | 流id   |
+
+### 示例
+
+```java
+// 启用流
+String namespaceId = "2akrarsj8zp0w";
+Stream stream = new Stream("teststream004");
+streamManager.enableStream(namespaceId, stream.getStreamID());
+```
+
+<br/>
+## **删除流**
+
+```java
+Response deleteStream(String namespaceId, String streamId) throws QiniuException 
+```
+
+### 参数说明
+
+| 参数        | 说明   |
+| ----------- | ------ |
+| namespaceId | 空间id |
+| streamId    | 流id   |
+
+### 示例
+
+```java
+// 删除流
+String namespaceId = "2akrarsj8zp0w";
+Stream stream = new Stream("teststream004");
+streamManager.deleteStream(namespaceId, stream.getStreamID());
+```
+<br/>
+
+## **停用流**
+
+```java
+Response stopStream(String namespaceId, String streamId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明   |
+| ----------- | ------ |
+| namespaceId | 空间id |
+| streamId    | 流id   |
+
+### 示例
+
+```java
+// 停用流
+String namespaceId = "2akrarsj8zp0w";
+Stream stream = new Stream("teststream004");
+streamManager.stopStream(namespaceId, stream.getStreamID());
+```
+
+# **设备管理**
+
+## **创建设备**
+
+```java
+Response createDevice(String namespaceId, Device device) throws QiniuException
+```
+
+### 参数说明
+
+| 参数     | 说明                                               |
+| -------- | -------------------------------------------------- |
+| namespaceId    | 空间id                                             |
+| device   | 设备配置参数，Device相关说明详见`Device类方法说明` |
+
+### Device类方法说明
+
+- 获取设备名称
+
+  ```java
+  String getName()
+  ```
+
+- 设置设备名称
+
+  ```java
+  void setName(String name)
+  ```
+
+  参数说明：设备名称 (可包含 字母、数字、中划线、下划线；1 ~ 100 个字符长)
+
+- 获取国标ID
+
+  ```java
+  String getGbId()
+  ```
+
+- 设置国标ID
+
+  ```java
+  void setGbId(String gbId)
+  ```
+
+- 获取用户名
+
+  ```java
+  String getUsername()
+  ```
+
+  参数说明：用户名, 4~40位，可包含大写字母、小写字母、数字、中划线，建议与设备国标ID一致
+
+- 设置用户名
+
+  ```java
+   void setUsername(String username)
+  ```
+
+- 获取密码
+
+  ```java
+  String getPassword()
+  ```
+
+- 设置密码
+
+  ```java
+  void setPassword(String password)
+  ```
+
+  参数说明：密码, 4~40位，可包含大写字母、小写字母、数字、中划线
+
+- 是否注册成功后启动拉流
+
+  ```java
+  boolean isPullIfRegister()
+  ```
+
+- 设置是否注册成功后启动拉流
+
+  ```java
+  void setPullIfRegister(boolean pullIfRegister)
+  ```
+
+- 获取描述信息
+
+  ```java
+  String getDesc() 
+  ```
+
+- 设置描述信息
+
+  ```java
+  void setDesc(String desc)
+  ```
+
+### 示例
+
+```java
+// 创建设备
+DeviceManager deviceManager = new DeviceManager(auth);
+Device device = new Device();
+device.setUsername("admin");
+device.setPassword("123456");
+
+String namespaceId = "3nm4x0v0h6vjr";
+deviceManager.createDevice(namespaceId, device);
+```
+<br/>
+
+## **删除设备**
+
+```java
+Response deleteDevice(String namespaceId, String gbId) throws QiniuException 
+```
+
+### 参数说明
+
+| 参数        | 说明   |
+| ----------- | ------ |
+| namespaceId | 空间id |
+| gbId        | 国标id |
+
+### 示例
+
+```java
+// 删除设备
+String namespaceId = "3nm4x0v0h6vjr";
+device.setGbId("31011500991320000056");
+deviceManager.deleteDevice(namespaceId, device.getGbId());
+```
+<br/>
+
+## **查询设备**
+
+```java
+Response queryDevice(String namespaceId, String gbId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明   |
+| ----------- | ------ |
+| namespaceId | 空间id |
+| gbId        | 国标id |
+
+### 示例
+
+```java
+// 查询设备
+String namespaceId = "3nm4x0v0h6vjr";
+device.setGbId("31011500991320000056");
+deviceManager.queryDevice(namespaceId, device.getGbId());
+```
+<br/>
+
+## **更新设备**
+
+```java
+Response updateDevice(String namespaceId, String gbId, PatchOperation[] patchOperation) throws QiniuException
+```
+
+### 参数说明
+
+| 参数           | 说明                                   |
+| -------------- | -------------------------------------- |
+| namespaceId    | 空间id                                 |
+| gbId           | 国标id                                 |
+| patchOperation | 操作集，详见`PatchOperation类方法说明` |
+
+### 示例
+
+```java
+// 更新设备
+PatchOperation[] patchOperation = {new PatchOperation("replace", "name", "GBTEST")};
+String namespaceId = "3nm4x0v0h6vjr";
+device.setGbId("31011500991320000056");
+deviceManager.updateDevice(namespaceId, device.getGbId(), patchOperation);
+```
+<br/>
+
+## **获取设备列表**
+
+```java
+Response listDevice(String namespaceId, int offset, int line, String prefix, String state, int qtype)
+            throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                                                         |
+| ----------- | ------------------------------------------------------------ |
+| namespaceId | 空间id                                                       |
+| offset      | 在全部流中的偏移量                                           |
+| line        | 一次返回多少条                                               |
+| prefix      | 可以通过gbid前缀进行检索查询                                 |
+| state       | 按设备状态查询，offline: 离线, online: 在线, notReg: 未注册, locked: 锁定 |
+| qtype       | 按设备类型查询，0:全部, 1:摄像头, 2:平台                     |
+
+### 示例
+
+```java
+/ 获取设备列表
+int offset = 0;
+int line = 3;
+int qtype = 0;
+String prefix = "310";
+String state = "notReg";
+String namespaceId = "3nm4x0v0h6vjr";
+
+deviceManager.listDevice(namespaceId, offset, line, prefix, state, qtype);
+```
+<br/>
+
+## **获取通道列表**
+
+```java
+Response listChannels(String namespaceId, String gbId, String prefix) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明           |
+| ----------- | -------------- |
+| namespaceId | 空间id         |
+| gbId        | 国标id         |
+| prefix      | 通道国标ID前缀 |
+
+### 示例
+
+```java
+// 获取通道列表
+String namespaceId = "3nm4x0v0h6vjr";
+String prefix = "320";
+device.setGbId("31011500991320000056");
+deviceManager.listChannels(namespaceId, device.getGbId(), prefix);
+```
+<br/>
+
+## **启动设备拉流**
+
+```java
+Response startDevice(String namespaceId, String gbId, String[] channels) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明     |
+| ----------- | -------- |
+| namespaceId | 空间id   |
+| gbId        | 国标id   |
+| channels    | 通道列表 |
+
+### 示例
+
+```java
+// 启动设备拉流
+String namespaceId = "3nm4x0v0h6vjr";
+device.setGbId("31011500991320000056");
+deviceManager.startDevice(namespaceId, device.getGbId(), new String[]{"31011500991320000056"});
+```
+<br/>
+
+## **停止设备拉流**
+
+```java
+Response stopDevice(String namespaceId, String gbId, String[] channels) throws QiniuException 
+```
+
+### 参数说明
+
+| 参数        | 说明     |
+| ----------- | -------- |
+| namespaceId | 空间id   |
+| gbId        | 国标id   |
+| channels    | 通道列表 |
+
+### 示例
+
+```java
+// 停止设备拉流
+String namespaceId = "3nm4x0v0h6vjr";
+device.setGbId("31011500991320000056");
+deviceManager.stopDevice(namespaceId, device.getGbId(), new String[]{"31011500991320000056"});
+```
+<br/>
+
+## **同步设备通道**
+
+```java
+Response fetchCatalog(String namespaceId, String gbId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明     |
+| ----------- | -------- |
+| namespaceId | 空间id   |
+| gbId        | 国标id   |
+
+### 示例
+
+```java
+// 同步设备通道
+String namespaceId = "2xenzw5o81ods";
+device.setGbId("31011500991320000356");
+deviceManager.fetchCatalog(namespaceId, device.getGbId());
+```
+<br/>
+
+## **查询通道详情**
+
+```java
+Response queryChannel(String namespaceId, String gbId, String channelId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明     |
+| ----------- | -------- |
+| namespaceId | 空间id   |
+| gbId        | 国标id   |
+| channelId   | 通道id   |
+
+### 示例
+
+```java
+// 查询通道详情
+deviceManager.queryChannel("3nm4x0vyz7xlu", "31011500991180000270", "34020000001310000020");
+```
+<br/>
+
+## **删除通道**
+
+```java
+Response deleteChannel(String namespaceId, String gbId, String channelId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明     |
+| ----------- | -------- |
+| namespaceId | 空间id   |
+| gbId        | 国标id   |
+| channelId   | 通道id   |
+
+### 示例
+
+```java
+// 删除通道
+deviceManager.deleteChannel("3nm4x0vyz7xlu", "31011500991180000270", "34020000001310000020");
+```
+<br/>
+
+## **查询本地录像列表**
+
+```java
+Response queryGBRecordHistories(String namespaceId, String gbId, String channelId, int start, int end) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明     |
+| ----------- | -------- |
+| namespaceId | 空间id   |
+| gbId        | 国标id   |
+| channelId   | 网关设备时为通道ID(普通设备可以忽略) |
+| start       | 查询开始时间(unix时间戳,单位为秒) |
+| end         | 查询结束时间(unix时间戳,单位为秒) |
+
+### 示例
+
+```java
+// 查询本地录像列表
+deviceManager.queryGBRecordHistories("3nm4x0vyz7xlu", "31011500991180000270", "34020000001310000020", 1604817540, 1604903940);
+```
+
+# **模板管理**
+
+## **创建模板**
+
+```java
+Response createTemplate(Template template) throws QiniuException
+```
+
+### 参数说明
+
+| 参数     | 说明                               |
+| -------- | ---------------------------------- |
+| template | 模板参数，详见`Template类方法说明` |
+
+### Template类方法说明
+
+- 获取模板id
+
+  ```java
+  String getId() 
+  ```
+
+- 设置模板id
+
+  ```java
+  void setId(String id) 
+  ```
+
+- 获取模板名称
+
+  ```java
+  String getName() 
+  ```
+
+- 设置模板名称
+
+  ```java
+  void setName(String name) 
+  ```
+
+  参数说明：模版名称，格式为 4 ~ 100个字符，可包含小写字母、数字、中划线、汉字)
+
+- 获取模板描述信息
+
+  ```java
+  String getDesc() 
+  ```
+
+- 设置模板描述信息
+
+  ```java
+  void setDesc(String desc) 
+  ```
+
+- 获取模版对应的对象存储的bucket
+
+  ```java
+  String getBucket() 
+  ```
+
+- 设置模版对应的对象存储的bucket
+
+  ```java
+  void setBucket(String bucket) 
+  ```
+
+- 获取存储过期时间
+
+  ```java
+  int getDeleteAfterDays() 
+  ```
+
+- 设置存储过期时间,默认永久不过期
+
+  ```java
+  void setDeleteAfterDays(int deleteAfterDays) 
+  ```
+
+- 获取模板类型
+
+  ```java
+  int getTemplateType() 
+  ```
+
+- 设置模板类型
+
+  ```java
+  void setTemplateType(int templateType) 
+  ```
+
+  参数说明: 模板类型,取值：0（录制模版）, 1（截图模版）
+
+- 获取文件存储类型
+
+  ```java
+  int getFileType() 
+  ```
+
+- 设置文件存储类型
+
+  ```java
+  void setFileType(int fileType) 
+  ```
+
+  参数说明: 文件存储类型,取值：0（普通存储）,1（低频存储）
+
+- 获取录制模式
+
+  ```java
+  int getRecordType() 
+  ```
+
+- 设置录制模式
+
+  ```java
+  void setRecordType(int recordType) 
+  ```
+
+  参数说明: 录制模式, 0（不录制）,1（实时录制）, 2（按需录制）
+
+- 获取录制文件存储格式
+
+  ```java
+  int getRecordFileFormat() 
+  ```
+
+- 设置录制文件存储格式
+
+  ```java
+  void setRecordFileFormat(int recordFileFormat) 
+  ```
+
+  参数说明: 录制文件存储格式(多选), 范围：1(001)～7(111), 从左往右的三位二进制数分别代表MP4, FLV, M3U8; 0代表不选择该格式, 1代表选择;例如：2(010)代表选择FLV格式，6(110)代表选择MP4和FLV格式，1(001)代表选择M3U8格式，7(111)代表三种格式均选择
+
+- 获取ts文件名字模板
+
+  ```java
+  String getTsFilenametemplate() 
+  ```
+
+- 设置ts文件名字模板
+
+  ```java
+  // record/ts/${namespaceId}/${streamId}/${startMs}-${endMs}.ts  
+  void setTsFilenametemplate(String tsFilenametemplate) 
+  ```
+
+- 获取录制封面名字模板
+
+  ```java
+  String getRecordSnapFileNameFmt() 
+  ```
+
+- 设置录制封面名字模板
+
+  ```java
+  // record/snap/${namespaceId}/${streamId}/${startMs}.jpg  
+  void setRecordSnapFileNameFmt(String recordSnapFileNameFmt) 
+  ```
+
+- 获取是否开启覆盖式截图
+
+  ```java
+  boolean isJpgOverwriteStatus() 
+  ```
+
+- 设置是否开启覆盖式截图
+
+  ```java
+  void setJpgOverwriteStatus(boolean jpgOverwriteStatus) 
+  ```
+
+- 获取是否开启序列式截图
+
+  ```java
+  boolean isJpgSequenceStatus() 
+  ```
+
+- 设置是否开启序列式截图
+
+  ```java
+  void setJpgSequenceStatus(boolean jpgSequenceStatus) 
+  ```
+
+- 获取是否开启按需截图
+
+  ```java
+  boolean isJpgOnDemandStatus() 
+  ```
+
+- 设置是否开启按需截图
+
+  ```java
+  void setJpgOnDemandStatus(boolean jpgOnDemandStatus) 
+  ```
+
+- 获取覆盖式截图文件命名格式
+
+  ```java
+  String getJpgOverwriteFileNameTemplate() 
+  ```
+
+- 设置覆盖式截图文件命名格式
+
+  ```java
+  void setJpgOverwriteFileNameTemplate(String  jpgOverwriteFileNameTemplate) 
+  ```
+
+- 获取序列式截图文件命名格式
+
+  ```java
+  String getJpgSequenceFileNameTemplate() 
+  ```
+
+- 设置序列式截图文件命名格式
+
+  ```java
+  void setJpgSequenceFileNameTemplate(String jpgSequenceFileNameTemplate) 
+  ```
+
+- 获取按需式截图文件命名格式
+
+  ```java
+  String getJpgOnDemandFileNameTemplate() 
+  ```
+
+- 设置按需式截图文件命名格式
+
+  ```java
+  void setJpgOnDemandFileNameTemplate(String jpgOnDemandFileNameTemplate) 
+  ```
+
+- 获取模板创建时间
+
+  ```java
+  int getCreatedAt() 
+  ```
+
+- 设置模板创建时间
+
+  ```java
+  void setCreatedAt(int createdAt) 
+  ```
+
+- 获取模板更新时间
+
+  ```java
+  int getUpdatedAt() 
+  ```
+
+- 设置模板更新时间
+
+  ```java
+  void setUpdatedAt(int updatedAt) 
+  ```
+
+- 获取录制文件时长
+
+  ```java
+  int getRecordInterval() 
+  ```
+
+- 设置录制文件时长
+
+  ```java
+  void setRecordInterval(int recordInterval) 
+  ```
+
+  参数说明: 单位为秒
+
+- 获取截图间隔
+
+  ```java
+  int getSnapInterval() 
+  ```
+
+- 设置截图间隔
+
+  ```java
+  void setSnapInterval(int snapInterval) 
+  ```
+
+  参数说明：单位为秒
+
+- 获取m3u8文件命名格式
+
+  ```java
+  String getM3u8FileNameTemplate() 
+  ```
+
+- 设置m3u8文件命名格式
+
+  ```java
+  void setM3u8FileNameTemplate(String m3u8FileNameTemplate) 
+  ```
+
+- 获取flv文件命名格式
+
+  ```java
+  String getFLVFileNameTemplate() 
+  ```
+
+- 设置flv文件命名格式
+
+  ```java
+  void setFLVFileNameTemplate(String flvFileNameTemplate) 
+  ```
+	
+- 获取mp4文件命名格式
+
+  ```java
+  String getMp4FileNameTemplate() 
+  ```
+
+- 设置mp4文件命名格式
+
+  ```java
+  void setMp4FileNameTemplate(String mp4FileNameTemplate) 
+  ```
+	
+	
+### 示例
+
+```java
+// 创建模板
+Template template = new Template();
+template.setName("testtemplate001");
+template.setBucket("Testforhugo");
+template.setTemplateType(1);
+template.setJpgOverwriteStatus(true);
+template.setRecordType(2);
+
+templateManager.createTemplate(template);
+```
+<br/>
+
+## **查询模板**
+
+```java
+Response queryTemplate(String templateId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数       | 说明   |
+| ---------- | ------ |
+| templateId | 模板id |
+
+### 示例
+
+```java
+// 查询模板
+String templateId = "2akrarsl22iil";
+templateManager.queryTemplate(templateId);
+```
+<br/>
+
+## **更新模板**
+
+```java
+Response updateTemplate(String templateId, PatchOperation[] patchOperation) throws QiniuException
+```
+
+### 参数说明
+
+| 参数           | 说明                                   |
+| -------------- | -------------------------------------- |
+| templateId     | 模板id                                 |
+| patchOperation | 操作集，详见`PatchOperation类方法说明` |
+
+### 示例
+
+```java
+// 更新模板
+String templateId = "2akrarsl22iil";
+PatchOperation[] patchOperation = {new PatchOperation("replace", "name","testtemplate002")};
+templateManager.updateTemplate(templateId, patchOperation);
+```
+<br/>
+
+## **获取模板列表**
+
+```java
+Response listTemplate(int offset, int line, int templateType, String match) throws QiniuException
+```
+
+### 参数说明
+
+| 参数         | 说明                                        |
+| ------------ | ------------------------------------------- |
+| offset       | 在全部templates中的偏移量                   |
+| line         | 一次返回多少条                              |
+| templateType | 模板类型，取值：0（录制模版）, 1（截图模版) |
+| match        | 模糊匹配查询(模版名称包含match串时返回)     |
+
+### 示例
+
+```java
+// 获取模板列表
+int offset = 0;
+int line = 1;
+int templateType = 1;
+String match = "test";
+
+templateManager.listTemplate(offset, line, templateType, match);
+```
+<br/>
+
+## **删除模板**
+
+```java
+Response deleteTemplate(String templateId)
+```
+
+### 示例
+
+```java
+// 删除模板
+String templateId = "2akrarsl22iil";
+templateManager.deleteTemplate(templateId);
+```
+
+# **录制管理**
+
+## **查询录制记录**
+
+```java
+Response queryStreamRecordHistories(String namespaceId, String streamId, int start, int end, int line, String marker) throws QiniuException
+Response queryStreamRecordHistories(String namespaceId, String streamId, int start, int end, int line, String marker, String format) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| streamId    | 流ID                              |
+| start       | 查询开始时间(unix时间戳,单位为秒) |
+| end         | 查询结束时间(unix时间戳,单位为秒) |
+| line        | 一次返回多少条                    |
+| marker      | 上次返回的marker值                |
+| format      | 查询的文件类型                    |
+
+### 示例
+
+```java
+// 查询录制记录
+int start = 1587975463;
+int end = 1587976463;
+String maker = "";
+String namespaceId = "3nm4x0v0h6vjr";
+Stream stream = new Stream("teststream004");
+
+streamManager.queryStreamRecordHistories(namespaceId, stream.getStreamID(), start, end, line, maker);
+```
+<br/>
+
+## **查询流封面**
+
+```java
+Response queryStreamCover(String namespaceId, String streamId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明   |
+| ----------- | ------ |
+| namespaceId | 空间id |
+| streamId    | 流ID   |
+
+### 示例
+
+```java
+// 查询流封面 
+String namespaceId = "3nm4x0v0h6vjr";
+Stream stream = new Stream("teststream004");
+streamManager.queryStreamCover(namespaceId, stream.getStreamID());
+```
+<br/>
+
+## **获取截图列表**
+
+```java
+Response streamsSnapshots(String namespaceId, String streamId, int start, int end, int type, int line, String marker) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| streamId    | 流ID                              |
+| start       | 查询开始时间(unix时间戳,单位为秒) |
+| end         | 查询结束时间(unix时间戳,单位为秒) |
+| line        | 一次返回多少条                    |
+| marker      | 上次返回的marker值                |
+| type        | 1:实时截图对应的图片列表          |
+
+### 示例
+
+```java
+String namespaceId = "3nm4x0v0h6vjr";
+Stream stream = new Stream("teststream004");
+int start = 1587975463;
+int end = 1587976463;
+int line = 1;
+streamManager.streamsSnapshots(namespaceId, stream.getStreamID(), start, end, 0, line, "");
+```
+<br/>
+
+## **按需截图**
+
+```java
+Response ondemandSnap(String namespaceId, String streamId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| streamId    | 流ID                              |
+
+### 示例
+
+```java
+res = streamManager.ondemandSnap("2xenzw5o81ods", "31011500991320000356");
+```
+<br/>
+
+## **删除截图**
+
+```java
+Response deleteSnapshots(String namespaceId, String streamId, String[] files) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| streamId    | 流ID                              |
+| files       | 删除的截图文件名称数组               |
+<br/>
+
+## **启动按需录制**
+
+```java
+Response startRecord(String namespaceId, String streamId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| streamId    | 流ID                              |
+
+### 示例
+
+```java
+res = recordManager.startRecord("2xenzw5o81ods", "31011500991320000356");
+```
+<br/>
+
+## **停止按需录制**
+
+```java
+Response stopRecord(String namespaceId, String streamId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| streamId    | 流ID                              |
+
+### 示例
+
+```java
+res = recordManager.stopRecord("2xenzw5o81ods", "31011500991320000356");
+```
+<br/>
+
+## **删除录制片段**
+
+```java
+Response deleteStreamRecordHistories(String namespaceId, String streamId, String[] files) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| streamId    | 流ID                              |
+| files       | 删除的录制文件名称数组               |
+<br/>
+
+## **录制视频片段合并**
+
+```java
+Response recordClipsSaveas(String namespaceId, String streamId, String fname, String format, int start, int end, boolean deleteTs, String pipeline, String notifyUrl, int deleteAfterDays) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| streamId    | 流ID                              |
+| fname       | 保存的文件名(需要带上文件格式后缀),不指定系统会随机生成 |
+| format      | 保存的文件格式,可以为m3u8, mp4或者flv |
+| start       | 查询开始时间(unix时间戳,单位为秒) |
+| end         | 查询结束时间(unix时间戳,单位为秒) |
+| deleteTs    | 在不生成m3u8格式文件时是否删除对应的ts文件 |
+| pipeline    | 数据处理的私有队列，不指定则使用公共队列 |
+| notifyUrl   | 保存成功回调通知地址，不指定则不通知 |
+| deleteAfterDays | 文件过期时间,默认和录制模版中的设置保持一致 |
+
+### 示例
+
+```java
+res = recordManager.recordClipsSaveas("2xenzw5o81ods", "31011500991320000356", "", "m3u8", 1605254612, 1605255300, false, "", "", 0);
+```
+<br/>
+
+## **录制回放**
+
+```java
+Response recordsPlayback(String namespaceId, String streamId, int start, int end) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| streamId    | 流ID                              |
+| start       | 查询开始时间(unix时间戳,单位为秒)     |  
+| end         | 查询结束时间(unix时间戳,单位为秒）    |
+
+### 示例
+
+```java
+res = recordManager.recordsPlayback("2xenzw5o81ods", "31011500991320000356", 1605254612, 1605255300);
+```
+
+# **数据统计管理**
+
+## **查询带宽数据**
+
+```java
+Response queryBandwidth(String namespaceId, String streamId, String tu, int start, int end) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| streamId    | 流ID                              |
+| start       | 年月日模式(20191001)或者年月日时分秒模式(20201012204005)     |  
+| end         | 年月日模式(20191002)或者年月日时分秒模式(20201012204005)    |
+| tu          | 时间粒度 可以是 5min, hour, day   |
+
+### 示例
+
+```java
+res = statsManager.queryBandwidth("", "", "5min", 20200901, 20200902);
+```
+<br/>
+
+## **查询流量数据**
+
+```java
+Response queryFlow(String namespaceId, String streamId, String tu, int start, int end) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| streamId    | 流ID                              |
+| start       | 年月日模式(20191001)或者年月日时分秒模式(20201012204005)     |  
+| end         | 年月日模式(20191002)或者年月日时分秒模式(20201012204005)    |
+| tu          | 时间粒度 可以是 5min, hour, day   |
+
+### 示例
+
+```java
+res = statsManager.queryFlow("", "", "5min", 20200901, 20200902);
+```
+
+# **PTZ管理**
+
+## **云台控制**
+
+```java
+Response ptzControl(String namespaceId, String gbId, String cmd, int speed, String chId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| gbId        | 设备国标Id                             |
+| cmd         | left(向左), right(向右), up(向上), down(向下), leftup(左上), rightup(右上), leftdown(左下), rightdown(右下), zoomin(缩小), zoomout(放大),stop(停止PTZ操作)    |  
+| speed       | 调节速度(1~10, 默认位5)   |
+| chId        | 子设备国标ID  |
+
+### 示例
+
+```java
+res = ptzManager.ptzControl("2xenzw5o81ods", "31011500991320000382", "up", 5, "");
+```
+<br/>
+
+## **变焦控制**
+
+```java
+Response focusControl(String namespaceId, String gbId, String cmd, int speed, String chId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| gbId        | 设备国标Id                             |
+| cmd         | focusnear(焦距变近), focusfar(焦距变远),stop(停止)    |  
+| speed       | 调节速度(1~10, 默认位5)   |
+| chId        | 子设备国标ID  |
+
+### 示例
+
+```java
+res = ptzManager.focusControl("2xenzw5o81ods", "31011500991320000382", "focusfar", 5, "");
+```
+<br/>
+
+## **光圈控制**
+
+```java
+Response irisControl(String namespaceId, String gbId, String cmd, int speed, String chId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| gbId        | 设备国标Id                             |
+| cmd         | irisin(光圈变小), irisout(光圈变大),stop(停止)    |  
+| speed       | 调节速度(1~10, 默认位5)   |
+| chId        | 子设备国标ID  |
+
+### 示例
+
+```java
+res = ptzManager.irisControl("2xenzw5o81ods", "31011500991320000382", "irisin", 5, "");
+```
+<br/>
+
+## **预置位控制**
+
+```java
+Response presetsControl(String namespaceId, String gbId, String cmd, String name, int presetId, String chId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| gbId        | 设备国标Id                             |
+| cmd         | set(新增预置位), goto(设置),remove(删除)   |  
+| name        | 预置位名称(cmd为set时有效,支持中文)  |
+| presetId    | 预置位ID          |
+| chId        | 子设备国标ID  |
+
+### 示例
+
+```java
+res = ptzManager.presetsControl("2xenzw5o81ods", "31011500991320000382", "set", "test", 0, "");
+```
+<br/>
+
+## **获取预置位列表**
+
+```java
+Response listPresets(String namespaceId, String gbId, String chId) throws QiniuException
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| namespaceId | 空间id                            |
+| gbId        | 设备国标Id                        |
+| chId        | 子设备国标ID  |
+
+### 示例
+
+```java
+res = ptzManager.listPresets("2xenzw5o81ods", "31011500991320000382", "");
+```

@@ -1,0 +1,70 @@
+# 描述
+该接口用于查询指定的应用下Topic信息。
+
+# 请求
+**请求语法**
+
+```
+GET /v1/apps/<appid>/topics/<encodeTopic> HTTP/1.1
+Host: linking.qiniuapi.com
+Content-Type: application/json
+Authorization: <QiniuAdminToken>
+```
+
+**请求参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|appid|是|string|设备所属应用的appid，设备名称只能由 4-200 位英文字母和数字组成|
+|encodeTopic|是|string|topic名称进行[URL安全的Base64编码](https://developer.qiniu.com/kodo/manual/1231/appendix#1)后得到的字符串|
+
+**请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+
+# 响应
+**响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)
+**响应元素**
+
+```
+200 
+{
+    "topic": "<Topic>", 
+    "auth": <Auth>,
+	"createdAt": "<createdTimestamp>", 
+    "updatedAt": "<updatedTimestamp>"
+}
+```
+
+|参数名称|参数名称|
+|---|---|
+|topic|Topic的名称|
+|auth|设备对该Topic的操作权限<br>0:发布（pub）<br>1:订阅（sub）<br>2:发布和订阅（pub,sub）|
+|createdAt|创建时间|
+|updatedAt|更新时间|
+
+# 示例
+
+**请求示例**
+
+```
+GET /v1/apps/2akrar93dqurh/topics/dWRmL2xpbmtpbmcvdjEvMmFrcmFyOTNkcXVyaC8ke2RldmljZX0vdGVzdDExMS8= HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization: QiniuStub uid=1810757928
+```
+
+**响应示例**
+
+```
+HTTP/1.1 200 OK
+Content-Length: 114
+Content-Type: application/json
+X-Reqid: 5TIAAKzGG4a5i8sV
+Date: Tue, 08 Oct 2019 02:42:04 GMT
+{
+  "topic": "udf/linking/v1/2akrar93dqurh/${device}/test111/",
+  "auth": 1,
+  "createdAt": 1570501777,
+  "updatedAt": 1570501777
+}
+```

@@ -1,0 +1,58 @@
+# **描述**
+本接口用于获取图像底库列表。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/imagelibs?offset=<offset>&line=<line>&match=<match>&sortBy=<sortBy>`
+* Get请求，通过`非SDK`方式调用的客户，http头部Content-Type,`要么设置为application/x-www-form-urlencoded`,`要么置空`, `要么不要携带`; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|line|否|integer|一次返回多少条，最多1000,当超过1000条时，需要结合offset 循环读取。
+|offset|否|integer|偏移量，当需要循环读取时,初始值offset = 0, 第N次请求时offset = (N -1) * line
+|sortBy|否|string|默认按创建时间降序排列，sortBy由"asc/desc"和可参与排序的字段组成，其中 asc 表示升序，desc 表示降序
+|match|否|string|模糊匹配查询(库名称包含match串时返回)
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|items|库数组|库数组
+|items.id|string|库id
+|items.name|string|库名称
+|items.desc|string|备注描述	
+|items.createdAt|integer|库创建时间
+|total|integer|总数量
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/imagelibs \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "items": [
+    {
+      "id": "2akrars5b81f5",
+      "name": "test0016",
+      "desc": "this is a test",
+      "createdAt": 1586850533
+    },
+    {
+      "id": "d102sns2mwhd",
+      "name": "test009",
+      "createdAt": 1585104103
+    }
+  ],
+  "total": 2
+}
+```

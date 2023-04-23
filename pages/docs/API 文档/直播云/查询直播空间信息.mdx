@@ -1,0 +1,142 @@
+# 接口描述
+
+查询目标直播空间信息，包括直播空间基本信息、绑定的域名列表、存储空间信息和直播空间配置信息
+
+# 请求参数
+
+```
+GET /v2/hubs/<hub>
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/x-www-form-urlencoded 
+```
+
+|      参数          |      类型          |  必填   |                  描述                      |
+| -------------------- | -------------------- | ----------- | ------------------------------------------ |
+|       Hub           |    string           | 是    |              直播空间名                          |
+
+# 返回数据
+
+|      参数          |      类型          |                  描述                      |
+| -------------------- | -------------------- | ------------------------------------------ |
+|      Name           |    string           |             直播空间名                           |
+| CreatedAt           |     int64           |            创建时间                            |
+| UpdatedAt           |     int64           |             更新时间                            |
+|   Domains           |[]object             |                直播空间下的域名列表                        |
+|├─ Type           |    string           |         域名类型，包括：<br>publishRtmp：推流域名<br>liveRtmp：RTMP播放域名<br>liveHls：HLS播放域名<br>liveHdl：FLV播放域名    |
+|├─ Domain           |    string           |        域名                                  |
+|├─ Cname           |    string           |          CNAME                              |
+|DefaultDomains           |[]object             |     直播空间默认域名                                   |
+|├─ Type           |    string           |         域名类型                               |
+|├─ Domain           |    string           |           域名                                |
+|StorageBucket           |    string           |        与直播空间绑定的存储空间                      |
+|LiveDataExpireDays           |     int64           |      存储过期时间，单位：天                       |
+|PublishSecurity           |    string           |       推流鉴权方式                           |
+|      Nrop           | object              |        鉴黄配置信息                              |
+|├─ Enable            |      bool          |         是否开启直播空间级别鉴黄功能           |
+|├─ Interval           |       int           |  截帧间隔，每个流隔多久进行截帧并鉴黄，单位：秒     |
+|├─ NotifyURL           |    string           |      回调 URL                              |
+|├─NotifyRate           |   float64          |通知阈值，鉴黄结果阈值表示AI模型判断当前直播画面有多大的概率涉黄，当鉴黄结果阈值大于或等于通知阈值时，将发送回调信息到回调URL|
+|PassiveCodecProfiles  |  []string           | 被动转码配置，形式如：720p                   |
+|  Converts           |  []string           |  主动转码配置，形式如：720p                   |
+|   HlsPlus           |      bool           |   是否开启 hls 低延迟                         |
+| VodDomain           |    string           |     点播域名                                   |
+| AccessLog           | object              |   直播日志保存信息                            |
+|├─SaveBucket           |    string         |    存储空间                               |
+|├─ExpireDays           |       int         |      过期天数                              |
+|SnapshotInterval       |       int          |   直播封面的截图间隔，单位：秒                  |
+
+# 示例
+
+请求体:
+
+```
+GET /v2/hubs/test HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/x-www-form-urlencoded 
+```
+
+返回体:
+
+```
+200 OK
+
+{
+    "hubName": "test",
+    "createdAt": 1484795401,
+    "updatedAt": 1634543051,
+    "domains": [
+        {
+            "type": "publishRtmp",
+            "domain": "pili-publish.testhub.cloudvdn.com",
+            "cname": "pili-publish.testhub.cloudvdn.com.publish.z0.pili.pilidns.com"
+        },
+        {
+            "type": "liveRtmp",
+            "domain": "pili-live-rtmp.testhub.cloudvdn.com",
+            "cname": "pili-live-rtmp.testhub.cloudvdn.com.live-rtmp.z0.pili.pilidns.com"
+        },
+        {
+            "type": "liveHls",
+            "domain": "pili-live-hls.testhub.cloudvdn.com",
+            "cname": "pili-live-hls.testhub.cloudvdn.com.live-hls.z0.pili.pilidns.com"
+        },
+        {
+            "type": "publishRtmp",
+            "domain": "pili-publish.test3.qbox.net",
+            "cname": "pili-publish.test3.qbox.net.publish.z0.pili.pilidns.com"
+        },
+        {
+            "type": "liveRtmp",
+            "domain": "pili-live-hw-rtmp.testhub.cloudvdn.com",
+            "cname": "pili-live-hw-rtmp.testhub.cloudvdn.com.live-rtmp.z0.pili.pilidns.com"
+        },
+        {
+            "type": "liveRtmp",
+            "domain": "pili-live-b-rtmp.testhub.cloudvdn.com",
+            "cname": "pili-live-b-rtmp.testhub.cloudvdn.com.live-rtmp.z0.pili.pilidns.com"
+        }
+    ],
+    "defaultDomains": [
+        {
+            "type": "liveRtmp",
+            "domain": "pili-live-rtmp.testhub.cloudvdn.com"
+        },
+        {
+            "type": "publishRtmp",
+            "domain": "pili-publish.testhub.cloudvdn.com"
+        },
+        {
+            "type": "liveHls",
+            "domain": "pili-live-hls.testhub.cloudvdn.com"
+        }
+    ],
+    "storageBucket": "test2z0",
+    "liveDataExpireDays": 180,
+    "publishSecurity": "none",
+    "nrop": {
+        "enable": false,
+        "interval": 5,
+        "notifyURL": "http://pili.com",
+        "notifyRate": 0.8
+    },
+    "passiveCodecProfiles": [
+        "480p",
+        "720p",
+        "180p"
+    ],
+    "converts": [],
+    "hlsPlus": false,
+    "vodDomain": "pili-vod.testhub.cloudvdn.com",
+    "accesslog": {
+        "saveBucket": "",
+        "expireDays": 0
+    },
+    "snapshotInterval": 10
+}
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

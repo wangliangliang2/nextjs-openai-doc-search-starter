@@ -1,0 +1,129 @@
+## 示例
+
+centos6.7编译安装mysql5.6
+
+## 环境
+
+系统环境：CentOS release 6.7 (Final)
+
+## 准备
+
+**1、安装编译源码所需的工具和库**
+```shell
+yum -y install gcc gcc-c++ autoconf* automake* zlib* libxml* ncurses-devel* libgcrypt* libtool* openssl*
+```
+安装cmake
+```shell
+yum -y install cmake
+```
+
+**2、设置MySQL用户和组**
+```shell
+groupadd -r mysql
+useradd -r -g mysql -s /sbin/nologin -M mysql
+```
+
+**3、建立mysql安装目录及数据存放目录**
+```shell
+mkdir -p /opt/mysql
+mkdir -p /opt/data
+```
+
+**4、赋予数据存目录权限**
+```shell
+chown mysql:mysql -R /opt/mysql/
+chown mysql:mysql -R /opt/data/
+```
+
+## 下载MySQL源码包并解压
+```
+cd /opt/software
+
+wget http://mirrors.sohu.com/mysql/MySQL-5.6/mysql-5.6.28.tar.gz
+
+tar zxvf mysql-5.6.28.tar.gz
+
+cd mysql-5.6.28
+```
+
+## 编译
+**1.cmake**
+```shell
+cmake . -DCMAKE_INSTALL_PREFIX=/opt/mysql \
+-DMYSQL_DATADIR=/opt/data \
+-DSYSCONFDIR=/etc \
+-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+-DWITH_ARCHIVE_STORAGE_ENGINE=1 \
+-DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
+-DWITH_READLINE=1 \
+-DWITH_SSL=system \
+-DWITH_ZLIB=system \
+-DWITH_LIBWRAP=0 \
+-DMYSQL_UNIX_ADDR=/tmp/mysql.sock \
+-DDEFAULT_CHARSET=utf8 \
+-DDEFAULT_COLLATION=utf8_general_ci
+```
+*如果想清理此前的编译所生成的文件重新运行配置，则需要使用如下命令：*
+```shell
+# make clean
+# rm CMakeCache.txt
+```
+**2.**
+```shell
+make && make install && echo OK
+```
+## 配置并初始化数据库
+
+```shell
+cd /opt/mysql
+```
+**1.配置my.cnf配置文件**
+```shell
+cp support-files/my-default.cnf /etc/my.cnf
+```
+**2.初始化mysql数据库**
+```shell
+scripts/mysql_install_db --user=mysql --basedir=/opt/mysql/ --datadir=/opt/data/
+```
+**3.复制mysql服务启动脚本及加入PATH路径**
+```shell
+cp support-files/mysql.server /etc/init.d/mysql
+```
+```shell
+vim /etc/profile
+
+PATH=/opt/mysql/bin:/opt/mysql/lib:$PATH
+export PATH
+```
+```shell
+source /etc/profile
+```
+
+## 五、启动mysql
+**1.启动**
+```shell
+/etc/init.d/mysql start
+```
+
+**2.修改mysql root 密码**
+若root用户现在没有密码，设置密码为123456，命令为：
+```shell
+mysqladmin -u root password 123456
+```
+若root现有密码非空（123456），那么修改密码为abcdef的命令是：
+```shell
+mysqladmin -u root -p password abcdef
+```
+输入原密码123456后密码修改成功。
+
+**3.连接mysql**
+```shell
+mysql -u root -p
+```
+
+
+**4.mysql允许root用户远程连接：**(如果有需要的话)
+```shell
+mysql>Grant all privileges on *.* to 'root'@'%' identified by 'youpassword' with grant option;
+mysql> flush privileges;
+```

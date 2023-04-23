@@ -1,0 +1,24 @@
+**使用场景**
+
+在数据中的字段比较原始，或者维度过高的情况下，我们会需要先对特征做一些加工，通过特征筛选、特征降维等方式实现特征加工的目的。
+
+**通用语法**
+
+```
+|fit <algo_name> [options] <feature_field_1> <feature_field_2> [into model_name]...  
+```
+
+**通用参数说明：**
+
++ <algo_name> 必填，用来指定训练模型采用的算法名称。
++ [options]可选，为算法的内置参数，根据提供的算法变化。
++ <feature_field> 必填，可以是一个或者多个字段，用来指定需要的特征字段，给定的feature_field值必须存在于数据集中。
++ [into model_name]可选，用来将fit训练出来的模型保存成model_name以便下次调用。
++ 数据集必须不为空。
+
+
+以下算法可以用来做特征加工：
+- [特征筛选 - FieldSelector](/express/manual/11068/characteristics-of-the-filter-fieldselector)
+- [核主成分分析 - KernelPCA](/express/manual/11069/kernel-principal-component-analysis-kernelpca)
+- [主成分分析 - Principal Component Analysis/PCA](/express/manual/11070/principal-component-analysis-principal-component-analysis-pca)
+- [TFIDF](/express/manual/11071/tfidf)

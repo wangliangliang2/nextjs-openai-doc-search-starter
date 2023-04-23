@@ -1,0 +1,183 @@
+# 接口简介
+检测营业执照的图片，返回 OCR 识别结果。
+
+**注意**  
+
+- 接口超时时间为 30 秒
+- 资源的 Mime 文件格式仅支持图片类型：image/*，如：image/jpeg、image/png。
+- 请求接口为标准的HTTP/HTTPS 协议。
+
+# 请求语法  
+
+```
+POST /ocr/bs HTTP/1.1
+Host: ocr-bs.qiniuapi.com
+Content-Type: application/json
+Authorization: QiniuToken
+```
+
+	
+# 头部信息
+
+| 头部名称      | 必填 | 说明                                                         |
+| ------------- | ---- | ------------------------------------------------------------ |
+| Host          | 是   | 固定为  ocr-bs.qiniuapi.com |
+| Content-Type  | 是   | 固定为 application/json                                      |
+| Authorization | 是   | 该参数应严格按照[管理凭证](https://developer.qiniu.com/kodo/manual/access-token)格式进行填充，否则会返回 401 错误码。一个合法的 Authorization 值应类似于：`Qiniu QNJi_bYJlmO5LeY08FfoNj9w_r7...` |
+
+# 请求body
+
+| 字段                | 是否必填 | 类型   | 说明                                                         |
+| ------------------- | -------- | ------ | ------------------------------------------------------------ |
+| image            | Y        | string | base64编码的图片数据, JPG 或 PNG 格式             |
+| uuid             | N        | string | 唯一会话 id|
+
+## 返回  
+
+	
+| 字段         | 类型        | 说明         |
+| ------------ | ----------- | ------------ |
+| uuid   | string      | 请求中的 uuid 字符串，如果请求 中没有发送 uuid 参数，那么这里 的值为空字符串  |
+| errorcode    | int         | 返回状态码   |
+| items     | jsonObject      | OCR 结果 |
+
+### items  
+
+| 字段         | 类型        | 说明         |
+| ------------ | ----------- | ------------ |
+| has_head   | bool      |  是否含有“营业执照”四字 |
+| has_tail   | bool      | 是否含有“登记机关”四字  |
+| is_copy   | bool      | 是否副本 |
+| credit_code | string      | 统一社会信用代码  |
+| name   | string      | 名称|
+| type   | string      | 类型|
+| address   | string      | 住所、经营场所、营业场所|
+| legal_representative   | string      | 经营者、投资人、负责人、 法定代表人|
+| found_date   | string      | 成立日期、注册日期 |
+| operation_term   | string      | 经营期限、营业期限 |
+| registered_capital   | string      | 注册资本、成员出资总额 |
+| business_scope   | string      | 经营范围 |
+  
+	
+# 示例
+
+```
+POST /ocr/bs HTTP/1.1
+Host: ocr-bs.qiniuapi.com
+Authorization: Qiniu aWQ6lF1Zxxse43jB6V7lsdfaadf:7cWZPxxxxxasdffed60zkI8=
+Content-Type: application/json 
+{
+    "image": IMAGE_DATA
+}
+```  
+
+  
+## 返回示例
+  
+
+```
+{
+"errorcode": 0,
+"errormsg": "OK",
+"session_id": "7800000015836645854820154824909",
+"ocr_result": {
+"has_head": true,
+"has_tail": true,
+"is_copy": false,
+"credit_code": {
+"value": "9133****95366C",
+"pos": {
+"x": 1802,
+"y": 1395,
+"width": 413,
+"height": 65
+}
+},
+"name": {
+"value": "*****有限公司",
+"pos": {
+"x": 1277,
+"y": 1628,
+"width": 574,
+"height": 51
+}
+},
+"type": {
+"value": "有限责任公司(自然人投资或控股)",
+"pos": {
+"x": 1277,
+"y": 1724,
+"width": 749,
+"height": 65
+}
+},
+"address": {
+"value": "上海市浦东新区博霞路66号",
+"pos": {
+"x": 1277,
+"y": 1833,
+"width": 763,
+"height": 51
+}
+},
+"legal_representative": {
+"value": "葛*儒",
+"pos": {
+"x": 1277,
+"y": 1956,
+"width": 144,
+"height": 51
+}
+},
+"found_date": {
+"value": "2015 年 05 月 08 日",
+"pos": {
+"x": 1277,
+"y": 2175,
+"width": 400,
+"height": 51
+}
+},
+"operation_term": {
+"value": "2015 年 05 月 08 日至 2035 年 05 月 07 日",
+"pos": {
+"x": 1277,
+"y": 2271,
+"width": 897,
+"height": 51
+}
+},
+"registered_capital": {
+"value": "壹仟万元整",
+"pos": {
+"x": 1277,
+"y": 2066,
+"width": 238,
+"height": 51
+}
+},
+"business_scope": {
+"value": "服务:环保设备、节能设备、水处理设备、计算机软硬件的技术开发、技术服务、技术咨询、成果转让: 批发、 零售: 环保产品， 环保材料， 机械设备， 环保设备， 水处理设备， 化工原料(除化学危险品及易制毒化 学品)(依法须经批准的项目， 经相关部门批准店方可开展经营活动)",
+"pos": {
+"x": 1277,
+"y": 2353,
+"width": 991,
+"height": 51
+}
+}
+}
+}
+```
+
+## 错误码  
+| 错误码   | 错误信息                            | HTTP 状态码                            | 
+| -------- | ----------------------------------- |----------------------------------- |
+| 10001        | 请求解析失败                               | 400  | 
+| 10002        | 鉴权失败                                |  400 | 
+| 10003 | 图像解码错误| 400  |
+| 10004 | 请求超时               | 408  | 
+| 10005 | OCR 内部错误    |  500 | 
+| 10006 | 未知错误    |  500 | 
+
+## 价格
+0.05元/次

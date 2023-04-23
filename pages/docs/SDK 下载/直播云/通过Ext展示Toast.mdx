@@ -1,0 +1,25 @@
+# 通过Ext展示Toast
+
+在Ext中，有属于播放器专属的Toast样式，它显示的位置在渲染画面的区域内，并支持纯文案\带超链接\特殊样式等不同形式的Toast,以下只展示最简单的使用，更多使用请查看API文档。
+
+## 构建Toast
+
+```kotlin
+val toast = PlayerToast.Builder()
+	//toast类型为普通(即纯文本类型)
+    .toastItemType(PlayerToastConfig.TYPE_NORMAL)
+     //位置在左边
+    .location(PlayerToastConfig.LOCAT_LEFT_SIDE)
+	//设置文案
+    .setExtraString(PlayerToastConfig.EXTRA_TITLE, "清晰度开始切换至$newQuality,请稍候...")
+	//展示时长
+    .duration(PlayerToastConfig.DURATION_3)
+	//构建
+    .build()
+```
+
+## 显示Toast
+
+```kotlin
+mPlayerCore.playerToastContainer?.showToast(toast)
+```

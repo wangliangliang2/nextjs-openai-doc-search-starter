@@ -1,0 +1,50 @@
+GBDT回归树是一种提升集成算法，采用串行方式而非并行模式获得预测结果，每棵决策树都是一个弱学习器，通过预测前一棵决策树的误差获得一个新的弱学习器，将每一步的弱学习器串行起来，就得到了一个强学习器，提升预测精度。
+
+**语法：**
+```
+..| fit GradientBoostingRegressor n_estimators=<int> learning_rate=<float> subsample=<float> loss=<ls(default) | lad | huber | quantile> criterion=<mse | mae | friedman_mse(default)> max_features=<auto(default) | sqrt | log2 | None | int | float> max_depth=<int> min_samples_split=<int | float> min_samples_leaf=<int | float> max_leaf_nodes=<int> random_state=<int> <target_field> from <feature_field_1> <feature_field_2>... 
+```
+
+**参数说明：**
+
+- n_estimators用来决定建模中使用的数的数量，必须为正整数。若不设定，默认为100。
+
+- learning_rate用来指定收缩步长，即每个弱学习器的权重缩减系数，用于防止对负梯度方向的过拟合，提高模型的泛化能力，必须为(0,1]之间的float。默认为0.1。
+
+- subsample用来决定样本采样比例，必须为(0,1]之间的float。GBDT算法采用无放回的采样方式，如果subsample=1，则全部样本都使用，等于没有使用子采样。如果取值小于1，则只有一部分样本会去做GBDT的决策树拟合。默认为1。
+
+- loss用来决定损失函数。
+	+ loss=ls，使用均方差（least squares regression）
+	+ loss=lad, 使用最小绝对值差（least absolute deviation）
+	+ loss=huber，使用ls和lad的综合
+	+ loss=quantile，使用分位数回归（quantile regression)
+	+ 一般来说，如果数据的噪音点不多，用默认的均方差"ls"比较好。如果是噪音点较多，则推荐用抗噪音的损失函数"huber"。而如果我们需要对训练集进行分段预测的时候，则采用“quantile”。
+
+- criterion用来决定CART树做划分时对特征的评价标准。
+	+ criterion=mse，使用均方误差。
+	+ criterion=mae, 使用平均绝对误差。
+	+ criterion=friedman_mse（默认值），使用Friedman改进分数的均方误差函数。
+
+- max_features用来决定划分时考虑的最大特征数。
+	+ max_features=int，代表直接使用max_features为最大特征数量，必须在(0,n_features]之间。n_features即为建模时使用的特征字段的数量。
+	+ max_features=float，代表使用max_features\*n_features为最大特征数量。必须使max_features\*n_features向下取整的结果在(0,n_features]之间。
+	+ max_features=sqrt, 代表使用sqrt(n_features)，即n_features的平方根值为最大特征数量。
+	+ max_features=log2, 代表使用log2(n_features)。
+	+ max_features=auto（默认值），和max_features=sqrt一样。
+
+- max_depth用来决定数的最大深度。若不提供，即为不设限。在数据量大以及使用的特征数量也很大的情况，可以考虑将max_depth设为[0,100]之间。
+
+- min_samples_split用来决定分割一个内部节点所需要的最小样本数量。如果某节点的样本数少于min_samples_split，则不会再继续划分。在数据量非常大的情况，建议增大这个值。
+	+ min_samples_split=int，代表直接使用min_samples_split作为最小样本数量。
+	+ min_samples_split=float，代表使用min_samples_split\*n_samples向上取整的结果作为最小样本数量。n_samples即为建模时使用的样本数据量。
+	+ min_samples_split默认为2。
+	
+- min_samples_leaf用来决定需要在叶子节点上的最小样本数量。如果某叶子节点数目小于样本数，则会和兄弟节点一起被剪枝。在数据量非常大的情况，建议增大这个值。
+	+ min_samples_leaf=int，代表直接使用min_samples_leaf作为最小样本数量。
+	+ min_samples_leaf=float，代表使用min_samples_leaf\*n_samples向上取整的结果作为最小样本数量。n_samples即为建模时使用的样本数据量。
+	+ min_samples_leaf默认为1。
+
+- max_leaf_nodes用来决定最大叶子结点数量。若不提供，则不设限。通过限制最大叶子节点数，可以防止过拟合。在特征数量非常大的情况，建议增大这个值。
+
+- random_state为随机数种子，用来控制样本自助抽样的随机性和特征抽样的随机性。如果给定特定值，重新跑模型的时候，可以得出同样的结果。
+

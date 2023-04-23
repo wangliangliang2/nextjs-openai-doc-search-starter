@@ -1,0 +1,116 @@
+当前对设备资源(视频回放、缩略图查询、信令等)的访问和修改有两种方式：
+  1）设备上的密钥对对访问请求进行签名
+  2）七牛账号的密钥对访问请求进行签名
+
+在一些临时访问场景(比如客户的APP端需要访问资源)，把密钥下放给端上会有安全问题，所以访问请求必须进行客户的业务服务器进行中转，造成访问路径比较长。
+
+因此我们引入设备访问凭证，由七牛账号的密钥对签算对设备资源临时性访问的访问凭证。
+
+# 算法
+## 1.构造访问策略：
+
+### **使用设备密钥对**（[获取设备密钥](https://developer.qiniu.io/linking/manual/5323/linking-quick-start#4)）
+
+```
+{
+    "deadline": "<deadlineTimestamp>",//token 的有效时间,建议当前timestamp + 2小时
+    "random": <randomNumber>, // 随机数，范围为1-2147483647，用来保证DEVICE ACCESS TOKEN全局唯一
+    "statement":[
+        {
+            "action": "linking:vod"
+        },
+        {
+            "action": "linking:status"
+        }
+    ]
+}
+```
+
+### **使用账号密钥对** （[获取账号密钥](https://portal.qiniu.com/user/key)）
+```
+{
+    "appid": "<appid>",  
+    "device": "<deviceName>",  
+    "deadline": "<deadlineTimestamp>", //token 的有效时间,建议当前timestamp + 2小时
+    "random": "<randomNumber>", // 随机数，用来保证DEVICE ACCESS TOKEN全局唯一
+    "statement":[
+        {
+            "action": "linking:vod"
+        },
+        {
+            "action": "linking:status"
+        }
+    ]
+}
+```
+**action参数说明**
+
+|参数|说明|
+|---|---|
+|linking:status|使用查询指定时间段内设备的在线记录接口时，需指定此action|
+|linking:vod|使用[视频播放类](https://developer.qiniu.io/linking/api/5160/linking-api-guide#3)的接口时，需指定此action|
+
+
+## 2.将访问策略序列化成为JSON：
+用户可以使用各种语言的 JSON 库，也可以手工拼接字符串。序列化后，应得到如下形式的字符串（字符串值以外部分不含空格或换行）：
+```
+policy = 
+'{
+    "appid": "<appid>",  // 使用七牛账号密钥对签名时，需要该字段
+    "device": "<deviceName>", // 使用七牛账号密钥对签名时，需要该字段
+    "deadline": "<deadlineTimestamp>",
+    "random": "<randomNumber>", // 随机数，用来保证DEVICE ACCESS TOKEN全局唯一
+    "statement":[
+        {
+            "action": "linking:vod"
+        },
+        {
+            "action": "linking:status"
+        }
+    ]
+}'
+```
+
+## 3.对 JSON 编码的访问策略进行URL 安全的 Base64 编码，得到待签名字符串：
+```
+encodedPolicy = urlsafe_base64_encode(policy)
+```
+实际值为：
+
+```
+encodedPolicy = "eyJhcHBpZCI6IjJ4ZW56dmYwNmh0NWIiLCJkZXZpY2UiOiIxMDAwMTM5NTczNjYxNjkxNDBfMUdKMTExMTExMTExMTEiLCJkZWFkbGluZSI6MTU5MDIyODA5MCwicmFuZG9tIjoxNTU5MTI0MDkwMTc1LCJzdGF0ZW1lbnQiOlt7ImFjdGlvbiI6Imxpbmtpbmc6dm9kIn0seyJhY3Rpb24iOiJsaW5raW5nOnN0YXR1cyJ9XX0="
+```
+
+## 4.使用密钥（AK/SK）对上一步生成的待签名字符串计算HMAC-SHA1签名：
+```
+sign = hmac_sha1(encodedPolicy, "<SecretKey>")
+```
+#假设 SecretKey 为 MY_SECRET_KEY，实际签名为：
+```
+sign = "c10e287f2b1e7f547b20a9ebce2aada26ab20ef2"
+```
+注意：签名结果是二进制数据，此处输出的是每个字节的十六进制表示，以便核对检查。
+
+## 5.对签名进行URL安全的Base64编码：
+```
+encodedSign = urlsafe_base64_encode(sign)
+```
+最终签名值为：
+```
+encodedSign = "wQ4ofysef1R7IKnrziqtomqyDvI="
+```
+
+## 6.将AK、encodedSign 和 encodedPolicy 用英文符号 : 连接起来：
+```
+dtoken = AccessKey + ':' + encodedSign + ':' + encodedPolicy
+```
+假设用户的 AccessKey 为 MY_ACCESS_KEY ，则最后得到的访问凭证应为：
+```
+dtoken = "MY_ACCESS_KEY:wQ4ofysef1R7IKnrziqtomqyDvI=:eyJhcHBpZCI6IjJ4ZW56dmYwNmh0NWIiLCJkZXZpY2UiOiIxMDAwMTM5NTczNjYxNjkxNDBfMUdKMTExMTExMTExMTEiLCJkZWFkbGluZSI6MTU5MDIyODA5MCwicmFuZG9tIjoxNTU5MTI0MDkwMTc1LCJzdGF0ZW1lbnQiOlt7ImFjdGlvbiI6Imxpbmtpbmc6dm9kIn0seyJhY3Rpb24iOiJsaW5raW5nOnN0YXR1cyJ9XX0="
+```
+
+注意：为确保客户端、业务服务器和七牛服务器对于授权截止时间的理解保持一致，需要同步校准各自的时钟。频繁返回 401 状态码时请先检查时钟同步性与生成 deadline 值的代码逻辑。
+
+
+
+

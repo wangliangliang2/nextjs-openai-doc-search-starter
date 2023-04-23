@@ -1,0 +1,44 @@
+# 操作场景
+本文介绍如何在 Linux 或者 Mac OS 系统的本地电脑中通过 SSH 登录 Linux 实例。
+
+# 适用本地操作系统
+Linux或者Mac OS等类Unix系统	
+
+# 使用限制
+- 实例必须处于运行中状态。如果实例未运行，请启动实例。
+- 实例已经设置登录密码。如果未设置密码或密码丢失，请重置密码。
+- 实例已经绑定弹性IP，能够访问公网。
+
+# 操作步骤
+
+如果您的本地电脑为 Mac OS 系统，需先打开系统自带的终端（Terminal），再执行以下命令。
+如果您的本地电脑为 Linux 系统，可直接执行以下命令。
+
+
+# **使用密码登录**
+
+```
+ssh <username>@<hostname or IP address>
+```
+参数解析：
+- username ：root
+- hostname or IP address：  Linux 实例公网 IP或自定义域名。
+
+# **使用秘钥登录**
+
+运行以下命令修改私钥文件的属性。
+
+
+```
+chmod 400 [.pem私钥文件在本地机上的存储路径]
+```
+
+运行以下命令连接至实例。
+
+```
+ssh -i [.pem私钥文件在本地机上的存储路径] <username>@[公网IP地址]
+```
+
+参数解析：
+- username ：root
+- hostname or IP address：  Linux 实例公网 IP或自定义域名。

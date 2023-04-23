@@ -1,0 +1,85 @@
+# **描述**
+本接口用于查询通道列表，仅对类型为“平台”的设备有效。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/devices/{gbId}/channels?prefix=<GBIDPrefix>`
+*  Get请求，通过`非SDK`方式调用的客户，http头部Content-Type,`要么设置为application/x-www-form-urlencoded`,`要么置空`, `要么不要携带`; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|gbId|是|string|国标ID
+|prefix|否|string|通道国标ID前缀
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|total|int|通道数
+|onlineCount|int|在线设备数
+|offlineCount|int|离线数数
+|items|通道数组|通道数组
+|items.name|string|通道名称
+|items.gbId|string|通道国标ID
+|items.state|string|通道状态（offline: 离线, online: 在线）
+|items.vendor|string|厂家
+|items.lastSyncAt|int|最近一次同步时间
+
+**请求示例**
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarxjr6tzn/devices/31011500991180000083/channels \
+  --header 'authorization: Qiniu T853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+
+**响应示例**
+
+```
+{
+  "onlineCount": 5,
+  "offlineCount": 0,
+  "total": 5,
+  "items": [
+    {
+      "gbId": "34020000001310000001",
+      "name": "1F亮秀路车位-左",
+      "state": "online",
+      "vendor": "Dahua",
+      "lastSyncAt": 1598613019
+    },
+    {
+      "gbId": "34020000001310000017",
+      "name": "IPC",
+      "state": "online",
+      "vendor": "Dahua",
+      "lastSyncAt": 1598613020
+    },
+    {
+      "gbId": "34020000001310000003",
+      "name": "6F西北角",
+      "state": "online",
+      "vendor": "Dahua",
+      "lastSyncAt": 1598613020
+    },
+    {
+      "gbId": "34020000001310000004",
+      "name": "2F东南阳台",
+      "state": "online",
+      "vendor": "Dahua",
+      "lastSyncAt": 1598613020
+    },
+    {
+      "gbId": "34020000001310000005",
+      "name": "3F通道东北半球",
+      "state": "online",
+      "vendor": "Dahua",
+      "lastSyncAt": 1598613020
+    },
+  ]
+}
+```

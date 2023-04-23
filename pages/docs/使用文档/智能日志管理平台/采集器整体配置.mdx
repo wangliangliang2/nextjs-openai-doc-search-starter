@@ -1,0 +1,61 @@
+# 采集器整体配置
+
+当配置完 读取、解析、发送后，就会进入到采集器整体配置界面，如下图所示。
+
+![](https://dn-odum9helk.qbox.me/FjtaW70lmrsZkQdBjqLrtZsUXM5Y)
+
+
+一个采集器(Config)配置分发后，采集任务我们称之为一个`Runner`。
+
+在这个页面，您甚至可以手动修改json格式的配置，快速定义您的配置。
+
+# 配置字段说明：
+
+1. 名称(`name`) 必填，用来标识采集器(也是采集任务runner)的名字，一台机器上的runner名称是唯一的，重名的runner将无法加载。
+1. 单次读取最大数据量(`batch_size`) 单位为`byte`，每读取多少数据作为一个批次。默认`2097152`（2MB = `2*1024*1024`）
+1. 最长发送间隔(`batch_interval`) 单位为`秒`，每读取多长时间作为一个批次的数据发送，当时间间隔达到，无论读取多少条都会发送，防止读取时间过长。默认60秒
+1. 添加额外系统信息(`extra_info`) 可选，为true时带上系统的hostname、ip、os等信息
+2. 关闭runner前等待reader关闭时间(`max_reader_close_wait_time`)单位为`s`，默认为0
+
+
+# 典型的配置如下。
+
+```
+{
+    "name":"logkit_runner",
+    "batch_len": 1000,
+    "batch_size": 2097152,
+    "batch_interval": 300, 
+    "extra_info": true,
+    "reader":{
+        "log_path":"/home/user/app/log/dir/",
+        "meta_path":"./metapath",
+        "donefile_retention":"7",
+        "read_from":"newest",
+        "mode":"dir",
+        "valid_file_pattern":"qiniulog-*.log" // 可不选，默认为 "*"
+    },
+     "cleaner":{
+        "delete_enable":"true",
+        "delete_interval":"10",
+        "reserve_file_number":"10",
+        "reserve_file_size":"10240"
+    },
+    "parser":{
+        "name":"json_parser",
+        "type":"json"
+    },
+    "senders":[{
+        "name":"test_sender",
+        "sender_type":"pandora",
+        "fault_tolerant":"false",
+        "pandora_ak":"your_ak",
+        "pandora_sk":"your_sk",
+        "pandora_host":"https://pipeline.qiniu.com",
+        "pandora_repo_name":"repo_test",
+        "pandora_region":"nb",
+        "pandora_schema_free":"true"
+}]
+}
+```
+

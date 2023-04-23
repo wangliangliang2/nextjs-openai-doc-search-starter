@@ -1,0 +1,19 @@
+# 空间为何看不到域名配置
+ 一.创建空间时，模式选择了`动态地址`，所以看不到域名配置；怎么才能看到`域名配置`界面? 1.新建空间，模式选择“静态地址” 2. 不想新建空间? 请提工单，后台为您转换。
+ 二. 空间转换为`静态地址`后，需要客户做 
+ 1> 在域名管理界面新增域名，并[配置cname](https://developer.qiniu.com/qvs/8746/configure-cname) 
+ 2> 可选项，如果需要https的环境播放实时视频流，则需要进一步为域名[配置https证书](https://developer.qiniu.com/qvs/6925/qvs-https-configuration)
+# 为什么配置了录制模板，却无法回看历史视频
+一. 用户可在qvs的控制台，视频流管理板块，找到对应的视频流，当点击“云端录制回放时”，qvs会从存储空间(buceket)里读取文件；读取文件依赖有效的回放域名，此域名需要客户自行在七牛对象存储系统里配置(此域名与qvs自身的直播域名是独立的)。(存储空间会赠送有效期1个月的默认域名，1个月后该域名会被回收，客户需要提供自己的有效域名)[添加录制回看的CDN域名](https://portal.qiniu.com/cdn/domain/create)。
+ <img src="https://dn-odum9helk.qbox.me/FmRyS6FkcR4rLfLqLWkHYKh5DroD" width = "500" height = "200" alt="cdn" align=center />
+
+# 推流或者播放地址如何提高安全性
+- 建议打开时间戳防盗链，打开方法如下
+- 如果空间类型是`动态地址`类型（IP形式的播放地址）, 点击 "空间管理"-> 选择某个空间, 点击"配置" ->在空间信息里，点击"编辑"->设置"URL 鉴权"即可。![dynamic.png](https://dn-odum9helk.qbox.me/FvdW_UcMptDKaFR-xNWghxckfeNX)
+- 如果如果空间类型是静态地址类型（域名形式的播放地址）。在域名管理里设置。点击 "空间管理"-> 选择某个空间, 点击"配置"->选择"域名管理"->找到想开启时间戳防盗链的域名,点击'配置'。
+![static.png](https://dn-odum9helk.qbox.me/Fg-SxThlInHE434DTNTX4lYLM5Qv)
+# 调试web播放时，浏览器为何出现跨域错误
+一. 因为使用姿势错误，在http的环境里，使用了https的播放地址; 或者在https的环境中使用了http的播放地址。
+二. 解决办法，先阅读入门文档，了解一下[基本概念](https://developer.qiniu.com/qvs/6763/qvs-quick-start#2)
+三. 静态接入的情况下，在域名管理里，开启`https`开关后，刷新实时预览，看到的地址就是https环境专用地址；反之看到的就是http环境专用地址
+

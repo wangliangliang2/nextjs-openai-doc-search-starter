@@ -1,0 +1,203 @@
+对空间中的资源请求 pfop 持久化数据处理。参考：[七牛数据处理 pfop 文档](https://developer.qiniu.com/dora/manual/3686/pfop-directions-for-use)  
+1. **批量操作需要指定数据源，默认表示从七牛空间列举文件执行操作，如非默认或需更多条件，请先[配置数据源](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md)**  
+2. 支持通过 `-a=<account-name>`/`-d` 使用已设置的账号，则不需要再直接设置密钥，参考：[账号设置](https://github.com/NigelWu95/qiniu-suits-java/blob/master/README.md#账号设置)  
+
+# 1. 操作单个文件
+处理单个文件则使用 qsuits 的 single 模式来完成，必须加上 `-s` 参数才能使用该模式，命令举例如下： 
+`qsuits -s -d -process=pfop -bucket=temp -key=110.mp4 -fops="avthumb/mp4|saveas/dGVtcDprZXkubXA0" -force-public=true`  
+输出结果表示下载成功：  
+`10.mp4	z0.5cf6460238b9f31ea6d3d29d`  
+由于 pfop 是异步处理，返回的结果是一个异步处理的状态 ID，可以通过[ pfopresult 操作](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/pfopresult.md) 来查询到处理结果，此处可以使用 single 模式的命令来查看：  
+`qsuits -s -process=pfopresult -id=z0.5cf6460238b9f31ea6d3d29d`
+输出如下：
+```
+z0.5cf6460238b9f31ea6d3d29d	{"code":0,"desc":"The fop was completed successfully","id":"z0.5cf6460238b9f31ea6d3d29d","inputBucket":"temp","inputKey":"110.mp4","items":[{"cmd":"avthumb/mp4|saveas/dGVtcDprZXkubXA0","code":0,"desc":"The fop was completed successfully","hash":"FpBw7VMk5raxi-MG0ooVuPUSMNEs","key":"key.mp4","returnOld":0}],"pipeline":"0.default","reqid":"uxAAACmnPRWo96QV"}
+```  
+在提交处理之前或者之后，通过[ avinfo 操作]来查询音视频的一个元信息，判断需要进行何种转码或者检查转码之后的结果，命令举例如下：  
+`qsuits -s -process=avinfo -url=http://xxx.bkt.clouddn.com/10.mp4`  
+会输出类似如下结果：
+```
+http://p3l1d5mx4.bkt.clouddn.com/10.mp4	{"streams":[{"index":0,"codec_name":"h264","codec_long_name":"H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10","profile":"High","codec_type":"video","codec_time_base":"1/60","codec_tag_string":"avc1","codec_tag":"0x31637661","width":720,"height":486,"coded_width":720,"coded_height":496,"has_b_frames":2,"sample_aspect_ratio":"1:1","display_aspect_ratio":"40:27","pix_fmt":"yuv420p","level":30,"chroma_location":"left","refs":1,"is_avc":"true","nal_length_size":"4","r_frame_rate":"30/1","avg_frame_rate":"30/1","time_base":"1/15360","start_pts":0,"start_time":"0.000000","duration_ts":92160,"duration":"6.000000","bit_rate":"695088","bits_per_raw_sample":"8","nb_frames":"180","disposition":{"default":1,"dub":0,"original":0,"comment":0,"lyrics":0,"karaoke":0,"forced":0,"hearing_impaired":0,"visual_impaired":0,"clean_effects":0,"attached_pic":0,"timed_thumbnails":0},"tags":{"creation_time":"2011-09-15T17:31:45.000000Z","language":"eng","handler_name":"VideoHandler"}}],"format":{"nb_streams":1,"nb_programs":0,"format_name":"mov,mp4,m4a,3gp,3g2,mj2","format_long_name":"QuickTime / MOV","start_time":"0.000000","duration":"6.000000","size":"524167","bit_rate":"698889","probe_score":100,"tags":{"major_brand":"isom","minor_version":"512","compatible_brands":"isomiso2avc1mp41","creation_time":"2011-09-15T17:31:45.000000Z","encoder":"Lavf57.71.100"}}}
+```  
+
+# 2. 批量提交转码请求
+```
+process=pfop 
+ak= 
+sk= 
+bucket=
+indexes=
+pipeline=
+notifyURL=
+force=
+fops-index=
+pfop-config=
+force-public=
+```  
+|参数名|参数值及类型 | 含义|  
+|-----|-------|-----|  
+|process=pfop| 数据处理时设置为pfop| 表示数据处理操作|  
+|ak、sk|长度40的字符串|七牛账号的ak、sk，通过七牛控制台个人中心获取，当数据源为 qiniu 时无需再设置|  
+|bucket| 字符串| 操作的资源原空间，当数据源为 qiniu 时无需再设置|  
+|indexes|字符串| 设置输入行中 key 字段的下标（有默认值），参考[数据源 indexes 设置](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#1-公共参数)|  
+|pipeline| 字符串| 进行持久化数据处理的队列名称|  
+|notifyURL|	URL 字符串|	进行持久化结果回调的服务器通知地址，接受七牛的 POST 回调请求|  
+|force|	true/false|	持久化生成的文件名如果空间中已存在是否进行强制覆盖，默认为 false|  
+|force-public| true/false| 是否强制使用共有队列（会有性能影响）|  
+|fops-index| 字符串| 转码命令索引（下标），未设置任何索引时根据 parse 类型默认为 1 或 "fops"，用于解析输入行中的转码命令，建议转码命令中携带 saveas 重命名指令否则使用默认名|  
+|pfop-config| 文件路径字符串| 进行转码和另存规则设置的 json 配置文件路径，可设置多个转码条件和指令，该配置会覆盖 fops-index 设置的转码命令，pfop-config-配置文件内容写法参考下面|  
+
+## 1、关于 fops-index
+指定输入行中对应转码的命令字段下标，不设置为则无法进行解析。由于转码必须参数包含 key 和 fops，因此输入行中也必须包含 key 字段的值，使用 indexes 参数设置 key 下标，同时 key 下标不能与 fops 下标相同，参见[ indexes 索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-indexes-索引)及[关于 parse 和索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-parse)。  
+
+## 2、pfop-config 配置文件内容写法如下：
+```json
+{
+  "pfop":[
+    {
+      "cmd":"avthumb/mp4/s/1280x720/autoscale/1",
+      "saveas":"bucket:$(key)F720.mp4"
+    },
+    {
+      "cmd":"avsmart/mp4",
+      "saveas":"bucket:$(key)-avsmart.mp4"
+    }
+  ]
+}
+```  
+如上所示，pfop 操作的配置名称为 "pfop"，配置项为 json array，可参见 [pfop-config 配置](https://github.com/NigelWu95/qiniu-suits-java/blob/master/resources/process.json)  
+
+|必须选项|含义|  
+|-----|-----|  
+|key|上述配置文件中的 "F720" 为转码项名称，设置为 json key，key 不可重复，重复情况下后者会覆盖前者|  
+|cmd| 需要指定的转码指令 |  
+|saveas| 转码结果另存的格式，写法为：`<bucket>:<key>`，其中 `<key>` 支持[魔法变量](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/pfop.md#%E9%AD%94%E6%B3%95%E5%8F%98%E9%87%8F)|
+
+## 3、关于 saveas  
+### 魔法变量  
+`$(name)` 表示完整的原始文件名（如 a.jpg/a.png 的 $(name) 分别为为 a.jpg/a.png）  
+`$(key)` 表示去除后缀的原始文件名（如 a.jpg/a.png/a 的 $(key) 均为 a）  
+`$(ext)` 表示文件名的后缀部分（如 a.jpg/b.jpg 的 $(ext) 均为 jpg，c 的 $(ext) 为空字符串）  
+### 格式拼接  
+格式需要遵循 `<bucket>:<key>`，允许只有 `<bucket>`，此时表示由七牛自动生成文件名，但是不允许缺少 `<bucket>`，且不允许以 : 开头或结尾的格式。  
+
+## 4、命令行方式
+```
+-process=pfop -ak= -sk= -bucket= -pipeline= -force-public=
+```
+
+# 3. 批量查询转码结果
+如果在提交转码操作时没有设置回调，那么之后通常需要查询所提交的任务处理结果，在经过上一步请求的批量提交之后，会将包含文件名 key 和任务 persistentId 的结果保存在 save-path 中，此时可以通过将 save-path 的路径设置为 path 的 localfile 数据源，进行 pfopresult 操作，参考：[七牛转码结果查询](https://developer.qiniu.com/dora/manual/1294/persistent-processing-status-query-prefop)，查询出任务的处理结果，qsuits 会自动将查询到的处理结果分类，成功的、失败的、正在处理的，以及回调失败的都会单独使用结果文件来保存，这样在查询之后如果有尚未出成功的可以检查错误或重新提交，正在处理的可以进行二次查询，查询结果的保存文件名通常如下：  
+`pfopresult_success_xxx.txt` 表示查询到的处理成功的结果  
+`pfopresult_error_xxx.txt` 表示查询到的处理失败的结果  
+`pfopresult_notify_failed_xxx.txt` 表示查询到的回调失败的结果  
+`pfopresult_waiting_xxx.txt` 表示查询到的正在处理中的结果  
+`pfopresult_need_retry_xxx.txt` 表示需要重新提交查询的部分任务  
+
+```
+process=pfopresult 
+id-index=
+```  
+|参数名|参数值及类型 | 含义|  
+|-----|-------|-----|  
+|process=pfopresult| 查询 pfop 转码结果时设置为pfopresult| 表示查询 pfop 转码结果操作|  
+|id-index| 字符串| 转码结果查询所需 persistentId 的索引（下标），未设置任何索引时根据 parse 类型默认为 0 或 "id"|  
+
+## 1、命令行方式
+```
+-process=pfopresult -id-index=
+```
+
+## 2、备注
+pfopresult 操作是 file 源下的操作，从 every line of fileinput 的 id-index 索引获取 persistentId，参见[关于 parse 和索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-parse)。
+
+# 4. 查询音视频信息
+在对存储空间上的一些音视频文件分辨率、编码等信息需要做进一步了解的情况，可以对空间中的音视频资源查询 avinfo 元信息。参考：[七牛音视频元信息](https://developer.qiniu.com/dora/manual/1247/audio-and-video-metadata-information-avinfo)  
+```
+process=avinfo 
+protocol=
+domain=
+indexes=
+url-index=
+```  
+|参数名|参数值及类型 | 含义|  
+|-----|-------|-----|  
+|process=avinfo| 查询avinfo时设置为avinfo| 表示查询 avinfo 操作|  
+|protocol| http/https| 使用 http 还是 https 访问资源进行抓取（默认 http）|  
+|domain| 域名字符串| 用于拼接文件名生成链接的域名（七牛存储空间域名可以使用[ domainsfrom 命令查询](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/domainsofbucket.md)），当指定 url-index 时无需设置|  
+|indexes|字符串| 设置输入行中 key 字段的下标（有默认值），参考[数据源 indexes 设置](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#1-公共参数)|  
+|url-index| 字符串| 通过 url 操作时需要设置的 url 索引（下标），未设置任何索引和 domain 时根据 parse 类型默认为 0 或 "url"|  
+
+## 1、关于 url-index
+当使用 file 源且 parse=tab/csv 时 [xx-]index(ex) 设置的下标必须为整数。url-index 表示输入行含 url 形式的源文件地址，未设置的情况下则使用 key 字段加上 domain 的方式访问源文件地址，key 下标用 indexes 参数设置 ，参见[ indexes 索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-indexes-索引)及[关于 parse 和索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-parse)。  
+## 2、命令行方式
+```
+-process=avinfo -protocol= -domain=
+```
+
+# 5. 生成音视频转码指令
+一般情况下，可能对于大量的音视频资源具体需要转码的规格和参数处于未知情况，根据上一步已经获取到的音视频资源的 avinfo 信息，可以来设置规则判断进行某种自定义的转码并自定义转码后的文件名。参考：[七牛数据处理 pfop 文档](https://developer.qiniu.com/dora/manual/3686/pfop-directions-for-use)，经过该指令生成之后那么又可以回到第 2 步进行批量提交处理请求的操作。  
+
+```
+process=pfopcmd
+indexes=
+avinfo-index=
+pfop-config=
+has-duration=
+has-size=
+combine=true/false
+#cmd=
+#saveas=
+#scale=
+```  
+|参数名|参数值及类型 | 含义|  
+|-----|-------|-----|  
+|process=pfopcmd| 该操作设置为pfopcmd| 表示根据 avinfo 生成音视频转码指令|  
+|indexes|字符串| 设置输入行中 key 字段的下标（有默认值），参考[数据源 indexes 设置](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#1-公共参数)|  
+|pfop-config| 文件路径字符串| 进行转码和另存规则设置的 json 配置文件路径，可设置多个转码条件和指令，pfop-config-配置文件内容写法参考下面|  
+|avinfo-index| 字符串| 读取 avinfo 信息时需要设置的 avinfo 字符串索引（下标），未设置任何索引时根据 parse 类型默认为 1 或 "avinfo"，参见[关于 parse 和索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-parse)|  
+|has-duration| true/false| 得到的结果行中是否需要保存 duration（音视频时长）信息，会放在转码指令字段之后 |  
+|has-size| true/false| 得到的结果行中是否需要保存 size（音视频时长）信息，会放在 duration 字段之后|  
+|combine| true/false| 多个 pfop 命令时，是否组合成一个命令来处理，默认为 true，使用 `;` 来拼接多条处理命令，参考[persistentOps 多个命令](https://developer.qiniu.com/dora/api/3686/pfop-directions-for-use#1)|  
+|cmd| 字符串| pfop 命令，如 avthumb/mp4，和 pfop-config 中的 cmd 相同，如果不想设置 pfop-config 配置文件则可采用 cmd + saveas + scale 设置的方式|  
+|saveas| 字符串| saveas 的格式，如 bucket:$(key)F720.mp4，和 pfop-config 中的 saveas 相同，如果不想设置 pfop-config 配置文件则可采用 cmd + saveas + scale 设置的方式|  
+|scale| 字符串| scale 的格式，如 `[1000,1280]`，和 pfop-config 中的 scale 相同，如果不想设置 pfop-config 配置文件则可采用 cmd + saveas + scale 设置的方式|  
+
+## 1、pfop-config 配置文件内容写法如下：
+```json
+{
+  "pfopcmd":[
+    {
+      "scale":[1000,1280],
+      "cmd":"avthumb/mp4/s/1280x720/autoscale/1",
+      "saveas":"bucket:$(key)F720.mp4"
+    },
+    {
+      "scale":[1280],
+      "cmd":"avthumb/mp4/s/1280x720/autoscale/1",
+      "saveas":"bucket:$(key)F1080"
+    }
+  ]
+}
+```  
+如上所示，pfopcmd 操作的配置名称为 "pfopcmd"，配置项为 json array，可参见 [pfop-config 配置](https://github.com/NigelWu95/qiniu-suits-java/blob/master/resources/process.json)  
+
+|必须选项|含义|  
+|-----|-----|  
+|key|上述配置文件中的 F720 为转码项名称，设置为 json key，key 不可重复，重复情况下后者会覆盖前者|  
+|scale| 表示视频分辨率 width 的范围，只设置了一个值则表示目标范围大于该值，程序根据 avinfo 判断宽度范围对在此区间的文件生成转码指令|  
+|cmd| 需要指定的转码指令 |  
+|saveas| 转码结果另存的格式，写法为：`<bucket>:<key>`，其中 `<key>` 支持[魔法变量](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/pfopcmd.md#%E9%AD%94%E6%B3%95%E5%8F%98%E9%87%8F)|  
+
+## 2、关于 saveas  
+### 魔法变量   
+`$(name)` 表示完整的原始文件名（如 a.jpg/a.png 的 $(name) 分别为为 a.jpg/a.png）  
+`$(key)` 表示去除后缀的原始文件名（如 a.jpg/a.png/a 的 $(key) 均为 a）  
+`$(ext)` 表示文件名的后缀部分（如 a.jpg/b.jpg 的 $(ext) 均为 jpg，c 的 $(ext) 为空字符串）  
+### 格式拼接    
+格式需要遵循 `<bucket>:<key>`，允许只有 `<bucket>`，此时表示由七牛自动生成文件名，但是不允许缺少 `<bucket>`，且不允许以 `:` 开头或结尾的格式。  
+
+## 3、命令行方式
+```
+-process=pfopcmd -pfop-config= -has-duration= -has-size=
+```

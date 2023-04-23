@@ -1,0 +1,28 @@
+#### 1.putPolicy中bucket:key与上传方法中的key不同，报错：
+
+`{"error":"key doesn't match with scope"}`
+
+Example：
+
+java-sdk为例:
+         
+```         
+String token = auth.uploadToken("qiniu-java-demo", "test",3600,null,true);//（生成token代码）
+Response r = uploadManager.put(file, "test.txt", token,null,null, true);//（上传代码段）
+```
+因为test和test.txt不匹配，所以报错。auth.uploadToken中指定的key和uploadManager.put中设置的key值不同导致403
+
+
+#### 2.putPolicy中设置了limited mimeType,报错：
+
+`{"error":"limited mimeType: this file type is forbidden to upload"}`
+
+#### Example：
+
+java-sdk:
+    
+```    
+String token = auth.uploadToken("qiniu-java-demo", "test",3600,new StringMap().put("mimeLimit", "image/*"),true);
+Response r = uploadManager.put(file, "test.txt", token,null,null, true);
+```
+

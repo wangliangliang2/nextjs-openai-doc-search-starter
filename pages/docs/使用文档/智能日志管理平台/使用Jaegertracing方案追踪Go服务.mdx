@@ -1,0 +1,177 @@
+Jaeger 是由 Uber 开发的一套全链路追踪方案，符合 Opentracing 协议规范。Jaeger 的全链路追踪功能主要由三个角色完成：
+* client（负责全链路上各个调用点的计时、采样，并将 tracing 数据发往本地 agent）
+
+* agent（负责收集 client 发来的 tracing 数据，并以 thrift 协议转发给 collector
+
+* collector（负责搜集所有 agent 上报的 tracing 数据，统一存储）。
+
+Pandora 全链路追踪服务支持 Jaeger client 的解决方案是，利用 logkit-pro 替代 Jaeger agent 的功能，智能日志平台替代 Jaeger collector 的功能。此外，智能日志平台的**全链路追踪服务**，还提供链路的分析（包括全链路耗时详情、服务在执行过程中的具体信息、服务依赖关系）和展示。
+
+本文档主要示范通过 logkit-pro 采集 Jaeger 数据源的埋点数据，将数据发送到智能日志平台的**全链路追踪服务**来追踪 Go 语言编写的服务链路。
+
+# **1.环境准备**
+
+## **安装 Golang 环境**
+
+**Mac 平台安装 Golang 方法**
+```
+brew update && brew upgrade && brew install go
+```
+
+**Linux 平台安装 Golang 方法**
+
+[下载 Linux 平台的 Golang 安装包](https://golang.org/dl/)
+```
+# 解压缩到指定目录
+tar -C /usr/local -xzf go$VERSION.$OS-$ARCH.tar.gz
+# 配置 PATH 变量
+export PATH=$PATH:/usr/local/go/bin
+```
+
+**Windows 平台安装 Golang 方法**
+
+[下载 Windows 平台的 Golang 安装包](https://golang.org/dl/)
+
+解压安装，并配置环境变量即可。
+
+## **下载 Jaeger 开发包**
+
+[opentracing-go](https://github.com/opentracing/opentracing-go)
+
+[Jaeger Client Go](https://github.com/jaegertracing/jaeger-client-go)
+
+下载开发包到本地的 GOPATH 目录。
+
+若您不想通过源码运行 Demo，可跳过环境准备，下一章节 2.1）中，我们将提供 Demo 可执行包，可以直接解压运行 Demo，快速体验全链路监控服务效果。
+
+# **2.准备 Demo 服务**
+
+本教程的 Demo 包含三个服务，分别是 `hello`，`service1`，`service2`，三个服务的依赖关系如下图：
+
+<img src="https://dn-odum9helk.qbox.me/FiLXBuooed_0zLL6pSUXyFfNrXfP" width="500" hegiht="330" align=center />
+
+这里提供两种启动 Demo 的方式：
+
+1）利用编译好的可执行文件直接启动三个服务，请直接参考`2.1）`章节；
+
+2）通过源码自行编译执行，请直接参考`2.2）`章节
+
+## 2.1）通过 Demo 可执行包启动
+[请下载可执行包](https://pandora-kibana.qiniu.com/JaegerDemo-pkg.tar.gz)
+
+解压 JaegerDemo-pkg.tar.gz ,得到 JaegerDemo-pkg 目录，目录结构如下图。包含三个平台的可执行文件，分别是 Mac、Linux 和 Windows，请根据您自己的平台选择合适的目录执行以下操作。
+
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-17%20%E4%B8%8B%E5%8D%885.58.23.jpg" width="500" hegiht="330" align=center />
+
+这里我们选择 Mac 环境，进入 mac 目录，如下图：
+
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-17%20%E4%B8%8B%E5%8D%886.14.13.jpg" width="500" hegiht="330" align=center />
+
+分别启动三个服务
+```
+./client_mac
+./service1_mac
+./service2_mac
+```
+
+## 2.2）通过 Demo 源码编译执行
+[请下载源码](https://pandora-kibana.qiniu.com/JaegerDemo-src.tar.gz)
+
+解压 JaegerDemo-src.tar.gz，生成 JaegerDemo 目录，目录结构如下图：
+
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-17%20%E4%B8%8B%E5%8D%886.38.25.jpg" width="500" hegiht="330" align=center />
+
+进入 lib/tracing/init.go 初始化 Jaeger client，`Init` 方法是 Jaeger client 配置方法，三个服务初始化 Jaeger client 时，均需要调用此方法。
+
+client/hello.go 是 hello 服务源码，监听 `10080` 端口，对外接口 `http://127.0.0.1:10080/hello`，
+服务启动命令 `go run hello.go`。
+
+service1/service1.go 是 service1 服务源码，监听 `10081` 端口，对外接口 `http://127.0.0.1:10081/service1`，
+服务启动命令 `go run service1.go`。
+
+service2/service2.go 是 service2 服务源码，监听 `10082` 端口，对外接口 `http://127.0.0.1:10082/service2`，
+服务启动命令 `go run service2.go`。
+
+# **3.通过 logkit-pro 采集 Jaeger 数据源的埋点数据**
+
+## **安装 logkit-pro**
+
+首先需要在机器上安装 logkit-pro。
+
+1.登录 [logkit-pro](http://logkit-pro.qiniu.com/)，进入机器管理页面，点击添加机器。
+
+![](https://pandora-kibana.qiniu.com/k8s/add_machine.png)
+
+2.手动安装：根据您机器的操作系统版本选择对应的命令，复制到命令行工具即可，如图所示：
+
+![](https://pandora-kibana.qiniu.com/k8s/addbyhand.png)
+
+![](https://pandora-kibana.qiniu.com/logkit/running.png)
+
+详细的安装文档可以阅读 [logkit-pro 安装](/insight/manual/4682/download-and-install) 。
+
+3. 安装完毕后，您可以在机器列表页面看到您安装的机器:
+
+![](https://dn-odum9helk.qbox.me/FpmPwc2L2arnlHd9OpBEXkJs0rbx)
+
+## **配置数据源 Reader**
+
+选择 socket reader 读取数据：
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8B%E5%8D%882.18.08.jpg)
+
+* `接收调用链数据类型(tracing_type)`: tracing 数据类型，选择 jaeger；
+
+* `监听的地址和端口(http_service_address)`: logkit-pro 接收 tracing 数据的开放地址，如`:14268`
+
+* `监听地址前缀(http_service_path)`: logkit-pro 开放的 httpserver 路由地址，如: `/api/traces`
+
+通过如上配置完成 tracing reader，接收 Tracing 打点的 Endpoint 示例为：`http://127.0.0.1:14268/api/traces`。
+
+跳过数据解析与转换。
+
+## **配置发送源 Sender**
+
+发送到智能日志管理平台全链路追踪服务；
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8B%E5%8D%882.34.57.jpg)
+
+## **在 logkit-pro 中观察收集和发送的数据**
+
+进入数据收集页面，找到刚刚创建的收集器，点击`查看机器运行信息`：
+
+![](https://dn-odum9helk.qbox.me/FnYIif255dgrB7u7A9LfVpY4fdMn)
+
+有读取成功条数和发送成功条数证明数据采集成功。
+
+`注意：`发送到智能日志平台同时生成两个日志仓库：tracingspan 和 tracingservice。tracingspan 仓库里只记录 tracing 数据， tracingservice 仓库里记录服务数据。
+
+# **4.操作验证**
+
+## **启动三个服务，并调用 hello 服务的对外接口**
+
+浏览器中输入 `http://127.0.0.1:10080/hello`，观察浏览器返回，如下图：
+
+<img src="https://dn-odum9helk.qbox.me/FntPSZGdj5uoGEPy830Maf7yLIQe" width="300" hegiht="150" align=center />
+
+证明服务已经成功启动。
+
+## 到智能日志平台搜索发送过来的数据
+
+选择 tracingspan 仓库搜索 tracing 数据：
+
+这里需要说明一下，logkit-pro 中记录的日志条数为 13 条，其中有 7 条是 tracing span 数据，存在tracingspan 仓库里，另外 6 条是 service 相关的数据，记录在 tracingservice 仓库里。
+
+![](https://dn-odum9helk.qbox.me/Fi0KLtn6reOauR-lCNBNuucl9V8e)
+
+## **到全链路追踪服务查询链路**
+
+选择服务为 hello，时间范围为服务发生的时间，可以看到系统追踪到了一条链路，它包含 3 个 span，符合预期：
+
+![](https://dn-odum9helk.qbox.me/Fm39Hxn-cnIQcxszsJ2JC6G7otM3)
+
+## **追踪链路详情**
+
+点击具体的链路记录，可浏览链路调用的详情，与设计的 Demo 服务依赖关系一致，如下图：
+
+![](https://dn-odum9helk.qbox.me/Fs8L6Z1MNjC00FpQVAwiCe5zJE-4)

@@ -1,0 +1,67 @@
+# **描述**
+本接口用于查询模版。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/aitemplates/{templateId}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|templateId|是|string|模版ID|
+
+# **响应参数**
+|参数名称|类型|说明|
+|---|---|---|
+|id|string|模版id
+|name|string|模版名称
+|algorithms|int数组|算法数组。算法可选 1:安全帽识别 2: 人脸识别; 数组{1, 2} 代表同时选择了1和2, 两种算法
+|aiFrameInterval|integer|截帧间隔, 默认为1, 代表每1秒截取1帧进行AI计算。有效范围 500ms~ 3600s
+|confidence|integer|置信度。默认 60, 有效范围是1～100
+|runningMode|integer|运行模式。0:只要视频流在线就开始AI分析 1: 通过API控制AI分析的开始和结束 2: 自定义区间段内开始AI分析
+|aiImageLib|string|依赖的基础图像库ID，例如当算法为人脸识别时，需要指定一个基础的图像库。也可以新建一个基础图像库。
+|aiTimeRanges|TimeRange数组|AI工作时间范围, 默认数组为空,代表24小时生效；否则按照实际区间段，支持多个区间段
+|timeRange.start|string|AI每天开始时间。形式为00:00:00
+|timeRange.end|string|AI每天结束时间。形式为00:00:00
+|aiNeedCallback|boolean|是否回调ai计算结果。默认true
+|aiSaveResult|boolean|是否保存ai识别的结构化数据，默认为false。若不保存，可以通过回调的方式得到结构化数据。
+|desc|string|模版描述	
+|bucket|string|模版对应的对象存储的bucket,
+|deleteAfterDays|integer|存储过期时间，默认永久不过期
+|fileType|integer|文件存储类型，取值：0（普通存储），1（低频存储）
+|createdAt|integer|模板创建时间
+|updatedAt|integer|模板更新时间
+
+
+
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/aitemplates/2akrars59hm2l \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "id": "2akrars59hm2l",
+  "name": "test0013",
+  "desc":"this is a test",
+  "algorithms":[1],
+  "confidence":60,
+  "runningMode":0,
+  "aiFrameInterval":5,
+  "aiSaveResult":true,
+  "bucket":"bucket-test1",
+  "deleteAfterDays":7,
+  "fileType":0,
+  "createdAt": 1586847620,
+  "updatedAt": 1586847620
+}
+```

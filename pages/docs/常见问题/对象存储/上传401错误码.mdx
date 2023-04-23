@@ -1,0 +1,32 @@
+## 一、报错：`{"error":"expired token"}，{“error”:”token out of date”}`
+
+### 处理方法：
+
+1、将token的有效期设置的长一些。对于比较大的文件，可以适当加长有效期（默认是3600秒）
+
+2、看下自己的服务器时间是否是联网时间。如果时间不准，导致签名后的结果可能已经是过期的了
+
+3、建议客户每次上传都重新请求一次上传token。或者设置的时间长些
+
+## 二、报错：`{"error":"bad token","reqid":"t1wAAHuwANZHl9YT","details":["UP:4/401"],"code":401}`
+
+### 处理方法：
+
+1、检查密钥（ak，sk复制黏贴有误）信息是否正确。
+
+2、数字签名错误（签名方法是自己写的）， 建议使用sdk中封装的方法。
+
+3、检查上传参数，上传token由三部分组成（由冒号隔开），最后一段，用base64解码，可以看到你的上传策略中的参数，如果参数有问题也会报401。
+
+4、如果使用我们的sdk生成的token出现的问题，把token给我们（七牛后台耳机图标：提交工单）， 如果是自己写的，请检查token生成的相关代码。
+
+## 三、使用七牛sdk生成的token还是报错401
+
+如果客户端获取到从服务端生成的token上传报错401，在确认ak和sk没有问题的情况下，则可以使用curl工具模拟上传一下。
+
+    curl -v -F 'key=1111' -F 'token=g8D_Ledyo2iocGucAXSMEJqPFDly70AaHKCpQznb:5-oM4A7Hv8DTS1DVwBjE56x85sw=:eyJzY29wZSI6Inpob3VjaHVhbmciLCJkZWFkbGluZSI6MTQyNjc0NjY0Mn0=' -F 'file=/usr/local/test.txt' upload.qiniup.com
+
+其中key为上传文件名，file为本地文件路径;
+
+如果可以正常响应hash和key则说明token是没有问题，客户端获取token出现了问题。
+

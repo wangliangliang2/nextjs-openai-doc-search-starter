@@ -1,0 +1,284 @@
+# 接口简介
+
+音频流审核功能为音频流的内容审核场景提供涉政，国歌，色情，广告，娇喘，音色标签，唱歌等内容的识别，并且可以依据具体的业务场景进行配置，帮助您提前防御内容风险，提高审核效率，净化网络环境，提升用户体验。
+
+# 接口规格
+
+## 提交音频流识别请求
+
+**请求URL**: `https://censor-open.qiniuapi.com/anti_fraud/v2/audiostream`
+
+**字符编码格式**: 请求及返回结果都使用 UTF-8 字符集进行编码
+
+**请求方法**: POST
+
+**建议超时时长**: 3s
+
+**请求头部**: 
+
+| 字段          | 取值                                                         |
+| ------------- | ------------------------------------------------------------ |
+| Content-Type  | application/json                                             |
+| Authorization | Qiniu\<AccessKey>:\<Sign> <br/>**注意:** 用户请根据 AccessKey 和 SecretKey 生成鉴权，以便进行身份验证。\<Sign> 的取值请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken) |
+
+**请求参数**: 放在 HTTP Body 中，采用 json 格式，具体参数如下:
+
+| 参数名称 | 类型        | 是否必选 | 说明                                                         |
+| -------- | ----------- | -------- | ------------------------------------------------------------ |
+| type     | string      | Y        | 需要识别的违规类型，可选值:<br/>POLITICAL:涉政识别<br/>ANTHEN:国歌识别<br/>PORN:色情识别<br/>AD:广告识别<br/>MOAN:娇喘识别<br/>SING:唱歌识别<br/>如需做组合识别，通过下划线连接即可，例如AD_PORN_POLITICAL用于广告、色情和涉政识别。<br/>DEFAULT: 默认取值<br/>POLITICAL_PORN_MOAN_AD |
+| data     | json_object | Y        | 请求数据，最长1MB，详细内容参见下表                          |
+| callback | string      | Y        | 异步检测结果回调通知您的 URL，支持 HTTP 和 HTTPS             |
+
+其中，data的内容如下:
+
+| 参数名称         | 类型        | 是否必选 | 说明                                                         |
+| ---------------- | ----------- | -------- | ------------------------------------------------------------ |
+| streamType       | string      | Y        | 流类型:可选择： <br/>流地址：NORMAL <br/>声网录制：AGORA <br/>即构录制：ZEGO <br/>腾讯录制：TRTC |
+| url              | string      | N        | 要检测的音频流 url 地址（当 streamType 为 NORMAL 时必传）    |
+| agoraParam       | json_object | N        | 声网录制参数（当 streamType 为 AGORA 时必传），详见扩展参数  |
+| zegoParam        | json_object | N        | 即构录制参数（当 streamType 为ZEGO时必传），详见扩展参数     |
+| trtcParam        | json_object | N        | 腾讯录制参数（当 streamType 为 TRTC时必传），详见扩展参数    |
+| tokenId          | string      | Y        | 客户端用户账号唯一标识                                       |
+| channel          | string      | Y        | 见下文渠道配置表                                             |
+| room             | string      | N        | 房间号，建议传入                                             |
+| returnAllText    | bool        | N        | 值为 true 时，返回全量的音频流片段识别结果和文本内容<br>值为 false 时，只返回有风险（riskType 为 REJECT）的音频流片段识别结果和文本内容<br>默认是 false |
+| returnPreText    | bool        | N        | 值为 true 时，返回的 content 字段包含违规音频前一分钟文本内容<br>值为 false 时，返回的 content 字段只包含违规音频片段文本内容<br>默认值为 false |
+| returnPreAudio   | bool        | N        | 值为 true时，返回违规音频前一分钟音频链接。<br>值为 false时 ，只返回违规片段音频链接。<br>默认值为 false |
+| returnFinishInfo | bool        | N        | 音频流结束通知，可选值：<br>false: 不返回状态码<br>true: 回调参数增加 statCode 状态码<br>默认值为 false |
+| initDomain       | int         | N        | 当即构客户端初始化传入隔离域名该字段必传<br>可选值： <br>1：客户端初始化有隔离域名 |
+
+其中data.agoraParam内容如下：
+
+| 参数名称        | 类型   | 是否必选 | 说明                                                         |
+| --------------- | ------ | -------- | ------------------------------------------------------------ |
+| appId           | string | Y        | 声网提供的 appId                                             |
+| channel         | string | Y        | 声网提供的频道名                                             |
+| token           | string | N        | 安全要求较高的用户可以使用Token进行认证，生成方式详见声网文档：<br>https://docs.agora.io/cn/Interactive%20%20Broadcast/token_server?platform=All%20Platforms |
+| uid             | int    | N        | 用户id，32位无符号整数。<br>当token存在时，必须提供生成token时所使用的用户ID。<br>注意，此处需要区别实际房间中的用户uid，提供给服务端录制所用的 uid 不允许在房间中存在。 |
+| isMixingEnabled | bool   | N        | 分流/合流录制，默认合流录制<br>值为 true:合流 <br>值为 false:分流 <br>合流是指一个直播房间一路流，分流是指一个麦位一路流 |
+| channelProfile  | int    | N        | 声网录制的频道模式，取值： <br>0: 通信，即常见的 1 对 1 单聊或群聊，频道内任何用户可以自由说话； <br>1: 直播，有两种主播和观众两种用户角色。 <br>默认值为0，即默认以通信模式录制。 |
+
+其中data.zegoParam内容如下
+
+| 参数名称 | 类型   | 是否必选 | 说明                                                         |
+| -------- | ------ | -------- | ------------------------------------------------------------ |
+| tokenId  | string | Y        | zego 提供的身份验证信息，用于 token 登陆                     |
+| streamId | string | N        | 用户设置的音频流编号，唯一对应一路音频流，streamId 与 roomId 至少存在其中之一， 如果 streamId 与 roomId 同时存在， streamId 有效；当 streamId 生效时，服务端以用户为单位拉流。 |
+| roomId   | string | N        | 用户设置的房间编号，唯一对应一个房间， streamId 与 roomId 至少存在其中之一，如果 streamId 与 roomId 同时存在，streamId 有效；当 roomId 生效时，服务端以房间为单位拉流。 |
+| testEnv  | bool   | Y        | 是否使用 zego 测试环境：<br>值为true 时：测试环境，<br>值为false 时：正式环境。<br>默认值为 false |
+
+其中data.trtcParam内容如下
+
+| 参数名称   | 类型   | 是否必选 | 说明                                                         |
+| ---------- | ------ | -------- | ------------------------------------------------------------ |
+| sdkAppId   | int    | Y        | 腾讯提供的 sdkAppId                                          |
+| demoSences | int    | Y        | 录制类型可选值：<br>分流录制：2<br>合流录制：4               |
+| userId     | string | Y        | 分配给录制段的 userId，限制长度为 32bit，只允许包含（a-z，A-Z），数字(0-9)以及下划线和连词符 |
+| userSig    | string | Y        | 录制 userId 对应的验证签名，相当于登录密码                   |
+| roomId     | int    | N        | 房间号码，取值范围：【1-4294967294】<br>roomId 与 strRoomId 必传一个，若两者都有，值优先选用 roomId |
+| strRoomId  | string | N        | 房间号码，取值说明：<br>只允许包含（a-z，A-Z），数字(0-9)以及下划线和连词符<br>若您选用 strRoomId ，需注意 strRoomId 和roomId 两者都有时，值优先选用 roomId |
+
+其中，渠道配置表的内容如下：
+
+| 业务场景 | channel取值 | 备注             |
+| -------- | ----------- | ---------------- |
+| 语音房   | VOICE_ROOM  | 多人连麦语音房   |
+| 直播间   | LIVE_ROOM   | 视频直播间       |
+| 语音聊天 | VOICE_CHAT  | 两人语音聊天通话 |
+
+
+
+**返回参数**: 放在 HTTP Body 中，采用 json 格式，具体参数如下：
+
+| 参数名称 | 类型   | 是否必选 | 说明           |
+| -------- | ------ | -------- | -------------- |
+| code     | int    | Y        | 返回码         |
+| message  | string | Y        | 返回码详情描述 |
+| entryId  | string | Y        | 请求唯一标识   |
+
+## 异步回调识别结果
+
+**回调策略：** 当用户收到推送结果，并返回 HTTP 状态码为 200 时，表示推送成功；否则系统将进行最多 12 次推送。
+
+**请求方法：** POST 
+
+**字符编码格式：** 请求及返回结果都使用 UTF-8 字符集进行编码 
+
+**回调参数：** 放在 HTTP Body 中，采用 json 格式，具体参数如下：
+
+| 参数名称  | 类型        | 是否必选 | 说明                                                         |
+| --------- | ----------- | -------- | ------------------------------------------------------------ |
+| code      | int         | Y        | 返回码                                                       |
+| message   | string      | Y        | 返回码详情描述                                               |
+| entryId   | string      | Y        | 请求唯一标识                                                 |
+| score     | int         | N        | 风险分数（code 为 1100 且 riskLevel=REJECT时存在）<br>取值范围[0,1000]，分数越高风险越大 |
+| riskLevel | string      | Y        | 风险级别（code 为 1100 时存在） <br>可能返回值：PASS，REVIEW，REJECT <br>PASS：正常内容，建议直接放行 <br>REVIEW：可疑内容，建议人工审核 <br>REJECT：违规内容，建议直接拦截 |
+| statCode  | int         | N        | 审核状态：<br>0 : 审核中<br>1 : 审核结束                     |
+| detail    | json_object | Y        | 风险详情                                                     |
+
+其中 detail 的内容如下:
+
+| 参数名称          | 类型        | 是否必选 | 说明                                                         |
+| ----------------- | ----------- | -------- | ------------------------------------------------------------ |
+| beginProcessTime  | int         | Y        | 开始处理的时间（13 位时间戳）                                |
+| finishProcessTime | int         | Y        | 结束处理的时间（13 位时间戳）                                |
+| audioUrl          | string      | Y        | 音频片段地址，returnAllText 不传或为 false时只返回违规音频片段地址，<br>returnAllText 为 true 时返回所有音频片段地址 |
+| preAudioUrl       | string      | N        | 违规内容前 1 分钟音频片段地址（该参数只有在请求参数中 returnPreAudio 是 true 情况下存在） |
+| audio_endtime     | string      | Y        | 违规内容结束时间（绝对时间）                                 |
+| audio_starttime   | string      | Y        | 违规内容开始时间（绝对时间）                                 |
+| audioText         | string      | Y        | 音频片段文本                                                 |
+| content           | string      | N        | returnPreText 为 true 时返回违规内容前一分钟文本和违规内容片段文本 |
+| description       | string      | Y        | 策略规则风险原因描述<br>注：该参数为旧版 API 返回参数，兼容保留，后续版本将去除，请勿依赖此参数，仅供参考 |
+| descriptionV2     | string      | Y        | 策略规则风险原因描述<br>注：该参数为 API 返回参数，请勿依赖此参数，仅供参考 |
+| matchedItem       | string      | N        | 命中的具体敏感词（该参数仅在命中敏感词时存在）               |
+| matchedList       | string      | N        | 命中敏感词所在的名单名称（该参数仅在命中敏感词时存在）       |
+| hits              | json_array  | Y        | 展示风险详情，请勿依赖此参数，仅供参考                       |
+| model             | string      | Y        | 规则标识，用来标识文本命中的策略规则。<br>注：该参数为旧版 API 返回参数，兼容保留，后续版本将去除，请勿依赖此参数，仅供参考 |
+| isSing            | int         | N        | type 取值包含 SING 时存在：<br>取值 0 ：表示检测不存在唱歌片段<br>取值 1 ：表示检测存在唱歌片段 |
+| requestParams     | json_object | Y        | 返回请求参数 data 中的所有字段                               |
+| riskType          | int         | Y        | 标识风险类型，静音时不返回，可能取值：<br>0：正常<br>100：涉政<br>110: 暴恐<br>120: 国歌<br>200：色情<br>210：辱骂<br>250：娇喘<br>300：广告<br>400：灌水<br>500：无意义<br>600 : 违禁<br>700：其他<br>720：黑账号<br>730：黑 IP<br>800：高危账号<br>900：自定义 |
+| riskTypeDesc      | string      | N        | 风险原因描述                                                 |
+| room              | string      | Y        | 房间号                                                       |
+| userId            | int         | N        | 用户账号标识（仅分流情况下存在）。<br>返回的userId 是实际房间中的用户 id，与请求参数中的 uid 无关。 |
+| vadCode           | int         | N        | 静音状态：<br>0 ：静音片段<br>1 ：非静音片段                 |
+
+code 和 message 的列表如下:
+
+| code | message    |
+| ---- | ---------- |
+| 1100 | 成功       |
+| 1902 | 参数不合法 |
+| 1903 | 服务失败   |
+| 9100 | 余额不足   |
+| 9101 | 无权限操作 |
+
+
+
+## 音频流关闭通知接口
+
+**接口描述：** 该接口用于客户端通知服务端某个音频流已关闭
+
+**请求 URL：** `https://censor-open.qiniuapi.com/anti_fraud/v2/finish_audiostream`
+
+**字符编码格式：** 请求及返回结果都使用 UTF-8 字符集进行编码 
+
+**请求方法：** POST
+
+**建议超时时长：** 1s
+
+**请求头部**: 
+
+| 字段          | 取值                                                         |
+| ------------- | ------------------------------------------------------------ |
+| Content-Type  | application/json                                             |
+| Authorization | Qiniu\<AccessKey>:\<Sign> <br/>**注意:** 用户请根据 AccessKey 和 SecretKey 生成鉴权，以便进行身份验证。\<Sign> 的取值请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken) |
+
+**请求参数：** 放在HTTP Body中，采用json格式，具体参数如下：
+
+| 参数名称 | 类型   | 是否必选 | 说明         |
+| -------- | ------ | -------- | ------------ |
+| entryId  | string | Y        | 请求唯一标识 |
+
+**返回参数：** 放在HTTP Body中，采用json格式，具体参数如下： 
+
+| 参数名称 | 类型   | 是否必选 | 说明           |
+| -------- | ------ | -------- | -------------- |
+| code     | int    | Y        | 返回码         |
+| message  | string | Y        | 返回码详细描述 |
+
+
+
+
+# 示例
+
+## 请求示例
+
+```js
+POST /anti_fraud/v2/audiostream HTTP/1.1
+Host: censor-open.qiniuapi.com
+Content-Type: application/json
+Authorization: Qiniu YnxrxOSvGotRZpqkZnMzl_euuoqRzOKUd6zwbRju:r6a-o2UpBg6A4puIMnkCExH8lE8=
+
+{
+    "type": "POLITICAL_PORN_MOAN_ABUSE_AD",
+    "data": {
+        "streamType":"NORMAL",
+        "url": "rtmp://xxx.co/test/test1?sign=xxx",
+        "audioName": "xxxxxx",
+        "returnAllText": true
+    },
+    "callback": "http://xxx.test/audio-stream-callback"
+}
+
+```
+
+## 返回示例
+
+```js
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "code":1100,
+    "message":"成功", 
+    "entryrid":"5564f430ee6a1adb40f06d768b40316b",
+}
+
+```
+
+## 回调示例
+
+```js
+POST /xxxx HTTP/1.1
+Host: xxxx
+Content-Type: application/json
+
+{
+    "code":1100,
+    "message":"成功",
+    "riskLevel":"PASS",
+    "detail":{
+        "beginProcessTime":1629773218229,
+        "finishProcessTime":1629773218808,
+        "audioUrl":"https://xxx.mp3",
+        "audio_endtime":"2021-08-24 10:46:48",
+        "audio_starttime":"2021-08-24 10:46:38",
+        "audioText":"这是音频内容",
+        "content":"这是音频内容",
+        "description":"正常",
+        "hits":[
+        ],
+        "model":"M1000",
+        "requestParams":{
+            "audioName":"xxxxxx",
+            "returnAllText":true,
+            "returnPreAudio":true,
+            "returnPreText":true,
+            "room":"",
+            "streamType":"NORMAL",
+            "tokenId":"1234",
+            "url":"rtmp://xxx.co/test/test1?sign=xxx"
+        },
+        "riskTypeDesc":"正常",
+        "room":"",
+        "userId":0,
+        "vadCode":1
+    }
+}
+```
+
+
+
+# 错误码
+
+| code | message    |
+| ---- | ---------- |
+| 1100 | 成功       |
+| 1902 | 参数不合法 |
+| 1903 | 服务失败   |
+| 9100 | 余额不足   |
+| 9101 | 无权限操作 |
+
+# 价格
+
+1.2元/小时

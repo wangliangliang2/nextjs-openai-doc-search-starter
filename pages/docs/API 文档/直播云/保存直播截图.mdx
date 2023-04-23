@@ -1,0 +1,70 @@
+# 接口描述
+
+保存目标直播流在特定时间点的画面为图片，并保存在存储空间中。截图使用多媒体处理服务并独立计费，会额外产生费用，详细费用请参考[价格表](https://portal.qiniu.com/financial/price) 
+
+# 请求参数
+
+```
+POST /v2/hubs/<hub>/streams/<encodedStreamTitle>/snapshot
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+
+{
+    "fname": "<fname>",
+    "time": <time>,
+    "format": "<format>",
+    "pipeline": "<pipeline>",
+    "notify": "<notify>",
+    "deleteAfterDays": <deleteAfterDays>
+}
+```
+
+| 参数                | 类型   | 必填  | 描述                                             |
+| ------------------ | ------ | ---- | ------------------------------------------------ |
+| hub                | string | 是   | 直播空间名                                         |
+| encodedStreamTitle | string | 是   | 经过[base64编码](/kodo/manual/appendix)的直播流名   |
+| time               | int    | 否   | 截图时间，Unix 时间戳，不指定则为当前时间              |
+| fname              | string | 否   | 文件名，不指定系统会随机生成                          |
+| format             | string | 否   | 文件格式，默认为jpg，可取值为jpg和png                 |
+| pipeline           | string | 否   | 异步模式时，指定数据处理的队列，可以将优先级较高的任务配置到独立的队列中进行执行，参考文档：[流媒体队列](https://developer.qiniu.com/dora/kb/2500/streaming-media-queue-about-seven-cows)              |
+| notify             | string | 否   | 回调地址，若指定回调地址，则截图动作为异步模式           |
+| deleteAfterDays    | int    | 否   | 生命周期，- 0: 默认值，表示截图文件永久保存，单位：天    |
+
+# 返回数据
+
+| 参数                | 类型     | 描述                        |
+| ------------------ | -------- | -------------------------- |
+| fname              | string   | 文件名                      |
+| persistentID       | string   | 异步任务ID                   |
+
+# 示例
+
+请求体:
+
+```
+POST /v2/hubs/test/streams/YWJjZA==/snapshot HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+
+{
+    "fname": "test",
+    "time": 1632810081,
+    "deleteAfterDays": 1
+}
+```
+
+返回体:
+
+```
+200 OK
+
+{
+    "fname": "test"
+}
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

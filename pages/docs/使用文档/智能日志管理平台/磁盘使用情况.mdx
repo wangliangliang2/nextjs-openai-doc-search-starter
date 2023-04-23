@@ -1,0 +1,18 @@
+disk监控主要用于监控磁盘的使用情况, 包括磁盘用量、inode使用情况等。适用于对存储设备的监控。
+
+disk监控配置界面如下：
+![](https://dn-odum9helk.qbox.me/FlqiWmA3Bmrq3Q4TvzUeb3aPYelc)
+监控字段与指标的对应关系如下：
+
+1. `disk_path`:磁盘路径。
+2. `disk_device`:磁盘设备名。
+3. `disk_fstype`:文件系统类型。
+4. `disk_total`:磁盘总大小。
+5. `disk_free`:磁盘剩余大小。
+6. `disk_used`:磁盘用量。
+7. `disk_used_percent`:磁盘已用百分比。
+8. `disk_inodes_total`:总inode数量。
+9. `disk_inodes_fress`:空闲的inode数量。
+10. `disk_inodes_used`:使用的inode数量。
+
+下方`高级选项`中可以指定需要收集和忽略的磁盘挂载点。

@@ -1,0 +1,41 @@
+# 创建签名 (POST Signature)
+
+## 请求定义
+```
+POST /v1/signature HTTP/1.1
+Host: sms.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+```
+
+### 请求头
+
+> 请参考 [请求认证](/sms/api/5842/sms-api-authentication)
+
+
+### 请求包
+
+```json
+{
+    "signature": string,
+    "source": string,
+    "pics": []string
+}
+```
+
+参数名称 | 类型 | 必填 | 说明
+--------|------|-------|---------
+signature | string | 是 | 签名
+source | string | 是 | 签名来源，申请签名时必须指定签名来源。取值范围为：<br /> <ul><li>`enterprises_and_institutions` 企事业单位的全称或简称</li><li>`website` 工信部备案网站的全称或简称</li><li>`app` APP应用的全称或简称</li><li>`public_number_or_small_program` 公众号或小程序的全称或简称</li><li>`store_name` 电商平台店铺名的全称或简称</li><li>`trade_name` 商标名的全称或简称</li></ul>
+pics | []string | 否 | 签名对应的资质证明图片进行 base64 编码格式转换后的字符串
+
+
+## 响应定义
+
+### 该接口正确处理请求时返回如下 JSON 数据
+
+```json
+{
+    "signature_id": <signature_id>
+}
+```

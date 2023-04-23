@@ -1,0 +1,114 @@
+# 简介
+&emsp;在官网和控制台，七牛推出了资源包可供购买，本文列出了部分关于CDN资源包您可能需要了解的问题。
+<font color=#4671D5><a href="#Q0">Q：如何购买资源包？</a></font>
+<font color=#4671D5><a href="#Q1">Q：如何选择合适的CDN资源包？各选项的含义是什么？</a></font>
+<font color=#4671D5><a href="#Q2">Q：如何查看资源包余量？</a></font>
+<font color=#4671D5><a href="#Q3">Q：资源包可以叠加使用吗？抵扣顺序是什么？</a></font>
+<font color=#4671D5><a href="#Q4">Q：资源包是否可以用于海外CDN加速？</a></font>
+<font color=#4671D5><a href="#Q5">Q：使用量超出资源包后如何计费？</a></font>
+<font color=#4671D5><a href="#Q6">Q：今天8点后购买的资源包，为什么没有进行抵扣？</a></font>
+
+&emsp;
+&emsp;如果本文仍然无法解决您的问题，您也可以通过 **[工单系统](https://support.qiniu.com/tickets/new)** 将您的问题反馈给我们。
+
+
+-----
+<div id="Q0"></div>
+# Q：如何购买资源包？
+
+&emsp;限时活动入口： [【CDN特惠五折日间包】](https://marketing.qiniu.com/activity/20200423?entry=index-advert)
+
+&emsp;长期活动入口： [【财务中心-购买资源包】](https://portal.qiniu.com/financial/respack/fusion-composite)
+
+<div id="Q1"></div>
+# Q：如何选择合适的CDN资源包？各选项的含义是什么？
+&emsp;购买资源包前，需要了解您的账户CDN业务的使用情况。
+
+## 第一步：CDN域名所属协议（HTTP/HTTPS）
+
+&emsp; 在 **管理控制台** 页面选择 [**CDN**](https://portal.qiniu.com/cdn/overview) ，选择 [**域名管理**](https://portal.qiniu.com/cdn/domain) ，查看「协议」，并购买对应的「HTTP/HTTPS」资源包，如下图所示。
+
+注：如果域名协议为HTTPS，通过HTTP/HTTPS访问时产生的流量都计为HTTPS流量。
+![image](https://dn-odum9helk.qbox.me/Fqw6FBzD4R5xtyurNJo7gUKfgkGT)
+
+## 第二步：CDN域名的使用场景（动态/静态）
+
+&emsp; 在 **管理控制台** 页面选择 [**CDN**](https://portal.qiniu.com/cdn/overview) ，选择 [**域名管理**](https://portal.qiniu.com/cdn/domain) ，查看「使用场景」，并购买对应的「静态/动态」资源包。
+
+&emsp;静态加速场景：图片小文件/下载分发/点播平台
+
+&emsp;动态加速场景：动态加速
+
+&emsp;如下图所示。
+
+![image](https://dn-odum9helk.qbox.me/Fj02lTiRCtTBqLOhtVT1bpjYJmQI)
+
+## 第三步：资源包可用时间(全时段/日间时段/闲时段)
+1. 全时段流量包：全时段指每天 0:00 - 24:00
+1. 日间时段流量包：日间时段指每天 09:00 - 18:00
+1. 闲时流量包：闲时段指每天 00:00 - 09:00
+叠加使用规则和抵扣顺序参考 <font color=#4671D5><a href="#Q3">资源包可以叠加使用吗？抵扣顺序是什么？</a></font>
+
+## 第四步：CDN域名的使用量
+&emsp; 在 **管理控制台** 页面选择 [**CDN**](https://portal.qiniu.com/cdn/overview) ，选择 [**统计分析**](https://portal.qiniu.com/cdn/statistics/usage) ，查看「用量统计」，您可以参考近期的流量使用情况，对不同场景/协议下域名的使用量进行估算，选择合适的资源包大小，如下图所示。
+![image](https://dn-odum9helk.qbox.me/FlDOcADyVmd1dU1oPkbN-WeYY1ik)
+* 标注4：「域名」支持一键筛选 HTTP/HTTPS 协议进行统计。
+* 标注5：CDN资源包支持中国大陆使用，您可以在「地区」中选择中国大陆进行筛选。
+* 标注6：所选时间范围内，符合筛选条件的域名产生的总流量。
+* 标注7：所选时间范围内，符合筛选条件的域名产生的闲时总流量。
+
+<div id="Q2"></div>
+# Q：如何查看资源包余量？
+&emsp;由于七牛目前按量付费资源采取月结算模式，系统每天8点左右将根据用户已使用的用量进行计费，更新一次实时消费明细，即实时消费明细为预估账单和余额预扣除，没有实际完成扣除，所以默认情况下，资源包的余量需要每个月完成月账单出账后更新状态，我们也可以通过下面的方法预估算资源包的使用情况。
+
+&emsp;`资源包剩余大小 = 历史月账单抵扣后剩余 - 本月消费预抵扣大小`
+
+## 第一步：查看历史月账单抵扣后剩余
+
+&emsp; 在 **管理控制台** 页面选择 [**财务中心**](https://portal.qiniu.com/financial/overview) ，选择 [**订单列表**](https://portal.qiniu.com/financial/orders)，点击需要查看的资源包「详情」，进入订单详情后，点击「查看用量详情」。
+![image](https://dn-odum9helk.qbox.me/FtMKtdgkRuloeEcyHp-2V7HNhKS6)
+
+![image](https://dn-odum9helk.qbox.me/FrCwUPXPFiKZ_ubbiV5bbAUA6y-S)
+
+&emsp;您可以看到上一次月账单结算后资源包的剩余可用量，以及历史月份每次月账单结算后，资源包的抵扣情况。
+![image](https://dn-odum9helk.qbox.me/FjY74rrVdeg4ucZcsyi5fO4Pl14D)
+
+
+## 第二步：查看本月消费预抵扣大小
+注：实时消费明细 每日8点更新，更新用量的使用时间是截止本日0点，非实时动态更新。
+
+&emsp; 在 **管理控制台** 页面选择 [**财务中心**](https://portal.qiniu.com/financial/overview) ，选择 [**实时消费明细**](https://portal.qiniu.com/financial/orders)，查看从「上次月账单结算完成后」到「当日0点」的预估账单，参考下图，账单中可以下载「资源包抵扣明细」，抵扣明细中包含本月可用量/当前已用/本月剩余可用等参数。
+![image](https://dn-odum9helk.qbox.me/FswrNX6AhHh5EhbvQZoDJmvCsPpd)
+
+
+## 第三步：预估资源包余量
+&emsp;以上图中的「国内HTTP全时段静态加速流量100G」资源包为例，第一步获取到历史月账单抵扣后剩余96G，第二步中获取到本月HTTP资源包已经抵扣2GB，那么该资源包的余量为：
+
+&emsp;资源包剩余大小 = 历史月账单抵扣后剩余 - 本月消费预抵扣大小 = 96GB - 2GB = 94GB
+
+<div id="Q3"></div>
+# Q：资源包可以叠加使用吗？抵扣顺序是什么？
+
+&emsp;资源包可叠加购买。
+&emsp;相同资源包出账时将按照资源包过期先后顺序依次抵扣，若当过期时间相同时，根据流量产生时段，在日间时段优先抵扣日间时段资源包，在闲时段优先抵扣闲时资源包，最后抵扣全时段流量包。
+&emsp;不同类型的资源包抵扣顺序为：
+&emsp;首先，根据流量的时间判断产生的流量类型为 闲时/日间/全时段 流量，优先抵扣 闲时/日间 流量包，后抵扣 全时段 流量包。
+&emsp;其次，抵扣实名认证用户每月享有的免费流量额度。
+&emsp;然后，根据流量包的下发策略「按月分配不结转/按月分配可结转/一次性分配」，优先抵扣 按月分配不结转资源包，再是 按月分配可结转资源包，最后是 一次性分配资源包。
+&emsp;最后，按照剩余有效期，优先抵扣快过期的资源包。
+
+
+<div id="Q4"></div>
+# Q：资源包是否可以用于海外CDN加速？
+
+&emsp;资源包目前仅支持中国大陆范围使用，海外CDN加速暂不支持。
+
+<div id="Q5"></div>
+# Q：使用量超出资源包后如何计费？
+
+&emsp;在资源包生效期间内，若当月用量超出可用资源包额度，出账时将优先抵扣完资源包额度，超出部分再按照官网 [价格表 - 【CDN】](https://www.qiniu.com/prices)结算。 
+
+<div id="Q6"></div>
+# Q：今天8点后购买的资源包，为什么没有进行抵扣？
+&emsp;实时消费明细 每日8点更新，更新用量的使用时间是截止本日0点，非实时动态更新，当月生效的资源包，您可以在购买后第二天，在财务中心查看实时消费明细账单。
+

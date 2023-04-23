@@ -1,0 +1,69 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+>`PUT` /v1/security/bgpip/resource/:resource_id/level4rule_v2/:rule_id/update
+
+# 请求参数
+
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| X-Qiniu-Regionid | string | header | 是 | 地域 id, 取值：shanghai (大陆通用地域)|
+| resource_id | string | path | 是 | 高防实例 id |
+| rule_id | string | path | 是 | 规则 id, 可通过四层规则列表接口获取 |
+| rule_name | string | body | 否 | 规则名称，不能以数字开头，长度不超过32个字符 |
+| protocol | string | body | 是 | 四层协议，取值：TCP, UDP |
+| virtual_port | int | body | 是 | 转发端口 |
+| source_port | int | body | 是 | 源站端口 |
+| source_type | int | body | 是 | 回源类型，取值：1(域名回源)，2(IP回源) |
+| source_list | [ ] L4RuleSource | body | 是 | 回源列表 |
+| keep_time | int | body | 是 | 会话保持时间，单位秒 |
+| keep_enable | int | body | 是 | 会话保持开关，取值：0(会话保持关闭)，1(会话保持开启) |
+| lb_type | int | body | 是 | 负载均衡方式，取值: 只能填1(加权轮询) |
+
+
+	
+注：如果有部分参数无需修改，则填入修改前的参数值即可。
+
+### L4RuleSource参数说明
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| source | string | 是 | 回源IP或域名 |
+| weight | int | 是 | 回源权重，取值0到100 |
+
+<br>
+
+# 返回值
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| request_id | string | 是 | 请求记录 id |
+
+<br>
+
+# 示例
+### Body参数示例
+```json
+{
+    "rule_id": "rule-001",
+    "rule_name": "rule1",
+    "protocol": "TCP",
+    "virtual_port": 8000,
+    "source_port": 8000,
+    "source_type": 2,
+    "keep_time": 0,
+    "keep_enable": 0,
+    "source_list": [
+        {
+            "source": "1.2.3.4",
+            "weight": 1
+        }
+    ],
+    "lb_type":1
+}
+```
+
+### 正常返回示例
+```json
+{
+    "request_id": "04F0F334-AC1"
+}
+```

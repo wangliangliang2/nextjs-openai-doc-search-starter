@@ -1,0 +1,314 @@
+本文介绍了如何为Linux实例自动配置IPv6地址和手动配置IPv6地址，推荐您使用更高效的自动配置工具配置IPv6地址。
+#### **自动配置IPv6地址**
+ecs-util-ipv6能为已分配IPv6地址的ECS实例一键配置IPv6地址，或者为没有分配IPv6地址的ECS实例一键清理IPv6配置。
+
+使用限制如下：
+ecs-util-ipv6工具仅适用于VPC类型实例，使用前请勿将网络禁用或者将相关出口IP端口（100.100.100.200:80）禁用。
+ecs-util-ipv6工具运行时会自动重启网卡、网络服务，短时间内网络可能会不可用，请慎重执行。
+
+下载对应系统版本工具到目标系统，赋予执行权限后使用管理员权限执行：
+
+```
+wget -O ecs-utils-ipv6 https://ipv6-tool.qnssl.com/rhel-ecs-utils-ipv6 (具体操作系统对应的下载地址见下面表格)
+chmod +x ./ecs-utils-ipv6
+./ecs-utils-ipv6
+```
+	
+如果当前ECS已绑定IPv6地址，则会自动配置；否则会自动清理原有IPv6地址配置。
+
+命令行参数：
+```
+ecs-utils-ipv6 --help           # show usage
+ecs-utils-ipv6 --version        # show version
+ecs-utils-ipv6                  # auto config all dev ipv6
+ecs-utils-ipv6 --static [dev] [ip6s] [prefix_len] [gw6] # config dev static ipv6
+e.g. ecs-utils-ipv6 --static eth0
+       ecs-utils-ipv6 --static eth0 xxx::x1 64 xxx::x0
+       ecs-utils-ipv6 --static eth0 "xxx::x1 xxx:x2 xxx:x3" 64 xxx::x0
+ecs-utils-ipv6 --enable         # enable ipv6
+ecs-utils-ipv6 --disable        # disable ipv6
+```
+可以开启、禁用、手动配置、自动配置（默认）IPv6。
+```
+./ecs-utils-ipv6                 #默认可不带参数，自动配置多网卡多IPv6
+./ecs-utils-ipv6 --enable    #开启IPv6
+./ecs-utils-ipv6 --disable    #禁用IPv6
+./ecs-utils-ipv6 --static <dev>      #自动配置网卡IPv6
+./ecs-utils-ipv6 --static <dev> <ip6s> <prefix_len> <gw6>     #手动配置网卡IPv6，支持多IPv6，请用""包含，多个IPv6用空格隔开
+```
+下载地址如下：
+<style>
+table th:first-of-type {
+    width: 20%;
+}
+table th:nth-of-type(2) {
+    width: 27%;
+}
+table th:nth-of-type(3) {
+    width: 50%;
+}
+</style>
+
+| 系列 | 发行版 | 下载地址 |
+|---|---|---|
+| RHEL| CentOS 5/6/7/8 <br> Red Hat 5/6/7 |https://ipv6-tool.qnssl.com/rhel-ecs-utils-ipv6 |
+| Debian| Ubuntu 14/16 <br>Debian/8/9 |https://ipv6-tool.qnssl.com/debian-ecs-utils-ipv6 |
+| SLES| SUSE 11/12<br>OpenSUSE 42 |https://ipv6-tool.qnssl.com/sles-ecs-utils-ipv6 |
+| CoreOS | CoreOS 14/17 |https://ipv6-tool.qnssl.com/coreos-ecs-utils-ipv6 |
+| FreeBSD| FreeBSD 11 |https://ipv6-tool.qnssl.com/freebsd-ecs-utils-ipv6 |
+
+&nbsp;	
+#### **手动配置IPv6地址**
+完成以下操作，手动配置IPv6地址：
+1.检查实例是否已开启IPv6服务。
+<table><tr><td bgcolor=#F0F8FF>**注意： **CentOS 8、Debian 10.3、Ubuntu18.04默认开启了IPv6服务。</td></tr></table>
+a.远程连接实例。
+b.运行命令ip addr | grep inet6或者ifconfig | grep inet6
+* 若返回inet6相关内容，表示实例已成功开启IPv6服务。您可以跳过本章内容。
+* 若实例未开启IPv6服务，请根据下文开启IPv6服务。
+
+2.开启IPv6服务。
+CentOS 6的操作步骤如下：
+a.远程连接实例。具体操作，请参见通过VNC远程连接Linux实例。
+b.运行vi /etc/modprobe.d/disable_ipv6.conf，将options ipv6 disable=1修改为options ipv6 disable=0后保存退出。
+c.运行vi /etc/sysconfig/network，将NETWORKING_IPV6=no修改为NETWORKING_IPV6=yes后保存退出。
+d.运行以下命令：
+```
+modprobe ipv6 -r
+modprobe ipv6
+```
+e.运行lsmod | grep ipv6，当返回以下内容时，表明IPv6模块已经成功加载：
+```
+ipv6                  xxxxx  8
+```
+<table><tr><td bgcolor=#F0F8FF>**说明: **第三列参数值不能为 0，否则您需要重新设置IPv6服务。</td></tr></table>
+	
+f.运行vi /etc/sysctl.conf做如下修改：
+```
+#net.ipv6.conf.all.disable_ipv6 = 1
+#net.ipv6.conf.default.disable_ipv6 = 1
+#net.ipv6.conf.lo.disable_ipv6 = 1
+
+net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.default.disable_ipv6 = 0
+net.ipv6.conf.lo.disable_ipv6 = 0
+```
+	
+g.运行sysctl -p使配置生效。
+
+CentOS 7的操作步骤如下：
+a.远程连接实例。
+b.运行vi /etc/modprobe.d/disable_ipv6.conf，将options ipv6 disable=1修改为options ipv6 disable=0 后保存退出。
+c.运行vi /etc/sysconfig/network，将NETWORKING_IPV6=no修改为NETWORKING_IPV6=yes后保存退出。
+d.运行vi /etc/sysctl.conf做如下修改：
+```
+#net.ipv6.conf.all.disable_ipv6 = 1
+#net.ipv6.conf.default.disable_ipv6 = 1
+#net.ipv6.conf.lo.disable_ipv6 = 1
+
+net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.default.disable_ipv6 = 0
+net.ipv6.conf.lo.disable_ipv6 = 0
+```
+	
+e.运行sysctl -p使配置生效。
+
+CoreOS 14或17的操作步骤如下：
+a.远程连接实例。
+b.运行vi /usr/share/oem/grub.cfg，删除ipv6.disable=1后保存退出。
+c.重启实例。
+
+Debian 8或9的操作步骤如下：
+a.远程连接实例。
+b.运行vi /etc/default/grub，删除ipv6.disable=1后保存退出。
+c.运行vi /boot/grub/grub.cfg，删除ipv6.disable=1后保存退出。
+d.重启实例。
+e.运行vi /etc/sysctl.conf做如下修改：
+```
+#net.ipv6.conf.all.disable_ipv6 = 1
+#net.ipv6.conf.default.disable_ipv6 = 1
+#net.ipv6.conf.lo.disable_ipv6 = 1
+
+net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.default.disable_ipv6 = 0
+net.ipv6.conf.lo.disable_ipv6 = 0
+```
+f.运行sysctl -p使配置生效。
+
+FreeBSD 11的操作步骤如下：
+a.远程连接实例。
+c.运行vi /etc/rc.conf，添加ipv6_activate_all_interfaces="YES"后保存退出。
+d.运行/etc/netstart restart重启网络。
+
+OpenSUSE 42的操作步骤如下：
+远程连接实例。
+运行vi /etc/sysctl.conf做如下修改：
+```
+#net.ipv6.conf.all.disable_ipv6 = 1
+#net.ipv6.conf.default.disable_ipv6 = 1
+#net.ipv6.conf.lo.disable_ipv6 = 1
+
+net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.default.disable_ipv6 = 0
+net.ipv6.conf.lo.disable_ipv6 = 0
+```
+SUSE 11或12的操作步骤如下：
+a.远程连接实例。
+b.运行vi /etc/modprobe.d/50-ipv6.conf，删除install ipv6 /bin/true后保存退出。
+c.运行vi /etc/sysctl.conf做如下修改：
+```
+#net.ipv6.conf.all.disable_ipv6 = 1
+#net.ipv6.conf.default.disable_ipv6 = 1
+#net.ipv6.conf.lo.disable_ipv6 = 1
+
+net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.default.disable_ipv6 = 0
+net.ipv6.conf.lo.disable_ipv6 = 0
+```
+	
+d.运行sysctl -p使配置生效。
+
+Ubuntu 14或16的操作步骤如下：
+a.远程连接实例。
+b.运行vi /etc/sysctl.conf做如下修改：
+```
+#net.ipv6.conf.all.disable_ipv6 = 1
+#net.ipv6.conf.default.disable_ipv6 = 1
+#net.ipv6.conf.lo.disable_ipv6 = 1
+
+net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.default.disable_ipv6 = 0
+net.ipv6.conf.lo.disable_ipv6 = 0
+```
+c.运行sysctl -p使配置生效。
+
+3.查询实例的IPv6地址。
+您可以通过控制台查看实例分配的IPv6地址。
+
+4.手动配置IPv6地址。
+CentOS 6/7/8 和 Red Hat 6/7 的操作步骤如下：
+a.远程连接实例。
+b.运行vi /etc/sysconfig/network-scripts/ifcfg-eth0打开网卡配置文件，eth0为网卡标识符，您需要修改成实际的标识符。在文件中根据实际信息添加以下配置：
+* 单IPv6地址
+```
+IPV6INIT=yes
+IPV6ADDR=<IPv6地址>/<子网前缀长度>
+IPV6_DEFAULTGW=<IPv6网关>
+```
+* 多IPv6地址：
+```
+IPV6INIT=yes
+IPV6ADDR=<IPv6地址>/<子网前缀长度>
+IPV6ADDR_SECONDARIES="<IPv6地址1>/<子网前缀长度> <IPv6地址2>/<子网前缀长度>"
+IPV6_DEFAULTGW=<IPv6网关>
+```
+<table><tr><td bgcolor=#F0F8FF>**说明: **为区分单个IPv6与多个IPv6地址，请在IPV6ADDR_SECONDARIES 参数中使用列表格式表达多地址格式，使用半角引号（"）包含地址，并用空格隔开。</td></tr></table>
+c.重启网络服务：
+* 非CentOS 8系统运行service network restart或systemctl restart network。
+* CentOS 8系统运行nmcli c reload。
+
+Debian/8/9和Ubuntu 14/16的操作步骤如下：
+a.远程连接实例。
+b.运行vi /etc/network/interfaces打开网卡配置文件，eth0为网卡标识符，您需要修改成实际的标识符。在文件中根据实际信息添加以下配置：
+* 单 IPv6 地址：
+```
+auto eth0
+iface eth0 inet6 static
+address <IPv6地址>
+netmask <子网前缀长度>
+gateway <IPv6网关>
+```
+* 多IPv6 地址：
+
+```
+auto eth0
+iface eth0 inet6 static
+address <IPv6地址>
+netmask <子网前缀长度>
+gateway <IPv6网关>
+
+auto eth0:0
+iface eth0:0 inet6 static
+address <IPv6地址1>
+netmask <子网前缀长度>
+gateway <IPv6网关>
+
+auto eth0:1
+iface eth0:1 inet6 static
+address <IPv6地址2>
+netmask <子网前缀长度>
+gateway <IPv6网关>
+```	
+<table><tr><td bgcolor=#F0F8FF>**说明: **为区分单个 IPv6 与多个 IPv6 地址，您只需在同一网卡标识符的基础上重复添加地址信息即可。</td></tr></table>
+	
+c.重启网络服务：运行service network restart或systemctl restart networking。
+
+OpenSUSE 42 和 SUSE Linux 11/12的操作步骤如下：
+a.远程连接实例。
+b.运行vi /etc/sysconfig/network/ifcfg-eth0打开网卡配置文件，eth0为网卡标识符，您需要修改成实际的标识符。在文件中根据实际信息添加以下配置：
+* 单 IPv6 地址：
+```
+IPADDR_0=<IPv6地址>
+PREFIXLEN_0=<子网前缀长度>
+```
+
+	
+* 多IPv6 地址：
+
+```
+IPADDR_0=<IPv6地址>
+PREFIXLEN_0=<子网前缀长度>
+
+IPADDR_1=<IPv6地址1>
+PREFIXLEN_1=<子网前缀长度>
+
+IPADDR_2=<IPv6地址2>
+PREFIXLEN_2=<子网前缀长度>
+```
+<table><tr><td bgcolor=#F0F8FF>**说明: **为区分单个IPv6与多个IPv6地址，请使用不用的IPADDR_N和PREFIXLEN_N重复添加地址信息。</td></tr></table>
+c.运行vi /etc/sysconfig/network/routes打开路由配置文件，添加配置项：
+```
+default <IPv6网关> - -
+```
+d.重启网络服务：运行service network restart或systemctl restart networking。
+
+CoreOS 14/17的操作步骤如下：
+a.远程连接实例。
+b.运行vi /etc/systemd/network/10-eth0.network打开网卡配置文件，eth0为网卡标识符，您需要修改成实际的标识符。在文件中根据实际信息添加以下配置：
+* 单IPv6地址：
+```
+[Address]
+Address=<IPv6地址>/<子网前缀长度>
+[Route]
+Destination=::/0
+Gateway=<IPv6网关>
+```
+* 多IPv6地址:
+```
+[Address]
+Address=<IPv6地址1>/<子网前缀长度>
+[Address]
+Address=<IPv6地址2>/<子网前缀长度>
+[Route]
+Destination=::/0
+Gateway=<IPv6网关>
+```
+<table><tr><td bgcolor=#F0F8FF>**说明: **为区分单个IPv6与多个IPv6地址，请使用不用的IPADDR_N和PREFIXLEN_N重复添加地址信息。</td></tr></table>
+c.重启网络服务：运行systemctr restart systemd-networkd。
+
+FreeBSD 11的操作步骤如下：
+a.远程连接实例。
+b.运行vi /etc/rc.conf打开网卡配置文件，vtnet0为网卡标识符，您需要修改成实际的标识符。在文件中根据实际信息添加以下配置：
+* 单IPv6地址：
+```
+ipv6_ifconfig_vtnet0="<IPv6地址>"
+ipv6_defaultrouter="<IPv6网关>"
+```
+* 多IPv6地址：
+```
+ipv6_ifconfig_vtnet0="<IPv6地址1>"
+ipv6_ifconfig_vtnet0="<IPv6地址2>"
+ipv6_defaultrouter="<IPv6网关>"
+```
+<table><tr><td bgcolor=#F0F8FF>**说明: **为区分单个IPv6与多个IPv6地址，您只需在同一网卡标识符的基础上重复添加地址信息即可。</td></tr></table>
+c.重启网络服务：运行/etc/netstart restart。

@@ -1,0 +1,1260 @@
+![NuGet release](https://dn-odum9helk.qbox.me/5efe0f87c5c5e55cc03fd46b3d63dee4)
+
+此 C# SDK 适用于.NET Framework 2.0+ , .NET Core 以及UWP(Windows 10 通用应用)，基于七牛云API参考手册构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
+
+# 安装
+
+- <a href="#qiniu-sdk-dll">直接添加DLL引用</a>
+- <a href="#qiniu-sdk-nuget">包管理器(NuGet)方式安装</a>
+- <a href="#qiniu-sdk-src">从源码编译</a>
+
+<a id="qiniu-sdk-dll"></a>
+**直接添加DLL引用**
+
+您可以在[这里](https://github.com/qiniu/csharp-sdk/releases)找到所有的Release，选择您需要的版本下载，解压后将*.dll文件添加至项目引用。需要注意的是，此SDK依赖[Json.NET](http://www.newtonsoft.com/json)，可以添加对应版本Newtonsoft.Json.dll引用或者使用NuGet来安装它：
+
+```
+Install-Package Newtonsoft.Json
+```
+
+<a id="qiniu-sdk-nuget"></a>
+**包管理器(NuGet)方式安装**
+
+或者从NuGet来安装，以Visual Studio 2013/2015为例(如果您的Visual Studio没有安装NuGet，请先[安装](http://docs.nuget.org/docs/start-here/installing-nuget))。打开NuGet程序包管理器搜索Qiniu.Shared或者在控制台中键入以下命令：
+
+```
+Install-Package Qiniu.Shared
+```
+
+<a id="qiniu-sdk-src"></a>
+**从源码编译**
+
+当然，您也可以直接从源码编译
+
+```
+git clone https://github.com/qiniu/csharp-sdk
+```
+
+# 鉴权
+
+- <a href="#qiniu-keys-get">获取密钥</a>
+- <a href="#qiniu-keys-set">配置密钥</a>
+- <a href="#qiniu-keys-auth">生成凭证</a>
+
+七牛C# SDK的上传、文件管理等功能需要合法的授权。授权凭证的签算需要七牛账号下的一对有效的密钥：`Access Key`和`Secret Key`。
+
+<a id="qiniu-keys-get"></a>
+**获取密钥**
+
+要接入七牛云存储，您需要拥有一对有效的 Access Key (以下简称AK) 和 Secret Key (以下简称SK) 用来进行签名认证。您可以登录七牛开发者平台，查看 [AK 和 SK](https://portal.qiniu.com/user/key)。如果没有账号，可以在[七牛开发者平台](https://portal.qiniu.com/signup)开通一个七牛开发者帐号。
+
+<a id="qiniu-keys-set"></a>
+**配置密钥**
+
+使用各种七牛API服务(如upload等)之前请确保AK & SK均已赋值：
+
+```csharp
+// AK = "<YOUR_ACCESS_KEY>"
+// SK = "<YOUR_SECRET_KEY>"
+```
+
+<a id="qiniu-keys-auth"></a>
+**生成凭证**
+
+使用AK & SK构建Mac对象，然后使用Mac对象生成鉴权类`Auth`，然后就可以生成上传凭证、管理凭证等（以下`CreateXXToken`中的XXToken是是`UploadToken`,`DownloadToken`,`ManageToken`之一）：
+
+```csharp
+using Qiniu.Util;
+Mac mac = new Mac(AK, SK);
+Auth auth = new Auth(mac);
+auth.CreateXXToken(...);
+```
+
+或者使用Auth的静态方法：
+
+```csharp
+using Qiniu.Util;
+Mac mac = new Mac(AK, SK);
+Auth.CreateXXToken(mac,...);
+```
+
+# SDK设置
+
+## Zone设置
+
+此步骤是必要的。
+
+不同的空间(bucket)可能位于不同的机房(区域/Zone)，因此文件管理/文件上传等操作需要正确配置Zone(位于`Qiniu.Common`命名空间)，默认配置为”华东机房”，用户可以有以下两种方法配置Zone:
+
+1.直接配置（ 如果确定机房所在Zone，可以使用此方法）
+
+```csharp
+// ZoneID zoneId = ZoneID.CN_East; 
+// [CN_East:华东] [CN_South:华南] [CN_North:华北] [US_North:北美]
+// USE_HTTPS = (true|false) 是否使用HTTPS
+Qiniu.Common.Config.SetZone(zoneId,USE_HTTPS);
+```
+
+2.使用AutoZone自动配置（推荐使用这个方法）
+
+```cshatrp
+// AK = ACCESS_KEY
+// USE_HTTPS = (true|false) 是否使用HTTPS
+// 使用前请确保AK和BUCKET正确，否则此函数会抛出异常(比如code612/631等错误)
+Qiniu.Common.Config.AutoZone(AK,BUCKET,USE_HTTPS);
+```
+
+## JSON解析器设置
+
+这个步骤是可选的。
+
+此SDK选用[Newtonsoft.Json](http://www.newtonsoft.com/json)（也称作Json.NET）作为默认的JSON解析器，您也可以自行设置（分别设置`Qiniu.JSON.JsonHelper`的两个属性：`JsonSerializer`和`JsonDeserializer`），可以参考如下示例。
+
+首先定义您的JSON序列化(Serialize)、反序列化(Deserialize)方法（此例使用默认的Newtonsoft.Json来实现）：
+
+```csharp
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Qiniu.JSON;
+
+namespace CSharpSDKExamples
+{
+    public class AnotherJsonSerializer : IJsonSerializer
+    {
+        // 实现此接口的JSON序列化方法
+        public string Serialize<T>(T obj) where T : new()
+        {
+            var settings = new JsonSerializerSettings();
+            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            settings.NullValueHandling = NullValueHandling.Ignore;
+            return JsonConvert.SerializeObject(obj, settings);
+        }
+    }
+
+    public class AnotherJsonDeserializer : IJsonDeserializer
+    {
+        // 实现此接口的JSON反序列化方法
+        public bool Deserialize<T>(string str, out T obj) where T : new()
+        {
+            obj = default(T);
+
+            bool ok = true;
+
+            try
+            {
+                obj = JsonConvert.DeserializeObject<T>(str);
+            }
+            catch (System.Exception)
+            {
+                ok = false;
+            }
+
+            return ok;
+        }
+    }
+}
+```
+
+然后在使用此SDK的其他功能(函数)之前设置JSON解析器，只需设置一次即可：
+
+```csharp
+// 使用自定义的JSON序列化、反序列化方法
+Qiniu.JSON.JsonHelper.JsonSerializer = new AnotherJsonSerializer();
+Qiniu.JSON.JsonHelper.JsonDeserializer = new AnotherJsonDeserializer();
+```
+
+如果您希望摆脱Json.NET依赖（比如您只想使用其他更轻量、更高效的JSON解析器或者自行实现），可在[此项目的github release](https://github.com/qiniu/csharp-sdk/releases)中找到ext-json版本，或者安装NuGet上的`Qiniu.Shared.ExtJson`版本，又或者参照此SDK源码的说明对`Qiniu.JSON`模块稍作修改然后编译。
+
+<a id="qiniu-upload-module"></a>
+# 上传文件
+
+- <a href="#qiniu-upload-flow">上传流程</a>
+- <a href="#qiniu-upload-putpolicy">上传策略</a>
+- <a href="#qiniu-upload-token">上传凭证</a>
+- <a href="#qiniu-upload-methods">上传方式选择</a>
+- <a href="#qiniu-upload-simple">简单上传</a>
+- <a href="#qiniu-upload-bytes">字节数据上传</a>
+- <a href="#qiniu-upload-stream">数据流上传</a>
+- <a href="#qiniu-upload-overwrite">覆盖上传</a>
+- <a href="#qiniu-upload-resumable">断点续上传</a>
+- <a href="#qiniu-upload-persist">上传&预转持久化</a>
+
+<a id="qiniu-upload-flow"></a>
+## 上传流程
+
+为了尽可能地改善终端用户的上传体验，七牛云存储首创了客户端直传功能。更多信息请参阅[业务流程](https://developer.qiniu.com/kodo/manual/programming-model)。
+
+<a id="qiniu-upload-putpolicy"></a>
+## 上传策略
+
+上传策略包含了上传文件的各种配置。在PuPolicy(上传策略)中可以进行丰富的参数设置，比如：文件类型限制、大小限制、回调设置等等，可以参考[上传策略](https://developer.qiniu.com/kodo/manual/put-policy)，具体使用方法可参考下面的上传示例。
+
+<a id="qiniu-upload-token"></a>
+## 上传凭证
+
+关于上传凭证的详细介绍，请参见[上传凭证](http://developer.qiniu.com/article/developer/security/upload-token.html)。可以使用`Auth.CreateUploadToken`来生成上传凭证，请参考上述的“鉴权”部分或者后面的“上传文件”示例代码。
+
+<a id="qiniu-upload-methods"></a>
+## 上传方式选择
+
+此SDK提供了两种上传模式：[表单上传](https://developer.qiniu.com/kodo/manual/form-upload)和[分片上传](https://developer.qiniu.com/kodo/manual/chunked-upload)。
+
+**表单上传**：一般适用于文件体积较小的情形，请使用`FormUploader`
+
+**分片上传**：适用于大文件或者需要支持断点续上传的情形，请使用`ResumableUploader`
+
+**自动选择**：自动选择以上两种方式之一（但需要预先知道待上传文件或者数据(流)的大小），请使用`UploadManager`
+
+需要注意的是，如果您需要上传“一种特殊的数据流（此流不支持查找）”时（例如NetworkStream，请参阅后面的“上传数据流”示例），请使用FormUploader或者ResumableUploader的UploadStream方法，因为这两个方法不需要预先知道流的长度。
+
+<a id="qiniu-upload-simple"></a>
+## 简单上传
+
+使用FormUploader,ResumableUploader或者UploadManager，以下代码示意了如何使用UploadManager来上传一个本地文件
+
+```csharp
+using System;
+using Qiniu.Common;
+using Qiniu.IO;
+using Qiniu.IO.Model;
+using Qiniu.Http;
+
+namespace CSharpSDKExamples
+{
+    public class UploadDemo
+    {
+        /// <summary>
+        /// 简单上传-上传小文件
+        /// </summary>
+        public void UploadFile()
+        {
+            // 生成(上传)凭证时需要使用此Mac
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            string bucket = "test";
+            string saveKey = "1.png";
+            string localFile = "D:\\QFL\\1.png";
+
+            // 上传策略，参见 
+            // https://developer.qiniu.com/kodo/manual/put-policy
+            PutPolicy putPolicy = new PutPolicy();
+
+            // 如果需要设置为"覆盖"上传(如果云端已有同名文件则覆盖)，请使用 SCOPE = "BUCKET:KEY"
+            // putPolicy.Scope = bucket + ":" + saveKey;
+            putPolicy.Scope = bucket;
+
+            // 上传策略有效期(对应于生成的凭证的有效期)          
+            putPolicy.SetExpires(3600);
+
+            // 上传到云端多少天后自动删除该文件，如果不设置（即保持默认默认）则不删除
+            putPolicy.DeleteAfterDays = 1;
+
+            // 生成上传凭证，参见
+            // https://developer.qiniu.com/kodo/manual/upload-token            
+
+            string jstr = putPolicy.ToJsonString();
+            string token = Auth.CreateUploadToken(mac, jstr);
+
+            UploadManager um = new UploadManager();
+
+            HttpResult result = um.UploadFile(localFile, saveKey, token);
+
+            Console.WriteLine(result);
+        }
+    }
+}
+```
+
+<a id="qiniu-upload-bytes"></a>
+## 字节数据上传
+
+使用FormUploader,ResumableUploader或者UploadManager，以下代码示意了如何使用FormUploader来上传字节数据
+
+```csharp
+using System;
+using Qiniu.Common;
+using Qiniu.IO;
+using Qiniu.IO.Model;
+using Qiniu.Http;
+
+namespace CSharpSDKExamples
+{
+    public class UploadDemo
+    {
+        /// <summary>
+        /// 简单上传-上传字节数据
+        /// </summary>
+        public void UploadData()
+        {
+            // 生成(上传)凭证时需要使用此Mac
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            string bucket = "test";
+            string saveKey = "myfile";
+            byte[] data = System.IO.File.ReadAllBytes("D:/QFL/1.mp3");
+            //byte[] data = System.Text.Encoding.UTF8.GetBytes("Hello World!");
+
+            // 上传策略，参见 
+            // https://developer.qiniu.com/kodo/manual/put-policy
+            PutPolicy putPolicy = new PutPolicy();
+
+            // 如果需要设置为"覆盖"上传(如果云端已有同名文件则覆盖)，请使用 SCOPE = "BUCKET:KEY"
+            // putPolicy.Scope = bucket + ":" + saveKey;
+            putPolicy.Scope = bucket;
+
+            // 上传策略有效期(对应于生成的凭证的有效期)          
+            putPolicy.SetExpires(3600);
+
+            // 上传到云端多少天后自动删除该文件，如果不设置（即保持默认默认）则不删除
+            putPolicy.DeleteAfterDays = 1;
+
+            // 生成上传凭证，参见
+            // https://developer.qiniu.com/kodo/manual/upload-token            
+
+            string jstr = putPolicy.ToJsonString();
+            string token = Auth.CreateUploadToken(mac, jstr);
+
+            FormUploader fu = new FormUploader();
+
+            HttpResult result = fu.UploadData(data, saveKey, token);
+
+            Console.WriteLine(result);
+        }
+    }
+}
+```
+
+<a id="qiniu-upload-stream"></a>
+## 数据流上传
+
+使用FormUploader,ResumableUploader或者UploadManager，如果预先不知道上传的流的长度，请使用FormUploader或者ResumableUploader，以下代码示意了如何使用FormUploader来上传一个网络流（“此流不支持查找操作”）：
+
+```csharp
+using System;
+using Qiniu.Common;
+using Qiniu.IO;
+using Qiniu.IO.Model;
+using Qiniu.Http;
+
+namespace CSharpSDKExamples
+{
+    public class UploadDemo
+    {
+        /// <summary>
+        /// 上传（来自网络回复的）数据流
+        /// </summary>
+        public void UploadStream()
+        {
+            // 生成(上传)凭证时需要使用此Mac
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            string bucket = "test";
+            string saveKey = "1.jpg";
+
+            // 上传策略，参见 
+            // https://developer.qiniu.com/kodo/manual/put-policy
+            PutPolicy putPolicy = new PutPolicy();
+
+            // 如果需要设置为"覆盖"上传(如果云端已有同名文件则覆盖)，请使用 SCOPE = "BUCKET:KEY"
+            // putPolicy.Scope = bucket + ":" + saveKey;
+            putPolicy.Scope = bucket;
+
+            // 上传策略有效期(对应于生成的凭证的有效期)          
+            putPolicy.SetExpires(3600);
+
+            // 上传到云端多少天后自动删除该文件，如果不设置（即保持默认默认）则不删除
+            putPolicy.DeleteAfterDays = 1;
+
+            // 生成上传凭证，参见
+            // https://developer.qiniu.com/kodo/manual/upload-token            
+
+            string jstr = putPolicy.ToJsonString();
+            string token = Auth.CreateUploadToken(mac, jstr);
+
+            try
+            {
+                string url = "http://img.ivsky.com/img/tupian/pre/201610/09/beifang_shanlin_xuejing-001.jpg";
+                var wReq = System.Net.WebRequest.Create(url) as System.Net.HttpWebRequest;
+                var resp = wReq.GetResponse() as System.Net.HttpWebResponse;
+                using (var stream = resp.GetResponseStream())
+                {
+                    // 请不要使用UploadManager的UploadStream方法，因为此流不支持查找(无法获取Stream.Length)
+                    // 请使用FormUploader或者ResumableUploader的UploadStream方法
+                    FormUploader fu = new FormUploader();
+                    var result = fu.UploadStream(stream, "xuejing-001.jpg", token);
+                    Console.WriteLine(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+    }
+}
+```
+
+<a id="qiniu-upload-overwrite"></a>
+## 覆盖上传
+
+在上传策略中设置`SCOPE = "BUCKET:KEY"`:
+
+```csharp
+PutPolicy putPolicy = new PutPolicy();
+putPolicy.Scope = bucket + ":" + saveKey;
+```
+
+其余部分代码类似。
+
+<a id="qiniu-upload-resumable"></a>
+## 断点续上传
+
+对于大尺寸文件的上传，可能需要进行分片上传或者需要从中断后的位置继续上传，这时请使用ResumeUploader。
+
+```csharp
+using System;
+using Qiniu.Common;
+using Qiniu.IO;
+using Qiniu.IO.Model;
+using Qiniu.Http;
+
+namespace CSharpSDKExamples
+{
+    public class UploadDemo
+    {
+        /// <summary>
+        /// 上传大文件，可以从上次的断点位置继续上传
+        /// </summary>
+        public void UploadBigFile()
+        {
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            string bucket = "test";
+            string saveKey = "1.mp4";
+            string localFile = "D:\\QFL\\1.mp4";
+
+            // 断点记录文件，可以不用设置，让SDK自动生成，如果出现续上传的情况，SDK会尝试从该文件载入断点记录
+            // 对于不同的上传任务，请使用不同的recordFile
+            string recordFile = "D:\\QFL\\resume.12345";
+
+            PutPolicy putPolicy = new PutPolicy();
+            putPolicy.Scope = bucket;
+            putPolicy.SetExpires(3600);
+
+            string token = Auth.CreateUploadToken(mac, putPolicy.ToJsonString());
+
+            // 包含两个参数，并且都有默认值
+            // 参数1(bool): uploadFromCDN是否从CDN加速上传，默认否
+            // 参数2(enum): chunkUnit上传分片大小，可选值128KB,256KB,512KB,1024KB,2048KB,4096KB
+            ResumableUploader ru = new ResumableUploader(false, ChunkUnit.U1024K);
+
+            // ResumableUploader.UploadFile有多种形式，您可以根据需要来选择
+            //
+            // 最简模式，使用默认recordFile和默认uploadProgressHandler
+            // UploadFile(localFile,saveKey,token)
+            // 
+            // 基本模式，使用默认uploadProgressHandler
+            // UploadFile(localFile,saveKey,token,recordFile)
+            //
+            // 一般模式，使用自定义进度处理(可以监视上传进度)
+            // UploadFile(localFile,saveKey,token,recordFile,uploadProgressHandler)
+            //
+            // 高级模式，包含上传控制(可控制暂停/继续 或者强制终止)
+            // UploadFile(localFile,saveKey,token,recordFile,uploadProgressHandler,uploadController)
+            // 
+
+            // 支持自定义参数
+            //var extra = new System.Collections.Generic.Dictionary<string, string>();
+            //extra.Add("FileType", "UploadFromLocal");
+            //extra.Add("YourKey", "YourValue");
+            //uploadFile(...,extra,...)
+
+            //最大尝试次数(有效值1~20)，在上传过程中(如mkblk或者bput操作)如果发生错误，它将自动重试，如果没有错误则无需重试
+            int maxTry = 10;
+
+            // 使用默认进度处理，使用自定义上传控制            
+            UploadProgressHandler upph = new UploadProgressHandler(ResumableUploader.DefaultUploadProgressHandler);
+            UploadController upctl = new UploadController(uploadControl);
+            HttpResult result = ru.UploadFile(localFile, saveKey, token, recordFile, maxTry, upph, upctl);
+
+            Console.WriteLine(result);
+        }
+
+        // 内部变量，仅作演示
+        private static bool paused = false;
+
+        /// <summary>
+        /// 上传控制
+        /// </summary>
+        /// <returns></returns>
+        private static UPTS uploadControl()
+        {
+            // 这个函数只是作为一个演示，实际当中请根据需要来设置
+            // 这个演示的实际效果是“走走停停”，也就是停一下又继续，如此重复直至上传结束
+            paused = !paused;
+
+            if (paused)
+            {
+                return UPTS.Suspended;
+            }
+            else
+            {
+                return UPTS.Activated;
+            }
+        }
+    }
+}
+```
+
+<a id="qiniu-upload-persist"></a>
+## 上传&预转持续化
+
+如果需要在在资源上传后自动触发[持久化处理](/dora/manual/1291)，在PutPolicy（[上传策略](https://developer.qiniu.com/kodo/manual/put-policy)）中设置persistentOps这一项即可。
+
+```csharp
+PutPolicy putPolicy = new PutPolicy();
+// ... (这里省略了putPolicy的一些设置)
+putPolicy.PersistentOps = "PERSISTENT_OPS";
+```
+
+其中`PERSISTENT_OPS`可以参考[persistentOps详解](https://developer.qiniu.com/kodo/manual/put-policy#put-policy-persistent-ops-explanation)
+
+<a id="qiniu-download-module"></a>
+# 下载文件
+
+- <a href="#qiniu-download-public">下载可公开访问的文件</a>
+- <a href="#qiniu-download-private">下载私有空间中的文件</a>
+
+<a id="qiniu-download-public"></a>
+## 下载可公开访问的文件
+
+可下载网络上或者公开空间中的小文件（如文本、图片等）。
+
+```csharp
+using System;
+using Qiniu.Common;
+using Qiniu.IO;
+using Qiniu.IO.Model;
+using Qiniu.Http;
+
+namespace CSharpSDKExamples
+{
+    public class DownloadDemo
+    {
+        /// <summary>
+        /// 下载可公开访问的文件
+        /// </summary>
+        public void DownloadFile()
+        {
+            // 文件URL
+            string rawUrl = "http://img.ivsky.com/img/tupian/pre/201610/09/beifang_shanlin_xuejing-001.jpg";
+            // 要保存的文件名，如果已存在则默认覆盖
+            string saveFile = "D:\\QFL\\saved-snow.jpg";
+
+            // 可公开访问的url，直接下载
+            HttpResult result = DownloadManager.Download(rawUrl, saveFile);
+
+            Console.WriteLine(result);
+        }
+    }
+}
+```
+
+<a id="qiniu-download-private"></a>
+## 下载私有空间中的文件
+
+私有空间中的文件访问链接需要经过授权，**生成授权下载链接**的过程如下：
+
+```csharp
+ACC_URL = RAW_URL+Expire+Token
+```
+
+比如原始链接` http://example.com/file/1.jpg`
+
+加上过期时间戳 `http://example.com/file/1.jpg?e=1476783956`
+
+（如果原始链接中已包含?打头的query字符串，则时间戳字符串改为`&e=...`）
+
+然后Auth生成token拼接上去 `http://example.com/file/1.jpg?e=1476783956&token=Token`
+
+可参考下面的方法下载私有空间中的小文件：
+
+```csharp
+using System;
+using Qiniu.Common;
+using Qiniu.Util;
+using Qiniu.IO;
+using Qiniu.IO.Model;
+using Qiniu.Http;
+
+namespace CSharpSDKExamples
+{
+    public class DownloadDemo
+    {
+        /// <summary>
+        /// 下载私有空间中的文件
+        /// </summary>
+        public void DownloadPrivateFile()
+        {
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            string rawUrl = "http://your-bucket.bkt.clouddn.com/1.jpg";
+            string saveFile = "D:\\QFL\\saved-1.jpg";
+
+            // 设置下载链接有效期3600秒
+            int expireInSeconds = 3600;
+            string accUrl = DownloadManager.CreateSignedUrl(mac, rawUrl, expireInSeconds);
+
+            // 接下来可以使用accUrl来下载文件
+            HttpResult result = DownloadManager.Download(accUrl, saveFile);
+
+            Console.WriteLine(result);
+        }
+    }
+}
+```
+
+<a id="qiniu-bucket-module"></a>
+# 空间文件管理
+
+- <a href="#qiniu-bucket-functions">支持的功能列表</a>
+- <a href="#qiniu-bucket-simple">简单处理</a>
+- <a href="#qiniu-bucket-batch">批量处理</a>
+- <a href="#qiniu-bucket-listfiles">获取空间文件列表</a>
+- <a href="#qiniu-bucket-update">更新文件生命周期</a>
+
+<a id="qiniu-bucket-functions"></a>
+## 支持的功能
+
+下表列举了空间管理的一些基本功能（部分不常见的功能未在此列举）：
+
+| 功能 | 函数 | 说明 |
+|----|----|----|
+|获取文件信息| Stat(bucket,key) |文件名、大小、Hash等信息  |
+|修改文件类型| Chgm(bucket,key,mimeType) |修改后的类型为`mimeType` |
+|移动或重命名文件|Move(srcBucket,srcKey,dstBucket,dstKey,[force])| 可选参数force |
+|复制文件| Copy(srcBucket,srcKey,dstBucket,dstKey,[force])|可选参数force|
+|删除文件| Delete(bucket,key)||
+|设置或更新文件生存时间| UpdateLifecycle(bucket,key,days)| 设置days=0表示取消|
+|获取空间文件列表| ListFiles(bucket) | 另请参阅后面的“获取文件列表”示例 |
+|抓取网络资源到空间| Fetch(resURL,bucket,key)||
+|更新镜像空间中的文件| Prefetch(resURL,bucket,key)|空间`bucket`设置了“镜像存储”|
+|资源管理批量操作| Batch(opstr)| 另请参阅后面的“批量处理”示例|
+|批量获取文件信息| BatchStat(bucket,keys)|参数keys是string数组|
+|批量删除文件| BatchDelete(bucket,keys)|参数keys是string数组|
+
+<a id="qiniu-bucket-simple"></a>
+## 简单处理
+
+支持stat、copy、move、delete等，其中move/copy支持force参数(强制覆盖选项，即如果目标文件已存在，可以设置强制覆盖参数force来覆盖那个文件的内容)。
+
+以下代码示意了如何获取空间中文件的信息(stat)：
+
+```csharp
+using System;
+using Qiniu.Common;
+using Qiniu.RS;
+using Qiniu.RS.Model;
+using Qiniu.Http;
+
+namespace CSharpSDKExamples
+{
+    public BucketDemo
+    {
+        /// <summary>
+        /// 获取文件基本信息
+        /// </summary>
+        public void Stat()
+    {
+        // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+        // 实际应用中，请自行设置您的AccessKey和SecretKey
+        Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+        string bucket = "test";
+        string key = "1.avi";
+
+        BucketManager bm = new BucketManager(mac);
+
+        StatResult result = bm.Stat(bucket, key);
+
+        Console.WriteLine(result);
+    }
+}
+}
+```
+
+其他操作类似。
+
+<a id="qiniu-bucket-batch"></a>
+## 批量处理
+
+batch批处理请求的主体内容具有op=OP1&op=OP2&op=...这样的格式，其中op=OPS作为一个单位，用&符号相连，OPS是以上stat,copy,move,delete等操作字符串。
+
+```csharp
+using System;
+using Qiniu.Common;
+using Qiniu.RS;
+using Qiniu.RS.Model;
+using Qiniu.Http;
+
+namespace CSharpSDKExamples
+{
+    public class BucketDemo
+    {
+        /// <summary>
+        /// 批量操作
+        /// </summary>
+        public void Batch()
+        {
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            // 批量操作类似于
+            // op=<op1>&op=<op2>&op=<op3>...
+            string batchOps = "op=OP1&op=OP2";
+            BucketManager bm = new BucketManager(mac);
+            var result = bm.Batch(batchOps);
+            // 或者
+            //string[] batch_ops={"<op1>","<op2>","<op3>",...};
+            //bm.Batch(batch_ops);
+
+            Console.WriteLine(result);
+        }
+    }
+}
+```
+
+<a id="qiniu-bucket-listfiles"></a>
+## 获取空间文件列表
+
+在BucketManager类中提供了ListFiles方法`ListFiles(bucket, prefix, marker, limit, delimiter)`.
+
+该方法返回值中，有以下3个字段需要关注：
+
+|字段	| 含义 |
+|----|----|
+| Marker | 请参阅下述的marker参数 |
+| Items | 返回的结果，其中包括文件名、hash、大小等信息 |
+| CommonPrefixes | 请参阅下述的delimiter和prefix参数 |
+
+函数参数说明如下：
+
+| 参数 | 含义 |
+|----|----|
+| bucket | 目标空间名称 |
+| prefix | 返回指定文件名前缀的文件列表(prefix可设为null) |
+| marker | 考虑到设置limit后返回的文件列表可能不全(需要重复执行listFiles操作) 执行listFiles操作时使用marker标记来追加新的结果。**特别注意**首次执行listFiles操作时marker为null |
+| limit | 每次返回结果所包含的文件总数限制(limit最大值1000，*建议值100*) |
+| delimiter | 分隔符，比如-或者/等等，可以模拟作为目录结构(参考下述示例)。假设指定空间中有2个文件 fakepath/1.txt fakepath/2.txt 现设置delimiter=/ 得到结果items =[]，commonPrefixes = [fakepath/] 调整prefix=fakepath/ delimiter=null 得到所需结果items=[1.txt,2.txt] 于是可以在本地先创建一个目录fakepath,然后在该目录下写入items中的文件 |
+
+以下是一个获取文件列表的示例：
+
+```csharp
+using System;
+using Qiniu.Common;
+using Qiniu.RS;
+using Qiniu.RS.Model;
+using Qiniu.Http;
+
+namespace CSharpSDKExamples
+{
+    public class BucketDemo
+    {
+        /// <summary>
+        /// 获取空间文件列表          
+        /// </summary>
+        public void ListFiles()
+        {
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            string bucket = "test";
+            string marker = ""; // 首次请求时marker必须为空
+            string prefix = null; // 按文件名前缀保留搜索结果
+            string delimiter = null; // 目录分割字符(比如"/")
+            int limit = 100; // 单次列举数量限制(最大值为1000)
+
+            BucketManager bm = new BucketManager(mac);
+            //List<FileDesc> items = new List<FileDesc>();
+            //List<string> commonPrefixes = new List<string>();
+
+            do
+            {
+                ListResult result = bm.ListFiles(bucket, prefix, marker, limit, delimiter);
+
+                Console.WriteLine(result);
+
+                marker = result.Result.Marker;
+
+                //if (result.Result.Items != null)
+                //{
+                //    items.AddRange(result.Result.Items);
+                //}
+
+                //if (result.Result.CommonPrefixes != null)
+                //{
+                //    commonPrefixes.AddRange(result.Result.CommonPrefixes);
+                //}
+
+            } while (!string.IsNullOrEmpty(marker));
+
+            //foreach (string cp in commonPrefixes)
+            //{
+            //    Console.WriteLine(cp);
+            //}
+
+            //foreach(var item in items)
+            //{
+            //    Console.WriteLine(item.Key);
+            //}
+        }
+    }
+}
+```
+
+<a id="qiniu-bucket-update"></a>
+## 更新文件生命周期
+
+```csharp
+using System;
+using Qiniu.Common;
+using Qiniu.RS;
+using Qiniu.RS.Model;
+using Qiniu.Http;
+
+namespace CSharpSDKExamples
+{
+    public BucketDemo
+    {
+        /// <summary>
+        /// 设置或更新文件生命周期
+        /// </summary>
+        public void UpdateLifecycle()
+    {
+        // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+        // 实际应用中，请自行设置您的AccessKey和SecretKey
+        Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+        string bucket = "test";
+        string key = "1.jpg";
+
+        BucketManager bm = new BucketManager(mac);
+
+        // 新的deleteAfterDays，设置为0表示取消lifecycle
+        int deleteAfterDays = 1;
+        BucketManager bm = new BucketManager(mac);
+        var result = bm.UpdateLifecycle(bucket, key, deleteAfterDays);
+
+        Console.WriteLine(result);
+    }
+}
+}
+```
+
+<a id="qiniu-processing"></a>
+# 持久化操作
+
+如果需要对已保存在空间中的资源进行云处理并将结果持久化，可以使用[持久化数据处理](/dora/manual/1291),
+如果需要使用独立资源的处理队列，建议先创建一个队列(可将队列名赋给下述示例中的pipeline变量)，队列的创建可以参考[音视频转码界面化操作队列](https://developer.qiniu.com/dora/kb/3853/how-to-create-audio-and-video-processing-private-queues)
+
+```csharp
+using System;
+using Qiniu.Common;
+using Qiniu.RSF;
+using Qiniu.RSF.Model;
+using Qiniu.Util;
+
+namespace CSharpSDKExamples
+{
+    public class ProcessingDemo
+    {
+        /// <summary>
+        /// 持久化并保存处理结果
+        /// </summary>
+        public void PfopAndSave()
+        {
+            string bucket = "test";
+            string key = "1.avi";
+            // 队列名称，如果没有，请设置为null
+            // 另请参阅https://qiniu.kf5.com/hc/kb/article/112978/
+            string pipeline = "MEDIAPROC_PIPELINE";
+            // 接收处理结果通知的URL，另请参阅
+            // http://developer.qiniu.com/code/v6/api/dora-api/pfop/pfop.html#pfop-notification
+            string notifyUrl = "NOTIFY_URL";
+            bool force = false;
+
+            // 要保存的目标空间
+            string dstBucket = "dest-bucket";
+            string dstKey = "2.mp4";
+            string saveAsUri = StringHelper.urlSafeBase64Encode(dstBucket + ":" + dstKey);
+            // 需要执行的数据处理,例如视频转码
+            string fopM = "FILE_OPS"; //示例: "avthumb/mp4";
+            // 使用管道'|'命令，将处理结果saveas另存
+            string fops = fopM + "|saveas/" + saveAsUri;
+
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            OperationManager ox = new OperationManager(mac);
+            PfopResult result = ox.Pfop(bucket, key, fops, pipeline, notifyUrl, force);
+
+            // 稍后可以根据PersistentId查询处理进度/结果
+            //string persistentId = result.PersistentId;
+            //HttpResult pr = ox.Prefop(persistentId);
+            //Console.WriteLine(pr);
+
+            Console.WriteLine(result);
+        }
+    }
+}
+```
+
+其中`FILE_OPS`就是要进行的操作，如：`vframe/jpg/offset/1/w/480/h/360/rotate/90`表示视频截图。
+
+<a id="qiniu-cdn-module"></a>
+# CDN加速
+
+融合CDN加速的功能有：[缓存刷新](https://developer.qiniu.com/fusion/api/cache-refresh)（包括文件刷新和目录刷新）、[文件预取](https://developer.qiniu.com/fusion/api/file-prefetching)、获取[流量带宽](https://developer.qiniu.com/fusion/api/traffic-bandwidth)、获取[日志下载](https://developer.qiniu.com/fusion/api/download-the-log)链接、生成[时间戳防盗链](https://developer.qiniu.com/fusion/kb/timestamp-hotlinking-prevention)，下面分别是对应的示例。
+
+- <a href="#qiniu-cnd-refresh-url">文件刷新</a>
+- <a href="#qiniu-cnd-refresh-dir">目录刷新</a>
+- <a href="#qiniu-cdn-prefetch">文件预取操作</a>
+- <a href="#qiniu-cdn-flux">获取域名流量</a>
+- <a href="#qiniu-cdn-bandwidth">获取域名带宽</a>
+- <a href="#qiniu-cdn-loglist">获取日志下载链接</a>
+- <a href="#qiniu-cdn-hotlink">构建时间戳防盗链访问链接</a>
+
+<a id="qiniu-cdn-refresh-url"></a>
+## 文件刷新
+
+```csharp
+using System;
+using Qiniu.Util;
+using Qiniu.CDN;
+using Qiniu.CDN.Model;
+
+namespace CSharpSDKExamples
+{
+    public class FusionDemo
+    {
+        /// <summary>
+        /// 缓存刷新
+        /// </summary>
+        public void CdnRefresh()
+        {
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            CdnManager cdnMgr = new CdnManager(mac);
+
+            string[] urls = new string[] { "http://yourdomain.bkt.clouddn.com/somefile.php" };
+            
+            var result = cdnManager.RefreshUrls(urls);
+            
+            // 或者使用下面的方法
+            //RefreshRequest request = new RefreshRequest();
+            //request.AddUrls(urls);
+            //var result = cdnMgr.RefreshUrlsAndDirs(request);
+
+            Console.WriteLine(result);
+        }
+    }
+}
+```
+
+<a id="qiniu-cdn-refresh-dir"></a>
+## 目录刷新
+
+```csharp
+using System;
+using Qiniu.Util;
+using Qiniu.CDN;
+using Qiniu.CDN.Model;
+
+namespace CSharpSDKExamples
+{
+    public class FusionDemo
+    {
+        /// <summary>
+        /// 缓存刷新
+        /// </summary>
+        public void CdnRefresh()
+        {
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            CdnManager cdnMgr = new CdnManager(mac);
+
+            string[] dirs = new string[] { "http://yourdomain.bkt.clouddn.com/" };
+            
+            var result = cdnMgr.RefreshDirs(dirs);
+            
+            // 或者使用下面的方法
+            //RefreshRequest request = new RefreshRequest();
+            //request.AddDirs(dirs);
+            //var result = cdnMgr.RefreshUrlsAndDirs(request);
+
+            Console.WriteLine(result);
+        }
+    }
+}
+```
+
+<a id="qiniu-cdn-prefetch"></a>
+## 文件预取操作
+
+```csharp
+using System;
+using Qiniu.Util;
+using Qiniu.CDN;
+using Qiniu.CDN.Model;
+
+namespace CSharpSDKExamples
+{
+    public class FusionDemo
+    {
+        /// <summary>
+        /// 文件预取
+        /// </summary>
+        public void CdnPrefetch()
+        {
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            CdnManager cdnMgr = new CdnManager(mac);
+
+            string[] urls = new string[] { "http://yourdomain.clouddn.com/somefile.php" };
+            
+            var result = cdnMgr.PrefetchUrls(urls);
+            
+            // 或者使用下面的方法
+            //PrefetchRequest request = new PrefetchRequest(urls);
+            //var result = cdnMgr.PrefetchUrls(request);
+
+            Console.WriteLine(result);
+        }
+    }
+}
+```
+
+<a id="qiniu-cdn-flux"></a>
+## 获取域名流量
+
+```csharp
+using System;
+using Qiniu.Util;
+using Qiniu.CDN;
+using Qiniu.CDN.Model;
+
+namespace CSharpSDKExamples
+{
+    public class FusionDemo
+    {
+        /// <summary>
+        /// 查询流量
+        /// </summary>
+        public void GetFluxData()
+        {
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            CdnManager cdnMgr = new CdnManager(mac);
+
+            FluxRequest request = new FluxRequest();
+            request.StartDate = "2016-09-01";
+            request.EndDate = "2016-09-02";
+            request.Granularity = "day";
+            request.Domains = "DOMAIN1;DOMAIN2";
+            var result = cdnMgr.GetFluxData(request);
+
+            Console.WriteLine(result);
+        }
+    }
+}
+```
+
+<a id="qiniu-cdn-bandwidth"></a>
+## 获取域名带宽
+
+```csharp
+using System;
+using Qiniu.Util;
+using Qiniu.CDN;
+using Qiniu.CDN.Model;
+
+namespace CSharpSDKExamples
+{
+    public class FusionDemo
+    {
+        /// <summary>
+        /// 查询带宽
+        /// </summary>
+        public void GetBandwidthData()
+        {
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            CdnManager cdnMgr = new CdnManager(mac);
+
+            BandwidthRequest request = new BandwidthRequest();
+            request.StartDate = "2016-09-01";
+            request.EndDate = "2016-09-20";
+            request.Granularity = "day";
+            request.Domains = "yourdomain.bkt.clouddn.com;yourdomain2;yourdomain3";
+            var result = cdnMgr.GetBandwidthData(request);
+
+            Console.WriteLine(result);
+        }
+    }
+}
+```
+
+<a id="qiniu-cdn-loglist"></a>
+## 获取日志列表
+
+可以获取一个或多个域名在某一天的日志列表（下载链接），参考如下示例：
+
+```csharp
+using System;
+using Qiniu.Util;
+using Qiniu.CDN;
+using Qiniu.CDN.Model;
+
+namespace CSharpSDKExamples
+{
+    public class FusionDemo
+    {
+        /// <summary>
+        /// 查询日志
+        /// </summary>
+        public void GetCdnLogList()
+        {
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            CdnManager cdnMgr = new CdnManager(mac);
+
+            LogListRequest request = new LogListRequest();
+            request.Day = "2016-09-01"; // date:which-day
+            request.Domains = "DOMAIN1;DOMAIN2"; // domains
+            var result = cdnMgr.GetCdnLogList(request);
+
+            Console.WriteLine(result);
+        }
+    }
+}
+```
+
+<a id="qiniu-cdn-hotlink"></a>
+## 构建时间戳防盗链访问链接
+
+```csharp
+using System;
+using Qiniu.Util;
+using Qiniu.CDN;
+using Qiniu.CDN.Model;
+
+namespace CSharpSDKExamples
+{
+    public class FusionDemo
+    {
+        /// <summary>
+        /// 生成时间戳防盗链接
+        /// </summary>
+        public void HotLink()
+        {
+            // 这个示例单独使用了一个Settings类，其中包含AccessKey和SecretKey
+            // 实际应用中，请自行设置您的AccessKey和SecretKey
+            Mac mac = new Mac(Settings.AccessKey, Settings.SecretKey);
+
+            CdnManager cdnMgr = new CdnManager(mac);
+
+            TimestampAntiLeechUrlRequest request = new TimestampAntiLeechUrlRequest();
+            request.Host = "http://your-host";
+            request.Path = "/path/";
+            request.File = "file-name";
+            request.Query = "?version=1.1";
+            request.SetLinkExpire(600); // 设置有效期，单位:秒
+
+            string prefLink = cdnMgr.CreateTimestampAntiLeechUrl(request);
+
+            Console.WriteLine(prefLink);
+        }
+    }
+}
+```
+
+# 使用案例
+
+在QSunSync和qiniulab这两个工具中，都用到了此SDK，研究它们的源代码也能帮助您更好地了解此SDK：
+
+[QSunSync](https://github.com/qiniu/QSunSync)，图形界面同步工具（Windows）
+
+[QiniuLab](https://github.com/qiniu/qiniulab)，图像界面实验工具，不用编写繁复的代码就可以测试七牛云的多项服务（Windows）
+
+# API参考手册
+
+* [对象存储API参考手册](https://developer.qiniu.com/kodo)
+
+* [数据处理API参考手册](https://developer.qiniu.com/dora)
+
+* [融合CDN加速API参考手册](https://developer.qiniu.com/fusion)
+
+# 常见问题
+
+更多使用方法。可以参考[QiniuTests](https://github.com/qiniu/csharp-sdk/blob/master/src/QiniuTests/Storage/BucketManagerTests.cs)下的示例。
+
+问题排查。在SDK的大多函数中(如果有)响应消息，可以反馈给我们进行问题排查。
+
+# 相关资源
+
+如果您有任何关于我们文档或产品的建议和想法，欢迎到我们的技术论坛参与讨论。
+
+* [技术论坛](http://segmentfault.com/qiniu) - 在这里您可以和其他开发者愉快的讨论如何更好的使用七牛云服务
+
+* [提交工单](http://support.qiniu.com/hc/request/guest/) - 如果您的问题不适合在论坛讨论或得不到回答，您也可以提交一个工单，技术支持人员会尽快回复您
+
+* [博客](http://blog.qiniu.com/) - 这里会持续发布市场活动和技术分享文章
+
+* [微博](http://weibo.com/qiniutek)
+
+* [常见问题](https://support.qiniu.com/)
+
+# 贡献代码
+
+1. Fork
+
+2. 创建您的特性分支 git checkout -b my-new-feature
+
+3. 提交您的改动 git commit -am 'Added some feature'
+
+4. 将您的修改记录提交到远程 git 仓库 git push origin my-new-feature
+
+5. 然后到 github 网站的该 git 远程仓库的 my-new-feature 分支下发起 Pull Request
+
+# 许可证
+
+Copyright (c) 2017 [qiniu.com](https://www.qiniu.com/)
+
+基于 MIT 协议发布:
+
+www.opensource.org/licenses/MIT

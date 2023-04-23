@@ -1,0 +1,578 @@
+# 七牛低延时直播接入指南
+步骤一： 提供拉流域名做低延迟配置[（提交工单）](https://support.qiniu.com/tickets/new/form?category=%E5%85%B6%E4%BB%96%E7%B1%BB%E5%92%A8%E8%AF%A2&description=%E4%B8%83%E7%89%9B%E4%BD%8E%E5%BB%B6%E6%97%B6%E7%9B%B4%E6%92%AD%E6%8E%A5%E5%85%A5%E6%B5%8B%E8%AF%95%E7%94%B3%E8%AF%B7&method=PC%20%E6%8E%A8%E6%B5%81&space=%E7%9B%B4%E6%92%AD%E4%BA%91&title=%E4%B8%83%E7%89%9B%E4%BD%8E%E5%BB%B6%E6%97%B6%E7%9B%B4%E6%92%AD)
+步骤二： 推流端推流（不能包含 B 帧）
+步骤三： 使用七牛的播放器拉流
+
+**服务 TIPS**
+1.低延时直播采用 RTC 相关技术，大部分浏览器原生支持 RTC 播放，适用性更强；播放延迟小于 1 秒，适用于大部分对延迟有要求的直播场景
+
+2.推流端推流直播流中不包含 B 帧【推流命令样例：./ffmpeg -re -i "/*/*/*/*.mp4" -c copy -c:v libx264 -bf 0 -f flv 'rtmp://pili-publish.marsyu.site/lb-test/20200125h265test?expire=1610992020&token=W9G5v8_h5k6mgwshHQ2l7zB6NC4='】，不符合要求的直播流可能会出现卡顿/画面撕裂等问题；若推流侧无法自行适配，可以使用我们的服务端转码功能，在播放 URL 流名称后面添加 `@zerolatency` 转码规格 (转码将增加 200-400ms 延时，对播放延时有极高要求的客户请适配低延时推流规格，[转码将收取额外费用](https://developer.qiniu.com/pili/kb/2653/on-live-streaming-real-time-transcoding-control-multi-rate-service-side-watermark))
+
+3.[<低延时 Web SDK>](https://developer.qiniu.com/pili/7730/geek-web-sdk) 需要浏览器支持 RTC 和 H264 解码，目前部分 Android 手机自带浏览器并未支持 RTC，在这种情况下，我们建议更换浏览器或直接使用移动端的 SDK [<低延时 iOS SDK>](https://developer.qiniu.com/pili/7732/geek-ios-sdk)[<低延时 Android SDK>](https://developer.qiniu.com/pili/7731/geek-android-sdk)
+
+4.低延时直播SDK仅能播放低延时直播类型的直播流，如果需要播放rtmp/flv/hls/或者mp4等视频流，请使用[标准播放器](https://developer.qiniu.com/pili/1210/the-android-client-sdk)进行播放
+
+5.使用七牛的安卓推流 SDK，按照如下设置即可保证直播流中不包含B帧：
+H264Profile 设置成 BASELINE
+StreamingProfile.VideoProfile vProfile = new StreamingProfile.VideoProfile(fps,
+ birate,
+ gop,
+ StreamingProfile.H264Profile.BASELINE);
+# 1. 概述
+
+七牛低延时直播（Geek）直播构建了全新的低延时直播互动体验，相比于传统的直播能力降低了延时、优化了协议与底层技术，目前对于微信内直播多业务场景提供了更为优渥的使用体验。支持千万级并发同时拥有毫秒级开播体验，打通了用户对于直播低延时性的核心诉求。
+
+# 2. 功能列表
+
+- 支持七牛低延时直播流播放
+- 支持播放状态回调
+- 支持播放统计信息回调
+- 支持纯音频或纯视频播放
+- 支持播放音量设置
+
+# 3. 引入 SDK
+
+## 3.1 设备以及系统要求
+
+- 系统要求：Android 4.3 (API 18) 及以上
+
+## 3.2 开发环境
+
+- Android Studio 开发工具，官方<a href="http://developer.android.com/intl/zh-cn/sdk/index.html" target="_blank">下载地址</a>
+- Android 官方开发 SDK，官方<a href="https://developer.android.com/intl/zh-cn/sdk/index.html#Other" target="_blank">下载地址</a>
+
+## 3.3 下载和导入实时音视频 SDK
+
+SDK 主要包含 demo 代码、SDK jar 包，以及 SDK 依赖的动态库文件。
+其中，release 目录下是需要拷贝到您的 Android 工程的所有文件，以目前主流的 armeabi-v7a 架构为例，具体如下：
+
+| 文件名称               | 功能    | 大小    |       备注           |
+| --------------------- | -----  | -----  | -------------------  |
+| qndroid-rtplayer-x.y.z.jar | SDK 库 | 550K KB | 必须依赖  |
+| libqndroid_rtc.so     |  快直播拉流播放| 5.4 MB | 必须依赖              |
+
+- 将 qndroid-rtplayer-x.y.z.jar 包拷贝到您的工程的 libs 目录下
+- 将动态库拷贝到您的工程对应的目录下，例如：armeabi-v7a 目录下的 so 则拷贝到工程的 jniLibs/armeabi-v7a 目录下
+
+> 导入后生成的 APK 与未导入前相比，大小增加了 3M。
+
+具体可以参考 SDK 包含的 demo 工程，集成后的工程示例如下：
+
+![](https://docs.qnsdk.com/rtplayer-sdk-overview.png)
+
+## 3.4 修改 build.gradle
+
+打开工程目录下的 build.gradle，确保已经添加了如下依赖，如下所示：
+
+```java
+dependencies {
+    implementation files('libs/qndroid-rtplayer-x.y.z.jar')
+}
+```
+## 3.5 添加混淆
+
+如果工程中添加了混淆，则七牛的包也需要添加混淆规则，在 proguard-rules.pro 文件下添加以下代码：
+
+```  
+-keep class org.webrtc.** {*;}
+-dontwarn org.webrtc.**
+-keep class com.qiniu.droid.rtplayer.**{*;}
+-keep interface com.qiniu.droid.rtplayer.**{*;}
+```
+
+## 3.6 添加相关权限
+
+在工程的 AndroidManifest.xml 中增加如下 `uses-permission` 声明：
+
+```java
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
+
+在 Android 6.0 (API 23) 开始，用户需要在应用运行时授予权限，而不是在应用安装时授予，并分为正常权限和危险权限两种类型。在快直播 SDK 中，用户需要在`WRITE_EXTERNAL_STORAGE` 权限，具体可参考 [Android 官方文档](https://developer.android.com/training/permissions/requesting?hl=zh-cn)。
+
+# 4. 快速开始
+
+## 4.1 添加播放需要的渲染控件
+
+用户需要在布局文件中期望的位置添加 QNSurfaceView 或者 QNTextureView 用来做播放渲染窗口。
+
+示例代码如下：
+```java
+<com.qiniu.droid.rtplayer.render.QNSurfaceView
+    android:id="@+id/render_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+```
+```java
+mRenderView = findViewById(R.id.render_view);
+```
+
+-----
+
+## 4.2 创播放器对象
+
+本操作推荐在 Activity 生命周期中的 onCreate() 中完成
+
+```java
+mRTPlayer = QNRTPlayerFactory.createQNRTPlayer(getApplicationContext());
+```
+
+## 4.3 进行初始化设置以及渲染窗口设置
+```java
+mRTPlayer.initPlayer(mRTPlayerSetting);
+mRTPlayer.setSurfaceRenderWindow(mRenderView);
+```
+
+## 4.4 设置回调
+
+QNRTPlayer.EventListener 包含了播放过程中的状态，统计和错误回调，因此需要注册该监听器：
+```java
+mRTPlayer.setEventListener(listener);
+```
+
+## 4.5 开始播放
+创建播放地址对象 QNRTPlayer 并开始播放
+```java
+mRTUrl.setURL(videoPath);
+mRTPlayer.playUrl(mRTUrl);
+```
+
+-----
+
+## 4.6 销毁
+
+在整个 Activity 销毁时，用户需要调用以下代码对资源进行释放，一般此操作建议在 Activity 生命周期的 `onDestroy()` 中进行，示例代码如下：
+```java
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    mRTPlayer.releasePlayer();
+}
+```
+
+# 5 API 参考
+
+## 5.1 QNRTPlayerUrl
+播放地址类
+```java
+public class QNRTPlayerUrl {
+
+    /**
+     * 媒体流地址
+     */
+    private String mURL;
+
+    /**
+     * 是否强制拉取媒体流标志
+     */
+    private boolean mForceReset;
+
+    /**
+     * 请求流播放地址是否为 HTTP，默认为 true
+     * <p>
+     * 当请求播放一个实时流地址时，播放器将会根据流地址域名生成一个 HTTP / HTTPS 请求地址来发送播放请求,<br>
+     * 如果这个域名有做过证书绑定，应设置为 HTTPS；反之则需要设置为 HTTP
+     * <p/>
+     */
+    private boolean mHttpPost = true;
+}
+```
+## 5.2 QNConfiguration
+播放配置类
+```java
+public class QNConfiguration {
+
+    /**
+     * 配置播放是否回调统计信息
+     * <p>配置参数类型为 long 类型：<br>
+     * 0   表示关闭统计回调<br>
+     * > 0 表示以该值表示的周期回调统计信息，单位 MS<br>
+     * <p/>
+     *
+     * @see QNRTPlayerStats
+     */
+    public static final String CONF_PLAY_STAT        = "QNPlayConfStat";
+
+    /**
+     * 配置开关 SDK 日志文件
+     * <p>
+     * 配置参数类型为 boolean
+     * <p/>
+     */
+    public static final String CONF_DEBUG_FILE      = "QNPlayConfDebugFile";
+}
+```
+## 5.3 QNRTPlayerSetting
+播放设置类
+```java
+public class QNRTPlayerSetting {
+
+    /**
+     * 播放器日志等级
+     */
+    private QNLogLevel mLogLevel = QNLogLevel.INFO;
+
+    /**
+     * 播放器解码模式
+     */
+    private QNDecodeMode mDecodeMode = QNDecodeMode.HARDWARE;
+
+}
+```
+## 5.4 QNRTPlayerFactory
+播放对象工厂类
+```java
+public class QNRTPlayerFactory {
+
+    /**
+     * 创建播放器对象
+     *
+     * @param context 应用 context
+     * @return 播放器对象
+     */
+    public static QNRTPlayer createQNRTPlayer(Context context);
+}
+```
+
+## 5.5 QNRTPlayer
+播放核心接口类
+```java
+public interface QNRTPlayer {
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({STATE_IDLE, STATE_INIT, STATE_READY, STATE_PLAYING,
+            STATE_STOP, STATE_ERROR})
+    @interface PlayerState {}
+
+    /**
+     * 播放器默认状态，{@link #releasePlayer} 也将回到该状态
+     */
+    int STATE_IDLE       = 0;
+
+    /**
+     * 播放器已完成初始化，{@link #initPlayer} 后进入该状态
+     */
+    int STATE_INIT       = 1;
+
+    /**
+     * 播放器连接完成状态，{@link #playUrl(QNRTPlayerUrl)} 完成和媒体服务连接后进入该状态
+     */
+    int STATE_READY      = 2;
+
+    /**
+     * 播放器正在播放状态，当有音视频帧渲染后进入该状态
+     */
+    int STATE_PLAYING    = 3;
+
+    /**
+     * 播放器停止状态，{@link #stopPlay()} 后进入该状态
+     */
+    int STATE_STOP       = 4;
+
+    /**
+     * 播放器错误状态，当播放发生错误进入该状态
+     */
+    int STATE_ERROR      = 5;
+
+    @Documented
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({INFO_FIRST_VIDEO_DECODE, INFO_FIRST_AUDIO_DECODE,
+        INFO_VIDEO_SIZE_CHANGE, INFO_AUDIO_TRACK_RECEIVED, INFO_VIDEO_TRACK_RECEIVED, INFO_STATS_UPDATE})
+    @interface PlayerInfo {}
+
+    /**
+     * 收到第一个解码后的视频帧触发
+     * <p> 回调 onPlayerInfo#info 为空
+     */
+    int INFO_FIRST_VIDEO_DECODE     = 0;
+
+    /**
+     * 收到第一个解码后的音频帧触发
+     * <p> 回调 onPlayerInfo#info 为空
+     */
+    int INFO_FIRST_AUDIO_DECODE     = 1;
+
+    /**
+     * 视频帧大小变化时触发
+     * <p> 回调 onPlayerInfo#info 为 QNSize
+     */
+    int INFO_VIDEO_SIZE_CHANGE      = 2;
+
+    /**
+     * 媒体流收到音频轨道信息时触发
+     * <p> 回调 onPlayerInfo#info 为空
+     */
+    int INFO_AUDIO_TRACK_RECEIVED   = 3;
+
+    /**
+     * 媒体流收到视频轨道信息时触发
+     * <p> 回调 onPlayerInfo#info 为空
+     */
+    int INFO_VIDEO_TRACK_RECEIVED   = 4;
+
+    /**
+     * 播放器回调码率等信息时触发 {@link QNRTPlayerStats}
+     * <p> 回调 onPlayerInfo#info 为 QNRTPlayerStats
+     */
+    int INFO_STATS_UPDATE        = 5;
+
+    interface EventListener {
+
+        /**
+         * 播放状态变化回调
+         *
+         * @param state 播放状态
+         */
+        void onPlayerStateChanged(@PlayerState int state);
+
+        /**
+         * 播放事件回调
+         *
+         * @param type 播放事件类型
+         * @param info 播放事件描对象
+         */
+        void onPlayerInfo(@PlayerInfo int type, Object info);
+
+        /**
+         * 播放错误回调
+         *
+         * @param error 错误描述对象
+         */
+        void onPlayerError(QNError error);
+    }
+
+    /**
+     * 初始化播放器
+     *
+     * @param settings 初始化参数对象
+     */
+    void initPlayer(QNRTPlayerSetting settings);
+
+    /**
+     * 设置播放器监听对象
+     *
+     * @param listener 监听对象
+     */
+    void setEventListener(EventListener listener);
+
+    /**
+     * 设置基于 SurfaceView 的渲染控件
+     *
+     * @param view 控件对象
+     */
+    void setSurfaceRenderWindow(QNSurfaceView view);
+
+    /**
+     * 设置基于 TextureView 的渲染控件
+     *
+     * @param view 控件对象
+     */
+    void setTextureRenderWindow(QNTextureView view);
+
+    /**
+     * 开始播放媒体流
+     *
+     * @param url 媒体流地址
+     */
+    void playUrl(QNRTPlayerUrl url);
+
+    /**
+     * 是否正在播放
+     *
+     * @return 播放状态
+     */
+    boolean isPlaying();
+
+    /**
+     * 获取当前媒体流是否含有视频轨
+     *
+     * @return 是否含有视频轨
+     */
+    boolean hasVideo();
+
+    /**
+     * 获取当前媒体流是否含有音频轨
+     *
+     * @return 是否含有音频轨
+     */
+    boolean hasAudio();
+
+    /**
+     * 获取当前播放状态
+     *
+     * @return 播放状态
+     */
+    @PlayerState
+    int getPlayerState();
+
+    /**
+     * 设置视频 mute
+     * <p>播放器是否渲染视频帧，mute 后画面为最后一帧数据<p/>
+     *
+     * @param mute mute 标志
+     */
+    void muteVideo(boolean mute);
+
+    /**
+     * 设置音频 mute
+     * <p>播放器不再播放音频<p/>
+     *
+     * @param mute mute 标志
+     */
+    void muteAudio(boolean mute);
+
+    /**
+     * 设置播放音量
+     *
+     * @param volume 音量值 0 - 1；默认值为 1.0
+     */
+    void setVolume(float volume);
+
+    /**
+     * 获取当前播放音量
+     *
+     * @return 播放音量
+     */
+    float getVolume();
+
+    /**
+     * 停止媒体流播放，播放器不再接收媒体数据
+     */
+    void stopPlay();
+
+    /**
+     * 配置播放参数
+     *
+     * @param configure 配置描述对象
+     */
+    void configurePlayer(QNConfiguration configure);
+
+    /**
+     * 获取当前播放配置
+     *
+     * @return QNConfiguration 配置对象
+     */
+    QNConfiguration getConfigure();
+
+    /**
+     * 释放播放器相关资源
+     */
+    void releasePlayer();
+}
+```
+
+## 5.6 QNError
+播放错误码
+```java
+public class QNError {
+
+    /**
+     * 播放请求网络错误，如请求域名超时或者服务不可达
+     */
+    public static final int QN_NETWORK_ERROR         = 20001;
+
+    /**
+     * 播放请求鉴权错误，需要确认流地址的签算是否正确
+     */
+    public static final int QN_PLAY_AUTH_FAILED      = 20002;
+
+    /**
+     * 播放流地址不存在错误
+     */
+    public static final int QN_PLAY_STREAM_NOT_EXIST = 20003;
+
+    /**
+     * 播放请求失败，如服务异常
+     */
+    public static final int QN_PLAY_REQUEST_FAILED   = 20004;
+
+    /**
+     * 播放设置内部描述信息失败
+     */
+    public static final int QN_DESCRIPTION_ERROR     = 20005;
+
+    /**
+     * 播放连接异常断开
+     */
+    public static final int QN_CONNECTION_ERROR      = 20006;
+}
+```
+## 5.7 QNRTPlayerStats
+播放统计信息对象
+```java
+public class QNRTPlayerStats {
+    /**
+     * 帧率
+     */
+    public int frameRate;
+
+    /**
+     * 视频码率, 单位 bps
+     */
+    public int videoBitrate;
+
+    /**
+     * 音频码率, 单位 bps
+     */
+    public int audioBitrate;
+}
+```
+## 5.8 QNRenderMode
+播放控件渲染模式
+```java
+public enum QNRenderMode {
+    /**
+     * 在不超过控件大小情况下，显示视频帧大小
+     */
+
+    SCALE_ASPECT_FIT,
+
+    /**
+     * 填充显示控件大小
+     */
+
+    SCALE_ASPECT_FILL,
+
+    /**
+     * 当视频大于控件大小时，取一定比列的视频帧显示
+     */
+    SCALE_ASPECT_BALANCED;
+}
+```
+## 5.9 QNLogLevel
+SDK 日志等级
+```java
+public enum QNLogLevel {
+    VERBOSE,
+    INFO,
+    WARNING,
+    ERROR,
+    NONE
+}
+```
+日志级别如下：
+
+|   日志级别  |  描述                    |
+| ---------- |   ----------------------- |
+| VERBOSE   | 输出大于或等于 VERBOSE 日志级别的信息   | 
+| INFO      | 输出大于或等于 INFO 日志级别的信息      |
+| WARNING   | 输出大于或等于 WARNING 日志级别的信息   |
+| ERROR     | 输出大于或等于 ERROR 日志级别的信息     |
+| NONE      | 关闭日志的输出                        |
+## 5.10 QNDecodeMode
+播放解码模式
+```java
+public enum QNDecodeMode {
+    /**
+     * 硬件解码模式
+     */
+    HARDWARE,
+    /**
+     * 软件解码模式
+     */
+    SOFTWARE,
+}
+```

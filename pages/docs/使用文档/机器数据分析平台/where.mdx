@@ -1,0 +1,24 @@
+where 命令使用 eval 值表达式筛选搜索结果，返回表达式结果为 true 的结果。
+
+**语法：**
+
+where `<eval-expression>`
+
+**参数说明：**
+
+关于 eval-expression 支持的函数请参阅【[eval 命令](/express/manual/6015/eval)】
+
+**示例**
+
+1.比较日志中两个字段的关系，返回 a 大于 b 的事件
+
+* | where a>b
+
+2.返回指标大于 100 的事件
+
+* | stats count() as cnt by a | where cnt > 100
+
+3.返回与IP匹配的事件
+
+* | where like(src, "10.9.165.%") 
+

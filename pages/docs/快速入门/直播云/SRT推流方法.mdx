@@ -1,0 +1,13 @@
+SRT（Secure Reliable Transport）是一个开源的视频传输协议和技术栈，主要优化在不可靠网络（非拥塞导致的丢包）环境下实时视频的传输性能。在弱网环境下，推荐使用SRT协议推流。
+
+目前如七牛推流SDK、OBS等工具已支持SRT协议，下面以OBS为例，说明如何进行SRT协议推流：
+1. 获取SRT推流地址，在配置好推流域名后，可以从管理控制台—>直播空间—>直播流管理—>流属性中查找相应的SRT推流地址：
+<img src="https://dn-odum9helk.qbox.me/Fju2dZWAVE_vAF8QrzF7Qjk6B9Ac"  width="680">
+   或者可以按照 [推流地址生成规则](https://developer.qiniu.com/pili/8170/srt-push-flow-address) 自主拼接SRT推流地址。
+2. 确认所使用的OBS版本不低于25.0，[OBS官方下载地址](https://obsproject.com/download)
+3. 打开 OBS 推流软件，在设置—>推流中进行配置
+<img src="https://dn-odum9helk.qbox.me/ln3GS9aoJbZf7W1GcLaDHcPyk7M8"  width="680">
+4. 服务选择自定义，在服务器中填写上面获取到的完整推流地址，同时串流密钥留空，如图：
+<img src="https://dn-odum9helk.qbox.me/ljMdD2UMxGpDo0AqJSWj68Hh8GlY"  width="680">
+5. 点击确定完成设置后，在主界面点击开始推流即可
+<img src="https://dn-odum9helk.qbox.me/lsQZSnp4wBiKQU6f3rL-cR3XH5rm"  width="680">

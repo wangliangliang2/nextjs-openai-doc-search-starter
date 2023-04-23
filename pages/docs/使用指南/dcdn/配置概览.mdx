@@ -1,0 +1,45 @@
+**七牛云 DCDN** 支持多项自定义配置，您可以根据自身业务需要进行设置。
+# [基础信息](http://)
+配置项|描述|默认值
+-|-|-
+覆盖|切换加速区域，变更加速区域|中国大陆
+IP协议|CDN支持的IP协议|IPv4/IPv6
+
+# [回源配置](https://developer.qiniu.com/fusion/manual/4943/back-to-the-source-configuration)
+
+配置项|描述|默认值
+-|-|-
+源站信息|资源的回源域名或IP|用户配置
+回源HOST|指定请求的服务器的域名，默认为加速域名|加速域名
+回源协议|请求回源的协议，如需修改回源协议请先开启 HTTPS|HTTP
+
+# [缓存配置](https://developer.qiniu.com/fusion/manual/4944/cache-configuration)
+
+配置项|描述|默认值
+-|-|-
+静态缓存规则|定义指定资源内容的缓存行为及缓存时间规则|未开启
+忽略URL参数|资源缓存时去除 URL「?」后的全部或指定参数进行缓存|未开启
+
+# [访问控制配置](http://)
+
+配置项|描述|默认值
+-|-|-
+[referer防盗链](https://developer.qiniu.com/dcdn/development_guidelines/10788/dcdn-referer-hotlinking-prevention)|配置 Request Header 中 referer 黑白名单，从而限制访问来源|未开启
+[IP黑白名单](https://developer.qiniu.com/dcdn/development_guidelines/10791/dcdn-ip-black-and-white-list)|允许或者禁止某些 IP 或 IP 段的访问，帮助您解决恶意 IP 盗刷、攻击等问题|未开启
+
+# [HTTPS配置](https://developer.qiniu.com/fusion/manual/4952/https-configuration)
+
+配置项|描述|默认值
+-|-|-
+开启HTTPS|开启 HTTPS 安全加速，支持 SSL 证书绑定及 HTTPS 状态管理|未开启
+更换证书|更换即将过期或泄漏的证书|无
+强制HTTPS|开启后 HTTP 请求会强制跳转到 HTTPS 进行访问，关闭时默认兼容用户的 HTTP/HTTPS 请求|未开启
+HTTP/2 访问| HTTP/2 是最新的 HTTP 协议，用以最小化网络延迟，提升网络速度，如需使用请您先配置 HTTPS 证书|未开启
+
+
+
+# [HTTP 响应头配置](https://developer.qiniu.com/fusion/manual/4953/warning-traffic-bandwidth)
+配置项|描述|默认值
+-|-|-
+[HTTP 响应头](http://developer.qiniu.com/dcdn/development_guidelines/10793/dcdn-the-http-response-header-configuration)|支持设置或删除常见的 HTTP 请求响应头配置，用以向客户端提供额外信息|未开启
+

@@ -1,0 +1,258 @@
+七牛直播云会自动为每一条直播流落存储，保存在直播空间所对应的存储空间(bucket)，保存形式为 ts 切片文件。默认这些 ts 文件会在**存储过期时间(过期时间在直播空间设置中进行配置)**后被删除。
+如果希望进行点播回看，需要**录制**下来，生成一个视频文件来进行播放。
+<br/>
+# 录制方法
+1. 控制台界面操作
+2. 使用接口录制
+3. 联系技术支持配置自动录制
+<br/>
+
+## 1.控制台界面操作
+在 https://portal.qiniu.com 控制台进行点播录制，生成视频文件。 
+**操作步骤：** 
+1.给回看文件起个文件名。默认使用流名和时间作为文件名
+2.时间范围，继承自上一条设定直播记录的时间范围
+3.生成格式。**目前支持：m3u8,mp4,flv**
+4.点击“进行录制”，系统后台相应开始一个生成回看的任务，并给出任务ID，用户可以根据任务ID查看回看生成进度，参考[任务id查询](https://developer.qiniu.com/dora/manual/1294/persistent-processing-status-query-prefop)
+
+![](https://dn-odum9helk.qbox.me/FsztOoccHlE-aFjlJ2GCvQ6ETWVm)
+<br/>
+
+## 2.使用接口录制
+七牛直播云封装了各种语言的 sdk ，对应的 sdk 版本中都有 saveas() 方法  
+[七牛直播云sdk](https://developer.qiniu.com/pili/sdk/1220/server-sdk)  
+```
+# python 举例
+# 参数
+# name      : required, string
+# start     : required, int64, in second, unix timestamp
+# end       : required, int64, in second, unix timestamp
+# format    : optional, string, see http://developer.qiniu.com/docs/v6/api/reference/fop/av/avthumb.html
+# notifyUrl : optional, string
+# pipeline  : optional, string
+res = stream.save_as(name="videoName.mp4", format="mp4", start=1440282134, end=1440437833, notifyUrl=None)
+print res
+# 返回数据示例
+# {
+#     "url": "http://ey636h.vod1.z1.pili.qiniucdn.com/recordings/z1.test-hub.55d81a72e3ba5723280000ec/videoName.m3u8",
+#     "targetUrl": "http://ey636h.vod1.z1.pili.qiniucdn.com/recordings/z1.test-hub.55d81a72e3ba5723280000ec/videoName.mp4",
+#     "persistentId": "z1.55d81c6c7823de5a49ad77b3"
+# }
+```
+<br/>
+
+# FAQ
+### 1.为什么 saveas() 的时候报错 619 ？
+619 {"error": "no data" // 没有直播数据}  
+619 状态码是直播数据不存在，一般出现这样的问题，是 saveas() 方法中有 start 和 end 参数，在这两个参数段内如果无直播，或者超出 segment() 方法包含的范围，就会报错 619。  
+**解决方式：**先使用 segment() 方法，获取直播所有的历史时间段，然后将 start 和 end 传入 saveas() 方法。如果依然报错，请检查是否直播数据过了**存储过期时间**，或者被人为删除过 ts 切片文件。
+<br/>
+
+### 2.为什么 saveas() 的时候报错 612 ？
+612 {"error": "stream not found"}  
+检查一下 getstream() 方法是否获取到了正确的流ID，流ID 的组成方式为 `z1.<hub>.<title>`  
+<br/>
+
+### 3.为什么 saveas() 出来的 mp4 文件会卡住，快进，或者进度条无法拖动？  
+saveas 接口那边的转码参数是写死的，可能不能够很好的对特殊视频进行转码，建议 format 为空先生成m3u8，然后调用存储的avthumb接口： http://developer.qiniu.com/code/v6/api/dora-api/av/avthumb.html ，自己指定转码参数进行转码
+<br/>
+
+### 4.saveas() 转存一小时的视频大概需要多久？  
+首先在 saveas() 的时候指定一下私有队列，添加 pipeline 参数  
+m3u8 是立即生成，mp4 是异步转码，mp4 一般1小时的视频可以在3-5分钟转完，具体看服务端的负载情况。
+<br/>
+
+### 5.saveas() 默认保存为永久的，我不想保存为永久，想指定一个生命周期怎么做？  
+七牛直播录制支持指定存储的生命周期，saveas 指定参数 expireDays 和 persistentDeleteAfterDays 
+1. **expireDays** // ts和m3u8文件的生命周期, -1表示不修改ts文件生命周期且m3u8生命周期由persistentDeleteAfterDays决定
+2. **persistentDeleteAfterDays** // 生成文件的生命周期, m3u8文件只有当ExpireDays为-1时生效,0表示永不过期
+<br/>
+
+### 6.saveas() 返回的域名是直播的 TS 切片域名，如何换成点播 CDN 域名？如何配置 https？  
+可以自助修改，申请 https 免费证书参考[七牛免费https证书使用](https://segmentfault.com/a/1190000007669889)  
+自助修改 saveas() 方法返回的域名参考[给直播空间设置点播域名加速](https://developer.qiniu.com/pili/kb/set-on-demand-to-live-space-domain-acceleration)
+<br/>
+
+### 7.在调用[saveas接口](https://developer.qiniu.com/pili/api/2777/save-the-live-playback)的时候,有时会出现生成的m3u8时长和指定时长不一致。比如指定的时间戳参数是1502173314到1502173324一共10秒，但是生成的m3u8时长却超过10秒。
+这是因为切片后，ts文件本身有一定大小且不能再切片。例如对于下面的回放，如果指定的时间是开始直播之后的10秒，时间间隔跨越两个ts切片，最终生成的m3u8回放时长为14s。
+![](http://otp4la8ed.bkt.clouddn.com/ts_time.png)
+如果想要生成的回放时长更接近指定的时间，可以在**直播之前**修改推流端的*关键帧间隔*或是将一整段完整直播生成为mp4格式的回放视频，然后调用七牛切片接口对mp4文件切片，通过设置参数调低单个ts切片的大小。
+a.`缩短关键帧间隔（obs）`
+以obs举例，打开设置，选择输出，在输出模式中选择高级，在下面的关键帧间隔选项里填写合适的数值，不能低于3秒，避免影响推流和播放。
+![](http://otp4la8ed.bkt.clouddn.com/obs_gop.png)
+b.`对mp4文件进行切片`
+先调用直播sdk的[saveas接口](https://developer.qiniu.com/pili/api/2777/save-the-live-playback)，如果生成的m3u8回放时长与指定的时间偏差较大，重新调用接口，将saveas接口中的format参数设置为'mp4'。之后，对生成的mp4文件调用[切片接口](https://developer.qiniu.com/dora/manual/1485/audio-and-video-slice)
+，将接口中segtime的参数调低，通过ss和t参数来确定生成回放的开始时间和结束时间。
+注意：因为ts切片间隔不能太短，segtime参数能够选择的最小值为5，所以生成的m3u8回放仍有可能与指定的时间有少许偏差。
+在调用`saveas`保存回放时 可以在传数据中多传一个字段`expireDays`,`expireDays`可以为 -1 或者 15 天 都行，值为 -1 就是处理结果视频和原始ts都保持hub的过期时间，其他数字就是几天后过期
+
+## php代码示例
+```
+POST /v1/streams/z1.1314xicong.57ea2a3e5e77b03c550ae12c@480p/saveas HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+User-Agent: pili-sdk-php/1.5.4 curl/7.45.0 PHP/7.0.2
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:MX1wWHKptak6peLrxB5PJIpKRV4=
+Content-Length: 70
+
+{"name":"testttkkk","format":"mp4","start":-1,"end":-1,"expireDays":2}
+
+123.059.063.002.00080-192.168.205.017.52985: HTTP/1.1 200 OK
+Server: nginx/1.8.0
+Date: Wed, 09 Nov 2016 03:18:24 GMT
+Content-Type: application/json
+Content-Length: 261
+Connection: keep-alive
+Access-Control-Allow-Origin: *
+X-Log: tss.refs:14:9:2:0xc820505e30;ts.get:1109;ts.lcc:6;body;s.ph;s.put.tw;s.put.tr;s.put.tw;s.put.tr;s.ph;PFDS;PFDS;lc.set:1;rs6_1.sel;rs6_1.ups;qtbl.ups;MQ;RS.not:;mc.s;RS:3;rs.put:4;rs-upload.putFile:6;rs6_1.sel;qtbl.get;RS;PFOPMQ:15;STATUS;PFOP:20;APIS:21;up.pop:23;UP:31;UP:32;m3u8.up:35;PILI:1152
+X-Reqid: AT87e4RDf5UiWLPA
+X-Reqid: AT87e4RDf5UiWLPA
+
+{"url":"http://hus.echohu.top/recordings/z1.1314xicong.57ea2a3e5e77b03c550ae12c@480p/testttkkk.m3u8","duration":9,"targetUrl":"http://hus.echohu.top/recordings/z1.1314xicong.57ea2a3e5e77b03c550ae12c@480p/testttkkk","persistentId":"z1.582295808a3c0c5edc78fbf8"}
+```
+这里就是在post数据中多传了一个字段 "expireDays":2  设置为过期时间为2天后
+
+php-sdkv1 然后在 调用 saveas 的时候，增加 expireDays 的参数
+lib/Pili/Api.php 中 streamSaveAs 函数做个调整，增加 expireDays 参数
+
+```
+public static function streamSaveAs($transport, $streamId, $name, $format = NULL, $start = NULL, $end = NULL, $notifyUrl = NULL, $pipeline = NULL, $expireDays = -1)
+{
+$url = self::_getApiBaseUrl() . "streams/$streamId/saveas";
+$params = array(
+'name' => $name,
+);
+if (!empty($format)) {
+$params['format'] = $format;
+}
+if (!empty($start)) {
+$params['start'] = $start;
+}
+if (!empty($end)) {
+$params['end'] = $end;
+}
+if (!empty($notifyUrl)) {
+$params['notifyUrl'] = $notifyUrl;
+}
+if (!empty($pipeline)) {
+$params['pipeline'] = $pipeline;
+}
+if ($expireDays != 0) {
+$params['expireDays'] = $expireDays;
+}
+$body = json_encode($params);
+return $transport->send(HttpRequest::POST, $url, $body);
+}
+
+2. lib/Pili/Stream.php
+
+public function saveAs($name, $format = NULL, $start = NULL, $end = NULL, $notifyUrl = NULL, $pipeline = NULL, $expireDays = -1)
+{
+return Api::streamSaveAs($this->_transport, $this->id, $name, $format, $start, $end, $notifyUrl, $pipeline, $expireDays);
+}
+
+```
+php v2
+
+代码
+
+```
+$hubName = "huxicongPili";
+$mac = new Qiniu\Pili\Mac($ak, $sk);
+$client = new Qiniu\Pili\Client($mac);
+$hub = $client->hub($hubName);
+$streamKey = "qiche";
+$stream = $hub->stream($streamKey);
+print_r($stream);
+try {
+ //保存直播数据
+//     * PARAM
+//      * @fname: 保存的文件名, 不指定会随机生成.
+//      * @start: Unix 时间戳, 起始时间, 0 值表示不指定, 则不限制起始时间.
+//      * @end: Unix 时间戳, 结束时间, 0 值表示当前时间.
+//      * @format: 保存的文件格式, 默认为m3u8.
+//      * @pipeline: dora 的私有队列, 不指定则用默认队列.
+//      * @notify: 保存成功后的回调地址.
+//      * @expireDays: 对应ts文件的过期时间.
+// echo "================Get stream\n";
+    echo "================Save stream:\n";
+    $resp = $stream->saveas(array("fname"=>"1489570493","strart"=>-1  ,"end"=>-1,"expireDays"=>60*30*30));
+    print_r($resp);
+} catch (\Exception $e) {
+    echo "Error:", $e, "\n";
+}
+```
+请求
+
+```
+100.100.033.186.56448-123.059.063.002.00080: POST /v2/hubs/huxicongPili/streams/cWljaGU=/saveas HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+User-Agent: pili-sdk-php/2.0.0 curl/7.51.0 PHP/5.6.28
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:K6q4ZlfgR1AbEGCeI1SNkpcNucM=
+Content-Length: 62
+
+{"fname":"1489570493","strart":-1,"end":-1,"expireDays":54000}
+123.059.063.002.00080-100.100.033.186.56448: HTTP/1.1 200 OK
+Server: nginx/1.8.0
+Date: Tue, 04 Jul 2017 07:55:54 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+X-Log: tss.refs:2:2:37;ts.get:58;ts.lcc:8;body;s.ph;s.put.tw;s.put.tr;s.put.tw;s.put.tr;s.ph;s.put.tw;s.put.tr;s.ph;PFDS;PFDS:1;PFDS:2;lc.set;rs10_4.sel;rs10_4.ups;rwro.ups:1;RS.not:;mc.s;RS:2;rs.put:5;rs-upload.putFile:8;UP:16;m3u8.up:18;PILI:87;PILI-LINA:89
+X-Reqid: oBwAAK770Ap9Ec4U
+X-Reqid: oBwAAK770Ap9Ec4U
+
+{"fname":"1489570493.m3u8"}
+```
+## C# 代码示例
+修改源码文件 [API.cs](https://github.com/pili-engineering/pili-sdk-csharp/blob/0a59db3adcd8037ab28a9ac3dd8355416383f1b6/pili-sdk-csharp/pili/API.cs)
+```
+public static SaveAsResponse saveAs(Credentials credentials, string streamId, string fileName, string format, long start, long end, string notifyUrl, string pipleline, int expireDays)
+{
+    if (streamId == null)
+    {
+        throw new PiliException(MessageConfig.NULL_STREAM_ID_EXCEPTION_MSG);
+    }
+
+    if (!Utils.isArgNotEmpty(fileName))
+    {
+        throw new PiliException(MessageConfig.ILLEGAL_FILE_NAME_EXCEPTION_MSG);
+    }
+
+    if (start < 0 || end < 0 || start > end)
+    {
+        throw new PiliException(MessageConfig.ILLEGAL_TIME_MSG);
+    }
+
+string urlStr = string.Format("{0}/streams/{1}/saveas", API_BASE_URL, streamId);
+HttpWebResponse response = null;
+JObject json = new JObject();
+json.Add("name", fileName);
+if (Utils.isArgNotEmpty(notifyUrl))
+{
+	json.Add("notifyUrl", notifyUrl);
+}
+	if (start != 0)
+	{
+		json.Add("start", start);
+	}
+	if (end != 0)
+	{
+		json.Add("end", end);
+	}
+		json.Add("format", format);
+	if (pipleline!="")
+    {
+		json.Add("pipleline", pipleline);
+	}
+	if (expireDays != 0)
+	{
+		json.Add("expireDays", expireDays);
+	}
+```
+注意：此处仅截取部分代码，添加 expireDays 参数即可。

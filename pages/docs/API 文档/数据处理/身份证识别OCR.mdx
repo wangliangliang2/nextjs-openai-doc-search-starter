@@ -1,0 +1,124 @@
+# 接口简介
+七牛身份证识别OCR接口`ocr-idcard` ，检测单张身份证图片信息，例如：身份证中姓名、性别、民族、住址和身份证号码、有效期、签发地址等关键信息。
+
+
+**注意**
+
+- 接口超时时间为 30 秒
+- 资源的 Mime 文件格式仅支持图片类型：image/*，如：image/jpeg、image/png。
+- 请求接口为标准的HTTP/HTTPS 协议。
+- 证件照一般在178x220 ~ 480x640之间。人脸区域的像素，resize后尽量不要低于112x112。
+
+
+**身份证拍摄注意事项**
+-  原件拍摄；
+-  相机正对准身份证，让身份证尽量充满整张照片
+-  比较清晰，亮度适中，不反光
+
+# 请求语法
+
+```
+POST /ocr/idcard HTTP/1.1
+Host: ocr-idcard.qiniuapi.com
+Content-Type: application/json
+Authorization: QiniuToken
+```
+
+# 头部信息
+
+| 头部名称      | 必填 | 说明                                                         |
+| ------------- | ---- | ------------------------------------------------------------ |
+| Host          | 是   | 固定为  ocr-idcard[.qiniuapi.com](http://mkr_style_trans.apistore.qiniu.com/) |
+| Content-Type  | 是   | 固定为 application/json                                      |
+| Authorization | 是   | 该参数应严格按照[管理凭证](https://developer.qiniu.com/kodo/manual/access-token)格式进行填充，否则会返回 401 错误码。一个合法的 Authorization 值应类似于：`Qiniu QNJi_bYJlmO5LeY08FfoNj9w_r7...` |
+
+# 访问权限
+
+## 请求body
+
+| 字段                | 是否必填 | 类型   | 说明                                                         |
+| ------------------- | -------- | ------ | ------------------------------------------------------------ |
+| session_id          | N        | string | 唯一会话 id                                                  |
+| image               | Y        | string | base64编码的图片数据                                         |
+| ret_image           | N        | bool   | `是否返回识别后的切图(切图是指精 `确剪裁对齐后的身份证正反面图片)，返回格式为 JPEG 格式二进制图片使用 base64 编码后的字符串 |
+| ret_portrait        | N        | bool   | 是否返回身份证(人像面)的人脸图 片，返回格式为 JPEG 格式二进制图片使用 base64 编码后的字符串 |
+| ref_side            | N        | string | `当图片中同时存在身份证正反面时， `通过该参数指定识别的版面:取值'Any' - 识别人像面或国徽面，'F' - 仅 识别人像面，'B' - 仅识别国徽面 |
+| enable_border_check | N        | bool   | `身份证遮挡检测开关，如果输入图片中的身份证卡片边框不完整则返回告警 ` |
+| enable_detect_copy  | N        | bool   | `复印件、翻拍件检测开关，如果输入图片中的身份证卡片是复印件，则返回告警 ` |
+
+## 返回
+
+| 字段         | 类型        | 说明         |
+| ------------ | ----------- | ------------ |
+| session_id   | string      | 唯一会话 id  |
+| errorcode    | int         | 返回状态码   |
+| errormsg     | string      | 返回错误消息 |
+| warnmsg      | [ ]string   | 多重警告码   |
+| ocr_result   | OcrResult   | 文字识别结果 |
+| image_result | ImageResult | 图片检测结果 |
+
+### OcrResult
+
+| 字段      | 类型   | 说明                                   |
+| --------- | ------ | -------------------------------------- |
+| side      | string | F-身份证人像面，B-身份 证国徽面        |
+| idno      | string | 身份号码(人像面)                       |
+| name      | string | 姓名(人像面)                           |
+| nation    | string | 民族(人像面)                           |
+| gender    | string | 性别(人像面)                           |
+| address   | string | 地址(人像面)                           |
+| birthdate | string | 生日(人像面) eg. "19900111"            |
+| validthru | string | 有效期(国徽面) eg. "20001010-20101009" |
+| issuedby  | string | 签发机关(国徽面)                       |
+
+### ImageResult
+
+| 字段        | 类型     | 说明                                                         |
+| ----------- | -------- | ------------------------------------------------------------ |
+| idcard      | string   | 身份证区域图片，使用Base64 编码后的字符串， 是否返回由请求参数ret_image 决定 |
+| portrait    | string   | 身份证人像照片，使用Base64 编码后的字符串， 是否返回由请求参数ret_portrait 决定 |
+| idcard_bbox | [ ]Point | 框坐标，格式为 [[x0, y0], [x1, y1], [x2, y2], [x3, y3]]      |
+
+# 示例
+
+```
+POST /ocr/idcard HTTP/1.1
+Host: ocr-idcard.qiniuapi.com
+Authorization: Qiniu aWQ6lF1Zxxse43jB6V7lsdfaadf:7cWZPxxxxxasdffed60zkI8=
+Content-Type: application/json 
+{
+	“image”: IMAGEA_DATA,
+}
+```
+
+## 返回示例
+**人像面**
+```
+{"errorcode": 0, "errormsg": "OK", "warnmsg": [], "ocr_result": {"side": "F", "idno": "310225********1219", "name": "张麒麟", "nation": "汉", "gender": "男", "address": "云南省昆明市寻甸回发彝族自治县七星乡必寨村委会老长地村26号", "birthdate": "19911109"}, "image_result": {"idcard_bbox": [[8, 138], [8, 8], [210, 8], [210, 138]]}, "session_id": "1"}
+```
+**国徽面**
+```
+{"errorcode": 0, "errormsg": "OK", "warnmsg": [], "ocr_result": {"side": "B", "validthru": "20121008-20321008", "issuedby": "签发地"}, "image_result": {"idcard_bbox": [[15, 753], [15, 389], [572, 389], [572, 753]]}, "session_id": "1"}
+```
+
+## 错误码
+
+| 错误码   | 错误信息                            | HTTP 状态码 |
+| -------- | ----------------------------------- | ----------- |
+| 0        | 识别正常                            | 200         |
+| 53090001 | 请求解析失败                        | 400         |
+| 53090002 | 图片解码错误                        | 400         |
+| 53090003 | OCR 内部错误                        | 500         |
+| 53090004 | `无法识别的身份证(非中国身份证等) `     | 200         |
+| 53090005 | 参数错误                            | 200         |
+| 55060030 | 鉴权失败                            | 400         |
+
+## 告警码
+
+| 告警码   | 含义               |
+| -------- | ------------------ |
+| 53091001 | 黑白复印件         |
+| 53091003 | 无法检测到人脸     |
+| 53091004 | 证件信息缺失或错误 |
+| 53091005 | 证件过期           |
+| 53091006 | 身份证不完整       |

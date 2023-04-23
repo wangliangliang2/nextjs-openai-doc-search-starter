@@ -1,0 +1,148 @@
+七牛直播推流主要的鉴权方式有"无校验鉴权", "限时鉴权", "限时鉴权sk", "动态鉴权"。
+
+
+# 无校验鉴权(none)
+> **风险**： 如果没有鉴权，直播空间存在被盗用的风险
+
+推流地址格式：
+```
+rtmp://<RTMPPublishDomain>/<Hub>/<streamTitle>
+```
+* RTMPPublishDomain - 推流域名
+* Hub - 直播空间名称
+* streamTitle - 直播流名称
+
+# 静态鉴权(static)
+
+推流地址格式：
+```
+rtmp://<RTMPPublishDomain>/<Hub>/<streamTitle>?key=<PublishKey>
+```
+
+* PublishKey - 推流密钥
+* RTMPPublishDomain - 推流域名
+* Hub - 直播空间名称
+* streamTitle - 直播流名称
+
+示例:
+```
+RTMPPublishDomain: publish.domain.com
+Hub: testhub
+streamTitle: teststreamtitle
+PublishKey: 123
+```
+
+推流地址：
+```
+rtmp://publish.domain.com/testhub/teststreamtitle?key=123
+```
+
+# 限时鉴权(expiry)
+	
+推流地址格式: 
+```
+rtmp://<RTMPPublishDomain>/<Hub>/<streamTitle>?expire=<ExpireAt>&token=<Token>
+```
+
+* PublishKey - 推流密钥
+* RTMPPublishDomain - 推流域名
+* Hub - 直播空间名称
+* streamTitle - 直播流名称
+* ExpireAt - UNIX Timestamp。时间的单位精确到秒， 预计推流动作发生的时间。举例说明，当前时刻为12:00，预计12:20之前推流，超过时间后不可推流。将此刻12:20换算为UNIX Timestamp。
+* Token - 是经过hmac_sha1签算[SignStr](/pili/glossary/6677/about-push-live-stream-authentication-signstr)再经过base64生成
+
+
+[HMAC SHA1算法](/linking/glossary/5287/linking-hmac-sha1)
+[URL 安全的 Base64 编码](/article/kodo/kodo-developer/appendix.html#urlsafe-base64)
+
+示例：
+```
+RTMPPublishDomain: publish.domain.com
+Hub: testhub
+streamTitle: teststreamtitle
+ExpireAt: 1584522520
+PublishKey: 12345678
+
+SignStr = "/testhub/teststreamtitle?expire=1584522520"
+token = urlsafe_base64_encode(hmac_sha1(SignStr, PublishKey)) = zYvN7rHgJiw2QUSo_xRoBZIf1kM=
+```
+
+推流地址:
+```
+rtmp://publish.domain.com/testhub/teststreamtitle?expire=1584522520&token=zYvN7rHgJiw2QUSo_xRoBZIf1kM=
+```
+
+# 限时鉴权sk(expiry_sk)
+
+推流地址格式:
+```
+rtmp://<RTMPPublishDomain>/<Hub>/<streamTitle>?e=<ExpireAt>&token=<Token>
+```
+
+* RTMPPublishDomain - 推流域名
+* Hub - 直播空间名称
+* streamTitle - 直播流名称
+* ExpireAt - 合法的时间戳，表示推流过期时间
+* Token - 是经过hmac_sha1签算[SignStr](/pili/glossary/6677/about-push-live-stream-authentication-signstr)再经过base64生成
+
+Token 的具体计算方法：
+```
+SignStr = "/<Hub>/<streamTitle>?e=<ExpireAt>"
+Token = AccessKey + ":" + urlsafe_base64_encode(hmac_sha1(<SignStr>, <SecretKey>))
+```
+
+[HMAC SHA1算法](/linking/glossary/5287/linking-hmac-sha1)
+[URL 安全的 Base64 编码](/article/kodo/kodo-developer/appendix.html#urlsafe-base64)
+
+示例：
+```
+RTMPPublishDomain: publish.domain.com
+Hub: testhub
+streamTitle: teststreamtitle
+ExpireAt: 1584522520
+AccessKey: 7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII
+SecretKey: 312ae9gd2BrCfpTdF4U8aIg9Puh62K4eEGY72Ea_
+	
+SignStr = '/testhub/teststreamtitle?e=1584522520'
+Token = '7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII:NfI2OWGCMdFDTLOfeUd-zSPVrFY='
+```
+
+推流地址:
+```
+rtmp://publish.domain.com/testhub/teststreamtitle?e=1584522520&token=7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII:NfI2OWGCMdFDTLOfeUd-zSPVrFY=
+```
+
+
+# 动态鉴权(dynamic)
+> **该鉴权即将被移除，不推荐使用**
+	
+推流地址格式:
+```
+rtmp://<RTMPPublishDomain>/<Hub>/<streamTitle>?nonce=<Nonce>&token=<Token>
+```
+
+* PublishKey - 推流密钥
+* RTMPPublishDomain - 推流域名
+* Hub - 直播空间名称
+* streamTitle - 直播流名称
+* Nonce - 比上次推流使用的Nonce大的任意值。推荐使用推流时刻的UNIX Timestamp。时间为秒。
+* Token - 是经过hmac_sha1签算[SignStr](/pili/glossary/6677/about-push-live-stream-authentication-signstr)再经过base64生成
+
+	
+示例:
+```
+RTMPPublishDomain: publish.domain.com
+Hub: testhub
+streamTitle: teststreamtitle
+Nonce: 1584374401
+PublishKey: 12345678
+
+SignStr = "/testhub/teststreamtitle?nonce=1584374401"
+token = urlsafe_base64_encode(hmac_sha1(SignStr, PublishKey)) = "DUxp5_kAg5UpPQND1vLRH0k2Kj8="
+```
+	
+推流地址: 
+```
+rtmp://publish.domain.com/testhub/teststreamtitle?nonce=1584374401&token=DUxp5_kAg5UpPQND1vLRH0k2Kj8=
+```
+	

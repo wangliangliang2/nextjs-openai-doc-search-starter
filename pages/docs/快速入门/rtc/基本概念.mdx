@@ -1,0 +1,83 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文旨在介绍实时音视频过程中涉及到的一些基本概念。</p>
+<h6 id="app" class="rtc-doc-antor"></h6>
+
+# 应用
+<p><strong>应用</strong>是您在七牛云实时音视频应用中的一个业务上的划分方式，以<strong>应用 ID(AppID)</strong> 作为唯一的标识符。<strong>一个 APP 或者项目使用一个应用</strong>，同一个 APP 的不同平台（iOS、Android、Windows、Web）可共享一个应用，无需重复创建。</p>
+<p>您可以通过<a href="https://portal.qiniu.com/rtn/app">七牛控制台</a>来进行<strong>应用的创建和编辑</strong>。如果您还没有注册七牛开发者平台，具体流程请参考<a href="https://doc.qnsdk.com/rtn/docs/rtn_startup">七牛实时音视频云接入指南</a>。</p>
+<blockquote>
+<ul>
+<li>不同应用之间的数据不互通，房间也无法连通。</li>
+<li>一个应用对应一个唯一的 AppID，AppID 可用于后续的排障以及 <a href="#room_token">RoomToken</a> 的签算等工作。</li>
+</ul>
+</blockquote>
+<h6 id="room" class="rtc-doc-antor"></h6>
+
+# 房间
+<p><strong>房间</strong>是对音视频对话空间的抽象，用于隔离不同的通话过程，保障数据的安全及独立。同一房间内的用户可以互相接收对方的音视频数据。以 <code>RoomName</code> 为标识，需满足 <code>^[a-zA-Z0-9_-]{3,64}$</code> 的规格。<strong>加入房间需要携带 <a href="#room_token">RoomToken</a></strong>。</p>
+<blockquote>
+<ul>
+<li>当用户加入的房间不存在时，七牛后台服务会自动创建对应的房间。</li>
+<li>若房间内的所有用户都已离开，那么房间维持空状态 10s 后将会自动关闭。</li>
+<li>若房间为服务端创建，且创建后无用户进入，那么房间维持空状态 30s 后将会自动关闭。</li>
+<li>若房间内的用户由于断网等原因，30s 未向七牛后台服务通信，则该用户将被视为退出房间。</li>
+</ul>
+</blockquote>
+<h6 id="user_ID" class="rtc-doc-antor"></h6>
+
+# UserID
+<p><strong>UserID</strong> 是实时音视频通话房间内用户的唯一标识。</p>
+<blockquote>
+<ul>
+<li>UserID 支持字母、数字、中划线、下划线，区分大小写。</li>
+<li>同一房间内 UserID 唯一，若有重复，则根据<a href="https://portal.qiniu.com/rtn/app">七牛控制台上应用</a>对自动踢人配置，做相应的处理。</li>
+</ul>
+</blockquote>
+<h6 id="room_token" class="rtc-doc-antor"></h6>
+
+# RoomToken
+<p><strong>RoomToken</strong> 是加入房间需要携带的凭证信息，是基于 AppID、RoomName、UserID 以及过期时间等信息按照一定规则生成的，其具体的签算方式可参考 <a href="/rtc/development_guidelines/8813/roomToken">RoomToken 签发服务</a>。</p>
+<h6 id="track" class="rtc-doc-antor"></h6>
+
+# Track
+<p><strong>Track</strong> 代表音视频通话过程中的<strong>一条音频轨</strong>或者<strong>一条视频轨</strong>，是音视频通话的最小单位。</p>
+<blockquote>
+<ul>
+<li>一个用户可以创建多条音视频的 Track，如摄像头视频 Track、录屏视频 Track 和麦克风音频 Track 等</li>
+<li>音频 Track 仅支持创建一路，重复创建将创建失败</li>
+</ul>
+</blockquote>
+<h6 id="publish" class="rtc-doc-antor"></h6>
+
+# 发布
+<p><strong>发布</strong>是指将创建好的音视频 Track 对应的音视频数据推送到七牛实时音视频服务的操作，执行发布操作后，远端用户可以选择性的进行订阅观看。</p>
+<blockquote>
+<p>不同于 CDN 推流，此处的发布指的是房间内的音视频数据推送，将不会产生 rtmp 的直播观看地址</p>
+</blockquote>
+<h6 id="subscribe" class="rtc-doc-antor"></h6>
+
+# 订阅
+<p><strong>订阅</strong>是指向七牛实时音视频服务请求拉取远端发布的音视频数据的操作。订阅后，本地即可实时的接收远端发布的音视频数据。</p>
+<blockquote>
+<p>不同于 rtmp 拉流观看，此处的订阅指的是房间内的音视频数据接收，是基于实时性更好的 RTP 协议进行传输的</p>
+</blockquote>
+<h6 id="CDN_streaming" class="rtc-doc-antor"></h6>
+
+# CDN 推流
+<h6 id="direct_streaming" class="rtc-doc-antor"></h6>
+<h2 id="单路转推"><a href="#%E5%8D%95%E8%B7%AF%E8%BD%AC%E6%8E%A8" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>单路转推</h2>
+<p><strong>单路转推</strong>是指将客户端推送的一路音频 Track 和一路视频 Track 在服务端直接进行协议转换，再经由 CDN 分发的场景。由于不涉及服务端转码合流的操作，因此仅会产生单路转推场景的费用，费用相关可参考<a href="/rtc/product_introduction/8804/pd-price#4">单路转推费用文档</a>。更详细的说明可参考使用指南相关文档。</p>
+<blockquote>
+<p>单路转推最多仅支持一路音频和一路视频的 CDN 分发，无法进行多路画面和多路音频的合流操作</p>
+</blockquote>
+<h6 id="transcoding_streaming" class="rtc-doc-antor"></h6>
+<h2 id="合流转推"><a href="#%E5%90%88%E6%B5%81%E8%BD%AC%E6%8E%A8" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>合流转推</h2>
+<p><strong>合流转推</strong>是指将房间内的多路音频进行混音，多路视频进行合流，再以 rtmp 推流的形式经由 CDN 分发的场景。该场景涉及到服务端的合流操作，将会产生合流相关的费用，费用相关可参考<a href="/rtc/product_introduction/8804/pd-price#5">合流转推费用文档</a>。更详细的说明可参考使用指南相关文档。</p>
+<h6 id="multi_stream" class="rtc-doc-antor"></h6>
+
+# 大小流
+<p><strong>大小流</strong>是指用户发布视频 Track 时，基于该 Track 推送多路不同分辨率的视频码流，订阅端用户可以根据自己的需求选择订阅该 Track 的其中一路视频流。例如本地网络较差时，可选择订阅低分辨率的流；网络较好时，则可以选择订阅高分辨率的流。更详细的说明可参考使用指南相关文档。</p>
+<blockquote>
+<p>订阅时指定的 profile 仅为预期设置，实际订阅是否成功，以 Track 相关回调通知的实际结果为准。</p>
+</blockquote></div></div>

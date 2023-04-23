@@ -1,0 +1,16 @@
+用trim截断数据两端的值，返回去除一部分数据之后的数据。
+
+**语法：**
+
+```
+... |score trim proportiontocut=<float> tail=<left|right|both (default)> <a_field_1> ... <a_field_n>
+```
+
+**参数说明：**
+
+- proportiontocut, 必填，用来指定需要截断去除的数据比例。
+- tail, 用来指定去除数据的方式，是从左边截断（left), 从右边截断（right），还是从两边截断（both），默认是 both。
+
+**使用场景：**
+
+- 支持模糊搜索（ \*）。

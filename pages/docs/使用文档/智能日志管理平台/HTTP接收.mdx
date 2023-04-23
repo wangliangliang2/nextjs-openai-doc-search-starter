@@ -1,0 +1,16 @@
+Http Reader 是 logkit 提供的以 `http post` 请求的方式接受并读取日志的形式
+
+
+1. `http_service_address`: `必填`, 监听的地址和端口(`地址可以留空`, 即上述示例可以只填写 `:4001`)，不填写IP地址，会监听所有来源；若您填写了IP和端口，如 `10.10.1.1:4000`，则只监听指向该IP的请求。`注意请不要填写http协议头`。
+1. `http_service_path`: `选填`, 请求发送的路径，可填多个, 以 `,`分隔，如配置 `/logkit/data` , `/logkit/receive`，则 post 请求应该发往 `http://127.0.0.1:4001/logkit/data`, `http://127.0.0.1:4001/logkit/receive`。路径必须以`'/'`开头。
+1. `tag_file`可选项，可以读取一个`json格式`的文件，并把json的数据作为`标签`附着在所有数据之上。典型的应用场景为一些机器或者容器相关的元数据存以json格式放在文件中，logkit发送的数据都带上这些元数据，以便查询时可以快速定位机器元数据，并根据元数据做报警等后续事宜。
+
+
+> 注意1:该 reader 支持 `gzip`, 但请在请求头中添加 `Content-Encoding=gzip` 或者 `Content-Type=application/gzip`
+
+> 注意2:默认接收 request body 中所有的数据作为要读取的日志, `限制 request body 小于 100MB`
+
+> 注意3:默认将 request body 中的数据使用 `\n` 分割, 每行作为一条数据, 您的客户端发送时请注意以换行符(`\n`)结尾
+
+
+

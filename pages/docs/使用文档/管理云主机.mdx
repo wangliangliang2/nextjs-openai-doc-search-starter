@@ -1,0 +1,183 @@
+# 基本操作
+下面是七牛云主机的基本操作：
+- [关机](#close)
+- [开机](#open)
+- [挂载磁盘](#mount)
+- [卸载磁盘](#umount)
+- [绑定公网IP](#bind_ip)
+- [解绑公网IP](#unbind_ip)
+- [修改密码](#modify_passwd)
+- [重置](#rebuild)
+- [删除](#delete)
+- [安全组](#security_group)
+
+<a id="close"></a>
+# 关机
+
+- 七牛 EVM 云主机创建后的状态会由构建中变为开机状态  
+
+	![](https://dn-odum9helk.qbox.me/FuCAv5YPUrMYofXHAy26_4kD2toe)
+
+- 用户可以选中开机状态的云主机 点击云主机列表上方的 **关机** 按钮来进行关机操作 
+
+	![](https://dn-odum9helk.qbox.me/Fv3JqZs-rBa74Mnlp6xMDEaOwQoC)
+
+- 此时用户云主机的状态会从开机变为 **关机中**  
+
+	![](https://dn-odum9helk.qbox.me/Fr_a8EfT5ALaxbFRwn7mF0ueuOTJ)
+
+- 关机成功后云主机状态变为 **关机**  
+
+	![](https://dn-odum9helk.qbox.me/Ftz5-xp9EZdWuM-nHR_1Xf9QhLjC)
+
+<a id="open"></a>
+# 开机
+
+- 当云主机处于关机状态时，用户选中云主机，点击云主机列表上方的 **开机** 按钮来进行开机操作  
+
+	![](https://dn-odum9helk.qbox.me/FhKdNCARCem54-PT12b7uBxwI1lg)
+
+- 此时云主机的状态变为 **开机中**   
+
+	![](https://dn-odum9helk.qbox.me/FnaWZwwR_Mm8S1b0k3x8NDhZjzqk)
+
+- 开机成功后云主机状态变为 **开机**  
+
+	![](https://dn-odum9helk.qbox.me/FuCAv5YPUrMYofXHAy26_4kD2toe)
+    
+<a id="mount"></a>
+# 挂载磁盘
+
+当云主机磁盘空间不够使用时，我们往往需要向这台云主机挂载更多的磁盘设备，来获得的新的储存空间。
+
+- 选中一台云主机，点击 **操作** 按钮弹出的  **磁盘管理** 按钮  
+
+	![](https://dn-odum9helk.qbox.me/FtlZAZOnXmW3xNAWEXSH6ZfpV0Ph)
+
+- 在磁盘管理中选择要挂载的磁盘，点击确定完成绑定磁盘的过程  
+
+	![](https://dn-odum9helk.qbox.me/FnfBsOvNzmqDPlbhwF-JkkhDXx-3)
+
+- 挂载完成后，用户可以在云主机详情中看到已经挂载上的磁盘  
+
+	![](https://dn-odum9helk.qbox.me/FvQW0l6jqy5mADwyPRgnQaBn1kst)
+
+<a id="umount"></a>
+# 卸载磁盘
+
+当用户不再需要磁盘，或需要将磁盘挂载到其它云主机上时。
+我们需要将磁盘从云主机上卸载下来再进行其它诸如(删除和挂载操作)
+
+- 选中一台云主机，点击 **操作** 按钮弹出的  **磁盘管理** 按钮  
+
+	![](https://dn-odum9helk.qbox.me/FtlZAZOnXmW3xNAWEXSH6ZfpV0Ph)
+
+- 在磁盘管理中把需要卸载的磁盘勾掉，点击确认  
+
+	![](https://dn-odum9helk.qbox.me/FnfBsOvNzmqDPlbhwF-JkkhDXx-3)
+
+- 卸载完成后，用户可以在云主机详情中看到原来挂载的磁盘已经不存在了  
+
+	![](https://dn-odum9helk.qbox.me/FpEOSs0lOEAHPZ-WlZwspj3YNZmm)
+
+<a id="bind_ip"></a>
+# 绑定公网 IP
+
+用户如果需要通过公网访问到云主机，需要为云主机绑定公网IP
+
+- 选中一台云主机，点击 **操作** 按钮弹出的  **公网 IP** 按钮  
+
+	![](https://dn-odum9helk.qbox.me/Fh0cAkuDgHiB4UTEZYmBvMCn_rAf)
+
+- 或者 直接点击云主机列表中该云主机项上的 **绑定** 按钮  
+
+	![](https://dn-odum9helk.qbox.me/FibIKNOrJWNsOMw0-kcNuKVRB1io)
+
+- 在云主机的公网 IP 管理中选择要绑定的公网 IP 进行绑定  
+
+	![](https://dn-odum9helk.qbox.me/FpTV1Ts-K9ljwhMX9eD_JWef0o_N)
+
+- 点击确认绑定成功后可以在云主机的公网 IP 信息中看到公网 IP 的地址  
+
+	![](https://dn-odum9helk.qbox.me/FowRTYhonmbJkHqb_h9zY2vjcByC)
+
+<a id="unbind_ip"></a>
+# 解绑公网 IP
+
+用户如果不需要使用公网IP或者想把公网IP绑定给其它的云主机时;
+用户需要解绑云主机上的公网 IP
+
+- 选中一台云主机，点击 **操作** 按钮弹出的  **公网 IP** 按钮  
+
+	![](https://dn-odum9helk.qbox.me/Fh0cAkuDgHiB4UTEZYmBvMCn_rAf)
+
+- 在云主机的公网IP管理中点击 **解绑当前IP**  
+
+	![](https://dn-odum9helk.qbox.me/FhnRMo1AuMoxKCVc_bIzyaip5Nwk)
+
+解绑成功后再云主机列表的简介中可以看到该云主机已经没有公网 IP 地址了
+
+<a id="modify_passwd"></a>
+# 修改云主机密码
+
+如果用户遗忘了云主机的密码，用户可以修改云主机密码来重置云主机的密码
+
+- 选中一台云主机，点击 **操作** 按钮弹出的  **修改云主机密码** 按钮  
+	
+	![](https://dn-odum9helk.qbox.me/Fv3OkMevNCq_4nsgFW_jl_4RywPn)
+
+- 在弹出的对话框中输入新的云主机密码 和 确认新的云主机密码 点击 **确定** 按钮 就完成了云主机的密码操作  
+
+	![](https://dn-odum9helk.qbox.me/FnXWozYwaZUsEF4DJ2-cO11Ztd4W)
+
+<font color=red>注意：为了用户云主机的安全我们要求用户的云主机密码必须同时包含大写字母、小写字母、数字和特殊字符，并且密码的长度在8-32位之间。
+这些特殊字符包含 **.!@:#$%*()_+^&**</font>
+
+<a id="rebuild"></a>
+# 重置云主机
+
+用户如果因为某些原因想把云主机重置回初始状态
+
+- 选中一台云主机，点击 **操作** 按钮弹出的  **重置主机** 按钮  
+
+	![](https://dn-odum9helk.qbox.me/FqRZqFUWhgpYKHKv8d3lhGnYtBAV)
+
+- 在弹出的对话框中查看即将重置成的系统的信息 点击 **确定** 开始重置  
+
+	![](https://dn-odum9helk.qbox.me/FqzhwhDQb0_hDxq6IcUwrxLsF4nc)
+
+- 接下来会弹出一个登录密码确认的对话框 防止用户的云主机被恶意重置  
+
+	![](https://dn-odum9helk.qbox.me/Fqy3FzDQmkveKl7UYiUMaSut6CdC)
+
+<a id="delete"></a>
+# 删除
+
+当用户不需要使用云主机时，用户可以将云主机删除节约成本
+- 选中一台云主机，点击 **操作** 按钮弹出的  **删除** 按钮  
+
+	![](https://dn-odum9helk.qbox.me/FtEV6GC9vZrVqqNuLD3LnRqZegJ9)
+
+- 在接下来弹出的云主机名称确认对话框中 输入删除云主机的名称  
+
+	![](https://dn-odum9helk.qbox.me/FhULmiHFwkogqv7Wz-lPG5PTD3e9)
+
+- 接下来会弹出一个登录密码确认的对话框 防止用户的云主机被恶意删除  
+
+	![](https://dn-odum9helk.qbox.me/Fqy3FzDQmkveKl7UYiUMaSut6CdC)
+
+<a id="security_group"></a>
+# 安全组
+
+一台云主机可以绑定多个安全组用于保护云主机的安全
+
+- 在云主机列表中选中一台云主机 点击 **操作** 按钮弹出的  **安全组** 按钮  
+
+	![](https://dn-odum9helk.qbox.me/FkX_f9bomRsIH3i88dbEcjqOffTR)
+
+- 在云主机的安全组管理中选择想要应用到这台云主机的安全组  
+
+	![](https://dn-odum9helk.qbox.me/FjZDjFT7hG5ndePpxnBvVbjH95HI)
+
+- 设置成功后，用户可以到云主机详情里的安全组信息中查看该云主机现在的安全组列表  
+	![](https://dn-odum9helk.qbox.me/FoJP49tp45_TcWnaF_W7CYob7J80)

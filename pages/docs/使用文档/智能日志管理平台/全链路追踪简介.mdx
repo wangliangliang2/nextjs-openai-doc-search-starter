@@ -1,0 +1,82 @@
+全链路追踪是 Pandora 推出的链路追踪应用，兼容 zipkin、pinpoint、skywalking 和 jaeger 等开源 Tracing 方案。通过 logkit-pro 采集 zipkin、pinpoint、skywalking 和 jaeger 等开源 Tracing 方案的埋点日志数据，并将数据存储到智能日志平台，通过智能日志平台的全链路追踪应用分析埋点数据，得出同一次请求上各个服务的调用链关系，常应用于分析性能消耗原因、辅助性能优化、进行异常定位等场景。
+
+# **主要功能**
+
+主要功能包括：
+
+**链路查询**
+
+根据服务、操作类型、执行时间、标签等字段查询符合条件的链路信息，标签字段可指定包含某种操作（如 DB 查询）或者请求出现异常的链路等。
+
+![](https://dn-odum9helk.qbox.me/Fr440N675EyWHhhdmiUW0wpWoWdb)
+
+**链路详情**
+
+基于调用链查询的结果，查看目标链路（可能是异常链路、慢链路等）的调用链的详细信息，从而分析故障点、性能瓶颈、耗时原因等问题；也可以根据链路调用比例、峰值 QPS 评估链路容量。
+
+![](https://dn-odum9helk.qbox.me/FjM7oI4IyyU29yvpID3hRvGczXSV)
+
+埋点日志数据如何接入全链路追踪应用并查看链路详情请阅读[使用指南](/insight/manual/5119/access-data-tracing)。
+
+# **使用场景**
+
+全链路追踪应用适用的场景包括但不限于以下几种：
+
+* 监测各服务调用的耗时，分析耗时长的原因；
+
+* 分析 url 调用过程中性能消耗原因，抓取超过阈值 url 的详细数据；
+
+* 数据库场景下可以检查分析执行缓慢的 SQL 语句，辅助性能优化。
+
+* 根据链路详情中的 HTTP 响应码、请求的耗时等信息对系统中的异常情况进行监控
+
+# **产品特色**
+
+**简单易用**
+
+兼容 zipkin、pinpoint、skywalking 和 jaeger 等开源 Tracing 方案，通过 logkit-pro 采集 zipkin、pinpoint、skywalking 和 jaeger 等开源 Tracing 方案的埋点日志数据，发送到智能日志平台即可使用。
+
+**支持无侵入式 agent**
+
+对于 Java 语言，支持无侵入式数据收集，即开即用，只需要程序启动时添加简单参数即可实现数据收集
+
+**自定义监控粒度**
+
+监控粒度非常灵活，对于侵入式追踪，根据自定义的埋点粒度产生相应的监控数据，对于非侵入式的追踪，可以细到函数级别
+
+**强大的数据采集能力**
+
+完全兼容 zipkin，jaeger，pinpoint、skywalking 的监控 agent，可以直接将数据传送到七牛智能日志平台
+
+**共享原始数据**
+
+对于采集上来的数据，完全开放给用户使用，用户可以通过 API 获取采集的 opentracing 格式的数据，结合自己的业务做二次分析
+
+# **产品支持**
+
+**支持 opentracing 协议**
+
+智能日志平台的全链路追踪服务基于 opentracing 协议进行开发，因此对于兼容 opentracing 协议的 APM 软件，比如： zipkin，jaeger 等均能无缝接入。
+*  兼容zipkin span格式（v1:Thrift/JSON, v2:JSON), 通过HTTP接收
+*  兼容jaeger span格式（Thrift），通过HTTP接收
+*  定制了pinpoint span和spanchunk格式（Thrift），通过UDP接收
+*  定制了skywalking span 格式，通过UDP接收
+
+**支持语言**
+
+支持 PHP，Java，Golang，Node.js， Python，Ruby 等应用运行环境。
+
+**支持主流 Java 技术栈**
+
+对于 Java 语言来说，支持侵入式和无侵入式监控。
+
+无侵入式针对以下技术栈提供完美的监控方案：
+
+* 数据库：MySQL，Oracle，MS SQL Server，PostgreSQL 等
+
+* 消息队列：kafka，rabbitmq，redis 等
+
+* WEB 框架：tomcat，Spring，mybatis，thrift，netty 等
+
+* 侵入式通过埋点可以支持任意的技术栈。
+

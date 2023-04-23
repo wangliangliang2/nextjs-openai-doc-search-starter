@@ -1,0 +1,32 @@
+# 编辑签名 (PUT Signature)
+
+审核不通过的情况下才可以重新编辑签名，已经审核通过的签名无法重新编辑。
+
+## 请求定义
+
+```
+PUT /v1/signature/:id HTTP/1.1
+Host: sms.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+```
+
+### 请求头
+
+> 请参考 [请求认证](/sms/api/5842/sms-api-authentication)
+
+### 请求数据
+
+该接口定义以下请求数据:
+
+```json
+{
+    "signature": string
+}
+```
+
+## 响应定义
+
+### 该接口正确处理请求时返回 HTTP 状态码
+
+- 服务器端正确处理请求时响应 HTTP 状态码 200

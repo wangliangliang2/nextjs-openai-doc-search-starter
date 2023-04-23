@@ -1,0 +1,22 @@
+一类支持向量机是一种特殊的向量机的算法，它的目的是判断一个样本是否属于某单个类别中，因此在异常检测的场景下，一类支持向量机通过寻找一个超平面将样本中的正例圈出来，用这个圈来判断一个新数据是否为正样本。如果在圈内，即为正样本，如果在圈外，即为异常值。*如果需要做新颖性检测（Novelty Detection），在没有很明确的偏好算法的情况下，建议可以使用一类支持向量机（OneClass SVM）来得出初步的异常检测模型。*
+
+**语法：**
+```
+...| fit OneClassSVM kernel=<linear | poly | rbf(default) | sigmoid> degree=<int> gamma=<scale(default) | auto | float> coef0=<float> nu=<float> max_iter=<int> <feature_field_1> <feature_field_2> [into model_name]... 
+```
+
+**参数说明：**
+
+- kernel用来指定算法中使用的核心函数。
+	+ kernel=linear，使用线性核函数
+	+ kernel=poly，使用多项式核函数
+	+ kernel=rbf，使用径向基函数核/高斯核函数
+	+ kernel=sigmoid，使用sigmoid核函数
+- degree用来在kernel=poly的情况下，指定函数的次数。若不提供，默认为3。在kernel设定为其他核函数的情况下，会被忽略。
+- gamma用来在kernel=rbf、poly或者sigmoid的情况下，定义函数的系数。
+	+ gamma=scale（默认值）,使用1/ (n_features * X.var())为gamma值。n_features为提供的特征数量，X.var（）为数据集的方差。
+	+ gamma=auto，使用1/n_features为gamma值。
+	+ gamma=float，使用输入的float为gamma值。
+- coef0，用来在kernel=poly或者sigmoid的情况下，制定函数的独立项。若不提供，默认为0.0。
+- nu，用来设定训练误差，表示异常点比例，必须是在(0, 1]范围之间的float。若不提供，默认为0.5。
+- max_iter，用来指定算法的最大循环次数。若不提供，默认为-1，即不设限。在数据量或者特征数量特别大的情况下，可以设定该参数。

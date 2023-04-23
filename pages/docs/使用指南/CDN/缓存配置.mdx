@@ -1,0 +1,55 @@
+缓存过期配置是指配置 CDN 加速节点在缓存您的业务内容时遵循的一套过期规则，您可以登录**七牛开发者平台**选择**CDN控制台**,可以在控制台中查看域名的缓存配置信息并进行修改。 
+<br/>
+# 操作说明
+登录**七牛开发者平台**后，进入**CDN控制台**，选择【域名管理】，点击【配置】：
+
+![域名列表](https://dn-odum9helk.qbox.me/Fr29HEF4Y0J1NHYmOWW1SkjcyUFD)
+
+进入域名配置界面，点击【修改配置】进行缓存配置的修改。
+![](https://dn-odum9helk.qbox.me/FgzWIYw8V4HRyMA1sHv80gshltJq)
+
+### 基础配置
+缓存的基础配置分为自定义、遵循源站两种类型
+
+* 自定义：自定义指定的资源内容的缓存过期规则，默认为全局配置缓存30天，支持按照文件后缀、目录规则进行配置。
+
+（1）后缀：必须以「.」(英文点)开始，多个后缀请用「;」(英文分号)隔开，例如(.png;.jpg;.gif)。
+
+（2）路径：必须以「/」(英文斜杠)开始，多个路径请用「;」(英文分号)隔开，例如: (/a/b/c;/d/e/f;/h/i/j) ，路 径中不能包含「.」，也不能以「/」结尾。
+
+（3）缓存规则最多可配置15条。
+
+（4）1条缓存规则中，最多10个后缀/路径，「;」(英文分号)隔开。
+
+（5）时间单位：分/小时/天，只能输入整数，最大值为 365 天。
+
+（6）0 代表不缓存。
+
+（7）按从上至下顺序，采取优先匹配原则。
+![自定义](https://dn-odum9helk.qbox.me/FnZSBcjeKrTYoGp0y9dvc7r55ma_)
+
+推荐配置：
+（1）.jpg;.jpeg;.png;.bmp;.gif;.webp;.ico  图片类型缓存1天。
+
+（2）.js;.css;.txt;.xml;.shtml;.html;.htm;.csv;.bat  文本类型缓存1天。
+
+（3）.m3u8 m3u8类型缓存1小时。
+
+（4).avi;.mkv;.mp4;.mov;.flv;.rm;.rmvb;.swf;.mp3;.wav;.wmv;.rmi;.aac 音视频类型缓存7天。
+
+（5）.exe;.deb;.ipa;.apk;.sis;.psd;.dat 大文件类型缓存7天。
+![推荐配置](https://dn-odum9helk.qbox.me/FnflMXheV-SO_DxRaRpyhcj5qOxI)
+
+* 遵循源站：所有全部资源内容的缓存过期时间将与源站同步。
+![遵循源站](https://dn-odum9helk.qbox.me/FvwYyzVvqXi0ZrtK2DLohRsieGnI)
+
+### 忽略URL参数
+
+忽略URL参数：指忽略请求URL中「?」后面的参数进行缓存，当参数内容不影响文件内容时，建议开启有效提高文件缓存命中率，提升分发效率。
+
+忽略URL参数包含忽略全部参数和去指定参数缓存两种类型。
+* 忽略全部参数：资源缓存时去除 URL「?」后的全部参数进行缓存，忽略全部参数同时会导致图片处理等 FOP 功能失效。
+![image.png](https://dn-odum9helk.qbox.me/Fq6Kc7LD_R3g8AEs6GQrKgRMxVm0)
+
+* 忽略指定参数：输入需要忽略的参数，资源缓存时会忽略您输入的指定参数然后进行缓存。
+![image.png](https://dn-odum9helk.qbox.me/FolwDrfioQOVe4pWXA2KlVlSP5D4)

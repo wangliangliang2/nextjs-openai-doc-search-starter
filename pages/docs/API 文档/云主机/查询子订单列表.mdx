@@ -1,0 +1,91 @@
+# 请求路径
+> `GET` /v1/order/pay_record
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+resource_type | string | query | 否 | 资源类型
+resource_id | string | query | 否 | 资源 ID
+order_type | string | query | 否 | 订单类型，取值: create, renew, auto_renew, upgrade
+order_hash | string | query | 否 | 订单号
+status | string | query | 否 | 发货状态, 取值: success, fail_over, cancelled
+page | int | query | 否 | 页码，默认为1
+size | int | query | 否 | 分页大小，默认为20
+create_st | string | query | 否 | 起始时间戳，订单创建晚于该时间, 如1623219439
+create_et | string | query | 否 | 结束时间戳，订单创建早于该时间
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID
+data | []Atomic | 子订单信息集合
+
+
+### Atomic
+名称 | 类型 | 描述 
+----- | ----- | -----
+region_id | string | 地域 ID
+order_hash | string | 订单号
+order_type | string  | 订单类型，取值: create, renew, auto_renew, upgrade
+resource_type | string | 资源类型
+resource_id | string | 资源 ID
+life_start_time | string | 生命周期起始时间
+life_end_time | string | 生命周期结束时间
+status | string | 子订单发货状态
+create_time | string | 子订单创建时间
+complete_time | string | 子订单完成时间
+atomic_item_infos | []AtomicPrice | 子订单价格信息
+<br>
+
+### AtomicPrice
+名称 | 类型 | 描述 
+----- | ----- | -----
+price | double | 子订单价格, 单位: 元
+original_price | double | 子订单原价, 单位: 元
+
+## 返回示例
+``` 
+{
+    "data":[
+        {
+            "id": "531518",
+            "uid": 1381403989,
+            "order_type": "upgrade",
+            "mode": 1,
+            "resource_type": "instance",
+            "resource_id": "i-j6cfo9lcnrj2tufmg3b6",
+            "region_id": "cn-hongkong",
+            "life_start_time": "0001-01-01T00:00:00Z",
+            "life_end_time": "0001-01-01T00:00:00Z",
+            "atomic_item_infos": [
+                {
+                    "price_item": "qvm:instance:ecs.n4.small:for_trade:1month",
+                    "product_item": "qvm:instance:ecs.n4.small",
+                    "amount": 1,
+                    "resource_type": "instance",
+                    "item_hash": "cfff59ed-be9e-4132-8809-10caba557da3",
+                    "price": 31.52,
+                    "original_price": 31.52,
+                    "sub_order": {
+                        "order_hash": "6e5d274636cdf86dabee3f8658794d54",
+                        "sub_order_hash": "915778",
+                        "price": 31.52,
+                        "order_tag": "bo_order"
+                    },
+                    "discount_items": null,
+                    "current_price": 31.52
+                }
+            ],
+            "order_hash": "6e5d274636cdf86dabee3f8658794d54",
+            "status": "cancelled",
+            "create_time": "2020-09-05T19:07:48.562+08:00",
+            "complete_time": "0001-01-01T00:00:00Z"
+        }
+    ],
+    "page": 1,
+    "size": 100,
+    "total": 1,
+    "request_id": "3xV5Lpw-a-g51YYW"
+}
+```

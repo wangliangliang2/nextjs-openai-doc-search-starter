@@ -1,0 +1,24 @@
+初始化配置后，您可以让ECS连接PostgreSQL实例，也可以本地连接到PostgreSQL实例，实现业务目标。
+本章将介绍如何通过pgAdmin 4客户端连接RDS实例。
+# 通过客户端登录
+1.将要访问RDS实例的IP地址加入RDS白名单中。
+2.启动pgAdmin 4客户端。
+<table><tr><td bgcolor=#F0F8FF>**说明：** 高版本客户端首次登录需要设置Master Password用于保护保存的密码和其他凭据。</td></tr></table>
+3.右击Servers，选择Create > Server...。
+![](https://dn-odum9helk.qbox.me/Fmzonw6xAgBYC08ZoywWWPZkrjwZ)
+4.在General页签设置连接名称。
+![](https://dn-odum9helk.qbox.me/Fi5FWaKCNEKzVlIZHHztsJYf6mzw)
+5.选择Connection标签页，输入要连接的实例信息。
+![](https://dn-odum9helk.qbox.me/Ft8m2hXbh8W8VEKHRbZu2oVZngcj)
+
+|参数|说明|
+|---|---|---|
+|Hostname/address	|主机名称/地址。若通过内网连接，需输入RDS实例的内网连接地址；若使用外网连接，需输入RDS实例的外网连接地址。 | 
+|Port|连接地址对应的端口。|
+|Username|RDS实例的账号名称。|
+|Password|账号对应的密码。|
+<br>
+6.单击Save。
+7.若连接信息无误，会出现如下界面，则表示连接成功。
+<table><tr><td bgcolor=#F0F8FF>**说明：** postgres是RDS实例默认的系统数据库，请勿在该数据库中进行任何操作。</td></tr></table>
+![](https://dn-odum9helk.qbox.me/Fvnb3qSS6M8VfbKswQy3_19JTJCb)

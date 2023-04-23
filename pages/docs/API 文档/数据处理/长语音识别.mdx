@@ -1,0 +1,340 @@
+# 长语音识别
+
+长语音识别别可对用户指定的语音文件进行识别，针对请求的语音返回文本，可用于会议语音资料转写、客服语音质检等各类场景。
+
+# 使用方式
+
+使用方式分成2步:
+
+1. 提交长语音转写任务
+2. 接收回调结果
+
+## 一. 提交长语音转写任务
+
+**请求URL**: `https://yitu-audio.qiniuapi.com/v4/lasr`
+
+**请求方式**: `POST`
+
+**请求 Header**:
+
+| 字段          | 取值                                                         |
+| :------------ | :----------------------------------------------------------- |
+| Content-Type  | application/json                                             |
+| Authorization | Qiniu \<AccessKey>:\<Sign> </br>注意: 用户请根据 AccessKey 和 SuccessKey 生成鉴权，以便进行身份验证。\<Sign> 的取值请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken) |
+
+**请求 Body**:
+
+| 字段               | 类型        | 是否必选 | 说明                                     |
+| :----------------- | :---------- | :------- | :--------------------------------------- |
+| audioUrl           | string      | Y        | 音频文件的url                            |
+| callback           | string      | N        | 支持http/https, 填写后可通过回调获取结果 |
+| filedata           | json object | N        | 设置关于文件的编码和码率等               |
+| speechConfig       | json object | N        | 转写的相关配置                           |
+| wordsReplaceConfig | json array  | N        | 指定词和替换规则的配置                   |
+
+其中`filedata`结构体为
+
+| 字段            | 类型   | 是否必选 | 说明                                     |
+| :-------------- | :----- | :------- | :--------------------------------------- |
+| aue             | string | N        | 音频编码。参考文档首页的格式。           |
+| lang            | string | N        | 文件的语言，默认为MANDARIN，中文普通话。 |
+| sampleRateHertz | int    | N        | 采样频率。                               |
+| audioName       | string | N        | 用来标识文件的文件名                     |
+
+其中`speechConfig`结构体为
+
+| 字段              | 类型         | 是否必选 | 说明                                                         |
+| :---------------- | :----------- | :------- | :----------------------------------------------------------- |
+| scene             | string       | N        | 场景。默认为GERNERL                                          |
+| byWords           | bool         | N        | 逐字输出开关。<br>默认false，逐句输出。<br>true，开启后带有逐字模式。 |
+| customWords       | string array | N        | 独立热词。（支持100个）支持中文2-4个字符，中英混合4-8个字节  |
+| addPunctuation    | bool         | N        | 标点开关。默认true，表示开启加标点，输出带标点               |
+| wordsReplace      | bool         | N        | 指定词替换功能。<br>默认false，表示关闭。<br>开启后wordsReplaceConfig中的设置生效。 |
+| convertNumber     | bool         | N        | 数字符号统一。<br>默认为true，开启数字为统一为阿拉伯数字。<br>false 为汉字 一二三四五六七八九十。 |
+| numOfSpeakers     | int          | N        | 说话人分离功能<br>默认为1，一位说话人，不返回speakerIds.<br>0 表示盲分。<br>2-4时，表示指定了说话人的数量，返回speakerIds. |
+| disfluency        | bool         | N        | 顺滑标识开关。<br>默认false，关闭顺滑标识。                  |
+
+其中`wordsReplaceConfig`结构体为
+
+| 字段     | 类型   | 是否必选 | 说明                         |
+| :------- | :----- | :------- | :--------------------------- |
+| keywords | string | N        | 敏感词。支持中文和英文字符。 |
+| replace  | string | N        | 替换敏感词的字符。           |
+
+### 请求示例
+
+```json
+v4/lasr/start 
+{
+    "audioUrl":"https://cdnfile.mp3",
+    "callback":"https://callbackurl.com",
+    "filedata":{
+        "aue":"wav",
+        "lang":"MANDARIN",
+        "sampleRateHertz":"16000",
+        "audioName":"这是一个示例文件.amr"
+    },
+    "speechConfig":{
+        "scene":"GERNERL",
+        "byWords":true,
+        "customWords":[
+            "七牛",
+            "信息技术有限公司"
+        ],
+        "useCustomWordsIds":[
+            111,
+            2123,
+            432,
+            5342,
+            23
+        ],
+        "addPunctuation":true,
+        "wordsReplaceConfig":true,
+        "numOfSpeakers":1,
+        "convertNumber":true
+    },
+    "wordsReplaceConfig":[
+        {
+            "keywords":"他妈的",
+            "replace":"*"
+        },
+        {
+            "keywords":"破坏",
+            "replace":"xx"
+        }
+    ]
+}
+```
+
+
+**返回参数**
+
+| 字段      | 类型   | 是否必选 | 说明                                            |
+| :-------- | :----- | :------- | :---------------------------------------------- |
+| rtn       | int    | Y        | 请求处理结果的状态码，0表示成功，否则表示异常。 |
+| message   | string | Y        | 请求处理结果的debug提示信息                     |
+| taskId    | string | Y        | 任务ID,可用来查询和停止任务。                   |
+| requestId | string | Y        | 请求的唯一标示符                                |
+
+
+### 返回示例
+
+```JSON
+{
+    "rtn": 0, 
+    "message": "ok", 
+    "taskId": "4a3d3643-1712-4441-a5ae-7a5b26e3afc7", 
+    "audio": "8754c3a3-de2c-4c6b-a313-34c548681904"
+}
+```
+
+## 二. 接收回调结果
+
+回调参数以json形式组织，作为请求内容提交
+
+**请求方式**: `POST`
+
+**请求 Header**:
+
+| 字段         | 取值             |
+| :----------- | :--------------- |
+| Content-Type | application/json |
+
+**请求 Body**:
+
+| 字段      | 类型        | 是否必选 | 说明                                            |
+| :-------- | :---------- | :------- | :---------------------------------------------- |
+| rtn       | int         | Y        | 请求处理结果的状态码，0表示成功，否则表示异常。 |
+| message   | string      | Y        | 请求处理结果的debug提示信息                     |
+| taskId    | string      | Y        | 任务ID,可用来查询和停止任务。                   |
+| requestId | string      | Y        | 请求的唯一标示符                                |
+| data      | json object | N        | 识别结果。当rtn=0时，此结构存在。               |
+
+其中`data`结构体为
+
+
+| 字段         | 类型        | 是否必选 | 说明                                                         |
+| :----------- | :---------- | :------- | :----------------------------------------------------------- |
+| statusCode   | int         | N        | 转写任务状态<br>0-LOADING - 文件加载中。<br>1-QUEUEING - 排队中。<br>2-PROGRESSING - 正在转写。<br>3-TASK_SUCC - 转写完成。<br>回调时仅可见转写完成。 |
+| statusText   | string      | N        | 对应任务状态的文本信息。                                     |
+| speechResult | json object | N        | 转写识别结果。<br>status为转写完成时，此结构存在             |
+
+其中`speechResult`结构体为
+
+
+| 字段       | 类型         | 是否必选 | 说明                               |
+| :--------- | :----------- | :------- | :--------------------------------- |
+| resultText | string       | N        | 转写的结果文本全部输出。           |
+| duration   | int          | N        | 音频文件的时长。单位 ms            |
+| detail     | object array | N        | 转写输出的句或者字的详细数据信息。 |
+
+其中`detail`结构体为
+
+
+| 字段       | 类型         | 是否必选 | 说明                                                         |
+| :--------- | :----------- | :------- | :----------------------------------------------------------- |
+| sentences  | string       | N        | 每句的转写结果                                               |
+| startTime  | string       | N        | 每句的开始时间。音频起始点为0。单位ms<br>如果关闭时间戳定位功能，不返回 |
+| endTime    | string       | N        | 每字或每句结束时间。<br>如果关闭时间戳定位功能，不返回       |
+| speakerId  | string       | Y        | 每句的说话人Id。                                             |
+| wordsPiece | object array | Y        | 句中所对应的每字信息。开启byWords时，返回wordsPiece部分。    |
+
+其中`wordsPiece`结构体为
+
+
+| 字段           | 类型   | 是否必选 | 说明                                                         |
+| :------------- | :----- | :------- | :----------------------------------------------------------- |
+| words          | string | N        | 每字的文本信息                                               |
+| startTime      | string | N        | 每字的开始时间。单位ms                                       |
+| endTime        | string | N        | 每字的结束时间。单位ms                                       |
+| transcribeType | string | N        | 每个字符的属性。<br>1 识别字符<br>2 标点 （ 开启标点能力）<br>4 数字<br>8 已规则替换的词 （开启敏感词）<br>16 顺滑词 （开启顺滑标志）<br>32 影响语义的空格<br>64 热词命中<br>例子<br>type = 2 标点<br>type = 5，1+4 识别字符+数字<br>type =17，1+16 识别字符+数字 |
+
+### 回调示例
+
+```json
+{
+    "rtn":0,
+    "message":"SASS_SUCC",
+    "requestId":"a123bcef",
+    "taskId":"a123bcefa123bcef",
+    "data":{
+        "statusCode":3,
+        "statusText":"TASK_SUCC",
+        "speechResult":{
+            "resultText":"今天天气真的很不错。说的对！今天天气真的是棒呆了。",
+            "duration":34567892,
+            "detail":[
+                {
+                    "sentences":"今天天气真的很不错。",
+                    "startTime":"0",
+                    "endTime":"1600",
+                    "speakerId":"1",
+                    "wordsPiece":[
+                        {
+                            "words":"今",
+                            "startTime":"0",
+                            "endTime":"200",
+                            "transcribedType":"1"
+                        },
+                        {
+                            "words":"天",
+                            "startTime":"200",
+                            "endTime":"400",
+                            "transcribedType":"1"
+                        },
+                        {
+                            "words":"天",
+                            "startTime":"400",
+                            "endTime":"600",
+                            "transcribedType":"1"
+                        },
+                        {
+                            "words":"。",
+                            "startTime":"200",
+                            "endTime":"400",
+                            "transcribedType":"2"
+                        }
+                    ]
+                },
+                {
+                    "sentences":"棒呆了。",
+                    "startTime":"0",
+                    "endTime":"1600",
+                    "speakerId":"2",
+                    "wordsPiece":[
+                        {
+                            "words":"棒",
+                            "startTime":"0",
+                            "endTime":"200",
+                            "transcribedType":"1"
+                        },
+                        {
+                            "words":"呆",
+                            "startTime":"200",
+                            "endTime":"400",
+                            "transcribedType":"1"
+                        },
+                        {
+                            "words":"了",
+                            "startTime":"400",
+                            "endTime":"600",
+                            "transcribedType":"17"
+                        },
+                        {
+                            "words":"。",
+                            "startTime":"200",
+                            "endTime":"400",
+                            "transcribedType":"2"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+## 三. 查询转写任务
+
+**请求URL**: `https://yitu-audio.qiniuapi.com/v4/lasr/<taskId>`
+
+**请求方式**: `GET`
+
+**请求 Header**:
+
+| 字段          | 取值                                                         |
+| :------------ | :----------------------------------------------------------- |
+| Authorization | Qiniu \<AccessKey>:\<Sign> </br>注意: 用户请根据 AccessKey 和 SuccessKey 生成鉴权，以便进行身份验证。\<Sign> 的取值请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken) |
+
+**HTTP PATH 参数**
+
+| 字段   | 类型   | 是否必选 | 说明          |
+| :----- | :----- | :------- | :------------ |
+| taskId | string | Y        | 转写任务的 id |
+
+**返回参数**:
+
+| 字段      | 类型        | 是否必选 | 说明                                            |
+| :-------- | :---------- | :------- | :---------------------------------------------- |
+| rtn       | int         | Y        | 请求处理结果的状态码，0表示成功，否则表示异常。 |
+| message   | string      | Y        | 请求处理结果的debug提示信息                     |
+| taskId    | string      | Y        | 任务ID,可用来查询和停止任务。                   |
+| requestId | string      | Y        | 请求的唯一标示符                                |
+| data      | json object | N        | 识别结果。当rtn=0时，此结构存在。               |
+
+其中`data`结构体为
+
+| 字段         | 类型        | 是否必选 | 说明                                                         |
+| :----------- | :---------- | :------- | :----------------------------------------------------------- |
+| statusCode   | int         | N        | 转写任务状态<br>0-LOADING - 文件加载中。<br>1-QUEUEING - 排队中。<br>2-PROGRESSING - 正在转写。<br>3-TASK_SUCC - 转写完成。<br>回调时仅可见转写完成。 |
+| statusText   | string      | N        | 对应任务状态的文本信息。                                     |
+| speechResult | json object | N        | 转写识别结果。<br>status为转写完成时，此结构存在             |
+
+其中`speechResult`结构体为
+
+| 字段       | 类型         | 是否必选 | 说明                               |
+| :--------- | :----------- | :------- | :--------------------------------- |
+| resultText | string       | N        | 转写的结果文本全部输出。           |
+| duration   | int          | N        | 音频文件的时长。单位 ms            |
+| detail     | object array | N        | 转写输出的句或者字的详细数据信息。 |
+
+其中`detail`结构体为
+
+| 字段       | 类型         | 是否必选 | 说明                                                         |
+| :--------- | :----------- | :------- | :----------------------------------------------------------- |
+| sentences  | string       | N        | 每句的转写结果                                               |
+| startTime  | string       | N        | 每句的开始时间。音频起始点为0。单位ms<br>如果关闭时间戳定位功能，不返回 |
+| endTime    | string       | N        | 每字或每句结束时间。<br>如果关闭时间戳定位功能，不返回       |
+| speakerId  | string       | Y        | 每句的说话人Id。                                             |
+| wordsPiece | object array | Y        | 句中所对应的每字信息。开启byWords时，返回wordsPiece部分。    |
+
+其中`wordsPiece`结构体为
+
+| 字段           | 类型   | 是否必选 | 说明                                                         |
+| :------------- | :----- | :------- | :----------------------------------------------------------- |
+| words          | string | N        | 每字的文本信息                                               |
+| startTime      | string | N        | 每字的开始时间。单位ms                                       |
+| endTime        | string | N        | 每字的结束时间。单位ms                                       |
+| transcribeType | string | N        | 每个字符的属性。<br>1 识别字符<br>2 标点 （ 开启标点能力）<br>4 数字<br>8 已规则替换的词 （开启敏感词）<br>16 顺滑词 （开启顺滑标志）<br>32 影响语义的空格<br>64 热词命中<br>例子<br>type = 2 标点<br>type = 5，1+4 识别字符+数字<br>type =17，1+16 识别字符+数字 |
+
+# 价格
+1元/小时

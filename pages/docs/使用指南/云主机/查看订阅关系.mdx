@@ -1,0 +1,30 @@
+在消息队列 RocketMQ 控制台，您可实时查看 Group ID 和 Topic 之间的订阅关系，即某个 Topic 被哪些 Group ID 订阅了，以及某个 Group ID 订阅了哪些 Topic。
+
+# 什么是订阅关系
+
+消息队列 RocketMQ 里的一个 Group ID 代表一个 Consumer 实例群组。对于大多数分布式应用来说，一个 Group ID 下通常会挂载多个 Consumer 实例。消息队列 RocketMQ 的订阅关系主要由 Topic+Tag 共同组成，即一个 Group ID 下所有的 Consumer 实例订阅的 Topic 以及这些 Topic 中的过滤规则 Tag。
+同一个 Group ID 下所有的 Consumer 实例需保持订阅关系一致；否则，消息消费的逻辑就会混乱，甚至导致消息丢失。详情请参见订阅关系一致。
+# 查看 Topic 被哪些 Group ID 订阅
+
+## 前提条件
+
+订阅该 Topic 的 Group ID 至少有一个处于在线状态。
+## 操作步骤
+
+1. 登录消息队列 RocketMQ 控制台。在左侧导航栏，单击 Topic 管理。
+2. 在 Topic 管理页面找到目标 Topic，然后在其操作列单击订阅关系。
+## 结果验证
+
+在弹出的订阅关系对话框，除了看到该 Topic 的名称和最新一条消息的发送时间外，您还可以看到所有订阅该 Topic 的在线 Group ID 及其消费模式。
+此外，您还可以单击任一 Group ID 的操作列的消费者状态，查看该 Group ID 的消息消费详情。
+
+# 查看 Group ID 订阅的 Topic
+
+## 前提条件
+
+需查询的 Group ID 处于在线状态。
+## 操作步骤
+
+1. 登录消息队列 RocketMQ 控制台。在左侧导航栏，单击 Group 管理。
+2. 在 Group 管理页面找到目标 Group ID，在其操作列单击订阅关系。
+

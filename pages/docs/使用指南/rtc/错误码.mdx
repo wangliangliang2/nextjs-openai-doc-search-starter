@@ -1,0 +1,259 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文主要介绍 QNRTC SDK 各端相关的错误码及其建议的处理方式。</p>
+<blockquote>
+<p>若返回的错误码本文未提及，请<a href="https://support.qiniu.com/tickets/new">提交工单</a>或者联系七牛技术支持同学协助解决</p>
+</blockquote>
+
+# 房间相关错误码
+<style>
+table th:first-of-type {
+	width: 28%;
+}
+table th:nth-of-type(2) {
+	width: 8%;
+}
+table th:nth-of-type(3) {
+	width: 24%;
+}
+table th:nth-of-type(4) {
+	width: 40%;
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>枚举值</th><th>错误码</th><th>说明</th><th>处理方式</th></tr></thead><tbody><tr><td>QNRTC_OK</td><td>0</td><td>无错误</td><td>无</td></tr><tr><td>Err_Token_Error</td><td>10001</td><td>房间 Token 错误</td><td>表示您提供的房间 token 不符合七牛 token 签算规则，详情请参考 <a href="https://doc.qnsdk.com/rtn/docs/server_overview#1">RoomToken 签发服务</a></td></tr><tr><td>Err_Token_Expired</td><td>10002</td><td>房间 Token 过期</td><td>表示您的房间 token 过期，需要重新生成 token 再加入</td></tr><tr><td>Err_User_Already_Exist</td><td>10022</td><td>房间内已经有同名用户</td><td>后台如果配置为开启“禁止自动踢人”，则同一用户重复加入/未正常退出再加入会触发此错误</td></tr><tr><td>Err_Media_Not_Support</td><td>10054</td><td>媒体协商失败</td><td>表示该设备不支持指定的音视频格式，无法进行连麦的操作</td></tr><tr><td>Err_Auth_Failed</td><td>21001</td><td>加入房间认证失败</td><td>服务验证时出错，可能为服务网络异常，也可能是 token 验证失败，建议检查签算 token 的信息是否异常，若 token 无误，可重新尝试加入房间</td></tr><tr><td>Err_Reconnect_Failed</td><td>21003</td><td>30s 内未能重连成功或者重连时房间已被销毁</td><td>建议检查网络并重新申请 token 加入房间。当发生该错误时，之前创建的转推任务将被服务销毁，如有需要，应在下次成功加入房间后按业务需要恢复</td></tr><tr><td>Err_Fatal</td><td>21005</td><td>非预期错误</td><td>表示 RTC 生命周期异常，需要释放资源并重新初始化</td></tr></tbody></table>
+<blockquote>
+<p><strong>SDK 重连机制：</strong></p>
+<ul>
+<li>SDK 内部会尝试无限重连</li>
+<li>如果 30s 内无法完成有效的重连过程，则超时后的重连请求在到达 RTC 服务后会抛出 <code>Err_Reconnect_Failed</code> 错误</li>
+</ul>
+</blockquote>
+
+# 设备采集相关错误码
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>枚举值</th><th>错误码</th><th>说明</th><th>处理方式</th></tr></thead><tbody><tr><td>Err_Mic_Init_Failed</td><td>23006</td><td>系统麦克风初始化错误，无权限或者麦克风被占用</td><td>请确认应用是否获取音频录制的权限或者麦克风是否被占用</td></tr><tr><td>Err_Mic_Capture_Failed</td><td>23007</td><td>麦克风录制失败</td><td>可尝试取消发布并重新发布麦克风 Track</td></tr><tr><td>Err_Speaker_Init_failed</td><td>23008</td><td>扬声器无权限或者被占用</td><td>请确认应用是否获取音频播放的权限或者扬声器被占用</td></tr></tbody></table>
+
+# 发布 Track 相关错误码
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>枚举值</th><th>错误码</th><th>说明</th><th>处理方式</th></tr></thead><tbody><tr><td>Err_Invalid_Parameter</td><td>10053</td><td>非法参数</td><td>请检查待发布 Track 是否为本地 Track，并且不为空</td></tr><tr><td>Err_Invalid_State</td><td>21002</td><td>非法状态</td><td>请检查是否已经加入房间</td></tr><tr><td>Err_Fatal</td><td>21005</td><td>非预期错误</td><td>RTC 生命周期异常，需要释放资源并重新初始化</td></tr></tbody></table>
+
+# CDN 转推相关错误码
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>枚举值</th><th>错误码</th><th>说明</th><th>处理方式</th></tr></thead><tbody><tr><td>Err_No_Permission</td><td>10051</td><td>无操作权限</td><td>请检查用户的 token 签算权限</td></tr><tr><td>Err_Invalid_Parameter</td><td>10053</td><td>参数错误</td><td>请检查操作的参数是否合法</td></tr><tr><td>Err_Invalid_State</td><td>21002</td><td>状态异常</td><td>请检查房间状态，加入房间后才可以创建转推任务</td></tr><tr><td>Err_Network_Timeout</td><td>21004</td><td>操作超时</td><td>请重新尝试操作</td></tr><tr><td>Err_Fatal</td><td>21005</td><td>服务端错误</td><td>请重新尝试操作或者联系七牛技术支持同学协助定位</td></tr></tbody></table>
+
+# 跨房媒体转发相关错误码
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>枚举值</th><th>错误码</th><th>说明</th><th>处理方式</th></tr></thead><tbody><tr><td>Err_Relay_Token_Invalid</td><td>24000</td><td>Token 验证失败</td><td>请确认 Token 签算是否正确</td></tr><tr><td>Err_Relay_Already_Start</td><td>24001</td><td>已开启跨房</td><td>请勿重复操作</td></tr><tr><td>Err_Relay_Not_Start</td><td>24002</td><td>跨房没有开启</td><td>请先开启跨房再进行操作</td></tr><tr><td>Err_Relay_Destination_Room_Not_Existed</td><td>24003</td><td>目标房间不存在</td><td>请确认跨房的目标房间是否存在</td></tr><tr><td>Err_Relay_Player_In_Dest_Room</td><td>24004</td><td>用户不在目标房间内</td><td>请确认用户是否在目标房间内</td></tr><tr><td>Err_Relay_Start_Failed</td><td>24004</td><td>跨房开启失败</td><td>请确认跨房参数是否正确</td></tr><tr><td>Err_Invalid_Client_Mode</td><td>24006</td><td>使用场景不符</td><td>请切换到互动直播场景</td></tr><tr><td>Err_Invalid_Client_Role</td><td>24007</td><td>用户角色不符</td><td>请根据当前场景切换到指定角色再进行操作</td></tr></tbody></table></div></div>

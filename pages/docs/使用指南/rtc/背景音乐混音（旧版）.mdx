@@ -1,0 +1,36 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本部分介绍背景音乐混音功能的使用</p>
+<blockquote>
+<p>注意，自 SDK 4.2.0 版本开始，发布了新版本的混音功能，新版本混音功能支持多重音效且功能更强大，具体接入参考<a href="/rtc/12357/background-music-mix-web-new">混音功能（新版）</a>。</p>
+</blockquote>
+<p>用户可在连麦过程中通过混音功能添加背景音乐，支持 MP3、AAC 等格式的本地或在线音乐，使用方式如下：</p>
+
+# 创建 QNAudioMixer
+<p>SDK 当前仅支持基于 <a href="/rtc/api/9064/WebQNMicrophoneAudioTrack">QNMicrophoneAudioTrack</a> 的混音功能，因此，可以通过 <a href="/rtc/api/9064/WebQNMicrophoneAudioTrack">QNMicrophoneAudioTrack</a> 创建 <a href="/rtc/api/9066/WebQNAudioMixer">QNAudioMixer</a> 对象。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> filePath = <span class="hljs-string">&quot;/sdcard/music/example.mp3&quot;</span>;
+<span></span><span class="hljs-keyword">const</span> mAudioMixer = mMicrophoneAudioTrack.<span class="hljs-title function_">createAudioMixer</span>(filePath)
+<span></span></code></pre>
+<p><code>createAudioMixer</code> 不仅支持文件地址，同时还支持 AudioBuffer 与 File 类型。</p>
+
+# 混音控制
+<p>在创建了 <a href="/rtc/api/9066/WebQNAudioMixer">QNAudioMixer</a> 实例后，可以通过该实例提供的混音控制接口进行混音操作的控制，使用代码参考如下：</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// 开始混音</span>
+<span></span>mAudioMixer.<span class="hljs-title function_">start</span>();
+<span></span><span class="hljs-comment">// 停止混音</span>
+<span></span>mAudioMixer.<span class="hljs-title function_">stop</span>();
+<span></span><span class="hljs-comment">// 恢复混音</span>
+<span></span>mAudioMixer.<span class="hljs-title function_">resume</span>();
+<span></span><span class="hljs-comment">// 暂停混音</span>
+<span></span>mAudioMixer.<span class="hljs-title function_">pause</span>();
+<span></span><span class="hljs-comment">// 设置混音音量，默认值1</span>
+<span></span><span class="hljs-comment">// 0表示静音 1表示原始音量 </span>
+<span></span><span class="hljs-comment">// 建议设置范围：0-10 之间的浮点数</span>
+<span></span>mAudioMixer.<span class="hljs-title function_">setPlayingVolume</span>(volume);
+<span></span></code></pre>
+<p>上述为混音基本流程的控制，更多控制方式请参考 <a href="/rtc/api/9066/WebQNAudioMixer">QNAudioMixer</a>。</p>
+<blockquote>
+<p>当前<strong>仅支持一个麦克风 track 混一路音频</strong>，重复针对同一个麦克风 track 创建不同的 <a href="/rtc/api/9066/WebQNAudioMixer">QNAudioMixer</a> 并执行 start 操作，后面的会覆盖前面的，即以后执行 start 的音频混音控制器为准进行混音。</p>
+</blockquote>
+<h2 id="示例代码"><a href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>示例代码</h2>
+<p>背景音乐混音场景的示例代码可参考 <a href="https://github.com/pili-engineering/QNRTC-Web/tree/master/API-Examples-Web/audioMixing">API-Examples-Web/audioMixing</a></p></div></div>

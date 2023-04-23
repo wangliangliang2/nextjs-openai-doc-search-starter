@@ -1,0 +1,121 @@
+# 背景
+随着互联网的不断发展和智能设备的大规模普及，网络上的应用功能越来越多，受众群体也越来越广，在互联网文化内容极大丰富的同时，也产生了各种各样的难以控制的危险因素，具体包括色情、涉政、暴恐等各类违反社会稳定和谐、甚至危害国家安全的内容。随着政府对于不良信息监管日渐严格，每个网站和平台都在严肃对待和处理这些危险因素，而传统人力审核的方式处理网络上每天新产生的图片和视频变成了一个不可能完成的任务。
+
+
+RTC直接进行内容审核可以帮助用户进行实时音视频的内容审核
+# 1.接口说明
+
+入口地址
+Host: rtc.qiniuapi.com
+
+## 1.1创建任务
+POST /v3/apps/<appID>/rooms/<roomName>/scan_job
+
+认证方式
+使用七牛AK/SK签名认证
+
+请求参数
+
+|名称|类型|必需|描述|
+|-|-|-|-|
+|id|string|Y|任务ID|
+|playerId|string|Y|用户ID|
+|callBack|string|Y|回调地址|
+|tracks|string|Y|TrackID|
+|params|object|Y|截帧、审核参数|
+
+params参数
+|名称|类型|必须|描述|
+|-|-|-|-|
+|params.image.is_on|boolean|N|true/false，默认为false。图片审核和音频审核必须开启一个。|
+|params.image.scenes|array|N|图片审核类型，如果图片审核开启，则为必填字段，没有默认值，可选项：pulp terror politician ads。|
+|params.image.interval_msecs|int|N|截帧频率，如果图片审核开启，则为必填字段，单位：毫秒，取值范围为 1000 ～ 60000（即1s~60s）。|
+|params.image.saver.bucket|string|N|如果开启图片审核，则为必填字段，直播图片截帧文件存入的bucket，目前只支持存入七牛云华东的 bucket。如何创建七牛云bucket，请参见文档。|
+|params.image.saver.prefix|string|N|保存的图片截帧文件的前缀。|
+|params.image.hook_rule|int|N|图片审核结果回调规则，0/1。默认为0，返回判定结果违规的审核结果；设为 1 时，返回所有审核结果。|
+|params.audio.is_on|boolean|N|true/false，默认为false。图片审核和音频审核必须开启一个。|
+|params.audio.scenes|array|N|音频审核类型，如果音频审核开启，则为必填字段，没有默认值，目前可选项：antispam。|
+|params.audio.saver.bucket|string|N|如果开启音频审核，则为必填字段，直播音频截帧文件存入的bucket，目前只支持存入七牛云华东的 bucket。如何创建七牛云bucket，请参见文档|
+|params.image.saver.prefix|string|N|保存的音频截帧文件的前缀。|
+|params.audio.hook_rule|string|N|音频审核结果回调规则，0/1。默认为0，返回判定结果违规的审核结果；设为 1 时，返回所有审核结果。|
+
+请求示例
+POST /v3/apps/abcdefghi/rooms/room0/scan_job
+Host: rtc.qiniuapi.com
+Content-Type: application/json
+Authorization: Qiniu xxxxxxxxxxxx
+``` json
+{
+  "id": "job0",
+  "playerId": "player01",
+  "callBack": "http://test.callback.io/common-callback",
+  "tracks":[
+    {"trackId": "trackid1"},
+    {"trackId": "trackid2"}
+  ],
+  "params":{
+  "image": {
+    "is_on": true,
+    "scenes": [
+      "pulp",
+      "terror",
+      "politician"
+    ],
+    "interval_msecs": 2000,
+    "saver": {
+      "bucket": "live",
+      "prefix": "image/"
+    },
+    "hook_rule": 0
+  },
+  "audio":{
+    "is_on":true,
+    "scenes":[
+      "antispam"
+    ],
+    "saver":{
+      "bucket":"live",
+      "prefix":"audio/"
+    },
+    "hook_rule":0
+  }
+ }
+}
+
+```
+
+返回值: 
+``` json
+{"status":"OK","id":"job0"}
+```
+
+## 1.2删除识别任务
+
+DELETE /v3/apps/<appID>/rooms/<roomName>/scan_job/jobid
+
+请求参数
+|名称|类型|必须|描述|
+|-|-|-|-|
+|id|string|Y|任务ID|
+|playerId|string|Y|用户ID|
+
+请求示例
+``` json
+DELETE /v3/apps/abcdefghi/rooms/room0/scan_job/jobid
+Host: rtc.qiniuapi.com
+Content-Type: application/json
+Authorization: Qiniu xxxxxxxxxxxx
+{
+  "id": "job0",
+  "playerId": "player01"
+}
+```
+
+返回值: 
+``` json
+{"status":"OK","id":"job0"}
+```
+
+
+
+

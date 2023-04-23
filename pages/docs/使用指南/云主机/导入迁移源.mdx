@@ -1,0 +1,121 @@
+# 迁移源定义
+迁移源概指您的待迁移 IDC 服务器、虚拟机、其他云平台的云主机或其他类型的服务器。使用 QSMC 迁移时，您首先需要在迁移源上运行 QSMC 客户端，将迁移源导入并连接到您的七牛云账号，再登录 QSMC 控制台进行迁移。
+
+# 操作步骤
+
+## 1、下载SMC客户端
+在迁移源服务器中下载客户端，下载链接：[QSMC 下载](https://p2v-tools.oss-cn-hangzhou.aliyuncs.com/smc/Alibaba_Cloud_Migration_Tool.zip)
+
+## 2、解压SMC客户端。
+SMC客户端为Windows和Linux系统均提供32位和64位版本（i386表示32位，x86_64表示64位）。请根据迁移源的平台类型，选择相应的客户端版本。
+![image.png](https://dn-odum9helk.qbox.me/Fmg4WWV4CsNWelC2orPx6sYSGKRS)
+解压后文件夹中包含的目录和文件，如下图所示。
+![image.png](https://dn-odum9helk.qbox.me/FgrVRG9Um7UIp8XRB2n7f3UNx5bt)
+
+QSMC 客户端主要文件说明：
+| 文件（夹）名         | 描述                                              |
+|----------------------|---------------------------------------------------|
+| go2aliyun_client.exe | （Windows版本）命令行主程序。                     |
+| go2aliyun_gui.exe    | （Windows版本） GUI主程序。                       |
+| go2aliyun_client     | （Linux版本）命令行主程序。                       |
+| user_config.json     | 迁移源和迁移目标的配置文件。                      |
+| Excludes             | 排除不迁移文件目录的配置文件夹。                  |
+| client_data          | 迁移数据文件，包含 QVM 中转实例信息和迁移进度等。 |
+
+## 3、（可选）排除不迁移的文件或目录
+配置文件在SMC客户端的Excludes目录下，包括以下文件。如果配置文件缺失或被误删，您可自行创建相应文件。
+- 系统盘配置文件：rsync_excludes_win.txt（Windows系统）或rsync_excludes_linux.txt（Linux系统）
+
+- 数据盘配置文件：在系统盘的基础上以disk[磁盘索引编号]后缀命名，如rsync_excludes_win_disk1.txt（Windows系统）或rsync_excludes_linux_disk1.txt（Linux系统）
+
+### 配置示例一：为Windows服务器排除不迁移的文件或目录
+排除Windows路径时，您需要：
+- 去掉路径前缀（scr_path），例如去掉上述示例中的D:。
+- 将原路径中的\替换为/。
+
+**系统盘**
+待排除的文件或目录：
+``` 
+C:\MyDirs\Docs\Words
+C:\MyDirs\Docs\Excels\Report1.txt
+```
+在rsync_excludes_win.txt中添加内容：
+
+``` 
+/MyDirs/Docs/Words/
+/MyDirs/Docs/Excels/Report1.txt
+```
+**数据盘**
+待排除的文件或目录：
+``` 
+D:\MyDirs2\Docs2\Words2
+D:\MyDirs2\Docs2\Excels\Report2.txt
+```
+在rsync_excludes_win_disk1.txt中添加内容：
+``` 
+/MyDirs2/Docs2/Words2/
+/MyDirs2/Docs2/Excels2/Report2.txt
+```
+### 配置示例二：为Linux服务器排除不迁移的文件或目录
+排除Linux路径时需要去掉路径前缀（scr_path），例如去掉下述示例中的/mnt/disk1。
+
+**系统盘（根目录 /）**
+待排除的文件或目录为：
+``` 
+/var/mydirs/docs/words
+/var/mydirs/docs/excels/report1.txt
+```
+在rsync_excludes_linux.txt中添加内容：
+``` 
+/var/mydirs/docs/words/
+/var/mydirs/docs/excels/report1.txt
+```
+**数据盘**
+待排除的文件或目录为：
+``` 
+/mnt/disk1/mydirs2/docs2/words2
+/mnt/disk1/mydirs2/docs2/excels2/report2.txt
+```
+在rsync_excludes_linux_disk1.txt中添加内容：
+``` 
+/mydirs2/docs2/words2/
+/mydirs2/docs2/excels2/report2.txt
+```
+## 4、运行SMC客户端以导入迁移源信息。
+
+
+**Windows系统：**
+选择以下任一方式运行。
+- GUI版本：双击运行go2aliyun_gui.exe应用程序。
+- 命令行版本：双击运行go2aliyun_client.exe应用程序。
+
+![image.png](https://dn-odum9helk.qbox.me/Fquy5nnr3EpO2YZGHZguTrh3b7UF)
+
+在账号AK和账号SK文本框中，分别输入AccessKeyId和AccessKeySecret后，单击运行。
+
+
+**Linux系统：**
+根据迁移源操作系统对root权限和sudo权限的支持情况，选择运行方式。
+
+在go2aliyun_client所在目录下，使用root权限依次运行以下命令。
+``` 
+chmod +x go2aliyun_client
+./go2aliyun_client
+```
+
+在go2aliyun_client所在目录下，使用sudo权限依次运行以下命令。
+``` 
+sudo chmod +x ./go2aliyun_client
+sudo ./go2aliyun_client
+```
+
+输入访问密钥的AccessKeyId和AccessKeySecret，并按Enter键。
+![image.png](https://dn-odum9helk.qbox.me/Fi70IVNFYgJWBJZX5BJCeBwQdf4H)
+
+>  请勿关闭客户端直至迁移完成。否则，迁移源将与SMC控制台失去联系，无法完成迁移。
+查看 AccessKeyId 和 AccessKeySecret 可点击[管理密钥](https://portal.qiniu.com/qvm/system/keys)。
+
+
+当客户端界面提示Import Source Server [s-bxxxxxxxxxxxx] Successfully!时，表示迁移源信息成功导入QSMC控制台。
+
+第一次成功导入迁移源后，QSMC控制台会自动生成迁移源记录，迁移源状态为在线，默认迁移源名称为<迁移源主机名+迁移源IP地址>.

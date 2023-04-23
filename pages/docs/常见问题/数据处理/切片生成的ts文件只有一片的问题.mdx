@@ -1,0 +1,23 @@
+一般切片生成一片都是文件本身有问题，比如这个音频文件, 切片的时候可以指定参数/vn/1可修复，vn/1表示的是忽略视频流的信息。
+
+比如这个mp3文件:
+
+[http://dn-odum9helk.qbox.me/wjw/48min-66mb.mp3](http://dn-odum9helk.qbox.me/wjw/48min-66mb.mp3)
+
+这样切片生成的文件是只有一片的:
+
+avthumb/m3u8/segtime/10/ab/48k/ar/44100/acodec/libfaac/noDomain/1
+
+加一个vn/1参数再次切片是正常的:
+
+avthumb/m3u8/segtime/10/ab/48k/ar/44100/acodec/libfaac/noDomain/1/vn/1
+
+原因如下:
+
+Frame rate very high for a muxer not efficiently supporting it. 导致结果不符合预期
+
+因为此音频实际含有视频流  
+index":1,"codec\_name":"mjpeg","codec\_type":"video","start\_time":"0.025056","duration":"2884.075100","bit\_rate":"","nb\_frames":"","width":420,"height":420,"pix\_fmt":"yuvj444p","r\_frame\_rate":"90000/1","avg\_frame\_rate":"0/0","sample\_aspect\_ratio":"1:1","display\_aspect\_ratio":"1:1","tags":{},"Disposition":
+
+{"attached\_pic":1}
+

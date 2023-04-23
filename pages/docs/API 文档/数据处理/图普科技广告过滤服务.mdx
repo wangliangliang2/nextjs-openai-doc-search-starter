@@ -1,0 +1,147 @@
+广告过滤服务 ad 帮您判断保存在七牛云的图片是否属于广告。若您需要对存储在七牛云的图片进行审核过滤，那么本服务是非常简单高效的解决方案。**注意：**本接口无法判断带文字的图片是否属于广告，带文字图片的审核过滤请参阅[广告过滤服务增强版 (ad-plus)](/dora/api/advertising-filtering-service-enhanced-version-ad-plus)。
+
+本服务由广州图普网络科技有限公司（以下简称图普科技）提供。启用服务后，您存储在七牛云空间的文件将在您主动请求的情况下被提供给图普科技以供其计算使用。七牛不能保证鉴别结果的正确性，请您自行评估后选择是否启用。[服务价格](#ad-price)请您参考具体的价格表及[计费示例](#ad-pirce-example)，您使用本服务产生的费用由七牛代收。启用服务则表示您知晓并同意以上内容。
+
+**注意**：该功能目前仅支持华东的 bucket。
+<a id="ad-open"></a>
+# 开启服务
+
+如果您的文件存储在七牛云，则需先开启本服务。点此进入[七牛开发者平台](https://portal.qiniu.com/dora/thirdparty/create/ad/quickstart)，点击右上角**开始使用**按钮。
+如果您的文件存储在其他地方，则直接调用本接口。
+<a id="ad-request-syntax"></a>
+# 请求语法
+
+```
+GET <ImageDownloadURI>?ad HTTP/1.1
+Host: <ImageDownloadHost>
+```
+**注意：**当您下载私有空间的资源时，ImageDownloadURI 的生成方法请参考七牛的[下载凭证](/kodo/manual/download-token)。
+
+**示例：**资源为[http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg](http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg)，处理样式为 ad。
+
+```
+#构造下载URL
+DownloadUrl = 'http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg?ad'
+……
+#最后得到
+RealDownloadUrl = 'http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg?ad&e=×××&token=MY_ACCESS_KEY:×××'
+```
+
+<a id="ad-plus-request-header"></a>
+### 请求头部
+
+头部名称         | 必填 | 说明
+:------------- | :--- | :------------------------------------------
+Host           | 是   | 下载服务器域名，必须是七牛三级域名或自定义二级域名，参考七牛[自定义域名绑定流程](https://support.qiniu.com/hc/kb/article/68977/)
+
+<a id="ad-response-syntax"></a>
+# 响应语法
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-store
+
+{
+    // ...ad data...
+}
+```
+
+头部名称       | 必填 | 说明
+:------------- | :--- | :------------------------------------------
+Content-Type   | 是   | MIME 类型，固定为 application/json
+Cache-Control  | 是   | 缓存控制，固定为 no-store，不缓存
+
+
+<a id="ad-response-content"></a>
+### 响应内容
+
+* 如果请求成功，返回包含如下内容的 JSON 字符串 (已格式化，便于阅读)：  
+
+
+```
+{
+    "code": "<ResultCode         int>",
+    "message": "<ResultMessage   string>",
+    "fileList": [
+        {
+            "rate": <Rate        float>,
+            "label": <Category   int>,
+            "name": "<FileName   string>",
+            "review": <Review    boolean>
+        }
+    ],
+    "statistic": [
+        <Statistics              int>,
+        ...
+    ],
+    "reviewCount": <ReviewCount  int>,
+    "nonce": "<Nonce             string>",
+    "timestamp": "<Timestamp     int64>"
+}
+```
+
+字段名称        | 必填 | 说明                              
+:------------ | :--- | :--------------------------------------------------------------------
+code        | 是   | 处理状态，0: 调用成功，1: 授权失败，2: 模型 ID 错误，3: 没有上传文件，4: API 版本号错误，5: API 版本已弃用，6: secretId 错误，7: 任务 Id 错误，您的 secretId 不能调用该任务，8: secretId 状态异常，9: 尚未上传证书，100: 服务器错误，101: 未知错误
+message     | 是   | 与 code 对应的状态描述信息
+rate        | 是   | 介于 0-1 间的浮点数，表示该图像被识别为某个分类的概率值，概率越高，机器越肯定；您可以根据需求确定需要人工复审的界限
+label       | 是   | 表示该图像被机器判定为哪个分类，0: 正常，1: 二维码，2: 带文字图片，`-1`：说明该图片格式不被支持，或者图片有损坏等异常
+review      | 是   | 是否需要人工复审该图片，true: 需要，false: 不需要
+
+* 如果请求失败，请参考 **code** 和 **message** 字段说明。
+
+<a id="ad-samples"></a>
+# 服务示例
+
+在 Web 浏览器中输入以下图片地址：  
+
+```
+http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg?ad
+```
+
+返回结果 (内容经过格式化以便阅读)：
+
+```
+{ statistic: [ 1, 0, 0 ],
+  reviewCount: 1,
+  fileList:
+   [ { rate: 0.9999947547912598,
+       label: 0,
+       name: 'gyVSZ6_yFVA3dDsJItiqrQ==.resize',
+       review: false } ],
+  nonce: '0.0019572139717638493',
+  timestamp: 1435331445,
+  code: 0,
+  message: 'success'
+}
+```
+
+<a id="ad-price"></a>
+# 服务价格
+
+|                 | 确定部分      | 不确定部分       |
+|:---------------- | :------------ | :------------ |
+|      范围（张）   | 单价（元/百张） | 单价（元/百张）  |
+| 0 - 300万        |     0.25     |    0.0625     |
+| 300万 - 1500万   |     0.23     |   0.0575       |
+| 1500万 - 3000万  |     0.21     |    0.0525      |
+| > 3000万         |     0.18     |    0.045      |
+
+**注意：**
+
+ * 确定部分：准确度超过人工，无需 review（返回数据中 review 为 false）。
+ * 不确定部分：需要人工 review，但根据返回的参考值排序可以大大降低工作量（返回数据中 review 为 true）。
+
+<a id="ad-pirce-example"></a>
+# 计费示例
+
+某公司 2015 年 5 月使用七牛广告过滤服务，共发起 500 万次广告过滤请求，其中结果确定的次数为 480 万次，结果不确定的次数为 20 万次，则当月使用七牛广告过滤服务产生的费用为：
+
+确定的结果产生费用：0.25 元/百次 * 300 万次 + 0.23 元/百次 * (480 万次 - 300 万次) = 7500 元 + 4140 元 = 11640 元
+
+不确定的结果产生费用：0.0625 元/百次 * 20 万次 = 125 元
+
+总计费用：11640 元 + 125 元 = 11765 元
+
+[download-tokenHref]: http://developer.qiniu.com/article/developer/security/download-token.html  "下载凭证"

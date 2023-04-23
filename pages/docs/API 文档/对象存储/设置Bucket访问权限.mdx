@@ -1,0 +1,95 @@
+<a id="private-description"></a>
+# **描述** 
+
+本接口用于设置 Bucket 访问权限。目前 Bucket 有两种访问权限：公开和私有。创建 Bucket 时默认为公开空间。
+
+<br>
+
+<a id="private-requests"></a>
+# **请求**
+<a id="private-requests-syntax"></a>
+
+### **请求语法**
+
+```
+POST /private?bucket=<BucketName>&private=<Private> HTTP/1.1
+Host: uc.qiniuapi.com
+Content-Type: application/x-www-form-urlencoded
+X-Qiniu-Date: 20060102T150405Z
+Authorization: Qiniu <AccessToken>
+```
+
+<br>
+
+<a id="private-request-parameters"></a>
+### **请求参数**
+| 参数名称 | 必填 | 说明 |
+| --- | --- | --- |
+| bucket | 是 | 空间名称|
+| private | 是 |  <li>`0` 公开</li> <li>`1` 私有</li>|
+
+<br>
+
+<a id="private-request-headers"></a>
+### **请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](/kodo/api/3924/common-request-headers)。
+
+<br>
+
+### **请求内容**
+该请求操作的请求体为空。
+
+<br>
+
+<a id="private-responses"></a>
+# **响应**
+<a id="private-request-headers"></a>
+### **响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](/kodo/api/3924/common-request-headers)。
+
+<br>
+
+<a id="private-response-elements"></a>
+### **响应内容**
+该请求操作的响应体为空。
+
+<br>
+
+<a id="private-special-errors"></a>
+
+### **响应状态码**
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误响应](/kodo/api/3928/error-responses)。
+
+<br>
+
+<a id="private-examples"></a>
+
+# **示例**
+<a id="private-request-examples"></a>
+
+### **请求示例**
+```
+POST /private?bucket=test06&private=1 HTTP/1.1
+Host: uc.qiniuapi.com
+User-Agent: Go-http-client/1.1
+Content-Length: 23
+X-Qiniu-Date: 20060102T150405Z
+Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:YHLW5tnhbumBI56iQ0AzJdZONSY=
+Content-Type: application/x-www-form-urlencoded
+Accept-Encoding: gzip
+```
+<br>
+
+<a id="private-response-examples"></a>
+### **响应示例**
+```
+HTTP/1.1 200 OK
+Content-Length: 2
+Connection: keep-alive
+Content-Type: application/json
+Date: Mon, 02 Jan 2006 15:04:05 GMT
+Server: nginx
+X-Reqid: VBoAAJjbI4_ZmdsU
+
+{}
+```

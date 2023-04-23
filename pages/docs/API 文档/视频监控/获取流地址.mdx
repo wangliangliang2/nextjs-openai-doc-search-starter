@@ -1,0 +1,7 @@
+# **获取流地址**
+创建空间时时，需要选择是`静态地址`模式或`动态地址`模式，请根据空间设置的模式选择对应的接口获取流地址。
+
+|模式 |说明|
+|----|----|
+|静态地址|qvs域名系统用于实时的视频推流或播放,与客户在对象存储里配置的域名(视频回看)是独立的。 <br>通过配置域名的方式接入，流地址既可以通过api获取,在不开启时间戳防盗链时,`地址是固定的, 也可以自行拼装`。<br>拼装格式:<br>1.rtmp，推流和播放格式:"rtmp://推流或播放域名:2045/空间id/流id"。<br> 2.hls,http格式"http://播放域名:1240/空间id/流id.m3u8",https格式"https://播放域名:447/空间id/流id.m3u8"。<br>3.flv,http格式 "http://播放域名:1240/空间id/流id.flv",https格式"https://播放域名:447/空间id/流id.flv"。<br>4.webrtc, http环境 "webrtc://播放域名:1240/空间id/流id",https环境"webrtc://播放域名:447/空间id/流id"。<br>5.[流id规则](https://developer.qiniu.com/qvs/11878/use-the-stream-interface-is-required) <br>6.`https`环境播放实时视频流 需要2个条件, 1:提供域名,配置cname解析,[`如何配置cname?`](https://developer.qiniu.com/qvs/8746/configure-cname) 2.在qvs的域名管理界面,为该域名配置https证书。[`如何配置https证书?`](https://developer.qiniu.com/qvs/6925/qvs-https-configuration)<br>7.看不到域名配置管理界面?那是因为`新建空间`时,`模式`选择了动态地址,怎么办? 需要客户重建一个新空间，选择`静态地址`。客户如果不想新建空间时,需要提工单,我们在后台为客户转换空间模式.<br>
+|动态地址|无需配置域名，流地址全部为IP形式，需通过API获取实时的流地址。<br>适用场景：<br>1.测试阶段，快速验证。<br> 2.不想配置域名，能接受流地址通过API获取。<br> 3. http的播放环境。如果是`https`环境,`务必`使用上面的`静态地址` <br>**动态接入`不支持https`环境中播放, IP`不`固定，必须通过API获取最新流地址**

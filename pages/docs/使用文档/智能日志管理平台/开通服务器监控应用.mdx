@@ -1,0 +1,39 @@
+# **在目标监控机器上安装 logkit-pro**
+
+使用智能日志平台的服务监控应用监控机器，首先需要确保您的机器已经安装 logkit-pro，并`开启机器监控`。
+
+1.登录 [logkit-pro](http://logkit-pro.qiniu.com/)，进入机器管理页面，点击添加机器。
+
+![](https://pandora-kibana.qiniu.com/k8s/add_machine.png)
+
+2.手动安装：根据您机器的操作系统版本选择对应的命令，复制到命令行工具即可，如图所示：
+
+![](https://pandora-kibana.qiniu.com/k8s/addbyhand.png)
+
+![](https://pandora-kibana.qiniu.com/logkit/running.png)
+
+详细的安装文档可以阅读 [logkit-pro 安装](/insight/manual/4682/download-and-install) 。
+
+3.进入机器列表页，开启机器监控。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/logkit_open.png)
+
+或者，给机器安装好 logkit-pro 后，您可以直接打开智能日志平台，进入服务器监控应用，开启机器监控。
+
+![](https://pandora-kibana.qiniu.com/machineMonitor/open1.png)
+
+![](https://pandora-kibana.qiniu.com/machineMonitor/open2.png)
+
+`注意：`数据源名称 logkit_pro_internal 为 logkit-pro 收集机器数据发送到智能日志平台的默认数据源，一般情况下无需修改。
+
+# **在服务监控应用监控机器**
+
+这样，您就可以在服务监控应用监控机器资源与性能指标。
+
+进入[智能日志平台应用平台](https://portal.qiniu.com/insight/apps)，找到服务监控应用，点击`进入应用`。
+
+进入服务监控应用即可看到目标服务器监控视图。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/monitor_machine.png)
+
+

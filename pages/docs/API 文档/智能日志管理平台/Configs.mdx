@@ -1,0 +1,129 @@
+# **获取 config 列表**
+
+```
+GET /v1/api/configs?name=<tagName>&sort=<sortKey>&order=<order>&page=<pageNum>&size=<pageSize>&search=<search>
+```
+
+## **返回值**
+
+- 如果没有错误, 返回：
+
+```
+{
+    "configs":[
+        {
+            "name": "<config_name>",
+            "tags": ["tag1", "tag2"],
+            "config": {},
+            "note": "<config 备注>",
+            "timestamp": <timestamp>
+        },
+        ...
+    ],
+    "totalSize":<total_size>
+}
+```
+- 如果有错误则返回相应错误
+
+## **参数说明**
+
+- 参数 `sort`、`order` 会根据 `sort` 的值进行升序/降序排序，`order` 的值可以是 ascend/descend，`sort` 默认为 hostname，`order` 默认为 ascend
+- 参数 `search` 会对 hostname 进行搜索，将包含 `search` 值的结果搜索出来
+
+# **添加 config**
+
+```
+POST /v1/api/configs/<config_name>
+Content-Type: application/json
+{
+   "name": "<config_name>",
+   "tags": "["tag1", "tag2"]",
+   "config": <runner_config>,
+   "note": "<config 说明>"
+}
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误
+
+## **参数说明**
+
+- `name` 字段可有可无，最终会被链接中的 `<config_name>` 替换掉
+
+# **更新 config**
+
+```
+PUT /v1/api/configs/<config_name>/config
+Content-Type: application/json
+{
+   "config": <runner_config>,
+   "note": "<config 说明>"
+}
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误
+
+## **参数说明**
+
+- 当前仅支持更新 `config` 和 `note` 字段
+
+# **删除 config**
+
+```
+DELETE /v1/api/configs/<config_name>
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误
+
+# **删除多个 config**
+
+```
+POST /v1/api/configs/delete
+Content-Type: application/json
+[
+    "config1", "config2"
+]
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误
+
+# **分配 tags 给 config**
+
+```
+POST /v1/api/configs/<config_name>/tags
+Content-Type: application/json
+{
+   "tags": ["<tag1>", "<tag2>"]
+}
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误
+
+# **分发 config 到 agents**
+
+```
+POST /v1/api/configs/<config_name>/agents
+Content-Type: application/json
+{
+   "agent_ids": ["<agent_id1>", "<agent_id2>"]
+}
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误

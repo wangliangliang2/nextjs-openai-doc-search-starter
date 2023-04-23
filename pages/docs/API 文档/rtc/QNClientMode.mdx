@@ -1,0 +1,47 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                音视频通话使用场景，当前分为通信场景和互动直播场景，可通过 <a href='9090/WebQNRTCClient#setClientMode'>QNRTCClient.setClientMode</a> 方法进行设置，建议您根据不同需求选择适当的场景，以获取最佳使用体验。</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Enumeration members</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#RTC`)'>RTC</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#LIVE`)'>LIVE</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Enumeration members</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="RTC">
+RTC</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">RTC = 'RTC'</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>通信场景，用于常见的一对一通话或群聊，该场景中，所有用户均可以发布和订阅音视频轨道</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="LIVE">
+LIVE</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">LIVE = 'LIVE'</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>直播场景，有主播和观众两种用户角色，可以通过 <a href='9090/WebQNRTCClient#setClientRole'>QNRTCClient.setClientRole</a> 方法设置用户角色为主播或观众。主播可以发布和订阅音视频轨道，而观众只能订阅音视频轨道，无法发布。</p>
+    </div>
+<section class="rtc-doc-panel rtc-doc-describe-note">
+    <blockquote class="blockquote-warning">
+    <p>注意：直播场景中的用户角色默认为观众。如需发布音视频，必须将角色修改为主播。</p>
+    </blockquote>
+</section>
+</li>
+</ul>
+</section>
+</div>
+
+

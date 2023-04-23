@@ -1,0 +1,134 @@
+# 接口描述
+
+查询一段时间内目标直播空间、域名、区域的下行流量，延迟5分钟左右
+
+带宽数据可以从返回的流量数据`flow`转化，计算方法为`bandwidth=flow*8/300`
+
+# 请求参数
+
+```
+GET /statd/downflow?$hub=<hub>&$domain=<domain>&$area=<area>&begin=<begin>&end=<end>&g=<g>&group=<group>&select=flow
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/x-www-form-urlencoded 
+```
+
+| 参数        | 必填 | 描述                                                            |
+|-----------|----|---------------------------------------------------------------|
+|  begin    | 是  | 开始时间，支持格式：20060102、20060102150405                             |
+|  end      | 否  | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+|  g        | 是  | 时间粒度，可取值为 5min、hour、day、month                                 |
+|  group    | 是  | 按特定条件将返回数据分组，可取值为条件字段                                         |
+| $hub      | 否  | 直播空间名，条件字段，用于筛选符合条件的数据          |
+| $domain   | 否  | 域名，条件字段，用于筛选符合条件的数据            |
+| $area     | 否  | 区域，可取值为 cn(中国大陆)、hk(香港)、tw(台湾)、apac(亚太)、am(美洲)、emea(欧洲/中东/非洲)，条件字段，用于筛选符合条件的数据 |
+|  select   | 是  | 值字段，用于返回需要查询的数据。可选值为flow，流量，单位：byte。带宽可以从流量转换，公式为 带宽=流量*8/时间粒度，单位：bps       |
+
+
+# 返回数据
+
+<html>
+ <head></head>
+ <body>
+  <table> 
+   <thead class="ant-table-thead"> 
+    <tr> 
+     <th key="name">参数</th>
+    <th key="type">类型</th>
+     <th key="desc">描述</th>
+    </tr> 
+   </thead>
+   <tbody classname="ant-table-tbody">
+    <tr key="0-0">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> 统计返回</span></td>
+     <td key="1"><span>object[]</span></td>
+     <td key="2"><span style="white-space: pre-wrap">统计返回值</span></td>
+    </tr>
+    <tr key="0-0-1">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> time</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">时间</span></td>
+    </tr>
+    <tr key="0-0-2">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> values</span></td>
+     <td key="1"><span>map</span></td>
+     <td key="2"><span style="white-space: pre-wrap">数据<br>不使用分组查询时形式如："values":{"flow":4527162977}，其中"flow"对应select项<br>使用分组查询时形式如："values":{"SD":{"flow":4527162977}}，其中"SD"对应group项，"flow"对应select项</br></span></td>
+    </tr> 
+   </tbody> 
+  </table> 
+ </body>
+</html>
+
+# 示例
+
+## 不使用分组查询
+
+请求体:
+
+```
+GET /statd/downflow?$hub=test&begin=20210928&end=20210930&g=day&select=flow HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/x-www-form-urlencoded 
+```
+
+返回体:
+
+```
+200 OK
+
+[
+    {
+        "time": "2021-09-28T00:00:00+08:00",
+        "values":
+            {
+                "flow": 7150194752,
+            }
+    },
+    {
+        "time": "2021-09-29T00:00:00+08:00",
+        "values":
+            {
+                "flow": 7093777837,
+            }
+    }
+]
+```
+
+## 使用分组查询
+
+请求体:
+
+```
+GET /statd/downflow?$hub=test&begin=20210928&end=20210930&g=day&group=area&select=flow HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/x-www-form-urlencoded 
+```
+
+返回体:
+
+```
+200 OK
+
+[
+    {
+        "time": "2021-09-28T00:00:00+08:00",
+        "values":
+            {
+                "cn": {"flow": 7150194752}
+            }
+    },
+    {
+        "time": "2021-09-29T00:00:00+08:00",
+        "values":
+            {
+                "cn": {"flow": 7093777837}
+            }
+    }
+]
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

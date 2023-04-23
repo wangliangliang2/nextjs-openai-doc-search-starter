@@ -1,0 +1,37 @@
+kodo sender 会序列化接收到的数据，根据配置的文件分割带下（默认1G）和文件分割间隔（默认10min）将数据序列化成一个个文件块，直接发送直 kodo。
+![](https://dn-odum9helk.qbox.me/FmDjpvZ6SgErCHabXGMCtHkb_MTV)
+* kodo存储区域(`kodo_zone`): 七牛云存储的区域。
+
+* 云存储空间(`pandora_bucket_name`): 保存在七牛云存储的 bucket。
+
+* 云存储文件前缀(`pandora_kodo_prefix`): 保存在七牛云存储的文件前缀，默认是logkitauto/date=$(year)-$(mon)-$(day)/hour=$(hour)/min=$(min)/$(sec)，其中 $(XXX)会替换发送时间的值。
+
+* 七牛公钥(`pandora_ak`): 使用账号的 access key。
+
+* 七牛私钥(`pandora_sk`): 使用账号的 secret key。
+
+* 管道磁盘数据保存路径(ft_save_log_path): logkit 本地缓存日志的位置，启动 logkit 账号需要读写权限。
+
+打开高级选项会有以下字段可以配置:
+![](https://dn-odum9helk.qbox.me/Fubym7leIr0c2ocu4v7hbWo05duU)
+* 发送并发数量(`ft_procs`): 并发发送日志的个数。
+
+* 磁盘写入限速(`ft_write_limit`): 限制序列日志文件到本地的速度。
+
+* 同步meta到磁盘(`ft_sync_every`): 每序列化 ft_sync_every 次数数据到磁盘，则保存当前 sender 的元数据到磁盘，方便重启时恢复 sender 的信息。
+
+* 文件保存格式(`file_format_type`): 保存从解析传过来的文件格式，包含json、csv 和 test 格式，默认为 json。
+
+* 保存文件字段分割方式(`file_format_delimit`): 仅对文件保存格式(file_format_type)值为 csv 有效，为 csv 格式字段的分割符。
+
+* 文件分割大小(`pandora_kodo_rotate_size`): 当 logkit 会将文件大小满足 pandora_kodo_rotate_size 大小后，将当前正在序列化的文件关闭，放入传送队列进行传送，并重新使用一个新文件继续序列化后续的数据。
+
+* 文件分割间隔(`pandora_kodo_rotate_interval`): logkit 根据 pandora_kodo_rotate_interval 时间间隔，将当前正在序列化的文件关闭，放入传送队列进行传送，并重新使用一个新文件继续序列化后续的数据。
+
+
+
+
+
+
+
+

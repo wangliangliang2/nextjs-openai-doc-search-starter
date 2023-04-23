@@ -1,0 +1,236 @@
+## 示例
+
+系统环境：CentOS release 6.7 (Final)
+
+## 需求
+centos6.7编译安装nginx1.8.1
+
+## 准备
+
+### 安装依赖
+
+```shell
+yum install -y  gcc gcc-c++ autoconf automake zlib zlib-devel openssl openssl-devel pcre pcre-devel
+```
+
+### 下载安装包
+
+```shell
+cd /opt/software
+```
+```shell
+#download nginx
+wget -c http://nginx.org/download/nginx-1.8.1.tar.gz
+
+#download pcre
+wget -c https://sourceforge.net/projects/pcre/files/pcre/8.35/pcre-8.35.tar.gz
+
+#download zlib
+wget -c http://zlib.net/zlib-1.2.8.tar.gz
+
+#download openssl
+wget -c http://www.openssl.org/source/openssl-1.0.1i.tar.gz
+```
+
+### 解压包
+
+```shell
+tar zxvf nginx-1.8.1.tar.gz
+
+tar zxvf pcre-8.35.tar.gz
+
+tar zxvf zlib-1.2.8.tar.gz
+
+tar zxvf openssl-1.0.1i.tar.gz
+```
+
+### 添加用户
+```shell
+groupadd -r nginx
+
+useradd -r -g nginx nginx
+```
+
+## 编译安装
+```shell
+cd /opt/software/nginx-1.8.1
+```
+```shell
+./configure \
+--prefix=/opt/nginx \
+--user=nginx \
+--group=nginx \
+--with-http_ssl_module \
+--with-http_gzip_static_module \
+--with-http_stub_status_module \
+--with-http_realip_module \
+--pid-path=/var/run/nginx.pid \
+--with-pcre=/opt/software/pcre-8.35 \
+--with-zlib=/opt/software/zlib-1.2.8 \
+--with-openssl=/opt/software/openssl-1.0.1i
+
+make
+
+make install && echo OK
+```
+
+## 启动nginx
+
+### 正确性检查
+```shell
+#每次修改nginx配置文件后都要进行检查
+
+# /opt/nginx/sbin/nginx -t
+nginx: the configuration file /opt/nginx/conf/nginx.conf syntax is ok
+nginx: configuration file /opt/nginx/conf/nginx.conf test is successful
+```
+
+### 启动nginx
+```shell
+/opt/nginx/sbin/nginx
+```
+
+### reload nginx
+```shell
+/opt/nginx/sbin/nginx -s reload
+```
+
+---
+
+
+
+## 安装脚本
+
+*将以上步骤整合到一个脚本中来编译安装nginx*
+
+```shell
+vim nginx1.8.sh
+```
+
+```shell
+#!/bin/bash
+#install nginx-1.8.1
+
+#安装目录
+INSTALL_DIR=/opt/
+SRC_DIR=/opt/software
+
+[ ! -d ${INSTALL_DIR} ] && mkdir -p ${INSTALL_DIR}
+[ ! -d ${SRC_DIR} ] && mkdir -p ${SRC_DIR}
+
+# Check if user is root
+if [ $(id -u) != "0" ]; then
+    echo "Error: You must be root to run this script!!"
+    exit 1
+fi
+
+#安装依赖包
+for Package in wget gcc gcc-c++ autoconf automake zlib zlib-devel openssl openssl-devel pcre pcre-devel
+do
+	yum -y install $Package
+done
+
+Install_Nginx()
+{
+#更新版本信息
+NGINX="nginx-1.8.1"
+PCRE="pcre-8.35"
+ZLIB="zlib-1.2.8"
+OPENSSL="openssl-1.0.1i"
+
+NGINXFEATURES="--prefix=${INSTALL_DIR}nginx \
+--user=nginx \
+--group=nginx \
+--with-http_ssl_module \
+--with-http_gzip_static_module \
+--with-http_stub_status_module \
+--with-http_realip_module \
+--pid-path=/var/run/nginx.pid \
+--with-pcre=${SRC_DIR}/${PCRE} \
+--with-zlib=${SRC_DIR}/${ZLIB} \
+--with-openssl=${SRC_DIR}/${OPENSSL}
+"
+
+cd ${SRC_DIR}
+#下载所需安装包
+echo 'Downloading NGINX'
+if [ ! -f ${NGINX}.tar.gz ]
+then
+  wget -c http://nginx.org/download/${NGINX}.tar.gz
+else
+  echo 'Skipping: NGINX already downloaded'
+fi
+
+echo 'Downloading PCRE'
+if [ ! -f ${PCRE}.tar.gz ]
+then
+  wget -c https://sourceforge.net/projects/pcre/files/pcre/8.35/${PCRE}.tar.gz
+else
+  echo 'Skipping: PCRE already downloaded'
+fi
+
+echo 'Downloading ZLIB'
+if [ ! -f ${ZLIB}.tar.gz ]
+then
+  wget -c http://zlib.net/${ZLIB}.tar.gz
+else
+  echo 'Skipping: ZLIB already downloaded'
+fi
+
+echo 'Downloading OPENSSL'
+if [ ! -f ${OPENSSL}.tar.gz ]
+then
+  wget -c http://www.openssl.org/source/${OPENSSL}.tar.gz
+else
+  echo 'Skipping: OPENSSL already downloaded'
+fi
+
+echo '----------Unpacking downloaded archives. This process may take serveral minutes---------'
+
+echo "Extracting ${NGINX}..."
+tar xzf ${NGINX}.tar.gz
+echo 'Done.'
+
+echo "Extracting ${PCRE}..."
+tar xzf ${PCRE}.tar.gz
+echo 'Done.'
+
+echo "Extracting ${ZLIB}..."
+tar xzf ${ZLIB}.tar.gz
+echo 'Done.'
+
+echo "Extracting ${OPENSSL}..."
+tar xzf ${OPENSSL}.tar.gz
+echo 'Done.'
+
+#添加用户
+groupadd -r nginx
+useradd -r -g nginx nginx
+
+#编译
+echo '###################'
+echo 'Compile NGINX'
+echo '###################'
+cd ${SRC_DIR}/${NGINX}
+./configure ${NGINXFEATURES}
+make
+make install
+cd ../
+
+mkdir -p ${INSTALL_DIR}/nginx/conf/vhosts
+
+}
+
+Install_Nginx
+```
+
+
+
+安装方式：
+可将需下载的安装包一起上传至/opt/software后加快安装进度
+
+在/opt/software中执行安装脚本
+
+ 
+
+注意：如果将脚本复制到linux下，可能存在格式问题，通过  :set ff=unix 解决

@@ -1,0 +1,34 @@
+# QNIMChatServiceProtocol Protocol Reference
+
+Conforms to | NSObject  
+---|---  
+Declared in | QNIMChatServiceProtocol.h  
+  
+### `- messageStatusChanged:error:`
+
+消息发送状态发生变化
+
+`- (void)messageStatusChanged:(QNIMMessageObject *) _message_ error:(QNIMError
+*) _error_`
+
+#### Discussion
+
+消息发送状态发生变化
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- receivedMessages:`
+
+收到消息
+
+`- (void)receivedMessages:(NSArray<QNIMMessageObject*> *) _messages_`
+
+#### Discussion
+
+收到消息
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`

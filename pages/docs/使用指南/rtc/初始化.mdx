@@ -1,0 +1,33 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本部分介绍了实时音视频的初始化方式及其配置项。</p>
+<blockquote>
+<p>在加入房间前，需要使用 SDK 提供的 <a href="/rtc/11415/UniappQNRTC#configRTC">configRTC</a> 用来进行初始化配置。</p>
+</blockquote>
+<p>#默认配置初始化</p>
+<p>直接使用 <a href="/rtc/11415/UniappQNRTC#configRTC">QNRTC.configRTC</a> 默认配置进行初始化，示例代码如下：</p>
+<pre><code class="language-typescript"><span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">configRTC</span>()
+<span></span></code></pre>
+<p>若 默认配置无法满足您的场景需要，您可通过传入 <a href="/rtc/11385/UniappQNRTCConfiguration">QNRTCConfiguration</a> 对象进行自定义初始化配置。</p>
+<p>#设置媒体传输方式</p>
+<p>通过 policy 参数设置媒体传输方式，默认使用 UDP 传输。</p>
+<pre><code class="language-typescript"><span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">configRTC</span>({
+<span></span>    <span class="hljs-attr">policy</span>: QNRTCPolicy.<span class="hljs-property">forceTCP</span>
+<span></span>})
+<span></span></code></pre>
+<p>其中，媒体传输方式有如下几种，可根据实际情况自行选择：</p>
+<pre><code class="language-typescript"><span class="hljs-built_in">enum</span> QNRTCPolicy {
+<span></span>    forceTCP = <span class="hljs-string">&quot;forceTCP&quot;</span>,  <span class="hljs-comment">// 强制 tcp</span>
+<span></span>    forceUDP = <span class="hljs-string">&quot;forceUDP&quot;</span>,  <span class="hljs-comment">// 强制 udp</span>
+<span></span>    preferUDP = <span class="hljs-string">&quot;preferUDP&quot;</span>  <span class="hljs-comment">// 优先 UDP，不通的话自动改为 TCP</span>
+<span></span>}
+<span></span></code></pre>
+<p>#设置日志等级</p>
+<p>通过 logLevel 参数设置 SDK 的日志等级。</p>
+<pre><code class="language-typescript"><span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">configRTC</span>({
+<span></span>    <span class="hljs-attr">logLevel</span>: QNRTCLogLevel.<span class="hljs-property">error</span>
+<span></span>})
+<span></span></code></pre>
+<blockquote>
+<p>由于 uniapp 兼容 iOS 与 Android，除了上述两种自定义配置项，sdk 还提供了专属于 iOS 与 Android 的配置项，具体完整配置可参考 <a href="/rtc/11385/UniappQNRTCConfiguration">QNRTCConfiguration</a>。</p>
+</blockquote></div></div>

@@ -1,0 +1,20 @@
+批量获取下载外链，可以先列举出空间中的文件 key ，然后在 key 前拼接域名。具体方法：  
+1. 使用 [qshell](https://developer.qiniu.com/kodo/tools/1302/qshell) 工具的 [listbucket](https://github.com/qiniu/qshell/blob/master/docs/listbucket.md) 命令，列举出空间文件列表。输出结果示例：  
+```
+hello.jpg	1710619	FlUqUK7zqbqm3NPwzq2q7TMZ-Ijs	14209629320769140	image/jpeg  1  
+hello.mp4	8495868	lns2dAHvO0qYseZFgDn3UqZlMOi-	14207312835630132	video/mp4   0  
+hhh	1492031	FjiRl_U0AeSsVCHXscCGObKyMy8f	14200176147531840	image/jpeg  1  
+jemygraw.jpg	1900176	FtmHAbztWfPEqPMv4t4vMNRYMETK	14208960018750329	application/octet-stream	1   QiniuAndroid
+```  
+2. 过滤出第一列的 key ，并拼接域名。实现方法有很多，下面介绍一种：  
+在 linux 或 macOS 终端，执行如下命令：  
+```  
+$ cat fileList.txt | awk -F ' ' ' {print "http://domain/"$1}' > urlList.txt  
+```  
+urlList.txt 的输出结果：  
+```
+http://domain/hello.jpg  
+http://domain/hello.mp4  
+http://domain/hhh  
+http://domain/jemygraw.jpg
+```  

@@ -1,0 +1,46 @@
+**新功能**
+
+* [权限系统](/express/manual/6663/role-based-access-control)发布，支持角色继承、平台功能限制、仓库数据限制、搜索限制、用户管理。
+
+* APP 平台相关：
+
+	* 支持APP导出。[点此](/express/manual/6357/manual)了解详情。
+	
+	* 支持APP对象管理[点此](/express/manual/6357/manual)了解详情。
+	
+		* 查看APP对象，包括APP的提取规则、来源类型、视图、导航。
+		
+		* 编辑APP视图和导航类型的对象，其中导航栏支持交互式编辑。
+		
+	* input元素支持`<prefix>`、`<suffix>`、`<value-prefix>`、`<value-suffix>`、`<delimiter>`子元素。[点此](/express/extend/6568/input)了解详情。
+
+* 审计HTTP打点行为，数据进入"_internal"仓库。
+
+* HTTP监控上传支持在url中指定tag。[点此](/express/manual/6025/monitoring_upload)了解详情。
+
+* 仪表盘模板变量支持配置变量前缀、后缀字符串、分隔符。[点此](/express/manual/6056/dashboard)了解详情。
+
+
+**Bug修复**
+
+* 来源类型的时间戳配置在自动模式下，年份自动填充异常。
+
+* SPL 相关：
+
+	* mvexpand命令没有高亮提示。
+	
+	* replace命令对数据不生效。
+	
+	* 多分片情况下transaction命令搜索响应不稳定。
+
+	* regex 命令错误导致的空指针异常。
+	
+* 审计HTTP打点行为时，如果在发送response之前发生exception，会导致用于审计的Action信息丢失。
+
+* HTTP监控上传Token返回异常：http监控上传开启token，即使token错误，服务端也返回正确token。
+
+* 搜索任务出现404而搜索任务实际并没有停止。
+
+* 上传文件示例数据展示页面，过滤对日志条数不生效。
+
+* 用正则表达式方式提取字段的情况下，划词结果不稳定。

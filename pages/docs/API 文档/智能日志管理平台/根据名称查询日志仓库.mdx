@@ -1,0 +1,41 @@
+**请求语法**
+
+```
+GET /v5/repos/<RepoName>
+Authorization: Pandora <auth>
+```
+
+**请求内容**
+
+|参数|类型|必填|说明|
+|:---|:---|:---|:---|
+|RepoName|string|是|日志仓库名称|
+
+**响应报文**
+
+```
+200 OK
+{
+  "region": <Region>,
+  "retention": <Retention>
+  "schema": [
+    {
+      "key": <Key>,
+      "valtype": <ValueType>
+    },
+    ...
+  ],
+  "createTime": <CreateTime>,
+  "updateTime": <UpdateTime>
+}
+```
+
+**响应内容**
+
+|参数|类型|必填|说明|
+|:---|:---|:---|:---|
+|region|string|-|所属区域|
+|retention|string|-|存储时限|
+|schema|json|-|字段信息|
+|createTime|string|-|创建时间|
+|updateTime|string|-|更新时间|

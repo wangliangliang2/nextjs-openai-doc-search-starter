@@ -1,0 +1,20 @@
+当前的音视频应用必须面对各种不同的播放客户端，从 PC 端（Web）开始，到智能手机。这些播放客户端有不同的尺寸，因而需要不同的分辨率。视频不同的客户端也会有不同的网络环境，比如 PC 上通常都有 WiFi 或有线网络，有较高的带宽保证，而手机、平板电脑在室外时，使用 2G/3G 网络，往往带宽不足，或者不稳定。因而需要针对不同的网络环境采用不同的码率。
+
+HLS 本身所具备的的多码率播放能力对于音视频应用而言，提供了很大的方便。
+
+用户首先根据需要生成不同分辨率和码率的 HLS 视频，（生成的方法参考[在七牛云存储上播放 HLS](/kodo/kb/1339)）。这些不同分辨率的 HLS 视频都应当存放在同一个 bucket 中。然后构造出多码率的 m3u8 文件：
+
+    #EXTM3U
+        #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=15000000
+        http://test-hls.u.qiniudn.com/ultra-high.m3u8
+        #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=10000000
+        http://test-hls.u.qiniudn.com/high.m3u8
+        #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=5000000
+        http://test-hls.u.qiniudn.com/standard.m3u8
+        #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=2500000
+        http://test-hls.u.qiniudn.com/low.m3u8
+
+其中，ultra-high.m3u8、high.m3u8、standard.m3u8、low.m3u8 分别是已经生成的各种分辨率和码率的 HLS 视频。
+
+用户生成这个文件后，可以将其上传至 bucket，供以后使用。
+

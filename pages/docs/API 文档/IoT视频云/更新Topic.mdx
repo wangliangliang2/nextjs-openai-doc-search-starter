@@ -1,0 +1,99 @@
+# 描述
+该接口用于在指定的应用下修改自定义的Topic。
+
+# 请求
+**请求语法**
+
+```
+PATCH /v1/apps/<appid>/topics/<encodeTopic> HTTP/1.1
+Host: linking.qiniuapi.com
+Content-Type: application/json
+Authorization: <QiniuAdminToken>
+
+{
+  "operations":[
+    {
+      "op": "<replace|delete>",
+      "key": "<fieldName>",
+      "value": "<value>"
+    }
+   ]
+}
+```
+
+**请求参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|appid|是|string|设备所属应用的appid，设备名称只能由 4-200 位英文字母和数字组成|
+|encodeTopic|是|string|topic名称进行[URL安全的Base64编码](https://developer.qiniu.com/kodo/manual/1231/appendix#1)后得到的字符串|
+
+**请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+**请求元素**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|op|是|string|更该或删除某个属性，replace：更改，delete：删除|
+|key|是|string|要修改或删除的属性|
+|value|是|string|要修改或删除属性的值|
+
+# 响应
+**响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)
+**响应元素**
+
+```
+{
+  "topic": "udf/linking/v1/2akrar93dqurh/${device}/test111/",
+  "auth": 2,
+  "createdAt": 1570501777,
+  "updatedAt": 1570505703
+}
+```
+
+|参数名称|参数名称|
+|---|---|
+|topic|Topic的名称|
+|auth|设备对该Topic的操作权限<br>0:发布（pub）<br>1:订阅（sub）<br>2:发布和订阅（pub,sub）|
+|createdAt|创建时间|
+|updatedAt|更新时间|
+
+# 示例
+
+**请求示例**
+
+```
+PATCH /v1/apps/2akrar93dqurh/topics/dWRmL2xpbmtpbmcvdjEvMmFrcmFyOTNkcXVyaC8ke2RldmljZX0vdGVzdDExMS8= HTTP/1.1
+Host: linking.qiniuapi.com
+User-Agent: insomnia/6.6.2
+Authorization: QiniuStub uid=1810757928
+Content-Type: application/json
+Content-Length: 94
+
+ {
+ 	"operations":[
+     {
+       "op":"replace",
+       "key":"auth",
+       "value":2
+     }
+    ]
+ }
+```
+
+**响应示例**
+
+```
+HTTP/1.1 200 OK
+Content-Length: 114
+Content-Type: application/json
+X-Reqid: 5TIAAHMK--adjssV
+Date: Tue, 08 Oct 2019 03:35:03 GMT
+{
+  "topic": "udf/linking/v1/2akrar93dqurh/${device}/test111/",
+  "auth": 2,
+  "createdAt": 1570501777,
+  "updatedAt": 1570505703
+}
+```

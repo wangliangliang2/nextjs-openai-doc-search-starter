@@ -1,0 +1,35 @@
+跨域访问，或者说 JavaScript 的跨域访问问题，是浏览器出于安全考虑而设置的一个限制，即同源策略。当来自于 A 网站的页面中的 JavaScript 代码希望访问B网站的时候，浏览器会拒绝该访问，因为 A、B 两个网站是属于不同的域。
+
+在实际应用中，经常会有跨域访问的需求，比如用户的网站 a.website.com，后端使用了七牛云对象存储 Kodo 系统。在网页中提供了使用 JavaScript 实现的上传功能，但是在该页面中，只能向 a.website.com 发送请求，向其他网站发送的请求都会被浏览器拒绝。这样就导致用户上传的数据必须从 a.website.com 中转。如果设置了跨域访问的话，用户就可以直接上传到七牛云存储而无需从 a.website.com 中转。
+<br>
+
+
+
+
+# **跨域资源共享的实现**
+
+- 跨域资源共享（Cross-Origin Resource Sharing），简称 CORS，是 HTML5 提供的标准跨域解决方案，七牛云存储系统支持 CORS 标准来实现跨域访问。具体的 CORS 规则可以参考 W3C CORS 规范。其实现如下：
+   - CORS 通过 HTTP 请求中附带 Origin 的 Header 来表明自己来源域，比如上面那个例子，Origin 的 Header 就是 a.website.com。
+   - 服务器端接收到这个请求之后，会根据一定的规则判断是否允许该来源域的请求。如果允许，服务器在返回的响应中会附带上 Access-Control-Allow-Origin 这个 Header，内容为 a.website.com 来表示允许该次跨域访问。如果服务器允许所有的跨域请求，将 Access-Control-Allow-Origin 的 Header 设置为 * 即可。
+   - 浏览器根据是否返回了对应的 Header 来决定该跨域请求是否成功，如果没有附加对应的 Header，浏览器将会拦截该请求。如果是非简单请求，浏览器会先发送一个 OPTIONS 请求来获取服务器的 CORS 配置，如果服务器不支持接下来的操作，浏览器也会拦截接下来的请求。
+- 对象存储 Kodo 默认允许资源的跨域访问，会返回 Access-Control-Allow-Origin : * 的 Header 内容；同时提供了存储空间级别的 CORS 规则配置，添加规则后 Kodo 会根据已设定的规则来允许或者拒绝相应的跨域请求。
+   - Kodo 系统支持创建多条跨域访问规则，当收到跨域访问请求时，会依次检查每一条规则，使用第一条匹配的规则来允许请求并返回对应的 Header。
+   - 如果所有规则都匹配失败，则不附加任何 CORS 相关的 Header。
+   - CORS 规则匹配成功必须满足以下三个条件：
+      - 请求的 Origin 必须匹配一个允许来源项。
+     - 请求的方法（如 GET、PUT 等）或者 OPTIONS 请求的 Access-Control-Request-Method 头对应的方法必须匹配一个允许 Methods 项。
+     - OPTIONS 请求的 Access-Control-Request-Headers 头包含的每个 Header 都必须匹配一个允许 Headers 项。
+<br>
+
+# **具体说明**
+- CORS 相关的 Header 附加等都是浏览器自动完成的，用户不需要有任何额外的操作。CORS 操作也只在浏览器环境下有意义。
+- CORS 请求的通过与否和对象存储 Kodo 的身份验证是完全独立的，即对象存储 Kodo 的 CORS 规则仅仅是用来决定是否附加 CORS 相关的 Header 的一个规则。是否拦截该请求完全由浏览器决定。
+- 使用跨域请求的时候需要关注浏览器是否开启了 Cache 功能。当运行在同一个浏览器上分别来源于 a.website.com 和 b.website.com 的两个页面都同时请求同一个跨域资源的时候，如果 a.website.com 的请求先到达服务器，服务器将资源带上 Access-Control-Allow-Origin 的 Header 为 a.website.com 返回给用户。这个时候 b.website.com 又发起了请求，浏览器会将 Cache 的上一次请求返回给用户，此时 Header 的内容和 CORS 的要求不匹配，就会导致后面的请求失败。
+<br>
+
+
+# **操作方式**
+Kodo 支持通过控制台方式设置跨域资源共享。
+|支持的操作方式|参考文档|
+|-|-|
+|控制台|	[设置跨域资源共享](/kodo/development_guidelines/8539/set-the-cross-domain-resource-sharing)|

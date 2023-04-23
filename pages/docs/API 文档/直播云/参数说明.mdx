@@ -1,0 +1,76 @@
+# <span id="pubUrl">推拉流地址(pubUrl)详细参数</span>
+
+参数名称 | 是否必填 |字段类型 | 取值范围 | 说明
+ ---|---|---|---|---
+url | 必填项 |string | - | 流地址
+isp | 非必填项 |string | 电信，联通，移动 | 运营商，用于指定推拉流运营商ip，如果填写即为默认
+seek | 非必填项 |int | - | seek值
+videoType | 必填项 | 0:直播 1:点播 | 推流地址视频类型
+rtspType | 非必填项 | 0:rtsp udp, 1:rtsp tcp | 拉流rtsp的传输类型，0表示udp传输类型的rtsp流；1表示tcp传输类型的rtsp流，默认参数为0
+
+# <span id="pubFilter">过滤条件(pubFilter)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+area | string | 东北, 华北, 华中, 华东, 华南, 西北, 西南, 其它 | 地域，用于指定该地址的实例，执行任务
+isp | string | 电信，联通，移动 | 运营商，过滤包含该运营商的实例
+ips | string[] | pub对外ip地址 | ip地址列表，过滤包含该ip地址的实例
+
+
+# <span id="list">任务列表(list)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+taskID | string | - | 任务ID
+uid | int | - | 用户ID
+name | string | - | 任务名称
+desc | string | - | 任务描述
+sourceUrls | 对象数组 | - | 源地址信息
+forwardUrls | 对象数组 | - | 转推地址信息
+filter | 对象 | - | 任务过滤条件
+runType | string | normal 普通转推，seek seek转推 | 任务类型
+status | string | pending 初始状态, running, stopped, failed, finished | 任务状态
+deliverStartTime | int | - | 任务定时开始时间，单位：ms
+deliverStopTime | int | - | 任务定时关闭时间，单位：ms
+startTime | int | - | 任务开始时间，单位：ms
+stopTime | int | - | 任务停止时间，单位：ms
+loopTimes | int | - | 任务循环次数
+retry | int | - | 剩余重试次数
+retryTime | int | >=60 | 表示pub任务的总断流重试时间，pub任务转推中断后会在断流重试时间内不断进行重新连接，直至重连成功或者达到设定的总断流重试时间。在单位：s
+# <span id="history">任务历史(history)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+name | string | - | 任务名称
+startTime | int | - | 开始时间，ms
+stopTime | int | - | 开始时间，ms
+status | string | - | 任务状态
+message | string | - | 输出日志
+
+# <span id="preload">预加载(preload)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+enable | bool | - | 是否开启预加载
+preloadTime | int | 大于当前时间 | 预加载开始时间，ms，默认为定时任务开始时间前5min开始
+
+# <span id="statusCallback">pub任务状态通知(statusCallback)详细参数</span>
+
+参数名称 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---
+type | string | GET、FORM、JSON | 请求类型，为空表示不回调通知
+url | string |  | 用户自定义回调通知地址
+vars | map |  | 自定义配置回调参数，支持魔法变量（详见系统内置参数）
+
+# <span id="回调参数">系统内置参数(statusCallback)</span>
+
+参数Value | 说明
+ ---|---
+$(taskID) | pub任务id
+$(status) | pub任务状态
+$(startTime) | 最新一次pub任务开始时间
+$(stopTime) | 最新一次pub任务结束时间
+$(params) | pub任务运行参数
+
+
+

@@ -1,0 +1,49 @@
+# 请求路径
+> `POST` /v1/ess/group/:id/rule
+
+# 请求参数
+
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region_id | string | body | 是 | 地域 ID |
+| id | string | body | 是 | 伸缩组 ID |
+| scaling_rule_name | string | body | 是 | 伸缩组规则名称 |
+| cooldown | int | body | 否 | 伸缩规则的冷却时间，仅适用于简单伸缩规则，且此时该项必选。取值范围：0~86400，单位：秒。|
+| min_adjustment_magnitude | int | body | 否 | 伸缩规则最小调整实例数，仅当伸缩规则类型为SimpleScalingRule或StepScalingRule，且AdjustmentType为PercentChangeInCapacity时生效。 |
+| adjustment_value | int | body | 是 | 伸缩规则的调整值， 仅适用于简单伸缩规则，且此时该项必选。任何情况下，单次调整的ECS实例台数都不能超过 1000。不同调整方式对应的取值范围：QuantityChangeInCapacity：-500~500 PercentChangeInCapacity：-100~10000 TotalCapacity：0~1000。 |
+| adjustment_type | []string | body | 是 | 伸缩规则的调整方式，仅适用于简单伸缩规则，且此时该项必选。可选值： QuantityChangeInCapacity：增加或减少指定数量的ECS实例。 PercentChangeInCapacity：增加或减少指定比例的ECS实例。 TotalCapacity： 将当前伸缩组的ECS实例数量调整到指定数量。 |
+| scaling_rule_type | string | body | 是 | 伸缩规则类型。可选值： SimpleScalingRule：简单伸缩规则。根据调整方式（AdjustmentType）和调整值（AdjustmentValue）调整ECS实例数量。 TargetTrackingScalingRule：目标追踪伸缩规则。根据预定义监控（MetricName）项动态计算需要扩缩容的ECS实例数量，尽量将预定义监控项的指标值维持在目标值（TargetValue）附近。 StepScalingRule： 步进伸缩规则，根据阈值和指标值提供分步扩展方式。 默认值：SimpleScalingRule。 |
+| estimated_instance_warmup | int | body | 是 | 实例预热时间，适用于目标追踪伸缩规则和步进伸缩规则。处于预热状态的ECS实例将正常的加入伸缩组，但是期间将不会向云监控上报监控数据。 说明 动态计算需要扩缩容的ECS实例数量时，处于预热状态的实例不计入现有实例数量。 取值范围：0~86400，单位：秒，默认值：300。 |
+| predictive_scaling_mode | string | body | 否 |  预测规则的模式，取值范围： PredictAndScale：产生预测结果并创建预测任务。 PredictOnly：产生预测结果，但不会创建预测任务。 默认值：PredictAndScale。 |
+| metric_name | string | body | 否 |  预定义监控项，仅适用于目标追踪伸缩规则，且此时该项必选。可选值： CpuUtilization：平均CPU使用率 ClassicInternetRx：经典网络公网入流量平均值 ClassicInternetTx：经典网络公网出流量平均值 VpcInternetRx：VPC网络公网入流量平均值 VpcInternetTx：VPC网络公网出流量平均值 IntranetRx：内网入流量平均值 IntranetTx ：内网出流量平均值 |
+| disable_scale_in | int | body | 否 |  是否禁用缩容，仅适用于目标追踪伸缩规则。 |
+| target_value | string | body | 否 | 目标值，仅适用于目标追踪伸缩规则，且此时该项必选。TargetValue 最多保留小数点后三位，且必须大于 0。 |
+| initial_max_size | int | body | 否 | 伸缩组实例数上限，和PredictiveValueBehavior式结合使用。 默认值为伸缩组最大实例数。|
+| predictive_task_buffer_time | string | body | 否 | 预测规则自动创建的预测任务默认均在整点执行，您可以设置预启动时间提前执行预测任务，预先准备资源。取值范围：0~60。 默认值：0。 |
+| predictive_value_buffer | int | body | 否 | PredictiveValueBehavior为PredictiveValueOverrideMaxWithBuffer时生效，预测值会按照该比例增加，当增加后的值大于初始最大值时，会采用增加后的值。取值范围：0~100。 默认值：0。 |
+| predictive_value_behavior | string | body | 否 | 预测规则最大值处理方式。取值范围: MaxOverridePredictiveValue：初始最大值会覆盖预测值, 预测值大于初始最大值时，预测任务的最大值采用初始最大值; PredictiveValueOverrideMax：预测值会覆盖初始最大值, 预测值大于初始最大值时， 预测任务的最大值采用预测值; PredictiveValueOverrideMaxWithBuffer：预测值会附加一定比例, 预测值会按照PredictiveValueBuffer比例增加，当增加后的值大于初始最大值时，会采用增加后的值。 |
+| step_adjustment | []StepAdjustment | body | 否 | 分步步骤信息。仅适用于步进追踪伸缩规则，且此时该项必选 |
+
+### StepAdjustment 分步步骤配置
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| metric_interval_lower_bound | double | body | 否 | 分步步骤的下边界 |
+| metric_interval_upper_bound | double | body | 否 | 分步步骤的上边界 |
+| scaling_adjustment | int | body | 否 | 分步步骤对应的实例扩展数量 |
+
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| request_id | string | 是 | 请求记录 ID |
+
+
+
+# 示例
+### 正常返回示例
+```json
+{
+    "request_id": "504ce405-58d1-40b1-9674-40d7d3875d65"
+}
+```

@@ -1,0 +1,105 @@
+# **简介**
+
+**同步处理**，用于计算量较小可以快速返回结果的资源处理场景，很适合图片资源、文件资源的处理。您可以在 `访问文件URL时` ，添加一个或多个数据处理指令，以直接获取处理后的结果。
+
+- 比较典型的一个场景是 `图片查看`，客户端可以上传一张高精度的图片，然后在查看图片的时候根据屏幕规格生成缩略图。这样既可以明显降低网络流量，而且可以提高图片显示速度，还能降低移动设备的内存占用。
+
+
+
+下面描述同步处理的详细用法。
+
+
+
+# **请求报文**
+
+<a id="imagemogr2-request-syn"></a>
+
+## 请求语法
+
+```
+GET <imageDownloadURI>?<接口规格> HTTP/1.1
+Host: <imageDownloadHost>
+```
+
+<a id="imagemogr2-request-header"></a>
+
+## 头部信息
+
+| 头部名称 | 必填 | 说明                                                         |
+| -------- | ---- | ------------------------------------------------------------ |
+| Host     | 是   | 下载服务器域名，可为七牛三级域名或自定义二级域名，参考[七牛自定义域名绑定流程](https://support.qiniu.com/question/68977)。 |
+
+<a id="imagemogr2-response"></a>
+
+# **响应报文**
+
+<a id="imagemogr2-rsponse-syn"></a>
+
+## 响应语法
+
+```
+HTTP/1.1 200 OK
+Content-Type: <imageMimeType>
+
+<imageBinaryData>
+```
+
+<a id="imagemogr2-response-header"></a>
+
+## 头部信息
+
+| 头部名称      | 必填 | 说明                                                         |
+| ------------- | ---- | ------------------------------------------------------------ |
+| Content-Type  | 是   | MIME类型，成功时为图片的MIME类型，失败时为application/json。 |
+| Cache-Control |      | 缓存控制，失败时为no-store，不缓存。                         |
+
+<a id="imagemogr2-response-content"></a>
+
+## 响应内容
+
+- 如果请求成功，返回图片的二进制数据。  
+- 如果请求失败，返回包含如下内容的 JSON 字符串（已格式化，便于阅读）：  
+
+```
+{
+    "code":     <HttpCode  int>, 
+    "error":   "<ErrMsg    string>",
+}
+```
+
+| 字段名称 | 必填 | 说明                                                        |
+| -------- | ---- | ----------------------------------------------------------- |
+| code     | 是   | HTTP状态码，请参考[响应状态码](#imagemogr2-response-code)。 |
+| error    | 是   | 与HTTP状态码对应的消息文本。                                |
+
+<a id="imagemogr2-response-code"></a>
+
+## 响应状态码
+
+| HTTP状态码 | 含义                                                         |
+| ---------- | ------------------------------------------------------------ |
+| 200        | 处理成功。                                                   |
+| 400        | 请求报文格式错误。                                           |
+| 404        | 资源不存在。                                                 |
+| 599        | 服务端操作失败。如遇此错误，请将完整错误信息（包括所有的HTTP响应头部）[提交工单](https://support.qiniu.com/tickets/category) 给我们。 |
+
+
+
+# **示例**
+
+**原图**
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg)
+
+**针对该原图生成一张480x320大小的缩略图**
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageView2/2/w/320/h/480
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageView2/2/w/320/h/480)
+

@@ -1,0 +1,26 @@
+完整的App需配置以下内容，使app以视图的形式展示分析数据：
+
+* [来源类型和提取规则](/express/extend/6555/app-knowledge)：一个应用的数据通常为一种或者多种类型的日志，系统正确的识别并解析日志是后续业务和场景化展示的前提。您需要将应用相关的来源类型和解析规则添加到应用的配置文件，以便在创建应用的搜索和仪表盘时能使用配置文件中的来源类型和解析规则。
+
+* [视图页面](/express/extend/6556/views)：配置xml视图页面（您希望的数据展示形式）来展示您的分析数据。
+
+* [导航栏](/express/extend/6557/nav)：如果您的应用中包含多个视图页面，需配置导航栏指定每个页面的入口。
+
+此节介绍配置视图页面的方式。以添加仪表盘页面和搜索页面为例：
+
+**一. 在app中添加仪表盘页面**
+
+1.使用系统的仪表盘功能配置仪表盘，并导出仪表盘的xml文件至应用的目录下。
+
+* 使用 Pandora 2.0 的仪表盘功能配置应用程序所需的仪表盘，配置步骤参考[可视化手册](https://developer.qiniu.com/express/manual/6046/charts)。
+*  导出仪表盘 XML 文件。
+![](https://dn-odum9helk.qbox.me/FpBZkCb834F_5NLVXtFPBEAuLmmR)
+* 将仪表盘 XML 文件添加至应用的`[appname] >> default >> views`目录。
+
+2.在 XML 编辑器中编写仪表盘页面。语法请参考[dashboard](/express/extend/6595/dashboard-xml)
+
+**二. 在app中添加搜索页面**
+
+1. 在 XML 编辑器中编写搜索页面。语法请参考[event-search](/express/extend/6572/event-search)。
+
+2. 将编写好的搜索视图文件添加至应用的`[appname] >> default >> views`目录。

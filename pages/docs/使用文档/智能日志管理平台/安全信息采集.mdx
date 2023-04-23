@@ -1,0 +1,102 @@
+主机监控主要用于监控机器本身的一些信息，比如网络信息，端口信息，进程信息，登录信息，暴力破解信息。
+
+主机监控界面如下:
+
+![](https://dn-odum9helk.qbox.me/FjmFCIdakNdFkbV-STdzCJAlCc74)
+
+主机监控提供以下 5 种监控信息，每种监控信息说明如下：
+
+| 监控来源 | 描述       | 备注      |
+| :--------: | :--------: | :--------: |
+| 网络信息  | 主机上连接五元组信息    | 支持自定义的采集时间间隔，支持windows、linux、mac系统     |
+| 端口信息  | 主机上处于监听状态的端口快照    | 目前只监控了 TCP 协议的端口信息，支持windows、linux、mac系统   |
+| 进程信息  | 采集主机上的所有进程快照    |  支持自定义的采集时间间隔，支持windows、linux、mac系统  |
+| 登录信息  | 采集用户登录信息    | 仅支持 linux 系统，准实时数据，每隔 1 分钟增量采集一次   |
+| 暴力破解信息  | 采集登录失败的信息    | 仅支持 linux 系统，必须要 root 权限，准实时数据，每隔1分钟增量采集一次   |  
+
+* 网络信息监控字段
+
+| 字段 | 描述       | 示例      |
+| :--------: | :--------: | :--------: |
+| collet_time  | 采集的信息时间，每分钟采集一次，是该分钟的起始时间    | 2018-09-17T03:01:00Z     |
+| topic  | 主题，固定为 pandora_log_network    | pandora_log_network   |
+| ip  | 机器的 ip 地址，如果有多个网卡，返回的第一个 ip    |  1.1.1.1  |
+| src_ip  | 监听的 ip 地址，如果为 0.0.0.0 表示监听本机所有 ipv4 的网卡，::表示本机所有 ipv6 网卡    | 1.2.3.5   |
+| src_port  | 监听的端口    | 8000   |
+| dst_ip  | 建立连接的目的 ip    | 1.2.3.4   |
+| dst_port  | 建立连接的目的端口    | 32000   |
+| proto  | 主要有 tcp，tcp6，udp，udp6四种    | udp   |
+| proc_name  | 监听端口的进程名字    | logkit   |
+| proc_path  | 监听端口的进程路径    | /home/test/logkit   |
+| status  | 连接状态，见下面说明    | 1   |
+
+
+* 端口信息监控字段
+
+| 字段 | 描述       | 示例      |
+| :--------: | :--------: | :--------: |
+| collet_time  | 采集的信息时间，每分钟采集一次，是该分钟的起始时间    | 2018-09-17T03:01:00Z     |
+| topic  | 主题，固定为 pandora_log_port    | pandora_log_port   |
+| ip  | 机器的 ip 地址，如果有多个网卡，返回的第一个 ip    |  1.1.1.1  |
+| src_ip  | 监听的 ip 地址，如果为 0.0.0.0 表示监听本机所有 ipv4 的网卡，::表示本机所有 ipv6 网卡    | 127.0.0.1   |
+| src_port  | 监听的端口    | 8000   |
+| proto  | 监听的协议，仅支持 tcp 和 tcp6    | tcp   |
+| proc_name  | 监听端口的进程名字    | logkit   |
+| pid  | 监听的进程 id    | 1000   |
+
+* 进程信息监控字段
+
+| 字段 | 描述       | 示例      |
+| :--------: | :--------: | :--------: |
+| collet_time  | 采集的信息时间，每分钟采集一次，是该分钟的起始时间    | 2018-09-17T03:01:00Z     |
+| topic  | 主题，固定为 pandora_log_process    | pandora_log_process   |
+| ip  | 机器的ip地址，如果有多个网卡，返回的第一个 ip    |  1.1.1.1  |
+| cmdline  | 进程启动的命令    | ./logkit -f logkit.conf   |
+| pid  | 进程 id    | 1000  |
+| name  | 进程名称    | logkit   |
+| path  | 启动进程的应用的路径    | /home/test/logkit   |
+| md5  | 启动进程的应用的 md5，只支持小于 1M的文件    | 406ba6f56372d55d58beb532ee7195d0   |
+| pname  | 父进程的名字    | supervisord   |
+| start_time  | 进程启动时间    | 仅支持 linux 系统，准实时数据，每隔1分钟采集一次   |
+| user  | 进程所属用户    | test   |
+| uid  | 进程所属用户的 id    | 100  |
+
+* 登录信息监控字段
+
+| 字段 | 描述       | 示例      |
+| :--------: | :--------: | :--------: |
+| collet_time  | 采集的信息时间，每分钟采集一次，是该分钟的起始时间    | 2018-09-17T03:01:00Z     |
+| topic  | 主题，固定为 pandora_log_login    | pandora_log_login   |
+| ip  | 机器的ip地址，如果有多个网卡，返回的第一个 ip    |  1.1.1.1  |
+| warn_ip  | 客户端机器 ip    | 1.1.1.2   |
+| warn_port  | 客户端登录的端口    | pts   |
+| warn_user  | 客户端登录的用户名    | root   |
+| warn_count  | 在该分钟内同一个 ip 和端口使用同一用户登录的次数    | 2   |
+
+* 暴力破解信息日志字段
+
+| 字段 | 描述       | 示例      |
+| :--------: | :-------- :| :--------: |
+| collet_time  | 采集的信息时间，每分钟采集一次，是该分钟的起始时间    | 2018-09-17T03:01:00Z     |
+| topic  | 主题，固定为 pandora_log_violence    | pandora_log_violence   |
+| ip  | 机器的ip地址，如果有多个网卡，返回的第一个ip    |  1.1.1.1  |
+| warn_ip  | 客户端机器 ip    | 1.1.1.2   |
+| warn_port  | 客户端登录的端口    | pts   |
+| warn_user  | 客户端登录的用户名    | root   |
+| warn_count  | 在该分钟内同一个 ip 和端口使用同一用户登录的次数    | 2   |
+
+连接的状态说明
+
+| 状态值 | 描述       | 
+| :--------: | :--------: |
+| 1  | ESTABLISHED    |
+| 2  | SYN_SENT    |
+| 3  | SYN_RECV    |
+| 4  | FIN_WAIT1    |
+| 5  | FIN_WAIT2    |
+| 6  | TIME_WAIT    |
+| 7  | CLOSE    |
+| 8  | CLOSE_WAIT    |
+| 9  | LAST_ACK    |
+| 10  | LISTEN    |
+| 11  | CLOSING    |

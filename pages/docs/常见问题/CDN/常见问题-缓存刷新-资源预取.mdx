@@ -1,0 +1,91 @@
+# 简介
+&emsp;七牛默认使用 CDN 域名访问对象存储资源，如果您正在使用 **对象存储 / CDN 产品**，可能会涉及到资源的缓存/预取问题，本文列出了部分您可能需要了解的问题列表。
+<font color=#4671D5><a href="#Q0">Q：资源已经在源站删除，为什么还能访问？</a></font>
+<font color=#4671D5><a href="#Q1">Q：资源已经覆盖/重新上传，为什么还能访问到旧文件？</a></font>
+<font color=#4671D5><a href="#Q2">Q：如何刷新 CDN 缓存？</a></font>
+<font color=#4671D5><a href="#Q3">Q：刷新文件 和 刷新目录 分别是什么含义？</a></font>
+<font color=#4671D5><a href="#Q4">Q：刷新 和 文件预取 有什么区别？</a></font>
+<font color=#4671D5><a href="#Q6">Q：如何修改缓存时间？</a></font>
+<font color=#4671D5><a href="#Q7">Q：为什么已经上传的文件有时会出现404，等待一段时间就会正常？</a></font>
+<font color=#4671D5><a href="#Q8">Q：CDN 节点的缓存会实时和源站同步更新吗？</a></font>
+<font color=#4671D5><a href="#Q9">Q：如何查看刷新任务是否处理成功？</a></font>
+<font color=#4671D5><a href="#Q10">Q：为什么刷新任务已经执行成功，还是访问到旧缓存？</a></font>
+<font color=#4671D5><a href="#Q11">Q：CDN 访问为什么会存在缓存问题？</a></font>
+&emsp;
+&emsp;如果本文仍然无法解决您的问题，您也可以通过 **[工单系统](https://support.qiniu.com/tickets/new)** 将您的问题反馈给我们。
+
+
+
+
+-----
+<div id="Q0"></div>
+**Q:资源已经在源站删除，为什么还能访问？**
+&emsp;当前访问到了该资源在 CDN 节点的缓存。
+&emsp;资源从源站删除之后，缓存仍然会在 CDN 节点保存，所以用户仍然可以访问到，需要刷新 CDN 缓存。
+&emsp;说明：如果您使用了七牛的对象存储，默认绑定CDN加速域名，如果需要刷新缓存，请参考文档[刷新缓存的方法](https://developer.qiniu.com/fusion/kb/1325/refresh-the-cache-and-the-effect-of-time)
+
+<div id="Q1"></div>
+**Q:资源已经覆盖/重新上传，为什么还能访问到旧文件？**
+&emsp;当前访问到了旧文件在 CDN 节点的缓存。
+&emsp;在源站某个资源的内容变更之后，旧缓存仍然会在 CDN 节点保存，刷新 CDN 缓存即可重新回源获取资源。
+&emsp;说明：如果您使用了七牛的对象存储，默认绑定CDN加速域名，如果需要刷新缓存，请参考文档[刷新缓存的方法](https://developer.qiniu.com/fusion/kb/1325/refresh-the-cache-and-the-effect-of-time)
+
+<div id="Q2"></div>
+**Q:如何刷新 CDN 缓存？**
+&emsp;刷新缓存方法请参考文档[刷新缓存的方法](https://developer.qiniu.com/fusion/kb/1325/refresh-the-cache-and-the-effect-of-time)
+&emsp;方法1:  portal.qiniu.com 控制台刷新缓存，点击左侧 cdn — 刷新预取
+&emsp;方法2:  api 接口地址：https://developer.qiniu.com/fusion/api/1229/cache-refresh
+&emsp;方法3:  qshell命令行工具：https://developer.qiniu.com/kodo/tools/1302/qshell
+
+<div id="Q3"></div>
+**Q: 刷新文件 和 刷新目录 分别是什么含义？**
+&emsp;缓存刷新分为 刷新文件 和 刷新目录。
+* 刷新文件：是以单条url为单位进行缓存刷新。
+* 目录刷新：是以目录为单位，将该域名对应目录下的所有文件进行缓存刷新。
+
+<div id="Q4"></div>
+**Q: 刷新 和 文件预取 有什么区别？**
+&emsp;刷新的含义为清空缓存，预取的含义为主动进行缓存
+* 刷新后，所有 CDN 节点上对应的资源缓存失效，用户再次触发访问时，CDN 节点将执行回源拉取，刷新操作用于文件更新或删除后，保证用户能访问到最新资源。
+* 预取后，资源将被主动缓存到 CDN 节点，用户通过 CDN 访问对应预取过的资源时，不需要重复回源，可以提升用户的访问速度。
+
+<!--
+<div id="Q5"></div>
+**Q:如何强制回源，不读取 CDN 缓存？**
+&emsp;由于 CDN 上默认是根据url缓存的，可以在访问链接后加上 ?<随机数> ，如原始url为 http://a.com/1.txt ，那么访问 http://a.com/1.txt?<随机数字> 就可以强制进行回源了，如果您的资源更新频率较高，可以在cdn配置中，修改资源的缓存时间。
+**`注意：`**
+&emsp;1. 使用该方法强制回源的域名不能配置 忽略 URL 参数 ，否则随机数无效。
+&emsp;2. 随机数也会被缓存，需要强制回源时尽量不使用重复的随机数测试。
+-->
+<div id="Q6"></div>
+**Q:如何修改缓存时间？**
+&emsp;如果需要部分前缀或后缀文件不缓存，可以在控制台-域名管理中，修改该域名的缓存配置为自定义，根据您的业务需求设置缓存时间。修改完成后，节点对新的缓存将会依据配置进行，如需清空旧配置情况时已触发的缓存，可以尝试刷新目录缓存。
+
+<div id="Q7"></div>
+**Q:为什么已经上传的文件有时会出现404，等待一段时间就会正常？**
+&emsp;如果在文件上传完成之前触发访问，会报错 404 ，404 默认会缓存 10 秒左右，如果重复请求该资源，会在上传完成后 10 秒内访问正常.
+
+<div id="Q8"></div>
+**Q:CDN 节点的缓存会实时和源站同步更新吗？**
+&emsp;CDN 缓存更新依赖主动触发刷新任务，或者根据控制台配置的缓存有效时间，过期后重新回源拉取，默认情况下不会主动更新。
+
+<div id="Q9"></div>
+**Q:如何查看刷新任务是否处理成功？**
+&emsp;方法1:可以在控制台 - cdn - 刷新预取 - 操作记录中查看
+&emsp;方法2:调用CDN的接口查询，文档参考 [刷新查询](https://developer.qiniu.com/fusion/api/1229/cache-refresh#4).
+
+<div id="Q9"></div>
+**Q:提交任务报错 [403023] urls admin submitted belong to more than one user**
+&emsp;提交刷新/预取任务的域名必须是当前账户在 CDN 域名管理中已经创建的域名，无法刷新其他账户或未创建的域名.
+
+<div id="Q10"></div>
+**Q:为什么刷新任务已经执行成功，还是访问到旧缓存？**
+&emsp;1. 检查本地浏览器缓存是否清空，可以尝试更换浏览器或者无痕模式。
+&emsp;2. 确认下访问 URL 是否携带了其他参数，刷新时是否连带参数进行刷新。
+&emsp;3. https 和 http 部分场景下独立缓存，如果之前刷新的是 https 链接，并且用 http 访问过该资源，可以再尝试刷新 http 的链接试下。
+
+<div id="Q11"></div>
+**Q:CDN 访问为什么会存在缓存问题？**
+&emsp;CDN 服务利用多级缓存原理进行加速，所以通过 CDN 的访问默认都会被缓存。
+
+

@@ -1,0 +1,127 @@
+平台支持用户通过插件的形式实现自定义API的逻辑，下面以Python SDK为例说明如何进行自定义API开发。
+
+## 安装 Python 环境
+
+自定义API 需要Python 3.8+ 以上的环境，以及 pip 包管理工具。非常建议使用 [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/) 或者 [pipenv](https://github.com/pypa/pipenv) 等工具来管理你的Python 环境。
+
+
+## 安装Pandora Python SDK
+
+确认安装完整的Python 环境，并且安装好 pip 包管理工具。执行如下命令
+
+```shell
+sudo pip install pdr_python_sdk
+```
+
+创建模板应用，执行如下命令，注意填写你的APP英文名字和标题。
+
+```shell
+create_pandora_app --name <APP英文名字> --title <APP的标题>
+```
+
+
+## 配置自定义API的配置项
+
+在demo/resources/customapis 查看api.json，文件配置如下，可以按照需求进行修改：
+
+```javascript
+{
+    "prefix":"/test",       // api请求的路径，支持最长路径匹配
+    "env":"python3",        // 运行的环境
+    "filename":"api_example.py",    // 实现自定义api的脚本，脚本位于应用的 bins 目录下
+    "method":["GET","PUT"]  // api请求的方法
+}
+```
+
+## 编写自定义API脚本
+
+详细内容参考[SDK帮助手册](/express/sdk/7282/custom-operators-sdk) 获取Python SDK，然后在bins目录下可以查看api_example.py 脚本。注意我们继承了 OnDemandApi 类型，并且覆盖了 do_handle_data 接口，在接口中实现了我们API的业务逻辑：
+
+```python
+import sys
+import os
+
+# add library to python path , don't forget it
+lib_name = 'libs'
+sys.path.insert(0, os.path.sep.join([os.path.dirname(os.path.abspath(__file__)), lib_name]))
+
+from pdr_python_sdk.api.on_demand_api import OnDemandApi
+from pdr_python_sdk.api.response import Response
+from pdr_python_sdk.on_demand_action import run
+
+
+class ApiExample(OnDemandApi):
+
+    def do_handle_data(self, data):
+        """
+        TODO: Implement your own business logic
+
+        :param data: http request
+        :return:
+        """
+        if not data.contains_request():
+            raise Exception('api data should contain request details')
+
+        request = data.request()
+        if 'GET' != str.upper(request.method()):
+            return Response(405, {"status": "method is not get"}).to_string()
+
+        return Response(200, {"status": "ok"}).to_string()
+
+
+if __name__ == '__main__':
+    run(ApiExample, sys.argv, sys.stdin.buffer, sys.stdout.buffer)
+
+```
+
+## 运行单元测试
+
+在项目中运行命令，可以执行在 bins/tests 目录下的单元测试代码，保障我们APP的质量。
+
+
+```shell
+./run.sh unittest
+```
+
+
+## 打包并安装APP
+
+将我们的应用项目打包，如果运行成功的话，应用的包将会出现在 dist 目录下：
+
+```shell
+./run.sh package 
+
+$ ls dist 
+scientific_app.tar.gz
+```
+
+去pandora 2.0的应用商店的“应用管理”界面上传APP 的程序包，或者可以执行以下命令，自动上传：
+
+```shell
+export PANDORA_PORT=<PANDORA端口>
+export PANDORA_SCHEME=<https|http>
+export PANDORA_TOKEN=<PANDORA访问Token>
+export PANDORA_HOST=<PANDORA服务IP或者域名>
+
+./run.sh upload
+```
+
+
+
+## 测试API
+
+手动发送api请求：
+
+```shell
+curl host:ip/custom/v1/demo/test
+```
+
+注意URL的组成模式是： 
+
+```
+host:ip/custom/v1/${APP_NAME}/${API_PREFIX}
+
+其中 
+APP_NAME 是 APP的唯一标示名称
+API_PREFIX 是在文件 resources/customapis 目录下的配置文件中 prefix 字段指定的API前缀
+```

@@ -1,0 +1,133 @@
+【系统环境：CentOS-6.6-x86_64】
+
+【rsync的详细介绍请看：[rsync - 维基百科](https://zh.wikipedia.org/zh-cn/Rsync)】
+
+【CentOS-6.6默认安装rsync-3.0.6】
+
+#检查rsync
+检查是否已安装rsync，使用命令：
+`rpm -qa|grep rsync`    或    `whereis rsync`
+
+![](https://dn-odum9helk.qbox.me/FpsFS2abFYdFETf35AcKaACE92Sy)
+
+
+如未安装，可下载rsync-3.0.6.tar.gz相应版本
+
+```
+tar zxvf rsync-3.0.6.tar.gz
+cd rsync-3.0.6
+./configure --prefix=/usr/local/rsync //指定安装位置，默认为/usr/bin/rsync
+make && make install
+```
+安装完成！
+
+#rsync服务器端配置
+##1.创建配置文件rsyncd.conf
+rsyncd.conf文件配置需要手动创建
+
+` vim /etc/rsyncd.conf`
+
+```
+uid = nobody
+gid = nobody
+use chroot = no
+max connections = 10
+strict modes = yes
+pid file = /var/run/rsyncd.pid
+lock file = /var/run/rsync.lock
+log file = /var/log/rsync.log
+
+[module1]
+path = /backupdir
+comment = rsync file
+ignore errors
+read only = no
+write only = no
+hosts allow = 192.168.77.146,192.168.77.148
+hosts deny = *
+list = false
+uid = root
+gid = root
+auth users = backup
+secrets file = /etc/server.pass
+exclude = test1/ 
+```
+
+```
+uid，此选项指定当该模块传输文件时守护进程应该具有的用户ID，默认值是“nobody”。
+gid，此选项指定当该模块传输文件时守护进程应该具有的用户组ID，默认值是“nobody”。
+max connections，此选项指定模块的最大并发连接数量，以保护服务器。超过限制的连接请求将被暂时限制。默认值是0，即没有限制。
+strict modes，此选项指定是否检查口令文件的权限，yes为检查口令文件的权限，反之为no。如果设置为yes，密码文件的权限必须为root用户权限。
+pid file，此选项用来指定rsync守护进程对应的PID文件路径。
+lock file，此选项用来指定支持max connections的锁文件，默认值是/var/run/rsyncd.lock。
+log file，此选项指定了rsync的日志输出文件路径。
+[module1],表示定义一个模块 的开始，module1就是该模块的名称。
+path，此选项用来指定要备份的文件或目录，是必须设置的项。这里指定的目录为/backupdir。
+comment,此选项用来指定一个描述，该描述连同模块名在客户连接得到模块列表时显示个客户。
+ignore errors，表示可以忽略一些无关的I/O错误。
+read only，设置为no表示客户端可以上传文件，设置为yes表示只读。
+write only，设置为no表示客户端可以下载文件，设置为yes表示不能下载。
+hosts allow，设置可以连接rsync服务器的主机，“*”标志允许连接任何主机。
+hosts deny，设置禁止连接rsync服务器的主机地址。
+list，此选项用于设定当客户机请求可以使用的模块列表是，该模块是否被列出。默认值是true，如果需要建立隐藏的模块，可以设置为false。
+vauth users，此选项用来定义可以连接该模块的用户名，多个用户以空格或逗号分隔开。需要注意的是，这里的用户和Linux的系统用户没有任何关系。这里指定的用户是backup。
+secret file，此选项用于指定一个包含“用户名：密码”格式的文件，用户名就是“auth users”选项定义的用户，密码可以随便指定，这里设为123456.只要和客户端的secret file对应起来即可。只有在auth users被定义时，该文件才起作用。系统默认没有这个文件，自己手动创建一个即可。
+exclude,排除目录，多个之间使用空格隔开。
+```
+
+##2.创建secrets file  /etc/server.pass
+`vim /etc/server.pass`
+` backup:123456`
+修改权限为600
+` chmod 600 /etc/server.pass`
+
+##3.启动rsync守护进程
+- ` /usr/bin/rsync --daemon`
+
+![](https://dn-odum9helk.qbox.me/FvueIgCzstS6IiwLnQweiL9jDHyp)
+
+注：如使用putty，xshell终端操作,为保证终端断开进程仍然执行，只用以下命令
+`nohup /usr/bin/rsync --daemon`
+
+- 开机自启动
+echo "/usr/bin/rsync --daemon" >> /etc/rc.local
+
+- 配置iptables
+`vi /etc/sysconfig/iptables`
+增加:
+`-A INPUT -m state --state NEW -m tcp -p tcp --dport 873 -j ACCEPT`
+重启iptables
+`service iptables restart`
+#rsync客户端配置
+
+- 在备份机（客户端）上不用做任何设置，只需执行rsync同步操作即可。为了在同步过程中不用输入密码，需要在备份机上创建一个secret file，该文件的内容为服务端rsyncd.conf文件中“auth users”选项指定用户的密码，而这个文件的名称和路径可以随意指定，只要在执行rsync同步时指定即可。
+
+   `vim /etc/server.pass`
+   `123456`
+  修改权限：
+  `chmod 600 /etc/server.pass`
+
+- 执行同步操作
+
+	```
+/usr/bin/rsync -vzrtopg --delete --progress --exclude "*access*" --exclude "debug*" backup@192.168.77.147::module1 /test --password-file=/etc/server.pass
+	```
+	各参数的含义：
+	```
+在 “-vzrtopg"选项中，v是“--verbose”，即详细模式输出；z表示“--compress”，即在传输时对备份的文件进行压缩处理；r表示“--recursive”，也就是对子目录以递归模式处理；t即“--times”，用来保持文件时间信息；0即“--owner”，用来保持文件属主信息；p即“--perms”，用来保持文件权限；g即“--group”，用来保持文件的属组信息。
+“--delete”选项指定以rsync服务器端为基准进行数据镜像同步，也就是要保持rsync服务端目录与客户端目录的完全一致。
+“--progress”选项用于显示数据镜像的同步过程。
+“--exclude”选项用于排除不需要传输的文件类型。
+“backup@192.168.77.147::module1”表示对服务器192.168.77.147中的module1模块进行备份，也就是指定备份的模块。backup表示使用“backup”这个用户对该模块进行备份。
+“/test”用于指定备份文件在客户端机器上的存放路径。也就是将备份的文件存放在备份机的/test目录下。
+“--password-file=/etc/server.pass"用来指定客户机上存放密码文件的位置，这样在客户机执行同步命令时就无需输入交互密码。注意，这个密码文件的名称和位置可以随意指定，但是在客户端主机上必须存在此文件，文件的内容仅仅为备份用户的密码，这里指定的是backup用户的密码。
+```
+
+- 设置定时备份策略（每天凌晨3：30自动执行备
+在备份机执行crontab -e,然后添加如下信息份操作）
+
+	```
+30 3 * * * /usr/bin/rsync -vzrtopg --delete --progress --exclude "*access*" --exclude "debug*" backup@192.168.77.147::module1 /test --password-file=/etc/server.pass
+
+	```
+

@@ -1,0 +1,65 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>自 v4.1.0 版本，Web SDK 新增跨房媒体转发功能。</p>
+<p>跨房媒体转发允许主播不离开自己的所在的房间，仅通过信令的操作，转发自己的音视频到其他的房间。七牛 RTC SDK 支持同时转发多路至多个房间（具体按照设备状况以及网络状况决定）。依赖此功能，可以很方便的实现直播过程中的连麦，小班课等业务。</p>
+
+# 场景角色配置
+<p>场景 <a href="https://developer.qiniu.com/rtc/11357/QNClientMode-Web">QNClientMode</a>：</p>
+<ul>
+<li><code>QNClientMode.LIVE</code>: 用于互动直播场景，可以通过设置角色来控制权限。主播可以发布和订阅音视频，观众仅能订阅音视频。</li>
+<li><code>QNClientMode.RTC</code>: 用于通信场景，所有人都可以发布自己的音视频，不可设置角色。</li>
+</ul>
+<p>角色 <a href="https://developer.qiniu.com/rtc/11358/QNClientRole-Web">QNClientRole</a>：</p>
+<ul>
+<li><code>QNClientRole.BROADCASTER</code>: 主播角色，拥有发布和订阅音视频的权限。</li>
+<li><code>QNClientRole.AUDIENCE</code>: 观众角色，仅有订阅音视频的权限。</li>
+</ul>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> client = <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createClient</span>();
+<span></span>
+<span></span><span class="hljs-keyword">await</span> client.<span class="hljs-title function_">setClientMode</span>(<span class="hljs-title class_">QNClientMode</span>.<span class="hljs-property">LIVE</span>);
+<span></span><span class="hljs-keyword">await</span> client.<span class="hljs-title function_">setClientRole</span>(<span class="hljs-title class_">QNClientRole</span>.<span class="hljs-property">BROADCASTER</span>)
+<span></span>
+<span></span><span class="hljs-keyword">await</span> client.<span class="hljs-title function_">join</span>(<span class="hljs-string">&quot;xxx&quot;</span>);
+<span></span></code></pre>
+<p>注意，场景仅可在加入房间之前设置，角色在加入房间之前或者之后均可设置。</p>
+
+# 跨房媒体转发
+<p>针对跨房媒体转发，SDK 提供了开始（<a href="https://developer.qiniu.com/rtc/9090/WebQNRTCClient#startMediaRelay">startMediaRelay</a>）、更新（<a href="https://developer.qiniu.com/rtc/9090/WebQNRTCClient#updateMediaRelay">updateMediaRelay</a>）和停止（<a href="https://developer.qiniu.com/rtc/9090/WebQNRTCClient#stopMediaRelay">stopMediaRelay</a>）三个接口。</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// 转发目标房间名称及房间 token</span>
+<span></span><span class="hljs-keyword">const</span> relayConfig = { <span class="hljs-attr">destRoomInfos</span>: [
+<span></span>    { <span class="hljs-attr">roomName</span>: <span class="hljs-string">&quot;destRoomName1&quot;</span>; <span class="hljs-attr">roomToken</span>: <span class="hljs-string">&quot;destRoomToken1&quot;</span>; },
+<span></span>    { <span class="hljs-attr">roomName</span>: <span class="hljs-string">&quot;destRoomName2&quot;</span>; <span class="hljs-attr">roomToken</span>: <span class="hljs-string">&quot;destRoomToken2&quot;</span>; },
+<span></span>]}
+<span></span>
+<span></span><span class="hljs-comment">// 开始转发</span>
+<span></span><span class="hljs-keyword">const</span> relayResult = <span class="hljs-keyword">await</span> client.<span class="hljs-title function_">startMediaRelay</span>(relayConfig);
+<span></span></code></pre>
+<p>开始转发成功后，会自动将自己在原房间发布的所有媒体流发布到目标房间中。目标房间的用户会正常收到新用户加入和新用户发布新媒体流的通知。</p>
+<p>更新转发的接口使用方法类似，只需要指定想要转发的目标房间信息即可。此方法为全量更新，正在跨房媒体转发中却未被包含在参数中的房间，将停止媒体转发。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> relayConfig = { <span class="hljs-attr">destRoomInfos</span>: [
+<span></span>    { <span class="hljs-attr">roomName</span>: <span class="hljs-string">&quot;destRoomName2&quot;</span>; <span class="hljs-attr">roomToken</span>: <span class="hljs-string">&quot;destRoomToken2&quot;</span>; },
+<span></span>    { <span class="hljs-attr">roomName</span>: <span class="hljs-string">&quot;destRoomName3&quot;</span>; <span class="hljs-attr">roomToken</span>: <span class="hljs-string">&quot;destRoomToken3&quot;</span>; },
+<span></span>]}
+<span></span>
+<span></span><span class="hljs-comment">// 更新转发</span>
+<span></span><span class="hljs-keyword">const</span> relayResult = <span class="hljs-keyword">await</span> client.<span class="hljs-title function_">updateMediaRelay</span>(relayConfig);
+<span></span></code></pre>
+<p>最后就是停止转发。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> relayResult = <span class="hljs-keyword">await</span> client.<span class="hljs-title function_">stopMediaRelay</span>();
+<span></span></code></pre>
+
+# 转发状态通知
+<p>除了在调用媒体转发接口后的 promise 返回后，如果转发过程中发生各种情况，可以通过监听 <a href="https://developer.qiniu.com/rtc/9090/WebQNRTCClient#media-relay-state-changed">media-relay-state-changed</a> 事件获取转发状态通知。</p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;media-relay-state-changed&quot;</span>, <span class="hljs-function">(<span class="hljs-params">roomName: <span class="hljs-built_in">string</span>, state: QNMediaRelayState</span>) =&gt;</span> {
+<span></span>    <span class="hljs-comment">// ...</span>
+<span></span>});
+<span></span></code></pre>
+<p>跨房媒体转发状态<a href="/rtc/11353/QNMediaRelayState-Web">QNMediaRelayState</a></p>
+<ul>
+<li>成功 SUCCESS(0)</li>
+<li>主动退出 STOPPED(1)</li>
+<li>无效token INVALID_TOKEN(2)</li>
+<li>目标房间不存在 NO_ROOM(3)</li>
+<li>目标房间已关闭 ROOM_CLOSED(4)</li>
+<li>目标房间存在相同用户名的用户 PLAYER_EXISTED(5)</li>
+</ul></div></div>

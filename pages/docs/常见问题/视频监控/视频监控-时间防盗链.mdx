@@ -1,0 +1,50 @@
+时间戳防盗链通过使用约定的加密字符串来对具有访问有效期的资源链接进行一些加密计算得到一个 token 值，然后访问外链里面带上这个 token 和截止时间戳去访问七牛qvs节点，七牛qvs节点会用同样的算法来计算访问链接是否合法，如果不合法则返回403 Forbidden，否则返回所要访问的资源。
+
+# **签算token说明**
+**操作步骤：**
+1. 获取鉴权 key
+操作说明：请参考[域名管理](https://developer.qiniu.io/qvs/manual/6784/namespace-management#2)
+开启时间防盗链开关，设置key即可，可自动生成亦可手动输入。
+![](https://dn-odum9helk.qbox.me/Fkp_Aw9NvV8Y8DXDbJ9ehSVJ9iyK)
+2. 设置过期时间(unixtimestamp)
+3. 签名token生成过程: 通过上面两步生成中间串 s = key+url_base64_encode(path)+e  key为第一个步获取的key, path为为请求流的播放path,e为第二步中unix 时间戳的十六进制表示, 然后
+token = md5(s).to_lower(), 其中 to_lower() 表示生成的 md5 字符串用小写字母表示
+
+
+**签名参数传递方式：**
+例如播放地址是：
+http://qvs-live-hdl.qiniu.com:2045/3k5ndkiqvggnz/stream1.flv
+
+最终形成的播放地址是：
+http://qvs-live-hdl.qiniu.com:2045/3k5ndkiqvggnz/stream1.flv?token=xxxx&e=xxxx
+
+**参考实例:**
+需要获取一个当前时间5分钟后过期的防盗链签名 url.
+
+播放地址为: http://qvs-live-hdl.qiniu.com:2045/3k5ndkiqvggnz/stream1.flv
+portal上已经开启了时间戳防盗链, 设置了主密钥key为123
+假设当前时间的时间戳为: 1590468504
+过期时间是5分钟后, 所以过期时间戳为: 1590468504 + 5 * 60 = 1590468804
+换算为16进制: 5ecca0c4 (一定要全小写)
+即参数 e=5ecca0c4
+
+中间字符串的生成规则是: S= key + url_base64_encode(path) + t
+key 是设置时输入的密钥, 这里是 key=123
+path 是 URL 中的 path 部分, URL是http://qvs-live-hdl.qiniu.com:2045/3k5ndkiqvggnz/stream1.flv, 则 path=/3k5ndkiqvggnz/stream1.flv
+
+所以 S=123LzNrNW5ka2lxdmdnbnovc3RyZWFtMS5mbHY=5ecca0c4
+
+** 注：本文提到的 url_base64_encode 算法，都是base64安全编码，下同**
+
+再用 md5算法 token = md5(S).to_lower()
+得到: 
+     token=74e0b06fce024b4743bca95bd62b2fe0
+     e=1590468804
+所以最终生成的5分钟后过期的播放地址是: http://qvs-live-hdl.qiniu.com:2045/3k5ndkiqvggnz/stream1.flv?token=74e0b06fce024b4743bca95bd62b2fe0&e=1590468804
+
+# **快速接入**
+为了方便用户可以快速的接入测试，视频监控portal中提供了地址生成器，可以快速生成带时间戳的防盗链的推拉流地址。
+
+**说明：** 需要保证的选择的域名已经开启了时间防盗链功能，否则生成的地址为不带时间防盗链的地址。
+![](https://dn-odum9helk.qbox.me/FoQeUBzcGsQOuwgr6COUklihrzPF)
+

@@ -1,0 +1,130 @@
+# 接口描述
+
+查询一段时间内目标直播空间、转码配置的转码时长，延迟10分钟左右
+
+# 请求参数
+
+```
+GET /statd/codec?$hub=<hub>&$profile=<profile>&begin=<begin>&end=<end>&g=<g>&group=<group>&select=duration
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/x-www-form-urlencoded  
+```
+
+| 参数          | 必填       | 描述                                                            |
+|-------------|----------|---------------------------------------------------------------|
+|  begin      | 是        | 开始时间，支持格式：20060102、20060102150405                             |
+|  end        | 否        | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+|  g          | 是        | 时间粒度，可取值为 5min、hour、day、month                                 |
+|  group      | 是        | 按特定条件将返回数据分组，可取值为条件字段                                         |
+| $hub        | 否        | 直播空间名，条件字段，用于筛选符合条件的数据                                   |
+| $profile    | 否        | 转码配置，条件字段，用于筛选符合条件的数据                                |
+|  select     | 是        | 值字段，用于返回需要查询的数据。可选值为duration：转码时长，单位：毫秒                 |
+
+# 返回数据
+
+<html>
+ <head></head>
+ <body>
+  <table> 
+   <thead class="ant-table-thead"> 
+    <tr> 
+     <th key="name">参数</th>
+    <th key="type">类型</th>
+     <th key="desc">描述</th>
+    </tr> 
+   </thead>
+   <tbody classname="ant-table-tbody">
+    <tr key="0-0">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> 统计返回</span></td>
+     <td key="1"><span>object[]</span></td>
+     <td key="2"><span style="white-space: pre-wrap">统计返回值</span></td>
+    </tr>
+    <tr key="0-0-1">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> time</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">时间</span></td>
+    </tr>
+    <tr key="0-0-2">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> values</span></td>
+     <td key="1"><span>map</span></td>
+     <td key="2"><span style="white-space: pre-wrap">数据<br>不使用分组查询时形式如："values":{"duration":4527162977}，其中"duration"对应select项<br>使用分组查询时形式如："values":{"SD":{"duration":4527162977}}，其中"SD"对应group项，"duration"对应select项</br></span></td>
+    </tr> 
+   </tbody> 
+  </table> 
+ </body>
+</html>
+
+# 示例
+
+## 不使用分组查询
+
+请求体:
+
+```
+GET /statd/codec?$hub=test&$profile=480p&$profile=720p&begin=20210928&end=20210930&g=day&select=duration HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/x-www-form-urlencoded  
+```
+
+返回体:
+
+```
+200 OK
+
+[
+    {
+        "time": "2021-09-28T00:00:00+08:00",
+        "values":
+            {
+                "duration": 86463553,
+            }
+    },
+    {
+        "time": "2021-09-29T00:00:00+08:00",
+        "values":
+            {
+                "duration": 86400154,
+            }
+    }
+]
+```
+
+## 使用分组查询
+
+请求体:
+
+```
+GET /statd/codec?$hub=test&$profile=!480p&begin=20210928&end=20210930&g=day&group=profile&select=duration HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/x-www-form-urlencoded 
+```
+
+返回体:
+
+```
+200 OK
+
+[
+    {
+        "time": "2021-09-28T00:00:00+08:00",
+        "values":
+            {
+                "720p": {"duration": 86463553}
+            }
+    },
+    {
+        "time": "2021-09-29T00:00:00+08:00",
+        "values":
+            {
+                "720p": {"duration": 86400154}
+            }
+    }
+]
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

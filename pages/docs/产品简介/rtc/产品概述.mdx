@@ -1,0 +1,311 @@
+七牛实时音视频(QRTC)，是基于七牛在直播产品上的积累，结合连麦 SDK、自研实时互动流媒体网络，以及强大的云端能力，为客户提供跨平台、高品质的一站式实时互动直播解决方案。基于七牛云 QRTC，零基础搭建音视频平台，快速支持一对一视频通话、多人会议、连麦直播、语音互动等多种业务场景。</br>
+
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+<blockquote>
+目前，QRTC 有新旧两套版本并行：</br>
+<ul>
+<li>新版本：4.x 及之后的版本</li>
+<li>旧版本：3.x 及之前的版本</li>
+</ul>
+其中，新版本是基于旧版本进行了接口重构的版本，新版本接口结构更清晰，接入更简单。若无特殊需求，我们建议您使用新版本 SDK 进行接入，对于正在使用旧版 SDK 的开发者，可以参考各端的迁移指南，进行版本迁移。
+</br>当前文档站为 <a href="https://developer.qiniu.com/rtc/8802/pd-overview">新版本的开发文档</a>。本文将为您提供目录索引，以便您能更好更快的了解实时音视频产品的接入方式。
+</br>若有需要，您仍可查看 <a href="https://doc.qnsdk.com/rtn">3.x 及之前版本的开发文档</a>
+</br>
+</br>
+注意：5.x 版本是基于 4.x 版本开发的重构版本，SDK 使用了统一的 C++ RTC 内核, 保证了 QRTC 在各个端上处理逻辑的一致性，同时接口和 4.x 完全兼容。若您使用的是 4.x 的版本，可直接进行升级；若您使用的 3.x 及之前的版本，可参考各端的迁移指南，进行版本迁移。
+</blockquote>
+</div>
+
+<video id="video" controls="false" preload="auto" style="height:100%;width:100%">
+      <source id="mp4" src="https://docs.qnsdk.com/RTC_%E5%BC%95%E5%AF%BC%E8%A7%86%E9%A2%91.mp4" type="video/mp4"></source>
+
+# 从 3.x 向 4.x 版本迁移
+
+<table>
+    <tr>
+        <td width="20%"><a href="https://developer.qiniu.com/rtc/9394/migration-guide-android">Android 迁移指南</a></td>
+        <td width="20%"><a href="https://developer.qiniu.com/rtc/9538/migration-guide-iOS">iOS 迁移指南</a></td>
+        <td width="20%"><a href="https://developer.qiniu.com/rtc/9531/migration-guide-web">Web 迁移指南</a></td>
+        <td width="20%"><a href="https://developer.qiniu.com/rtc/9605/migration-guide-window">Windows 迁移指南</a></td>
+        <td width="20%"><a href="https://developer.qiniu.com/rtc/11145/migration-guide-wxapp">WXApp 迁移指南</a></td>
+    </tr>
+</table>
+
+
+# 产品说明
+
+<table>
+    <tr>
+        <td width="33%">产品简介</td>
+        <td width="33%">产品动态</td>
+        <td width="33%">购买指南</td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/8802/pd-overview">产品概述</a></td>
+        <td><a href="https://developer.qiniu.io/rtc/9399/update-log-android">Android 更新日志</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/8804/pd-price">价格说明</a></td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/10155/process">接入流程</a></td>
+        <td><a href="https://developer.qiniu.io/rtc/9672/update-log-iOS">iOS 更新日志</a></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/8803/pd-function">核心功能</a></td>
+        <td><a href="https://developer.qiniu.io/rtc/9677/update-log-for-web">Web 更新日志</a></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/10077/app-scenarios">应用场景</a></td>
+        <td><a href="https://developer.qiniu.io/rtc/9673/update-log-windows">Windows 更新日志</a></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/11151/update-log-for-wxapp">WXapp 更新日志</a></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/11850/update-log-for-uniapp">Uniapp 更新日志</a></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/11852/linux-update-the-solstice">Linux 更新日志</a></td>
+        <td></td>
+    </tr>
+
+</table>
+
+
+# 快速入门
+
+<table>
+    <tr>
+        <td width="12.5%">控制台</td>
+        <td width="12.5%">Android</td>
+        <td width="12.5%">iOS</td>
+        <td width="12.5%">Web</td>
+        <td width="12.5%">Windows</td>
+        <td width="12.5%">WXApp</td>
+        <td width="12.5%">Uniapp</td>
+        <td width="12.5%">Linux</td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/10069/the-console-shows">控制台说明</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/8764/an-overview-of-the-android-sdk">SDK 概览</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/8830/an-overview-of-the-ios-sdk">SDK 概览</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9478/an-overview-of-the-web-sd">SDK 概览</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9536/windows-overview-of-the-sdk">SDK 概览</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11118/an-overview-of-the-wxapp-sd">SDK 概览</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11847/an-overview-of-the-uniapp-sdk">SDK 概览</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11364/sdk-overview-linux">SDK 概览</a></td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/9858/applist">管理实时音视频</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/8765/prepare-android-development">开发准备</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/8831/prepare-ios-development">开发准备</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9476/prepare-web-development">开发准备</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9537/windows-preparation">开发准备</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11119/prepare-wxapp-development">开发准备</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11848/prepare-uniapp-development">开发准备</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11365/preparation-linux">开发准备</a></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/8766/quick-start-android">快速开始</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9255/quick-start-iOS">快速开始</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9477/quick-start-websit">快速开始</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9543/windows-rtc-quick-start">快速开始</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11120/quick-start-wxapp">快速开始</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11849/quick-start-uniapp">快速开始</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11366/quick-start-linux">快速开始</a></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/10493/browser-support">浏览器兼容性说明</a></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+</table>
+
+
+# 使用指南
+
+<table>
+    <tr>
+        <td width="12.5%">Android</td>
+        <td width="12.5%">iOS</td>
+        <td width="12.5%">Web</td>
+        <td width="12.5%">Windows</td>
+        <td width="12.5%">服务端</td>
+        <td width="12.5%">WXApp</td>
+        <td width="12.5%">Uniapp</td>
+        <td width="12.5%">Linux</td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/8727/initialization-android">初始化</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9257/user-guidance-iOS">初始化</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9386/user-guidance-web">初始化</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9545/user-guidance-windows">初始化</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/8805/server-overview">服务端说明</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11146/user-guidance-wxapp">初始化</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11837/initialization-uniapp">初始化</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11368/initialization-linux">初始化</a></td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/8767/audio-and-video-collection-android">音视频采集</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9258/audio-and-video-collection-iOS">音视频采集</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9387/audio-and-video-collection-web">音视频采集</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9546/audio-and-video-collection-windows">音视频采集</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/8812/serversdk">服务端 SDK</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11147/room-management-wxapp">房间管理</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11838/audio-and-video-collection-uniapp">音视频采集</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11371/media-capture-linux">音视频采集</a></td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/8768/room-management-android">房间管理</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9261/room-management-iOS">房间管理</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9465/room-management-web">房间管理</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9547/room-management-windows">房间管理</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/8813/roomToken">roomToken</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11148/publish-and-subscribe-wxapp">发布和订阅</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11841/room-management-uniapp">房间管理</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11373/room-management-linux">房间管理</a></td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/8769/publish-and-subscribe-android">发布和订阅</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9260/publish-and-subscribe-iOS">发布和订阅</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9467/publish-and-subscribe-website">发布和订阅</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9548/publish-and-subscribe-windows">发布和订阅</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/8814/api-app">应用管理</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11149/turn-the-cdn-push-wxapp">CDN 转推</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11843/publish-and-subscribe-uniapp">发布和订阅</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11372/publish-subscribe-linux">发布和订阅</a></td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/8770/turn-the-cdn-push-android">CDN 转推</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9262/turn-the-cdn-push-iOS">CDN 转推</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9468/turn-the-cdn-push-web">CDN 转推</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9549/turn-the-cdn-push-windows">CDN 转推</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/8815/api-room">房间管理</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11150/error_code_wxapp">错误码</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11842/turn-the-cdn-push-uniapp">CDN 转推</a></td>
+<td><a href="https://developer.qiniu.com/rtc/11374/solution-streaming-linux">CDN 转推</a></td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/8771/background-music-mix-android">背景音乐混音</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9256/%E8%83%8C%E6%99%AF%E9%9F%B3%E4%B9%90%E6%B7%B7%E9%9F%B3%20-%20iOS">背景音乐混音</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9470/background-music-mix-web">背景音乐混音</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/development_guidelines/11177/background-music-mix-windows">背景音乐混音</td>
+        <td><a href="https://developer.qiniu.com/rtc/8816/RTC-Pub">RTC-Pub</a></td>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/11844/video-size-flow-uniapp">视频大小流</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11370/multi-stream-linux">视频大小流</a></td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/11965/android_audio_effect_mixing">多音效混音</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11979/iOS-audio-effect-mixer">多音效混音</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9472/video-size-flow-web">视频大小流（旧版）</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9550/video-size-flow-windows">视频大小流</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/8817/api-mergePublish">合流转推</a></td>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/11845/quality-statistics-uniapp">通话质量统计</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11375/statistics-linux">通话质量统计</a></td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/8772/video-size-flow-android">视频大小流</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/9259/multi-stream-iOS">视频大小流</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/10233/web-call-quality-statistics">通话质量统计</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/development_guidelines/11178/call-quality-statistics-windows">通话质量统计</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/8818/api-rtmp">旁路直播</a></td>
+        <td></td>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/11369/error-code-linux">错误码</a></td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/9860/quality-statistics-android">通话质量统计</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/10085/quality-statistics-iOS">通话质量统计</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/10483/web-error-code">错误码</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/11350/error-code-windows">错误码</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/8819/api-record">录制存储</a></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><a href="https://developer.qiniu.com/rtc/9904/rtc-error-code-android">错误码</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/10084/rtc-error-code-iOS">错误码</a></td>
+        <td><a href="https://developer.qiniu.com/rtc/10720/device_management">设备管理</a></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/10785/web-screen-sharing">屏幕共享</a></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/11359/media-relay-web">跨房媒体转发</a></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/10566/video-size-flow-web-new">视频大小流（新版）</a></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/10266/we-best-practices">最佳实践</a></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/10232/check-system-requirements">浏览器兼容性检测</a></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td><a href="https://developer.qiniu.com/rtc/11182/electron">Electron 环境下使用</a></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+</table>
+

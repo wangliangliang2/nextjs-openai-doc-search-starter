@@ -1,0 +1,85 @@
+# **简介**
+
+提供图片高级压缩功能，可以更加高效地将图片转化为 `AVIF 高压缩比格式`。
+
+- AVIF 得益于其出色的压缩效率, 在既不降低图片的画质时，大幅降低图片的体积：相对于JPEG、WebP节约～50%带宽，加快网站打开速度，提升用户体验
+- 支持HDR 
+- 可同时支持有损和无损压缩
+- 高兼容性，Google Chrome，Mozilla Firefox, Windows 10 等主流浏览器已经支持AVIF
+
+
+
+
+## **使用限制**
+
+- 处理后的图片w和h参数不能超过 9999 像素, 总像素不能超过 30720000 像素
+- 处理前的图片`w`和`h`参数不能超过3万像素，总像素不能超过1.5亿像素
+- 输入图片格式支持： JPEG、PNG、BMP、WEBP、HEIF 、AVIF等
+- 原图为 AVIF 的请求，假如不明确指定输出格式为 AVIF， 则会输出为JPG，将不会按图片高级压缩来收费
+
+
+
+
+# **接口规格**
+
+当使用 **基本图片处理、图片高级处理、图片水印处理** 时, 指定输出格式为 `AVIF`:
+
+```
+	imageView2/<mode>/format/avif/...
+	imageMogr2/format/avif/...
+	watermark/<1..4>/format/avif/... // 1..4 表示水印mode 1 2 3 4 可以使用 5 6 不能使用
+```
+
+
+
+
+# **示例**
+- 将 JPG 格式的原图转化为 AVIF 格式：  
+
+  ```
+  POST /pfop/ HTTP/1.1
+  Host: api.qiniu.com
+  Content-Type: application/x-www-form-urlencoded
+  Authorization: QBox <AccessToken>
+  
+  bucket=test&key=gogopher.jpg&fops=imageMogr2%2fformat%2avif&notifyURL=http%3A%2F%2Ffake.com%2Fqiniu%2Fnotify
+  ```
+
+![查看效果图](https://dn-odum9helk.qbox.me/resource/gogopher.jpg)
+
+- 将 JPG 格式的原图转化为 HEIF 格式，并缩放为200x200：  
+
+  ```
+  POST /pfop/ HTTP/1.1
+  Host: api.qiniu.com
+  Content-Type: application/x-www-form-urlencoded
+  Authorization: QBox <AccessToken>
+  
+  bucket=test&key=gogopher.jpg&fops=imageView2%2f1%2fformat%2favif%2fw%2f200%2fh%2f200&notifyURL=http%3A%2F%2Ffake.com%2Fqiniu%2Fnotif
+  ```
+
+  
+
+## 压缩率比对
+下表列出了 JPG 原图和转化成 AVIF 图片的大小。从表中可以看出，AVIF 格式图片具有超高的压缩率，能够大幅节省带宽。
+
+| 格式 | 分辨率    | 大小             |
+| ---- | --------- | ---------------- |
+| 原图 | 640 x 427 | 209k             |
+| AVIF | 640 x 427 | 26k（压缩率87%） |
+| AVIF | 200 x 200 | 9k（压缩率95%）  |
+
+# **操作方式**
+
+图片高级压缩功能，目前只能以 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 形式来使用
+
+# **服务价格**
+
+图片高级压缩功能按照图片的输出规格计费，如下：
+
+| 输出规格         | 价格        |
+| ---------------- | ----------- |
+| 800 x 600 以下   | 0.075 元/千次 |
+| 1600 x 1200 以下 | 0.3 元/千次 |
+| 3200 x 2400 以下   | 1.6 元/千次 |
+| 6400 x 4800 以下 | 5.4 元/千次 |

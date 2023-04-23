@@ -1,0 +1,149 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文提供 QNRTC Android SDK 4.x 以上版本的发布说明。</p>
+<blockquote>
+<ul>
+<li>若您想要查看 4.x 版本之前的发布说明，可查看 <a href="https://doc.qnsdk.com/rtn/android/docs/release_notes">3.x 及之前版本的更新日志</a></li>
+<li>若您正在使用 3.x 或者更低版本的 SDK，并且想要升级至最新版本，则可参考 <a href="/rtc/development_guidelines/9394/migration-guide-android">4.x 版本迁移指南</a> 进行版本升级。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>注意：5.x 版本是基于 4.x 版本开发的重构版本，SDK 使用了统一的 C++ RTC 内核, 保证了 QRTC 在各个端上处理逻辑的一致性，同时接口和 4.x 完全兼容。若您使用的是 4.x 的版本，可直接进行升级；若您使用的 3.x 及之前的版本，可参考各端的迁移指南，进行版本迁移。</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Android/tree/v5.2.2"><strong>5.2.2</strong></a></p>
+<ul>
+<li>发布 qndroid-rtc-5.2.2.jar</li>
+<li>更新 libqndroid_rtc.so</li>
+<li>修复在 armv7 架构手机上使用软件 AEC 时崩溃的问题</li>
+<li>修复在重连失败再次加入房间后，离开房间会崩溃的问题</li>
+<li>修复在观众角色时，无法回调本地网络质量信息的问题</li>
+<li>修复采集分辨率和编码分辨率不一致，导致画面被裁剪的问题</li>
+<li>优化在 RTT 一定波动网络环境下视频卡顿的现象</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Android/tree/v5.2.1"><strong>5.2.1</strong></a></p>
+<ul>
+<li>发布 qndroid-rtc-5.2.1.jar</li>
+<li>更新 libqndroid_rtc.so</li>
+<li>支持动态修改本地视频 Track 的编码参数</li>
+<li>修复在 API 31 及以上版本 SDK 需要 BLUETOOTH 权限才能进行蓝牙连麦的问题</li>
+<li>修复本地 Track 的 mute 状态在重连过程中有可能失效的问题</li>
+<li>修复使用在线资源进行混音时进行 seek 导致概率奔溃的问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Android/tree/v5.2.0"><strong>5.2.0</strong></a></p>
+<ul>
+<li>发布 qndroid-rtc-5.2.0.jar</li>
+<li>更新 libqndroid_rtc.so</li>
+<li>优化弱网下视频质量调整策略，平衡清晰度和流畅性</li>
+<li>支持音乐，音效通过 RTC 进行本地播放</li>
+<li>支持外部音源 (PCM) 混音</li>
+<li>支持设置拉伸模式进行视频渲染</li>
+<li>修复稳定性崩溃问题</li>
+<li>修复展讯平台硬编码无法使用的问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Android/tree/v5.1.3"><strong>5.1.3</strong></a></p>
+<ul>
+<li>发布 qndroid-rtc-5.1.3.jar</li>
+<li>更新 libqndroid_rtc.so</li>
+<li>升级音频回声处理算法, 优化回声处理的兼容性和稳定性</li>
+<li>新增音频场景化配置功能</li>
+<li>修复 init/deinit 过程中概率崩溃的问题</li>
+<li>修复硬解码概率崩溃的问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Android/tree/v5.1.2"><strong>5.1.2</strong></a></p>
+<ul>
+<li>发布 qndroid-rtc-5.1.2.jar</li>
+<li>更新 libqndroid_rtc.so</li>
+<li>优化蓝牙场景的使用体验</li>
+<li>修复远端用户离开房间概率崩溃的问题</li>
+<li>修复断网重连时没有回调单路转推 QNLiveStreamingListener.onStopped() 状态的问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Android/tree/v5.1.1"><strong>5.1.1</strong></a></p>
+<ul>
+<li>发布 qndroid-rtc-5.1.1.jar</li>
+<li>更新 libqndroid_rtc.so</li>
+<li>支持创建纯音频合流转推任务</li>
+<li>修复 QNRemoteVideoTrackStats，QNRemoteAudioTrackStats 中 uplinkRTT，uplinkLostRate 值错误的问题</li>
+<li>修复在 Android 4.4 上无法使用的问题</li>
+<li>视频默认使用软件编码</li>
+<li>取消对接口 QNTranscodingLiveStreamingConfig.setHoldLastFrame() 的支持</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Android/tree/v5.1.0"><strong>5.1.0</strong></a></p>
+<ul>
+<li>发布 qndroid-rtc-5.1.0.jar</li>
+<li>更新 libqndroid_rtc.so</li>
+<li>新增多重混音功能，支持同时混音背景音乐和音效</li>
+<li>修复 userData 异常的问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Android/tree/v5.0.1"><strong>5.0.1</strong></a></p>
+<ul>
+<li>发布 qndroid-rtc-5.0.1.jar</li>
+<li>更新 libqndroid_rtc.so</li>
+<li>升级自研音频回声消除算法</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Android/tree/v5.0.0"><strong>5.0.0</strong></a></p>
+<ul>
+<li>发布 qndroid-rtc-5.0.0.jar</li>
+<li>更新 libqndroid_rtc.so</li>
+<li>新增 SDK 内部音视频弱网优化</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Android/tree/v4.0.3"><strong>4.0.3</strong></a></p>
+<ul>
+<li>发布 qndroid-rtc-4.0.3.jar</li>
+<li>修复加房间前设置连麦角色失效的问题</li>
+<li>优化蓝牙场景的使用体验</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Android/tree/v4.0.2"><strong>4.0.2</strong></a></p>
+<ul>
+<li>发布 qndroid-rtc-4.0.2.jar</li>
+<li>更新 libqndroid_rtc.so</li>
+<li>升级自研音频回声消除算法</li>
+<li>修复 HE-AAC 音频格式混音播放异常</li>
+<li>修复无法创建纯音频合流转推任务的问题</li>
+<li>修复个别场景下偶现的空指针问题</li>
+<li>修复蓝牙耳机场景下的异常问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Android/tree/v4.0.1"><strong>4.0.1</strong></a></p>
+<ul>
+<li>发布 qndroid-rtc-4.0.1.jar</li>
+<li>新增场景和角色设置，详见 QNRTC.createClient, QNRTCClient.setClientRole</li>
+<li>跨房媒体转发功能，详见 QNRTCClient.(start/update/stop)MediaRelay</li>
+<li>麦克风被占用时提供检测方法或错误回调</li>
+<li>修复断网时统计信息依然回调质量正常的问题</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/pili-engineering/QNRTC-Android/tree/v4.0.0"><strong>4.0.0</strong></a></p>
+<ul>
+<li>发布 qndroid-rtc-4.0.0.jar</li>
+<li>新增核心类 <code>QNRTC</code> 和 <code>QNRTCClient</code>，移除 <code>QNRTCCEngine</code> 接口类</li>
+<li>新增 <code>QNLocalTrack</code> 和 <code>QNRemoteTrack</code> 及其衍生的子类，对不同类型的音视频轨道做了区分，并提供了丰富的控制接口</li>
+<li>优化事件监听逻辑，提供更丰富更具体的事件监听</li>
+</ul>
+</li>
+</ul></div></div>

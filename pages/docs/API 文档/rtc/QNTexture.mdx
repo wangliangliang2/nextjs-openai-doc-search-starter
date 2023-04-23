@@ -1,0 +1,145 @@
+<div data-v-md-line="1"><link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                纹理对象，用于外部导入场景下推送纹理，使用方式可参考<a href='8767/audio-and-video-collection-android#3'>外部视频数据导入</a>使用指南</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#create`)'>create</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">Properties</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#id`)'>id</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#type`)'>type</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#transformMatrix`)'>transformMatrix</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#handler`)'>handler</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">Enum</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#TextureType`)'>TextureType</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="create">
+create</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">static QNTexture create(int id, TextureType type, float[] transformMatrix, Handler handler)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建纹理对象</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            id: int
+        </div>
+                <p>纹理 ID</p>
+    </li>
+    <li>
+        <div>
+            type: TextureType
+        </div>
+                <p>纹理类型</p>
+    </li>
+    <li>
+        <div>
+            transformMatrix: float[]
+        </div>
+                <p>4x4 纹理变换矩阵</p>
+    </li>
+    <li>
+        <div>
+            handler: Handler
+        </div>
+                <p>纹理所在的 GL 线程 Handler</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">Properties</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="id">
+id</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">id: int</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>纹理 ID</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="type">
+type</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">type: TextureType</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>纹理类型</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="transformMatrix">
+transformMatrix</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">transformMatrix: float[]</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>纹理变换矩阵</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>该矩阵为 4x4 的纹理变换矩阵，根据纹理类型的不同，处理方式也有所区别：</p>
+        <p>  1. 如果推送的纹理为 OES 纹理，则需要传入对应的纹理变换矩阵。</p>
+        <p>  2. 如果推送的纹理为 RGB 纹理，则通常只需传入单位矩阵即可。</p>
+        </blockquote>
+    </section>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="handler">
+handler</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">handler: Handler</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>纹理所在的 GL 线程 Handler</p>
+    </div>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">Enum</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="TextureType">
+TextureType</div>
+<ul class="rtc-doc-page-container">
+<li class="rtc-doc-page-description">
+<div class="rtc-doc-parameters-title">Type declaration</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <p>OES</p>
+    </li>
+    <li>
+        <p>RGB</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+
+</div>

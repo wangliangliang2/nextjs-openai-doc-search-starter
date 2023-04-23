@@ -1,0 +1,60 @@
+本文提供使用 TCP 协议下的 C++ SDK 收发定时消息的示例代码供您参考。目前支持的地域包括公网、华东1（杭州）、华北2（北京）、华东2（上海）、华南1（深圳）。
+定时消息可以做到在指定时间戳之后才可被消费者消费，适用于对消息生产和消费有时间窗口要求，或者利用消息触发定时任务的场景。
+定时消息的概念介绍及使用过程中的注意事项，请参见定时和延时消息。
+
+# 前提条件
+
+- 下载 C/C++ SDK。版本详情请参见版本说明；
+- 准备环境。
+
+# 发送定时消息
+
+**说明：具体的示例代码，请以消息队列 RocketMQ 代码库为准。**
+发送定时消息的代码示例如下：
+```
+#include "ONSFactory.h"
+#include "ONSClientException.h"
+using namespace ons;
+int main()
+{
+    //创建 producer，并配置发送消息所必需的信息；
+    ONSFactoryProperty factoryInfo;
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::ProducerId, "XXX");//您在控制台创建的 Group ID
+     factoryInfo.setFactoryProperty(ONSFactoryProperty::NAMESRV_ADDR, "XXX"); //设置 TCP 接入域名，进入控制台的实例管理页面的“获取接入点信息”区域查看
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::PublishTopics,"XXX" );//您在控制台创建的 Topic
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::MsgContent, "xxx");//消息内容
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::AccessKey, "xxx");//身份验证，在消息队列管理控制台创建
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::SecretKey, "xxx" );//身份验证，在消息队列管理控制台创建
+    //create producer;
+    Producer *pProducer = ONSFactory::getInstance()->createProducer(factoryInfo);
+    //在发送消息前，必须调用 start 方法来启动 Producer，只需调用一次即可;
+    pProducer->start();
+    Message msg(
+            //Message Topic
+            factoryInfo.getPublishTopics(),
+            //Message Tag，可理解为 Gmail 中的标签，对消息进行再归类，方便 Consumer 指定过滤条件在消息队列 RocketMQ 的服务器过滤       
+            "TagA",
+            //Message Body，不能为空，消息队列 RocketMQ 不做任何干预，需要 Producer 与 Consumer 协商好一致的序列化和反序列化方式
+            factoryInfo.getMessageContent()
+    );
+    // 设置代表消息的业务关键属性，请尽可能全局唯一。
+    // 以方便您在无法正常收到消息情况下，可通过控制台查询消息并补发。
+    // 注意：不设置也不会影响消息正常收发
+    msg.setKey("ORDERID_100");
+    // deliver time 单位 ms，指定一个时刻，在这个时刻之后才能被消费，这个例子表示 3s 后才能被消费
+    long deliverTime = 获取系统当前时间(ms) + 3000;
+    msg.setStartDeliverTime(deliverTime);
+    //发送消息，只要不抛出异常，就代表发送成功     
+    try
+    {
+        SendResultONS sendResult = pProducer->send(msg);
+    }
+    catch(ONSClientException & e)
+    {
+        //自定义处理 exception 的细节
+    }
+    // 在应用退出前，必须销毁 Producer 对象，否则会导致内存泄露等问题
+    pProducer->shutdown();
+    return 0;
+}
+```

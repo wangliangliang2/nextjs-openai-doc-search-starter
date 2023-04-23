@@ -1,0 +1,113 @@
+# 描述
+该接口用于更新指定设备的影子信息。
+
+# 请求
+**请求语法**
+
+```
+POST /v1/apps/<appid>/devices/<encodeDeviceName>/shadow HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization: <QiniuToken>
+
+{
+	"stateDesired": {
+		"MicSwitch":1,
+		"StatusLightSwitch":1,
+		"IpcVersion":1.01
+	}
+}
+
+```
+参数说明
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|appid|是|string|设备所属应用的appid，设备名称只能由 4-200 位英文字母和数字组成|
+|encodeDeviceName|是|string|设备名称进行[URL安全的Base64编码](https://developer.qiniu.com/kodo/manual/1231/appendix#1)后得到的字符串|
+
+**请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+
+**请求元素**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|stateDesired|必填|String|修改后设备预期的状态，输入需要修改对应的设备影子属性及对应的参数值。|
+
+
+**请求元素**
+该请求操作的请求体为空。
+
+# 响应
+**响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+**响应元素**
+
+```
+200{
+  "stateReported": {},
+  "stateDesired": {},
+  "lastReportUpdateTime": {},
+  "lastDesiredUpdateTime": {},
+  "timestamp": 0,
+  "version": 0
+}
+```
+
+
+|参数名称|说明|
+|---|---|
+|stateReported|设备自身上报的状态。|
+|stateDesired|设备预期的状态。可通过 HTTP RESTful API 向本文档写入数据更新设备状态，设备 SDK 通过注册相关属性和回调，设备影子服务同步影子数据到设备。|
+|lastReportUpdateTime|stateReported 部分每个属性项的最后更新时间。|
+|lastDesiredUpdateTime|stateDesired 部分每个属性项的最后更新时间。|
+|timestamp|设备影子文档的最后一次更新时间。|
+|version|设备影子文档的版本号，每次设备影子文档更新之后，版本号都会递增。版本号由IoT视频云平台后台维护，这可以确保设备的数据与设备影子的数据保持一致。|
+
+
+# 示例
+
+**请求示例**
+
+```
+POST /v1/apps/2akrarhns6ibj/devices/ZGV2aWNlXzJha3JhcmxoYjE1NGY=/shadow HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=
+Content-Type: application/x-www-form-urlencoded
+
+{
+  "stateDesired": {
+    "MicSwitch":1,
+	"StatusLightSwitch":1,
+	"IpcVersion":1.01
+	}
+}
+
+```
+**响应示例**
+
+```
+HTTP/1.1 200 OK
+Content-Length: 117
+Content-Type: application/json
+X-Reqid: R0IAAMBB1l2wU9oV
+Date: Mon, 25 Nov 2019 06:23:56 GMT
+
+200 {
+  "stateReported": null,
+  "stateDesired": {
+    "IpcVersion": 1.01,
+    "MicSwitch": 1,
+    "StatusLightSwitch": 1
+  },
+  "lastReportUpdateTime": null,
+  "lastDesiredUpdateTime": {
+    "IpcVersion": 1575532452997373884,
+    "MicSwitch": 1575532452997373884,
+    "StatusLightSwitch": 1575532452997373884
+  },
+  "timestamp": 1575532452997373884,
+  "version": 0
+}
+
+```

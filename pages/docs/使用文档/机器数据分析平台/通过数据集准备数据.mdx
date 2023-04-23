@@ -1,0 +1,183 @@
+Pandora MLTK为用户提供数据集的方式做数据准备工作，数据集允许用户用前端交互式的操作做到实现数据接入、数据清洗、和数据加工。在完成数据准备之后，我们才能进入下一步的模型构建工作。
+
+为了方便您有效地使用数据集实现数据准备，本文档将通过一个泰坦尼克号乘客的幸存预测案例向您如何通过**数据集**的界面交互操作，完成机器学习的数据准备工作。数据集的具体使用方法可参考[Pandora数据集功能概览](/express/manual/6802/functions_overview)。
+
+## **数据背景介绍**
+
+泰坦尼克号是当年世界上体积最庞大、内部设施最豪华的客运轮船，有“永不沉没”的美誉。1912年4月15日，它在首次航行期间，撞上冰山后沉没，众多名乘客和机组人员中大约有三分之二以上的人遇难。这场悲剧震撼了国际社会，直接促进了更好船舶安全条例的诞生。
+
+该数据集就是来自网络上流传的有关泰坦尼克号乘客生存记录的一个版本，已经成为很多人在机器学习领域使用的经典测试案例，用来构建包含年龄、性别、船舱等特征的预测乘客是否幸存的模型。该数据集已经被分成[train](http://pw7x36qrk.bkt.clouddn.com/titanic_train_raw.tsv)（891条记录）和[test](http://pw7x36qrk.bkt.clouddn.com/titanic_test_raw.tsv)（418条记录）两个数据集。
+
+每个样本有10个特征变量，数据集具体字段信息如下：
+
+| **特征变量名称**  | **特征变量含义**                 |
+|------------------|----------------------------------|
+| passenger_id     | 乘客ID
+| sex              | 乘客的性别                       |
+| age              | 乘客的年龄                       |
+| parch            | 与乘客同行的父母和子女的数量     |
+| sib_sp            | 与乘客同行的兄弟姐妹和配偶的数量 |
+| name            | 乘客的姓名     |
+| p_class           | 乘客所持船票的等级               |
+| cabin            | 乘客所在的船舱                   |
+| ticket           | 乘客票号                    |
+| fare             | 乘客所持船票的价格               |
+| embarked           | 乘客登船的港口                   |
+| **目标变量名称** | **目标变量含义**                 |
+| survived         | 0（遇难）                        |
+|                  | 1（幸存）                        |
+
+
+## **第一步、数据接入**
+
+Pandora MLTK可以利用已经保存在Pandora的数据做进一步的分析，包括*仓库（repo）*和*数据集（dataset）*。Pandora接收数据的方法可参考[Pandora机器数据分析平台-数据接收](/express/manual/6011/access_to_data)。
+
+我们采取本地文件上传的方式，把刚刚下载的两个tsv文件上传到Pandora平台，用制表符（Tab或者\t)来读取字段，再通过一条简单的spl语句过滤掉表头名称，筛选出需要的字段。
+
+```
+repo="titanic_train"
+| where fare!="Fare"
+| fields passenger_id, sex, age, parch, sib_sp, name, p_class, ticket, fare, cabin, embarked, survived
+```
+
+上传完成的数据如下图。
+![titanic_train.png](https://dn-odum9helk.qbox.me/Fkl1W0K_Ew1f-PC2lgUnZpWQ6OP1)
+
+用已经存在repo里面的数据，我们可以创建数据集。
+有以下两种方法选择数据集的数据来源：
+
++ 在接入数据之后，用户在“仓库管理”界面可以看到自己保存数据的仓库，或者可以在右上角的搜索框填入关键字搜索目标仓库。直接点击仓库名称便可以查看该仓库内的数据详情。在确定数据之后，通过“另存为”可以将搜索出来的数据保存成数据集。
+![create_dataset_2.png](https://dn-odum9helk.qbox.me/FkefeKeXIlL0AnZqNH_hCoBYFGvZ)
+
++ 在“数据集管理”页面，通过点击右上角的“+”号，直接新建数据集。
+![create_dataset_3.png](https://dn-odum9helk.qbox.me/FhlePI-BdXdxQBaIyXxB68IA322G)
+通过输入简单的，可以搜索到需要的数据。在页面左侧可以通过简单的勾选，选择需要添加到数据集的字段。默认只包含一个_time字段。
+![create_dataset_4.png](https://dn-odum9helk.qbox.me/FufcBtzdbNIWxLH42N4NFOYyda13)
+选择结束之后，点击“下一步”可以做下一步的数据处理。可以实现的处理方式包括编辑、排序、过滤、关联数据集、统计、新增。
+![create_dataset_5.png](https://dn-odum9helk.qbox.me/FphiW3FV0wAXYXtHkf6xFYXaBbTi)
+
+
+## **第二步、数据清洗**
+
+这是在建模前期准备工作中非常重要的一步，因为接入的数据不一定能满足之后建模工作的要求，数据质量也会直接影响之后分析的效果。用户可以通过Pandora和Pandora MLTK提供的数据详情、可视化图表等方法发现数据中存在问题的部分。Pandora用户可以直接通过SPL、或者数据集的界面交互操作，发现并解决这些问题。SPL语法可以参考[Pandora SPL参考手册](/express/manual/6010/spl_manual)，数据集使用方法可以参考[Pandora 数据集](/express/manual/6802/functions_overview)。
+
+在以下场景中需要做数据清洗：
+1. 数据存在错误，例如：拼写错误、漏写小数点。
+2. 同一个数据源中因为版本不同导致数据不统一，例如：某个指标中同时存在“T”“F”和“True”“False”。
+3. 数据有缺失。
+4. 数据类型有误，例如：某个用1、0表示“T”和“F”的字段被误识别为数值型字段。
+
+我们通常用*缺失值处理*和*异常值处理*的方法来解决以上几种情况。
+
+**缺失值处理：**
+如果数据中存在缺失值，可能会对我们之后的分析工作造成影响，因此，我们建议在数据清洗步骤按需处理缺失值。常用的缺失值处理的方式有以下几种：
+
+1. *替换为统一值*
+2. *替换为平均数/中位数*
+3. *替换为众数*
+4. *移除该行*
+5. *移除该列*
+
+
+我们可以先计算一下各个特征字段中缺失值的数量。目前，我们在搜索分析界面通过通过以下这段SPL来实现这个计算。
+
+```
+repo="titanic_train"
+| where fare!="Fare"
+| eval passenger_id_null = if(passenger_id=="",1,0)
+| eval sex_null = if(sex=="",1,0)
+| eval age_null = if(age=="",1,0)
+| eval parch_null = if(parch=="",1,0)
+| eval sib_sp_null = if(sib_sp=="",1,0)
+| eval name_null = if(name=="",1,0)
+| eval p_class_null = if(p_class=="",1,0)
+| eval ticket_null = if(ticket=="",1,0)
+| eval fare_null = if(fare=="",1,0)
+| eval cabin_null = if(cabin=="",1,0)
+| eval embarked_null = if(embarked=="",1,0)
+| stats sum(passenger_id_null),sum(sex_null),sum(age_null),sum(parch_null),sum(sib_sp_null),sum(name_null),sum(p_class_null),sum(ticket_null),sum(fare_null),sum(cabin_null),sum(embarked_null)
+```
+
+统计结果如下图。可看出来，在该数据集中有四列字段中存在空缺值，分别是age、p_class、fare和cabin。
+
+![missing_value.png](https://dn-odum9helk.qbox.me/Fkh8dsct67eSZqLZ2ZaquT430KYc)
+
+
+在该数据中，我们可以用第二种方法（**替换为平均数/中位数**）来取代数值型数据的缺失：age和fare。在该案例中，我们尝试用中位数。
+
+首先，在数据集左边，点击“SPL”然后“在搜索中打开”可以跳转到普通的搜索分析界面，允许用户在原有的SPL之下做下一步的分析。
+![data_cleaning_4.png](https://dn-odum9helk.qbox.me/Fh5WsA8M_53z-c73vRCTXdva0U0I)
+
+然后，再根据以下这段代码，分别计算出age的中位数，再将新搜索出的结果，点击“另存为”生成新数据集。
+
+```
+| eventstats percentile(age,50) as age_medium, percentile(fare, 50) as fare_medium
+```
+![missing_value_9.png](https://dn-odum9helk.qbox.me/Fs-yA3zBlAHdSewzWQBrSiSaoyCf)
+
+通过“新增“中的”Eval 表达式“这个功能，我们可以新建一个字段（或者替换原字段）。下图的表达式用来判断，fare字段中，某一行的数据是否为空（”“），如果是，则替换成fare_medium（fare字段的中位数），如果不是，则保持fare字段中的值不变。*值得注意的是，这种if(fare=="",fare_medium,fare）的判断语句只适合在用分隔符（逗号、制表符等）分隔的数据上检测数据是否为空，其他场景可以用if(isNull(fare),fare_medium,fare）语句来替代。*
+
+![missing_value_10.png](https://dn-odum9helk.qbox.me/FrGxdilnbGt0SbTYLVVZCPkSfpGX)
+
+处理结果如下。再把这些中位数统计字段从数据集中移除便可。
+
+![missing_value_12.png](https://dn-odum9helk.qbox.me/Fu3eHgeBkjS0IfddS5ZQaToF-LW5)
+
+
+我们可以用第三种方法（**替换为众数**）来处理大部分非数值型字段的缺失，即使用最高频次的变量值来取代空值：p_class。值得注意的是，虽然p_class字段是int类型，但是它代表的含义是票仓等级，是一种离散型数据，因此我们也用非数值型字段的处理方式来处理该字段的缺失值。
+
+首先，我们需要统计出目标字段中的不同变量的频次。点击“统计”，我们可以计算不同p_class的值的计数，结果如下图显示，出现频次最高的p_class值是3，
+
+![missing_value_15.png](https://dn-odum9helk.qbox.me/FhODwNvZRzFVsI8yvQt2iWZayhA-)
+![missing_value_16.png](https://dn-odum9helk.qbox.me/FnZTKJQBTKeSAQuz41c70aAT_6PR)
+
+
+根据这个结果，我们可以在页面左侧移除之前的“统计”和“排序”工作，回到之前的数据页面，并且通过“新增”中的“Eval 表达式“，找到p_class中值为空的数据，并且将其替代成3。
+
+![missing_value_19.png](https://dn-odum9helk.qbox.me/FkJTZODvU00yRPRuaFxb0LiSIYsY)
+
+
+如果数据中缺失数据过多，导致这个字段对于之后分析的意义有限，我们可以考虑基础掉整列字段。在该数据集中，cabin丢失了超过77%的数据，我们直接通过“编辑”中”移除字段“功能，移除该字段。
+![missing_value_8.png](https://dn-odum9helk.qbox.me/Fo20hn8u56iTlv20zHgLszJZ_N41)
+
+
+
+**异常值处理：**
+
+数据中的异常值，即与其他数据有明显不同的值，可能是因为人工误差或者极端场景造成的。因此，如果我们想要建立模型预测大部分数据的表现，我们需要在数据清洗步骤按需处理异常值。常用的缺失值处理方式有以下几种：
+
+1. *过滤掉某个固定值*
+2. *过滤掉某个范围外的值*（高级：四分位法）
+3. *统一变量值名称*
+
+在该数据中，我们可以尝试用*四分位法*，检测票价（fare）字段中是否存在异常值，进而将异常数据去除。
+
+四分位法是一种常用的数据清洗的方式，它可以通过通关观察数据整体的分布情况，识别出可能的异常值。
+“正常数据”的上限：Q3+1.5IQR=75%分位数+（75%分位数-25%分位数）\*1.5
+”正常数据“的下限：Q1－1.5IQR=25%分位数-（75%分位数-25%分位数）\*1.5
+我们可以通过编写一些简单的SPL实现这种筛选方式。在这个数据集中，我们可以尝试筛选出票价**“fare”**在正常范围之内的数据。
+首先，在数据集左边，点击“SPL”然后“在搜索中打开”可以跳转到普通的搜索分析界面，允许用户在原有的SPL之下做下一步的分析。
+![data_cleaning_4.png](https://dn-odum9helk.qbox.me/Fh5WsA8M_53z-c73vRCTXdva0U0I)
+通过执行以下这段代码，我们首先找出fare字段的25%分位数和75%分位数。再根据上限和下限定义找出fare字段的正常值范围。在计算出数据结果之后，我们可以通过点击“另存为”回到创建数据集的页面。
+```
+| eventstats percentile(fare, 25) as fare_q1, percentile(fare, 75) as fare_q3
+| eval fare_iqr = fare_q3 - fare_q1
+| eval fare_upper_bound = fare_q3 + 1.5*fare_iqr
+| eval fare_lower_bound = fare_q3 - 1.5*fare_iqr
+```
+![data_cleaning_5.png](https://dn-odum9helk.qbox.me/FkZ6dpeMguCJ-uefu-8vVYV4CcYL)
+
+我们可以再次选择字段，可以选择全部字段，或者只选择计算出的上限和下限字段（fare_upper_bound, fare_lower_bound)。通过“过滤”中的”按字段关系筛选“功能，挑选出fare字段在”正常范围“之间的数据。
+![data_cleaning_7.png](https://dn-odum9helk.qbox.me/FtlieZahdHpRQJfvbRpq1wu_ipzG)
+
+在筛选结束之后，如果我们不再需要fare_lower_bound和fare_upper_bound字段，我们可以点击“编辑”中的“移除字段”将这俩字段从数据集中移除。
+
+![data_cleaning_8.png](https://dn-odum9helk.qbox.me/FuwYqt6Rh939qNpwMJ9BKGR9RhLl)
+
+
+## **第三步、保存数据集**
+在数据清洗完成，处理结果符合预期之后，便可以保存数据集了。点击右上角的”保存“，填写数据集名称和分类之后就完成了。
+![create_dataset.png](https://dn-odum9helk.qbox.me/FjX3FJWNm2MlN3rfdIcUpQpnSvXt)
+
+对titanic_test的数据也做相同处理，并且保存之后，数据准备的工作就完成了。
+

@@ -1,0 +1,54 @@
+Append 命令将子搜索的结果追加到当前搜索结果。
+
+**语法：**
+
+```
+append [<subsearch-options> ...] <subsearch>
+```
+
+**参数说明**
+
+必填参数：
+
+* `<subsearch>`：子搜索语句，须在其中指定要追加搜索的事件来源，子搜索须放在方括号中。如：```*|append maxout=5 [search sourcetype="username"]```
+
+可选参数：
+
+* `subsearch-options`：
+
+	* `maxout`：要从子搜索输出的结果行数，默认值是50000。
+
+**用法示例：**
+
+原始数据：
+
+|user|categoryId|total|
+|:--:|:--:|:--:|
+|a|Accessories|100|
+|a|Arcode|50|
+|b|Accessories|70|
+|b|Arcode|90|
+|c|Accessories|60|
+|c|Arcode|30|
+|c|Arcode|80|
+|b|Accessories|40|
+ 
+统计购买每类产品的不同客户数量，并追加统计每位客户的总消费额。
+ 
+```
+sourcetype="append" 
+| stats distinct(user) by categoryId 
+| append [sourcetype="append"| stats sum(total) as count by user]
+```
+
+结果如下：
+
+|categoryId|distinct(user)|user|count|
+|:--:|:--:|:--:|
+|Arcode|3|-|-|
+|Accessories|3|-|-|
+|-|-|a|150|
+|-|-|b|200|
+|-||c|170|
+
+

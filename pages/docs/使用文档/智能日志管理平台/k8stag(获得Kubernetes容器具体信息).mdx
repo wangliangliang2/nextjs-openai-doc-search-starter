@@ -1,0 +1,12 @@
+为 Kubernetes 用户量身定做的 Transformer，对于收集的 Kubernetes 用户，其日志路径信息就带有包括 `k8s_pod_name`,`k8s_namespace`,`k8s_container_name`,`k8s_container_id` 在内的信息，所以 logkit Pro 通过收集到 Kubernetes 日志的路径，获取这些标签。
+
+在 File Reader 的配置中，`datasource_tag` 这个选项会记录文件路径。logkit Pro 默认开启这个选项，并记录为 datasource 字段。
+
+### **实例配置**
+
+```
+{
+	"type":"k8stag",
+	"sourcefilefield":"datasource"
+}
+```

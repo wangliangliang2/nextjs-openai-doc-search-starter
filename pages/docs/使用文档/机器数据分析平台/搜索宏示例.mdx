@@ -1,0 +1,67 @@
+下文介绍了3种典型场景的搜索宏配置：
+
+* 不包含参数的搜索宏。
+* 包含参数的搜索宏，配置验证表达式及验证错误信息。
+* 嵌套引用其他搜索宏的搜索宏。
+
+关于搜索宏的定义及使用详见[搜索宏](/express/manual/7139/search-the-macro)
+
+
+
+-----
+**示例一、不包含参数的搜索宏**
+
+
+如果您有一个SPL长句会经常在不同搜索中使用，您可以将其创建为搜索宏，在搜索中只需要填写``` `搜索宏名称` ```即可。例如：
+* 创建名称为`computeLevel`的搜索宏，搜索语句：``` sourcetype="json" | eval level=case(grade < 60, "failed", grade >= 60 AND grade < 90, "good", grade >= 90, "excellent", "error") ```
+* 点击确定完成创建后在搜索框中输入 ``` repo=classA `computeLevel` ```，``` repo=classB `computeLevel` ```，``` repo=classC `computeLevel` ``` 即可获取不同repo下所有的level结果。
+
+
+![](https://dn-odum9helk.qbox.me/FnBnQOWCyeXzDUi8htGZsuGg8Aku)
+
+
+
+注：如需修改分数与级别的对应关系，可以直接编辑搜索宏的搜索语句，如修改为``` sourcetype="json" | eval level=case(grade < 70, "failed", grade >= 70 AND grade < 90, "good", grade >= 90, "excellent", "error") ``` 。
+
+
+**示例二、包含参数的搜索宏**
+
+1. 在某些场景中您需要在SPL中使用变量，搜索宏同样支持动态参数的引用，搜索结果随参数变化而变化.例如：
+
+
+* 创建名称为`level_grade(1)`的搜索宏。
+* 搜索语句：`sourcetype="json" | eval level=case(grade < 60, "failed", grade >= 60 AND grade < 90, "good", grade >= 90, "excellent", "error") | stats $arg$(grade) by level` 。
+* 参数：`arg`（代表stats 统计命令）。
+* 点击确定完成创建后在搜索中输入 ``` `level_grade(avg)` ```即可统计各个级别的分数平均值，输入 ``` `level_grade(max)` ```即可统计各个级别的分数最大值。
+
+![](https://dn-odum9helk.qbox.me/FtqeFtZMoJzt7O0r4FeU3HKtMyFe)
+
+
+2. 如果在调用参数时，您需要验证被输入的参数是否满足输入条件，搜索宏支持以表达的形式对参数进行验证。例如：
+
+
+* 创建名称为 `level_with_arg(2)` 的搜索宏。
+* 搜索语句为：``` sourcetype="json" | eval level=case(grade < $score1$, "failed", grade >= $score1$ AND grade < $score2$, "good", grade >= $score2$, "excellent", "error") ```。
+* 参数：`score1`，`score2`（代表区分得分级别的分数值）。
+* 输入验证表达式：`isnum($score1$) AND isnum($score2$)` 验证参数是不是为数值，如果不是，系统返回验证错误信息：“您输入的参数不是数值类型，请重新输入”。
+* 点击确定完成创建后在搜索中输入``` `level_with_arg(60, 90)` ```代表分数<60为不及格，分数<90为良好，分数>=90为优秀。
+
+![](https://dn-odum9helk.qbox.me/Fv0e4XgCiGlXAqChqne_HS1M3Mvr)
+
+
+**示例三、嵌套引用其他搜索宏的搜索宏**
+
+1. 如果您需要在搜索宏中引用其他搜索宏，配置步骤如下：
+
+
+* 创建名称为`transaction`的搜索宏，搜索语句：```sourcetype="_json" | transaction clientip maxpause=5s ```，将时间间隔为5秒的 `clientip` 值相同的日志进行事务分析。
+* 创建名称为 `eventcount` 的搜索宏引用`transaction`搜索宏，搜索语句：``` `transaction`| timechart span=1d sum(eventcount) as pageviews ```，统计每天的事务计数。
+* 创建名称为 `eventcount(1)` 的搜索宏引用`transaction`搜索宏，搜索语句：``` `transaction`| timechart span=$span$ sum(eventcount) as pageviews```，参数：span，统计指定时间间隔内的事务计数，在搜索中输入 ``` `eventcount(10s)` ```即可得到每10s的事务计数。
+![](https://dn-odum9helk.qbox.me/Fj0rQLS-tXot2TC2Y557pPZbBA4f)
+	
+
+2. 如果您在搜索中需要引用多层嵌套带参数的搜素宏配置如下：
+
+
+* 创建名称为`transaction(1)`的搜索宏，搜索语句：```sourcetype="_json" | transaction clientip maxpause=$arg$```，将指定时间间隔的 `clientip` 值相同的日志进行关联事务分析，其中参数arg为时间间隔。
+* 创建名称为`eventcount2(1)` 的搜索宏引用`transaction(1)`搜索宏，搜索语句：``` `transaction($span$)` | timechart span=$span$ sum(eventcount) as pageviews ``` ，统计指定时间间隔内的事务计数，其中参数span为时间间隔。配置完成后，在搜索分析界面输入``` `eventcount(10s)` ``` 即可得到每10s的事务(maxpause=10s)计数。展开的spl如下：```sourcetype="_json" | transaction clientip maxpause=10s| timechart span=10s sum(eventcount) as pageviews ```。

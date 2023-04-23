@@ -1,0 +1,131 @@
+# 简介
+该文档主要介绍使用 qshell 如何同步本地文件目录到存储空间并体现出层级结构。
+
+<br>
+
+# 环境
+系统介绍：Linux（ ubuntu16.04 ）
+
+要上传的资源目录：
+
+![](https://dn-odum9helk.qbox.me/Fuz2M1jqyfuonqSaFoYzUv6JVSS5)
+
+<br>
+
+# 配置
+
+<br>
+
+## 第一步：工具下载
+
+命令行工具 qshell [传送门](https://developer.qiniu.com/kodo/tools/1302/qshell)
+
+本例下载工具版本如下：
+
+| 文件名 | 描述 |
+| ---- | ---- |
+| qshell_linux_x64 | Linux 64位系统 |
+
+文件下载后重命名并赋予qshell执行权限，命令行操作如下：
+
+```
+$ mv qshell-linux-x64 qshell
+$ chmod +x qshell
+```
+
+<br>
+
+## 第二步：配置环境变量
+本例使用最简便的方法，直接放到环境变量。命令行操作如下：
+
+```
+$ sudo mv qshell /usr/bin/
+```
+
+<br>
+
+操作完成后再重新开启一个终端既可运行 qshell，如下：
+
+```
+$ qshell
+Use help or help [cmd1 [cmd2 [cmd3 ...]]] to see supported commands.
+```
+
+<br>
+
+## 第三步：配置账户
+需要鉴权的命令都需要依赖七牛账号下的 AccessKey 和 SecretKey 。[传送门](https://portal.qiniu.com/user/key)
+
+```
+$ qshell account <Your AccessKey> <Your SecretKey>
+```
+
+操作完成后可以使用命令 `qshell account` 查看当前用户设置的 AccessKey 和 SecretKey 。
+
+<br>
+
+此处操作后在当前用户主目录中生成 qshell 目录：
+
+```
+$ ls ~/.qshell/
+account.json
+```
+
+<br>
+
+## 第四步：编写同步目录文件
+在上文提到的 qshell 目录中创建配置文件，文件内容如下：
+
+```
+$ cat upload.conf 
+{
+    "src_dir" : "/home/boponik/XBOX",
+    "bucket" : "xbox"
+}
+```
+
+<br>
+
+注意：
+
+如果想要忽略本地文件的相对路径，比如本地存在一些层级；
+但是层级里面的文件和外面的文件名称和内容都相同的情况下，为了避免重复上传不需要的文件，可以使用忽略本地文件的相对路径的方法。   
+
+则配置文件为：
+
+```
+$ cat upload.conf 
+{
+    "src_dir" : "/home/boponik/XBOX",
+    "ignore_dir" : true,
+    "bucket" : "xbox"
+}
+```
+
+<br>
+
+## 第五步：同步资源
+详细参数说明：https://github.com/qiniu/qshell/blob/master/docs/qupload.md   
+
+```
+qshell qupload <LocalUploadConfig> [flags]
+```
+
+<br>
+
+### 同步资源
+
+![](https://dn-odum9helk.qbox.me/FpVk2u7wYkPHWfptBAjxogkiozgA)
+
+<br>
+
+### 查看同步日志
+
+![](https://dn-odum9helk.qbox.me/FiUi2VTmVENCIrIlO7l1vEyiKV-E)
+
+<br>
+
+### 控制台查看资源
+到七牛云控制台进入空间 xbox 
+
+![](https://dn-odum9helk.qbox.me/FghHOFh-P9-aQ56fASm3vxmWyalu)

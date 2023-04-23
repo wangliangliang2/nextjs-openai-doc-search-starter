@@ -1,0 +1,106 @@
+根据CA中心规范，申购DV类型的数字证书（含免费证书），必须对域名所有权进行验证。在您购买证书后，「补全信息」阶段需要选择合适的域名验证方式并正确配置，CA机构检测通过后即下发证书。七牛SSL证书服务提供了以下三种域名验证方式：
+- DNS验证
+- 文件验证
+- DNS_PROXY验证
+</br>
+# 1 DNS验证
+不同品牌证书需要验证的DNS记录类型不同，DigiCert和GeoTrust品牌证书需要验证TXT记录，TrustAsia品牌证书需要验证CNAME记录。
+## 1.1 申请主域名证书
+### 1.1.1 TXT验证方式示例
+例如，您申请的主域名为：example.com
+- TXT 记录名：_dnsauth.example.com
+- TXT 记录值：201812300636213kyqu82ck87xtq5rpgdh4unhqr64qptuwoldwju53vyjkpxkgc
+
+您需要填写主机记录 _dnsauth ，选择记录类型 TXT ，并将 TXT 值复制到记录值中，如下图所示。
+<img src="https://dn-odum9helk.qbox.me/FhUEhqyHO6bH6KHc3nLQSNhiIw38" width="800"/>
+<br>
+
+### 1.1.2 CNAME验证方式示例
+例如，您申请的主域名为：example.com
+- CNAME 记录名：_C1E07925FCC06589F0CAAF548FCAEB66.example.com
+- CNAME 记录值：5852BB0B073F4CF57C75FDCE8DF42AE2.8C29A008F14DC69BA44165A140CA63C1.TTDtjKayl3.trust-provider.com
+您需要填写主机记录 _C1E07925FCC06589F0CAAF548FCAEB66 ，选择记录类型 CNAME ，并将 CNAME 值复制到记录值中，如下图所示。
+![image.png](https://dn-odum9helk.qbox.me/FlGfaO38Giv5GC4RfLf0ed2qDBjG)
+
+## 1.2 申请二级域名证书
+### 1.2.1 TXT验证方式示例
+例如，您申请的二级域名为：qn.example.com 
+
+- TXT 记录名：_dnsauth.qn.example.com
+- TXT 记录值：201812300636213kyqu82ck87xtq5rpgdh4unhqr64qptuwoldwju53vyjkpxkgc
+
+
+您需要填写主机记录 _dnsauth.qn ，选择记录类型 TXT ，并将 TXT 值复制到记录值中，如下图所示。
+
+<img src="https://dn-odum9helk.qbox.me/Fko30OhgVwnRJub5W8UH1wNgj28e" width="800"/>
+<br>
+注：其他多级域名同理添加解析。
+
+### 1.2.2 CNAME验证方式示例
+
+例如，您申请的二级域名为：qn.example.com
+- CNAME 记录名：_C9AA335DC4A67B04F972E803284694F4.qn.example.com
+- CNAME 记录值：EA88872517104F501B02AF178D06AEAF.D0398DCB0652D944449ED5DC265077AF.TTDtjqmhpd.trust-provider.com
+您需要填写主机记录 _C9AA335DC4A67B04F972E803284694F4.qn ，选择记录类型 CNAME ，并将 CNAME 值复制到记录值中，如下图所示。
+![image.png](https://dn-odum9helk.qbox.me/FgHuPWfoRhMg0c0WhXwzVnKZSZiZ)
+
+DNS解析验证说明
+&emsp;解析添加正确后，正常检测系统会循环自动验证，最长不超过24小时，您可以用 dig 命令（Linux/Mac）来自我检测下DNS解析是否配置成功。
+
+验证通过后等待一段时间，证书就会进行签发。
+
+
+# 2. 文件验证
+文件验证方式一般由您的域名站点管理人员进行操作。主域名/www域名申请证书选择文件验证时，要求同时验证主域名和www域名，二级或其他多级域名只验证当前域名即可。
+
+**申请主域名/www域名证书**
+例如，您申请的主域名：`example.com` 或者 `www.example.com` 时
+验证文件路径：/.well-known/pki-validation/fileauth.txt
+验证文件值：201908121017265gizouk70ojryt7995d3oo2ah627rhergi120mtd01thpmpmu9
+
+验证证书需要保证访问下面两条链接时，返回文本内容为文件验证值：201908121017265gizouk70ojryt7995d3oo2ah627rhergi120mtd01thpmpmu9
+```
+http://example.com/.well-known/pki-validation/fileauth.txt
+http://www.example.com/.well-known/pki-validation/fileauth.txt
+```
+
+注：如申请泛域名 *.example.com 证书，验证的域名为 example.com 。
+
+
+**申请二级域名证书**
+例如，您申请的二级域名：`qn.example.com` 
+验证文件路径：/.well-known/pki-validation/fileauth.txt
+验证文件值：201908121017265gizouk70ojryt7995d3oo2ah627rhergi120mtd01thpmpmu9
+
+验证证书需要保证访问下面这条链接时，返回文本内容为文件验证值201908121017265gizouk70ojryt7995d3oo2ah627rhergi120mtd01thpmpmu9
+```
+http://qn.example.com/.well-known/pki-validation/fileauth.txt
+```
+`要点提示：选择文件验证方式，返回的文件内容中请勿包含多余的空格或回车。`
+
+# 3. DNS_PROXY验证
+当前DNS_PROXY的验证方式仅适用于 DV 通配符两年期证书。区别于DNS验证，DNS_PROXY验证采用代理验证的方式，需要您将_dnsauth.子域名的解析调整至指定CNAME。证书颁发后请保留CNAME记录，第二年续期会自动复用CNAME配置重新验证域名。
+
+例如，您申请的域名为:`*.example.com`
+CNAME 记录名：_dnsauth.example.com
+CNAME 记录值：xxxxxx.dcv-dns.sslauto.cn
+您需要填写主机记录 _dnsauth ，选择记录类型 CNAME ，并将 CNAME 值复制到记录值中，如下图所示。
+</br>
+
+![iShot2021-06-01 16.00.10.png](https://dn-odum9helk.qbox.me/Fgz0d5WBIdP3T3vDFaQJ0EhpQ3dd)
+</br>
+## 证书验证长时间未通过
+</br>
+1. 证书审核有延迟
+如果您添加TXT解析后长时间未通过审核，您可以提交工单给工程师帮您检测下配置是否正确。文件验证时间会比DNS久，如果比较紧急，建议提交DNS验证的证书订单。
+</br>
+2. 免费证书申请失败
+未通过的订单您也可以重新提交，需要注意更新证书的TXT验证值。
+</br>
+3. 免费证书续费失败
+证书续费会生成一个新的证书订单，您需要补全新证书的订单信息，并且针对新证书进行验证配置，同时删除掉旧证书的相关TXT记录。
+
+
+
+
+

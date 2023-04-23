@@ -1,0 +1,33 @@
+本教程将指引您快速了解并且使用七牛云低延时直播GEEK产品，在使用低延时直播之前，您可以先访问[低延时直播功能介绍](/pili/product_introduction/9903/low-latency-live-function-is-introduced)文档来了解什么是低延时直播服务。
+# 准备工作
+在使用低延时直播之前，需要先注册七牛云账号，并且认证通过。
+然后再创建直播空间。详细介绍请参考：[直播云快速入门](/pili/1221/the-console-quick-start)
+在创建完直播空间，并且域名解析等也完成后，进入下面步骤
+# 步骤一：获取推流地址
+进入创建的hub，选择直播直播流管理，点击添加流，创建直播流
+![image.png](https://dn-odum9helk.qbox.me/FpbkxBUVnkHyCRMdxZqfnOa2RSrJ)
+添加完成之后，进入流-实时直播页面，找到推流地址栏目，获取当前流的推流地址
+![image.png](https://dn-odum9helk.qbox.me/Fjw59thYo2eU0fkZyKgCf7nmqkTx)
+**备注**
+若hub开启了直播鉴权，该页面的推流地址有效期默认为1小时，如果需要自定义推流地址的有效时长，则点击更新按钮更新推流地址的有效时间。
+# 步骤二：直播推流
+您可根据业务场景将生成好的推流地址输入到对应的推流软件中。
+如PC端，一般使用OBS进行推流。
+因为低延时直播在播放带B帧的直播流会出现画面撕裂等现象，因此推流时需要注意去掉B帧。
+如使用OBS推流，可以通过配置去掉B帧，如下图。[OBS推不带B帧直播流详细介绍](/pili/9886/obs-push-flow-excluding-b-frame-guidelines)
+![image.png](https://dn-odum9helk.qbox.me/FhW7PA_yBvY6ARNIQxGFOp-f4Ihg)
+如使用命令行推流，命令行推流示例：./ffmpeg -re -i 'demo.mp4' -c copy -c:v libx264 -bf 0 -f flv 'rtmp://pili-publish.xxxx.com/lb-test/streamid'
+若推流侧无法自行适配，可以使用我们的服务端转码功能，在播放 URL 流名称后面添加 `@zerolatency`（样例：https://xxxx.com/hub/stream.m3u8@zerolatency)，即可顺利支持低延时直播（转码将产生一定费用，将按照原始流转码规格进行收费，并增加 200-400ms 延时，对播放延时有极高要求的客户，请适配低延时推流规格)。
+
+# 步骤三：获取播放地址
+
+推流成功后，进入流详情页面，获取播放地址：
+![image.png](https://dn-odum9helk.qbox.me/Ftgf1RJrqJDDh6TkC32HQQv5QNls)
+**备注**
+若域名开启了时间戳防盗链，该页面的播放地址有效期默认为1小时，如果需要自定义播放地址的有效时长，则点击更新按钮更新播放地址的有效时间。
+# 步骤四：低延时直播播放
+七牛云低延时播放器提供[低延时Web SDK](https://developer.qiniu.com/pili/7730/geek-web-sdk)、[低延时Android SDK](https://developer.qiniu.com/pili/7731/geek-android-sdk)和[低延时iOS SDK](https://developer.qiniu.com/pili/7732/geek-ios-sdk)三种SDK接入播放方式。
+将步骤三的任意一个播放地址放入七牛云低延时播放器中进行播放，即实现了低延时播放。
+我们提供了Web端的播放器Demo，您可以使用[Pili-player-demo](https://pili-player-demo.qiniu.com/)，体验七牛云的低延时直播。
+![image.png](https://dn-odum9helk.qbox.me/FvVqYGW_7p1-w7Bpn95tujr7I8OU)
+

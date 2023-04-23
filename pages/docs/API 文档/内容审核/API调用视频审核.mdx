@@ -1,0 +1,432 @@
+本文介绍了异步调用视频内容审核`/v3/video/censor`的接口，帮助您正确使用此 API 进行视频内容审核，支持基于API URL发起HTTP/HTTPS POST请求的方式调用。
+
+# 使用限制
+* 视频大小不超过1G。
+* 视频格式支持 mp4、flv、mov、avi、wmv、ts和mpg。
+* 支持用户设定截帧频率，但单个视频最大截帧数为3000帧。如根据截帧频率计算出来的截帧数大于3000帧，则会按最大3000帧对整个视频进行均匀截帧。
+* 接口响应时间依赖视频的下载时间。请保证被审核视频所在的存储服务稳定可靠，建议您使用七牛云存储或者CDN缓存等。
+
+# 功能描述
+视频内容审核 API 主要用于检测或识别视频中的不良信息，并给出审核结果管控建议。支持的审核类型包括：视频鉴黄、视频鉴暴恐、视频敏感人物识别。
+
+**审核类型scenes与相应的label/group**
+在提交内容审核任务时，您需要指定审核类型**scenes**；而在返回结果中，则包含了您指定的类型对应的label结果分类参数，具体label/group请参见[图片内容审核](https://developer.qiniu.com/censor/api/5588/image-censor)。
+
+# 请求说明
+
+请求方式： POST
+
+请求url： http://ai.qiniuapi.com/v3/video/censor
+
+**请求Header**
+
+|字段|	取值|
+| :--- | :--- |
+|Content-Type|application/json|
+|Authorization|Qiniu &lt;AccessKey&gt;:&lt;Sign&gt; <br>注意: 用户请根据 AccessKey 和 SecretKey 后生成鉴权，以便进行身份验证，`Sign`的取值以及`Authorization`签名方法请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken)。|
+
+**请求参数**
+
+|字段|类型|是否必选|说明|
+| :--- | :--- | :--- | :--- |
+|data.uri|string|Y|视频URL地址，目前支持http、https和[qiniu协议](/censor/7299/censor-params#2)的资源。|
+|data.id|string|N|调用者设置的视频唯一标识，异步处理的返回结果中会带上该信息。|
+|params.scenes|array|Y|审核类型，必填字段，没有默认值，可选项：pulp/terror/politician/ads/behavior。|
+|params.cut\_param.interval\_msecs|int|N|截帧频率，单位：毫秒，默认为5000（5s)，取值范围为1000～60000（即1s~60s）。|
+|params.saver.bucket|string|N|视频截帧文件存入的bucket，目前只支持存入七牛云华东的bucket。如何创建七牛云bucket，请参见[文档](https://developer.qiniu.com/kodo/manual/1233/console-quickstart#step1)。|
+|params.saver.prefix|string|N|保存的截帧文件的前缀。|
+|params.hook_url|string|N|视频检测结束后的回调地址。关于API调用视频审核回调文档，请参见[文档](/censor/api/5924/video-review-callback)|
+|params.hook_auth|Boolean|N|true/false，默认为false，设置回调请求中加入请求头authorization，用于回调服务器鉴权|
+
+**请求示例**
+
+```
+POST /v3/video/censor HTTP/1.1
+Host: ai.qiniuapi.com
+Content-Type: application/json
+Authorization: Qiniu YnxrxOSvGotRZpqkZnMzl_euuoqRzOKUd6zwbRju:r6a-o2UpBg6A4puIMnkCExH8lE8=
+
+{
+    "data": {
+        "uri": "https://mars-assets.qnssl.com/scene.mp4",
+        "id": "video_censor_test"
+    },
+    "params": {
+        "scenes": [
+            "pulp",
+            "terror",
+            "politician"
+        ],
+        "cut_param": {
+            "interval_msecs": 5000
+        }
+    }
+}
+```
+注意： 请把 Authorization 换成您的账号七牛鉴权 QiniuToken
+
+## 系统接受到请求后，会立即返回job_id，视频审核结果通过job_id获得。
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+	"job": <job_id>
+}
+```
+
+| 参数 | 类型 | 必选 | 说明 |
+| :--- | :--- | :---: | :--- |
+| `job_id` | string | 是 | 服务器返回的，唯一标识该视频任务的ID。  |
+
+# 通过job_id获取视频审核结果
+
+**请求语法**
+
+```
+GET /v3/jobs/video/<job-id> HTTP/1.1
+Host: ai.qiniuapi.com
+Authorization: Qiniu <AccessKey>:<Sign>
+```
+**注意：** 需要在请求的 head 部分添加[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken)，以进行用户身份验证。
+
+| 参数 | 类型 | 必选 | 说明 |
+| :--- | :--- | :---: | :--- |
+| `job_id` | string | 是 | 服务器返回的，唯一标识该视频任务的ID。 |
+
+
+**返回参数说明**
+
+|字段|取值|说明|
+| :------------- | :--- | :--- |
+|id|string|服务器返回的，唯一标识该视频任务的ID。|
+|vid|string|视频唯一标识，申请任务时传入的data.id。|
+|request|json结构体|视频审核请求中的body。|
+|status|string|任务状态，`WAITING/DOING/RESCHEDULED/FAILED/FINISHED`,`RESCHEDULED`是指等待重试中。|
+|result|json结构体|视频内容审核的返回结果，详情请查看`*表.视频内容审核的返回结果*`。|
+|created_at|string| 任务创建时间，如：2019-01-02T15:03:04。 |
+|updated_at|string| 任务更新时间，如：2019-01-02T15:03:04。 |
+|rescheduled_at|string| 任务重试时间，如：2019-01-02T16:03:04。 |
+
+*表.视频内容审核的返回结果*
+
+|字段|取值|说明|
+| :------------- | :--- | :--- |
+|code|int|处理状态：200 调用成功|
+|message|string|与code对应的状态描述信息|
+|result.suggestion|string|视频的审核结果管控建议说明<br>根据内容审核中各种审核类型的返回结果，系统会将审核结果转换成对应的管控建议，取值包括：[“block”,”review”,”pass”]。<br>suggestion=block：表示系统确认审核内容违规，建议您将其删除。<br>suggestion=review：表示系统无法确认审核内容是否违规，建议您进行人工复核。<br>suggestion=pass：表示系统确认审核内容正常，建议您忽略该文件。 |
+|result.scenes.`<type>`|json结构体|审核类型,目前支持"pulp", "terror", "politician"|
+|result.scenes.`<type>`.suggestion|string|该审核类型的结果管控建议，参见result.suggestion|
+|result.scenes.`<type>`.cuts[]|array|该审核类型的截帧审核结果数组|
+|result.scenes.`<type>`.cuts[].suggestion|string|该审核类型的截帧审核结果管控建议，参见result.suggestion|
+|result.scenes.`<type>`.cuts[].offset|int|该审核类型的截帧的时间位置|
+|result.scenes.`<type>`.cuts[].uri|string|该审核类型的截帧uri|
+|result.scenes.`<type>`.cuts[].details[]|array|该审核类型的截帧审核详细信息数组|
+|result.scenes.`<type>`.cuts[].details[].suggestion|string|该审核类型的截帧审核结果详细的结果管控建议，参见result.suggestion|
+|result.scenes.`<type>`.cuts[].details[].label|string|该审核类型的截帧审核结果标签，具体请参见[图片内容审核](https://developer.qiniu.com/censor/api/5588/image-censor)的label/group|
+|result.scenes.`<type>`.cuts[].details[].score|string|该审核类型的截帧审核结果置信度|
+|result.scenes.politician.cuts[].details[].group|string|该审核类型的截帧审核结果分组，具体请参见[图片内容审核](https://developer.qiniu.com/censor/api/5588/image-censor)的label/group|
+|result.scenes.politician.cuts[].details[].sample.uri|string|该敏感人物的参考图链接|
+|result.scenes.politician.cuts[].details[].sample.pts|array|参考图中敏感人物的人脸方框坐标|
+|result.scenes.politician.cuts[].details[].detections[].pts|array|截帧中检测到的敏感人物人方框坐标|
+|result.scenes.politician.cuts[].details[].detections[].score|string|截帧中检测到的人脸匹配为敏感人物的置信度|
+|result.scenes.terror.cuts[].details[].detections[].pts|array|当截帧审核结果label为以下五种时，该字段用于返回检测到的物体方框坐标：<br>“illegal_flag：违规旗帜类”<br>”guns：枪”<br>”knives：刀”<br>”anime_knives：二次元刀”<br>“anime_guns：二次元枪”|
+|result.scenes.terror.cuts[].details[].detections[].score|string|截帧中检测到的物体置信度|
+
+
+**返回示例**
+
+```
+{
+    "id":"5c416b7afb09fe00089e37be",
+	"vid":"video_censor_test",
+    "request":{
+        ...
+    },
+    "status":"FINISHED",
+    "result":{
+        "code":200,
+        "message":"OK",
+        "result":{
+            "suggestion":"pass",
+            "scenes":{
+                "politician":{
+                    "cuts":[
+                        {
+                            "offset":0,
+                            "suggestion":"pass"
+                        },
+                        {
+                            "offset":657,
+                            "suggestion":"pass"
+                        }
+                    ],
+                    "suggestion":"pass"
+                },
+                "pulp":{
+                    "cuts":[
+                        {
+                            "details":[
+                                {
+                                    "label":"normal",
+                                    "score":0.99976,
+                                    "suggestion":"pass"
+                                }
+                            ],
+                            "offset":0,
+                            "suggestion":"pass"
+                        },
+                        {
+                            "details":[
+                                {
+                                    "label":"normal",
+                                    "score":0.99998,
+                                    "suggestion":"pass"
+                                }
+                            ],
+                            "offset":657,
+                            "suggestion":"pass"
+                        }
+                    ],
+                    "suggestion":"pass"
+                },
+                "terror":{
+                    "cuts":[
+                        {
+                            "details":[
+                                {
+                                    "label":"normal",
+                                    "score":0.76111,
+                                    "suggestion":"pass"
+                                }
+                            ],
+                            "offset":0,
+                            "suggestion":"pass"
+                        },
+                        {
+                            "details":[
+                                {
+                                    "label":"normal",
+                                    "score":0.52299,
+                                    "suggestion":"pass"
+                                }
+                            ],
+                            "offset":657,
+                            "suggestion":"pass"
+                        }
+                    ],
+                    "suggestion":"pass"
+                }
+            }
+        }
+    },
+    "created_at":"2019-01-18T14:00:26.865+08:00",
+    "updated_at":"2019-01-18T14:01:01.148+08:00",
+    "rescheduled_at":"2019-01-18T14:00:26.865+08:00"
+}
+```
+
+# 代码示例
+**注意**
+* 运行方法：`python VideoReview.py <censor | pulp | terror | politician> <uri>`，得到job_id
+* 代码中需填入账号的 `ak`、`sk`
+
+视频内容审核（VideoReview.py）
+```
+# -*- coding: utf-8 -*-
+from qiniu import Auth, QiniuMacAuth, http
+import requests, json, sys
+
+access_key = '<ak>'
+secret_key = '<sk>'
+ 
+auth = QiniuMacAuth(access_key, secret_key)
+ 
+url = 'http://ai.qiniuapi.com/v3/video/censor'
+ 
+body = {
+	"data": {
+		"uri": "<uri>"
+	},
+	"params": {
+        "scenes":[],
+        "cut_param": {
+            "interval_msecs": 5000
+        }
+    }
+}
+
+ops = {
+	"censor": ["pulp","terror","politician"],
+	"pulp": ["pulp"],
+	"terror": ["terror"],
+	"politician": ["politician"],
+}
+
+body["params"]["scenes"] = ops[sys.argv[1]]
+body["data"]["uri"] = sys.argv[2]
+
+ret, res = http._post_with_qiniu_mac(url, body, auth)
+
+headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
+
+print(json.dumps(headers, indent=4, ensure_ascii=False))
+print(json.dumps(ret, indent=4, ensure_ascii=False))
+```
+
+**注意**
+* 调用命令：`python VideoReview.py.py censor https://mars-assets.qnssl.com/scene.mp4`
+
+```
+{
+    "reqid": "lSQAAPpUdoS3roUV, lSQAAPpUdoS3roUV",
+    "code": 200,
+    "xlog": "COMMON-GATE:2;AI:2"
+}
+{
+    "job": "5c6fe7f59a0b0500082b774f"
+}
+```
+
+**注意**
+* 运行方法：`python AsyncResult.py <job_id>`，得到视频审核结果
+* 代码中需填入账号的 `ak`、`sk`
+
+通过job_id获取视频审核结果（AsyncResult.py）
+```
+# -*- coding: utf-8 -*-
+from qiniu import Auth, QiniuMacAuth
+import requests, json, sys
+
+access_key = '<ak>'
+secret_key = '<sk>'
+ 
+auth = QiniuMacAuth(access_key, secret_key)
+
+url = 'http://ai.qiniuapi.com/v3/jobs/video/' + sys.argv[1]
+
+token = "Qiniu " + auth.token_of_request("GET", "ai.qiniuapi.com", url, "")
+
+r = requests.get(url, headers={'Authorization': token})
+print json.dumps(json.loads(r.text), indent=4, ensure_ascii=False)
+```
+
+**注意**
+* 调用命令：`python AsyncResult.py 5c6fe7f59a0b0500082b774f`
+
+```
+{
+    "status": "FINISHED",
+    "rescheduled_at": "2019-02-22T20:15:49.931+08:00",
+    "created_at": "2019-02-22T20:15:49.931+08:00",
+    "request": {
+        "params": {
+            "cut_param": {
+                "interval_msecs": 5000
+            },
+            "sync": false,
+            "scenes": [
+                "pulp",
+                "terror",
+                "politician"
+            ]
+        },
+        "data": {
+            "uri": "https://mars-assets.qnssl.com/scene.mp4"
+        }
+    },
+    "updated_at": "2019-02-22T20:15:52.426+08:00",
+    "result": {
+        "message": "OK",
+        "code": 200,
+        "result": {
+            "scenes": {
+                "terror": {
+                    "suggestion": "pass",
+                    "cuts": [
+                        {
+                            "details": [
+                                {
+                                    "score": 0.8864266,
+                                    "suggestion": "pass",
+                                    "label": "normal"
+                                }
+                            ],
+                            "suggestion": "pass",
+                            "offset": 520
+                        },
+                        {
+                            "details": [
+                                {
+                                    "score": 0.99499327,
+                                    "suggestion": "pass",
+                                    "label": "normal"
+                                }
+                            ],
+                            "suggestion": "pass",
+                            "offset": 5520
+                        }
+                    ]
+                },
+                "politician": {
+                    "suggestion": "pass",
+                    "cuts": [
+                        {
+                            "suggestion": "pass",
+                            "offset": 520
+                        },
+                        {
+                            "suggestion": "pass",
+                            "offset": 5520
+                        }
+                    ]
+                },
+                "pulp": {
+                    "suggestion": "pass",
+                    "cuts": [
+                        {
+                            "details": [
+                                {
+                                    "score": 0.6159534,
+                                    "suggestion": "pass",
+                                    "label": "normal"
+                                }
+                            ],
+                            "suggestion": "pass",
+                            "offset": 520
+                        },
+                        {
+                            "details": [
+                                {
+                                    "score": 0.65406007,
+                                    "suggestion": "pass",
+                                    "label": "normal"
+                                }
+                            ],
+                            "suggestion": "pass",
+                            "offset": 5520
+                        }
+                    ]
+                }
+            },
+            "suggestion": "pass"
+        }
+    },
+    "id": "5c6fe7f59a0b0500082b774f"
+}
+```
+
+# 服务价格
+视频内容审核是对视频截帧后，进行截帧图片内容审核，所以视频内容审核的价格实际使用的是截帧图片审核的价格，与图片内容审核共用范围。
+
+1）按照设置的截帧频率对视频进行截帧，不额外收费
+2）对截帧进行图片内容审核
+图片内容审核价格请[参考](https://www.qiniu.com/prices?source=dora)。
+
+**示例：**
+
+某月客户视频文件使用视频鉴黄服务，视频截帧的数量为400万，即视频鉴黄产生的图片鉴黄量为400万；当月图片文件使用鉴黄服务，其调用量为106万。则这个月总的图片鉴黄调用量为506万，账单金额则为: 
+图片鉴黄：
+
+``` 3000000*0.155/100+2000000*0.145/100=4650+2900＝7550元 ```

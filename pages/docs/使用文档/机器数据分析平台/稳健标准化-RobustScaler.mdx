@@ -1,0 +1,18 @@
+稳健标准化是一种将数据标准化的方法，它基于数据的分位数，不易受到极端值的影响。
+
+稳健标准化将数据缩放到指定的分位数范围，默认为0.25和0.75分位数。
+
+
+语法：
+
+```
+..| fit RobustScaler with_centering=<bool> with_scaling=<bool> quantile_range=<tuple> <feature_field_1> <feature_field_2> [into model_name]...
+```
+
+
+参数说明：
+
+- with_centering参数，默认为True。表明是否要进行中心化。
+- with_scaling参数，默认为True。表明是否要进行标准化。
+
+- quantile_range参数，用于指定作稳健标准化时的分位数范围。如不提供，默认值为25-75。

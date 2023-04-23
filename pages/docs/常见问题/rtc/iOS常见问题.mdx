@@ -1,0 +1,106 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文搜集并整理了 iOS 实时音视频 SDK 对接及使用过程中的常见问题</p>
+<blockquote>
+<p>若您遇到的问题本文未提及，请<a href="https://support.qiniu.com/tickets/new">提交工单</a>或者联系七牛技术支持同学协助解决。</p>
+</blockquote>
+
+# 配置使用
+<h2 id="横屏连麦的设置"><a href="#%E6%A8%AA%E5%B1%8F%E8%BF%9E%E9%BA%A6%E7%9A%84%E8%AE%BE%E7%BD%AE" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>横屏连麦的设置</h2>
+<p>需要设置 <a href="/rtc/api/8852/QNCameraVideoTrack-iOS#videoOrientation">videoOrientation</a> 为 <code>AVCaptureVideoOrientationLandscapeRight</code> 或 <code>AVCaptureVideoOrientationLandscapeLeft</code>，注意对应手机的实际旋转方向，然后设置 <a href="/rtc/api/8844/QNCameraVideoTrackConfig-iOS#videoEncodeSize">videoEncodeSize</a> 为横屏尺寸，即宽大于高的横屏比例分辨率。</p>
+<h2 id="扬声器听筒切换"><a href="#%E6%89%AC%E5%A3%B0%E5%99%A8%E5%90%AC%E7%AD%92%E5%88%87%E6%8D%A2" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>扬声器听筒切换</h2>
+<p>v2.1.0 之前的版本，没有暴露切换扬声器和听筒的方法，给 <code>QNRTCSession</code> 加个扩展，直接操作 <code>AVAudioSession</code> 实现切换：</p>
+<pre><code class="language-objc"><span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">QNRTCSession</span> (<span class="hljs-title">AudioSession</span>)</span>
+<span></span>- (<span class="hljs-keyword">void</span>)overrideOutputAudioPortToSpeaker:(<span class="hljs-built_in">BOOL</span>)enabled;
+<span></span><span class="hljs-keyword">@end</span>
+<span></span></code></pre>
+<p>v4.0 之前的版本，通过 <code>QNRTCEngine</code> 调用如下 API 实现：</p>
+<pre><code class="language-objc">- (<span class="hljs-keyword">void</span>)setDefaultOutputAudioPortToSpeaker:(<span class="hljs-built_in">BOOL</span>)defaultToSpeaker;
+<span></span></code></pre>
+<p>v4.0 及以上版本，通过 <code>QNRTC</code> 调用 <a href="/rtc/api/8834/QNRTC-iOS#setAudioRouteToSpeakerphone">setAudioRouteToSpeakerphone</a> 实现。</p>
+<h2 id="sdk-对接第三方美颜的处理"><a href="#sdk-%E5%AF%B9%E6%8E%A5%E7%AC%AC%E4%B8%89%E6%96%B9%E7%BE%8E%E9%A2%9C%E7%9A%84%E5%A4%84%E7%90%86" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>SDK 对接第三方美颜的处理</h2>
+<p>直接在摄像头采集的数据回调中，修改原来的 <code>CMSampleBufferRef</code></p>
+<p>具体实现， v4.0 以下版本可参考 <a href="https://github.com/pili-engineering/QNRTCLive-iOS/blob/master/QNRTCLiveDemo/QNRTCLiveDemo/QNLiveViewController.m">牛互动</a> 下的</p>
+<pre><code class="language-objc">- (<span class="hljs-keyword">void</span>)RTCEngine:(QNRTCEngine *)engine cameraSourceDidGetSampleBuffer:(<span class="hljs-built_in">CMSampleBufferRef</span>)sampleBuffer；
+<span></span></code></pre>
+<p>v4.x 则在 <code>QNCameraVideoTrack</code> 下的</p>
+<pre><code class="language-objc">- (<span class="hljs-keyword">void</span>)cameraVideoTrack:(QNCameraVideoTrack *)cameraVideoTrack didGetSampleBuffer:(<span class="hljs-built_in">CMSampleBufferRef</span>)sampleBuffer;
+<span></span></code></pre>
+<p>v5.x 则在 <code>QNLocalVideoTrack</code> 下的</p>
+<pre><code class="language-objc">- (<span class="hljs-keyword">void</span>)localVideoTrack:(QNLocalVideoTrack *)localVideoTrack didGetPixelBuffer:(CVPixelBufferRef)pixelBuffer;
+<span></span></code></pre>
+<h2 id="qnrtckit-设置-sei-以及-plplayerkit-解析-sei-信息"><a href="#qnrtckit-%E8%AE%BE%E7%BD%AE-sei-%E4%BB%A5%E5%8F%8A-plplayerkit-%E8%A7%A3%E6%9E%90-sei-%E4%BF%A1%E6%81%AF" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>QNRTCKit 设置 SEI 以及 PLPLayerKit 解析 SEI 信息</h2>
+<p><code>QNRTCKit</code> SDK 中调用本地视频 Track 发布 SEI：</p>
+<pre><code class="language-objc"><span class="hljs-comment">// v4.x</span>
+<span></span>- (<span class="hljs-keyword">void</span>)sendSEI:(<span class="hljs-built_in">NSString</span> *)videoSEI repeatNmuber:(<span class="hljs-built_in">NSNumber</span> *)repeatNumber;
+<span></span>
+<span></span><span class="hljs-comment">// v5.x</span>
+<span></span>- (<span class="hljs-keyword">void</span>)sendSEI:(<span class="hljs-built_in">NSString</span> *)videoSEI uuid:(<span class="hljs-built_in">NSString</span> *)uuid repeatNmuber:(<span class="hljs-built_in">NSNumber</span> *)repeatNumber;
+<span></span></code></pre>
+<p><code>PLPLayerKit</code> SDK 中实现代理回调：</p>
+<pre><code class="language-objc">- (<span class="hljs-keyword">void</span>)player:(PLPlayer *)player SEIData:(<span class="hljs-built_in">NSData</span> *)SEIData ts:(int64_t)ts;
+<span></span></code></pre>
+<p>在该回调内部，解析 SEI 信息，将 <code>SEIData</code>转换成需要的 16进制字符串</p>
+<pre><code class="language-objc"><span class="hljs-built_in">NSData</span> *data = [SEIData subdataWithRange:<span class="hljs-built_in">NSMakeRange</span>(<span class="hljs-number">19</span>, SEIData.length - <span class="hljs-number">19</span> - <span class="hljs-number">1</span>)];
+<span></span><span class="hljs-built_in">NSMutableString</span> *hexString = [[<span class="hljs-built_in">NSMutableString</span> alloc] initWithCapacity:[data length]];
+<span></span>[data enumerateByteRangesUsingBlock:^(<span class="hljs-keyword">const</span> <span class="hljs-keyword">void</span> * _Nonnull bytes, <span class="hljs-built_in">NSRange</span> byteRange, <span class="hljs-built_in">BOOL</span> * _Nonnull stop) {
+<span></span>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> *dataBytes = (<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> *)bytes;
+<span></span>    <span class="hljs-keyword">for</span> (<span class="hljs-built_in">NSInteger</span> i = <span class="hljs-number">0</span>; i &lt; byteRange.length; i++) {
+<span></span>        <span class="hljs-built_in">NSString</span> *hexStr = [<span class="hljs-built_in">NSString</span> stringWithFormat:<span class="hljs-string">@&quot;%x&quot;</span>, (dataBytes[i]) & <span class="hljs-number">0xff</span>];
+<span></span>        <span class="hljs-keyword">if</span> ([hexStr length] == <span class="hljs-number">2</span>) {
+<span></span>            [hexString appendString:hexStr];
+<span></span>        } <span class="hljs-keyword">else</span> {
+<span></span>            [hexString appendFormat:<span class="hljs-string">@&quot;0%@&quot;</span>, hexStr];
+<span></span>        }
+<span></span>    }
+<span></span>}];
+<span></span></code></pre>
+
+# 功能疑问
+<h2 id="是否支持后台连麦"><a href="#%E6%98%AF%E5%90%A6%E6%94%AF%E6%8C%81%E5%90%8E%E5%8F%B0%E8%BF%9E%E9%BA%A6" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>是否支持后台连麦</h2>
+<p>基于 iOS App 运行模式，仅支持退后台语音连麦，视频画面将保留退后台前的最后一帧。</p>
+<p>若您有后台连麦的需求，请在工程 Info.plist 下配置 “Required background modes” 对应 “App plays audio or streams audio/video using AirPlay” ，即设置音频模式，就可实现在应用退后台后，保持音频采集。</p>
+<p>若您不需要后台连麦，可以在应用层监听 <code>UIApplicationDidEnterBackgroundNotification</code>、<code>UIApplicationDidBecomeActiveNotification</code>，分别调用 <a href="rtc/api/8852/QNCameraVideoTrack-iOS#stopCapture">QNCameraVideoTrack.stopCapture</a> 和 <a href="rtc/api/8852/QNCameraVideoTrack-iOS#startCapture">QNCameraVideoTrack.startCapture</a>方法进行 Camera 采集的关闭和开启操作。</p>
+<h2 id="服务端与客户端合流配置的差异"><a href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%90%88%E6%B5%81%E9%85%8D%E7%BD%AE%E7%9A%84%E5%B7%AE%E5%BC%82" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>服务端与客户端合流配置的差异</h2>
+<p>服务端合流需要七牛官网注册实名后的账号，在 <a href="https://portal.qiniu.com/app">portal</a> 上创建应用，对应应用来编辑配置的合流信息，其中包括是否启用转推、是否只合成音频、合流输出尺寸大小、合流输出帧率和码率、填充模式以及转推流名。具体说明，可参见<a href="https://developer.qiniu.com/rtn/4399/the-service-side-confluence">服务端合流文档</a>。</p>
+<p><strong>注意：合流输出尺寸是整个流的画布大小！</strong></p>
+<p>客户端合流则是调用代码实现，需要配置 <a href="/rtc/api/8862/QNTranscodingLiveStreamingConfig-iOS">QNTranscodingLiveStreamingConfig</a> ，生成 <a href="/rtc/api/8863/QNTranscodingLiveStreamingTrack-iOS">QNTranscodingLiveStreamingTrack</a> ，然后调用 <a href="/rtc/api/8836/QNRTCClient-iOS#setTranscodingLiveStreamingID">setTranscodingLiveStreamingID</a> 实现。</p>
+<p><code>QNTranscodingLiveStreamingConfig</code> 是合流输出的配置，包括合流输出宽高、合流转推 url、流 id、帧率、码率、画面填充模式以及水印背景图片等。</p>
+<p><code>QNTranscodingLiveStreamingTrack</code> 是配置单个用户的，<code>frame</code> 包括了 x、y 坐标位置及宽高，<code>zOrder</code> 则决定了层次，一般 <code>zOrder</code> 为 0，有多个转推 Track 且有层次需求的，需要小心配置，不要覆盖。</p>
+<p>不需要合流时，服务端合流直接关闭<code>启用转推</code>，客户端则需要调用 <a href="/rtc/api/8836/QNRTCClient-iOS#stopLiveStreamingWithTranscoding">stopLiveStreamingWithTranscoding</a> 来停止合流，收到 <a href="/rtc/api/9248/QNRTCClientDelegate#didStopLiveStreamingWith">didStopLiveStreamingWith</a> 回调代表停止合流转推成功。</p>
+<p>另外，存在管理员用户和普通用户，即 <code>admin</code> 和 <code>user</code>。拥有 <code>admin</code> 权限的主播，可以设置 <code>user</code> 权限主播的画面。</p>
+<h2 id="房间内连麦的最大人数"><a href="#%E6%88%BF%E9%97%B4%E5%86%85%E8%BF%9E%E9%BA%A6%E7%9A%84%E6%9C%80%E5%A4%A7%E4%BA%BA%E6%95%B0" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>房间内连麦的最大人数</h2>
+<p>上行 50 人发布，下行随时可上麦人数在 1000 人，不过最多可发布的就是 50 人；单房间观众权限（不能直接发布）最多可订阅 1 万人，主播权限是 1000 人。</p>
+<h2 id="进入房间后发生重连时的重连逻辑"><a href="#%E8%BF%9B%E5%85%A5%E6%88%BF%E9%97%B4%E5%90%8E%E5%8F%91%E7%94%9F%E9%87%8D%E8%BF%9E%E6%97%B6%E7%9A%84%E9%87%8D%E8%BF%9E%E9%80%BB%E8%BE%91" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>进入房间后发生重连时的重连逻辑</h2>
+<p>房间内本地发生重连时，房间状态会变更为 <a href="/rtc/api/9254/QNTypeDefines#QNConnectionState">QNConnectionStateReconnecting</a>，此时 SDK 会自动重连，内部进行循环重试，当一直无法重连成功且无任何报错信息时，可通过调用 <a href="/rtc/api/8836/QNRTCClient-iOS#leave">leave</a> 离开房间。</p>
+<h2 id="合流失败后是否会重连"><a href="#%E5%90%88%E6%B5%81%E5%A4%B1%E8%B4%A5%E5%90%8E%E6%98%AF%E5%90%A6%E4%BC%9A%E9%87%8D%E8%BF%9E" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>合流失败后是否会重连</h2>
+<p>不会重连，但会触发<code>合流错误的回调</code> <a href="/rtc/api/9248/QNRTCClientDelegate#didErrorLiveStreaming">didErrorLiveStreaming</a></p>
+<h2 id="是否支持-app-extension-方式的录屏"><a href="#%E6%98%AF%E5%90%A6%E6%94%AF%E6%8C%81-app-extension-%E6%96%B9%E5%BC%8F%E7%9A%84%E5%BD%95%E5%B1%8F" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>是否支持 APP Extension 方式的录屏</h2>
+<p>不支持，<code>QNRTC</code> 在 Extension 模式下无法实现数据发布，直接在 APP 中用系统录屏 Replaykit 的 <code>RPScreenRecorder</code> 即可。</p>
+<h2 id="是否支持合流过程中修改发布的分辨率"><a href="#%E6%98%AF%E5%90%A6%E6%94%AF%E6%8C%81%E5%90%88%E6%B5%81%E8%BF%87%E7%A8%8B%E4%B8%AD%E4%BF%AE%E6%94%B9%E5%8F%91%E5%B8%83%E7%9A%84%E5%88%86%E8%BE%A8%E7%8E%87" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>是否支持合流过程中修改发布的分辨率</h2>
+<p>不支持，需要先停止原来的视频发布 <a href="/rtc/api/8836/QNRTCClient-iOS#unpublish">unpublish</a>，设置新的参数后重新发布 <a href="/rtc/api/8836/QNRTCClient-iOS#publish">publish</a>。</p>
+<h2 id="混音格式支持"><a href="#%E6%B7%B7%E9%9F%B3%E6%A0%BC%E5%BC%8F%E6%94%AF%E6%8C%81" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>混音格式支持</h2>
+<p>混音功能分为<a href="/rtc/api/11930/QNAudioMusicMixer-iOS">背景音乐混音</a>和<a href="/rtc/development_guidelines/11979/iOS-audio-effect-mixer">多音效混音</a>两种。</p>
+<p>两种混音场景均支持本地文件和在线文件，支持混合的音频格式为：aac、mp3、mp4、wav、m4r、caf、ogg、opus、m4a、flac</p>
+
+# 非预期问题
+<h2 id="合流后没有视频帧或音频帧"><a href="#%E5%90%88%E6%B5%81%E5%90%8E%E6%B2%A1%E6%9C%89%E8%A7%86%E9%A2%91%E5%B8%A7%E6%88%96%E9%9F%B3%E9%A2%91%E5%B8%A7" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>合流后没有视频帧或音频帧</h2>
+<p>检查 portal 后台连麦应用的设置，检查下宽高参数是否有设置为<code>奇数</code>，若存在改为<code>偶数</code>即可；没有音频，需要检查是否<code>静默</code>了音频发布。</p>
+<h2 id="合流后转推画面不符合预期"><a href="#%E5%90%88%E6%B5%81%E5%90%8E%E8%BD%AC%E6%8E%A8%E7%94%BB%E9%9D%A2%E4%B8%8D%E7%AC%A6%E5%90%88%E9%A2%84%E6%9C%9F" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>合流后转推画面不符合预期</h2>
+<p>检查配置合流转推后台<code>画布</code>大小，客户端上<code>位置</code>是否对应，是否存在<code>多人</code>可配置合流画面位置导致。</p>
+<h2 id="上架-appstore-审核失败"><a href="#%E4%B8%8A%E6%9E%B6-appstore-%E5%AE%A1%E6%A0%B8%E5%A4%B1%E8%B4%A5" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>上架 AppStore 审核失败</h2>
+<p>可能使用了<code>真机加模拟器</code>版本，或者携带了 <code>QNRTCKit</code> SDK 文件夹下的 <code>dsym</code> 文件。保证使用<code>仅真机</code>版本，且不携带 <code>dsym</code> 文件。</p>
+<h2 id="设置-qncameravideotrack-的编码分辨率配置-videoencodesize-不生效"><a href="#%E8%AE%BE%E7%BD%AE-qncameravideotrack-%E7%9A%84%E7%BC%96%E7%A0%81%E5%88%86%E8%BE%A8%E7%8E%87%E9%85%8D%E7%BD%AE-videoencodesize-%E4%B8%8D%E7%94%9F%E6%95%88" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>设置 QNCameraVideoTrack 的编码分辨率配置 videoEncodeSize 不生效</h2>
+<p>创建 <a href="/rtc/8852/QNCameraVideoTrack-iOS">QNCameraVideoTrack</a> 指定编码分辨率配置 <a href="/rtc/8844/QNCameraVideoTrackConfig-iOS#videoEncodeSize">videoEncodeSize</a> 时，需要同步设置预览分辨率 <a href="/rtc/8852/QNCameraVideoTrack-iOS#videoFormat">videoFormat</a>，保证预览分辨率的宽高大于编码分辨率的宽高，否则设置不生效。</p>
+<h2 id="手动引入-sdk-时报错动态库无法找到-image-not-found"><a href="#%E6%89%8B%E5%8A%A8%E5%BC%95%E5%85%A5-sdk-%E6%97%B6%E6%8A%A5%E9%94%99%E5%8A%A8%E6%80%81%E5%BA%93%E6%97%A0%E6%B3%95%E6%89%BE%E5%88%B0-image-not-found" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>手动引入 SDK 时报错：动态库无法找到 image not found</h2>
+<p>如果运行后程序 crash，报错信息标识动态库无法找到 image not found，说明 SDK 没有正常 Embed，可以按<a href="/rtc/8831/prepare-ios-development#3">接入文档</a>流程重新引入一次。</p>
+<h2 id="屏幕录制失败或者播放声音突然变小"><a href="#%E5%B1%8F%E5%B9%95%E5%BD%95%E5%88%B6%E5%A4%B1%E8%B4%A5%E6%88%96%E8%80%85%E6%92%AD%E6%94%BE%E5%A3%B0%E9%9F%B3%E7%AA%81%E7%84%B6%E5%8F%98%E5%B0%8F" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>屏幕录制失败或者播放声音突然变小</h2>
+<p>需要检查下 App 层是否更改了 <code>AVAudioSession</code> 的 category 类型或 mode 模式，在使用 SDK 的过程中，请确保<code>AVAudioSession</code> 的 category 类型和 mode 模式分别是 <code>AVAudioSessionCategoryPlayAndRecord</code> 和 <code>AVAudioSessionModeVoiceChat</code>，否则可能出现屏幕录制失败（报错 -5833）、播放声音突然变小等非预期问题。</p>
+
+# 报错处理
+<h2 id="rtcvideoencoderh264-报错--12902"><a href="#rtcvideoencoderh264-%E6%8A%A5%E9%94%99--12902" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>RTCVideoEncoderH264 报错 -12902</h2>
+<p>当使用默认 <a href="/rtc/api/8844/QNCameraVideoTrackConfig-iOS#videoEncodeSize">videoEncodeSize</a>，但实际预览画面尺寸会动态改变时，会复现该报错，原因是 <code>videoEncodeSize</code> 默认与预览画面尺寸一致，当预览画面尺寸动态更改时，编码尺寸 <code>videoEncodeSize</code> 也一直随之改动，导致编码报错。</p>
+<p>此时，需要对 <a href="/rtc/api/8844/QNCameraVideoTrackConfig-iOS#videoEncodeSize">videoEncodeSize</a> 设置固定值，不随预览画面尺寸动态更改。</p>
+<h2 id="更新合流转推的布局发生报错-11013"><a href="#%E6%9B%B4%E6%96%B0%E5%90%88%E6%B5%81%E8%BD%AC%E6%8E%A8%E7%9A%84%E5%B8%83%E5%B1%80%E5%8F%91%E7%94%9F%E6%8A%A5%E9%94%99-11013" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>更新合流转推的布局发生报错 11013</h2>
+<p>请先检查 <a href="/rtc/api/8836/QNRTCClient-iOS#startLiveStreamingWithTranscoding">startLiveStreamingWithTranscoding</a> 创建合流转推是否成功，是否存在 <a href="/rtc/api/8862/QNTranscodingLiveStreamingConfig-iOS#streamID">streamID</a> 或 <a href="/rtc/api/8862/QNTranscodingLiveStreamingConfig-iOS#publishUrl">publishUrl</a> 为 nil。</p>
+<p>正确做法应该在创建合流转推成功的回调 <a href="/rtc/api/9248/QNRTCClientDelegate#didTranscodingTracksUpdated">didTranscodingTracksUpdated</a> 中，实现合流转推布局 <a href="/rtc/api/8836/QNRTCClient-iOS#setTranscodingLiveStreamingID">setTranscodingLiveStreamingID</a> 的更新。</p></div></div>

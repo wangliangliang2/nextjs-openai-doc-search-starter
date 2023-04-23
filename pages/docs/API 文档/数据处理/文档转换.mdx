@@ -1,0 +1,73 @@
+# 接口简介
+
+文档转换用于实时将存储在七牛的word(docx, doc)、excel(xlsx, xls)、ppt(pptx)格式的文档转成pdf，支持在浏览器预览，或者存储在七牛云的云存储中
+
+**注意**：
+- 该功能目前支持预览的文件格式有word(docx, doc)、excel(xlsx, xls)、ppt(pptx)等
+- 该功能目前支持 华东、华南、华北、华东-浙江2 区域的存储 bucket
+
+# 命令规格
+**注意**：接口规格不含任何空格与换行符，下列内容经过格式化以便阅读。
+
+```shell
+doc-convert/preview
+```
+
+# 使用方式
+- 可以将word(docx, doc)、excel(xlsx, xls)、ppt(pptx)转成pdf。
+- 通过[pfop持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop)的方式来调用。可以实现将转换后的pdf存储到kodo对象存储的功能。
+
+
+# pfop持久化处理示例
+
+通过pfop操作，可以实现将转换后的pdf存储到kodo对象存储的功能。具体pfop文档请点击：[pfop持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop)，将其中`fops`参数的命令填为`doc-convert/preview`即可
+
+pfop实现pdf转kodo存储代码示例(go语言描述)：
+``` 
+
+package main
+
+import (
+ "fmt"
+ "os"
+
+ "github.com/qiniu/go-sdk/v7/auth"
+ "github.com/qiniu/go-sdk/v7/storage"
+)
+
+var (
+ accessKey = os.Getenv("QINIU_ACCESS_KEY")
+ secretKey = os.Getenv("QINIU_SECRET_KEY")
+ bucket    = os.Getenv("QINIU_TEST_BUCKET")
+ // 数据处理的私有队列，必须指定以保障处理速度
+ pipeline = os.Getenv("QINIU_TEST_PIPELINE")
+)
+
+func main() {
+ mac := auth.New(accessKey, secretKey)
+ cfg := storage.Config{
+  UseHTTPS: true,
+ }
+ // 指定空间所在的区域，如果不指定将自动探测
+ // 如果没有特殊需求，默认不需要指定
+ operationManager := storage.NewOperationManager(mac, &cfg)
+ key := "qiniu.docx"
+ saveBucket := bucket
+ // 处理指令
+ fopDocConvert := fmt.Sprintf("doc-convert/preview|saveas/%s",
+  storage.EncodedEntry(saveBucket, "pfop_test_qiniu.pdf"))
+ // 强制重新执行数据处理任务
+ force := true
+ // 数据处理指令全部完成之后，通知该地址
+ notifyURL := "http://api.example.com/pfop/callback"
+ // 数据处理的私有队列，必须指定以保障处理速度
+ persistentId, err := operationManager.Pfop(bucket, key, fopDocConvert, pipeline, notifyURL, force)
+ if err != nil {
+  fmt.Println(err)
+  return
+ }
+ fmt.Println(persistentId)
+}
+```
+# 价格
+0.1元/千页

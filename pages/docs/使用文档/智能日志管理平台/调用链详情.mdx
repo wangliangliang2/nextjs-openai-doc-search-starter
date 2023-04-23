@@ -1,0 +1,31 @@
+调用链详情允许查看某个调用链的详细信息，包括链路的开始时间、持续时间、链路中的服务个数、span 个数、每个 span 各持续多长时间、每个 span 的具体信息等。
+
+典型应用场景是基于链路查询结果中的慢服务链路或出错服务链路查看链路细节，定位链路调用过程中每个环节的耗时和异常等信息。
+
+![](https://dn-odum9helk.qbox.me/FjM7oI4IyyU29yvpID3hRvGczXSV)
+
+1) 通过调用链详情，可以直观定位到整条链路上耗时最长的一次调用过程。
+
+   下图中，最耗时的一个节点可追踪定位到 `service1 service1-opname` ，接下来就可以对 `service1` 服务的 `service1-opname` 操作（或者调用过程）进行进一步分析
+	 
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-17%20%E4%B8%8A%E5%8D%8810.41.36.jpg)
+
+2）点击 `service1 service1-opname` 可以看到其调用详情。
+
+   下图中，通过 `span.kind: server` 信息可以指定，`service1` 服务，是作为 `hello` 服务的服务端被调用的。从调用链上，可以看到 `service1` 后续还调用了 `service2`，而最长耗时发生在 `service1` 调用 `service2` 之前，所以此示例中耗时根因在 `service1` 本地操作 `service1-opname` 中（相对于调用链起点，从 5.94ms 开始执行，持续了2.01s）。
+	 
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-17%20%E4%B8%8A%E5%8D%8810.53.28.jpg)
+
+   但如果最长耗时调用点发生在网络调用过程，如下图，最长耗时操作是 `service1 callservice2-opname`，该操作包含对 `service2` 的远程调用。我们需要区分是`远程方法执行`成为关键耗时还是`网络延时`成为关键耗时。前一种情况如上图所述，后一种情况为下图所示，`service1 callservice2-opname` 操作里有两条关键日志，`Before call service2` 事件发生的时刻是 1.7ms，`After call service2` 事件发生的时刻是2.01s，两个事件中间包含`网络延时`和 `service2` 的操作耗时。而 `service2` 的操作耗时可以由 `service2 service2-opname` 记录观察到(仅耗时0.06ms)。所以可以判断，下图所示情况的关键耗时是 `service1` 和 `service2` 之间的网络延时。
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-17%20%E4%B8%8A%E5%8D%8811.27.10.jpg)
+
+3）通过调用链可以定位代码结构中的耗时。
+
+   如下图，整条调用链中总共有 38 条 `span`（调用点），其中 `hello callservice2-opname` 是关键耗时点，从图中可以观察到，该耗时点下包含 32 次 `service2 service2-opname` 远程调用，虽然每个 `service2 service2-opname` 执行事件都很短，但是 32 次远程调用累计的网络时延很大。说明代码结构中很可能存在循环远程调用，所以可以考虑优化方向：降低循环远程调用的次数。这种循环远程调用的代码结构场景，可以延伸到访问数据库的场景，若代码结构的循环体中访问数据库，也可能成为耗时关键。这类调用链均可以通过`全链路监控服务`进行定位分析。
+	 
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-17%20%E4%B8%8A%E5%8D%8811.58.30.jpg)
+
+在 `hello callservice2-opname` 的`日志`字段里，也可以看到 包含 32 次 `service2 service2-opname` 远程调用，如下图：
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-17%20%E4%B8%8B%E5%8D%8812.07.19.jpg)
+

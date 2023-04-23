@@ -1,0 +1,56 @@
+# **描述**
+本接口用于更新域名信息
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：PATCH
+* 接口路径：`/v1/namespaces/{namespaceId}/domains/{domain}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间名称ID
+|domain|是|string|域名
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|operations|是|op数组|op集合，详见：*表一*
+
+*表一：* OP集合参数
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|operations.key|是|string|要修改的参数
+|operations.op|是|string|op操作(目前支持replace和delete)
+|operations.value|是|object|要修改的参数对应的value(当op为delete的时候可以忽略)
+
+*表二：* 可编辑参数说明
+
+|参数名称|字段类型|说明|
+|---|---|---|
+|isDefault|boolean|是否默认域名
+
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|domain|Object|域名信息
+|domain.domain|string|域名
+|domain.type|string|域名类型 "publishRtmp":rtmp推流, "liveRtmp": rtmp播放, "liveHls": HLS, "liveHdl": HDL, "liveWebrtc": webrtc, "live": 统一播放	
+|domain.cname|integer|cname
+|domain.state|integer|0: 未配置CNAME，1: 可用，2: 不可用
+|domain.isDefault|boolean|是否默认域名
+|domain.createdAt|integer|创建时间
+|domain.playSecurity|object|时间戳防盗链
+|domain.playSecurity.open|boolean|时间戳防盗链开关
+|domain.playSecurity.expireAfter|integer|时间戳过期时长，单位：秒
+|domain.playSecurity.primary|string|主KEY
+|domain.playSecurity.secondary|string|备用KEY
+|domain.httpsSwitch|object|https开关
+|domain.httpsSwitch.certid|string|证书id
+|domain.httpsSwitch.httpsOpen|boolean|https开关
+

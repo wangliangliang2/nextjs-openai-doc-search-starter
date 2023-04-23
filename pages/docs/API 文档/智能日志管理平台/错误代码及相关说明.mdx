@@ -1,0 +1,45 @@
+**通用错误**
+
+|http code|error message|说明|
+|:---|:------------|:--|
+|400|E8001: Invalid arguments|参数不合法|
+|500|E8004: Internal server error|服务器内部错误|
+
+**仓库(Repo)相关错误**
+
+|http code|error message|说明|
+|:---|:------------|:--|
+|400|E8101: Missing required Repo|reponame为空|
+|400|E8102: Missing required Retention|retention为空|
+|400|E8103: Missing required Region|region为空|
+|400|E8104: The data you provided is not match with your repo schema|打点格式错误|
+|400|E8105: The Repo you provided is invalid|提供的reponame不合法|
+|400|E8106: The Retention you provided is invalid|提供的retention不合法|
+|400|E8107: The Region you provided is invalid|提供的region不合法|
+|400|E8108: The Schema you provided is invalid|提供的Schema不合法|
+|404|E8111: The specified repo does not exist under the provided appid|repo不存在|
+|409|E8112: The specified repo already exists under the provided appid|repo已存在|
+|400|E8113: The request frequency is beyond limit. Try later.|请求过于频繁,请稍候重试|
+|413|E8114: Request entity too large	|请求体太大,请确认后重试|
+|400|E8115: Request entity empty|请求体为空,请确认后重试|
+|400|E8116: Request entity malformed|请求体不合法,请确认后重试|
+
+**Indice(索引)相关错误**
+
+|http code|error message|说明|
+|:---|:------------|:--|
+|400|E8202: The q you provided is invalid|请求参数q不合法|
+|400|E8203: The from you provided is invalid|请求参数from不合法|
+|400|E8204: The size you provided is invalid|请求参数size不合法|
+|400|E8205: The sort you provided is invalid|请求参数sort不合法|
+|400|E8206: The time range parameter value cannot be empty!|请求参数from,to不能为空|
+|400|E8207: The end time you provided is invalid|请求参数to不合法|
+|400|E8208: The end time you provided must be later than from time!|请求参数to必须小于from|
+|400|E8209: The aggregation field cannot be empty!|必须指定聚合的字段|
+
+**其它错误**
+
+|http code|error message|说明|
+|:---|:------------|:--|
+|400|E8301: The Params you provided is invalid|提供的参数不合法,请检查|
+| 401 | bad token | 鉴权不通过 、token已过期、机器时间未同步 |

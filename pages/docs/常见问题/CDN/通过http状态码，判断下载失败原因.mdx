@@ -1,0 +1,11 @@
+如果使用浏览器访问，可以 [在浏览器中获取网络请求信息](https://developer.qiniu.com/fusion/kb/1478/how-to-access-network-in-the-browser-request-information)
+
+常见的集中错误如下：
+
+| 错误码 | 说明 |
+| ---- | ---- |
+| 401 | 鉴权失败。<br>· `token not specified` 表示访问时没有带 token 。如果确认访问 URL 是带了 token 的，需要核实域名是否开启了忽略 URL 参数，私有空间域名此项必须关闭。 <br>· `download token auth failed` 表示 token 错误，说明生成 token 的算法有问题，建议直接使用七牛的服务端 SDK 生成 token。<br>· `token out of date` 表示 token 过期。  |
+| 403 | 权限不足。通常是因为域名开启了防盗链，需要确认一下防盗链规则是否跟访问请求相符。 | 
+| 404 | 文件不存在。需要确认一下文件是否真的上传成功，或者是上传后执行了删除操作。  |
+| 478 | 镜像回源失败。<br>通常报错是 `get image from source failed :E xxx ` ，其中 xxx 是回源拉取文件时源站响应的状态码，需要以此为依据排查源站服务是否正常。  |
+| 5xx | 错误是服务端异常。<br>· 域名的源站是自有源，建议优先排查源站是否对七牛回源请求给了 5xx 的响应。<br> · 域名的源站是七牛存储空间，需要给七牛提交工单，提供 [CDN 节点 IP](https://developer.qiniu.com/fusion/kb/3641/get-the-cdn-node-ip-method) 。|

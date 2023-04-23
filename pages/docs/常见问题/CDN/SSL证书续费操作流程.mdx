@@ -1,0 +1,18 @@
+在七牛购买的证书，支持进行续费操作，续费后将生成一个新证书订单，需要针对新生成的证书订单，进行补全信息及证书验证的操作，等待证书签发后，本次续费操作完成。
+
+1.登录 [七牛开发者平台](https://portal.qiniu.com/create) ，在左侧点击 [SSL 证书服务](https://portal.qiniu.com/certificate/ssl)，找到待续费的证书订单，点击续费。  
+ &emsp;<img src="https://dn-odum9helk.qbox.me/FmUrGkxakPnMfH4weB1ePaNUfICb" width=800 /> 
+
+
+2.提交订单后，会提示您进行证书信息补全：
+&emsp; <img src="https://dn-odum9helk.qbox.me/Fl1YnAdK5Dxox_zhjiOnteKPE-r1" width=500 /> 
+&emsp;如果您提交订单后跳过了这个按钮，后续也可以在订单页面找到这个证书，点击进行补全。
+&emsp; <img src="https://dn-odum9helk.qbox.me/FmZq_IiwpmBnhgB-Y_xjPdMm0gr-" width=800 /> 
+
+3.补全信息完成后，您需要完成证书的验证配置。
+&emsp;您可以在`订单详情`中获取证书的验证信息，如果您申请的是免费DV证书，您可以参考文档[**免费证书验证指南**](https://developer.qiniu.com/ssl/manual/3667/ssl-certificate-of-free-dns-validation-guide)
+&emsp;<img src="https://dn-odum9helk.qbox.me/FoqM2pSph8xmBVCQskjEdRQE9jBx" width="600"/>
+
+
+4.证书配置成功且订单签发后，您需要在「CDN」-「域名管理」-「配置」页面，修改「HTTPS配置」，选择下拉框中可选证书，点击提交即可更换CDN域名的绑定证书。
+&emsp; <img src="https://dn-odum9helk.qbox.me/FnABqLz16VOF4wInaPQrNkgIOb09" width=400 />

@@ -1,0 +1,209 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `POST` /v1/vm/resource_available
+
+
+# 请求参数
+
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必填</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>x-qiniu-regionid</td>
+      <td>string</td>
+      <td>header</td>
+      <td>是</td>
+      <td>
+        <p>地域 ID。</p>
+        <p>您可以调用 DescribeRegions 查看最新的七牛云地域列表。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>destination_resource</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>要查询的资源类型。取值范围：</p>
+        <ul>
+          <li>Zone：可用区</li>
+          <li>IoOptimized：I/O 优化</li>
+          <li>InstanceType：实例规格</li>
+          <li>SystemDisk：系统盘</li>
+          <li>DataDisk：数据盘</li>
+          <li>Network：网络类型</li>
+          <li>ddh：专有宿主机
+            参数 DestinationResource 的取值方式请参见上文接口说明。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>zone_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>可用区 ID。</p>
+        <p>默认值：无，表示随机分配当前地域下的可用区，返回该地域（RegionId）下所有可用区的符合查询条件的资源。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_charge_type</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>资源的计费方式。更多详情，请参见计费概述。取值范围：</p>
+        <ul>
+          <li>PrePaid：包年包月</li>
+          <li>PostPaid：按量付费
+            默认值：PostPaid</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_type</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>实例规格。更多详情，请参见实例规格族，也可以调用 DescribeInstanceTypes 接口获得最新的规格表。</p>
+        <p>当参数 DestinationResource 取值为 SystemDisk 或者 DataDisk 时，InstanceType 为必需参数。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>system_disk_category</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>系统盘类型。取值范围：
+          若参数 DestinationResource 取值为 SystemDisk、InstanceType 或者 DataDisk 时，参数 SystemDiskCategory 不是必需参数。</p>
+        <p>默认值：cloud_efficiency</p>
+      </td>
+    </tr>
+    <tr>
+      <td>data_disk_category</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>数据盘类型。取值范围：</p>
+      </td>
+    </tr>
+    <tr>
+      <td>network_category</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>网络类型。取值范围：</p>
+        <ul>
+          <li>vpc：专有网络</li>
+          <li>classic：经典网络</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+
+| 名称 | 类型 | 描述 |
+| ----- | ----- | ----- |
+| request_id | string | 请求 ID |
+| data | object{ "available_zone"： AvailableZoneType\[] } | 数据中信息组成的集合 |
+
+### AvailableZoneType
+| 名称 | 类型 | 描述 |
+| ----- | ----- | ----- |
+| region_id | string | 地域 ID |
+| zone_id | string | 可用区 ID |
+| status | string | 资源状态。<br />返回值：<ul><li>Available：资源充足</li><li>SoldOut：资源已售罄</li></ul> |
+| available_resources | object{"available_resources": AvailableResource\[]} | 支持的可供创建的具体资源组成的数组 |
+
+### AvailableResource
+| 名称 | 类型 | 描述 |
+| ----- | ----- | ----- |
+| type | string | 资源值 |
+| supported_resources | object{"supported_resource": SupportedResource\[]} | 支持的可供创建的具体资源组成的数组。 |
+
+### SupportedResource
+| 名称 | 类型 | 描述 |
+| ----- | ----- | ----- |
+| value  | string | 资源值。 |
+| status | string | 资源状态。<br />可能值：<ul><li>Available：资源充足</li><li>SoldOut：资源已售罄</li></ul> |
+| min    | integer | 资源规格的最小值，该参数值为空时将不返回。 |
+| max    | integer | 资源规格的最大值，该参数值为空时将不返回。 |
+| unit   | string | 资源规格单位，该参数值为空时将不返回。 |
+
+
+## 返回值示例
+```json
+{
+  "data": {
+    "available_zone": [
+      {
+        "region_id": "cn-qingdao",
+        "zone_id": "cn-qingdao-c",
+        "status": "Available",
+        "available_resources": {
+          "available_resources": [
+            {
+              "type": "InstanceType",
+              "supported_resources": {
+                "supported_resource": [
+                  {
+                    "value": "ecs.e4.2xlarge",
+                    "status": "Available"
+                  },
+                  {
+                    "value": "ecs.c6.4xlarge",
+                    "status": "SoldOut"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "region_id": "cn-qingdao",
+        "zone_id": "cn-qingdao-b",
+        "status": "Available",
+        "available_resources": {
+          "available_resources": [
+            {
+              "type": "InstanceType",
+              "supported_resources": {
+                "supported_resource": [
+                  {
+                    "value": "ecs.e4.2xlarge",
+                    "status": "Available"
+                  },
+                  {
+                    "value": "ecs.sn2ne.2xlarge",
+                    "status": "Available"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "request_id": "N8cGF9hhROnf1FAW"
+}
+```

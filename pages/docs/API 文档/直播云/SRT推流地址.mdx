@@ -1,0 +1,64 @@
+使用 SRT 发起推流的地址，可以通过RTMP推流地址转换得到，签算后的RTMP推流URL，我们可以分成几个部分
+``` language
+rtmp://<RTMPPublishDomain>/<Hub>/<streamTitle>?<query>
+```
+
+转换为SRT推流URL的步骤，就是对这几个部分的重新拼接
+``` language
+srt://<RTMPPublishDomain>:1935?streamid=#!::h=<Hub>/<streamTitle>,m=publish,domain=<RTMPPublishDomain>,<query>
+```
+
+需要注意的是
+1. ":1935?streamid=#!::h=" 为固定规格，推流指定端口1935。
+2. "m=publish,domain=&lt;RTMPPublishDomain&gt;" 同样为固定规格，这两个参数的含义是告知服务端这是一个SRT推流请求。
+2. "&lt;query&gt;"部分有些特殊，根据鉴权方式的不同会有不同的参数，不过共同点是我们需要将每个参数之间的"&"替换为","。
+
+------------------------------------
+以下是几种鉴权方式对应的SRT推流地址格式：
+
+**无校验鉴权**
+``` language
+srt://<RTMPPublishDomain>:1935?streamid=#!::h=<Hub>/<streamTitle>,m=publish,domain=<RTMPPublishDomain>
+```
+**静态鉴权(static)**
+``` language
+srt://<RTMPPublishDomain>:1935?streamid=#!::h=<Hub>/<streamTitle>,m=publish,domain=<RTMPPublishDomain>,key=<PublishKey>
+```
+**限时鉴权(expiry)**
+``` language
+srt://<RTMPPublishDomain>:1935?streamid=#!::h=<Hub>/<streamTitle>,m=publish,domain=<RTMPPublishDomain>,expire=<ExpireAt>,token=<Token>
+```
+**限时鉴权sk(expiry_sk)**
+``` language
+srt://<RTMPPublishDomain>:1935?streamid=#!::h=<Hub>/<streamTitle>,m=publish,domain=<RTMPPublishDomain>,e=<ExpireAt>,token=<Token>
+```
+**动态鉴权(dynamic)**
+``` language
+srt://<RTMPPublishDomain>:1935?streamid=#!::h=<Hub>/<streamTitle>,m=publish,domain=<RTMPPublishDomain>,nonce=<Nonce>,token=<Token>
+```
+
+其中非鉴权相关参数说明如下：
+|参数名称|说明|
+|-|-|
+|RTMPPublishDomain|直播空间绑定的 RTMP 推流域名|
+|Hub|直播空间名称|
+|streamTitle|直播流名称|
+
+鉴权相关参数，可以参照[推流鉴权方式](https://developer.qiniu.com/pili/6678/push-the-current-authentication)，按照RTMP推流进行签算，签算完成后，再拼入SRT推流地址。
+
+------------------------------------
+以限时鉴权sk(expiry_sk)方式的SRT推流为例，
+若使用该鉴权方式的RTMP推流地址为
+``` language
+rtmp://publish.domain.com/testhub/teststreamtitle?e=1584522520&token=7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII:NfI2OWGCMdFDTLOfeUd-zSPVrFY=
+```
+
+则对应的
+推流域名为publish.domain.com；
+直播空间名称为testhub；
+直播流名称为teststreamtitle；
+鉴权相关参数为e=1584522520&token=7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII:NfI2OWGCMdFDTLOfeUd-zSPVrFY=；
+所以对应的SRT推流地址可以写成：
+``` language
+srt://publish.domain.com:1935?streamid=#!::h=testhub/teststreamtitle,m=publish,domain=publish.domain.com,e=1584522520,token=7O7hf7Ld1RrC_fpZdFvU8aCgOPuhw2K4eapYOdII:NfI2OWGCMdFDTLOfeUd-zSPVrFY=
+```

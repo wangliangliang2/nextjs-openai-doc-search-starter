@@ -1,0 +1,34 @@
+为了帮助用户快速了解日志分析服务，我们提供日志上传功能，上传后可用它来尝试日志分析服务的各种功能，如日志实时滚动输出、日志过滤、可视化等。
+
+本文档为您演示通过本地文件上传数据到智能日志管理平台，并进行实时日志滚动输出的基本流程。
+
+# **从本地上传文件并解析**
+
+1. 选择[数据上传 tab](https://portal.qiniu.com/insight/data)，开始上传文件。
+
+![](https://pandora-kibana.qiniu.com/data_collectdata_collect.png)
+
+2. 选择仓库并上传本地的日志文件。
+
+![](https://pandora-kibana.qiniu.com/data_collect/upload.png)
+
+3. 在日志列表选择一条日志当作示例数据进行解析，选择日志读取模式为单行。
+
+![](https://pandora-kibana.qiniu.com/data_collect/example_data.png)
+
+4. 对示例数据选择解析方法，提取日志里的字段。对于 csv 格式的日志我们选择固定分隔符提取方法。
+
+   根据日志格式选择合适的分隔符，即可看到解析结果。系统自动为字段分配字段名与类型，字段名与类型支持修改。
+
+![](https://pandora-kibana.qiniu.com/data_collect/csv.png)
+
+5. 填写规则名称保存字段提取规则并将数据入库。
+
+![](https://pandora-kibana.qiniu.com/data_collect/save.png)
+
+# **步骤2 查看实时日志**
+
+进入[实时日志查看](https://portal.qiniu.com/insight/real/overview?&timeField=&queryString=&preset=m5&start=&end=)页面，选择刚刚上传文件的实时仓库，输入搜索条件（不输入搜索条件表示查看全部实时日志），点击搜索，即可看到实时日志内容。
+
+![](https://pandora-kibana.qiniu.com/data_collect/realtime_search.png)
+

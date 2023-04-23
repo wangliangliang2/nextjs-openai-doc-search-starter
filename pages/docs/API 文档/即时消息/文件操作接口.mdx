@@ -1,0 +1,231 @@
+# 文件操作接口
+
+## 下载头像
+<a id=下载头像> </a>
+### 基本信息
+
+**Path：** /file/download/avatar
+
+**Method：** GET
+
+**接口描述：**
+
+
+### 请求参数
+**Headers**
+
+| 参数名称  | 参数值  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ | ------------ |
+| access-token  |   | 否  |   |  令牌 |
+| app_id  |   | 是  |   |  应用ID |
+| group_id  |   | 否  |   |  仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id  |   | 否  |   |  仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+**Query**
+
+| 参数名称  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ |
+| image_type | 否  |   |  图片类型，1: 原图，2: 缩略图, 3: 封面图 |
+| object_name | 是  |   |  对象名 |
+| sdk_sign | 否  |   |  SDK的签名 |
+| store_token | 否  |   |  文件token |
+| thumbnail_strategy | 否  |   |  缩略图生成策略, 1 - 第三方服务器生成， 2 - 本地服务器生成，默认值是 1 |
+
+### 返回数据
+
+<table>
+  <thead class="ant-table-thead">
+    <tr>
+      <th key=name>名称</th><th key=type>类型</th><th key=required>是否必须</th><th key=default>默认值</th><th key=desc>备注</th><th key=sub>其他信息</th>
+    </tr>
+  </thead><tbody className="ant-table-tbody">
+               </tbody>
+              </table>
+            
+## 下载聊天文件
+<a id=下载聊天文件> </a>
+### 基本信息
+
+**Path：** /file/download/chat
+
+**Method：** GET
+
+**接口描述：**
+
+
+### 请求参数
+**Headers**
+
+| 参数名称  | 参数值  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ | ------------ |
+| access-token  |   | 否  |   |  令牌 |
+| app_id  |   | 是  |   |  应用ID |
+| group_id  |   | 否  |   |  仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id  |   | 否  |   |  仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+**Query**
+
+| 参数名称  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ |
+| file_sign | 是  |   |  文件签名 |
+| format | 否  |   |  需要下载的音频文件格式amr/mp3 默认为amr |
+| image_type | 否  |   |  图片类型，1: 原图，2: 缩略图, 3: 封面图 |
+| sdk_sign | 否  |   |  SDK的签名 |
+| source | 否  |   |  请求来源, miniprogram - 小程序，默认值是 '' |
+| store_token | 否  |   |  文件token |
+| thumbnail_strategy | 否  |   |  缩略图生成策略, 1 - 第三方服务器生成， 2 - 本地服务器生成，默认值是 1 |
+
+### 返回数据
+
+<table>
+  <thead class="ant-table-thead">
+    <tr>
+      <th key=name>名称</th><th key=type>类型</th><th key=required>是否必须</th><th key=default>默认值</th><th key=desc>备注</th><th key=sub>其他信息</th>
+    </tr>
+  </thead><tbody className="ant-table-tbody">
+               </tbody>
+              </table>
+            
+## 获取上传用户头像URL
+<a id=获取上传用户头像URL> </a>
+### 基本信息
+
+**Path：** /file/upload/avatar/user
+
+**Method：** GET
+
+**接口描述：**
+
+
+### 请求参数
+**Headers**
+
+| 参数名称  | 参数值  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ | ------------ |
+| access-token  |   | 否  |   |  令牌 |
+| app_id  |   | 是  |   |  应用ID |
+| group_id  |   | 否  |   |  仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id  |   | 否  |   |  仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### 返回数据
+
+<table>
+  <thead class="ant-table-thead">
+    <tr>
+      <th key=name>名称</th><th key=type>类型</th><th key=required>是否必须</th><th key=default>默认值</th><th key=desc>备注</th><th key=sub>其他信息</th>
+    </tr>
+  </thead><tbody className="ant-table-tbody"><tr key=0-0><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> code</span></td><td key=1><span>integer</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">返回码，200是成功</span></td><td key=5><p key=2><span style="font-weight: '700'">format: </span><span>int32</span></p></td></tr><tr key=0-1><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> data</span></td><td key=1><span>object</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-1-0><td key=0><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> download_url</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-1-1><td key=0><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> oss_body_param</span></td><td key=1><span>object</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-1-2><td key=0><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> upload_url</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-2><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> message</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">错误信息，如果成功，该项为null</span></td><td key=5></td></tr>
+               </tbody>
+              </table>
+            
+## 获取上传群头像URL
+<a id=获取上传群头像URL> </a>
+### 基本信息
+
+**Path：** /file/upload/avatar/group
+
+**Method：** GET
+
+**接口描述：**
+
+
+### 请求参数
+**Headers**
+
+| 参数名称  | 参数值  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ | ------------ |
+| access-token  |   | 否  |   |  令牌 |
+| app_id  |   | 是  |   |  应用ID |
+| user_id  |   | 否  |   |  仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+**Query**
+
+| 参数名称  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ |
+| group_id | 是  |   |  group_id |
+
+### 返回数据
+
+<table>
+  <thead class="ant-table-thead">
+    <tr>
+      <th key=name>名称</th><th key=type>类型</th><th key=required>是否必须</th><th key=default>默认值</th><th key=desc>备注</th><th key=sub>其他信息</th>
+    </tr>
+  </thead><tbody className="ant-table-tbody"><tr key=0-0><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> code</span></td><td key=1><span>integer</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">返回码，200是成功</span></td><td key=5><p key=2><span style="font-weight: '700'">format: </span><span>int32</span></p></td></tr><tr key=0-1><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> data</span></td><td key=1><span>object</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-1-0><td key=0><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> download_url</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-1-1><td key=0><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> oss_body_param</span></td><td key=1><span>object</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-1-2><td key=0><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> upload_url</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-2><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> message</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">错误信息，如果成功，该项为null</span></td><td key=5></td></tr>
+               </tbody>
+              </table>
+            
+## 获取上传聊天文件的URL
+<a id=获取上传聊天文件的URL> </a>
+### 基本信息
+
+**Path：** /file/upload/chat
+
+**Method：** GET
+
+**接口描述：**
+
+
+### 请求参数
+**Headers**
+
+| 参数名称  | 参数值  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ | ------------ |
+| access-token  |   | 否  |   |  令牌 |
+| app_id  |   | 是  |   |  应用ID |
+| group_id  |   | 否  |   |  仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id  |   | 否  |   |  仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+**Query**
+
+| 参数名称  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ |
+| file_type | 是  |   |  文件类型 100: 普通聊天文件, 101: 语音聊天文件(amr格式),102: 图片聊天文件, 103: 视频聊天文件, 104: 语音聊天文件(mp3格式)200: 普通共享文件, 201: 语音共享文件, 202: 图片共享文件, 203: 视频共享文件 |
+| to_id | 是  |   |  to_id |
+| to_type | 否  |   |  1: 用户，2: 群组 |
+
+### 返回数据
+
+<table>
+  <thead class="ant-table-thead">
+    <tr>
+      <th key=name>名称</th><th key=type>类型</th><th key=required>是否必须</th><th key=default>默认值</th><th key=desc>备注</th><th key=sub>其他信息</th>
+    </tr>
+  </thead><tbody className="ant-table-tbody"><tr key=0-0><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> code</span></td><td key=1><span>integer</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">返回码，200是成功</span></td><td key=5><p key=2><span style="font-weight: '700'">format: </span><span>int32</span></p></td></tr><tr key=0-1><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> data</span></td><td key=1><span>object</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-1-0><td key=0><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> download_url</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-1-1><td key=0><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> oss_body_param</span></td><td key=1><span>object</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-1-2><td key=0><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> upload_url</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap"></span></td><td key=5></td></tr><tr key=0-2><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> message</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">错误信息，如果成功，该项为null</span></td><td key=5></td></tr>
+               </tbody>
+              </table>
+            
+## 获取聊天文件转发的URL
+<a id=获取聊天文件转发的URL> </a>
+### 基本信息
+
+**Path：** /file/upload/forward
+
+**Method：** GET
+
+**接口描述：**
+
+
+### 请求参数
+**Headers**
+
+| 参数名称  | 参数值  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ | ------------ |
+| access-token  |   | 否  |   |  令牌 |
+| app_id  |   | 是  |   |  应用ID |
+| group_id  |   | 否  |   |  仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id  |   | 否  |   |  仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+**Query**
+
+| 参数名称  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ |
+| file_sign | 是  |   |  文件签名 |
+| to_id | 是  |   |  to_id |
+| to_type | 否  |   |  1: 用户，2: 群组 |
+
+### 返回数据
+
+<table>
+  <thead class="ant-table-thead">
+    <tr>
+      <th key=name>名称</th><th key=type>类型</th><th key=required>是否必须</th><th key=default>默认值</th><th key=desc>备注</th><th key=sub>其他信息</th>
+    </tr>
+  </thead><tbody className="ant-table-tbody"><tr key=0-0><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> code</span></td><td key=1><span>integer</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">返回码，200是成功</span></td><td key=5><p key=2><span style="font-weight: '700'">format: </span><span>int32</span></p></td></tr><tr key=0-1><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> data</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">结果数据</span></td><td key=5></td></tr><tr key=0-2><td key=0><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> message</span></td><td key=1><span>string</span></td><td key=2>非必须</td><td key=3></td><td key=4><span style="white-space: pre-wrap">错误信息，如果成功，该项为null</span></td><td key=5></td></tr>
+               </tbody>
+              </table>

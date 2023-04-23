@@ -1,0 +1,84 @@
+表单上传适用于文件内容可以在一次 HTTP 请求即可传递完成的场景。该功能非常适合在浏览器中使用 HTML 表单上传资源，或者在不需要处理复杂情况的客户端开发中使用。如果文件较大（大于 1GB），或者网络环境较差，可能会导致 HTTP 连接超时而上传失败。若发生这种情况，您需要考虑换用更安全的分片上传功能。
+
+开发者只要组装一个符合 HTML 文件上传表单规范（参考[RFC1867](http://www.ietf.org/rfc/rfc1867.txt)）的 HTTP 请求，并以 POST 方式向域名 upload.qiniup.com 发起这个请求，即可将指定文件上传到服务端。详细使用方法请参考[表单上传 API](/kodo/api/1312/upload)。
+
+<br>
+
+<a id="form-upload-usage"></a>
+# **使用方法**
+
+我们可以用如下的 HTML 表单来描述表单上传的基本用法：
+
+```
+<form method="post" action="http://upload.qiniup.com/"
+ enctype="multipart/form-data">
+  <input name="key" type="hidden" value="<resource_key>">
+  <input name="x:<custom_name>" type="hidden" value="<custom_value>">
+  <input name="token" type="hidden" value="<upload_token>">
+  <input name="crc32" type="hidden" />
+  <input name="accept" type="hidden" />
+  <input name="file" type="file" />
+  <input type="submit" value="上传文件" />
+</form>
+```
+
+关键参数说明：
+
+名称        | 类型   | 必填 | 说明
+------------|--------|------|-------------------------------------
+action        | string   | 是   | 上传地址<span id="Null">，可参考[存储区域](/kodo/manual/1671/region-endpoint)</span>
+resource_key        | string | 否   | 资源名，必须是 UTF-8 编码。**注意：** 如果[上传凭证](/kodo/manual/1208/upload-token)中 scope 指定为 &lt;bucket&gt;:&lt;key&gt;， 则该字段也必须指定。
+custom_name | string | 否 |[自定义变量](/kodo/manual/1235/vars#xvar)的名字，不限个数。
+custom_value | string | 否 | [自定义变量](/kodo/manual/1235/vars#xvar)的值。 |
+upload_token     | string | 是   | 必须是一个符合相应规格的[上传凭证](/kodo/manual/1208/upload-token)，否则会返回 401 表示权限认证失败。
+crc32       | string | 否   | 上传内容的 crc32 校验码。如填入，则<span id="Productname">七牛</span>服务器会使用此值进行内容检验。
+accept      | string | 否   | 当 HTTP 请求指定 accept 头部时，<span id="Productname">七牛</span>会返回 content-type 头部的值。该值用于兼容低版本 IE 浏览器行为。低版本 IE 浏览器在表单上传时，返回 application/json 表示下载，返回 text/plain 才会显示返回内容。
+file        | file   | 是   | 文件本身。
+
+提交以上 HTML 表单而生成的 HTTP 请求内容大致如下：
+
+```
+POST / HTTP/1.1
+Host:           <UpHost>
+Content-Type:   multipart/form-data; boundary=<frontier>
+Content-Length: <multipartContentLength>
+
+--<frontier>
+Content-Disposition:       form-data; name="key"
+
+<resource_key>
+--<frontier>
+Content-Disposition:       form-data; name="x:<custom_name>"
+
+<custom_value>
+--<frontier>
+Content-Disposition:       form-data; name="token"
+
+<upload_token>
+--<frontier>
+Content-Disposition:       form-data; name="crc32"
+
+<crc32>
+--<frontier>
+Content-Disposition:       form-data; name="accept"
+
+<acceptContentType>
+--<frontier>
+Content-Disposition:       form-data; name="file"; filename="<fileName>"
+Content-Type:              application/octet-stream
+Content-Transfer-Encoding: binary
+
+<fileBinaryData>
+--<frontier>--
+```
+
+在非网页开发的场景中，开发者完全可以自行组装这个 HTML 表单请求。考虑到各个平台上的网络库都已经对 HTML 文件上传表单有非常完整的支持，组装这个请求的过程将会非常轻松。
+
+<br>
+
+<a id="form-upload-response"></a>
+# **后续动作**
+
+我们可以在生成[上传凭证](/kodo/manual/1208/upload-token)时指定一系列的参数，以控制服务器在文件上传完成后的后续动作。另外如果需要，我们可以在表单参数中增加一系列[魔法变量](/kodo/manual/1235/vars#magicvar)和[自定义变量](/kodo/manual/1235/vars#xvar)。上述表单例子中的`x:<custom_name>`就是变量的使用方法示例。我们可以将其更换为一系列魔法变量或自定义变量。
+
+变量将会在回调和自定义返回内容中起到极大的作用。具体用法请参考[回调通知(callback)](/kodo/manual/1653/callback)和[自定义响应内容(ReturnBody)](/kodo/manual/1654/response-body#returnbody)。

@@ -1,0 +1,540 @@
+Rclone 是一个命令行工具，用来管理云上文件。Rclone 具有强大的云上处理功能，等效于 unix 命令 rsync、cp、mv、mount、ls、ncdu、tree、rm 和 cat，其最初受 rsync 的启发并采用 Go 编写。当前，Rclone 作为一个成熟的开源软件，已经拥有较为完备的文档和社区，可以提供广泛和友好的使用用例。
+
+Rclone 功能非常丰富包括档案同步、文件传输、加密、缓存和挂载等，并且支持各大云存储供应商的接口、能提供统一的访问界面。从 v1.60.0 开始，Rclone 可以通过 S3 协议对接七牛云对象存储 Kodo，以对 Kodo 进行对象存储管理，常用功能如：上传、下载、删除、数据迁移等。
+
+<br>
+
+<a id="install"></a>
+
+# **配置 Rclone**
+**关于 Rclone**
+- 查看 [Rclone 安装地址](https://rclone.org/install/)
+- 点击 [Github 地址](https://github.com/rclone/rclone.git) 查看 Rclone 代码
+- 查看更多 [Rclone 命令](https://rclone.org/commands/)
+- 其他详情请参考 [Rclone 官方网站](https://rclone.org/)
+<br>
+
+## **1、创建新的 remote 端**
+安装 Rclone 后，执行 rclone config，然后选择 n 创建新的 remote 端
+```
+rclone config
+No remotes found, make a new one?
+n) New remote
+s) Set configuration password
+q) Quit config
+n/s/q> n
+```
+
+
+## **2、为 remote 端命名**
+```
+Enter name for new remote.
+name> qiniu
+```
+
+## **3、选择七牛云对象存储 Kodo 所兼容的 S3**
+```
+Option Storage.
+Type of storage to configure.
+Choose a number from below, or type in your own value.
+ 1 / 1Fichier
+   \ (fichier)
+ 2 / Akamai NetStorage
+   \ (netstorage)
+ 3 / Alias for an existing remote
+   \ (alias)
+ 4 / Amazon Drive
+   \ (amazon cloud drive)
+ 5 / Amazon S3 Compliant Storage Providers including AWS, Alibaba, Ceph, China Mobile, Cloudflare, ArvanCloud, Digital Ocean, Dreamhost, Huawei OBS, IBM COS, IDrive e2, Lyve Cloud, Minio, Netease, RackCorp, Scaleway, SeaweedFS, StackPath, Storj, Tencent COS, **Qiniu** and Wasabi
+   \ (s3)
+ 6 / Backblaze B2
+   \ (b2)
+ 7 / Better checksums for other remotes
+   \ (hasher)
+ 8 / Box
+   \ (box)
+ 9 / Cache a remote
+   \ (cache)
+10 / Citrix Sharefile
+   \ (sharefile)
+11 / Combine several remotes into one
+   \ (combine)
+12 / Compress a remote
+   \ (compress)
+13 / Dropbox
+   \ (dropbox)
+14 / Encrypt/Decrypt a remote
+   \ (crypt)
+15 / Enterprise File Fabric
+   \ (filefabric)
+16 / FTP
+   \ (ftp)
+17 / Google Cloud Storage (this is not Google Drive)
+   \ (google cloud storage)
+18 / Google Drive
+   \ (drive)
+19 / Google Photos
+   \ (google photos)
+20 / HTTP
+   \ (http)
+21 / Hadoop distributed file system
+   \ (hdfs)
+22 / HiDrive
+   \ (hidrive)
+23 / Hubic
+   \ (hubic)
+24 / In memory object storage system.
+   \ (memory)
+25 / Internet Archive
+   \ (internetarchive)
+26 / Jottacloud
+   \ (jottacloud)
+27 / Koofr, Digi Storage and other Koofr-compatible storage providers
+   \ (koofr)
+28 / Local Disk
+   \ (local)
+29 / Mail.ru Cloud
+   \ (mailru)
+30 / Mega
+   \ (mega)
+31 / Microsoft Azure Blob Storage
+   \ (azureblob)
+32 / Microsoft OneDrive
+   \ (onedrive)
+33 / OpenDrive
+   \ (opendrive)
+34 / OpenStack Swift (Rackspace Cloud Files, Memset Memstore, OVH)
+   \ (swift)
+35 / Pcloud
+   \ (pcloud)
+36 / Put.io
+   \ (putio)
+37 / QingCloud Object Storage
+   \ (qingstor)
+38 / SSH/SFTP
+   \ (sftp)
+39 / Sia Decentralized Cloud
+   \ (sia)
+40 / Storj Decentralized Cloud Storage
+   \ (storj)
+41 / Sugarsync
+   \ (sugarsync)
+42 / Transparently chunk/split large files
+   \ (chunker)
+43 / Union merges the contents of several upstream fs
+   \ (union)
+44 / Uptobox
+   \ (uptobox)
+45 / WebDAV
+   \ (webdav)
+46 / Yandex Disk
+   \ (yandex)
+47 / Zoho
+   \ (zoho)
+48 / premiumize.me
+   \ (premiumizeme)
+49 / seafile
+   \ (seafile)
+Storage> s3   
+```
+
+## **4、选择七牛云对象存储 Kodo 为后端**
+```
+Option provider.
+Choose your S3 provider.
+Choose a number from below, or type in your own value.
+Press Enter to leave empty.
+ 1 / Amazon Web Services (AWS) S3
+   \ (AWS)
+ 2 / Alibaba Cloud Object Storage System (OSS) formerly Aliyun
+   \ (Alibaba)
+ 3 / Ceph Object Storage
+   \ (Ceph)
+ 4 / China Mobile Ecloud Elastic Object Storage (EOS)
+   \ (ChinaMobile)
+ 5 / Cloudflare R2 Storage
+   \ (Cloudflare)
+ 6 / Arvan Cloud Object Storage (AOS)
+   \ (ArvanCloud)
+ 7 / Digital Ocean Spaces
+   \ (DigitalOcean)
+ 8 / Dreamhost DreamObjects
+   \ (Dreamhost)
+ 9 / Huawei Object Storage Service
+   \ (HuaweiOBS)
+10 / IBM COS S3
+   \ (IBMCOS)
+11 / IDrive e2
+   \ (IDrive)
+12 / Seagate Lyve Cloud
+   \ (LyveCloud)
+13 / Minio Object Storage
+   \ (Minio)
+14 / Netease Object Storage (NOS)
+   \ (Netease)
+15 / RackCorp Object Storage
+   \ (RackCorp)
+16 / Scaleway Object Storage
+   \ (Scaleway)
+17 / SeaweedFS S3
+   \ (SeaweedFS)
+18 / StackPath Object Storage
+   \ (StackPath)
+19 / Storj (S3 Compatible Gateway)
+   \ (Storj)
+20 / Tencent Cloud Object Storage (COS)
+   \ (TencentCOS)
+21 / Wasabi Object Storage
+   \ (Wasabi)
+22 / Qiniu Object Storage (Kodo)
+   \ (Qiniu)
+23 / Any other S3 compatible provider
+   \ (Other)
+provider> Qiniu
+```
+
+## **5、提供七牛云对象存储 Kodo 的 AK/SK**
+```
+Option env_auth.
+Get AWS credentials from runtime (environment variables or EC2/ECS meta data if no env vars).
+Only applies if access_key_id and secret_access_key is blank.
+Choose a number from below, or type in your own boolean value (true or false).
+Press Enter for the default (false).
+ 1 / Enter AWS credentials in the next step.
+   \ (false)
+ 2 / Get AWS credentials from the environment (env vars or IAM).
+   \ (true)
+env_auth> 1
+```
+输入七牛云对象存储 Kodo 的 AK
+```
+Option access_key_id.
+AWS Access Key ID.
+Leave blank for anonymous access or runtime credentials.
+Enter a value. Press Enter to leave empty.
+access_key_id> **** AK ****
+```
+输入七牛云对象存储 Kodo 的 SK
+```
+Option secret_access_key.
+AWS Secret Access Key (password).
+Leave blank for anonymous access or runtime credentials.
+Enter a value. Press Enter to leave empty.
+secret_access_key> **** SK ****
+```
+
+## **6、选择七牛云对象存储 Kodo 的 S3 地址**
+```
+Option region.
+Region to connect to.
+Choose a number from below, or type in your own value.
+Press Enter to leave empty.
+   / The default endpoint - a good choice if you are unsure.
+ 1 | East China Region 1.
+   | Needs location constraint cn-east-1.
+   \ (cn-east-1)
+   / East China Region 2.
+ 2 | Needs location constraint cn-east-2.
+   \ (cn-east-2)
+   / North China Region 1.
+ 3 | Needs location constraint cn-north-1.
+   \ (cn-north-1)
+   / South China Region 1.
+ 4 | Needs location constraint cn-south-1.
+   \ (cn-south-1)
+   / Southeast Asia Region 1.
+ 5 | Needs location constraint ap-southeast-1.
+   \ (ap-southeast-1)
+   / North America Region.
+ 6 | Needs location constraint us-north-1.
+   \ (us-north-1)
+region> 1
+```
+
+```
+Option endpoint.
+Endpoint for Qiniu Object Storage.
+Choose a number from below, or type in your own value.
+Press Enter to leave empty.
+ 1 / East China Endpoint 1
+   \ (s3-cn-east-1.qiniucs.com)
+ 2 / East China Endpoint 2
+   \ (s3-cn-east-2.qiniucs.com)
+ 3 / North China Endpoint 1
+   \ (s3-cn-north-1.qiniucs.com)
+ 4 / South China Endpoint 1
+   \ (s3-cn-south-1.qiniucs.com)
+ 5 / North America Endpoint 1
+   \ (s3-us-north-1.qiniucs.com)
+ 6 / Southeast Asia Endpoint 1
+   \ (s3-ap-southeast-1.qiniucs.com)
+endpoint> 1
+```
+```
+Option location_constraint.
+Location constraint - must be set to match the Region.
+Used when creating buckets only.
+Choose a number from below, or type in your own value.
+Press Enter to leave empty.
+ 1 / East China Region 1
+   \ (cn-east-1)
+ 2 / East China Region 2
+   \ (cn-east-2)
+ 3 / North China Region 1
+   \ (cn-north-1)
+ 4 / South China Region 1
+   \ (cn-south-1)
+ 5 / North America Region 1
+   \ (us-north-1)
+ 6 / Southeast Asia Region 1
+   \ (ap-southeast-1)
+location_constraint> 1
+```
+
+## **7、 选择 ACL 和存储类型**
+```
+Option acl.
+Canned ACL used when creating buckets and storing or copying objects.
+This ACL is used for creating objects and if bucket_acl isn't set, for creating buckets too.
+For more info visit https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
+Note that this ACL is applied when server-side copying objects as S3
+doesn't copy the ACL from the source but rather writes a fresh one.
+Choose a number from below, or type in your own value.
+Press Enter to leave empty.
+   / Owner gets FULL_CONTROL.
+ 1 | No one else has access rights (default).
+   \ (private)
+   / Owner gets FULL_CONTROL.
+ 2 | The AllUsers group gets READ access.
+   \ (public-read)
+   / Owner gets FULL_CONTROL.
+ 3 | The AllUsers group gets READ and WRITE access.
+   | Granting this on a bucket is generally not recommended.
+   \ (public-read-write)
+   / Owner gets FULL_CONTROL.
+ 4 | The AuthenticatedUsers group gets READ access.
+   \ (authenticated-read)
+   / Object owner gets FULL_CONTROL.
+ 5 | Bucket owner gets READ access.
+   | If you specify this canned ACL when creating a bucket, Amazon S3 ignores it.
+   \ (bucket-owner-read)
+   / Both the object owner and the bucket owner get FULL_CONTROL over the object.
+ 6 | If you specify this canned ACL when creating a bucket, Amazon S3 ignores it.
+   \ (bucket-owner-full-control)
+acl> 2
+```
+```
+Option storage_class.
+The storage class to use when storing new objects in Qiniu.
+Choose a number from below, or type in your own value.
+Press Enter to leave empty.
+ 1 / Standard storage class
+   \ (STANDARD)
+ 2 / Infrequent access storage mode
+   \ (LINE)
+ 3 / Archive storage mode
+   \ (GLACIER)
+ 4 / Deep archive storage mode
+   \ (DEEP_ARCHIVE)
+storage_class> 1
+```
+
+## **8、确认配置**
+```
+Edit advanced config?
+y) Yes
+n) No (default)
+y/n> n
+```
+```
+Configuration complete.
+Options:
+- type: s3
+- provider: Qiniu
+- access_key_id: 0p6YmsTFa-MLL4cZhe2Yj8n7nXZ3N_xxxxxxxxxx
+- secret_access_key: zU9otHDc562WBIDEyExxTlEy9_xxxxxxxxxxxxxx
+- region: cn-east-1
+- endpoint: s3-cn-east-1.qiniucs.com
+- location_constraint: cn-east-1
+- acl: public-read
+- storage_class: STANDARD
+Keep this "qiniu" remote?
+y) Yes this is OK (default)
+e) Edit this remote
+d) Delete this remote
+y/e/d> y
+```
+
+```
+Current remotes:
+
+Name                 Type
+====                 ====
+qiniu                s3
+
+e) Edit existing remote
+n) New remote
+d) Delete remote
+r) Rename remote
+c) Copy remote
+s) Set configuration password
+q) Quit config
+e/n/d/r/c/s/q> q
+```
+
+<br>
+
+<a id="command"></a>
+# **通过 Rclone 管理七牛云对象存储 Kodo 的常用命令**
+
+## **列举**
+仅仅列举对象完整路径和大小
+```
+rclone ls qiniu:bucket-name/directory-path
+```
+
+额外列举对象修改时间
+```
+rclone lsl qiniu:bucket-name/directory-path
+```
+
+仅仅列举目录
+```
+rclone lsd qiniu:bucket-name/directory-path
+```
+
+列举目录和文件，目录以 / 结尾
+```
+rclone lsf qiniu:bucket-name/directory-path
+```
+
+列举对象所有信息，以 JSON 的形式
+```
+rclone lsjson qiniu:bucket-name/directory-path
+```
+
+以树的形式列举目录和文件
+```
+rclone tree qiniu:bucket-name/directory-path
+```
+
+以 CUI 的形式列举目录和文件
+```
+rclone ncdu qiniu:bucket-name/directory-path
+```
+
+## **读取**
+从云存储读取对象内容
+```
+rclone cat qiniu:dest-bucket-name/dest-path
+```
+
+从云存储获取对文件下载地址
+```
+rclone link qiniu:dest-bucket-name/dest-path
+```
+
+从云存储目录计算对象数量和总大小
+```
+rclone size qiniu:dest-bucket-name/dest-directory-path
+```
+
+## **上传**
+从标准输入流获取数据并上传到云存储
+```
+cat local-path | rclone rcat qiniu:dest-bucket-name/dest-path
+```
+
+## **同步**
+从本地同步到云存储
+```
+rclone sync local-path qiniu:dest-bucket-name/dest-directory-path
+```
+
+从云存储同步到云存储
+```
+rclone sync qiniu:src-bucket-name/src-directory-path qiniu:dest-bucket-name/dest-directory-path
+```
+
+对比本地与云存储
+```
+rclone check local-path qiniu:dest-bucket-name/dest-directory-path
+```
+
+对比云存储与云存储
+```
+rclone check qiniu:src-bucket-name/src-directory-path qiniu:dest-bucket-name/dest-directory-path
+```
+
+## **移动**
+移动目录
+```
+rclone move qiniu:src-bucket-name/src-directory-path qiniu:dest-bucket-name/dest-directory-path
+```
+移动文件
+```
+rclone moveto qiniu:src-bucket-name/src-path qiniu:dest-bucket-name/dest-path
+```
+
+## **复制**
+从指定 URL 复制内容到云存储
+```
+rclone copyurl https://url qiniu:dest-bucket-name/dest-path
+```
+
+复制目录
+```
+rclone copy qiniu:src-bucket-name/src-directory-path qiniu:dest-bucket-name/dest-directory-path
+```
+
+复制文件
+```
+rclone copyto qiniu:src-bucket-name/src-path qiniu:dest-bucket-name/dest-path
+```
+
+## **删除**
+删除目录
+```
+rclone delete qiniu:bucket-name/dest-directory-path
+```
+
+删除文件
+```
+rclone deletefile qiniu:bucket-name/dest-path
+```
+
+## **修改存储类型**
+修改目录
+```
+rclone settier STORAGE_CLASS qiniu:bucket-name/dest-directory-path
+```
+
+修改文件
+```
+rclone settier STORAGE_CLASS qiniu:bucket-name/dest-path
+```
+
+## **校验**
+校验目录
+```
+rclone hashsum MD5 qiniu:bucket-name/dest-directory-path
+```
+
+<br>
+
+<a id="serve"></a>
+# **通过 Rclone 对接到七牛云对象存储 Kodo 的常用命令**
+将 Kodo 用作 HTTP 服务器
+```
+rclone serve http qiniu:bucket-name/dest-directory-path --addr ip:port
+```
+
+将 Kodo 用作 FTP 服务器
+```
+rclone serve ftp qiniu:bucket-name/dest-directory-path --addr ip:port
+```
+
+将 Kodo 作为文件系统挂载到挂载点上
+```
+rclone mount qiniu:bucket-name/dest-directory-path mount-point
+```

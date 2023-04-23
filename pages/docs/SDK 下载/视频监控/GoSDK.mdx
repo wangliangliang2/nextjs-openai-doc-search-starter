@@ -1,0 +1,1307 @@
+# **简介**
+
+此SDK主要帮助您快速接入七牛云的视频监控平台。
+
+主要有如下功能：
+
+- 空间管理
+- 流管理
+- 设备管理
+- 模板管理
+- 录制管理
+- 数据统计管理
+
+# **开源**
+
+- [Go SDK 项目地址](https://github.com/qiniu/go-sdk)
+- [Go SDK 发布地址](https://github.com/qiniu/go-sdk/releases)
+
+# **安装**
+
+推荐使用 go mod ， `github.com/qiniu/go-sdk/v7` ，如 `require github.com/qiniu/go-sdk/v7 v7.9.6` 
+
+# **鉴权**
+
+七牛 Go SDK 的所有的功能，都需要合法的授权。授权凭证的签算需要七牛账号下的一对有效的`Access Key`和`Secret Key`，这对密钥可以通过如下步骤获得：
+
+1. 点击[注册](https://portal.qiniu.com/signup)开通七牛开发者帐号
+2. 如果已有账号，直接登录七牛开发者后台，点击[这里🔗](https://portal.qiniu.com/user/key)查看 Access Key 和 Secret Key
+
+# **快速接入**
+
+下面以`rtmp`接入方式举例，讲述接入流程，sdk接口详细说明见后面的章节
+
+- 1. 创建qvs manager
+
+  ```go
+  ak := "your access key"
+  sk := "your secret key"
+  mac := auth.New(ak, sk)
+  manager := qvs.NewManager(mac, nil)
+  ```
+
+- 2. 创建空间
+
+  构造好`NameSpace`结构体之后，调用`AddNamespace`创建空间
+
+  ```go
+  ns := &NameSpace{
+  	Name:        "testNamespace",
+  	AccessType:  "rtmp",// 接入类型"gb28181"或者“rtmp”
+  	RTMPURLType: 1, // accessType为“rtmp”时，推拉流地址计算方式，1:static, 2:dynamic
+  	Domains:     []string{"qiniu1.com"}, // 直播域名
+  }
+  ns1, err := manager.AddNamespace(ns)
+  ```
+
+- 3. 创建流
+
+  构造好`Stream`结构体之后，调用`AddStream`创建流
+
+  ```
+  stream := &Stream{
+  	StreamID: "test001",
+  }
+  _, err = manager.AddStream(ns1.ID, stream)
+  ```
+
+- 4. 生成推拉流地址
+
+  ```
+  ret, err := manager.DynamicPublishPlayURL("2akrarwwhi0ff", "test1", &qvs.DynamicLiveRoute{PublishIP: "127.0.0.1", PlayIP: "127.0.0.1", UrlExpireSec: 0})
+  if err != nil {
+  	fmt.Printf("err=%s\n", err.Error())
+  }
+  publishUrl := ret.PublishUrl
+  playUrl := ret.PlayUrls.Rtmp
+  ```
+
+- 5. 在推流端(一般是摄像头)使用`publishUrl`推流
+
+- 6. 可以使用`ffplay`或者`vlc`播放`playUrl`的流
+
+# **空间管理**
+
+空间管理的所有接口需要先通过`ak`、`sk`创建qvs manager
+
+```go
+ak := "your access key"
+sk := "your secret key"
+mac := auth.New(ak, sk)
+manager := qvs.NewManager(mac, nil)
+```
+<br />
+
+## **创建空间**
+
+```go
+func (manager *Manager) AddNamespace(ns *NameSpace) (*NameSpace, error)
+```
+
+### 参数说明
+
+| 参数 | 说明                                                         |
+| ---- | ------------------------------------------------------------ |
+| ns   | 空间相关参数，详见[NameSpace结构体说明](#NameSpace结构体说明) |
+
+### NameSpace结构体说明
+
+| 成员                   | 类型     | 是否必须                   | 说明                                                         |
+| ---------------------- | -------- | -------------------------- | ------------------------------------------------------------ |
+| ID                     | string   | 否                         | 空间id                                                       |
+| Name                   | string   | 是                         | 空间名称(格式"^[a-zA-Z0-9_-]{1,100}$")                       |
+| Desc                   | string   | 否                         | 空间描述                                                     |
+| AccessType             | string   | 是                         | 接入类型"gb28181"或者“rtmp”                                  |
+| RTMPURLType            | int      | 当accessType为"rtmp"时必填 | accessType为“rtmp”时，推拉流地址计算方式，1:static, 2:dynamic |
+| Zone                   | string   | 否                         | zone为服务区域配置项，可选项为z0、z1、z2，默认为z0。z0表示华东、z1表示华北、z2表示华南 |
+| Domains                | []string | 当rtmpUrlType为1时必填     | 直播域名                                                     |
+| Callback               | string   | 否                         | 后台服务器回调URL                                            |
+| Disabled               | bool     | 否                         | 流是否被启用，false:启用，true:禁用                           |
+| RecordTemplateId       | string   | 否                         | 录制模版id                                                   |
+| SnapShotTemplateId     | string   | 否                         | 截图模版id                                                   |
+| RecordTemplateApplyAll | bool     | 否                         | 空间模版是否应用到全局                                       |
+| SnapTemplateApplyAll   | bool     | 否                         | 截图模版是否应用到全局                                       |
+| HLSLowLatency          | bool     | 否                         | HLS低延时开关                                                |
+| CreatedAt              | int64    | 否                         | 空间创建时间                                                 |
+| UpdatedAt              | int64    | 否                         | 空间更新时间                                                 |
+| DevicesCount           | int64    | 否                         | 设备数量                                                     |
+| StreamCount            | int64    | 否                         | 流数量                                                       |
+| OnlineStreamCount      | int64    | 否                         | 在线流数量                                                   |
+| DisabledStreamCount    | int64    | 否                         | 禁用流数量                                                   |
+| OnDemandPull           | bool     | 否                         | 按需拉流开关，默认关闭                                         | 
+
+### 示例
+
+```go
+ns := &NameSpace{
+	Name:        "testNamespace",
+	AccessType:  "rtmp",// 接入类型"gb28181"或者“rtmp”
+	RTMPURLType: 1, // accessType为“rtmp”时，推拉流地址计算方式，1:static，2:dynamic
+	Domains:     []string{"qiniu1.com"}, // 直播域名
+}
+ns1, err := manager.AddNamespace(ns)
+```
+<br />
+
+## **删除空间**
+
+```go
+func (manager *Manager) DeleteNamespace(nsId string)
+```
+
+### 参数说明
+
+| 参数 | 说明   |
+| ---- | ------ |
+| nsId | 空间id |
+
+### 示例
+
+```go
+// 删除空间
+nsId := "2akrarsj8zp0w"
+manager.DeleteNamespace(nsId)
+```
+<br />
+
+## **更新空间**
+
+```go
+func (manager *Manager) UpdateNamespace(nsId string, ops []PatchOperation) (*NameSpace, error) 
+```
+
+### 参数说明
+
+| 参数 | 说明                                                         |
+| ---- | ------------------------------------------------------------ |
+| nsId | 空间id                                                       |
+| ops  | 操作集，详见[PatchOperation结构体说明](#PatchOperation结构体说明) |
+
+### PatchOperation结构体说明
+
+| 成员  | 类型      | 说明                                            |
+| ----- | --------- | ----------------------------------------------- |
+| Op    | string    | 更该或删除某个属性，replace：更改，delete：删除 |
+| Key   | string    | 要修改或删除的属性                              |
+| Value | interface | 要修改或删除属性的值                            |
+
+### 示例
+
+```go
+// 更新空间
+nsId := "2akrarsj8zp0w"
+ops := []PatchOperation{
+		{
+			Op:    "replace",
+			Key:   "name",
+			Value: "testNamespace2",
+		},
+		{
+			Op:    "replace",
+			Key:   "zone",
+			Value: "z1",
+		},
+}
+ns3, err := manager.UpdateNamespace(nsId, ops)
+```
+<br />
+
+## **查询空间信息**
+
+```go
+func (manager *Manager) QueryNamespace(nsId string) (*NameSpace, error) 
+```
+
+### 参数说明
+
+| 参数 | 说明   |
+| ---- | ------ |
+| nsId | 空间id |
+
+### 示例
+
+```go
+// 查询空间信息
+nsId := "2akrarsj8zp0w"
+manager.DeleteNamespace(nsId)
+```
+<br />
+
+## **获取空间列表**
+
+```go
+func (manager *Manager) ListNamespace(offset, line int, sortBy string) ([]NameSpace, int64, error)
+```
+
+### 参数说明
+
+| 参数   | 说明                                                         |
+| ------ | ------------------------------------------------------------ |
+| offset | 在全部namespace中的偏移量                                    |
+| line   | 一次返回多少条                                               |
+| sortBy | asc 表示升序, desc 表示降序, 默认按创建时间降序排列(可参与排序的字段有createdAt, updatedAt).asc:updatedAt表示更新时间从小到大排序, desc:updatedAt表示更新时间从大到小排序 |
+
+### 示例
+
+```go
+// 获取空间列表
+offset := 0
+line := 100
+sortBy := "asc"
+
+nss, total, err := manager.ListNamespace(offset, line, sortBy)
+```
+<br />
+
+## **禁用空间**
+
+```go
+func (manager *Manager) DisableNamespace(nsId string) error
+```
+
+### 参数说明
+
+| 参数 | 说明   |
+| ---- | ------ |
+| nsId | 空间id |
+
+### 示例
+
+```go
+// 禁用空间
+nsId := "2akrarsj8zp0w"
+err := manager.DisableNamespace(nsId)
+```
+<br />
+
+## **启用空间**
+
+```go
+func (manager *Manager) EnableNamespace(nsId string) error
+```
+
+### 参数说明
+
+| 参数 | 说明   |
+| ---- | ------ |
+| nsId | 空间id |
+
+### 示例
+
+```go
+// 启用空间
+nsId := "2akrarsj8zp0w"
+err := manager.EnableNamespace(nsId)
+```
+
+# **流管理**
+
+## **创建流**
+本接口仅用于接入类型为RTMP的空间
+
+```go
+func (manager *Manager) AddStream(nsId string, stream *Stream) (*Stream, error)
+```
+
+### 参数说明
+
+| 参数   | 说明                                                        |
+| ------ | ----------------------------------------------------------- |
+| nsId   | 空间id                                                      |
+| Stream | 流相关参数结构体，详见[Stream结构体说明](#Stream结构体说明) |
+
+### Stream结构体说明
+
+| StreamID           | 类型   | 说明                                                         |
+| ------------------ | ------ | ------------------------------------------------------------ |
+| StreamID           | string | 流名称, 流名称在空间中唯一，可包含 字母、数字、中划线、下划线；1 ~ 100 个字符长；创建后将不可修改 |
+| Desc               | string | 关于流的描述信息                                             |
+| NamespaceId        | string | 所属的空间ID                                                 |
+| Namespace          | string | 所属的空间名称                                               |
+| RecordTemplateId   | string | 录制模版ID，配置流维度的录制模板                             |
+| SnapShotTemplateId | string | 截图模版ID，配置流维度的截图模板                             |
+| Status             | bool   | 设备是否在线                                                 |
+| Disabled           | bool   | 流是否被禁用                                                 |
+| LastPushedAt       | int64  | 最后一次推流时间，0:表示没有推流                              |
+| CreatedAt          | int64  | 流创建时间                                                   |
+| UpdatedAt          | int64  | 流更新时间                                                   |
+| UserCount          | int    | 在线观看人数                                                 |
+| ClientIp           | string | 推流端ip                                                     |
+| AudioFrameRate     | int64  | 直播流的实时音频帧率                                         |
+| BitRate            | int64  | 直播流的实时码率                                             |
+| VideoFrameRate     | int64  | 直播流的实时视频帧率                                         |
+
+### 示例
+
+```go
+// 创建流
+stream := &Stream{
+		StreamID: "test003",
+}
+_, err = manager.AddStream(ns1.ID, stream)
+```
+<br />
+
+## **删除流**
+
+```go
+func (manager *Manager) DeleteStream(nsId string, streamId string) error
+```
+
+### 参数说明
+
+| 参数     | 说明   |
+| -------- | ------ |
+| nsId     | 空间id |
+| streamId | 流id   |
+
+### 示例
+
+```go
+// 删除流
+manager.DeleteStream(ns1.ID, "test001")
+```
+<br />
+
+## **查询流信息**
+
+```go
+func (manager *Manager) QueryStream(nsId string, streamId string) (*Stream, error) 
+```
+
+### 参数说明
+
+| 参数     | 说明   |
+| -------- | ------ |
+| nsId     | 空间id |
+| streamId | 流id   |
+
+### 示例
+
+```go
+// 查询流信息
+manager.QueryStream(ns1.ID, "test001")
+```
+<br />
+
+## **更新流**
+
+```go
+func (manager *Manager) UpdateStream(nsId string, streamId string, ops []PatchOperation) (*Stream, error)
+```
+
+### 参数说明
+
+| 参数 | 说明                                                         |
+| ---- | ------------------------------------------------------------ |
+| nsId | 空间id                                                       |
+| ops  | 操作集，详见[PatchOperation结构体说明](#PatchOperation结构体说明) |
+
+### 示例
+
+```go
+// 更新流
+stream := &Stream{
+		StreamID: "test003",
+}
+ops := []PatchOperation{
+		{
+			Op:    "replace",
+			Key:   "desc",
+			Value: "test",
+		},
+}
+stream1, err := manager.UpdateStream(ns1.ID, stream.StreamID, ops)
+```
+<br />
+
+## **获取流列表**
+
+```go
+func (manager *Manager) ListStream(nsId string, offset, line int, prefix, sortBy string, qType int) ([]Stream, int64, error)
+```
+
+### 参数说明
+
+| 参数   | 说明                                                         |
+| ------ | ------------------------------------------------------------ |
+| nsId   | 空间id                                                       |
+| offset | 在全部流中的偏移量                                           |
+| line   | 一次返回多少条                                               |
+| prefix | 流ID 前缀，可以流ID 前缀进行检索查询                         |
+| sortBy | asc 表示升序，desc 表示降序。默认按创建时间降序排列(可参与排序的字段有createdAt, updatedAt, lastPushedAt). asc:updatedAt表示更新时间从小到大排序, desc:updatedAt表示更新时间从大到小排序 |
+| qType  | 查询流类型， 0:全部，1:在线流，2:离线流                        |
+
+### 示例
+
+```go
+// **获取流列表**
+streams, total, err := manager.ListStream(ns1.ID, 0, 2, "test", "desc:updatedAt", 0)
+```
+<br />
+
+## **获取动态推拉流地址**
+
+```go
+func (manager *Manager) DynamicPublishPlayURL(nsId string, streamId string, route *DynamicLiveRoute) (*RouteRet, error)
+```
+
+### 参数说明
+
+| 参数     | 说明                                                         |
+| -------- | ------------------------------------------------------------ |
+| nsId     | 空间id                                                       |
+| streamId | 流id                                                         |
+| route    | 动态模式的推拉流域名相关参数，详见[DynamicLiveRoute结构体说明](#DynamicLiveRoute) |
+
+### DynamicLiveRoute结构体说明
+
+| 成员         | 类型   | 说明                                                         |
+| ------------ | ------ | ------------------------------------------------------------ |
+| PublishIP    | string | 推流端对外IP地址                                             |
+| PlayIP       | string | 拉流端对外IP地址                                             |
+| UrlExpireSec | int64  | 地址过期时间，urlExpireSec:100代表100秒后过期；默认urlExpireSec:0,永不过期|
+
+### RouteRet结构体说明
+
+| 成员              | 类型                                                         | 说明                                        |
+| ----------------- | ------------------------------------------------------------ | ------------------------------------------- |
+| PublishUrl        | string                                                       | rtmp推流地址                                |
+| PlayUrls          | RoutePlayUrls,详见[RoutePlayUrls结构体说明](#RoutePlayUrls结构体说明) | 拉流URLs                                    |
+| PublishUrlExpired | int64                                                        | 推拉流地址过期时间点(unix时间戳,单位second) |
+
+### RoutePlayUrls结构体说明
+
+| 成员 | 类型   | 说明         |
+| ---- | ------ | ------------ |
+| Rtmp | string | rtmp播放地址 |
+| Flv  | string | flv播放地址  |
+| Hls  | string | hls播放地址  |
+
+### 示例
+
+```go
+// 获取动态推拉流地址
+ret, err := manager.DynamicPublishPlayURL("2akrarwwhi0ff", "test1", &qvs.DynamicLiveRoute{PublishIP: "127.0.0.1", PlayIP: "127.0.0.1", UrlExpireSec: 0})
+```
+<br />
+
+## **获取静态推拉流地址**
+
+```go
+func (manager *Manager) StaticPublishPlayURL(nsId, streamId string, route *StaticLiveRoute) (string, error)
+```
+
+### 参数说明
+
+| 参数     | 说明                                                         |
+| -------- | ------------------------------------------------------------ |
+| nsId     | 空间id                                                       |
+| streamId | 流id                                                         |
+| route    | 静态模式的推拉流域名相关参数，详见[StaticLiveRoute结构体说明](#StaticLiveRoute结构体说明) |
+
+### StaticLiveRoute结构体说明
+
+| 成员         | 类型   | 说明                                                         |
+| ------------ | ------ | ------------------------------------------------------------ |
+| Domain       | string | 域名                                                         |
+| DomainType   | string | 域名类型                                                     |
+| UrlExpireSec | int64  | 地址过期时间，urlExpireSec:100代表100秒后过期；默认urlExpireSec:0,永不过期 |
+
+## 示例
+
+```go
+// 获取静态推拉流地址
+ret, err := manager.StaticPublishPlayURL(ns1.ID, "1", &StaticLiveRoute{Domain: "qvs-publish.qiniu1.com", DomainType: DomainPublishRTMP})
+```
+<br />
+
+## **禁用流**
+
+```go
+func (manager *Manager) DisableStream(nsId string, streamId string) error
+```
+
+### 参数说明
+
+| 参数     | 说明   |
+| -------- | ------ |
+| nsId     | 空间id |
+| streamId | 流id   |
+
+### 示例
+
+```go
+// 禁用流
+manager.DeleteStream(ns1.ID, "test001")
+```
+<br />
+
+## **启用流**
+
+```go
+func (manager *Manager) EnableStream(nsId string, streamId string) error
+```
+
+### 参数说明
+
+| 参数     | 说明   |
+| -------- | ------ |
+| nsId     | 空间id |
+| streamId | 流id   |
+
+### 示例
+
+```go
+// 启用流
+manager.DeleteStream(ns1.ID, "test001")
+```
+<br />
+
+## **停用流**
+```go
+func (manager  *Manager) StopStream(nsId  string, streamId  string) error
+```
+### 参数说明
+| 参数     | 说明   |
+| -------- | ------ |
+| nsId     | 空间id |
+| streamId | 流id   |
+
+### 示例
+```go
+// 停用流
+manager.StopStream(ns1.ID, "test001"）
+```
+<br />
+
+## **查询推流记录**
+
+```go
+func (manager *Manager) QueryStreamPubhistories(nsId string, streamId string, start, end int, line, offset int) ([]StreamPublishHistory, int64, error)
+```
+
+### 参数说明
+
+| 参数     | 说明                                   |
+| -------- | -------------------------------------- |
+| nsId     | 空间id                                 |
+| streamId | 流id                                   |
+| start    | 推流开始时间(unix timestamp in second) |
+| end      | 推流结束时间(unix timestamp in second) |
+| line     | 一次返回多少条                         |
+| offset   | 在全部流中的偏移量                     |
+
+### 示例
+
+```go
+// 查询推流记录
+start := 1587975463
+end := 1587976463
+offset := 0
+line := 1
+manager.DeleteStream(ns1.ID, "test001", start, end, line, offset)
+```
+
+# **设备管理**
+
+## **创建设备**
+```go
+func (manager *Manager) AddDevice(device *Device) (*Device, error)
+```
+### 参数说明
+| 参数 | 说明                                                        |
+| ---- | ----------------------------------------------------------- |
+| Device | 设备相关参数，详见[Device结构体说明](#Device结构体说明) |
+
+### Device结构体说明
+| 成员 | 类型   | 说明 |
+| --- | ------ | ---- |
+| NamespaceId      | string | 所属的空间ID |
+| Name      | string | 设备名称 |
+| GBId      | string | 设备国标ID |
+| Type      | int | 设备类型，取值1（摄像头）, 2（平台）|
+| Username  | string    | 用户名 |
+| Password   | string    | 密码 |
+| PullIfRegister | bool    | 注册成功后启动拉流, 默认关闭 |
+| Desc   | string    | 设备描述 |
+| NamespaceName    | string    | 所属的空间名称 |
+| State | string | 状态（offline: 离线, online: 在线, notReg: 未注册, locked: 锁定） |
+| Channels  | int | 设备通道数 |
+| Vendor  | string    | 厂商 |
+| CreatedAt   | int64 | 创建时间，Unix时间戳，秒 |
+| UpdatedAt| int64   | 更新时间，Unix时间戳，秒 |
+| LastRegisterAt | int64   | 上一次注册时间，Unix时间戳，秒 |
+| LastKeepaliveAt | int64   | 上一次心跳时间，Unix时间戳，秒 |
+### 示例
+```go
+// 创建设备
+device := &Device {
+	Name:               "device1",
+	Desc:               "test gb28181",
+	Username:           "username",
+	Password:           "password"
+}
+dev, err := manager.AddDevice(device)
+```
+
+## **删除设备**
+```go
+DeleteDevice(nsId string, gbId string) error
+```
+### 参数说明
+| 参数 | 说明                                                        |
+| ---- | ----------------------------------------------------------- |
+| nsId | 空间id |
+| gbId | 国标id |
+
+### 示例
+```go
+// 删除设备
+dev, err := manager.DeleteDevice(ns1.ID, "device1")
+```
+
+## **更新设备**
+```go
+func (manager *Manager) UpdateDevice(nsId string, gbId string, ops []PatchOperation) (*Device, error) 
+```
+### 参数说明
+
+| 参数 | 说明                                                         |
+| ---- | ------------------------------------------------------------ |
+| nsId | 空间id                                                       |
+| gbId | 国标Id |
+| ops  | 操作集，详见[PatchOperation结构体说明](#PatchOperation结构体说明) |
+
+### 示例
+```go
+// 更新设备
+ops := []PatchOperation{
+	{
+		Op:    "replace",
+		Key:   "desc",
+		Value: "test",
+	},
+}
+dev, err := manager.UpdateDevice(ns1.ID, dev.gbId, ops)
+```
+
+## **查询设备信息**
+```go
+func (manager *Manager) QueryDevice(nsId string, gbId string) (*Device, error)
+```
+### 参数说明
+| 参数 | 说明                                                        |
+| ---- | ----------------------------------------------------------- |
+| nsId | 空间id |
+| gbId | 国标id |
+
+### 示例
+```go
+// 删除设备
+nsId := "testNsId"
+gbId := "testGbId"
+dev, err := manager.QueryDevice(nsId, gbId)
+```
+
+## **查询设备列表**
+```go
+func (manager *Manager) ListDevice(nsId string, offset, line int, prefix, state string, qType int) ([]Device, int64, error)
+```
+### 参数说明
+| 参数 | 说明                                                        |
+| ---- | ----------------------------------------------------------- |
+| nsId | 空间id |
+| offset | 在全部Device中的偏移量 |
+| line | 一次返回多少条 |
+| prefix| 可以通过gbid前缀进行检索查询 |
+| state | 按设备状态查询，offline: 离线，online: 在线，notReg: 未注册，locked: 锁定 |
+| qtype | 按设备类型查询，0:全部，1:摄像头，2:平台 |
+
+### 示例
+```go
+// 查询设备列表
+nsId := "testNsId"
+gbId := "testGbId"
+dev, err := manager.ListDevice(ns1.ID, 0, 2, "302", "", 0)
+```
+
+## **查询通道列表**
+```go
+func (manager *Manager) ListChannels(nsId string, gbId string, prefix string) (*DeviceChannels, error)
+```
+
+### 参数说明
+| 参数 | 说明                                                        |
+| ---- | ----------------------------------------------------------- |
+| nsId | 空间id |
+| gbId | 国标id |
+| prefix | 通道国标ID前缀 |
+
+### 示例
+```go
+// 删除设备
+nsId := "testNsId"
+gbId := "testGbId"
+prefix := "320"
+dev, err := manager.ListChannels(nsId, gbId, prefix)
+```
+
+## **启动设备拉流**
+```go
+func (manager *Manager) StartDevice(nsId string, gbId string, channels []string) error
+```
+
+### 参数说明
+| 参数 | 说明                                                        |
+| ---- | ----------------------------------------------------------- |
+| nsId | 空间id |
+| gbId | 国标id |
+| channels | 平台设备指定需要启动的通道国标ID(为空表示启动平台下的所有设备) |
+
+### 示例
+```go
+// 启动设备拉流
+nsId := "testNsId"
+gbId := "testGbId"
+channels := []string{"31011500991320000028"}
+dev, err := manager.StartDevice(nsId, gbId, channels)
+```
+
+## **停止设备拉流**
+```go
+func (manager *Manager) StopDevice(nsId string, gbId string, channels []string) error
+```
+
+### 参数说明
+| 参数 | 说明                                                        |
+| ---- | ----------------------------------------------------------- |
+| nsId | 空间id |
+| gbId | 国标id |
+| channels | 平台设备指定需要结束的通道国标ID(为空表示停止平台下的所有设备) |
+
+### 示例
+```go
+// 停止设备拉流
+nsId := "testNsId"
+gbId := "testGbId"
+channels := []string{"31011500991320000028"}
+dev, err := manager.StartDevice(nsId, gbId, channels)
+```
+<br />
+
+## **同步设备通道**
+```go
+func (manager *Manager) FetchCatalog(nsId, gbId string) error 
+```
+
+### 参数说明
+| 参数 | 说明                                                        |
+| ---- | ----------------------------------------------------------- |
+| nsId | 空间id |
+| gbId | 国标id |
+
+### 示例
+```go
+err = c.FetchCatalog("3nm4x0vyz7xlu", "31011500991180000270")
+```
+<br />
+
+## **查询通道详情**
+```go
+func (manager *Manager) QueryChannel(nsId, gbId, channelId string) (*Channel, error)
+```
+
+### 参数说明
+| 参数 | 说明                                                        |
+| ---- | ----------------------------------------------------------- |
+| nsId | 空间id |
+| gbId | 国标id |
+| channelId | 通道id |
+
+### 示例
+```go
+channel, err := c.QueryChannel("3nm4x0vyz7xlu", "31011500991180000270", "31011500991180000135")
+```
+<br />
+
+## **删除通道**
+```go
+func (manager *Manager) DeleteChannel(nsId, gbId, channelId string) error
+```
+
+### 参数说明
+| 参数 | 说明                                                        |
+| ---- | ----------------------------------------------------------- |
+| nsId | 空间id |
+| gbId | 国标id |
+| channelId | 通道id |
+
+### 示例
+```go
+err = c.DeleteChannel("3nm4x0vyz7xlu", "31011500991180000270", "31011500991180000135")
+```
+<br />
+
+## **查询本地录像列表**
+```go
+func (manager *Manager) QueryGBRecordHistories(nsId, gbId, chId string, start, end int) (*DeviceVideoItems, error)
+```
+
+### 参数说明
+| 参数        | 说明     |
+| ----------- | -------- |
+| nsId | 空间id   |
+| gbId        | 国标id   |
+| channelId   | 网关设备时为通道ID(普通设备可以忽略) |
+| start       | 查询开始时间(unix时间戳,单位为秒) |
+| end         | 查询结束时间(unix时间戳,单位为秒) |
+
+### 示例
+```go
+ret, err := c.QueryGBRecordHistories("3nm4x0vyz7xlu", "31011500991180000270", "34020000001310000020", 1604817540, 1604903940)
+```
+
+# **模板管理**
+
+## **创建模板**
+
+```go
+func (manager *Manager) AddTemplate(tmpl *Template) (*Template, error) 
+```
+
+### 参数说明
+
+| 参数 | 说明                                                        |
+| ---- | ----------------------------------------------------------- |
+| Tmpl | 模板相关参数，详见[Template结构体说明](#Template结构体说明) |
+
+### Template结构体说明
+
+| 成员                         | 类型   | 说明                                                         |
+| ---------------------------- | ------ | ------------------------------------------------------------ |
+| ID                           | string | 模板id                                                       |
+| Name                         | string | 模版名称，格式为 4 ~ 100个字符，可包含小写字母、数字、中划线、汉字 |
+| Desc                         | string | 模版描述                                                     |
+| Bucket                       | string | 模版对应的对象存储的bucket                                   |
+| DeleteAfterDays              | int    | 储过期时间，默认永久不过期                                    |
+| TemplateType                 | int    | 板类型，取值：0（录制模版），1（截图模版）                    |
+| FileType                     | int    | 件存储类型，取值：0（普通存储），1（低频存储）                 |
+| RecordType                   | int    | 录制模式，0（不录制），1（实时录制），2（按需录制）           |
+| RecordFileFormat             | int    | 录制文件存储格式(多选)，范围：1(001)～7(111)，从左往右的三位二进制数分别代表MP4、FLV、M3U8；0代表不选择该格式，1代表选择；例如：2(010)代表选择FLV格式，6(110)代表选择MP4和FLV格式，1(001)代表选择M3U8格式，7(111)代表三种格式均选择                         |
+| TSFileNameTemplate           | string | ts文件名模板，例如：record/ts/${namespaceId}/${streamId}/${startMs}-${endMs}.ts |
+| RecordSnapFileNameFmt        | string | 截图文件名格式，例如：/record/snap/${namespaceId}/${streamId}/${startMs}.jpg |
+| RecordInterval               | int    | 录制文件长度                                                 |
+| M3u8FileNameTemplate         | string | m3u8文件命名格式                                             |
+| FLVFileNameTemplate          | string | flv文件命名格式                                             |
+| MP4FileNameTemplate          | string | mp4文件命名格式                                             |
+| JpgOverwriteStatus           | bool   | 开启覆盖式截图(一般用于流封面)                               |
+| JpgSequenceStatus            | bool   | 开启序列式截图                                               |
+| JpgOnDemandStatus            | bool   | 开启按需截图                                                 |
+| JpgOverwriteFileNameTemplate | string | 覆盖式截图文件命名格式:snapshot/jpg/${namespaceId}/${streamId}/${streamId}.jpg |
+| JpgSequenceFileNameTemplate  | string | 序列式截图文件命名格式:snapshot/jpg/${namespaceId}/${streamId}/${startMs}.jpg |
+| JpgOnDemandFileNameTemplate  | string | 按需式截图文件命名格式:snapshot/jpg/${namespaceId}/${streamId}/ondemand-${startMs}.jpg |
+| SnapInterval                 | int    | 序列式截图时间间隔                                           |
+| CreatedAt                    | int64  | 模板创建时间                                                 |
+| UpdatedAt                    | int64  | 模板更新时间                                                 |
+| Zone                         | string | one为服务区域配置项，可选项为z0、z1、z2，默认为z0。z0表示华东、z1表示华北、z2表示华南 |
+
+### 示例
+
+```go
+// 创建模板
+tmpl := &Template{
+		Name:               "test001",
+		Bucket:             "xxxx",
+		TemplateType:       1,
+		JpgOverwriteStatus: true,
+		RecordType:         2,
+		Zone:               "z0",
+		RecordFileFormat:   1,
+}
+tmpl1, err := c.AddTemplate(tmpl)
+```
+<br />
+
+## **删除模板**
+
+```go
+func (manager *Manager) DeleteTemplate(templId string) error
+```
+
+### 参数说明
+
+| 参数    | 说明   |
+| ------- | ------ |
+| templId | 模板id |
+
+### 示例
+
+```go
+// 删除模板
+manager.DeleteTemplate(tmpl1.ID)
+```
+<br />
+
+## **更新模板**
+
+```go
+func (manager *Manager) UpdateTemplate(templId string, ops []PatchOperation) (*Template, error)
+```
+
+### 参数说明
+
+| 参数    | 说明                                                         |
+| ------- | ------------------------------------------------------------ |
+| templId | 模板id                                                       |
+| ops     | 操作集，详见[#PatchOperation结构体说明](#PatchOperation结构体说明) |
+
+### 示例
+
+```go
+// 更新模板
+ps := []PatchOperation{
+		{
+			Op:    "replace",
+			Key:   "name",
+			Value: "test002",
+		},
+		{
+			Op:    "replace",
+			Key:   "zone",
+			Value: "z1",
+		},
+}
+tmpl2, err := manager.UpdateTemplate(tmpl1.ID, ops)
+```
+<br />
+
+## **查询模板信息**
+
+```go
+func (manager *Manager) QueryTemplate(templId string) (*Template, error)
+```
+
+### 参数说明
+
+| 参数    | 说明   |
+| ------- | ------ |
+| templId | 模板id |
+
+### 示例
+
+```go
+// 查询模板信息
+tmpl2, err := manager.QueryTemplate("2akrarsl22iil")
+```
+<br />
+
+## **获取模板列表**
+
+```go
+func (manager *Manager) ListTemplate(offset, line int, sortBy string, templateType int, match string) ([]Template, int64, error) 
+```
+
+### 参数说明
+
+| 参数         | 说明                                                         |
+| ------------ | ------------------------------------------------------------ |
+| offset       | 在全部templates中的偏移量                                    |
+| line         | 一次返回多少条                                               |
+| sortBy       | 默认按创建时间降序排列，sortBy由"asc/desc"和可参与排序的字段组成，其中 asc 表示升序，desc 表示降序，可参与排序的字段有createdAt，updatedAt。asc:updatedAt表示更新时间从小到大排序，desc:updatedAt表示更新时间从大到小排序 |
+| templateType | 模板类型，取值：0（录制模版），1（截图模版）                 |
+| match        | 模糊匹配查询(模版名称包含match串时返回)                      |
+
+### 示例
+
+```go
+// 获取模板列表
+nss, total, err := c.ListTemplate(0, 2, "asc:updatedA", 1, "")
+```
+
+# **录制管理**
+
+## **查询录制记录**
+
+```go
+func (manager *Manager) QueryStreamRecordHistories(nsId string, streamId string, start, end int, marker string, line int, format string) ([]RecordHistory, string, error)
+```
+
+### 参数说明
+
+| 参数     | 说明                              |
+| -------- | --------------------------------- |
+| nsId     | 空间id                            |
+| streamId | 流id                              |
+| start    | 查询开始时间(unix时间戳，单位为秒) |
+| end      | 查询结束时间(unix时间戳，单位为秒) |
+| marker   | 上次返回的marker值                |
+| line     | 一次返回多少条                    |
+| format   | 查询录制格式，""为查询所有格式视频   |
+
+### 示例
+
+```go
+// 查询录制记录
+nsId := "2akrarsj8zp0w"
+streamId := "test01"
+start := 1587975463
+end := 1587976463
+marker := ""
+line := 10
+format := ""
+recordHistory, err := manager.QueryStreamRecordHistories(nsId, streamId, start, end, marker, line, format)
+```
+<br />
+
+## **获取截图列表**
+
+```go
+func (manager *Manager) StreamsSnapshots(nsId string, streamId string, start, end int, qtype int, line int, marker string) ([]byte, error)
+```
+
+### 参数说明
+
+| 参数     | 说明                                                        |
+| -------- | ----------------------------------------------------------- |
+| nsId     | 空间id                                                      |
+| streamId | 流id                                                        |
+| start    | 查询开始时间(unix时间戳,单位为秒)                           |
+| end      | 查询结束时间(unix时间戳,单位为秒)                           |
+| qtype    | 1:实时截图对应的图片列表                                    |
+| line    | 限定返回截图的个数，只能输入1-100的整数，不指定默认返回30个 |
+
+### 示例
+
+```go
+// 查询录制记录
+nsId := "2akrarsj8zp0w"
+streamId := "test01"
+start := 1587975463
+end := 1587976463
+marker := ""
+line := 10
+qtype := 1
+recordHistory, err := manager.StreamsSnapshots(nsId, streamId, start, end, qtype, line)
+```
+<br />
+
+## **获取直播封面截图**
+
+```go
+func (manager *Manager) QueryStreamCover(nsId string, streamId string) (string, error)
+```
+
+### 参数说明
+| 参数     | 说明                                                        |
+| -------- | ----------------------------------------------------------- |
+| nsId     | 空间id                                                      |
+| streamId | 流id                                                        |
+
+### 示例
+```go
+// 获取直播封面截图
+nsId := "2akrarsj8zp0w"
+streamId := "test01"
+cover, err := manager.QueryStreamCover(nsId, streamId)
+```
+<br />
+
+## **按需截图**
+
+```go
+func (manager *Manager) OndemandSnap(nsId, streamId string) error
+```
+
+### 参数说明
+| 参数     | 说明                                                        |
+| -------- | ----------------------------------------------------------- |
+| nsId     | 空间id                                                      |
+| streamId | 流id                                                        |
+
+### 示例
+```go
+err := c.OndemandSnap("2xenzw5o81ods", "31011500991320000356")
+```
+<br />
+
+## **删除截图**
+
+```go
+func (manager *Manager) DeleteSnapshots(nsId, streamId string, files []string) error
+```
+
+### 参数说明
+| 参数     | 说明                                                        |
+| -------- | ----------------------------------------------------------- |
+| nsId     | 空间id                                                      |
+| streamId | 流id                                                        |
+| files    | 需要删除的文件列表                                             |
+
+### 示例
+```go
+err = c.DeleteSnapshots("2xenzw5o81ods", "31011500991320000356", []string{"test.jpg"})
+```
+<br />
+
+## **启动按需录制**
+
+```go
+func (manager *Manager) StartRecord(nsId, streamId string) error
+```
+
+### 参数说明
+| 参数     | 说明                                                        |
+| -------- | ----------------------------------------------------------- |
+| nsId     | 空间id                                                      |
+| streamId | 流id                                                        |
+
+### 示例
+```go
+err = c.StartRecord("2xenzw5o81ods", "31011500991320000356")
+```
+<br />
+
+## **停止按需录制**
+
+```go
+func (manager *Manager) StopRecord(nsId, streamId string) error
+```
+
+### 参数说明
+| 参数     | 说明                                                        |
+| -------- | ----------------------------------------------------------- |
+| nsId     | 空间id                                                      |
+| streamId | 流id                                                        |
+
+### 示例
+```go
+err = c.StopRecord("2xenzw5o81ods", "31011500991320000356")
+```
+<br />
+
+## **删除录制片段**
+
+```go
+func (manager *Manager) DeleteStreamRecordHistories(nsId, streamId string, files []string) error
+```
+
+### 参数说明
+| 参数     | 说明                                                        |
+| -------- | ----------------------------------------------------------- |
+| nsId     | 空间id                                                      |
+| streamId | 流id                                                        |
+| files    | 需要删除的文件列表(从查询录制记录file 字段获取文件名)              |
+
+### 示例
+```go
+err = c.DeleteStreamRecordHistories("2xenzw5o81ods", "31011500991320000356", []string{"record/2xenzw5o81ods/31011500991320000356/1604989846152-1604990735281-852640.m3u8"})
+```
+<br />
+
+## **录制视频片段合并**
+
+```go
+func (manager *Manager) RecordClipsSaveas(nsId, streamId string, arg *saveasArgs) (*saveasReply, error)
+```
+
+### 参数说明
+| 参数     | 说明                                                        |
+| -------- | ----------------------------------------------------------- |
+| nsId     | 空间id                                                      |
+| streamId | 流id                                                        |
+| arg      | 详见saveasArgs结构体说明                                      |
+
+### saveasArgs结构体说明
+
+| 成员                         | 类型   | 说明                                                         |
+| ---------------------------- | ------ | ------------------------------------------------------------ |
+| fname       | string | 保存的文件名(需要带上文件格式后缀)，不指定系统会随机生成 |
+| format      | string | 保存的文件格式，可以为m3u8、mp4、flv |
+| start       | int | 查询开始时间(unix时间戳，单位为秒) |
+| end         | int | 查询结束时间(unix时间戳，单位为秒) |
+| deleteTs    | bool| 在不生成m3u8格式文件时是否删除对应的ts文件 |
+| pipeline    | string | 数据处理的私有队列，不指定则使用公共队列 |
+| notifyUrl   | string | 保存成功回调通知地址，不指定则不通知 |
+| deleteAfterDays | int | 文件过期时间，默认和录制模版中的设置保持一致 |
+
+### saveasReply结构体说明
+
+| 成员                         | 类型   | 说明                                                         |
+| ---------------------------- | ------ | ------------------------------------------------------------ |
+| fname          | string | 表示保存后在存储空间里的文件名。使用存储空间的下载域名可以访问这文件 |
+| persistentId   | string | 持久化异步处理任务ID，异步模式才会返回该字段，可以通过该字段查询转码进度 |
+| bucket         | string | 文件存储的bucket |
+| duration       | int    | 合并后文件的时长(单位为秒) |
+
+### 示例
+```go
+ret, err := c.RecordClipsSaveas("2xenzw5o81ods", "31011500991320000356", &saveasArgs{
+		Format: "m3u8",
+		Start:  1604989846,
+		End:    1604990735,
+	})
+```
+<br />
+
+## **录制回放**
+
+```go
+func (manager *Manager) RecordsPlayback(nsId, streamId string, start, end int) (string, error)
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| nsId | 空间id                            |
+| streamId    | 流ID                              |
+| start       | 查询开始时间(unix时间戳,单位为秒)     |  
+| end         | 查询结束时间(unix时间戳,单位为秒）    |
+	
+# **数据统计管理**
+
+## **查询带宽数据**
+
+```go
+func (manager *Manager) QueryBandwidth(nsId, streamId, tu string, start, end int) (*FlowBadwidthData, error)
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| nsId | 空间id                            |
+| streamId    | 流ID                              |
+| start       | 年月日模式(20191001)或者年月日时分秒模式(20201012204005)     |  
+| end         | 年月日模式(20191002)或者年月日时分秒模式(20201012204005)    |
+| tu          | 时间粒度 可以是 5min、hour、day   |
+
+### 示例
+
+```go
+ret, err = c.QueryBandwidth("", "", "hour", 20200901, 20200902)
+```
+<br />
+
+## **查询流量数据**
+
+```go
+func (manager *Manager) QueryFlow(nsId, streamId, tu string, start, end int) (*FlowBadwidthData, error)
+```
+
+### 参数说明
+
+| 参数        | 说明                              |
+| ----------- | --------------------------------- |
+| nsId | 空间id                            |
+| streamId    | 流ID                              |
+| start       | 年月日模式(20191001)或者年月日时分秒模式(20201012204005)     |  
+| end         | 年月日模式(20191002)或者年月日时分秒模式(20201012204005)    |
+| tu          | 时间粒度 可以是 5min、hour、day   |
+
+### 示例
+
+```go
+ret, err := c.QueryFlow("", "", "5min", 20200901, 20200902)
+```

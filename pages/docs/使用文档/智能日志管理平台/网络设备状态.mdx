@@ -1,0 +1,19 @@
+net监控主要用于监控网络设备的状态，比如收发包的数量、收发包的字节数等。
+
+net监控配置界面如下:
+![](https://dn-odum9helk.qbox.me/FjF6Dx_2Yg3fCa5H23FUA43yfdj3)
+监控字段与指标的对应关系如下：
+
+1. `net_bytes_sent`:网卡发包总数(bytes)。
+2. `net_bytes_sent_per_sec`:网卡发包速率(bytes/s)。
+3. `net_bytes_recv`:网卡收包总数(bytes)。
+4. `net_bytes_recv_per_sec`:网卡收包速率(bytes/s)。
+5. `net_packets_sent`:网卡发包数量。
+6. `net_packets_recv`:网卡收包数量。
+7. `net_err_in`:网卡收包错误数量。
+8. `net_err_out`:网卡发包错误数量。
+9. `net_drop_in`:网卡收 丢包数量。
+10. `net_drop_out`:网卡发 丢包数量。
+11. `net_interface`:网卡设备名称。
+
+在下方的`高级选项`中可以通过相关的配置指定需要收集的特定网卡信息和是否忽略网络协议的状态。

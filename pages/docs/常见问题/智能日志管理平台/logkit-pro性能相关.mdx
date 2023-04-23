@@ -1,0 +1,36 @@
+> logkit 如何进行性能调优？
+ 
+可以参考这篇文档： [logkit-pro 资源限制与性能调优](https://developer.qiniu.com/insight/manual/4934/logkit-pro-compared-with-mainstream-collecting-component-function-performance#3)
+
+> 问题描述： 如何限制/提高logkit-pro使用的CPU资源？ 
+
+ 主配置文件中有 `runtime.max_procs` 一项，该项配置控制了logkit-pro整体使用的CPU数量，默认为1，当您希望限制使用的核数时，配置为您希望限制的数量即可，当您希望提高使用量时也是相应修改。
+
+```
+{
+  "version": 1,
+  "service": {
+    "bind_host": ":3000",
+    "static_dir": "public",
+    "upload_dir": "data/upload"
+  },
+  "service_url": {
+    "smart_elf": "https://logkit-pro.qiniu.com/"
+  },
+  "runtime": {
+    "max_procs": 1
+  },
+  "security": {
+    "disable_auths": false,
+    "auths_file": "auths.conf"
+  }
+}
+```
+
+> 问题描述： 读取、发送慢怎么提升？ 
+
+ 读取、解析、发送跟实际的配置关系较为紧密，请参考各个模块的配置选项，可以关闭一些性能消耗大但您实际不使用的功能进行一些性能优化。
+		除此之外，还要查看机器的资源是否已经达到瓶颈，主要查看： `CPU`，`内存`，`磁盘IO`，`网络带宽`这四项。
+		一般情况下，`读取文件`的速度不会成为性能瓶颈，而`读取消息队列`如kafka，则可以考虑通过多实例(多个runner)配置同一个consumergroup，来进行并发消费。
+		`解析(parser)` 和 `转换(transformer)`主要消耗`CPU`，如果`CPU`被打满，极有可能是配置的解析和转换较多，此时可以从解析方式或者转换方式上考虑优化，如能用csv的转换就不用grok，等等。
+		`发送(sender)` 的优化方式较为多样，可以参考上文中日志发送常见问题里的`如何不重不漏的高效发送日志数据` 部分。

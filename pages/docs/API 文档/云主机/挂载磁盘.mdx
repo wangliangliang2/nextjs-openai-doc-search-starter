@@ -1,0 +1,84 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `POST` /v1/vm/disk/:disk_id/attach
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>地域 ID。</p>
+        <p>您可以调用 DescribeRegions 查看最新的七牛云地域列表。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>disk_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>磁盘 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>目标 ECS 实例的 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>delete_with_instance</td>
+      <td>boolean</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>释放实例时，该云盘是否随实例一起释放。</p>
+        <ul>
+          <li>true：释放。</li>
+          <li>false：不释放。云盘会转换成按量付费数据盘而被保留下来。
+            默认值：false</li>
+        </ul>
+        <div class="marker marker-note">
+          <p>说明：将 delete_with_instance 置为 false 后，一旦 ECS 实例被安全控制，即 operation_locks 中标记了 "lock_peason" : "security"，释放 ECS 实例时会忽略云盘的该属性，被同时释放。</p>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>bootable</td>
+      <td>boolean</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>是否作为系统盘挂载。 默认值：false</p>
+        <div class="marker marker-note">
+          <p>说明 设置为 <code>Bootable=true</code> 时，目标 ECS 实例必须处于无系统盘状态。</p>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+| 名称 | 类型 | 是否必须 | 描述 |
+| ----- | ----- | ----- | ----- |
+| request_id | string | 是 | 请求 ID

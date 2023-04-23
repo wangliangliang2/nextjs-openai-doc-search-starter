@@ -1,0 +1,40 @@
+Grok Transformer 是一个类似于 Logstash Grok Parser 一样的解析，会将指定的字符串转换为map。
+
+* 匹配日志的 grok 表达式(`grok_patterns`):用于匹配日志的 grok 表达式，多个用逗号分隔。填写解析日志的`grok pattern`名称，包括一些[logkit Pro 自身内置的 patterns](https://github.com/qiniu/logkit/blob/develop/grok_patterns/logkit-patterns)以及自定义的 pattern 名称，以及社区的常见 grok pattern，如[logstash 的内置 pattern](https://github.com/logstash-plugins/logstash-patterns-core/blob/master/patterns/grok-patterns)以及常见的[grok 库 pattern](https://github.com/vjeantet/grok/tree/master/patterns)
+    * 填写方式是 `%{QINIU_LOG_FORMAT},%{COMMON_LOG_FORMAT}`，以百分号和花括号包裹 pattern 名称，多个 pattern 名称以逗号分隔。
+    * 实际匹配过程中会按顺序依次去 parse 文本内容，以第一个匹配的 pattern 解析文本内容。
+    * 需要注意的是，每多一个 pattern，解析时都会多解析一个，直到成功为止，所以 pattern 的数量多有可能降低解析的速度，在数据量大的情况下，建议一个 pattern 解决数据解析问题。
+  
+* 自定义grok表达式(`grok_custom_patterns`):用户自定义的 grok pattern 内容，需符合 logkit Pro 自定义 pattern 的写法，按行分隔，参见自定义 pattern 的写法和用法说明。
+
+### **示例**：
+
+例如， parser 解析后的数据为:
+
+```
+{ 
+   "key1": "value1", 
+	 "grok_key": `127.0.0.1 user-identifier frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326 "-" "Mozilla"`
+}
+```
+grok_patterns 为 `%{COMBINED_LOG_FORMAT}`, 经过 grok 变换后的数据将变为:
+
+```
+{
+	"key1": "value1",
+	"grok_key": `127.0.0.1 user-identifier frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326 "-" "Mozilla"`
+	"grok":{
+	    "resp_bytes":   int64(2326),
+			"auth":         "frank",
+			"client_ip":    "127.0.0.1",
+			"http_version": float64(1.0),
+			"ident":        "user-identifier",
+			"request":      "/apache_pb.gif",
+			"referrer":     "-",
+			"agent":        "Mozilla",
+			"verb":         "GET",
+			"resp_code":    "200",
+			"ts":           "2000-10-10T13:55:36-07:00",
+	},
+},
+```

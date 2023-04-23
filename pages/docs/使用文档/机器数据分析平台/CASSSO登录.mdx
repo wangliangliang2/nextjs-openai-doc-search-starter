@@ -1,0 +1,35 @@
+# 概述
+对于使用Pandora的大多数企业用户来说，都会有自己的内部账户系统使用某种认证鉴权方式，无论是自研的还是第三方的解决方案。如果用户内部系统和各个外部系统都用单独的账户体系，对系统使用者和管理者来说会造成很大的操作负担、管理复杂度及安全风险。
+在这样的背景下，我们就需要一个针对企业内部用户的单点登录系统 (SSO)，实现更简便的用户登录及账户管理，同时带来更好的安全性 。单点登录（ Single Sign-On，简称 SSO ）是目前比较流行的服务于企业业务整合的解决方案之一，SSO使得用户在多个应用系统中，只需要登录一次就可以访问所有相互信任的应用系统。SSO的解决方案很多，其中应用最为广泛的是CAS（Central Authentication Service）框架，CAS是Yale大学发起的一个企业级的、开源的项目，旨在为Web应用系统提供一种可靠的单点登录解决方法。
+
+**CAS协议流程及原理说明如下：**
+* CAS 协议涉及两个主体，通过浏览器交换信息：
+    * CAS Server： CAS 服务端，身份认证提供方，独立部署，如企业内部系统。主要负责对用户的认证工作。
+    * CAS Client： CAS 客户端，资源提供方，如Pandora系统。负责处理对客户端Web 应用系统受保护资源的访问请求，需要对请求方进行身份认证时，重定向到 CAS Server 进行认证。CAS Client 与客户端应用部署在一起，以 Filter方式保护受保护的资源。
+* 授权流程
+    1. 访问服务：用户登录 CAS Client 提供的应用，客户端发送请求访问应用系统的服务资源；
+    2. 定向认证：CAS Client 分析该Http 请求中是否包含认证票据Service Ticket（ST），如果没有，则客户端会重定向用户请求到CAS Server ,并传递 Service （目的资源地址）；
+    3. 用户认证：用户输入身份认证信息，登录成功后CAS Server 随机产生一个唯一、不可伪造的票据 ST，然后附带ST回调 CAS client；
+    4. 发放票据：CAS Server将ST发放给CAS Client ，客户端收到 Service和ST 后通过后台与CAS Server 进行交互验证；
+    5. 验证票据：CAS Server根据请求参数Service和ST进行身份核实，验证票据的合法性，验证通过后允许客户端访问服务。
+    6. 传输用户信息：CAS Client和CAS Server之间完成了一个对用户的身份核实，返回给用户CAS Client访问资源。服务器验证票据通过后，传输用户认证结果信息给客户端。
+![image.png](https://dn-odum9helk.qbox.me/Fm3jBBtF_A48HlI1tmhWWC8BW4yq)
+* CAS如何实现SSO
+CAS SSO实现方式可简化理解为：1个Cookie和N个Session。CAS Server创建cookie，在所有应用认证时使用，各应用通过创建各自的Session来标识用户是否已登录。
+用户在一个应用验证通过后，以后用户在此浏览器里访问其他应用时，客户端应用中的filter会在session中读取到用户信息，如果读取不到用户信息，就会跳转到CAS Server的login接口认证，但这时CAS Server会读取到浏览器传来的cookie（ TGC ），所以CAS Server不会要求用户重新登录，只会根据service参数生成一个ST然后再和应用验证票据。
+* CAS登出
+用户在一个系统登出时，访问其它子系统也应该是登出状态。应用除结束本地局部会话外，还应该通知认证中心该用户登出。认证中心接到登出通知，即可结束全局会话，同时需要通知所有已建立局部会话的子系统，将它们的局部会话销毁。此时用户访问其它应用时，均显示登出状态。
+
+# 对接流程
+在pandora平台第三方登录认证中支持基于CAS 协议集成第三方身份提供商实现Pandora的SSO登录对接，实现接入用户企业统一账户系统。下文介绍企业如何实现Pandora的SSO登录与企业自有身份认证系统对接，用户可以通过单点登录 (SSO) 方式登录 Pandora系统。
+为了建立Pandora与企业账号系统之间的互信关系，需在平台访问控制中配置SSO接入信息，配置完成后才能通过单点登录方式登录平台。点击访问控制 > 第三方登录，开启第三方认证并选择认证类型为CAS SSO登录，选择CAS SSO登录接入，支持用户基于CAS框架将Pandora配置为客户端接入单点登录系统，具体配置信息说明如下：
+
+|配置|说明|
+|-|-|
+|应用ID（Service）|接入Cas服务器的应用端ID，每一个接入的客户端对应一个Service配置|
+|cas登录地址(casServerLoginUrl)|Cas服务登录地址|
+|cas登出地址(casServerLogoutUrl)|Cas服务登出地址|
+|cas服务器地址（casServerUrlPrefix）|Cas服务器地址，CAS Client发送请求访问应用系统的服务资源时，客户端会重定向用户请求到CAS Server|
+|初始用户权限分配|为首次登录的账号指定一个初始化权限角色|
+
+![image.png](https://dn-odum9helk.qbox.me/FvnZ9_HOqoR-iPtIryf8Jb8juAuD)

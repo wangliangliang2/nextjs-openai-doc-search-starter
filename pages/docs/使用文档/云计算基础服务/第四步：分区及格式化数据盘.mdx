@@ -1,0 +1,69 @@
+当您购买了数据盘时，需要格式化才可使用。未购买数据盘的用户可以跳过此步骤。这里以 CentOS 为例进行说明。
+
+> 注意：仅支持对数据盘进行分区，不支持对系统盘进行分区。若您强行对系统盘分区可能导致系统崩溃等严重问题，针对此种情况七牛云不承担赔偿责任。
+
+## 1.
+
+通过第三步介绍的方法登录 Linux 云主机。
+
+## 2.
+
+输入命令`fdisk -l`查看您的数据盘信息，注意：在没有分区和格式化数据盘之前，使用`df -h` 命令是无法看到数据盘的。在下面的示例中，有一个 10.7 GB 的数据盘(/vdb)需要挂载。
+
+![](https://dn-odum9helk.qbox.me/Fpims-dPvBiUqeqTASh7phCaTL9Z)
+
+## 3.
+
+执行以下命令，对数据盘进行分区。
+
+	fdisk /dev/vdb
+
+按照界面的提示，依次输入“n”(新建分区)、“p”(新建扩展分区)、“1”(使用第1个主分区)，两次回车(使用默认配置)，输入“wq”(保存分区表)，回车开始分区。  
+这里是以创建1个分区为例，开发者也可以根据自己的需求创建多个分区。
+
+![](https://dn-odum9helk.qbox.me/FvYDnyY26i-F0VWoIm7uP9XudWYG)
+
+使用 “fdisk -l” 命令，即可查看到，新的分区 vdb1 已经创建完成。  
+
+![](https://dn-odum9helk.qbox.me/FpiN4fX7mMcvENv4aHD34qZivVYs)
+
+## 4.
+
+分区后需要对分好的区进行格式化，您可自行决定文件系统的格式，如 ext2、ext3 等。本例以 “ext3” 为例：
+
+使用下面的命令对新分区进行格式化。
+
+    mkfs.ext3 /dev/vdb1
+
+![](https://dn-odum9helk.qbox.me/FnNLlIjfUA0VKxT3yGeZ52plOVei)
+
+## 5.
+
+使用以下命令创建 mydata 目录并将分区挂载在该目录下：
+
+    mkdir /mydata
+    mount /dev/vdb1 /mydata
+
+最后用以下命令查看
+
+    df -h
+
+出现如图信息则说明挂载成功，即可以查看到数据盘了。  
+
+![](https://dn-odum9helk.qbox.me/FhBD3e4Rr5P8NPMfNdGBaNWeWFdO)
+
+## 6.
+
+如果希望云主机在重启或开机时能自动挂载数据盘，必须将分区信息添加到 `/etc/fstab` 中。如果没有添加，则云主机重启或重新开机后，都不能自动挂载数据盘。
+
+使用以下命令添加分区信息：
+
+    echo '/dev/vdb1 /mydata ext3 defaults 0 0' >> /etc/fstab
+
+使用以下命令查看
+
+    cat /etc/fstab
+
+出现如图信息则说明添加分区信息成功。  
+
+![](https://dn-odum9helk.qbox.me/FmHS3IuPtFsKEaOpqIVv9_5mAjmH)

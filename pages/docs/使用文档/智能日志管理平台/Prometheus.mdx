@@ -1,0 +1,31 @@
+prometheus监控主要用于收集 prometheus 支持的各类 node_exporter 数据。
+
+即我们兼容了所有 prometheus 的收集节点，可以替代 prometheus 服务端去获取所有 prometheus 采集节点的数据。
+
+# 配置说明
+
+prometheus监控配置界面如下：
+![](https://dn-odum9helk.qbox.me/FvWbvmyLWw834JHc5IxgwIqaAjjZ)
+
+目前支持添加exporter的方式有两种：
+1. 在`监听路径`中，手动输入exporter的配置地址，可以输入多个，用`,`分隔。（例：http://127.0.0.1:9100/metrics,http://127.0.0.2:9100/metrics ）
+2. 在`consul访问路径`中，输入consul集群的配置地址，会自动从consul中读取配置的services，并从是exporter的url中收集监控数据。（例：http://127.0.0.1:8500 ），该方式会利用 consul 的服务发现能力，您可以自己注册监控节点，logkit-pro会自动发现并去采集数据。
+3. 若两者同时配置则会收集两个配置路径中的所有监控信息: 
+4. `数据中心`和`鉴权信息`都是从consul中读取services需要用到的配置。如果是手动输入监听路径则无需填写。
+5. `数据中心`:consul中存放相关配置的datacenter名字,不填默认为`dc1`。
+6. `鉴权信息`: 若consul配置了ACL，则需要填写相关的token才可以读取到相关的services信息。若未配置ACL，则无需填写。
+
+# 数据说明
+
+在 prometheus 中的一条记录对应到 logkit 收集之后也是一条记录，并会标注其来源路径(url及path)。相应的，对于所有配置的收集路径都会有一条显示当前node状态的记录：
+
+* `node_path`:收集监控信息的路径。
+* `node_status`node当前的状态，分为 `down` 和 `up` 。
+* `node_err_info`:node当前的错误信息，只有状态为 `down` 的node才会有此字段。
+
+# prometheus常见的监控节点
+
+prometheus支持的监控形式多样，支持仅百种监控，可以参考如下页面。
+
+https://prometheus.io/docs/instrumenting/exporters/
+

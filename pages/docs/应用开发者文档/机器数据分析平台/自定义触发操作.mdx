@@ -1,0 +1,208 @@
+平台支持用户通过插件的形式实现告警等功能的触发操作的逻辑，下面以Python SDK为例说明如何进行自定义API开发。
+
+## 安装 Python 环境
+
+自定义API 需要Python 3.8+ 以上的环境，以及 pip 包管理工具。非常建议使用 [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/) 或者 [pipenv](https://github.com/pypa/pipenv) 等工具来管理你的Python 环境。
+
+
+## 安装Pandora Python SDK
+
+确认安装完整的Python 环境，并且安装好 pip 包管理工具。执行如下命令
+
+```shell
+sudo pip install pdr_python_sdk
+```
+
+创建模板应用，执行如下命令，注意填写你的APP英文名字和标题。
+
+```shell
+create_pandora_app --name <APP英文名字> --title <APP的标题>
+```
+
+
+## 配置自定义触发操作的配置项
+
+在demo/resources/custom_triggers/ 查看triggeractionhello.json，文件配置如下，可以按照需求进行修改：
+
+```javascript
+{
+  "name": "hello_trigger",            // 触发操作的唯一标识
+  "displayName": "hello触发方式",      // 触发操作的显示名
+  "env": "python3",                       // 运行时环境的名字
+  "filename": "trigger_action_example.py"  // 触发操作的触发脚本，位于 bins 目录下
+}
+```
+
+## 编写自定义触发操作脚本
+
+详细内容参考[SDK帮助手册](/express/sdk/7282/custom-operators-sdk) 获取Python SDK，然后在bins目录下可以查看trigger_action_example.py 脚本。注意我们继承了 OnDemandTriggerAction 类型，并且覆盖了 do_handle_events 接口，在接口中实现了我们API的业务逻辑：
+
+```python
+import sys
+import os
+import logging
+
+# add library to python path , don't forget it
+lib_name = 'libs'
+sys.path.insert(0, os.path.sep.join([os.path.dirname(os.path.abspath(__file__)), lib_name]))
+
+from pdr_python_sdk.trigger_action.on_demand_trigger_action import OnDemandTriggerAction
+from pdr_python_sdk.on_demand_action import run
+
+
+class TriggerActionExample(OnDemandTriggerAction):
+
+    def do_handle_events(self, events):
+        length = len(events)
+        event_name = ""
+        event_display_id = ""
+        params = {}
+        logging.info("event length = {0}".format(length))
+        if length > 0:
+            event_name = events[0].eventName
+            event_display_id = events[0].eventDisplayId
+            params = events[0].params
+
+        content= "from hello trigger: eventLength={0}, event_name={1}, " \
+               "event_display_id={2}, params={3}".format(length, event_name, event_display_id, params)
+
+        # 在这里可以实现自定义通知、自动化处理等功能
+        # event 的结构如最后一节所示
+
+        return content
+
+
+if __name__ == '__main__':
+    run(TriggerActionExample, sys.argv, sys.stdin.buffer, sys.stdout.buffer)
+
+```
+
+## 编写触发操作的自定义表单
+
+在 `appserver/static/custom_triggers/<自定义触发名称>/form.xml` 编写自定义表单的 xml 配置，可以通过xml 控制在告警触发操作增加表单项。用户可以在表单项上填写需要的触发操作参数。
+
+示例，增加一个选择类的表单项，注意作为表单配置的顶层元素，所有表单元素需使用 form 包裹。
+
+
+```xml
+<form>
+  <input type="dropdown" field="align">
+    <label>对齐方式</label>
+    <initial-value>left</initial-value>
+    <choice value="left">向左</choice>
+    <choice value="center">居中</choice>
+    <choice value="right">向右</choice>
+  </input>
+</form>
+```
+
+上传APP之后可以看到效果如下：
+
+![form_input_dropdown.png](https://dn-odum9helk.qbox.me/FpTMq3-J9LQEs_49kVwwHO4NzB9t)
+
+
+自定义表单非常有用，可以帮助用户填写和自定义触发规则相关的参数。详细的自定义表单参数如文档[自定义表单](/express/extend/7938/the-custom-form)所示。
+
+## 运行单元测试
+
+在项目中运行命令，可以执行在 bins/tests 目录下的单元测试代码，保障我们APP的质量。
+
+
+```shell
+./run.sh unittest
+```
+
+
+## 打包并安装APP
+
+将我们的应用项目打包，如果运行成功的话，应用的包将会出现在 dist 目录下：
+
+```shell
+./run.sh package 
+
+$ ls dist 
+trigger_test.tar.gz
+```
+
+去pandora 2.0的应用商店的“应用管理”界面上传APP 的程序包，或者可以执行以下命令，自动上传：
+
+```shell
+export PANDORA_PORT=<PANDORA端口>
+export PANDORA_SCHEME=<https|http>
+export PANDORA_TOKEN=<PANDORA访问Token>
+export PANDORA_HOST=<PANDORA服务IP或者域名>
+
+./run.sh upload
+```
+
+
+
+## 传入SDK 中 Event 的数据结构
+
+|字段名字|字段类型|字段意义|
+|-|-|-|
+| eventDisplayId | 字符串 | 事件展示ID |
+| eventId | 字符串 | 事件唯一标识ID |
+| eventName | 字符串 | 事件名字  |
+| eventDescription | 字符串 | 事件描述 |
+| eventStatus | 字符串 | 事件状态  |
+| eventSubject | 字符串 |  事件报警主体 |
+| alertLevel | 字符串 | 报警级别 |
+| eventTime | 字符串 | 事件时间 |
+| eventConditionRecord | 字符串  | 事件原始数据记录 |
+| alertSourceType | 字符串 | 告警来源类型，目前包括日志告警和手动创建两种  |
+| alertName | 字符串 | 报警规则名字  |
+| alertDescription | 字符串 | 报警规则描述 |
+| alertDataSource | 字符串 | 报警数据源 |
+| alertTimeRange | 字符串 | 描述告警计算时间区间 |
+| alertInterval | 字符串 | 描述告警运行周期 |
+| alertExecuteCount | 整数 | 告警运行批次 |
+| phoenixHost | 字符串 | Pandora服务的地址 |
+| userName | 字符串 | 用户账号 |
+| realUserName | 字符串 | 用户实际名称 |
+| additionContents | 数组，元素类型为 AdditionContent | 补充信息 |
+| AdditionContent.name | 字符串 | 补充信息名字 |
+| AdditionContent.spl | 字符串 | 补充信息的计算SPL |
+| AdditionContent.contents | 数组，每个元素为一行数据 | 补充信息SPL计算的结果 |
+| params | Map | 用户在自定义表单的填写内容，key 为字段名，value 为用户表单内填写内容 |
+
+
+一个Event的示例：
+
+```javascript
+{
+    "eventDisplayId": "1",
+    "eventId": "asdf-1234-dfdfe",
+    "eventName": "mock_event1",
+    "eventDescription": "this is a mock event",
+    "eventStatus": "created",
+    "eventSubject": "hostname=localhost",
+    "alertLevel": "警告",
+    "eventTime": "2021-01-28 12:00:00",
+    "eventConditionRecord": "field1:12, field2:13",
+    "alertSourceType": "日志告警",
+    "alertName": "mock_event1",
+    "alertDescription": "this is a mock event",
+    "alertDataSource": "|makeresults",
+    "alertTimeRange": "从 5 分钟前到 0 分钟前",
+    "alertInterval": "每 5 分钟",
+    "alertExecuteCount": 1,
+    "phoenixHost": "127.0.0.1:9999",
+    "userName": "mock_user@qiniu.com",
+    "realUserName": "mock_user@qiniu.com",
+    "params": {
+        "param1": "value1"
+    },
+    "additionContents": [
+        {
+            "name": "附件内容1",
+            "spl": "|makeresults | eval x=10",
+            "contents": [
+                {
+                    "x": 10
+                }
+            ]
+        }
+    ]
+}
+```

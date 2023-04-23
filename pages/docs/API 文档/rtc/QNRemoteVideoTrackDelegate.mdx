@@ -1,0 +1,101 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                远端视频 Track 回调代理，可通过 <a href='8858/QNRemoteVideoTrack-iOS#delegate'>QNRemoteVideoTrack.delegate</a> 进行设置，用来实现远端视频 Track 数据以及发生变化的回调。</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didGetPixelBuffer`)'>didGetPixelBuffer</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didMuteStateChanged`)'>didMuteStateChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didVideoProfileChanged`)'>didVideoProfileChanged</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didGetPixelBuffer">
+didGetPixelBuffer</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)remoteVideoTrack:(<a href='8858/QNRemoteVideoTrack-iOS'>QNRemoteVideoTrack</a> *)remoteVideoTrack didGetPixelBuffer:(CVPixelBufferRef)pixelBuffer</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端视频 Track 的视频数据回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            remoteVideoTrack: <a href='8858/QNRemoteVideoTrack-iOS'>QNRemoteVideoTrack</a>
+        </div>
+                <p>远端视频 Track</p>
+    </li>
+    <li>
+        <div>
+            pixelBuffer: CVPixelBufferRef
+        </div>
+                <p>具体的视频数据格式，可通过 CVPixelBufferGetPixelFormatType 获取</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didMuteStateChanged">
+didMuteStateChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)remoteVideoTrack:(<a href='8858/QNRemoteVideoTrack-iOS'>QNRemoteVideoTrack</a> *)remoteVideoTrack didMuteStateChanged:(BOOL)isMuted;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端视频 Track 静默的回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            remoteVideoTrack: <a href='8858/QNRemoteVideoTrack-iOS'>QNRemoteVideoTrack</a>
+        </div>
+                <p>远端音频 Track</p>
+    </li>
+    <li>
+        <div>
+            isMuted: BOOL
+        </div>
+                <p>是否静默</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didVideoProfileChanged">
+didVideoProfileChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)remoteVideoTrack:(<a href='8858/QNRemoteVideoTrack-iOS'>QNRemoteVideoTrack</a> *)remoteVideoTrack didVideoProfileChanged:(<a href='9254/QNTypeDefines#QNTrackProfile'>QNTrackProfile</a>)profile;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端视频 Track 分辨率发生变化的回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            remoteVideoTrack: <a href='8858/QNRemoteVideoTrack-iOS'>QNRemoteVideoTrack</a>
+        </div>
+                <p>远端视频 Track</p>
+    </li>
+    <li>
+        <div>
+            profile: <a href='9254/QNTypeDefines#QNTrackProfile'>QNTrackProfile</a>
+        </div>
+                <p>分辨率等级</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

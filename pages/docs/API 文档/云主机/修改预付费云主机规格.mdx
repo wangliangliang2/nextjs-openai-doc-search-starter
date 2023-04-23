@@ -1,0 +1,34 @@
+# 请求路径
+> `PUT` /v1/vm/instance/:id/prepaySpec
+
+# 请求参数
+
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region_id | string | body | 是 | 地域 ID |
+| id | string | path | 是 | 主机实例 ID |
+| instance_type | string | body | 是 | 新的主机规格，查规格参考文档: [查看实例规格详情列表](https://developer.qiniu.com/qvm/5594/openapi-ecs-describe-instance-type) |
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| data | OrderInfo | 是 | 订单详情 |
+| request_id | string | 是 | 请求记录 ID |
+
+### OrderInfo 订单详情
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| order | string | 是 | 订单号 |
+
+
+# 示例
+### 正常返回示例
+```json
+{
+    "data": {
+        "order": "1QW2F998-8642-2346-I2K3-0OKMNHY65TG4",
+    }
+    "request_id": "04F0F334-AC1"
+}
+```

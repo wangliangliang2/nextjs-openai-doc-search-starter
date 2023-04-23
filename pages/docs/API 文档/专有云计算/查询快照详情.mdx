@@ -1,0 +1,69 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+
+> `GET` /api/rio/v1/storage/snapshot/:id
+
+# 请求参数
+
+| 名称          | 类型   | 位置   | 必须 | 描述    |
+| ------------- | ------ | ------ | ---- | ------- |
+| x-rio-zone-id | string | header | 是   | 地域 ID |
+| id            | string | query  | 是   | 快照 ID |
+
+# 返回值
+
+| 名称       | 类型         | 描述     |
+| ---------- | ------------ | -------- |
+| request_id | string       | 请求 ID  |
+| data       | SnapshotInfo | 快照详情 |
+
+## SnapshotInfo 镜像详情
+
+| 名称          | 类型             | 描述                                                                                                                              |
+| ------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| snapshot_id   | string           | 快照 ID                                                                                                                           |
+| snapshot_name | string           | 快照名称                                                                                                                          |
+| description   | string           | 快照描述                                                                                                                          |
+| status        | string           | 快照状态：<ul><li>`progressing`：正在创建的快照</li><li>`accomplished`：创建成功的快照</li><li>`failed`：创建失败的快照</li></ul> |
+| progress      | string           | 快照创建进度，单位为百分比。                                                                                                      |
+| remain_time   | integer          | 正在创建的快照剩余完成时间，单位为秒                                                                                              |
+| source_disk   | SnapshotDiskInfo | 快照来源磁盘信息                                                                                                                  |
+| created_at    | integer          | 镜像的创建时间：时间戳，毫秒                                                                                                      |
+
+## SnapshotDiskInfo 快照来源磁盘信息
+
+| 名称          | 类型             | 描述                                                                                                                              |
+| ------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| zone_id     | string  | 地域 ID                                                                                                                                                                                                                                                                                                                                             |
+| disk_id     | string  | 磁盘 ID                                                                                                                                                                                                                                                                                                                                             |
+| disk_name   | string  | 磁盘名称                                                                                                                                                                                                                                                                                                                                            |     |
+| disk_type   | string  | 磁盘类型：<ul><li>`system` : 系统盘</li><li>`data` : 数据盘</li></ul>                                                                                                                                                                                                                                                                               |     |
+| size        | integer | 磁盘大小                                                                                                                                                                                                                                                                                                                                            |
+| disk_status | string  | 磁盘状态：<ul><li>`In_use` : 使用中</li><li>`Available` : 空闲</li><li>`Attaching` : 挂载中</li><li>`Detaching` : 卸载中</li><li>`Creating` : 创建中</li><li>`Initializing` : 初始化中</li><li>`ReIniting` : 回滚中</li><li>`Processing` : 处理中</li><li>`Deleting` : 删除中</li><li>`Downloading` : 下载镜像</li><li>`Error` : 磁盘错误</li></ul> |
+
+## 返回值示例
+
+```json
+{
+  "request_id": "HtPfErqC3zhDOcwW",
+  "data": {
+    "snapshot_id": "5425fce7-5e5b-4aae-a2c8-de87ebea34b1",
+    "snapshot_name": "S-SWD7K",
+    "description": "",
+    "status": "accomplished",
+    "usage": "disk",
+    "progress": "100%",
+    "remain_time": 0,
+    "source_disk": {
+      "disk_id": "04655fe0-6b39-43cb-b344-f3b09703ef58",
+      "disk_name": "D-qudvl",
+      "zone_id": "wenzhou",
+      "disk_type": "",
+      "disk_status": "In_use",
+      "size": 20
+    },
+    "created_at": 1640758933000
+  }
+}
+```

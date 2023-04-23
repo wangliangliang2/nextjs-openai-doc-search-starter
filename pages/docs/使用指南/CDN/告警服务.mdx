@@ -1,0 +1,86 @@
+告警服务帮助用户对CDN流量、带宽、命中率、状态码等指标进行监控，包括告警配置和告警联系人两个模块。在告警配置模块中，针对每个域名，用户可以配置各项告警的触发条件。在告警联系人模块中，用户可以设置接收人、接收人组和Webhook，当某个告警条件被触发后，相应的接收者会收到邮件和短信通知。
+<br>
+# 告警配置
+登陆[**七牛开发者平台**](https://portal.qiniu.com/signin)，进入[**CDN控制台**](https://portal.qiniu.com/cdn/overview)，选择【告警配置】。
+<br>
+## 搜索告警规则
+![WX20230112-175707@2x.png](https://dn-odum9helk.qbox.me/FnDQvr0_lmKxBHpaWX0Fu7-G0SFL)
+* 在域名告警规则界面，右上角搜索框输入规则名称或域名搜索相关告警规则。
+* 支持规则名称和域名两个维度的搜索。
+* 域名维度的搜索结果为关联该域名的所有告警规则。
+<br>
+## 新建告警规则
+![WX20230112-164614@2x.png](https://dn-odum9helk.qbox.me/FpoT3rmtj3ifunr0GnfnDbcpjKc7)
+* 新建告警规则：在域名告警规则界面，左上角点击【新建告警规则】，可为新域名配置告警。
+* 规则名称：告警规则的名称。
+* 监控指标配置：用户根据业务需要配置监控指标，具体指标信息参考下表。<br>
+
+<table>
+   <tr>
+      <td align="center"><b>监控指标</b></td>
+      <td align="center"><b>选项</b></td>
+      <td align="center"><b>计量单位</b></td>
+   </tr>
+   <tr>
+      <td align="center">状态码</td>
+      <td align="center">高于/低于/环比波动/环比上升/环比下降</td>
+      <td align="center">百分比</td>
+   </tr>
+   <tr>
+      <td align="center">流量命中率</td>
+      <td align="center">高于/低于/环比波动/环比上升/环比下降</td>
+      <td align="center">百分比</td>
+   </tr>
+   <tr>
+      <td align="center">请求命中率</td>
+      <td align="center">高于/低于//环比波动/环比上升/环比下降</td>
+      <td align="center">百分比</td>
+   </tr>
+   <tr>
+      <td rowspan="2" align="center">带宽</td>
+      <td align="center">高于/低于</td>
+      <td align="center">Mbps</td>
+   </tr>
+   <tr>
+      <td align="center">环比波动/环比上升/环比下降</td>
+      <td align="center">百分比</td>
+   </tr>
+   <tr>
+      <td rowspan="2" align="center" >流量</td>
+      <td align="center">高于/低于</td>
+      <td align="center">GB</td>
+   </tr>
+   <tr>
+      <td align="center">环比波动/环比上升/环比下降</td>
+      <td align="center">百分比</td>
+   </tr>
+</table>
+
+说明：
+（1）目前，状态码、流量命中率、请求命中率指标仅对部分用户展示，且每个域名告警条数不超过 10 条，如有需要状态码、命中率的相关配置或单域名需要配置超过 10 条告警，请[**提交工单**](https://support.qiniu.com/tickets/new/form?category=%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98&space=CDN)申请开通高级告警服务。
+（2）多项监控指标之间支持【且】或【或】两种关系；多项监控指标关系为【且】时，只有所有监控指标都达到告警阈值才会触发告警；多项监控指标关系为【或】时，任何一项监控指标达到告警阈值就会触发告警。
+* 监控接收人：用户可以选择接收人、接收人组或Webhook；若没有目标接收人，可点击【新建接收人】，创建好目标接收人后，点击【新建接收人】旁边的刷新按钮，即可以选择目标接收人。
+* 监控域名：非必选项，可以先创建告警规则，再添加监控域名；选择监控域名，支持模糊搜索。
+<br>
+## 修改告警规则
+![WX20230112-180535@2x.png](https://dn-odum9helk.qbox.me/FpoI942gXvoluk4L7mXZz7Etv5pA)
+* 在域名告警规则界面，查找到目标告警规则，在操作列点击【编辑】，告警规则参数的修改同【新建告警规则】。
+* 修改规则名称会自动创建一条新的告警规则，原告警规则不变。
+* 修改告警规则，告警规则会自动变为启用状态。
+<br>
+## 启停告警规则
+![WX20230112-180720@2x.png](https://dn-odum9helk.qbox.me/FnrVnIaYfRLRjdoBdD5WyVmIBiv_)
+* 在域名告警规则界面，查找到目标告警规则，在告警启停列点击对应按钮，实现告警规则的启用或停用。
+<br>
+## 删除告警规则
+![WX20230112-180841@2x.png](https://dn-odum9helk.qbox.me/FvvgzcdyYsxqvU6Au3rY383AvGiV)
+* 在域名告警规则界面，查找到目标告警规则，在告警启停列点击【删除】；勾选多条目标告警规则，点击告警列表右上角的【批量删除】。
+* 删除告警规则需要先解绑关联的所有域名，否则无法删除。
+<br>
+## 查看告警规则
+![WX20230112-181002@2x.png](https://dn-odum9helk.qbox.me/FvWcodoSn9-zJBq2Klp4EOATeNpD)
+* 在域名告警规则界面，查找到目标告警规则，在操作列点击【查看】。
+
+# 告警联系人
+![WX20230112-182435@2x.png](https://dn-odum9helk.qbox.me/FihmM0k3tchOjkgnMASglH95l1Hs)
+原有告警联系人模块迁移到了消息中心模块，您可以前往[**消息中心**](https://portal.qiniu.com/notification/recipient/user)进行设置，也可以通过上方导航栏的【消息】按钮进入消息中心进行设置。

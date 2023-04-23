@@ -1,0 +1,438 @@
+<style>
+    .rtc-doc{
+        font-family: PingFangSC-Light;
+        background:white!important;
+        color:black
+    }
+    .rtc-doc * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    .rtc-doc a {
+        font-style: italic;
+        font-weight: 400;
+        color: #00aae7;
+        word-break:break-all;
+        text-decoration: none;
+    }
+
+    .rtc-doc-panel {
+        background-color: #fff;
+        box-shadow: 0 0 4px rgb(0 0 0 / 25%);
+        padding-top:20px!important;
+        margin-top:0!important;
+        padding: 20px;
+        color: #707070;
+        font-size: 15px;
+        line-height: 26px;
+        letter-spacing: 0;
+        margin-bottom:20px;
+    }
+
+    .rtc-doc-panel a {
+        font-style: italic;
+        font-weight: 400;
+        color: #00aae7;
+        word-break:break-all;
+        text-decoration: none;
+    }
+</style>
+<style>
+    .rtc-doc-catalogue{
+        column-gap: 20px;
+        column-count: 3;
+        padding: 0;
+        list-style: none;
+        line-height: 1.5em;
+        margin: 20px 0 40px;
+    }
+    @media (min-width: 901px) and (max-width: 1024px) {
+        .rtc-doc-catalogue{
+            column-count: 2
+        }
+    }
+    
+    @media (max-width: 900px){
+        .rtc-doc-catalogue{
+            column-count: 1
+        }
+    }
+    
+    .rtc-doc-catalogue li{
+        list-style: none;
+        line-height: 40px;
+        cursor: pointer;
+        color: #00aae7
+    }
+    .rtc-doc-catalogue li a{
+        line-height:40px;
+        text-decoration:none
+    }
+ </style>
+<style>
+    .rtc-doc {
+            color: #707070;
+            font-size: 15px;
+        }
+        .rtc-doc hr {
+            margin:20px 0!important;
+        }
+        .rtc-doc p {
+            line-height: 26px;
+            margin-top: 20px!important;
+            margin-bottom: 20px!important;
+            padding-left:10px;
+        }
+        .rtc-doc a {
+            white-space: nowrap;
+            font-style:normal!important
+        }
+        .rtc-doc p code {
+            padding: 3px 5px;
+            white-space: pre;
+            color:#707070!important;
+            white-space: nowrap;
+            background: #f9f9fc;
+            border-radius: 4px;
+            line-height: 28px;
+            margin-left: 2px;
+            margin-right: 2px;
+        }
+        .rtc-doc h2 {
+            padding: 0 10px!important;
+            font-size: 20px!important;
+            margin: 0.8em 0;
+            font-weight: bold!important;
+            color:black!important;
+            font-weight: bold!important;
+        }
+
+        .rtc-doc h3 {
+            padding-top:0!important;
+            padding: 0 15px;
+            color: #222!important;
+            font-size: 18px!important;
+            font-weight: 400!important;
+            line-height: 25px!important;
+        }
+
+        .rtc-doc h4 {
+            padding-left: 20px;
+            padding-top:0!important;
+            line-height: 25px!important;
+            color: #707070!important;
+            font-size: 15px!important;
+            font-weight:bold!important;
+        }
+
+        .rtc-doc h5 {
+            padding-left: 20px;
+            padding-top:0!important;
+            line-height: 25px!important;
+            color: #707070!important;
+            font-size: 12px!important;
+            font-weight:bold!important;
+
+        }
+
+        .rtc-doc h2,h3,h4,h5 {
+            margin-top: 0.8em!important;
+            margin-bottom: 0.8em!important
+        }
+
+        .rtc-doc pre code.hljs{
+            display:block;
+            overflow-x:auto;
+            padding:1em;
+        }
+        .rtc-doc code.hljs{
+            padding:3px 5px
+        }
+        .rtc-doc .hljs{
+            background:#f0f0f0;color:#444
+        }
+        .rtc-doc .hljs-comment{
+            color:#888
+        }
+        .rtc-doc .hljs-punctuation,.hljs-tag{
+            color:#444a
+        }
+        .rtc-doc .hljs-tag .hljs-attr,.hljs-tag .hljs-name{
+            color:#444
+        }
+        .rtc-doc .hljs-attribute,.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-name,.hljs-selector-tag{
+            font-weight:700
+        }
+        .rtc-doc .hljs-deletion,.hljs-number,.hljs-quote,.hljs-selector-class,.hljs-selector-id,.hljs-string,.hljs-template-tag,.hljs-type{
+            color:#800
+        }
+        .rtc-doc .hljs-section,.hljs-title{
+            color:#800;font-weight:700
+        }
+        .rtc-doc .hljs-link,.hljs-operator,.hljs-regexp,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-symbol,.hljs-template-variable,.hljs-variable{
+            color:#bc6060
+        }
+        .rtc-doc .hljs-literal{
+            color:#78a960
+        }
+        .rtc-doc .hljs-addition,.hljs-built_in,.hljs-bullet,.hljs-code{
+            color:#397300
+        }
+        .rtc-doc .hljs-meta{
+            color:#1f7199
+        }
+        .rtc-doc .hljs-meta .hljs-string{
+            color:#4d99bf
+        }
+        .rtc-doc .hljs-emphasis{
+            font-style:italic
+        }
+        .rtc-doc .hljs-strong{
+            font-weight:700
+        }
+        .rtc-doc pre {
+            padding: 10px;
+            background: #f2f2f7;
+            margin-bottom: 20px;
+            line-height:25px;
+            font-size:15px;
+            overflow-x: scroll;
+            border:none!important
+        }
+        .rtc-doc pre ol li {
+            list-style:none!important;
+            border-left:none!important;
+            padding:0!important;
+            line-height:25px!important;
+            margin: 0!important
+        }
+        .rtc-doc pre ol {
+            margin:0!important;
+            padding: 0!important
+        }
+        .rtc-doc ol {
+            padding-left: 20px;
+            margin-left: 10px
+        }
+        .rtc-doc ul {
+            padding-left: 20px;
+            margin-left: 10px
+        }
+        .rtc-doc li {
+            color: #707070;
+            font-size: 15px;
+            line-height: 26px;
+            letter-spacing: 0;
+            padding: 5px 0;
+            /* list-style: none; */
+        }
+        .rtc-doc li ul {
+            padding-left: 0;
+            margin-left:18px;
+        }
+        .rtc-doc-example {
+            margin-bottom: 20px;
+            line-height:25px;
+            font-size:15px;
+        }
+        
+
+        .rtc-doc blockquote {
+            padding: 10px 20px 10px 20px;
+            margin: 20px 0;
+            font-size: 14px;
+            border-left: 5px solid rgba(135, 206, 250, 0.4);
+            background:rgba(135, 206, 250, 0.2)
+        }
+        .rtc-doc blockquote code {
+            background:rgba(135, 206, 250, 0.3)
+        }
+        .rtc-doc blockquote ol {
+            padding: 20px 0;
+        }
+        .rtc-doc blockquote li {
+            padding: 5px 0;
+        }
+
+        .rtc-doc img {
+            width: 100%
+        }
+        .rtc-doc table {
+            background-color: #fff!important;
+            box-shadow: 0 0 4px rgb(0 0 0 / 25%);
+            padding: 20px 0;
+            color: #707070;
+            border-spacing: 0;
+            font-size: 15px;
+            width: auto!important;
+            border: none!important;
+            overflow: auto;
+            table-layout: fixed;
+            display: table;
+            border-collapse: collapse;
+            line-height: 26px;
+            letter-spacing: 0;
+            margin-bottom:20px!important
+        }
+        .rtc-doc thead {
+            display: table-header-group;
+            vertical-align: middle;
+        }
+        .rtc-doc tbody {
+            display: table-header-group;
+            vertical-align: middle;
+        }
+        .rtc-doc th {
+            white-space: inherit;
+            border-top: none!important;
+            vertical-align:middle!important;
+            padding: 6px 13px!important;
+            border: 1px solid #dfdfdf;
+            border-bottom: 1px solid #dfdfdf!important;
+            color: #222;
+            font-size: 16px;
+            font-weight: 400;
+        }
+        .rtc-doc tbody tr:nth-of-type(odd) {
+            background-color: white!important
+        }
+        .rtc-doc td {
+            white-space: inherit;
+            padding: 5px 13px!important;
+            vertical-align:middle!important;
+            border-top:none!important;
+            border: 1px solid #dfdfdf;
+            font-size: 14px;
+            word-break: break-all;
+        }  
+</style>
+<div class="rtc-doc">
+    <div><p>rtc-pub 允许用户将视频文件转推到房间内，供房间内的其他用户订阅。</p>
+<h2 id="接口鉴权"><a href="#%E6%8E%A5%E5%8F%A3%E9%89%B4%E6%9D%83" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>接口鉴权</h2>
+<p>与开启房间相同，需要在路径上带上token=<roomtoken>。room token 必须是合法的房间token，并具有管理员权限。</roomtoken></p>
+<h2 id="限制条件"><a href="#%E9%99%90%E5%88%B6%E6%9D%A1%E4%BB%B6" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>限制条件</h2>
+<p>目前转推的文件必须使用 H264 视频编码及 AAC 音频编码（采样率为44100Hz），flv封装。不符合条件的文件在转推时可能出现无法观看、音视频与源文件有较大差异等异常，可转码后再使用转推服务。</p>
+<h2 id="建立转推任务"><a href="#%E5%BB%BA%E7%AB%8B%E8%BD%AC%E6%8E%A8%E4%BB%BB%E5%8A%A1" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>建立转推任务</h2>
+<p><strong>路径</strong></p>
+<pre><code className="language-bash">POST /v3/apps/<span class="hljs-tag">&lt;<span class="hljs-name">appID</span>&gt;</span>/rooms/<span class="hljs-tag">&lt;<span class="hljs-name">roomID</span>&gt;</span>/pub
+<span></span></code></pre>
+<p><strong>请求参数</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>参数名称</th><th>位置</th><th>含义</th><th>备注</th></tr></thead><tbody><tr><td>sourceUrls</td><td>请求体</td><td>转推视频的下载地址列表</td><td>有多个时，依次转推，即第一个源地址转推完毕后开始转推第二个，依此类推。</td></tr></tbody></table>
+<p><strong>请求示例</strong></p>
+<pre><code className="language-bash">curl -XPOST -H<span class="hljs-string">&quot;Content-Type:application/json&quot;</span>  -v https:<span class="hljs-comment">//rtc.qiniuapi.com/v3/apps/app000/rooms/room000/pub?token=&lt;roomtoken&gt;\</span>
+<span></span>-d&#x27;{<span class="hljs-string">&quot;sourceUrls&quot;</span>:[<span class="hljs-string">&quot;https://video.example.com/1.mp4&quot;</span>]}&#x27;
+<span></span></code></pre>
+<p><strong>返回示例</strong></p>
+<pre><code className="language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">&quot;taskID&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;1234567890_rtcaabbccddeeff1234567890&quot;</span><span class="hljs-punctuation">}</span>
+<span></span></code></pre>
+<p>返回创建的转推任务ID。</p>
+<h2 id="列出转推任务"><a href="#%E5%88%97%E5%87%BA%E8%BD%AC%E6%8E%A8%E4%BB%BB%E5%8A%A1" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>列出转推任务</h2>
+<p><strong>路径</strong></p>
+<pre><code className="language-bash">GET /v3/apps/<span class="hljs-tag">&lt;<span class="hljs-name">appID</span>&gt;</span>/rooms/<span class="hljs-tag">&lt;<span class="hljs-name">roomID</span>&gt;</span>/pub
+<span></span></code></pre>
+<p><strong>请求示例</strong></p>
+<pre><code className="language-bash">curl -v https://rtc.qiniuapi.com/v3/apps/app000/rooms/room000/pub?token=<span class="hljs-tag">&lt;<span class="hljs-name">roomtoken</span>&gt;</span>
+<span></span></code></pre>
+<p><strong>返回示例</strong></p>
+<pre><code className="language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">&quot;tasks&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">[</span>
+<span></span><span class="hljs-punctuation">{</span><span class="hljs-attr">&quot;taskID&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;1234567890_rtctask0&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;rtctask0&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;appID&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;abcdefghi&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;uid&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-number">1234567890</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;roomID&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;abcdefghi:room0&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;sourceUrls&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">[</span><span class="hljs-string">&quot;http://video.example.com/aaa-123.mp4&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;running&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;createTime&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;2021-01-01T10:00:00&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;startTime&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;2021-01-01T10:00:01&quot;</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+<span></span><span class="hljs-punctuation">{</span><span class="hljs-attr">&quot;taskID&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;1234567890_rtctask1&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;rtctask1&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;appID&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;abcdefghi&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;uid&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-number">1234567890</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;roomID&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;abcdefghi:room0&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;sourceUrls&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">[</span><span class="hljs-string">&quot;http://video.example.com/aaa-456.mp4&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;stopped&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;createTime&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;2021-01-01T10:00:00&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;startTime&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;2021-01-01T10:00:01&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;stopTime&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;2021-01-01T10:01:00&quot;</span><span class="hljs-punctuation">}</span>
+<span></span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">}</span>
+<span></span></code></pre>
+<h2 id="查看转推任务详情"><a href="#%E6%9F%A5%E7%9C%8B%E8%BD%AC%E6%8E%A8%E4%BB%BB%E5%8A%A1%E8%AF%A6%E6%83%85" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>查看转推任务详情</h2>
+<p><strong>路径</strong></p>
+<pre><code className="language-bash"><span class="hljs-variable constant_">GET</span> /v3/apps/&lt;appID&gt;<span class="hljs-regexp">/rooms/</span>&lt;roomID&gt;<span class="hljs-regexp">/pub/</span>&lt;taskID&gt;
+<span></span></code></pre>
+<p><strong>请求示例</strong></p>
+<pre><code className="language-bash">curl -v https://rtc.qiniuapi.com/v3/apps/app000/rooms/room000/pub/1234567890_rtctask0?token=<span class="hljs-tag">&lt;<span class="hljs-name">roomtoken</span>&gt;</span>
+<span></span></code></pre>
+<p><strong>返回示例</strong></p>
+<pre><code className="language-json"><span class="hljs-punctuation">{</span><span class="hljs-attr">&quot;taskID&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;1234567890_rtctask0&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;rtctask0&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;appID&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;abcdefghi&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;uid&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-number">1234567890</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;roomID&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;abcdefghi:room0&quot;</span><span class="hljs-punctuation">,</span>
+<span></span><span class="hljs-attr">&quot;roomServer&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;room-server-0&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;sourceUrls&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">[</span><span class="hljs-string">&quot;http://video.example.com/aaa-123.mp4&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;running&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;createTime&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;2021-01-01T10:00:00&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;startTime&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;2021-01-01T10:00:01&quot;</span><span class="hljs-punctuation">}</span>
+<span></span></code></pre>
+<h2 id="删除转推任务"><a href="#%E5%88%A0%E9%99%A4%E8%BD%AC%E6%8E%A8%E4%BB%BB%E5%8A%A1" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>删除转推任务</h2>
+<p><strong>路径</strong></p>
+<pre><code className="language-bash"><span class="hljs-variable constant_">DELETE</span> /v3/apps/&lt;appID&gt;<span class="hljs-regexp">/rooms/</span>&lt;roomID&gt;<span class="hljs-regexp">/pub/</span>&lt;taskID&gt;
+<span></span></code></pre>
+<p><strong>请求示例</strong></p>
+<pre><code className="language-bash">curl - XDELETE -v https://rtc.qiniuapi.com/v3/apps/app000/rooms/room000/pub/1234567890_rtctask0?token=<span class="hljs-tag">&lt;<span class="hljs-name">roomtoken</span>&gt;</span>
+<span></span></code></pre>
+<p><strong>返回示例</strong></p>
+<p>正常返回时状态码为200,无其他信息。</p>
+<h2 id="开始转推任务"><a href="#%E5%BC%80%E5%A7%8B%E8%BD%AC%E6%8E%A8%E4%BB%BB%E5%8A%A1" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>开始转推任务</h2>
+<p>开始已经停止的转推任务。若转推任务处于failed/finished状态，从头开始；处于stopped状态，从停止点开始。</p>
+<p><strong>路径</strong></p>
+<pre><code className="language-bash"><span class="hljs-variable constant_">POST</span> /v3/apps/&lt;appID&gt;<span class="hljs-regexp">/rooms/</span>&lt;roomID&gt;<span class="hljs-regexp">/pub/</span>&lt;taskID&gt;/start
+<span></span></code></pre>
+<p>无请求体。</p>
+<p><strong>请求示例</strong></p>
+<pre><code className="language-bash">curl -XPOST -H<span class="hljs-string">&quot;Content-Type:application/json&quot;</span>  -v https:<span class="hljs-comment">//rtc.qiniuapi.com/v3/apps/app000/rooms/room000/pub/1234567890_rtcaabbccddeeff1234567890/start?token=&lt;roomtoken&gt;</span>
+<span></span></code></pre>
+<p><strong>返回示例</strong>
+正常返回时状态码为200，无其他信息.</p>
+<h2 id="停止转推任务"><a href="#%E5%81%9C%E6%AD%A2%E8%BD%AC%E6%8E%A8%E4%BB%BB%E5%8A%A1" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>停止转推任务</h2>
+<p>停止转推任务，相当于视频播放中的暂停。</p>
+<p><strong>路径</strong></p>
+<pre><code className="language-bash"><span class="hljs-variable constant_">POST</span> /v3/apps/&lt;appID&gt;<span class="hljs-regexp">/rooms/</span>&lt;roomID&gt;<span class="hljs-regexp">/pub/</span>&lt;taskID&gt;/stop
+<span></span></code></pre>
+<p>无请求体。</p>
+<p><strong>请求示例</strong></p>
+<pre><code className="language-bash">curl -XPOST -H<span class="hljs-string">&quot;Content-Type:application/json&quot;</span>  -v https:<span class="hljs-comment">//rtc.qiniuapi.com/v3/apps/app000/rooms/room000/pub/1234567890_rtcaabbccddeeff1234567890/stop?token=&lt;roomtoken&gt;</span>
+<span></span></code></pre>
+<p><strong>返回示例</strong></p>
+<p>正常返回时状态码为200，无其他信息。</p>
+<h2 id="设置seek时间"><a href="#%E8%AE%BE%E7%BD%AEseek%E6%97%B6%E9%97%B4" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>设置seek时间</h2>
+<p>设置视频文件开始播放的时间。</p>
+<p><strong>路径</strong></p>
+<pre><code className="language-bash"><span class="hljs-variable constant_">POST</span> /v3/apps/&lt;appID&gt;<span class="hljs-regexp">/rooms/</span>&lt;roomName&gt;<span class="hljs-regexp">/pub/</span>&lt;taskID&gt;/seek
+<span></span></code></pre>
+<p><strong>请求参数</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>参数名称</th><th>位置</th><th>含义</th><th>备注</th></tr></thead><tbody><tr><td>index</td><td>请求体</td><td>sourceUrl的索引号，即第几个源地址。从0开始编号。</td><td></td></tr><tr><td>seek</td><td>请求体</td><td>转推的seek位置，相对视频文件的开始时间。单位为秒。</td><td></td></tr></tbody></table>
+<p><strong>请求示例</strong></p>
+<pre><code className="language-bash">curl -XPOST -H<span class="hljs-string">&quot;Content-Type:application/json&quot;</span>  -v https:<span class="hljs-regexp">//r</span>tc.qiniuapi.com/v3/apps/app00<span class="hljs-number">0</span>/rooms/room00<span class="hljs-number">0</span>/pub/<span class="hljs-number">1234567890_</span>rtcaabbccddeeff123456789<span class="hljs-number">0</span>/<span class="hljs-keyword">seek</span>?token=&lt;roomtoken&gt;\
+<span></span>-d<span class="hljs-string">&#x27;{&quot;index&quot;:0,&quot;seek&quot;:120}&#x27;</span>
+<span></span></code></pre>
+<p>该请求将第一个视频seek位置设置到120秒的位置。</p>
+<p><strong>返回示例</strong>
+正常返回时状态码为200，无其他信息。</p></div></div>

@@ -1,0 +1,18 @@
+# 审核标签说明
+
+**审核类型scenes与相应的label/group**
+
+|审核类型|说明|scenes|label/group|
+| :--- | :--- | :--- | :--- |
+|图片鉴黄|识别图片中的色情、性感内容。|pulp|normal：正常图片，无色情内容<br>sexy：性感图片<br>pulp：色情图片|
+|图片鉴暴恐|识别图片中的暴恐内容。|terror|bloodiness：血腥<br>self_burning：自焚<br>beheaded：斩首类<br>march_crowed：人群聚集类<br>fight_police：警民冲突<br>fight_person：民众肢体接触<br>illegal_flag：违规旗帜类<br>guns：枪<br>knives：刀<br>anime_bloodiness：动漫血腥类<br>anime_knives：二次元刀<br>anime_guns：二次元枪<br>politics：涉政<br>violence：暴恐<br>normal：正常<br>|
+|图片敏感人物识别|识别图片中的敏感人物人脸。|politician|图片敏感人物识别的label返回的是敏感人物的姓名；<br>group返回的是该敏感人物所属的分组，目前支持的分组有：<br>domestic_statesman：国内政要<br>foreign_statesman：国外政要<br>chinese_martyr：革命英烈<br>affairs_official_gov：落马官员（政府）<br>affairs_official_ent：落马官员（企事业）<br>terrorist：恐怖分子<br>affairs_celebrity：劣迹艺人<br>politics：涉政人物<br>|
+|图片广告识别|识别图片中的广告内容。|ads|图片广告识别的label有：<br>summary_ads：文字广告<br> qr_code：二维码<br>bar_code：一维码|
+|图片不良场景识别|识别图片中的不良场景内容。|behavior|图片不良场景识别的label有：<br>behavior：不良场景<br> normal: 正常|
+|音频违规识别|识别音频中的违规内容。|antispam|音频违规识别的label有：<br>porn：色情 <br>politics：涉政 <br>abuse：辱骂 <br>ad：广告 <br>normal：正常|
+
+# 审核资源说明
+
+**qiniu 协议**
+
+协议格式: `qiniu:///<bucket>/<key>`

@@ -1,0 +1,143 @@
+* `<option>`元素定义图表的通用属性，系统为不同图表支持不同属性。
+
+### 父元素
+
+所有图表类型均支持`<option>`元素。
+
+### 属性
+
+**二维图表类型的公共 `<option>`标签的属性**
+	
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.mergeType<br>style.dataLimit<br>style.stackMode|数据的合并方式，支持 sum、avg、min、max、newest、oldest 类型值<br>当数据量很大时，限制图表中显示的数据量<br>是否设置数据堆叠方式，设置了数据堆叠后， 同个类目轴上系列配置相同的 stack 值后，后一个系列的值会在前一个系列的值上相加。|'sum'<br>500<br>'none'|
+
+示例：
+
+```
+<option name="style.mergeTyp">sum</option>
+```
+
+	
+**二维图表每种图表类型特有的`<option>`标签的属性：**
+
+1.折线图、面积图：没有特有`<option>`标签的属性。
+
+2.柱状图：
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.orientation<br>style.showBarLabel|柱状图显示的方向，支持可选值为 horizontal: 柱状图水平方向上显示; vertical: 柱状图垂直方向上显示<br>是否在柱形条上显示数值以及显示的位置，支持可选值 true: 显示数值，且在柱状条的中间显示; false: 隐藏数值; top: 显示数值，且在柱状条的顶端显示|'horizontal'<br>false|
+
+3.散点图
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.regression|散点图上可以根据数据点的分布构造回归曲线，支持可选类型包括 linear: 线性回归曲线; exponential: 指数回归曲线; logarithmic: 对数回归曲线; none: 不显示回归曲线|'none'|
+
+4.气泡图
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.minSize<br>style.maxSize<br>style.showZero<br>style.sizeField<br>style.unit|气泡的最小半径值<br>气泡的最大半径值<br>是否显示零值<br>用于标记气泡大小的字段<br>对气泡的数值设置单位化|5<br>30<br>true<br>无<br>['none'， 'short']|
+
+**一维图表类型的公共 `<option>`标签的属性**
+	
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.mergeType<br>style.dataLimit<br>style.unit<br>style.metrics<br>style.groups|数据的合并方式，支持 sum、avg、min、max、newest、oldest 类型值<br>当数据量很大时，限制图表中显示的数据量<br>对数值进行格式化<br>用于展示当前图表的指标<br>用于展示当前图表的分组字段|'sum'<br>500<br>['none'， 'short']<br>无<br>无|
+
+**一维图表每种图表类型特有的`<option>`标签的属性：**
+
+1.旭日图 
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.showLabe|是否开启文字说明|true|
+
+2.分组饼图、指标饼图、分组玫瑰图、指标玫瑰图、嵌套饼图
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.showLabe<br>style.maxSlices|是否开启文字说明<br>最大区域数量|true<br>[20]|
+
+3.分组环图、指标环图
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.showLabe<br>style.maxSlices<br>style.showTitle<br>style.dataFormat<br>style.circularWidth<br>style.play	<br>style.playInterval<br>style.dataPercentDecimals		|是否开启文字说明<br>最大区域数量<br>饼图标题位置<br>标题数值显示格式<br>环图宽度，单位 px<br>环图轮播是否开启<br>环图轮播时间间隔，单位秒<br>数值百分比模式显示时, 百分比精确的位数	|true<br>"percent"<br>30<br>false<br>2<br>2|
+
+4.数字单值图
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.nullValueMode<br>style.statOption<br>style.colorMode<br>style.showTimeline	|单值图空值模式<br>单值图统计选项<br>单值图颜色选项<br>是否显示时序折线图	|'empty'<br>'current'<br>'content'<br>false|
+
+5.仪表单值图、占比图
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.nullValueMode<br>style.statOption<br>style.titleName<br>style.circularWidth<br>style.titlePosition|单值图空值模式<br>单值图统计选项<br>标题名称<br>环宽度<br>标题位置|'empty'<br>'current'<br>无<br>30<br>'center'|
+
+6.普通雷达图、多重雷达图
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.displayType<br>style.enableIndicator<br>style.indicatorMin<br>style.indicatorMax	|图表形式<br>是否自定义指示器<br>指示器最小值<br>指示器最大值|'polygon'<br>false<br>0<br>无|
+
+7.城市气泡图
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.color<br>style.minSize<br>style.maxSize<br>style.threshold|气泡颜色<br>气泡最小半径<br>气泡最大半径<br>高亮阈值|'#1989FA'5<br>30<br>0|
+
+7.中国迁徙图、世界迁徙图
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.inflowColor<br>style.inflowText<br>style.outflowColor<br>style.outflowText<br>style.gradientColor<br>style.bubbleMaxSize<br>style.bubbleMinSize|流入节点颜色<br>流入节点名字流出节点颜色<br>流出节点名字<br>迁徙线颜色<br>气泡最大直径<br>气泡最小直径|'#1989FA'<br>'流入'<br>'#1989FA'<br>'流出'<br>['#FFDF4C', '#FEBF57', '#FB7A77', '#D7668A', '#6F7BE2']<br>255|
+
+8.中国地图、世界地图
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.showCalculable<br>style.showVisualMap<br>style.chartColor<br>style.showDetailList|是否显示地图的手柄原色<br>是否显示视觉映射元素<br>地图显示的颜色<br>是否显示各区域的数据详情|true<br>true<br>'#1989FA'<br>true|
+
+**其他图表类型的公共`<option>`标签的属性**
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|style.mergeType<br>style.dataLimit<br>|数据的合并方式，支持 sum、avg、min、max、newest、oldest 类型值<br>当数据量很大时，限制图表中显示的数据量|'sum'<br>500|
+
+**其他图表中每种图表类型特有的`<option>`标签的属性：**
+
+1.网格数据表、树状数据表
+
+|属性|可选项|说明||
+|:--:|:--:|:--:|:--:|
+|name|style.textDisplayMode<br>style.pageSize|当单元格里的字符过长时的显示方式，支持 newline: 换行显示; omit: 省略号显示 两种可选值<br>数据表每一页显示的数据条数|'sum'<br>500|
+
+
+2.时间轴
+
+|属性|可选项|说明||
+|:--:|:--:|:--:|:--:|
+|name|style.labelField<br>style.startField<br>style.durationField<br>style.axisPosition<br>style.maxZoom<br>style.minZoom<br>style.chartBackGround<br>style.eventBackGround<br>style.fontColor<br>style.dataSize|标签字段	<br>开始时间字段<br>持续时间字段<br>时间轴位置<br>最大时间刻度<br>最小时间刻度<br>背景颜色<br>背景颜色<br>字体颜色<br>最大展示事件数量|无<br>无<br>无<br>'top'<br>'none'<br>'none'<br>无	<br>'#2C6DD2'	<br>'#FFFFFF'<br>5|
+
+3.环形关系图、弧形关系图
+
+|属性|可选项|说明|默认值|
+|:--:|:--:|:--:|:--:|
+|name|sstyle.color<br>style.curveness|关系图颜色<br>边的曲度，支持从 0 到 1 的值，值越大曲度越大|'sum'<br>500<br>'#1989FA'<br>0|
+
+4.二级桑基图、多级桑基图
+
+桑基图没有特有的`<option>`标签的属性。
+
+
+
+
+
+
+
+

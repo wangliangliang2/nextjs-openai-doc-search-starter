@@ -1,0 +1,352 @@
+<style>
+    .rtc-doc{
+        font-family: PingFangSC-Light;
+        background:white!important;
+        color:black
+    }
+    .rtc-doc * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    .rtc-doc a {
+        font-style: italic;
+        font-weight: 400;
+        color: #00aae7;
+        word-break:break-all;
+        text-decoration: none;
+    }
+
+    .rtc-doc-panel {
+        background-color: #fff;
+        box-shadow: 0 0 4px rgb(0 0 0 / 25%);
+        padding-top:20px!important;
+        margin-top:0!important;
+        padding: 20px;
+        color: #707070;
+        font-size: 15px;
+        line-height: 26px;
+        letter-spacing: 0;
+        margin-bottom:20px;
+    }
+
+    .rtc-doc-panel a {
+        font-style: italic;
+        font-weight: 400;
+        color: #00aae7;
+        word-break:break-all;
+        text-decoration: none;
+    }
+</style>
+<style>
+    .rtc-doc-catalogue{
+        column-gap: 20px;
+        column-count: 3;
+        padding: 0;
+        list-style: none;
+        line-height: 1.5em;
+        margin: 20px 0 40px;
+    }
+    @media (min-width: 901px) and (max-width: 1024px) {
+        .rtc-doc-catalogue{
+            column-count: 2
+        }
+    }
+    
+    @media (max-width: 900px){
+        .rtc-doc-catalogue{
+            column-count: 1
+        }
+    }
+    
+    .rtc-doc-catalogue li{
+        list-style: none;
+        line-height: 40px;
+        cursor: pointer;
+        color: #00aae7
+    }
+    .rtc-doc-catalogue li a{
+        line-height:40px;
+        text-decoration:none
+    }
+ </style>
+<style>
+    .rtc-doc {
+            color: #707070;
+            font-size: 15px;
+        }
+        .rtc-doc hr {
+            margin:20px 0!important;
+        }
+        .rtc-doc p {
+            line-height: 26px;
+            margin-top: 20px!important;
+            margin-bottom: 20px!important;
+            padding-left:10px;
+        }
+        .rtc-doc a {
+            white-space: nowrap;
+            font-style:normal!important
+        }
+        .rtc-doc p code {
+            padding: 3px 5px;
+            white-space: pre;
+            color:#707070!important;
+            white-space: nowrap;
+            background: #f9f9fc;
+            border-radius: 4px;
+            line-height: 28px;
+            margin-left: 2px;
+            margin-right: 2px;
+        }
+        .rtc-doc h2 {
+            padding: 0 10px!important;
+            font-size: 20px!important;
+            margin: 0.8em 0;
+            font-weight: bold!important;
+            color:black!important;
+            font-weight: bold!important;
+        }
+
+        .rtc-doc h3 {
+            padding-top:0!important;
+            padding: 0 15px;
+            color: #222!important;
+            font-size: 18px!important;
+            font-weight: 400!important;
+            line-height: 25px!important;
+        }
+
+        .rtc-doc h4 {
+            padding-left: 20px;
+            padding-top:0!important;
+            line-height: 25px!important;
+            color: #707070!important;
+            font-size: 15px!important;
+            font-weight:bold!important;
+        }
+
+        .rtc-doc h5 {
+            padding-left: 20px;
+            padding-top:0!important;
+            line-height: 25px!important;
+            color: #707070!important;
+            font-size: 12px!important;
+            font-weight:bold!important;
+
+        }
+
+        .rtc-doc h2,h3,h4,h5 {
+            margin-top: 0.8em!important;
+            margin-bottom: 0.8em!important
+        }
+
+        .rtc-doc pre code.hljs{
+            display:block;
+            overflow-x:auto;
+            padding:1em;
+        }
+        .rtc-doc code.hljs{
+            padding:3px 5px
+        }
+        .rtc-doc .hljs{
+            background:#f0f0f0;color:#444
+        }
+        .rtc-doc .hljs-comment{
+            color:#888
+        }
+        .rtc-doc .hljs-punctuation,.hljs-tag{
+            color:#444a
+        }
+        .rtc-doc .hljs-tag .hljs-attr,.hljs-tag .hljs-name{
+            color:#444
+        }
+        .rtc-doc .hljs-attribute,.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-name,.hljs-selector-tag{
+            font-weight:700
+        }
+        .rtc-doc .hljs-deletion,.hljs-number,.hljs-quote,.hljs-selector-class,.hljs-selector-id,.hljs-string,.hljs-template-tag,.hljs-type{
+            color:#800
+        }
+        .rtc-doc .hljs-section,.hljs-title{
+            color:#800;font-weight:700
+        }
+        .rtc-doc .hljs-link,.hljs-operator,.hljs-regexp,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-symbol,.hljs-template-variable,.hljs-variable{
+            color:#bc6060
+        }
+        .rtc-doc .hljs-literal{
+            color:#78a960
+        }
+        .rtc-doc .hljs-addition,.hljs-built_in,.hljs-bullet,.hljs-code{
+            color:#397300
+        }
+        .rtc-doc .hljs-meta{
+            color:#1f7199
+        }
+        .rtc-doc .hljs-meta .hljs-string{
+            color:#4d99bf
+        }
+        .rtc-doc .hljs-emphasis{
+            font-style:italic
+        }
+        .rtc-doc .hljs-strong{
+            font-weight:700
+        }
+        .rtc-doc pre {
+            padding: 10px;
+            background: #f2f2f7;
+            margin-bottom: 20px;
+            line-height:25px;
+            font-size:15px;
+            overflow-x: scroll;
+            border:none!important
+        }
+        .rtc-doc pre ol li {
+            list-style:none!important;
+            border-left:none!important;
+            padding:0!important;
+            line-height:25px!important;
+            margin: 0!important
+        }
+        .rtc-doc pre ol {
+            margin:0!important;
+            padding: 0!important
+        }
+        .rtc-doc ol {
+            padding-left: 20px;
+            margin-left: 10px
+        }
+        .rtc-doc ul {
+            padding-left: 20px;
+            margin-left: 10px
+        }
+        .rtc-doc li {
+            color: #707070;
+            font-size: 15px;
+            line-height: 26px;
+            letter-spacing: 0;
+            padding: 5px 0;
+            /* list-style: none; */
+        }
+        .rtc-doc li ul {
+            padding-left: 0;
+            margin-left:18px;
+        }
+        .rtc-doc-example {
+            margin-bottom: 20px;
+            line-height:25px;
+            font-size:15px;
+        }
+        
+
+        .rtc-doc blockquote {
+            padding: 10px 20px 10px 20px;
+            margin: 20px 0;
+            font-size: 14px;
+            border-left: 5px solid rgba(135, 206, 250, 0.4);
+            background:rgba(135, 206, 250, 0.2)
+        }
+        .rtc-doc blockquote code {
+            background:rgba(135, 206, 250, 0.3)
+        }
+        .rtc-doc blockquote ol {
+            padding: 20px 0;
+        }
+        .rtc-doc blockquote li {
+            padding: 5px 0;
+        }
+
+        .rtc-doc img {
+            width: 100%
+        }
+        .rtc-doc table {
+            background-color: #fff!important;
+            box-shadow: 0 0 4px rgb(0 0 0 / 25%);
+            padding: 20px 0;
+            color: #707070;
+            border-spacing: 0;
+            font-size: 15px;
+            width: auto!important;
+            border: none!important;
+            overflow: auto;
+            table-layout: fixed;
+            display: table;
+            border-collapse: collapse;
+            line-height: 26px;
+            letter-spacing: 0;
+            margin-bottom:20px!important
+        }
+        .rtc-doc thead {
+            display: table-header-group;
+            vertical-align: middle;
+        }
+        .rtc-doc tbody {
+            display: table-header-group;
+            vertical-align: middle;
+        }
+        .rtc-doc th {
+            white-space: inherit;
+            border-top: none!important;
+            vertical-align:middle!important;
+            padding: 6px 13px!important;
+            border: 1px solid #dfdfdf;
+            border-bottom: 1px solid #dfdfdf!important;
+            color: #222;
+            font-size: 16px;
+            font-weight: 400;
+        }
+        .rtc-doc tbody tr:nth-of-type(odd) {
+            background-color: white!important
+        }
+        .rtc-doc td {
+            white-space: inherit;
+            padding: 5px 13px!important;
+            vertical-align:middle!important;
+            border-top:none!important;
+            border: 1px solid #dfdfdf;
+            font-size: 14px;
+            word-break: break-all;
+        }  
+</style>
+<div class="rtc-doc">
+    <div><p>云端落存储是为了满足客户音视频内容录制、备案的需求。目前云端落存储的前提是必须将房间内的多路流进行服务端合流，不合流而直接将多路流落存储的场景，可以使用单路转推功能。</p>
+<h2 id="开通正式直播空间"><a href="#%E5%BC%80%E9%80%9A%E6%AD%A3%E5%BC%8F%E7%9B%B4%E6%92%AD%E7%A9%BA%E9%97%B4" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>开通正式直播空间</h2>
+<p>如果需要进行云端落存储，首先必须开通直播空间。</p>
+<br></br>
+直播空间的开通方法见：https://developer.qiniu.com/pili/manual/1221/the-console-quick-start
+<br></br>
+如果您的业务中涉及到旁路直播功能的使用，则必须提供通过公安局备案的域名用于直播业务。
+<h2 id="临时存储"><a href="#%E4%B8%B4%E6%97%B6%E5%AD%98%E5%82%A8" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>临时存储</h2>
+<p>按国家相关法律规定，所有直播内容需要至少存储 60 天。因此，在创建「直播空间」的第二步「设置存储空间」，需要选择存储空间中 ts 文件的过期时间，可选范围为 60 天 - 120 天。</p>
+<br></br>
+旁路直播时，直播云会将旁路直播的内容自动切片为 ts 临时存储，并根据您在开通直播空间时设置的存储周期存储在七牛云存储中，过期后自动删除。
+<p><img src="https://dn-odum9helk.qbox.me/FhvJzbEBcGsD6sS4nyAbLByu3LDX" alt="image.png"></img></p>
+<h2 id="永久存储"><a href="#%E6%B0%B8%E4%B9%85%E5%AD%98%E5%82%A8" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>永久存储</h2>
+<p>如果需要将临时存储内容转为永久存储，有自动录制、手动录制两种方法，主要区别</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>命名</th><th>录制格式</th><th>指定时间段</th><th>指定时间段</th></tr></thead><tbody><tr><td>自动录制</td><td>自动名名</td><td>可以选择mp4、m3u8 或 flv 中的一种</td><td>无法指定</td></tr><tr><td>手动录制</td><td>可以指定命名</td><td>默认为 m3u8, 如果指定其他格式，则保存动作为异步模式。详细信息可以参考 转码 api</td><td>可以指定</td></tr></tbody></table>
+<p><strong>自动录制</strong>
+联系七牛技术支持，打开自动录制功能，则所有房间旁路直播内容可以自动录制为 mp4、m3u8 或 flv 中的一种。</p>
+<p><strong>手动录制</strong>
+可以直接调用 saveas 接口（接口说明地址： <a href="https://developer.qiniu.com/pili/api/2777/save-the-live-playback%EF%BC%89">https://developer.qiniu.com/pili/api/2777/save-the-live-playback）</a> 将临时文件转为永久存储，saveas 方式可以根据需求自定义命名。</p></div></div>

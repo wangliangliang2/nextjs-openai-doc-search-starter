@@ -1,0 +1,5 @@
+我们常收到反馈，用户因误操作导致数据被错误删除，导致业务无法正常运转。为尽量避免此类特殊情况发生、且尽可能杜绝因未及时解决数据丢失问题带来的重大影响，Kodo 支持提供[跨区域同步](/kodo/development_guidelines/8613/dev-cross-regional-synchronization)功能，您可提前为您空间的数据进行容灾备份。
+
+跨区域同步是将不同区域的存储空间之间的数据同步，它将源存储空间对象的改动（除删除操作）自动、异步地同步到目标存储空间，同时也支持选择是否将源存储空间的历史数据复制至目标存储空间。跨区域同步功能通过跨区域容灾备份数据，解决了用户误操作源文件导致数据丢失的问题。如下图为跨区域同步设置界面，更多设置详情请参考[设置跨区域同步](/kodo/development_guidelines/1700/cross-regional-synchronization)。
+![image.png](https://dn-odum9helk.qbox.me/Fvkj_czJPLXmVeQgPQEQ8H5qQPA_)
+

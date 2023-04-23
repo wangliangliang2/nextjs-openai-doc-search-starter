@@ -1,0 +1,39 @@
+# **描述**
+本接口用于启用流
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{id}/streams/{streamId}/enabled`
+* 当流为`禁用`状态时，需要`启用`后才能正常观看或推流；
+* 空间接入类型为`主动拉流`时，该接口会主动回源拉流。
+* 空间接入类型为`GB28181`时,该接口会重新开启设备推流。
+* 空间接入类型为`rtmp`时，我们提供如下功能，来满足按需拉流，节省客户流量: 一.持续1分钟无人观看,自动中断并禁用推流 二.当有观众观看请求触发时，流会被自动启用，推流断就可以恢复推流。体验改功能，客户可以提工单，我们将在后台定向为客户启用该功能。`GB28181`或者`主动拉流`类型的空间，自带“按需拉流”，客户可以在qvs控制台空间信息面板里，打开或者关闭[按需拉流](https://developer.qiniu.com/qvs/7703/on-demand-pull-flow-introduced)。
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|流ID
+
+
+# **响应参数**
+无
+# **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/d102sni9zryu/streams/device0059/enabled \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+
+**响应示例**
+
+```
+{
+  "code": 200
+}
+```

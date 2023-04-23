@@ -1,0 +1,72 @@
+# **1. 什么是容器轻应用平台？**
+
+容器轻应用平台（QAPP），是一款面向开发者的容器应用服务，为您的数据处理业务提供稳定、可靠、按需弹性缩放的容器运行服务。为您省去底层服务器的运维和管理工作，专注于业务开发，提升开发效率。同时，只需要为容器实际运行消耗的资源付费，可以节约使用成本。
+
+本文将帮助您快速了解容器轻应用平台（QAPP），您可根据指引快速上手QAPP。
+
+
+
+# **2. 了解QAPP的计费**
+
+七牛云容器轻应用平台，会按照用户实例实际使用情况收取费用。关于收费模式和具体价格，请参阅 [购买指南-计费说明 ](/qapp/buying_guide/12305/billing-way01)。
+
+
+
+# **3.QAPP 使用流程图**
+
+QAPP 使用流程如下图所示。
+
+![image](https://dora-doc.qiniu.com/WX20221109-112523%402x.png)
+
+1. 在首次部署应用前，需要完成注册、认证、制作应用镜像、配置应用版本（应用多版本可以模拟出测试、生产的不同阶段，方便后续进行版本升级）等准备工作。
+
+2. 在QAPP控制台部署实例。
+
+   具体操作，请参见[部署管理](/qapp/development_guidelines/12324/instance-deployment)。除通过控制台部署应用外，还支持通过 [命令行工具 qappctl](/qapp/tools/12308/qappctl-command-line-tools) 来部署应用。
+
+3. 通过以下方式访问应用。
+
+   - 方式一：访问 kodo 资源。具体操作，请参见[Fop请求入口](/qapp/development_guidelines/12335/fop-request-entry01)。
+   - 方式二：访问公网资源。具体操作，请参见[异步任务入口](/qapp/development_guidelines/12336/asynchronous-task-entry)。
+   - 同时可以设置更细粒度的访问权限控制，请[提交工单](https://support.qiniu.com/question)申请。
+
+4. **可选**：您可以为 QAPP 应用配置更多进阶功能。
+
+   - 弹性（降本增效）
+   - 可观测性
+   - 流量管理
+
+   
+
+# **4.使用QAPP 服务**
+
+### **4.1 注册与认证**
+
+在使用七牛云QAPP服务之前，您需要[七牛账号](https://portal.qiniu.com/)，并完成 [实名认证](https://developer.qiniu.com/af/4057/the-identity-authentication)。
+
+### **4.2  部署应用**
+
+您可参考 [快速部署一个应用实例](/qapp/quick_start/12307/rapid-deployment-of-an-application-example) 文档，了解快速创建应用实例的方法。
+
+### **4.3 应用托管**
+
+QAPP 作为集群、应用、存储、流量等模块的管理平台，如果您需获取更多信息或需进行更多实践操作，请参考以下内容进一步了解并使用。
+
+| 如果您想管理实例生命周期                                     | 可以阅读                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 上传本地可运行的 docker image到应用镜像仓库。                | [命令行工具 qappctl](/qapp/tools/12308/qappctl-command-line-tools) |
+| 创建应用版本，方便在不同区域进行实例部署。                   | [应用版本](/qapp/development_guidelines/12314/the-new-application-version) |
+| 业务需要配置很多文本或环境变量，当配置发生变更时，避免额外的代码修改和镜像构建。 | [应用配置](/qapp/development_guidelines/12323/application-configuration01) |
+| 对已创建的应用中部署实例。                                   | [部署实例](/qapp/development_guidelines/12324/instance-deployment) |
+| 手动扩缩适用于人工运维的场景，针对服务流量不多的情况。       | [手动扩缩](/qapp/development_guidelines/12326/manually-enlarge-shrinks) |
+| 设置定时扩缩或指标扩缩来实现自动扩缩容，从容应对业务突发流量。 | [自动扩缩](/qapp/development_guidelines/12327/automatic-enlarge-shrinks) |
+| 对运行中的应用实例，可以通过滚动更新的方式升级，如果发生异常，可以回滚。 | [滚动更新](/qapp/development_guidelines/12329/scroll-to-update) |
+| 应用借助流量分配可以实现流量切分，A/B 测试等高级功能。       | [流量控制](/qapp/development_guidelines/12331/flow-distribution01) |
+| 对存储在七牛云上的文件，通过构建的数据处理框架来执行数据处理操作。 | [Fop请求入口](/qapp/development_guidelines/12335/fop-request-entry01) |
+| 实现了访问公网，通过分配的域名，创建对应 HTTP 接口的异步调用。 | [异步任务入口](/qapp/development_guidelines/12336/asynchronous-task-entry) |
+| **如果您想监控诊断应用运行情况**                             | **可以阅读**                                                 |
+| 应用运行过程中，提供实时的标准输出日志，方便定位排查业务问题。 | [日志查询](/qapp/development_guidelines/12338/log-management) |
+| 应用运行过程中，方便了解启用实例的运行情况和健康状态等信息。 | [监控中心](/qapp/development_guidelines/12339/system-monitoring) |
+| 应用运行过程中，当应用触发告警规则时自动发送告警通知，快速发现应用运行异常。 | [告警](/qapp/development_guidelines/12340/ops-alarm)         |
+
+

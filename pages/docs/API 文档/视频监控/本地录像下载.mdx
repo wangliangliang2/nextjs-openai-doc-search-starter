@@ -1,0 +1,126 @@
+# **描述**
+
+本接口用于下载存储在NVR或者IPC的SD卡中的录像文件，由于下载需要通过`GB28181`协议，下载需要分两步进行。第一步，云平台通过`GB28181`协议将录像文件下载到服务器，第二步，客户终端请求服务器下载文件。本接口用于触发第一步，即云平台通过`GB28181`协议将录像文件下载到服务器。
+
+用户可以通过以下两种方式获取真实录像文件下载地址：
+
+1. 本接口调用后会返回一个`HTTP`地址，此地址用于查询当前的下载状态，用户可以每隔一段时间请求一次这个地址用于获取下载进度。当下载进度达到100%时，请求该地址会返回录像文件的下载地址。
+2. 用户也可以通过设置HTTP回调的方式获取到录像文件的下载地址，具体消息格式见[消息回调](https://developer.qiniu.com/qvs/10240/the-message-callback)。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/devices/{gbId}/download`
+
+## **请求参数**
+
+**路径参数**
+
+| 参数名称    | 必填 | 字段类型 | 说明       |
+| ----------- | ---- | -------- | ---------- |
+| namespaceId | 是   | string   | 空间ID     |
+| gbId        | 是   | string   | 设备国标ID |
+
+**Body**
+
+| 参数名称  | 必填 | 字段类型 | 说明                                |
+| --------- | ---- | -------- | ----------------------------------- |
+| channelId | 否   | string   | 通道ID，如果是NVR设备，需要传此参数 |
+| start     | 是   | int      | 录像开始时间                        |
+| end       | 是   | int      | 录像结束时间                        |
+
+## **响应参数**
+
+| 参数名称      | 字段类型 | 说明                                                      |
+| ------------- | -------- | --------------------------------------------------------- |
+| httpQueryUrl  | string   | 用来查询下载进度的http地址，请求报文格式见`查询下载进度`  |
+| httpsQueryUrl | string   | 用来查询下载进度的https地址，请求报文格式见`查询下载进度` |
+
+## **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarvzvyijd/devices/31011500991180003239/download \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json'
+  --data-raw '{
+    "channelId":"34020000001310000034",
+    "start":1636851600,
+    "end":1636851620
+  }'
+```
+
+**响应示例**
+
+```
+{
+ "httpQueryUrl":"http://236809372.cloudvdn.com/api/v1/gb28181?action=query_download_status\u0026id=31011500991180003239_34020000001310000034_history_1636851600_1636851620\u0026ip=14.29.108.156\u0026app=2xenzw72izhqy",
+ "httpsQueryUrl":"https://236809372.cloudvdn.com/api/v1/gb28181?action=query_download_status\u0026id=31011500991180003239_34020000001310000034_history_1636851600_1636851620\u0026ip=14.29.108.156\u0026app=2xenzw72izhqy"
+}
+```
+
+# **查询下载进度**
+
+本接口用于获取服务器内部通过`gb28181`协议下载历史录像文件的进度，如果文件暂未下载完成，返回当前的百分比，如果文件已经下载完成，返回真实的录像文件下载地址。
+
+* 接口地址：`download`接口返回
+* 请求方式：GET
+
+## **请求参数**
+
+**路径参数**
+null
+
+**Body**
+
+null
+
+## **响应参数**
+
+| 参数名称          | 必填 | 字段类型 | 说明                                                         |
+| ----------------- | ---- | -------- | ------------------------------------------------------------ |
+| id                | 是   | string   | 流id                                                         |
+| percent           | 是   | integer  | 下载进度百分比                                               |
+| httpDownloadAddr  | 否   | string   | 录像文件http下载地址，服务器内部通过gb28181协议下载完成后返回。报文请求格式见`录像文件下载` |
+| httpsDownloadAddr | 否   | string   | 录像文件https下载地址，服务器内部通过gb28181协议下载完成后返回。报文请求格式见`录像文件下载` |
+
+## **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url https://236809372.cloudvdn.com/api/v1/gb28181?action=query_download_status\u0026id=31011500991180003239_34020000001310000034_history_1636851600_1636851620\u0026ip=14.29.108.156\u0026app=2xenzw72izhqy
+```
+
+**响应示例**
+
+```
+{
+  "id": "31011500991180003239_34020000001310000034_history_1636851600_1636851620",
+  "percent":100,
+  "httpDownloadAddr":"http://236809372.cloudvdn.com/api/v1/gb28181?action=download&id=31011500991180003239_34020000001310000034_history_1636851600_1636851620&app=2xenzw72izhqy&ip=14.29.108.156",
+  "httpsDownloadAddr":"https://236809372.cloudvdn.com/api/v1/gb28181?action=download&id=31011500991180003239_34020000001310000034_history_1636851600_1636851620&app=2xenzw72izhqy&ip=14.29.108.156",
+}
+```
+
+# **录像文件下载**
+
+## **请求参数**
+
+ **路径参数**
+null
+
+ **Body**
+null
+
+## **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://236809372.cloudvdn.com/api/v1/gb28181?action=download&id=31011500991180003239_34020000001310000034_history_1636851600_1636851620&app=2xenzw72izhqy&ip=14.29.108.156
+```
+

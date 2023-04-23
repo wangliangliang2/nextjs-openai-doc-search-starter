@@ -1,0 +1,291 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `GET` /v1/vm/eip/:allocation_id
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+allocation_id | string | path  | 是 | 弹性公网 IP 的 ID
+region_id     | string | query | 是 | 地域 ID
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID
+data       | EIPInfo | EIP 列表
+
+
+### EIPInfo
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>allocation_id</td>
+      <td>string</td>
+      <td>
+        <p>弹性公网 IP 的 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>allocation_name</td>
+      <td>string</td>
+      <td>
+        <p>弹性公网 IP 的名称</p>
+      </td>
+    </tr>
+    <tr>
+      <td>charge_type</td>
+      <td>string</td>
+      <td>
+        <p>弹性公网 IP 的计费模式。</p>
+        <ul>
+          <li>PrePaid：包年包月。</li>
+          <li>PostPaid：按量计费。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>status</td>
+      <td>string</td>
+      <td>
+        <p>EIP 的状态。</p>
+        <ul>
+          <li>Associating：绑定中。</li>
+          <li>Unassociating：解绑中。</li>
+          <li>InUse：已分配。</li>
+          <li>Available：可用。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_id</td>
+      <td>string</td>
+      <td>
+        <p>当前绑定的实例的 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_name</td>
+      <td>string</td>
+      <td>
+        <p>当前绑定的实例的名称</p>
+      </td>
+    </tr>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>
+        <p>EIP 所在的地域</p>
+      </td>
+    </tr>
+    <tr>
+      <td>ip_address</td>
+      <td>string</td>
+      <td>
+        <p>弹性公网 IP 的 IP 地址</p>
+      </td>
+    </tr>
+    <tr>
+      <td>isp</td>
+      <td>string</td>
+      <td>
+        <p>服务提供商</p>
+        <ul>
+          <li><code>BGP_PRO</code>: BGP（多线）精品线路</li>
+          <li><code>BGP</code>: BGP（多线）线路</li>
+          <li><code>5_telcom</code>: 电信</li>
+          <li><code>5_union</code>: 联通</li>
+          <li><code>5_bgp</code>: 全动态BGP</li>
+          <li><code>5_sbgp</code>: 静态BGP</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>internet_charge_type</td>
+      <td>string</td>
+      <td>
+        <p>EIP 的计量方式，取值：</p>
+        <ul>
+          <li>PayByBandwidth（默认值）：按带宽计费。</li>
+          <li>PayByTraffic：按流量计费。</li>
+          <li>当 InstanceChargeType 取值为 PrePaid 时，InternetChargeType 必须取值 PayByBandwidth。</li>
+          <li>当 InstanceChargeType 取值为 PostPaid 时，InternetChargeType 可取值 PayByBandwidth 或 PayByTraffic。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_type</td>
+      <td>string</td>
+      <td>
+        <p>EIP 的实例的类型，取值：</p>
+        <ul>
+          <li><code>Nat</code>：NAT 网关。</li>
+          <li><code>SlbInstance</code>：负载均衡 SLB。</li>
+          <li><code>EcsInstance</code>：云服务器 ECS。</li>
+          <li><code>NetworkInterface</code>：辅助弹性网卡。</li>
+          <li><code>HaVip</code>：高可用虚拟 IP。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>bandwidth</td>
+      <td>string</td>
+      <td>
+        <p>EIP 的带宽峰值，单位为 Mbps</p>
+        <p>如果加入带宽包，则为被分配的带宽大小</p>
+      </td>
+    </tr>
+    <tr>
+      <td>pricing_cycle</td>
+      <td>string</td>
+      <td>
+        <p>包年包月的计费周期，取值：</p>
+        <ul>
+          <li>Month（默认值）：按月付费。</li>
+          <li>Year：按年付费。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>period</td>
+      <td>string</td>
+      <td>
+        <p>购买时长。</p>
+        <ul>
+          <li>当 PricingCycle 取值 Month 时，Period 取值范围为 1~9。</li>
+          <li>当 PricingCycle 取值 Year 时，Period 取值范围为 1~3。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>bandwidth_package_bandwidth</td>
+      <td>string</td>
+      <td>
+        <p>EIP 加入的共享带宽的带宽值</p>
+      </td>
+    </tr>
+    <tr>
+      <td>bandwidth_package_id</td>
+      <td>string</td>
+      <td>
+        <p>加入的共享带宽 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>bandwidth_package_type</td>
+      <td>string</td>
+      <td>
+        <p>带宽的类型，仅支持返回 CommonBandwidthPackage（共享带宽）</p>
+      </td>
+    </tr>
+    <tr>
+      <td>eip_bandwidth</td>
+      <td>string</td>
+      <td>
+        <p>EIP 加入共享带宽之前或退出共享带宽之后的带宽</p>
+      </td>
+    </tr>
+    <tr>
+      <td>expired_time</td>
+      <td>string</td>
+      <td>
+        <p>到期时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>created_at</td>
+      <td>string</td>
+      <td>
+        <p>创建时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>updated_at</td>
+      <td>string</td>
+      <td>
+        <p>更新时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>auto_renew_info</td>
+      <td>AutoRenew</td>
+      <td>
+        <p>自动续费信息</p>
+        <p>注：仅限于已开启自动续费的包年包月 EIP</p>
+      </td>
+    </tr>
+    <tr>
+      <td>customized_expire_time</td>
+      <td>string</td>
+      <td>
+        <p>自定义过期时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>cost_charge_type</td>
+      <td>string</td>
+      <td>付费方式</td>
+    </tr>
+    <tr>
+      <td>cost_charge_mode</td>
+      <td>string</td>
+      <td>按什么计费</td>
+    </tr>
+  </tbody>
+</table>
+
+
+### AutoRenew
+名称 | 类型 | 描述 
+----- | ----- | -----
+region_id     | string | EIP 所在的地域
+resource_type | string | 资源类别
+resource_id   | string | 资源 ID
+cost_params   | object | 计费参数
+updated_at    | string | 创建时间
+created_at    | string | 更新时间
+
+## 返回值示例
+```json
+{
+  "data": {
+    "allocation_id": "eip-j6ct5x5x63h6x8",
+    "allocation_name": "ssss",
+    "charge_type": "PostPaid",
+    "status": "InUse",
+    "instance_id": "i-j6ci4wx78lgqewyxihx1",
+    "instance_name": "ss",
+    "region_id": "cn-hongkong",
+    "ip_address": "123.123.123.123",
+    "isp": "BGP",
+    "internet_charge_type": "PayByTraffic",
+    "instance_type": "EcsInstance",
+    "bandwidth": "10",
+    "pricing_cycle": "",
+    "period": "",
+    "auto_pay": "true",
+    "bandwidth_package_bandwidth": "",
+    "bandwidth_package_id": "",
+    "bandwidth_package_type": "",
+    "eip_bandwidth": "",
+    "allocation_time": "2020-11-09T19:58:57+08:00",
+    "expired_time": "2120-12-25T23:54:00+08:00",
+    "updated_at": "2020-12-25T15:54:08.202+08:00",
+    "created_at": "2020-11-09T19:58:58.633+08:00",
+    "customized_expire_time": null,
+    "cost_charge_type": "PostPaid",
+    "cost_charge_mode": "PayByTraffic",
+  },
+  "request_id": "ScKvEURLnxF751MW"
+}
+```

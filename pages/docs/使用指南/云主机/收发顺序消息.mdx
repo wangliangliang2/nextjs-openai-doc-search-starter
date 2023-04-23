@@ -1,0 +1,115 @@
+顺序消息（FIFO 消息）是消息队列 RocketMQ 提供的一种严格按照顺序来发布和消费的消息类型。本文提供使用 TCP 协议下的 C/C++ SDK 收发顺序消息的示例代码供您参考。
+顺序消息分为两类：
+- 全局顺序：对于指定的一个 Topic，所有消息按照严格的先入先出（First In First Out，简称 FIFO）的顺序进行发布和消费。
+- 分区顺序：对于指定的一个 Topic，所有消息根据 Sharding Key 进行区块分区。 同一个分区内的消息按照严格的 FIFO 顺序进行发布和消费。Sharding Key 是顺序消息中用来区分不同分区的关键字段，和普通消息的 Key 是完全不同的概念。
+
+# 前提条件
+- 下载 C/C++ SDK。版本详情请参见版本说明；
+- 准备环境。
+
+# 发送顺序消息
+
+**说明：具体的示例代码，请以消息队列 RocketMQ 代码库为准。**
+发送顺序消息的示例代码如下：
+```
+#include "ONSFactory.h"
+#include "ONSClientException.h"
+#include <iostream>
+using namespace ons;
+int main()
+{
+    //producer创建和正常工作的参数，必须输入
+    ONSFactoryProperty factoryInfo;
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::ProducerId, "xxxxxxxxxx");//在控制台创建的 Group ID
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::NAMESRV_ADDR, "XXX"); //设置 TCP 接入域名，进入控制台的实例管理页面的“获取接入点信息”区域查
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::PublishTopics,"xxxxxxxxxxxx" );// 在控制台创建的 Topic
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::MsgContent, "input msg content");//消息内容
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::AccessKey, "xxxxxxxxx");//身份验证，在消息队列管理控制台创建
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::SecretKey, "xxxxxxxxxxxxxxxxxxx" );//身份验证，在消息队列管理控制台创建器管理控制台创建
+    //创建 Producer
+    OrderProducer *pProducer = ONSFactory::getInstance()->createOrderProducer(factoryInfo);
+    //在发送消息前，必须调用 start 方法来启动 Producer，只需调用一次即可。
+    pProducer->start();
+    Message msg(
+                //Message Topic
+                factoryInfo.getPublishTopics(),
+                //Message Tag，可理解为 Gmail 中的标签，对消息进行再归类，方便 Consumer 指定过滤条件在消息队列 RocketMQ 的服务器过滤
+                "TagA",
+                //Message Body，任何二进制形式的数据，消息队列 RocketMQ 不做任何干预，需要 Producer 与 Consumer 协商好一致的序列化和反序列化方式
+                factoryInfo.getMessageContent()
+    );
+    // 设置代表消息的业务属性，请尽可能全局唯一。
+    // 以方便您在无法正常收到消息情况下，可通过控制台查询消息并补发。
+    // 注意：不设置也不会影响消息正常收发
+    msg.setKey("ORDERID_100");
+    // 分区顺序消息中区分不同分区的关键字段
+    // 如果是全局顺序消息，该字段可以设置为任意非空字符串。
+  std::string shardingKey = "abc";  //带有同一 Sharding Key 的消息会按照顺序发送
+    try
+    {
+        //发送消息，只要不抛异常就是成功
+        SendResultONS sendResult = pProducer->send(msg, shardingKey);
+    std::cout << "send success" << std::endl;
+    }
+    catch(ONSClientException & e)
+    {
+        //添加对 exception 的处理
+    }
+    // 在应用退出前，必须销毁 Producer 对象，否则会导致内存泄露等问题
+    pProducer->shutdown();
+    return 0;
+}
+```
+
+
+# 订阅顺序消息
+
+订阅顺序消息的示例代码如下：
+```
+#include "ONSFactory.h"
+using namespace std;
+using namespace ons;
+//创建消费消息的实例
+//pushConsumer 拉取到消息后，会主动调用该实例的 consumeMessage 函数
+class ONSCLIENT_API MyMsgListener : public MessageOrderListener
+{
+public:
+    MyMsgListener()
+    {
+    }
+    virtual ~MyMsgListener()
+    {
+    }
+    virtual OrderAction consume(Message &message, ConsumeOrderContext &context)
+    {
+            //根据业务需求，消费消息
+        return Success; //CONSUME_SUCCESS;
+    }
+};
+int main(int argc, char* argv[])
+{
+    //OrderConsumer 创建和工作需要的参数，必须输入
+    ONSFactoryProperty factoryInfo;
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::ConsumerId, "");//在控制台创建的 Group ID
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::PublishTopics,"" );// 在控制台创建的 Topic
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::AccessKey, "");//身份验证，在消息队列管理控制台创建
+    factoryInfo.setFactoryProperty(ONSFactoryProperty::SecretKey,  "");//身份验证，在消息队列管理控制台创建
+    // 设置 TCP 接入域名，进入控制台的实例管理页面的“获取接入点信息”查看
+    properties.put(PropertyKeyConst.NAMESRV_ADDR,
+      "XXX");
+    // 创建 orderConsumer
+    OrderConsumer* orderConsumer = ONSFactory::getInstance()->createOrderConsumer(factoryInfo);
+    MyMsgListener  msglistener;
+    //指定 orderConsumer 订阅的消息 Topic和消息 Tag
+    orderConsumer->subscribe(factoryInfo.getPublishTopics(), "*",&msglistener );
+    // 注册消息监听的处理实例，orderConsumer 拉取到消息后，会调用该类的 consumeMessage 函数
+    //启动 orderConsumer
+    orderConsumer->start();
+    for(volatile int i = 0; i < 1000000000; ++i) {
+        //wait
+    }
+    //销毁 orderConsumer, 在应用退出前，必须销毁 Consumer 对象，否则会导致内存泄露等问题
+    orderConsumer->shutdown();
+   return 0;
+}
+```

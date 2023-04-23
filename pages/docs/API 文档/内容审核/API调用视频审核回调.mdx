@@ -1,0 +1,146 @@
+本文介绍发送并完成了API调用视频审核后，回调地址可收到的回调信息，视频审核回调的使用须知等，帮助您正确地处理回调信息。
+
+# 使用限制须知
+
+* API调用视频审核支持不设置回调
+* 若设置了回调，进行了一次API调用视频审核，则触发一次回调
+* 若回调失败（回调地址响应5XX状态码），目前不会进行重试
+* API调用视频审核支持回调，API调用图片审核不支持回调
+* API调用视频审核回调 与 增量审核回调 属于两种回调，需求场景、调用方法、返回内容格式均不同
+* 关于API调用视频审核接口，请参考：[API调用视频审核](/censor/api/5620/video-censor)
+
+# API调用视频审核回调格式
+
+|字段|取值|说明|
+| :------------- | :--- | :--- |
+|id|string|服务器返回的，唯一标识该视频任务的ID。|
+|request|json结构体|视频审核请求中的body。|
+|status|string|任务状态，`WAITING/DOING/RESCHEDULED/FAILED/FINISHED`,`RESCHEDULED`是指等待重试中。|
+|result|json结构体|视频内容审核的返回结果，详情请查看`*表.视频内容审核的返回结果*`。|
+|created_at|string| 任务创建时间，如：2019-01-02T15:03:04。 |
+|updated_at|string| 任务更新时间，如：2019-01-02T15:03:04。 |
+|rescheduled_at|string| 任务重试时间，如：2019-01-02T16:03:04。 |
+|code|int|处理状态：200 调用成功|
+|message|string|与code对应的状态描述信息|
+|result.suggestion|string|视频的审核结果管控建议说明<br>根据内容审核中各种审核类型的返回结果，系统会将审核结果转换成对应的管控建议，取值包括：[“block”,”review”,”pass”]。<br>suggestion=block：表示系统确认审核内容违规，建议您将其删除。<br>suggestion=review：表示系统无法确认审核内容是否违规，建议您进行人工复核。<br>suggestion=pass：表示系统确认审核内容正常，建议您忽略该文件。 |
+|result.scenes.`<type>`|json结构体|审核类型,目前支持"pulp", "terror", "politician"|
+|result.scenes.`<type>`.suggestion|string|该审核类型的结果管控建议，参见result.suggestion|
+|result.scenes.`<type>`.cuts[]|array|该审核类型的截帧审核结果数组|
+|result.scenes.`<type>`.cuts[].suggestion|string|该审核类型的截帧审核结果管控建议，参见result.suggestion|
+|result.scenes.`<type>`.cuts[].offset|int|该审核类型的截帧的时间位置|
+|result.scenes.`<type>`.cuts[].uri|string|该审核类型的截帧uri|
+|result.scenes.`<type>`.cuts[].details[]|array|该审核类型的截帧审核详细信息数组|
+|result.scenes.`<type>`.cuts[].details[].suggestion|string|该审核类型的截帧审核结果详细的结果管控建议，参见result.suggestion|
+|result.scenes.`<type>`.cuts[].details[].label|string|该审核类型的截帧审核结果标签，具体请参见[图片内容审核](https://developer.qiniu.com/censor/api/5588/image-censor)的label/group|
+|result.scenes.`<type>`.cuts[].details[].score|string|该审核类型的截帧审核结果置信度|
+|result.scenes.politician.cuts[].details[].group|string|该审核类型的截帧审核结果分组，具体请参见[图片内容审核](https://developer.qiniu.com/censor/api/5588/image-censor)的label/group|
+|result.scenes.politician.cuts[].details[].sample.uri|string|该敏感人物的参考图链接|
+|result.scenes.politician.cuts[].details[].sample.pts|array|参考图中敏感人物的人脸方框坐标|
+|result.scenes.politician.cuts[].details[].detections[].pts|array|截帧中检测到的敏感人物人方框坐标|
+|result.scenes.politician.cuts[].details[].detections[].score|string|截帧中检测到的人脸匹配为敏感人物的置信度|
+|result.scenes.terror.cuts[].details[].detections[].pts|array|当截帧审核结果label为以下五种时，该字段用于返回检测到的物体方框坐标：<br>“illegal_flag：违规旗帜类”<br>”guns：枪”<br>”knives：刀”<br>”anime_knives：二次元刀”<br>“anime_guns：二次元枪”|
+|result.scenes.terror.cuts[].details[].detections[].score|string|截帧中检测到的物体置信度|
+
+```
+{
+  "id": "5d271f33e74cf10008cb8ae3",
+  "vid": "",
+  "request": {
+    "data": {
+      "uri": "http://video.a.com/xxx/0.ts"
+    },
+    "params": {
+      "sync": false,
+      "scenes": [
+        "pulp",
+        "terror",
+        "politician"
+      ],
+      "cut_param": {
+        "interval_msecs": 5000
+      },
+      "hook_url": "http://requestbin.fullcontact.com/1mhqoh41"
+    }
+  },
+  "status": "FINISHED",
+  "result": {
+    "code": 200,
+    "message": "OK",
+    "result": {
+      "suggestion": "pass",
+      "scenes": {
+        "politician": {
+          "cuts": [
+            {
+              "offset": 520,
+              "suggestion": "pass"
+            },
+            {
+              "offset": 5520,
+              "suggestion": "pass"
+            }
+          ],
+          "suggestion": "pass"
+        },
+        "pulp": {
+          "cuts": [
+            {
+              "details": [
+                {
+                  "label": "normal",
+                  "score": 0.97960997,
+                  "suggestion": "pass"
+                }
+              ],
+              "offset": 520,
+              "suggestion": "pass"
+            },
+            {
+              "details": [
+                {
+                  "label": "normal",
+                  "score": 0.95487005,
+                  "suggestion": "pass"
+                }
+              ],
+              "offset": 5520,
+              "suggestion": "pass"
+            }
+          ],
+          "suggestion": "pass"
+        },
+        "terror": {
+          "cuts": [
+            {
+              "details": [
+                {
+                  "label": "normal",
+                  "score": 0.9920667,
+                  "suggestion": "pass"
+                }
+              ],
+              "offset": 520,
+              "suggestion": "pass"
+            },
+            {
+              "details": [
+                {
+                  "label": "normal",
+                  "score": 0.84314996,
+                  "suggestion": "pass"
+                }
+              ],
+              "offset": 5520,
+              "suggestion": "pass"
+            }
+          ],
+          "suggestion": "pass"
+        }
+      }
+    }
+  },
+  "created_at": "2019-07-11T19:36:19.982+08:00",
+  "updated_at": "2019-07-11T19:36:24.349+08:00",
+  "rescheduled_at": "2019-07-11T19:36:19.982+08:00"
+}
+```

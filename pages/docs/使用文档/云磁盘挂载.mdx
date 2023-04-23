@@ -1,0 +1,30 @@
+在使用七牛 EVM 的过程中如果系统分配的磁盘容量不够实际使用,可以通过创建云磁盘并且挂载到目标云主机来满足对磁盘容量的需求。
+
+1. [创建云磁盘](/evm/manual/4046/disk-management#create_volume)
+
+- 完成创建后，即可在 **磁盘管理** 界面看到新创建的磁盘。然后需要将磁盘挂载到目标主机，这里有两种方式:  
+ - **从主机入口**：
+  	- 进入主机列表，选中一台主机，点击 **操作** 按钮弹出的  **磁盘管理** 按钮  
+	![](https://dn-odum9helk.qbox.me/FtlZAZOnXmW3xNAWEXSH6ZfpV0Ph) 
+        
+ 	 - 在磁盘管理中选择要挂载的磁盘，点击确定完成绑定磁盘的过程  
+
+	![](https://dn-odum9helk.qbox.me/FnfBsOvNzmqDPlbhwF-JkkhDXx-3) 
+  - **从磁盘入口**：
+  	- 进入磁盘列表，点击对应磁盘的 **挂载** 按钮，即可选择将该磁盘挂载到所选择的主机上
+    
+    	![](https://dn-odum9helk.qbox.me/FsodNjvv0AdnMRHjdlhiW92yPAHm)
+    
+    	![](https://dn-odum9helk.qbox.me/FpvQIdbIaBmVDYjFQ0rzEbK-fMwo)
+
+- 挂载完成后，用户可以在主机详情中看到已经挂载上的磁盘  
+
+	![](https://dn-odum9helk.qbox.me/FvQW0l6jqy5mADwyPRgnQaBn1kst)
+    
+	![](https://dn-odum9helk.qbox.me/FsodNjvv0AdnMRHjdlhiW92yPAHm)
+
+	![](https://dn-odum9helk.qbox.me/FpvQIdbIaBmVDYjFQ0rzEbK-fMwo)
+
+- 磁盘挂载成功后，您还需要登录云主机，对挂载的磁盘进行分区格式化和挂载新分区。具体操作步骤，请参见  
+	- [Linux 磁盘挂载](/evm/manual/4043/linux-disk-mount)
+	- [Windows 磁盘挂载](/evm/manual/4044/windows-disk-mounted)

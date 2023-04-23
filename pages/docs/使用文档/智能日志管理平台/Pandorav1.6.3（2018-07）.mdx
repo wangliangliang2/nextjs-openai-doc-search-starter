@@ -1,0 +1,17 @@
+**新功能：**
+
+* 报表新增[世界地图](/insight/manual/4864/statistical-map#2)类型。
+
+![](https://pandora-kibana.qiniu.com/world_map.png)
+
+* Dashboard 支持对[单张图表自定义时间范围](/insight/manual/4867/the-dashboard#4)。除了直接自定义以外，也支持通过设置相对目前时间的时间偏移量控制单个图表的显示时间范围。
+
+![](https://pandora-kibana.qiniu.com/logdb/customized_time.png)
+
+* 上传文件配置解析规则支持[使用键值对方式解析](/insight/manual/4888/key-value-parsing)、[不解析直接上传](/insight/manual/4889/no-parsing-to-upload)两种解析方式。【[使用文档](/insight/manual/4882/file-upload)】
+
+* 日志仓库增加 `_time` 字段，标记数据入库索引时间，并且支持仓库使用该时间字段进行搜索分析。【[文档](/insight/manual/4629/search-analysis)】
+
+* 可视化报表配置：
+
+  字段的平均值、求和、最大值、最小值指标支持数学运算：输入类似 `_value * (60 * 60)` 等计算公式改变原始指标值。【[文档](/insight/manual/4692/reports-and-dashboards#2)】

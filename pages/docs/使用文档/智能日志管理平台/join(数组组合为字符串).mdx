@@ -1,0 +1,64 @@
+join transformer 会将数组组合成字符串，数组里面的元素类型可以是任意类型。
+
+* 要进行Transform变化的键(`key`): 指定要解析的数据所在字段，支持多级嵌套，多级间用 *.* 符号连接，如 abc.xyz，表示 data["abc"]["xyz"]中的数据。
+* 变换后生成的新的键(`new`): 指定解析后生成的字段名称。
+* 组装时的分隔字符(`sep`): 指定组装时用来分隔的字符，可以不填留空。
+* 起始元素位置(`first`): 指定数组开始的元素位置（包含）默认为0，从第一个元素开始。
+* 末尾元素位置(`last`): 指定数组末尾的元素位置（不包含）默认为0，从最后一个元素结束。
+
+```
+{
+		"type":"join",
+		"key":"path_array",
+		"new":"mynewKey",
+    "first":0,
+    "last":0,
+    "sep":""
+}
+```
+
+### **示例**：
+
+假设原始数据为:
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "path_array": ["mytest","a","b"]
+}
+```
+
+经过 join transformer 变换后的数据将变为:
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "path_array": ["mytest","a","b"],
+		"mynewKey":"mytestab"
+}
+```
+
+示例：
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+		"first":1,
+		"last":3,
+		"sep":"/",
+    "path_array": ["mytest","a","b"]
+}
+```
+
+解析后数据将变成：
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "path_array": ["mytest","a","b"],
+		"mynewKey":"a/b"
+}
+```

@@ -1,0 +1,39 @@
+使用 HDL 观看直播的地址
+
+# 格式
+
+未开启时间戳防盗链：
+
+```
+https://<HDLPlayDomain>/<Hub>/<streamTitle>.flv
+```
+
+开启时间戳防盗链：
+
+```
+https://<HDLPlayDomain>/<Hub>/<streamTitle>.flv?sign=<md5(key+path+t).to_lower()>&t=<hex(time).to_lower()>
+```
+
+# 参数说明
+
+| 参数名称| 说明 |
+| :----------- |:--------------------------------------------------------------- |
+| HDLPlayDomain | 直播空间绑定的 HDL 直播域名 |
+| Hub | 直播空间名称 |
+| streamTitle | 直播流名称 |
+| sign | 开启时间戳防盗链时的加密字符串，生成方法见[播放地址时间戳防盗链](/pili/api/9868/play-security)  |
+| t | 开启时间戳防盗链时的播放地址过期时间，格式为经过16进制转换的UNIX时间戳，具体见[播放地址时间戳防盗链](/pili/api/9868/play-security)  |
+
+# 示例
+
+未开启时间戳防盗链：
+
+```
+http://pili-hdl.pilitest.com/testHub/testStream.flv
+```
+
+开启时间戳防盗链：
+
+```
+http://pili-hdl.pilitest.com/testHub/testStream.flv?sign=65667901baf24fbb6fae8dec6acd86b0&t=61769c40
+```

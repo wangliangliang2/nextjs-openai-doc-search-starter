@@ -1,0 +1,72 @@
+# QPlayer2
+QPlayer2 是一款面向未来的跨平台播放器SDK,除了基本的播放能力外，还引入目前最前沿的技术能力，同时在用户的接入上，提供了扩展插件，让客户能更便捷的实现播放器上层的相关业务逻辑。
+SDK包含两个部分：qplayer2-core提供核心播放能力，qplayer2-ext（目前仅android端支持）提供上层业务扩展能力。
+
+QPlayer2-Android:[https://github.com/pili-engineering/QPlayer2-Android](https://github.com/pili-engineering/QPlayer2-Android)
+QPlayer2-IOS:[https://github.com/pili-engineering/QPlayer2-IOS](https://github.com/pili-engineering/QPlayer2-IOS)
+QPlayer2-MacOS:敬请期待
+QPlayer2-Linux:敬请期待
+QPlayer2-Windows:敬请期待
+
+## qplayer2-core 功能列表
+### 媒体资源组成形式
+一个媒体资源支持多url，比如一个音频url和一个视频url组成一个媒体资源,提升拉流速度和解封装速度
+
+### 播放协议及封装
+目前支持的如下，如有其他需求可以联系技术支持或者提交github需求issue。
+- 协议：http/https/rtmp/srt 
+- 封装格式:flv/m3u8/mp4/flac/wav(PCM_S24LE)
+
+### 解码方式 
+- 软解
+- 硬解
+- 自动：自动选择合适的解码方式
+- 混解(Android端)
+
+### 色盲模式
+在业务场景中更好的服务视觉有障碍的客户  
+
+### 倍速
+改变视频播放的速度，且变速不变调
+
+### 清晰度切换
+通用清晰度切换方案，无缝切换，即使媒体资源gop不对齐
+
+### SEEK
+支持精准/关键帧 seek 两种方式
+
+### 指定起播位置
+从指定位置开始播放
+
+### 起播方式
+- 起播播放
+- 起播暂停 ：起播后首帧渲染出来就停止画面
+
+### 预加载
+提前加载点播视频，获得更好的首帧体验
+
+### SEI数据回调
+将sei数据上抛到上层供业务层使用，所有解码方式都支持
+
+### 纯音频播放/纯视频播放
+播放只有单音频流或者只有单视频流的视频
+
+### APM埋点上报
+用于整体大盘的性能监测
+
+### VR视频
+支持Equirect-Angular类型的vr视频播放
+
+## qplayer2-ext 功能列表(目前仅Android支持)
+
+### 场景切换定制
+当一个播放器有直播点播场景时，且2个场景的业务逻辑完全不同时，通过场景定制，能更丝滑的在2套逻辑中切换
+
+### 播放面板定制
+统一控制面板的显示隐藏，不同的视频场景中 可快速切换面板
+
+### 播放器上层浮窗定制
+拥有统一的浮窗展示隐藏动画和布局规范，更快的实现各类弹窗
+
+### 播放器上层手势
+支持多种手势判定回调，上层只需关心业务逻辑

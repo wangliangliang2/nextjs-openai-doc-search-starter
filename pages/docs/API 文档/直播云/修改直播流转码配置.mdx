@@ -1,0 +1,56 @@
+# 接口描述
+
+设置目标直播流使用的转码配置，设置好转码配置的直播流在推流开始时会触发转码，推流过程中修改转码配置不会立即生效，需要重新推流
+
+在播放地址后面添加 `@<ProfileName>` 即可播放相应转码流，目前可转码的配置有 `480p` 和 `720p`。使用转码服务会产生额外费用，详情费用请参考 [价格表](https://www.qiniu.com/prices/pili)
+
+# 请求参数
+
+```
+POST /v2/hubs/<hub>/streams/<encodedStreamTitle>/converts
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/json 
+
+{
+    "converts":["<ProfileName>", ...]
+}
+```
+| 参数                | 类型     | 必填  | 描述                                             |
+| ------------------ | -------- | ---- | ------------------------------------------------ |
+| hub                | string   | 是   | 直播空间名                                         |
+| encodedStreamTitle | string   | 是   | 经过[base64编码](/kodo/manual/appendix)的直播流名   |
+| converts           | string[] | 是   | 转码配置，如果提交的 ProfileName 为空数组，那么之前的转码配置将被取消<br>如果需要配置水印，则需要以wmt_开头，下划线后加水印模版名   |
+
+# 返回数据
+
+空
+
+# 示例
+
+
+请求体:
+
+```
+POST /v2/hubs/test/streams/dGltZXN0YW1w/converts HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/json 
+
+{
+    "converts":[
+        "480p", 
+        "720p"
+    ]
+}
+```
+
+返回体:
+
+```
+200 OK
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

@@ -1,0 +1,25 @@
+目前七牛播放器SDK的demo里面有这样一些类：  
+"PLMediaPlayerActivity",  
+"PLAudioPlayerActivity",  
+"PLVideoViewActivity",  
+"PLVideoTextureActivity",  
+
+其中 Audio 肯定是指播放纯音频的，这个不用说，其他的使用方法基本相同，唯一的区别在于 PLMediaView 、PLVideoView 类使用了 SurfaceView 来完成视频画面的渲染，而 PLVideoTextureView 采用了 TextureView 完成视频画面的渲染 ，因此，在这里合并在一起来介绍。
+
+SurfaceView和TextureView
+
+
+SurfaceView 和 TextureView 都继承自 android.view.View 类。它们可以从单独的线程中绘制和渲染，这是与其他视图的主要区别。 Crosswalk单独使用绘图功能，通过专用GPU线程大大提高渲染性能。
+
+
+SurfaceView 提供嵌入视图层次结构内部的专用绘图表面。你可以控制这个曲面的格式和大小; SurfaceView 会将表面放置在屏幕上的正确位置。它的行为或多或少地类似于传统桌面系统上的屏幕窗口，例如，X11 系统上的 XWindow，它可以是无框的，并嵌入在另一个 XWindow 中。
+
+以下是 SurfaceView 的两个限制：
+不能动画，变换和缩放;
+不能覆盖两个 SurfaceView。
+ 
+TextureView 看起来像一个普通的 View。你可以动画，变换和缩放它，就像一个 TextView。 TextureView 只能在硬件加速窗口中使用。然而，TextureView 将消耗比 SurfaceView 更多的内存，也可能有1〜3帧延迟。
+ 
+参考：  
+1，http://developer.Android.com/reference/android/view/SurfaceView.html  
+2，http://developer.android.com/reference/android/view/TextureView.html

@@ -1,0 +1,117 @@
+# 获取域名验证信息
+
+```
+用户获取域名所有权验证信息接口
+```
+
+## 请求包
+
+```
+GET /domain/<Name>/verify/info?product=<Product>
+Authorization: QBox <QBoxToken>
+Content-Type: application/x-www-form-urlencoded
+```
+
+### 参数解释
+
+|参数|类型|必填|含义|
+|---|---|---|---|
+|Name|string|是|需要验证的域名|
+|Product|string|是|产品类型: `cdn`(静态加速)/`dcdn`(全站加速)|
+
+## 返回包
+
+```
+{
+    domain: <Domain>,
+    dns: <OwnerVerifyDnsInfo>,
+    file: <OwnerVerifyFileInfo>,
+    state: <State>
+}
+```
+
+### 参数解释
+
+参数|类型|含义|
+|---|---|---|
+|Domain|string|用户需要验证的主域名,比如创建加速域名cdn.qiniu.com,需要验证主域名qiniu.com的所有权|
+|Dns|object|DNS验证信息,用户需要在域名所属的DNS服务商上配置DNS解析完成验证|
+|File|object|文件验证信息,用户需要在主域名所在服务器的根目录下配置验证文件|
+|State|string|验证状态: `no_need`(不需要验证)/`doing`(待验证)/`success`(验证通过)|
+
+### DNS验证信息
+
+|参数|类型|含义|
+|---|---|---|
+|Host|string|主机记录|
+|RecordType|string|记录类型|
+|RecordValue|string|记录值|
+
+### 文件验证信息
+
+|参数|类型|含义|
+|---|---|---|
+|FileName|string|文件名称|
+|FileValue|string|文件内容|
+
+**错误码**
+
+|错误码|含义|
+|---|---|
+|400079|未知的顶级域名|
+|500005|数据查询内部出错|
+
+
+
+# 验证域名所有权
+
+```
+用户验证域名所有权接口
+```
+
+## 请求包
+
+```
+POST /domain/<Name>/verify/check HTTP/1.1
+Content-Type: application/json
+Authorization: QBox <QBoxToken>
+
+{
+	"type": <Type>,
+	"product": <Product>
+}
+```
+### 参数解释
+
+|参数|类型|必填|含义|
+|---|---|---|---|
+|Name|string|是|域名, 如果是泛域名，必须以点号 . 开头|
+|Product|string|是|产品类型: `cdn`(静态加速)/`dcdn`(全站加速)|
+|Type|string|是|验证类型: `dns`(DNS验证)/`file`(文件验证)|
+
+## 返回包
+```
+{}
+```
+**错误码**
+
+|错误码|含义|
+|---|---|
+|400000|未知的输入参数|
+|400079|未知的顶级域名|
+|400937|尚未查看域名验证值(未调用获取域名验证信息接口的情况下，直接调用验证域名所有权接口，会返回该错误码)|
+|400932|域名所有权验证失败|
+|500004|更新数据内部出错|
+|500005|数据查询内部出错|
+
+## 请求示例
+
+```
+POST /domain/testqiniu.qbox.net/verify/check HTTP/1.1
+Authorization: QBox 0tf5awMVxwf8WrEvrjtbiZrdRZRJU-91JgCqTOC8:6oxDOtOXVEfcR8PPuAscmWjVRS8=
+Host: api.qiniu.com
+
+{
+    "type": "dns"
+}
+```

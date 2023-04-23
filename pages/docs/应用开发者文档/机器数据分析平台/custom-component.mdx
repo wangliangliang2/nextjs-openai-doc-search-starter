@@ -1,0 +1,55 @@
+`<custom-component>`元素支持自定义 React 组件， 该组件要求符合 UMD 规范。使用该元素需要传递两个参数，src 表明文件路径，module-name 表明模块名称。
+
+### 模块名称规范
+
+正则： /^com\.pandora\.2\.0\.custorm_module\.[A-Za-z0-9_-]{3,50}\.[A-Za-z0-9_-]{3,50}\.v\d+\.\d+\.\d+$/
+
+示例： 
+
+```
+com.pandora.2.0.custorm_module.qiniu.helloWrold.v1.0.0
+```
+
+### 文件路径
+
+* 引入当前 app 下的 js 文件
+```
+<custom-component src="[file_name].js" moduleName="[moduleName]">
+</custom-component>
+```
+
+* 引入其他 app 下的 js 文件
+```
+<html src="[other_app_name]:[file_name].js" moduleName="[moduleName]">
+</html>
+```
+
+### 书写 UMD React 组件方式
+
+1.使用工具 [nwb](https://github.com/insin/nwb)
+
+2.使用该工具书写 React UMD 组件[文档](https://github.com/insin/nwb/blob/master/docs/guides/ReactComponents.md#developing-react-components-and-libraries-with-nwb)
+
+3.参考流程
+ * 安装 nwb
+ ```
+ npm install -g nwb
+ ```
+ * 创建项目
+```
+nwb new react-component you-component-project
+```
+该步骤有三个选项，第一个是是否使用 ES modules，第二个是是否使用 UMD 规范，都选 'yes'，第三个是模块名称
+
+* 安装项目依赖
+
+ ```
+cd you-component-project
+npm install
+```
+* 编译打包
+```
+npm build
+```
+
+ 打包完成后将 umd 目录下的 js 文件复制到对应的 app 下即可使用

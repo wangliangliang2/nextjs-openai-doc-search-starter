@@ -1,0 +1,15 @@
+token 是一种变量，可用于传递值。 token 可以在支持 token 的元素（目前支持 `<input>`、`<operation-bar>`）上定义一个 token 变量，在需要使用该变量的地方使用 $token$ 即可实现值绑定。如果 token 变量值是一个对象，支持 $token.attr$ 的形式使用。
+
+示例
+
+```
+<input type="text" token="token">
+  <label>标签</label>
+  <initial-value>文本内容</initial-value>
+</input>
+
+<row>
+	<text>$token$</text>
+</row>
+```
+

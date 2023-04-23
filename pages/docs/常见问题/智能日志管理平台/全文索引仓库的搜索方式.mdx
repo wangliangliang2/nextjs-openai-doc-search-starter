@@ -1,0 +1,5 @@
+[全文索引](/insight/glossary/5103/the-index-way)是一种特殊的索引方式:
+	
+1. 全文索引将所有字段拼接在一起，使用标准分词器进行分词，可以直接输入关键词进行搜索。如数据中包含 `/we/are/friends`，直接输入 `friends` 即可搜索出该数据；
+
+2. 全文索引对每个字段选择了索引但是**不分词**。所以此时选择使用字段进行搜索要注意，如果字段 content 数据内容是 `/we/are/friends`，那么 `/we/are/friends` 整体被视为一个单次，我们必须输入 `content:"/we/are/friends"` 才能搜索出结果。如果只输入 `content:"friends"` 由于分词方式的选择是无法搜索出结果的。

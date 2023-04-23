@@ -1,0 +1,46 @@
+1. 拼接流ID。
+    对于本地录像回放，如果希望播放任意时间段内的录像，需要手动构造流ID。当设备类型为摄像头时，流ID格式为设备国标ID_history_开始时间戳_结束时间戳；当设备类型为平台时，流ID格式为设备国标ID_通道ID_history_开始时间戳_结束时间戳。
+    **示例**：
+  	   假设目前有一个NVR国标ID为`31011500991320020874`，通道ID为`34020000001310000001`，希望观看`2022-12-22 00:00:00`到`2022-12-22 23:59:59`时间段内的录像。
+  	开始时间`2022-12-22 00:00:00`转换的`uninx时间戳`为`1671638400`。
+  	结束时间`2022-12-22 23:59:59`转换的`unix时间戳`为`167172479`
+  	则流ID为: `31011500991320020874_34020000001310000001_history_1671638400_1671724799`。
+
+2. 获取播放地址。
+
+   - 如果空间已经配置了域名，则请求[静态模式获取流地址](https://developer.qiniu.com/qvs/6800/static-model)接口获取流地址。
+   - 如果空间没有配置域名， 则请求[动态模式获取流地址](https://developer.qiniu.com/qvs/6801/dynamic-model)接口获取流地址。
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;请求示例
+
+```
+    curl --request POST \
+    --url http://qvs.qiniuapi.com/v1/namespaces/d102sni9zryu/streams/31011500991320020874_34020000001310000001_history_1671638400_1671724799/urls \
+    --header 'authorization: QiniuStub j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+    --header 'content-type: application/json' \
+    --data '{
+      "publishIp":"116.236.177.50",
+      "playIp":"116.236.177.50"
+    }'
+```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;响应示例
+
+```
+{
+  "playUrls": {
+    "rtmp":"rtmp://180.101.136.82:2045/qiniu/31011500991180013390_34020000001310000006_history_1670799600_1670835600?e=1670851888\u0026token=52fdfc072182654d%3A1uPRRnu6M6aWZ_IVVHahdCjgFDk",
+    "flv":"http://180.101.136.82:1360/qiniu/31011500991180013390_34020000001310000006_history_1670799600_1670835600.flv?e=1670851888\u0026token=52fdfc072182654d%3AQAghBKuIO35EJVlT0uYI9iEr_Ms",		   
+    "hls":"http://180.101.136.82:1370/qiniu/31011500991180013390_34020000001310000006_history_1670799600_1670835600.m3u8?e=1670851888\u0026token=52fdfc072182654d%3A7ZmDc6X5bsZIuig7cRA6-HXInJU",  
+    "webrtc":"webrtc://180.101.136.82:1240/qiniu/31011500991180013390_34020000001310000006_history_1670799600_1670835600?e=1670851888\u0026token=52fdfc072182654d%3AYPD6HRoJFayO1iCMUiMlOrXsueg"
+   },
+  "onlineState":false,
+  "disabled":false,
+  "publishUrlExpired":1670851888
+}
+```
+
+
+3. 在播放器中播放播放获取到的流地址。
+```
+fflay http://180.101.136.82:1370/qiniu/31011500991180013390_34020000001310000006_history_1670799600_1670835600.m3u8?e=1670851888\u0026token=52fdfc072182654d%3A7ZmDc6X5bsZIuig7cRA6-HXInJU
+```

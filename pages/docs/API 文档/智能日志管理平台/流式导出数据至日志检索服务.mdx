@@ -1,0 +1,73 @@
+**请求语法**
+
+```
+POST /v2/repos/<RepoName>/exports/<ExportName>
+Content-Type: application/json
+Authorization: Pandora <auth>
+{
+  "type": <logdb>,
+  "whence": <ExportWhence>,
+  "spec": {
+        "destRepoName": <DestRepoName>,
+        "omitInvalid": <OmitInvalid>,
+        "omitEmpty": <OmitEmpty>,
+        "doc": {
+            "toRepoSchema1": <#fromRepoSchema1>,
+            "toRepoSchema2": {
+            	"toRepoSchema3": <#fromRepoSchema3>,
+            }
+            ......
+        }
+}
+```
+
+**请求内容**
+
+|参数|类型|必填|说明|
+|:---|:---|:---:|:---|
+| destRepoName |string|是|日志仓库名称|
+| omitInvalid |bool|否|是否忽略无效数据，默认值为false|
+| omitEmpty |bool|否|当某条数据的字段取值全部为null时是否忽略该条数据，默认值为false，设置为true时可避免导出没有意义的数据|
+| doc |map|是|字段关系说明</br> `fromRepoSchema`表示源消息队列字段名称</br>`toRepoSchema`表示目标日志仓库字段名称|
+
+> 消息队列中,字段的类型与日志检索服务中的字段类型需要作出如下对应:
+> 
+> 消息队列类型:string 对应 日志检索服务:string / date
+> 
+> 消息队列类型:long 对应 日志检索服务:long / date
+> 
+> 消息队列类型:float 对应 日志检索服务:float
+> 
+> 消息队列类型:array[string] 对应 日志检索服务:string
+> 
+> 消息队列类型:array[long] 对应 日志检索服务:long
+> 
+> 消息队列类型:array[float] 对应 日志检索服务:float
+> 
+> 消息队列类型:map 对应 日志检索服务:object
+> 
+> 消息队列类型:date 对应 日志检索服务:date 
+> 
+> 消息队列类型:jsonstring 对应 日志检索服务:object
+
+!> 注意: 对于消息队列的`jsonstring`类型，导出至日志检索服务的`object`类型时，会将内嵌字段名称中所有圆点(`.`)替换为下划线（由于日志检索服务的object类型的内嵌字段名称不支持圆点(`.`))。例如，消息队列中某一个字段`f1`的类型为`jsonstring`，取值为`{"education.level": "university"}`，最终导出至日志检索服务为`{"education_level": "university"}`，内嵌字段`education.level`中的圆点(`,`)被替换为下划线(`_`)。
+
+**示例**
+
+```
+curl -X POST https://nb-pipeline.qiniuapi.com/v2/repos/test_Repo/exports/export_job2 \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Pandora 2J1e7iG13J66GA8vWBzZdF-UR_d1MF-kacOdUUS4:NTi3wH_WlGxYOnXsvgUrO4XMD6Y=' \
+-d '{
+  "type": "logdb",
+  "spec": {
+	  "destRepoName": "logdb_testRepo", 
+	  "doc":{
+			"user":"userName",
+			"profile":{
+				"age":"age"
+			}
+	  }
+	}
+}'
+```

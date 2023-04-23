@@ -1,0 +1,58 @@
+# **前提条件**
+您已完成以下操作：
+1. 创建文件系统
+2. 添加挂载点
+3. 安装 NFS 客户端
+
+# **容量型或性能型 NAS **
+您可以在 Linux 系统中配置/etc/fstab 文件（推荐使用）或 /etc/rc.local 文件实现 NFS 文件系统自动挂载。
+
+## **1. 登录云服务器 QVM**
+## **2. 配置自动挂载**
+### 方案一（推荐使用）： 打开 /etc/fstab 配置文件，添加挂载命令。
+ 如果您是在CentOS 6.x系统中配置自动挂载，您需先执行chkconfig netfs on命令，保证netfs开机自启动。
+ 
+ - 如果您要挂载 NFS  v4文件系统，添加以下命令：
+```
+file-system-id.region.nas.aliyuncs.com:/ /mnt nfs vers=4,minorversion=0,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,_netdev,noresvport 0 0
+```
+
+- 如果您要挂载 NFS v3文件系统，添加以下命令：
+```
+file-system-id.region.nas.aliyuncs.com:/ /mnt nfs vers=3,nolock,proto=tcp,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,_netdev,noresvport 0 0
+```
+
+### 方案二：打开/etc/rc.local配置文件，添加挂载命令。
+在配置/etc/rc.local文件前，请确保用户对/etc/rc.local和/etc/rc.d/rc.local文件有可执行权限。例如：CentOS 7.x系统，用户默认无可执行权限，需添加权限后才能配置/etc/rc.local文件。
+
+- 如果您要挂载 NFS v4文件系统，添加以下命令：
+```
+sudo mount -t nfs -o vers=4,minorversion=0,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,_netdev,noresvport file-system-id.region.nas.aliyuncs.com:/ /mnt
+```
+
+- 如果您要挂载NFS v3文件系统，添加以下命令：
+```
+sudo mount -t nfs -o vers=3,nolock,proto=tcp,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,_netdev,noresvport file-system-id.region.nas.aliyuncs.com:/ /mnt
+```
+
+命令中各参数说明如下表所示：
+
+| 参数                                          | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |   |
+|-----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|
+| file-system-id.region.nas.aliyuncs.com:/ /mnt | 表示<挂载点地址>：<NAS文件系统目录> <当前服务器上待挂载的本地路径>，请根据实际情况替换。 挂载点地址：file-system-id.region.nas.aliyuncs.com，您可以在文件存储 NAS 控制台上，找到目标文件系统，单击管理，进入详情页面获取挂载点地址。  NAS 文件系统目录： NAS 的根目录（/）或任意子目录（例如：/share），如果是子目录，请确保子目录已存在。 当前服务器上待挂载的本地路径：服务器（例如： QVM  linux）的根目录（/）或任意子目录（例如：/mnt），如果是子目录，请确保子目录已存在。 |   |
+| vers                                          | 文件系统版本，目前只支持nfs v3和nfs v4。                                                                                                                                                                                                                                                                                                                                                                                                                                |   |
+| _netdev                                       | 防止客户端在网络就绪之前开始挂载文件系统。                                                                                                                                                                                                                                                                                                                                                                                                                              |   |
+| 0（noresvport 后第一项）                      | 非零值表示文件系统应由dump备份。对于 NAS ，此值为0。                                                                                                                                                                                                                                                                                                                                                                                                                      |   |
+| 0（noresvport 后第二项）                      | 该值表示fsck在启动时检查文件系统的顺序。对于 NAS 文件系统，此值应为0，表示 fsck不应在启动时运行。                                                                                                                                                                                                                                                                                                                                                                         |   |
+| 挂载选项                                      | 挂载文件系统时，可选择多种挂载选项，                                                                                                                                                                                                                                                                                                                                                                                                                                    |   |
+
+### 3. 执行reboot命令，重启云服务器 QVM 。
+### 4. 执行mount -l命令，查看挂载结果。
+如果回显包含如下类似信息，说明挂载成功。
+![](https://dn-odum9helk.qbox.me/FiiezsJPFlm7MqE3coJuc7u0nJ73)
+挂载成功后，您还可以通过df -h命令，查看文件系统的当前容量信息。
+
+### 5. 挂载成功后，您可以在 QVM 上访问 NAS 文件系统，执行读取或写入操作。
+您可以把 NAS 文件系统当作一个普通的目录来访问和使用，例子如下所示。
+![](https://dn-odum9helk.qbox.me/Fk5ZKuh0ZK7Mk8YZUI6UpAtnZaAR)
+

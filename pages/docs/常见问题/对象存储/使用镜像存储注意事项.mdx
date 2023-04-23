@@ -1,0 +1,28 @@
+# 使用镜像存储，更新源站文件后，如何访问最新文件？
+参考 [镜像存储刷新缓存方法](/fusion/kb/4215) 
+
+# 镜像源地址设置和拉取资源链接形式  
+
+&ensp;&ensp;&ensp;拉取资源链接为：镜像空间绑定的加速域名 +（源站链接-镜像源地址设置部分）
+
+&ensp;&ensp;&ensp;例如：
+
+
+&ensp;&ensp;&ensp;源站资源链接：http(s)://sourceDomain/image/123.jpg
+
+&ensp;&ensp;&ensp;加速域名：a.b.com
+
+<br/>
+&ensp;&ensp;&ensp;若镜像源地址设置为：http(s)://sourceDomain/
+
+&ensp;&ensp;&ensp;则拉取资源链接：http(s)://a.b.com/image/123.jpg
+
+<br/>
+&ensp;&ensp;&ensp;若镜像源地址设置为：http(s)://sourceDomain/image
+
+&ensp;&ensp;&ensp;则拉取资源链接：http(s)://a.b.com/123.jpg
+
+
+# 回源请求的User-Agent
+
+回源源站时，请求会携带固定的User-Agent信息：`<RegionID>-qiniu-imgstg-spider-1.0`，RegionID为华东z0、华南z1、华北z2、北美na0、东南亚as0。

@@ -1,0 +1,26 @@
+Multipart Upload相关的接口：
+
+接口   | 说明 
+ -----|-------------------
+[initiateMultipartUpload](/kodo/api/6365/initialize-multipartupload)        | 通知服务端开启分块上传任务,得到全局唯一任务 UploadId
+[uploadPart](/kodo/api/6366/upload-part)        | 分块上传数据，需指定的任务 UploadId
+[completeMultipartUpload](/kodo/api/6368/complete-multipart-upload)        | 完成整个文件的分块上传，需指定的任务 UploadId
+[abortMultipartUpload](/kodo/api/6367/abort-multipart-upload) | 中止分块上传任务，并且删除已经上传的块，需指定的任务 UploadId
+[listParts](/kodo/api/6858/listparts)|列举指定 UploadId 所属的所有已经上传成功 Part
+
+目前支持分片上传 v2 版 SDK 情况如下：
+
+ SDK | 版本
+---|----
+[JavaScript SDK](/kodo/sdk/1283/javascript) | v3.0.0 及以上
+[Flutter SDK](/kodo/sdk/7598/flutter-sdk) | 所有版本
+[Rust SDK](/kodo/sdk/11853/rust) | 所有版本
+[Android SDK](/kodo/sdk/1236/android) | v8.1.0 及以上
+[Objective-C SDK](/kodo/sdk/1240/objc) | v8.1.0 及以上
+[Go SDK](/kodo/sdk/1238/go) | v7.8.0 及以上
+[Java SDK](/kodo/sdk/1239/java) | v7.5.0 及以上
+[Python SDK](/kodo/sdk/1242/python) | v7.4.0 及以上
+[C/C++ SDK](/kodo/1255/cpp)| v7.1.0 及以上
+[Node.js SDK](/kodo/1289/nodejs)| v7.4.0 及以上
+[PHP SDK](/kodo/1241/php)| v7.4.0 及以上
+[c# SDK](/kodo/sdk/1237/csharp)| v8.0.0 及以上

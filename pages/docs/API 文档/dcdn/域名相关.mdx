@@ -1,0 +1,1114 @@
+# 创建全站加速域名
+
+```
+用户创建全站加速普通及泛域名接口 
+
+```
+
+## 请求包
+
+```
+POST /domain/<Name> HTTP/1.1
+Content-Type: application/json
+Authorization: QBox <AccessToken>
+
+{
+	// 基本配置
+	"type": <Type>,
+	"platform": <Platform>,
+	"geoCover": <GeoCover>,
+	"protocol": <Protocol>,
+        "ipTypes": <IpTypes>,
+
+	// 回源配置
+	"source": <Source>,
+
+	// 缓存配置
+	"cache": <Cache>,
+
+	// referer 防盗链
+	"referer": <Referer>,
+
+	// ip 黑白名单
+	"ipACL": <IPACL>,
+
+	 // htttps 配置
+	"https": <HTTPS>,
+	
+	// 备案号
+	"registerNo": <RegisterNo>
+}
+
+```
+
+### 参数解释
+
+**基本参数**
+
+| 参数       | 类型     | 必填   | 含义                                       |
+| -------- | ------ | ---- | ---------------------------------------- |
+| Name     | string | 是    | 域名, 如果是泛域名，必须以点号 . 开头                    |
+| Type     | string | 是    | 域名类型: `normal`(普通域名)/`wildcard`(泛域名)     |
+| Platform | string | 是    | 平台类型: 固定值 `dynamic`(动态加速)|
+| GeoCover | string | 是    | 地域: `china`/`foreign`/`global`           |
+| Protocol | string | 是    | 协议: `http`/`https`                       |
+| Source   | 请参考 [回源配置](https://developer.qiniu.com/fusion/api/4249/product-features#2) | 是    | 回源参数            |
+| Cache    | 请参考 [缓存策略](https://developer.qiniu.com/fusion/api/4249/product-features#1) | 备注：平台是动态加速是“否”，其他平台为“是”   | 缓存参数            |
+| Referer   | 请参考 [referer防盗链](https://developer.qiniu.com/fusion/api/4249/product-features#3) | 否    | 防盗链参数      |
+| IPACL   | 请参考 [ip黑白名单](https://developer.qiniu.com/fusion/api/4249/product-features#4) | 否    | ip 黑白名单参数      |
+| HTTPS   | 请参考 [HTTPS](https://developer.qiniu.com/fusion/api/4249/product-features#7) | 否    | HTTPS参数   |
+| RegisterNo   | string | 否    | 当创建域名返回`code: 500230` 或者返回的内容提示为`备案查询服务已关闭`，需要API调用者在本参数输入域名的备案号   |
+| IpTypes   | uint | 否    | IP协议：仅允许ipv4访问，取值为1；同时允许ipv4/ipv6访问，取值为3。不指定IPTypes时，国内/全球域名默认为允许ipv4/ipv6访问，海外域名仅允许ipv4访问。|
+
+## 返回包
+
+```
+{}
+
+```
+
+**错误码**
+
+| 错误码    | 含义                     |
+| ------ | ---------------------- |
+| 400001 | 非法域名                   |
+| 400005 | 未知的协议                  |
+| 400020 | 域名未备案                  |
+| 400040 | 非法的回源域名                |
+| 400044 | 非法的回源host              |
+| 400041 | 未知的回源ip                |
+| 400008 | 无此bucket               |
+| 400345 | 共享bucket不能绑定域名         |
+| 400043 | 未知的高级回源参数              |
+| 400022 | 未知的测试url               |
+| 400002 | 未知的回源类型                |
+| 400093 | 非法的域名类型                |
+| 400060 | 未知的referer防盗链类型        |
+| 400061 | 未知的referer防盗链参数        |
+| 400091 | 缓存参数有误                 |
+| 400309 | 缓存规则未设置全局或者为遵循源站       |
+| 400204 | 时间戳防盗链key值数目不够         |
+| 400031 | 非法的url                 |
+| 400203 | 已禁用的用户                 |
+| 400541 | 获取用户信息失败               |
+| 401000 | 未实名认证的用户               |
+| 400801 | 未知的vendor              |
+| 400003 | 未知的平台类型                |
+| 400004 | 未知覆盖                   |
+| 404911 | 非法的路径                  |
+| 404912 | 非法的正则表达式               |
+| 400520 | 不能同时设置时间戳防盗链和回源鉴权      |
+| 400200 | 未知的bucket              |
+| 400521 | 非法的回源鉴权地址              |
+| 400522 | 非法的回源鉴权http方法          |
+| 400523 | 非法的回源鉴权http code       |
+| 400524 | 非法的回源鉴权超时时间            |
+| 400525 | 非法的回源鉴权url参数           |
+| 400401 | 无此证书                   |
+| 400324 | https证书解码失败            |
+| 400325 | https证书解析失败            |
+| 400321 | https证书还未生效            |
+| 400329 | https证书过期              |
+| 400326 | https证书与域名不匹配          |
+| 400327 | 解析https证书密钥失败          |
+| 400328 | https证书与密钥不匹配          |
+| 400323 | 验证https证书链失败           |
+| 400549 | 只有https域名才能使用强制https跳转 |
+| 400621 | 泛域名及其子域名不能使用私有bucket   |
+| 400005 | 未知的协议                  |
+| 400332 | 未知的回源协议                |
+| 400932 | 域名所有权验证失败                |
+| 500219 | 查询证书内部错误               |
+| 500005 | 数据查询内部出错               |
+| 500230 | 备案查询服务已关闭               |
+| 500000 | 未知内部错误                 |
+
+## 请求示例
+
+```
+POST /domain/testqiniu.qbox.net HTTP/1.1
+Authorization: QBox 0tf5awMVxwf8WrEvrjtbiZrdRZRJU-91JgCqTOC8:6oxDOtOXVEfcR8PPuAscmWjVRS8=
+Content-Type: application/json
+Host: api.qiniu.com
+
+{
+  "protocol": "http",
+  "platform": "web",
+  "geocover": "china",
+  "type": "normal",
+  "ipTypes": 3,
+  "source": {
+    "sourceType": "bucket",
+    "sourceQiniuBucket": "test",
+    "testURLPath": "qiniu_do_not_delete.gif"
+  },
+  "cache": {
+    "cacheControls": [
+      {
+        "time": 0,
+        "timeunit": 0,
+        "type": "suffix",
+        "rule": ".m3u8;.js"
+      },
+      {
+        "time": 1,
+        "timeunit": 5,
+        "type": "all",
+        "rule": "*"
+      }
+    ],
+    "ignoreParam": true
+  },
+  "referer": {
+    "refererType": "white",
+    "refererValues": [
+      "*.qiniu.com",
+      "qiniu.com"
+    ],
+    "nullReferer": true
+  },
+  "ipACL": {
+    "ipACLType": "black",
+    "ipACLValues": [
+      "115.223.202.9"
+    ]
+  }
+}
+```
+
+# 调整覆盖
+```
+用户修改全站加速普通域名及泛域名区域覆盖接口
+
+```
+## 请求包
+```
+PUT /domain/<Name>/geocover
+Content-Type: application/json
+Authorization: QBox <QBoxToken>
+
+{
+    "geoCover": <GeoCover>
+}
+```
+### 参数解释
+|  参数 | 类型  | 必填  | 含义  |
+| ------------ | ------------ | ------------ | ------------ |
+|  Name  | string  | 是  | 域名 |
+|  GeoCover  | string  | 是  |  地域: china/foreign/global（中国大陆/海外/全球） |
+
+## 返回包
+```
+{ 200 }
+```
+**错误码**
+|  错误码 | 含义  |
+| ------------ | ------------ |
+|  400001 |  非法域名 |
+|  400004 |  未知覆盖 |
+|  400108 |  覆盖冲突 |
+|  400020 |  域名未备案 |
+|  400030 |  正在处理中 |
+|  400064 |  无权处理该域名 |
+|  400066 |  域名状态为失败 |
+|  400078 |  未备案的海外域名，对七牛资源的使用错误 |
+|  400093 |  非法的域名类型 |
+|  400313 |  域名有手动配置的时间戳防盗链 |
+|  400923 |  域名已冻结 |
+|  400998 |  域名已下线 |
+|  404001 |  无此域名 |
+|  500000 |  未知内部错误 |
+|  500005 |  数据查询内部出错 |
+|  500930 |  不能操作已删除的域名 |
+
+
+
+
+# 修改源站
+
+```
+用户修改普通域名及泛域名源站接口
+
+```
+
+## 请求包
+
+```
+PUT /domain/<Name>/source
+
+{
+	Source
+}
+
+```
+
+### 参数解释
+
+| 参数     | 类型     | 必填   | 含义                                      |
+| ------ | ------ | ---- | --------------------------------------- |
+| Source | object | 是    | Source结构请参考 [回源配置](https://developer.qiniu.com/fusion/api/4249/product-features#2) |
+
+## 返回包
+
+```
+{}
+
+```
+
+**错误码**
+
+| 错误码    | 含义          |
+| ------ | ----------- |
+| 400001 | 非法域名        |
+| 404001 | 无此域名        |
+| 400093 | 非法的域名类型     |
+| 400801 | 未知的vendor   |
+| 400018 | 非法的cname    |
+| 400005 | 未知的协议       |
+| 400046 | 非法的url重写规则  |
+| 400022 | 非法的测试url    |
+| 400024 | 验证源站访问性失败   |
+| 500005 | 数据查询内部出错    |
+| 500019 | 非标准的回源cname |
+
+## 请求示例
+
+```
+PUT /domain/testqiniu.qbox.net/source HTTP/1.1
+Authorization: QBox 0tf5awMVxwf8WrEvrjtbiZrdRZRJU-91JgCqTOC8:6oxDOtOXVEfcR8PPuAscmWjVRS8=
+Content-Type: application/json
+Host: api.qiniu.com
+
+{
+  "sourceType": "ip",
+  "sourceIPs": [
+    "1.1.1.1",
+    "1.1.1.2"
+  ],
+  "testURLPath": "test.gif"
+}
+```
+
+# 修改缓存规则
+
+```
+用户修改普通域名及泛域名缓存规则接口
+
+```
+
+## 请求包
+
+```
+PUT /domain/<Name>/cache
+Content-Type: application/json
+Authorization: QBox <AccessToken>
+{
+	Cache
+}
+
+```
+
+### 参数解释
+
+| 参数    | 类型     | 必填   | 含义                                       |
+| ----- | ------ | ---- | ---------------------------------------- |
+| Cache | object | 是    | Cache结构请参考 [缓存策略](https://developer.qiniu.com/fusion/api/4249/product-features#1) |
+
+## 返回包
+
+```
+{}
+
+```
+
+**错误码**
+
+| 错误码    | 含义               |
+| ------ | ---------------- |
+| 400001 | 未知的域名            |
+| 404001 | 无此域名             |
+| 400064 | 无权处理该域名          |
+| 400093 | 非法的域名类型          |
+| 400030 | 正在处理中            |
+| 400066 | 域名状态为失败          |
+| 400998 | 域名已下线            |
+| 400091 | 缓存参数有误           |
+| 400309 | 缓存规则未设置全局或者为遵循源站 |
+| 500005 | 数据查询内部出错         |
+| 400923 | 域名已冻结            |
+| 500930 | 删除中的域名           |
+
+## 请求示例
+
+```
+PUT /domain/testqiniu.qbox.net/cache HTTP/1.1
+Authorization: QBox 0tf5awMVxwf8WrEvrjtbiZrdRZRJU-91JgCqTOC8:6oxDOtOXVEfcR8PPuAscmWjVRS8=
+Content-Type: application/json
+Host: api.qiniu.com
+
+{
+  "cacheControls": [
+    {
+      "time": 0,
+      "timeunit": 0,
+      "type": "suffix",
+      "rule": ".m3u8;.js"
+    },
+    {
+      "time": 1,
+      "timeunit": 5,
+      "type": "all",
+      "rule": "*"
+    }
+  ],
+  "ignoreParam": true
+}
+```
+
+# 下线域名
+
+```
+用户下线普通及泛域名接口
+
+```
+
+## 请求包
+
+```
+POST /domain/<Name>/offline
+Authorization: QBox <AccessToken>
+
+```
+
+## 返回包
+
+```
+{}
+
+```
+
+**错误码**
+
+| 错误码    | 含义           |
+| ------ | ------------ |
+| 404001 | 无此域名         |
+| 400001 | 未知的域名        |
+| 400064 | 无权处理该域名      |
+| 400093 | 非法的域名类型      |
+| 400013 | 重复操作         |
+| 400030 | 正在处理中        |
+| 400066 | 域名状态为失败      |
+| 400018 | 非法的cname     |
+| 400397 | cname和其他域名冲突 |
+| 400923 | 域名已冻结        |
+| 500005 | 数据查询内部出错     |
+
+# 上线域名
+
+```
+用户上线普通及泛域名接口
+
+```
+
+## 请求包
+
+```
+POST /domain/<Name>/online
+Authorization: QBox <AccessToken>
+
+```
+
+## 返回包
+
+```
+{}
+
+```
+
+**错误码**
+
+| 错误码    | 含义           |
+| ------ | ------------ |
+| 404001 | 无此域名         |
+| 400001 | 未知的域名        |
+| 400064 | 无权处理该域名      |
+| 400093 | 非法的域名类型      |
+| 400013 | 重复操作         |
+| 400030 | 正在处理中        |
+| 400066 | 域名状态为失败      |
+| 400018 | 非法的cname     |
+| 400397 | cname和其他域名冲突 |
+| 500004 | 更新数据内部出错     |
+| 500923 | 域名已冻结        |
+| 500005 | 数据查询内部出错     |
+| 500235 | 该域名未绑定证书     |
+
+# 删除域名
+
+```
+用户删除普通及泛域名接口
+
+```
+
+## 请求包
+
+```
+DELETE /domain/<Name>
+Authorization: QBox <AccessToken>
+
+```
+
+返回包
+
+```
+{}
+
+```
+
+**错误码**
+
+| 错误码    | 含义            |
+| ------ | ------------- |
+| 404001 | 无此域名          |
+| 400001 | 未知的域名         |
+| 400064 | 无权处理该域名       |
+| 400013 | 重复操作          |
+| 400030 | 正在处理中         |
+| 400317 | 非已下线的域名       |
+| 400066 | 域名状态为失败       |
+| 400515 | 该泛域名还含有活跃的子域名 |
+| 500005 | 数据查询内部出错      |
+
+# 获取域名信息
+
+```
+用户获取域名信息接口，所有域名适用
+
+```
+
+## 请求包
+
+```
+GET /domain/<Name>
+Authorization: QBox <AccessToken>
+
+```
+
+## 返回包
+
+```
+{
+	"name": <Name>,
+	"type": <Type>,
+	"cname": <CName>,
+	"testURLPath": <TestURLPath>,
+	"platform": <Platform>,
+	"geoCover": <GeoCover>,
+	"protocol": <Protocol>,
+        "ipTypes": <IpTypes>,
+        "tagList": <TagList>,
+	"source": <Source>,
+	"cache": <Cache>,
+	"referer": <Referer>,
+	"ipACL": <IPACL>,
+	"operationType": <OperationType>,
+	"operatingState": <OperatingState>,
+	"operatingStateDesc": <OperatingStateDesc>,
+	"createAt": <CreateAt>,
+	"modifyAt": <ModifyAt>,
+	"pareDomain": <PareDomain>,
+	"https": <Https>,
+}
+
+```
+
+### 参数解释
+
+基本参数 [请参考](#basic)
+
+| 参数                 | 类型     | 含义                                       |
+| ------------------ | ------ | ---------------------------------------- |
+| CName              | string | 创建域名成功后七牛生成的域名，用户需要把 `Name` cname 到这个域名  |
+| Referer            | object | Referer结构请参考 [referer防盗链](https://developer.qiniu.com/fusion/api/4249/product-features#3) |
+| IPACL              | object | IPACL结构请参考 [ip黑白名单](https://developer.qiniu.com/fusion/api/4249/product-features#4) |
+| Source             | object | Source结构请参考 [回源配置](https://developer.qiniu.com/fusion/api/4249/product-features#2)  |
+| Cache              | object | Cache结构请参考 [缓存策略](https://developer.qiniu.com/fusion/api/4249/product-features#1) |
+| OperationType      | string | 域名最近一次操作类型: `create_domain`/`offline_domain`/`online_domain`/ `modify_source`/`modify_referer`/`modify_cache`/ `freeze_domain`/`unfreeze_domain`/`modify_timeacl`(修改时间戳防盗链)/ `modify_https_crt`/`sslize`(升级HTTPS)/`modify_bsauth`(修改回源鉴权) /`offline_bsauth`(删除回源鉴权) |
+| OperatingState     | string | 域名最近一次的操作状态: `processing`/`success`/`failed`/`frozen`/`offlined` |
+| OperatingStateDesc | string | 域名最近一次的操作状态的描述                           |
+| CreateAt           | string | 域名创建时间，格式:RFC3339                        |
+| ModifyAt           | string | 域名最后一次修改时间，格式:RFC3339                    |
+| PareDomain         | string | 父域名,属于泛子域名字段                             |
+| Https              | Object | Https结构请参考 [HTTPS](https://developer.qiniu.com/fusion/api/4249/product-features#7)       |
+| IpTypes   | uint | IP协议：仅允许ipv4访问，取值为1；同时允许ipv4/ipv6访问，取值为3。|
+| TagList    | []string | 域名的标签列表  |
+
+**错误码**
+
+| 错误码    | 含义       |
+| ------ | -------- |
+| 404001 | 无此域名     |
+| 400001 | 未知的域名    |
+| 400014 | 无权获取该域名  |
+| 500005 | 数据查询内部出错 |
+
+# 获取域名列表
+
+```
+用户获取域名列表接口，所有域名适用
+
+```
+
+## 请求包
+
+```
+GET /domain?product=<Product>&marker=<Marker>&limit=<Limit>&SourceTypes=<sourceTypes>&sourceQiniuBucket=<SourceQiniuBucket>
+Authorization: QBox <AccessToken>
+
+```
+
+### 参数解释
+
+| 参数     | 类型     | 含义                           |
+| ------ | ------ | ---------------------------- |
+| Marker | string | 用于标识从哪个位置开始获取域名列表，不填或空表示从头开始。|
+| Product| string | 全站加速固定传参 "dcdn"。|
+| Limit  | int    | 返回的最大域名个数，1~1000, 不填默认为 10。 |
+|SourceTypes|[]string| 回源类型，可选domain、ip、qiniuBucket、advanced中的一个或多个；如果指定了SourceQiniuBucket参数，SourceTypes只能指定为qiniuBucket一种回源类型，否则SourceQiniuBucket参数将不生效；同时获取多种回源类型域名的请求url示例：http://api.qiniu.com/domain?sourceTypes=domain&sourceTypes=ip。|
+| SourceQiniuBucket  | string    | 七牛存储空间名称, 不填默认查询全部域名。 |
+
+
+## 返回包
+
+```
+{
+	"marker": <Marker>,
+	"domains": [
+		{
+			"name": <Name>,
+			"type": <Type>,
+			"cname": <CName>,
+			"testURLPath": <TestURLPath>,
+			"platform": <Platform>,
+			"geoCover": <GeoCover>,
+			"protocol": <Protocol>,
+                        "ipTypes": <IpTypes>,
+                        "tagList": <TagList>,
+			"operatingState": <OperatingState>,
+			"operatingStateDesc": <OperatingStateDesc>,
+			"createAt": <CreateAt>,
+			"modifyAt": <ModifyAt>,
+		},
+		...
+	]
+}
+
+```
+
+### 参数解释
+
+基本参数 [请参考](#basic)
+
+| 参数             | 类型     | 含义                                       |
+| -------------- | ------ | ---------------------------------------- |
+| Marker         | string | 用于标示下一次从哪个位置开始获取域名列表                     |
+| CName          | string | 创建域名成功后七牛生成的域名，用户需要把 `Name` cname 到这个域名  |
+| TestURLPath    | string | 域名的测试资源，需要保证这个资源是可访问的                    |
+| IpTypes   | uint | IP协议：仅允许ipv4访问，取值为1；同时允许ipv4/ipv6访问，取值为3。|
+| TagList    | []string | 域名的标签列表                    |
+| OperatingState | string | 域名最近一次的操作状态: `processing`/`success`/`failed`/`frozen`/`offlined` |
+| CreateAt       | string | 域名创建时间，格式:RFC3339                        |
+| ModifyAt       | string | 域名最后一次修改时间，格式:RFC3339                    |
+
+
+**错误码**
+
+| 错误码    | 含义          |
+| ------ | ----------- |
+| 400021 | 非法的参数marker |
+| 500005 | 数据查询内部出错    |
+
+# HTTP升级为HTTPS
+
+```
+HTTP升级为HTTPS
+
+```
+
+## 请求包
+
+```
+PUT /domain/<Name>/sslize
+Authorization: QBox <AccessToken>
+
+{
+	"certid":<CertID>,
+	"forceHttps": <ForceHttps>,
+	"http2Enable": <Http2Enable>
+}
+
+```
+
+### 参数解释
+
+| 参数         | 类型     | 含义                      |
+| ---------- | ------ | ----------------------- |
+| CertID     | string | 证书id，从上传或者获取证书列表里拿到证书id |
+| ForceHttps | bool   | 是否强制https跳转             |
+| Http2Enable | bool   | http2功能是否启用，false为关闭，true为开启             |
+
+## 返回包
+
+```
+{}
+
+```
+
+**错误码**
+
+| 错误码    | 含义            |
+| ------ | ------------- |
+| 400331 | 非法参数          |
+| 404001 | 无此域名          |
+| 400001 | 未知的域名         |
+| 400064 | 无权处理该域名       |
+| 400008 | 无此bucket      |
+| 400392 | 非法的域名cname    |
+| 400013 | 重复操作          |
+| 400030 | 正在处理中         |
+| 400066 | 域名状态为失败       |
+| 400401 | 无此证书          |
+| 400324 | https证书解码失败   |
+| 400325 | https证书解析失败   |
+| 400321 | https证书还未生效   |
+| 400329 | https证书过期     |
+| 400326 | https证书与域名不匹配 |
+| 400327 | 解析https证书密钥失败 |
+| 400328 | https证书与密钥不匹配 |
+| 400323 | 验证https证书链失败  |
+| 400550 | 非法的证书id         |
+| 500219 | 查询证书内部错误      |
+| 500005 | 数据查询内部出错      |
+
+
+# HTTPS降级为HTTP
+
+```
+HTTPS降级为HTTP
+```
+
+## 请求包
+
+```
+PUT /domain/<Name>/unsslize
+Authorization: QBox <AccessToken>
+
+```
+
+## 返回包
+
+```
+{}
+```
+**错误码**
+
+|错误码|含义|
+|---|---|
+|400331|非法参数|
+|404001|无此域名|
+|400001|未知的域名|
+|400064|无权处理该域名|
+|400093|非法的域名类型|
+|400008|无此bucket|
+|400392|非法的域名cname|
+|400013|重复操作|
+|400030|正在处理中|
+|400923|域名已冻结|
+|400066|域名状态为失败|
+|401001|域名不允许操作|
+|500004|更新数据内部出错|
+|500005|数据查询内部出错|
+
+# 修改证书
+
+```
+修改证书
+
+```
+
+## 请求包
+
+```
+PUT /domain/<Name>/httpsconf
+Authorization: QBox <AccessToken>
+
+{
+	"certId": <CertID>,
+	"forceHttps": <ForceHttps>,
+	"http2Enable": <Http2Enable>
+}
+
+```
+
+### 参数解释
+
+| 参数         | 类型     | 含义                      |
+| ---------- | ------ | ----------------------- |
+| CertID     | string | 证书id，从上传或者获取证书列表里拿到证书id |
+| ForceHttps | bool   | 是否强制https跳转             |
+| Http2Enable | bool   | http2功能是否启用，false为关闭，true为开启             |
+
+
+## 返回包
+
+```
+{}
+
+```
+
+**错误码**
+
+| 错误码    | 含义            |
+| ------ | ------------- |
+| 400331 | 非法参数          |
+| 404001 | 无此域名          |
+| 400001 | 未知的域名         |
+| 400064 | 无权处理该域名       |
+| 400008 | 无此bucket      |
+| 400392 | 非法的域名cname    |
+| 400013 | 重复操作          |
+| 400030 | 正在处理中         |
+| 400066 | 域名状态为失败       |
+| 400401 | 无此证书          |
+| 400324 | https证书解码失败   |
+| 400325 | https证书解析失败   |
+| 400321 | https证书还未生效   |
+| 400329 | https证书过期     |
+| 400326 | https证书与域名不匹配 |
+| 400327 | 解析https证书密钥失败 |
+| 400328 | https证书与密钥不匹配 |
+| 400323 | 验证https证书链失败  |
+| 500219 | 查询证书内部错误      |
+| 500005 | 数据查询内部出错      |
+
+# 修改referer防盗链
+
+```
+用户修改普通域名及泛域名referer防盗链接口
+
+```
+
+## 请求包
+
+```
+PUT /domain/<Name>/referer
+
+{
+	Referer
+}
+
+```
+
+### 参数解释
+
+| 参数      | 类型     | 必填   | 含义                                       |
+| ------- | ------ | ---- | ---------------------------------------- |
+| Referer | object | 是    | Referer结构请参考 [referer防盗链](https://developer.qiniu.com/fusion/api/4249/product-features#3) |
+
+## 返回包
+
+```
+{}
+
+```
+
+**错误码**
+
+| 错误码    | 含义              |
+| ------ | --------------- |
+| 404001 | 无此域名            |
+| 400001 | 未知的域名           |
+| 400064 | 无权处理该域名         |
+| 400008 | 无此bucket        |
+| 400013 | 重复操作            |
+| 400030 | 正在处理中           |
+| 400066 | 域名状态为失败         |
+| 400998 | 域名已下线           |
+| 400923 | 域名已冻结           |
+| 500930 | 删除中的域名          |
+| 400060 | 未知的referer防盗链类型 |
+| 400061 | 未知的referer防盗链参数 |
+| 500005 | 数据查询内部出错        |
+
+## 请求示例
+
+```
+PUT /domain/testqiniu.qbox.net/referer HTTP/1.1
+Authorization: QBox 0tf5awMVxwf8WrEvrjtbiZrdRZRJU-91JgCqTOC8:6oxDOtOXVEfcR8PPuAscmWjVRS8=
+Content-Type: application/json
+Host: api.qiniu.com
+
+{
+  "refererType": "white",
+  "refererValues": [
+    "*.qiniu.com",
+    "qiniu.com"
+  ],
+  "nullReferer": true
+}
+```
+
+# 修改ip黑白名单
+
+```
+用户修改普通域名及泛域名ip黑白名单接口
+
+```
+
+## 请求包
+
+```
+PUT /domain/<Name>/ipacl
+
+{
+	IPACL
+}
+
+```
+
+### 参数解释
+
+| 参数    | 类型     | 必填   | 含义                                       |
+| ----- | ------ | ---- | ---------------------------------------- |
+| IPACL | object | 是    | IPACL结构请参考 [ip黑白名单](https://developer.qiniu.com/fusion/api/4249/product-features#4) |
+
+## 返回包
+
+```
+{}
+
+```
+
+**错误码**
+
+| 错误码    | 含义          |
+| ------ | ----------- |
+| 404001 | 无此域名        |
+| 400001 | 未知的域名       |
+| 400064 | 无权处理该域名     |
+| 400008 | 无此bucket    |
+| 400013 | 重复操作        |
+| 400030 | 正在处理中       |
+| 400066 | 域名状态为失败     |
+| 400998 | 域名已下线       |
+| 400923 | 域名已冻结       |
+| 500930 | 删除中的域名      |
+| 400074 | 非法的ip黑白名单类型 |
+| 400075 | 非法的ip黑白名单参数 |
+| 500005 | 数据查询内部出错    |
+
+## 请求示例
+
+```
+PUT /domain/testqiniu.qbox.net/ipacl HTTP/1.1
+Authorization: QBox 0tf5awMVxwf8WrEvrjtbiZrdRZRJU-91JgCqTOC8:6oxDOtOXVEfcR8PPuAscmWjVRS8=
+Content-Type: application/json
+Host: api.qiniu.com
+
+{
+  "ipACLType": "black",
+  "ipACLValues": [
+    "115.223.202.9"
+  ]
+}
+```
+
+# 修改响应头
+
+```
+修改CDN返回给用户的响应头
+```
+
+## 请求包
+
+```
+PUT /domain/<Name>/respheader
+Content-Type: application/json
+Authorization: QBox <QBoxToken>
+
+{
+    responseHeaderControls: [
+        {
+            op: <op>
+            key: <key>
+            value: <value>
+        }...
+    ]
+}
+```
+
+### 参数解释
+
+| 参数         | 类型     | 必填      | 含义   |
+| ---------- | ------ | ------ |---- |
+| Name   | string | 是     |域名 |
+| op     | string | 是     |对响应头的进行操作的类型，可选"set"、"del"，目前不支持"add" |
+| key    | string | 是     |匹配响应头的key，可选值：Content-Type,Cache-Control,Content-Disposition,Content-Language,Expires,Access-Control-Allow-Origin,Access-Control-Allow-Methods,Access-Control-Allow-Headers,Access-Control-Max-Age,Access-Control-Expose-Headers,Access-Control-Allow-Credentials。 |
+| value  | string | 是     |响应头的value，在op为"set"时有效 |
+
+## 返回包
+
+```
+{ }
+```
+
+**错误码**
+
+| 错误码    | 含义                  |
+| ------ | ------------------- |
+| 404001 | 无此域名                |
+| 400001 | 未知的域名               |
+| 400064 | 无权处理该域名             |
+| 400008 | 无此bucket            |
+| 400013 | 重复操作                |
+| 400030 | 正在处理中               |
+| 400066 | 域名状态为失败             |
+| 400998 | 域名已下线               |
+| 400923 | 域名已冻结               |
+| 400084 | 无效的响应头key |
+| 400085 | 无效的响应头操作请求 |
+| 400086 | 重复的响应头key |
+| 500930 | 删除中的域名              |
+| 500005 | 数据查询内部出错            |
+
+
+# 创建新的域名标签
+
+```
+在账户下添加新的域名标签
+```
+
+## 请求包
+
+```
+POST /domain/tag HTTP/1.1
+Content-Type: application/json
+Authorization: QBox <QBoxToken>
+
+{
+	tag: <Tag>,
+	product: <Product>
+}
+```
+### 参数解释
+
+|参数|类型|必填|含义|
+|---|---|---|---|
+|Tag|string|是|域名标签
+|Product|string|是|产品类型: `cdn`(静态加速)/`dcdn`(全站加速)|
+
+## 返回包
+```
+{}
+```
+**错误码**
+
+|错误码|含义|
+|---|---|
+|400331|非法参数|
+|400925|账号域名标签数量达到上限|
+|400927|域名标签已存在|
+|500004|更新数据内部出错|
+|500005|数据查询内部出错|
+
+## 请求示例
+
+```
+POST /domain/tag HTTP/1.1
+Authorization: QBox 0tf5awMVxwf8WrEvrjtbiZrdRZRJU-91JgCqTOC8:6oxDOtOXVEfcR8PPuAscmWjVRS8=
+Host: api.qiniu.com
+
+{
+    "tag": "图片",
+    "product": "cdn"
+}
+```
+
+# 设置域名标签
+
+```
+选取账户下定义好的标签，为域名配置标签列表
+```
+
+## 请求包
+
+```
+PUT /domain/<Domain>/tags HTTP/1.1
+Content-Type: application/json
+Authorization: QBox <QBoxToken>
+
+{
+	tagList: <TagList>
+}
+```
+### 参数解释
+
+|参数|类型|必填|含义|
+|---|---|---|---|
+|TagList|[]string|是|标签列表
+
+## 返回包
+```
+{}
+```
+**错误码**
+
+|错误码|含义|
+|---|---|
+|400331|非法参数|
+|404001|无此域名|
+|400064|无权处理该域名|
+|400926|单个域名标签数量达到上限|
+|500004|更新数据内部出错|
+|500005|数据查询内部出错|
+
+## 请求示例
+
+```
+PUT /domain/<Domain>/tags HTTP/1.1
+Authorization: QBox 0tf5awMVxwf8WrEvrjtbiZrdRZRJU-91JgCqTOC8:6oxDOtOXVEfcR8PPuAscmWjVRS8=
+Host: api.qiniu.com
+
+{
+    "tagList": ["图片","视频","文件"]
+}
+```
+
+# 获取所有域名标签
+
+```
+获取账户下定义的域名标签
+```
+
+## 请求包
+
+```
+GET /domain/all/tags?product=<Product>
+Authorization: QBox <QBoxToken>
+```
+### 参数解释
+
+|参数|类型|必填|含义|
+|---|---|---|---|
+|Product|string|是|产品类型: `cdn`(静态加速)/`dcdn`(全站加速)|
+
+## 返回包
+```
+{}
+```
+**错误码**
+
+|错误码|含义|
+|---|---|
+|400331|非法参数|
+|500005|数据查询内部出错|

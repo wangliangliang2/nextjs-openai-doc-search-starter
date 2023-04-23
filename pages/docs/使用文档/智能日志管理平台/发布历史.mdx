@@ -1,0 +1,859 @@
+# v1.6.0（2021/04/09）
+**feature**
+1. 支持通过WEB页面上传插件
+2. smartelf升级mysql驱动包并增加相关连接配置项
+3. smartelf接口超时问题优化：
+    (1).下发按钮及机器运行状态页面请求超时
+    (2).流量统计页面接口响应超时
+4. 版本相关：
+    (1).smartelf增加版本号管理
+    (2).smartelf页面上的agent版本支持动态变更
+5. 采集相关：
+    (1).支持采集7.x版本的elasticsearch
+    (2).当采集包含目录压缩的zip文件时，tailx只采集非目录文件
+6. 解析相关：
+    (1).升级syslog第三方解析包
+    (2).syslog rfc3164解析支持月份大小写格式
+    (3).支持csv/keyvalue解析时不拆分引号内数据
+
+**bug fix**
+1. smartelf相关问题修复：
+    (1).修复smartelf预览数据乱码导致后续任务无法下发问题
+    (2).修复smartelf_logintokens表缺少主键导致无法登陆问题
+    (3).修复smartelf clean job会因为删除列过多导致删除失败问题
+    (4).修复机器管理页面不显示创建机器后根据tag下发的采集任务问题
+2. 前端相关问题修复：
+    (1).修复csv表单样式重叠问题
+    (2).修复收集器下发机器页面回显展示不对问题
+    (3).修复在数据解析的流程中，选择csv解析，前后端解析不一致问题
+    (4).修复添加lumberjack采集器的时候，key_ciphersuites键的值默认不为空字符串问题
+3. 插件升级相关问题修复：
+    (1).修复提示文件忙而升级失败问题
+    (2).修复插件升级时，无法多选的问题
+4. 转换器相关问题修复：   
+    (1).修复transform错误校验的问题，如：replace,concat
+    (2).修复transform配置默认ip库后无法下发采集任务问题
+5. 采集相关问题修复：     
+    (1).修复dir，dirx模式无法读取已经读完的文件问题；
+    (2).修复发送失败时，拆分数据块大小不正确问题
+    (3).修复keyvalue解析会panic导致agent退出问题
+    (4).修复tailx采集会panic退出问题
+    (5).修复logkit创建backup文件过多导致系统卡死问题
+
+
+
+ -----
+
+# v1.5.7（2021/01/21）
+**feature**
+1. 新增智能日志平台仓库归档数据源
+2. logkit客户端支持插件升级
+3. 文件数据源支持自定义换行符
+4. 增加打印panic堆栈信息
+5. 客户端发送请求支持HTTPS
+6. Simplemysql 插件支持时区设置
+7. 支持Runner分发任务失败后状态显示异常
+8. Smartelf相关：(1)支持自动清理mysql数据库过期数据；(2)支持多节点开启csrf校验；(3)插件升级页面，加入刷新按钮；(4)使用数据库内的download_url升级agent；
+9. Kafka数据源：(1)kafka驱动包升级为Shopify/sarama；(2)支持SASL认证模式设置
+10. Java agent相关：(1)采集到的数据json串中增加agent所在机器IP；(2)java agent支持批量管理，状态上报
+
+**bug fix**
+1. 修复sls、kafka数据源页面获取数据会导致任务下发到logkit后无法执行问题
+2. 修复收集器删除之后30s之内重新分发运行信息页面待读取显示为空问题
+3. 修复收集器分发提示问题及没有刷新页面问题
+4. 修复runner重置reader重复启动问题
+5. 修复插件问题：(1)mysql，db2使用递增列采集数据报type is invalid错；(2)修复oracle zoneOffset配置导致采集到的数据会有延时；(3)oracle reader在预览的时候，时区问题导致读取的数据不对；(4)下发任务时拉取的插件版本不是最新的
+
+
+
+ -----
+
+# v1.5.6（2020/11/27）
+**feature**
+1. 新增执行脚本超时时间配置项
+2. 插件读取器支持获取样例数据时自动下载插件
+3. 机器管理的收集器页面，前端增加运行状态过滤
+4. 发布历史，按时间顺序展示
+5. 增加 logkit 插件执行时间日志
+6. logkit mongo过滤条件中增加对objectId的转化
+7. syslog severity/facility 对应到相应的字段，保留原始字段。解析器/转换器
+8. logkit script脚本支持二进制文件
+9. windows的oracle sender发送支持
+10. date没有年份时候自动加入年份时，对比当前时间
+11. logkit runner级别添加recover防止单个runner panic导致agent离线
+12. logkit golang版本回退到1.10，支持win servce 2003/2008 32位系统
+
+**bug fix**
+smartelf:
+1. 修复机器页面按时间/disk_size排序异常问题
+2. 修复发布管理页面发布历史，展示异常，发布管理页面上传安装包不能覆盖原有的安装包问题
+3. 修复分发采集任务时，不选任何一项无法进行分发问题
+4. 修复登陆失败返回401的时候，没有进行错误提醒，而是直接刷新问题
+5. 修复配置采集器页面上的date transform无法选择或填写时间问题
+6. 修复分发任务时，选择重新分发，点击确定后，选定消失了问题
+7. 修复机器页面显示可升级，点击升级后显示成功，但agent实际没有升级问题
+8. 修复机器运行状态页面kafka待读取显示不对问题
+9. 修复关闭全局监控之后，然后新加入的机器，单独开启当前机器的监控的时候，报错问题
+
+logkit:
+11. 修复script transformer页面上会报文件不存在错误问题
+12. 修复日志内容中发送的host内容异常问题
+13. 修复windows安装，不同账户启动多个logkit进程问题
+14. 修复日志中因为插件目录过深，无法计算磁盘大小问题
+15. 修复java agent行merge支持最大1M的数据，超过会丢失，spool数据丢失问题
+16. 修复采集相关问题：(1)dir模式下，采集实时数据read same inode设置为true无效;(2)tailx在windows机器上会延迟采集;(3)mysql采集配置了递增列后，日志报sql语句错误;(4)reader某些选项默认值不为字符串，无法下发采集任务;(5)解析Key value时，空值出错
+17. 修复插件相关问题：(1)oracle sender, 发送时间字段类型失败或者停止、删除runner时，造成logkit离线问题;(2)同时下发多个oracle sender采集任务，agent会离线;(3)插件配置的环境变量为相对路径，导致在预览的时候无法启动oracle，日志显示启动EOF;(4)停止采集任务后simplemysql插件子进程不会停止;
+
+
+
+ -----
+
+# v1.5.5（2020/09/21）
+**feature**
+1. 支持kafka发送/读取填写topic时，点击获取topic列表
+2. 读取/发送 smartelf端做成可插拔
+3. 机器休眠原因/时间上报到服务端	
+4. close wmi read chan
+5. logkit tailx 支持同时采集多个路径模式串
+6. 发布历史，按时间顺序展示
+
+**bugfix**
+1. 修复smartelf agent，删除plugins之后，如果不重启agent，会导致发现不了 plugins目录报错问题
+2. 修复smartelf发布历史，展示异常问题
+3. 修复smartelf 页面上传安装包不能覆盖原有的安装包问题
+4. 修复windows安装，不同账户启动多个logkit进程问题
+5. 修复mssql采集时拼接增量字段时SQL执行异常问题
+6. 修复dirx模式windows采集报错问题
+7. 修复页面syslog转换出错问题
+8. 修复logkit解析syslog日志时panic退出问题
+9. 修复bugfix-cmdb同步后出现标签丢失问题
+10. 修复logkit rfc3164解析错误，无法正确解析换行问题
+11. 修复logkit tracing采集报错，无法下发任务问题
+12. 修复cookie过期返回401，而不是200报错，会导致前端判断白屏问题
+
+
+
+-----
+
+# v1.5.4（2020/08/17）
+1. 新增时间差转换器
+2. 添加mysql插件，支持延迟读取
+3. 机器监控发送失败默认丢弃发送失败的数据
+4. aws s3 sender (1) 解析文件名模式匹配时发生错误，"pm"解析为"am"	的问题 (2) 设置为required的字段为空则丢弃
+5. 修复head_pattern设置之后发送数据到2.0部分成功部分失败时可能会panic的问题
+6. 设置非第一次安装机器时，机器管理页面网卡设置会异常的问题
+7. 修复windows可能不产生日志文件的问题
+8. 发送失败丢弃时，尝试8次(共8分钟多)再丢弃，sleep时间太长可能导致积压，改为4次(共30秒)
+9. 修复nginx解析重复上传nginx文件出错问题
+10. 修复机器监控收集自带的字段 localip 和 心跳上报的ip不一致的问题
+11. 支持小版本发布，例如 v1.5.4.1
+12. 对接 pandora http认证时，机器监控自动创建http监听时指定仓库和来源类型
+
+ 
+
+-----
+
+# v1.5.3（2020/07/23）
+1. 流量统计：字节、秒分开展示
+2. 机器管理页面批量添加标签变换接口，避免出错，更新时间较长时，页面增加等待状态
+3. 概览/admin管理页面展示休眠机器数量
+4. suse系统中 (1) root用户支持开启自启动  (2) 修复suse 32位无法下载正确安装包无法安装的问题 
+5. db2 功能改进
+6. 支持单行数据过大时处理，读取时超过设置最大长度实时丢弃 
+7. 休眠之后主动释放内存，停止上报任务状态 
+8. 阻塞式发送，单条过大导致发送失败逻辑修改，减少内存占用
+9. 插件日志打到统一位置 ./logs 目录下
+10. windows升级时支持更新start.bat和stop.bat 
+11. windows启动时检查是否有计划任务，如果有，则去除注册表和快捷方式启动项方式
+12. kafka 发送器支持sasl认证
+13. syslog解析 rfc3164 失败修复
+14. 修复meta文件夹因为文件配置问题导致错乱之后的一些异常情况
+15. 修复kafka ticker可能会panic的问题
+16. 修复pandora http全部发送失败时没有重复发送，并且修改配置默认值
+17. 修复supervisor收集时感应不到实时变化的问题
+18. 解析时去除首位空格，和最初保持一直（例如ngnix）
+
+ 
+
+-----
+
+# v1.5.2（2020/06/05）
+1. logkit自身日志支持设置rotate大小
+2. kafka读取支持2.3.0.0/2.4.0.0/2.5.0.0
+3. 文本读取修复 utf16le /  utf16BE 编码支持
+4. 修复label 转换器无法添加问题
+5. oracle/pandora http 发送错误打印输出修改
+6. s3 发送器无法发送修复
+7. s3 发送器支持snappy gzip 压缩，schema输入改为文本输入
+8. 修复网卡设置下拉框问题
+ 
+
+-----
+
+# v1.5.1（2020/05/19）
+1. 增加aliyun rds读取源
+2. 支持导出到 s3
+3. mysql读取支持定时全量采集
+4. aliyun sls读取支持consumer group
+5. oracle支持提取指定时间范围的数据
+6. Lumberjack 支持密码套件和tls版本选择
+7. syslog rfc3164 时间解析修复
+8. 修复oracle采集器在没有权限情况下oracle子进程会僵死
+9. 修复在某些情况下获取收集器状态卡住的问题，可能导致收集器重新分发
+10. 页面修复列表请求报错后页面异常
+11. 页面修复版本不匹配时报错
+12. 修复标签为空时，下发收集器到标签报错的问题
+13. 修复增加机器不分发的问题
+
+
+-----
+
+# v1.5.0（2020/04/20）
+1. 支持用户级别的限制logkit的内存/磁盘使用
+2. s3读取支持配置自定义终端节点地址 endpoint
+3. windows系统日志采集支持根据时间event_id进行过滤，支持设置每个事件单次采集数据量(read_size)，设置采集间隔
+4. 支持extract转换器
+5. 支持oracle发送器
+6. 监控性能收集中procstat支持监控logkit自身进程(仅限linux)
+7. mongodb数据源支持导出全量数据
+8. discard/replace/rename/trim/substring转换器性能优化
+9. pandora http默认支持发送所有字段数据，不需要手动填写发送的字段，优化pandora http发送器
+10. 机器监控默认修改为发送失败尝试重发，重发一定次数后丢弃数据
+11. 机器分发弹窗支持选择显示机器名称或机器IP
+12. logkit在windows支持不登录账号自动启动
+13. 页面搜索收集器/机器支持搜索多个/正则搜索
+14. ip数据库路径支持默认IP库 
+15. 修复收集器reader、parser的显示问题 
+16. 修复 syslog datasource 错乱的问题
+17. 修复 dirx 预览数据报文件不存在问题 
+18. 修复 mysql 起始时间格式不对时报错，mysql id转换出错问题
+19. 修复发送失败重发时可能存在的问题
+20. 修复拿不到父账号uid时报错问题
+21. 修改job超时文案
+
+
+-----
+
+
+
+
+# v1.4.0（2020/03/03）
+1. 支持一键休眠、唤醒、卸载。https://developer.qiniu.io/insight/manual/6448/sleep-and-wake-up
+3. keyvalue 解析器/转换器支持下一个key以前的值都为value
+4. csv 解析器/转换器支持文件首行字段识别为key
+5. http 发送器支持html特殊字符不转义
+6. mysql查询支持where
+8. dirx 读取替换glob实现方式，路径支持 ** ? 等方式
+9. dirx 读取支持cleaner
+10. Tracing Collector 读取支持队列设置。https://developer.qiniu.io/insight/manual/5036/tracing-reader
+11. 增加 pandora 2.0 http发送。 https://developer.qiniu.io/insight/manual/6653/pandora-http-sender
+12. windows ad域支持采集时间/采集条数可配，并且支持获取待读取的数据
+13. 增加不获取收集器状态的心跳，防止获取收集器状态有问题时导致服务端显示离线，实际在线的问题
+14. 支持设置单条数据最大值，在采集器最后一步的高级选项中进行配置，默认值为0表示不限制
+15. 精简读取/解析/转换/发送日志，防止极端情况下日志过多问题
+16. 支持阻塞式发送，不使用任何队列
+17. 发送中丢弃发送失败数据行为变为，尝试发送10次，如果失败则丢弃，每次发送间隔指数增加，时间间隔最大不超过5分钟
+18. oracle 修复使用递增的时间字段后，长时间没有数据写入搜索时间范围异常，修复搜索语句可以使用where。https://developer.qiniu.io/insight/manual/6470/oracle-reader
+19. 修复dirx在windows中冒号不能作为文件名导致创建meta失败
+20. tailx控制文件句柄，防止出现占用句柄数过多的情况，修复停止过慢问题
+21. 修复句柄数受到一定限制情况下，使用tailx追踪文件，超出句柄时导致日志rotate创建新的日志文件失败。旧的策略是写到标准输出，会导致nohup.out过大，日志删除不检测nohup.out，占用磁盘空间过大。修改之后变为创建新文件失败，原文件logkit.log继续使用并且清空重头写
+22. 修复windows下日志rotate失败的问题
+23. 修复s3返回内容为空时获取数据的问题
+24. windows start.bat文件修改，避免报错
+25. 修复分发收集器到机器，可能导致重新采集的问题
+26. 待读取中若后端返回到单位不是bytes时，使用返回的单位，不进行转换，以实际单位为准
+27. 修复流量统计读取条数始终为0的问题
+28. 修复机器安装时某些情况下下载失败的问题
+29. 修复前端agent显示版本问题和升级弹框消失问题
+30. 修复前端页面设置资源后不更新问题
+
+
+-----
+
+
+
+# v1.3.3（2019/12/23）
+1. 增加influxdb解析器
+2. sqlserver支持自动解析uniqueidentifier 类型的字段，转化为string
+3. concat转换器支持连接符
+4. ip agent转换支持mmdb格式
+5. 收集器另存为不自带后缀_1
+6. mysql修复连接问题，增加可选参数支持 oldpassords 等
+7. tailx修复inode 变化时没有重置元数据，导致读取延迟的问题
+8. http 发送器中分隔符为非必填项
+9. 后端自动trim空格，修复填写数据时多出空格出错的情况
+10. windows ad 修复重启之后域账户读取到很少量数据的问题，修复读取一段时间之后不读取数据的问题
+11. oracle采集器不强制转换为大写
+12. 修复windows卸载失败的问题
+13. 修复安装时指定网卡后，页面上网卡信息不对应的问题
+14. 修复页面切换网卡之后，发送的数据中自带网卡信息不改变的问题
+15. 新权限时获取不到全量资源组问题修复
+16. 修复windows安装时在某些操作系统上可能会报语法错误的问题
+17. 修复添加机器到标签、添加标签到机器、分发标签/机器到收集器可能不生效的问题
+18. 修复安全信息采集LinuxLog的message日志可能会重复采集的问题
+19. 修复数据大于2M分割发送时，如果有非英文字符，可能切割失败，导致一直重发失败
+
+
+-----
+
+
+
+# v1.3.2（2019/11/14）
+1. 机器安装页面支持选择是否开机自启动
+2. 机器安装页面选择标签进行安装，支持自动分发该标签上的收集器
+3. 收集器支持自定义内置字段前缀
+4. 禁止连续点击登录按钮
+5. 支持全局修改默认磁盘大小
+6. json转换器支持提取出一层，支持丢弃原始字段
+7. logkit s3 和 cloudtrail 元数据目录生成逻辑支持不依赖ak/sk
+8. scripts reader 参数分隔符可配置，去除创建时执行一次进行检查的逻辑，以支持有状态的脚本执行
+9. tailx支持日志文件inode不变，直接覆盖写
+10. syslog解析器中timestamp支持选择时区偏移量
+11. datamask 转换器自定义时固定以8位*掩盖，防止泄漏位数
+12. oracle支持不同类型时间格式，具体为: DATE，TIMESTAMP，TIMESTAMP WITH TIME ZONE，TIMESTAMP WITH LOCAL TIME ZONE 类型
+13. Oracle对于query大小写兼容
+14. 修复oracle中文乱码问题
+15. 修复新建收集器时，收集器名字多了后缀_1导致无法分发的问题
+16. 修复vcenter采集虚拟机消耗资源过大的问题
+17. tailx 修复状态切换可能导致的资源占用过高问题
+18. 修复ngnix解析时正则中有大小字母或者数字时解析出错的问题
+19. 修复pandora发送时遇到空字符可能会意外退出的问题
+
+
+-----
+
+
+
+# v1.3.1（2019/10/12）
+1. 数据收集页面和子页面支持批量 停止/启动/重置 收集器
+2. 机器管理中支持对每台机器批量 停止/启动/重置 收集器
+3.  ip变化上报，网卡选择base64加密(vbs不支持中文) 并且网卡支持变更
+4. vbs不需要admin权限
+5. 单独开启机器监控时允许在页面上查看机器监控信息
+6. 根据是否为父账号决定是否添加repos、pipeline等权限验证
+7. 编辑监控类型收集器时, 不允许修改收集器名称, 支持另存为
+8. cloudtrail lastkey 可配置
+9. 支持kafka 2.3.0.0
+10. 进程状态获取支持获取supervisor和非supervisor非运行状态
+11. 监控收集器支持一键开启
+12. 监控收集器增加/编辑时，点击下一步会自动校验必填项是否已填
+13. 修复oracle泄漏问题
+14. 修复dir模式中文件时间一致时导致漏读取数据的问题
+15. AES解密非法密文的异常处理修复
+16. Hdfs数据源获取出错修复
+17. 修复概览页运行中runner统计出错
+18. 修复单独开启机器监控时，全局关闭之后单独开启的机器监控可能也会关闭
+19. 机器监控被删除修复
+20. agent发布mongo更新记录字段问题修复
+21. 修改更新收集器、机器列表状态时不更新url的问题
+22. 修复强制删除收集器后不刷新的问题
+
+
+-----
+
+
+
+# v1.3.0（2019/08/20）
+1. 安装机器时支持收集指定网卡信息
+2. win7/8 支持开机自启动功能
+4. 支持 rsa解密 转换器
+5. 支持 aes解密 转换器
+6. 支持 flattern 转换器，将数组拉平
+7. metric vsphere 页面支持拉选要收集/不要收集的数据
+8. rename 转换器的key不做格式限制
+9. open-falcon 支持过滤 tag，支持发送时key中自定义 prefix
+10. oracle 支持指定 timeKey
+11. 修复 oracle 连接泄漏问题
+12. 修复 oracle 读取不到数据的问题
+13. 修复 mssql 停止/运行时可能造成机器离线的问题
+14. 修复 mssql 读取报错：找不到存储过程的问题
+15. xml 转换器展开时，如果key相同，支持自动重命名
+16. 修复 grok 解析器/转换器以双引号结尾时，自动去掉双引号的问题
+17. 修复 kafka(0.8及以前版本) 读取时offset记录的问题，并且关闭时会刷新offset
+18. 修复 tailx/dirx 不能及时释放已删除文件的 fd
+19. 修复收集器 另存为 报错
+20. 修复机器监控隐藏时，刷新按钮也隐藏的问题
+21. 采集监控信息时，发送器必填项没填时, 不允许点击下一步
+22. 修复预置配置排序问题 
+23. 修复流量统计页面都为0的问题
+
+
+-----
+
+
+
+# v1.2.9（2019/07/24）
+1. 增加 linuxaudit 转换器
+2. 增加 syslog 转换器，syslog 解析器/转换器中增加额外的时间格式
+3. 增加 userinfo 转换器，根据uid填充username和home目录
+4. keyvalue 转换器支持删除/保留原始字段
+5. S3 (cloudtrail) 支持 cn-northwest-1
+6. 支持发送得到 open-falcon
+7. 收集器中可以配置是否采集 lst 字段：记录读取时间(lst)
+8. dir 模式支持同一个文件的inode不固定，根据文件名进行读取
+9. agent管理中采集自身日志使用dir模式，从而修复同时开启agent收集日志和删除日志时，不能及时删除日志
+10. 机器监控支持发送失败时，指定机器磁盘使用总大小
+11. 修复编辑收集器时，如果发送到非pandora平台，编辑报错的问题
+12. 修复新权限时，开启/关闭日志管理功能报错
+13. 分发收集器，选择机器时，增加全选
+14. 修复编辑收集器之后，选择另存为会报错问题
+
+
+-----
+
+
+
+# v1.2.8（2019/06/20）
+1. 增加http方式读取数据
+2. 安全采集中的字段src_port和dst_port类型从string变为float
+3. 增加解码转换器
+4. csv解析器增加csv_contain_splitter_key字段：默认为空，填写字段名后则当前字段可以包含分隔符
+5. 收集器中可以配置是否采集 lst 字段：记录读取时间(lst)
+6. tailx 日志优化
+7. S3 (cloudtrail) 优化cpu占用率过高的问题
+8. winlog 优化cpu占用率过高的问题
+9. 修复另存为时状态不被清空问题
+10. 修复点击postgres等具有password input元素的属性出错问题
+11. 限制日志仓库、实时仓库、bucket名称不能出现大写字母
+12. 修复readspeed取值字段
+13. ie 兼容修复
+14. 增加安全收集器（预置模版）
+
+
+-----
+
+
+
+# v1.2.7（2019/04/25）
+1. 支持 hbase reader采集
+2. 支持 hbase sender采集
+3. 支持 vsphere metric采集
+4. 支持 tomcat metric采集
+5. 安全采集中支持采集登录记录、最后一次用户登录记录、当前登录记录
+6. 修复kafka reader删除/停止以后没有leave group导致读取不到数据
+7. 修复页面获取数据较慢的问题
+8. 修复mysql中sql语句不为空时，logkit重启会重新读取数据
+9. 修复使用ssh批量安装时超时出错
+
+
+-----
+
+
+
+# v1.2.6（2019/03/29）
+
+1. 增加单个机器监控的开启和关闭
+2. 增加机器agent卸载功能
+3. 增加编码转换校验
+4. 搜索agent支持通过tag搜索
+5. 支持 Tomcat metric采集
+6. 支持本地/远程 ipmi 采集
+7. 修复windows事件日志采集 event_id 的类型
+8. kafka 读取的版本支持 2.0.0.0/2.0.1.0/2.1.0.0/2.2.0.0 等
+9. 支持aws access日志解析
+10. 机器监控默认收集进程信息
+11. 修复syslog 解析的统计问题
+12. mysql 读取支持timestamp时间戳作为增量读取，支持字符串作为时间戳列名称，
+13. mysql 支持timestamp/date/datetime转换成日志分析时间格式
+14. tailx支持定时读取功能
+15. xml 转换支持去掉attribute元素信息
+16. 默认发送到pandora的嵌套类型改为jsonstring
+17. 增加秘钥属性，输入密码时前端显示 * 号
+18. 快速体验发送失败修复
+19. redis 读取时部分修改为选填项
+20. 支持 httpd 日志解析
+21. 文本文件读取时(fileauto/file/tailx/dir/dirx),支持自动生成head_pattern
+
+
+-----
+
+
+
+# v1.2.5 (2019/02/28)
+
+1. file reader中增加 encode 字段，记录读取数据的编码方式
+2. 增加[concat transformer](/insight/manual/5711/concat)，可以将2个字段拼接成1个字段
+3. [keyvalue](/insight/manual/5682/key-value-transform) 转换支持保留原始字段
+4. [fileauto、tailx或dirx 模式](/insight/manual/4751/file-reader)支持读取 `.gz`、`.zip`、`tar`、`.tar.gz` 后缀的压缩文件。
+5. [tailx、dirx模式](/insight/manual/4751/file-reader)支持在设定的文件过期(expire) 时间后自动删除文件的功能。
+6. [csv](/insight/manual/4760/csv-parser)的解析方式支持一种简写方式，同时定义多个key的类型，用竖线分隔。
+7. 新安装的windows agent，增加了windows开机自动启动功能(若要使用该功能，需要重新安装，在界面上点击升级无法获得该功能)。
+8. 增加[交换机日志](/insight/manual/5683/firewall-log)解析和转换，目前可以解析cisco,shorewall,susefirewall2 等三类防火墙日志。
+9. 前端界面增加了复制一条转换规则的能力，方便转换器填写。
+10. 增加了插件模式，目前提供了 [DB2](/insight/manual/5713/db2-data-acquisition)和[Oracle]()的插件读取，使用方式与正常数据源读取相同，会在运行时下载插件。
+11. lumberjack reader 增加字符编码功能，可以选择字符编码方式自动转为UTF-8
+12. 修复dirx中可能存在的无法关闭导致线程泄露的问题
+13. 修复windows环境中采集机器监控信息可能存在的panic问题
+14. 修复mysql 读取时没有填sql语句但是填了offset导致panic的问题
+15. 前端修复转换器配置有错不显示的问题
+16. 前端收集器中若有必填项未填，则自动展开高级选项。
+17. 前端界面上传配置文件时，自动更新 `pandora_host`和`pandora_logdb_host`
+18. 大量前端体验优化
+
+
+
+-----
+
+
+
+# v1.2.4 (2019/01/24)
+
+1. 增加离线agent满30天自动清理功能
+2. 增加 copy transformer，可以复制一个字段的内容
+3. 增加timestamp transformer，可以将date类型的数据转为long类型
+4. 支持  windows 2003/2008 CPU的收集
+5. 对no data recieved 等报错给出更详细的描述
+6. script reader支持直接填写脚本参数/内容
+7. 修复尝试发送页面即使发送失败也会显示成功的问题
+8. 增加了Redhat、CentOS 机器下 /var/log/audit/ 日志的解析
+9. 修改es读取根据不同时间渲染的方式，改为类似mysql的魔法变量模式
+10. 修复kafka在某种情况下rebalance可能导致topic的某些Partition不消费的问题
+11. 增加收集logkit自身日志功能
+12. 部分前端体验优化
+
+
+-----
+
+
+
+# v1.2.3 (2018/12/27)
+
+
+1. 允许收集器和tag解绑，以此可用于批量取消分发的收集器
+2. 机器列表文件夹图标下可以看到confs监听的runner数量
+3. 前端页面支持IE9
+4. 支持查看具体tag的统计信息，以tag列表的形式展示流量信息
+5. 机器列表增加按照tag过滤
+6. nginx parser在上传nginx配置文件后会初始化一个format格式
+7. 导航条屏幕宽度自适应
+8. 收集器支持上传和导出功能
+9. 修复mongo 使用cron读取存在的panic问题
+10. 优化无读取时logkit的CPU基础负载到0.5%以内，默认情况下不再开启磁盘限流
+11. 在date transformer转换时，自动将格式中逗号(,)替换成句号(.)
+12. csv parser在分割后自动去除数据前后多余的空格
+13. 在kafka reader中增加 maxprocessing选项，可用于调优从kafka中读取数据的超时时间
+14. 增加url convert transformer，可以对url编解码(decode和encode )
+15. xml transformer转换增加选项，解析后字段可以设置为全string，同时可以将字段展开到对外层。
+16. 修复es reader打开句柄泄露的问题
+17. sender中允许指定并发数量
+18. 增加了发送成功后同步meta文件的频率控制，负数为结束时同步，0和1为每次同步，大于1则是表示发送成功多少次后同步
+19. 修复kafka reader lag统计错误
+20. 修复kafka reader 同步offset数据可能存在遗漏的问题
+21. 允许发送原始字符串到下游，目前只有kafka sender支持，大大加快发送速度，优化性能
+22. 发送到es的时间字段从 `sendTime` 改为 `_time`
+23. 增加tracker对象，开启debug日志后可以看到各个阶段消耗的时间
+24. 修复errorlist打印多余错误日志的问题
+25. postgres支持根据时间搜索，同时在内存中去重
+26. 增加runner的audit文件，可以审计发送的数据量。
+27. confs监听目录中的runner可以启动停止
+28. 增加 docker 容器监控信息采集
+29. 修复tailx和dirx指定读取文件的编码方式不生效的问题
+30. 在filter transformer中增加正选功能
+31. 去除了pandora发送中导出到tsdb的选项
+32. 将es reader中的type选项设置为高级选项，可以默认不填
+33. 修复 http 和 socket 类型采集器启动时，端口冲突的问题
+34. 修复 pinpoint 和 skywalking 采集器的默认端口显示问题
+
+
+
+
+-----
+
+
+
+# v1.2.2 (2018/11/23)
+
+1. dir/dirx数据源支持再次读取已经读完（相同inode）的文件
+2. tailx/dirx的newest改为只有在读取存量数据时有效，dirx的dataSourceTag支持具体到文件（之前是文件夹）
+3. postgres支持timestamp
+4. json、logfmt解析增加保留原始字段功能
+5. 新增定长字段提取、过滤字段转换器
+6. 发送到文件支持划分原始数据发送到多个文件，支持发送raw字段字符串到文件
+8. 监控信息采集中增加net_hw_addr字段用于区分是否为虚拟网卡
+9. tracing将部分出错信息返回
+10. 读取/发送条数、速率改为整型展示
+11. 修复发送到pandora平台非backup_only时，在某些情况下可能会一直重发导致统计数据不准的问题
+12. 修复dirx/tailx文件过多时，尝试获取数据可能会导致程序崩溃的问题
+13. 修复winlog读取时，出现RPC server is too busy to complete this operation错误时，windows句柄猛增的问题
+14. 部分转换器支持多线程
+
+
+
+-----
+
+
+
+# v1.2.1 (2018/11/01)
+
+1. 新增VMware VSphere metric和eventlog读取功能
+2. 新增HDFS数据读取功能
+3. 支持Kafka 2.0版本数据读取
+4. tracing支持 Skywalking插件
+5. 支持服务端修改agent对机器CPU总的使用率
+6. windows event日志的部分字段修改为map类型
+7. 发送到pandora增加请求超时时间设置，可以不超时，解决因为超时导致数据重复的问题
+8. 用go的runtime.MAXPROCS 替代sender的并发数设置，去掉了 ft_procs 选项
+9. 修复了读取测试数据在10行以内时拿不到数据的问题
+10. 修复了发送到kafka实际没有错误但是报错的问题
+11. 修复了部分时间类型由于使用了time.Time而不是RFC3339导致的发送失败问题
+12. 修复了在32位机器上写数据到本地文件会导致程序崩溃的问题
+
+
+-----
+
+
+# v1.2.0 (2018/10/24)
+
+1. 服务端支持多行读取，新版本agent默认读取10行，老版本依旧1行
+2. 服务端支持保留机器监控修改的仓库名称
+3. tracing功能支持不写ak、sk（agent需要更新至v1.2.0）
+4. transformer前端支持拖动修改顺序
+5. tranformer支持某个失败不影响其他的继续执行（需升级至v1.2.0）
+6. 前端增加个人中心和秘钥管理
+7. 收集器配置支持表单填写和界面选择同步
+8. 前端支持跳转到智能日志平台的仓库直接查询
+9. 发送到智能日志平台设置分词更人性化
+10. 修复一些新增的transformer和parser在服务端解析转换出错的问题
+11. 新增发送到mysql功能
+12. 新增sqlfile(mysql数据的文件导出)功能
+13. 新增csv格式的文件打印功能
+14. 修复dir模式lag统计没有过滤掉不符合模式的文件的问题
+15. useragent Transformer支持多核
+16. 修复xml解析可能导致进程出错的问题
+17. 修复安全信息采集在windows下运行可能导致进程出错的问题
+18. 修复agent在手动重启后可能导致机器监控数据收集出错的问题
+19. 识别prometheus的exporter自带的时间戳为date类型
+
+
+-----
+
+
+# v1.1.1 (2018/9/27)
+
+1. runner增加历史错误提示
+2. 优化按钮、文件字体、文案，提升用户体验
+3. label transformer不用select，用input
+3. “另存为”功能直接在收集器右侧即可操作，更方便使用
+4. 新增[Oracle数据同步和监控功能](/insight/manual/5132/oracle-scene)场景实践
+5. 新增[lumberjack 数据源](/insight/manual/5142/lumberjack)，支持AIX机器日志采集
+6. 新增[安全数据采集功能](/insight/manual/5139/the-host-information-collection)，支持SIEM
+7. 发送给云存储(kodo)支持自定义环境地址、支持默认日志目录
+8. 支持[runner能延时](/insight/manual/5155/acquisition-task-overall-configuration-runner)等待reader关闭的参数(作为高级功能，暂时还不支持前端配置)
+9. [http sender](/insight/manual/4804/http-sender)增加 raw发送协议，可以把读取的原始数据当作body发送
+10. [kafka sender](/insight/manual/4802/kafka-sender)增加 lz4压缩模式，选择gzip压缩模式时增加压缩级别选择
+11. 修复了一些特殊场景下的问题
+
+
+-----
+
+
+# v1.0.4 (2018/09/13)
+
+1. 首栏增加<智能日志管理平台>跳转链接
+2. 增加用户“概览”首页，可以查看logkit-pro的整体情况
+3. 支持子账号登录使用，无需单独申请权限
+4. 限制删除有运行着runner的收集器，增加强制删除提示
+5. [pick transformer](/insight/manual/4808/pick-transformer) 前端支持字段多选
+6. 修复[grok划词](/insight/manual/4759/grok-parser)末尾多换行的问题
+7. [Elasticsearch Sender](/insight/manual/4799/es-sender)支持`gzip`压缩发送、支持用户密码、反馈发送错误、支持数据部分发送成功、修复部分配置错误。
+8. 发送端支持丢弃发送错误数据的选项
+9. 所有的解析器都支持了保留原始数据的功能，原始数据会保存在 `raw_data` 字段
+10. tracing读取支持[pinpoint Span和SpanChunk](/insight/manual/5054/all-link-track-profile)
+11. 新增 [windows wmi 读取](https://developer.qiniu.com/insight/manual/5058/reading-windows-from-the-wmi-interface-system-information)，支持通过wmi协议读取windows eventlog等信息
+12. 增加了从机器的环境变量读取隐私信息的功能，如密码、sk等，避免隐私信息存在配置文件中
+13. Kafka 发送如果数据过大会二分发送
+14. 收集器编辑支持“另存为”功能，快速复制收集器配置。
+15. 修复了pandora sender统计信息"发送数据成功/失败条数"可能不准确的问题；pandora sender有别名时，如果发送出错，下一次发送时会发送空数据的问题。
+
+
+-----
+
+
+
+# v1.0.3 (hotfix)
+
+1. 修复 v1.0.2 引入的在用户的runner，如果使用IP Transformer，字段中带有`.`号时，使用本地解析不兼容的情况。
+2. 修复 mysql 和 postgresql 读取的数据中，如果一条记录中，部分整型和浮点型字段存在null的情况会导致整条记录都被过滤的问题。
+
+如果您使用了上述功能，请升级
+
+
+-----
+
+
+
+# v1.0.2 (2018/09/04)
+
+1. 新增[tracing reader](https://developer.qiniu.com/insight/manual/5036/tracing-reader): logkit支持读取 jaeger和zipkin client打过来的tracing日志。
+2. 新增[winlog reader](https://developer.qiniu.com/insight/manual/5038/winlog-data-source): 支持收集windows下的系统日志（windows event log）数据。
+3. 新增[logfmt parser](https://developer.qiniu.com/insight/manual/5059/logfmt-format-log), 可以直接解析logfmt格式的日志。
+4. 新增[thinkphp5 parser](https://developer.qiniu.com/insight/manual/5060/thinkphp5-log)，可以直接解析 thinkphp5 格式的日志。
+5. 尝试获取数据现在只显示64Kb数据，防止前端页面崩溃。
+6. [grok parser](https://developer.qiniu.com/insight/manual/4917/grok-transformer) 划词体验改善，欢迎使用grok划词解决您的数据解析问题。
+7. 支持发送到kodo、导出到kodo时直接设置文件尾低频存储的文件。
+8. 所有配置模块增加文档链接。
+9. 所有parser添加多线程能力，会根据logkit全局使用的进程数控制，大大提高解析性能。
+10. [Socket reader](https://developer.qiniu.com/insight/manual/4770/socket-reader) 增加一种按json读取的能力，现在支持按包、按行和按json格式三种。
+11. logkit pandora sender中自动创建的工作流和仓库增加了描述信息
+12. [ip Transformer](https://developer.qiniu.com/insight/manual/4786/ip-transformer) 支持使用服务端解析，不再需要用户自己有IP库。
+13. 增加了选项，磁盘队列单个文件的大小和单条数据大小可以控制。
+
+-----
+
+
+# v1.0.1
+
+1. 支持[数据脱敏](/insight/manual/4962/datamask-converter)
+2. 选择获取样例数据的agent支持搜索
+3. 服务端支持展示非服务端下发的runner运行情况（主要用户支持老的logkit用户迁移到logkit-pro的场景）
+4. agent本地增加了 `/logkit/status` 接口支持，与开源版logkit一致
+5. 支持 [nginx 解析方式](/insight/manual/4758/nginx-parser)
+6. 服务端支持查看历史错误信息
+7. 服务端添加收集器完毕后，会询问是否直接分发到获取数据的agent
+8. 机器列表每页显示15条，并修正样式。
+9. 增加了[prometheus 监控节点读取](https://developer.qiniu.com/insight/manual/4961/prometheus-monitoring)的功能，适配了所有prometheus的监控节点，支持包括各类数据库、中间件、硬件设备在内的上百种监控。
+10. influxdb sender在 host 没有写 http 协议头时自动添加
+11. 重构了 qiniu log parser，使得其更灵活的适配七牛的日志库。
+12. 增加 influxdb 忽略超出 retention 数据的选项，修复了一旦有数据点超出retention再也无法恢复的问题
+13. 增加Mssql和Postgres schema选项，支持自定义架构
+14. 修复允许多个runner名字相同的问题，现在会禁止同名runner启动
+15. 修复某些场景下mysql 读取无法读到数据的问题
+16. 导出到kodo的分片策略设置时间和大小值，修复了把服务端配置改为默认值的问题
+
+-----
+
+# v0.3.1
+
+1. agent启动时立即向服务端同步本地的runner，减少服务端不必要的同步任务下发
+2. root下自动安装的agent 工作目录，由 `/` 改为 `/var/local/logkit-pro/agent/`
+3. disk queue 默认最大保存32GB数据，超过不再写入，防止磁盘爆满
+4. 【前端】修复编辑时默认的grok解析出错问题
+5. 修复尝试发送样例数据失败时由于磁盘队列导致的仍然不断重试的问题，现在最多重试3次。
+6. 修复k8stag key名字(key 应该是 `sourcefilefield`)错误
+7. 修复发送的嵌套数据为空不过滤的问题
+
+-----
+
+# v0.3.0 (集群版本正式上线: https://logkit-pro.qiniu.com/ )
+
+集群版也包含单机版功能
+
+使用地址：https://logkit-pro.qiniu.com/
+安装方式：https://developer.qiniu.com/insight/manual/4682/logkit-pro-install
+
+## Features
+
+1. 集群版正式上线， https://logkit-pro.qiniu.com/ 使用，可以[自动下载安装](https://developer.qiniu.com/insight/manual/4682/logkit-pro-install)，[一次配置，多次分发](/insight/manual/4737/logkit-pro-function)，[集群化、批量管理](/insight/manual/4935/configuration-distribution-and-batch-management)，最大程度减少agent管理负担。
+2. 增加 [Lua transformer](/insight/manual/4931/lua-transformer) 可以编写lua脚本函数，自定义您的数据转换方式
+3. [ip 转换](/insight/manual/4786/ip-transformer)支持`.mmdb` IP库格式
+4. [socket reader](/insight/manual/4770/socket-reader)支持按行分割收到的数据
+5. Pandora Sender、Stream Sender、Kodo Sender 添加自动获得七牛云存储 bucket列表、自动获得实时仓库列表等，可以通过下拉选择
+6. 增加同类产品[性能比较](/insight/manual/4934/logkit-pro-compared-with-mainstream-collecting-component-function-performance)
+
+
+## Bugfixes
+
+1. 修复前端runner 列表刷新错位问题
+2. 修复添加收集器左侧文字过长导致显示不全的问题
+3. 修复 autofile 模式下如果文件夹内文件的最后修改时间不超过tailx expire时间，读取不到数据的问题
+4. 修复错误信息过大可能导致页面崩溃的问题，现在单条最大只显示1kb长度的错误信息，多的会截断。
+
+
+# v0.3.0（单机版，功能与集群版相同，仅配置不同）
+
+-----
+
+
+
+# v0.2.2（单机版）
+
+下载地址： https://developer.qiniu.com/insight/manual/4682/logkit-pro-install
+
+## Features
+
+1. [http sender](/insight/manual/4804/http-sender)增加一种整个body变为json格式发送的选项（区别于现在整个body是多行，每个行单独是json）
+2. pandora sender内置 pandora_key_convert，自动转换不符合格式的key，同时对这个转换做了性能优化  
+3. 增加了[dirx模式](https://developer.qiniu.com/insight/manual/4751/file-reader)的文件读取方式，该功能类似tailx，可以以通配符的形式读取不同业务的文件夹数据 
+4. mapreplace中增加了一个“new”选项，可以保留原来的数据 
+5. 对[ip transformer](/insight/manual/4786/ip-transformer)使用的IP库进行统一管理，使得多个runner或者多个transformer配置了相同地址的ip库使用同一份，节省了大量内存 
+6. 将尝试获取数据的接口统一为读1分钟才超时，而不是原来的尝试读取3次读不到就放弃
+7. 对[urlparam transformer](/insight/manual/4779/urlparam-transformer)不光读取request的参数，还会读取 path 和 host 
+8. 对[urlparam transformer](/insight/manual/4779/urlparam-transformer)支持select_keys选项，允许只选择部分请求参数，防止请求参数过多导致的字段暴增(超过500个字段无法发送到Pandora) 
+9. [file sender](https://developer.qiniu.com/insight/manual/4785/file-sender)支持选项(file_send_timestamp_key)按数据中的时间来发送到指定文件  
+10. reader、parser、transformer、sender、Metric界面根据sortkey稳定排序 
+11. 当 [date transformer](/insight/manual/4791/date-transformer) 遇到没有时区信息的时间字符串时默认为本地时间（一般情况下，为 CST） 
+12. 增加了一种新的[kafka reader](https://developer.qiniu.io/insight/manual/4768/kafka-reader)，针对kafka版本在0.9及以后的版本  
+13. pandora_steam sender支持服务端下发 
+14. 支持Metric监控信息的采集
+    1. [System Metric](https://developer.qiniu.com//insight/manual/4896/the-system-monitoring):监控 load1、load5、load15、用户数、cpu核数以及系统启动时间等。
+    2. [Processes Metric](https://developer.qiniu.com/insight/manual/4897/the-processes-to-monitor): 监控处于各种状态的进程数量, 比如运行中/暂停/可中断/空闲的进程数量等。
+    3. [Netstat Metric](https://developer.qiniu.com/insight/manual/4898/netstat-monitoring): 监控处于各种状态的网络连接数, 比如Syn send/Syn Recv 等状态的网络连接数。
+    4. [Net Metric](https://developer.qiniu.com/insight/manual/4899/net-monitor): 监控网络设备的状态，比如收发包的数量、收发包的字节数等。
+    5. [Mem Metric](https://developer.qiniu.com/insight/manual/4900/the-memory-monitoring): 监控内存的实时状态。
+    6. [Swap Metric](https://developer.qiniu.com/insight/manual/4901/swap-monitoring): 监控 swap 分区的状态，比如换入换出、使用率、空闲大小等。
+    7. [Cpu Metric](https://developer.qiniu.com/insight/manual/4902/cpu-monitoring): 监控 cpu 的实时状态，包括用量，中断时间占比等。
+    8. [Kernel Metric](https://developer.qiniu.com/insight/manual/4909/the-kernel-monitoring): 监控内核中断次数、上下文切换次数、fork 的进程数等。
+    9. [Disk Metric](https://developer.qiniu.com/insight/manual/4903/disk-monitoring): 监控磁盘的使用情况, 包括磁盘用量、inode使用情况等。
+    10. [Diskio Metric](https://developer.qiniu.com/insight/manual/4904/diskio-monitoring): 监控磁盘读写状态, 包括读写次数、总用时等。
+    11. [Http Metric](https://developer.qiniu.com/insight/manual/4905/http-monitoring): 监控某个或者某些http请求。
+    12. [Procstat Metric](https://developer.qiniu.com/insight/manual/4906/procstat-monitoring): 监控某个或者某些进程的信息，包括cpu,内存,磁盘io,资源限制等。
+    13. [Ipmi Metric](https://developer.qiniu.com/insight/manual/4908/ipmi-monitoring): 硬件监控，监控各类支持ipmi接口的硬件指标。
+15. 新增 [csv transformer](https://developer.qiniu.com/insight/manual/4911/csv-transformer) :功能与csv parser相同，可以在transformer阶段针对某个key再次做csv解析
+16. 新增 [grok transformer](https://developer.qiniu.com/insight/manual/4917/grok-transformer) :功能与grok parser相同，可以在transformer阶段针对某个key再次做grok解析
+17. 新增 [join transformer](https://developer.qiniu.com/insight/manual/4880/join-transformer): 可以将数组组合成字符串，数组里面的元素类型可以是任意类型。
+18. 新增了直接发送到[七牛云存储(kodo)的sender](https://developer.qiniu.com/insight/manual/4919/kodo-sender)
+19. 为logkit-pro pprof增加memstats页面，方便排查问题已经性能调优
+20. [ip transformer](/insight/manual/4786/ip-transformer) 增加`.mmdb` IP库格式支持  
+21. 新增获取 read parse transform send 历史错误信息，默人历史错误条数最大为100条  
+22. 大量重构、性能优化
+ 
+
+## Bugfixes
+
+1. 修复上个版本引入 mssql和postgres连接时sql报错的问题 
+2. 修复含有容错功能的sender在一个runner中发送到多个sender时仍然会导致除第一个sender以为其他sender发不出数据的问题 
+3. 将mysql读取原来的共用连接改为每个请求都独立创建一个连接，避免unexpected EOF连接错误  
+4. sql reader保证每次读取完一张表都会存到meta中，同时修复sql reader同步数据库和表时存meta的错误  
+5. 修复export到logdb检查时omitEmpty和omitInvalid为nil导致出错的情况  
+6. 修复script transformer在没有脚本文件(路径填错)时可能panic的问题   
+7. 修复 urlparam transformer 转换某一条数据出错就导致整批数据都不转换的问题，现在一条出错其他可以继续转换  
+8. 修复syslog 出错时没有返回错误数据并导致pandora_stash记录的数据不准确的问题
+11. 修复编辑收集器的时候，extra_info 选择了false时选项变为没选中的状态  
+12. 修复ip transformer在logkit迁移过来时不带format字段情况下导致不兼容的问题 
+13. 【前端】添加所有错误日志列表 
+14. 【前端】 每页的runner显示要增加，改为20个 
+15. 【前端】 修复点击启动停止的时候，不容易点中的问题 
+16. 【前端】 修复discard transform无法选中字符的问题 
+17. 修复logkit-pro docker 镜像保存配置无效的问题 
+18. 【前端】修复transformer key填多层(a.b.c)不支持的问题 
+19. 【前端】修复时间转换一旦解析成功无法再次选择的bug 
+20. 修复 docker 镜像保存配置无效的问题
+21. 【前端】修复了discard选项无法选择字段的问题
+
+
+
+-----
+
+
+
+# v0.2.1 (单机版)
+
+## Features
+
+* 增加了[regex Transformer](https://developer.qiniu.io/insight/manual/4825/regexmatch-transformer) #326
+* Pandora sender改名 workflow-> pipeline, 数据源-> 实时仓库, 日志检索->智能日志平台 #325
+* AWS cloudtrail reader 改名 AWS S3 reader
+* 调整了前端pandora的申请开通连接 #336
+* pandora sender增加导出到kodo的rotate 大小/时间的选择,默认导出到kodo的保存时间从30天改为了永久存储 （logkit）
+* http sender增加一种模式，允许整个body变为json，区别于原来单行是json的模式 https://github.com/qiniu/logkit/pull/607
+* 在配置中保存rawData，用于下次修改配置时有个参照 https://github.com/qiniu/logkit/pull/592
+
+
+## Bugfixes
+
+* 添加inputNumber展示类型，修复transformer 不能输入数字问题 #328
+* 修复在发送到服务器的连接中有错误，然后又关闭了发送到服务器不断打印错误的问题 #337
+* 修复了一个runner配置多个sender可能导致第二个以后的sender发不出数据的bug https://github.com/qiniu/logkit/pull/598
+* 修复mysql reader中sql.done meta为空时可能导致数据不读取的bug  https://github.com/qiniu/logkit/pull/599
+* 修复mssql和postgressql的reader由于数据源拼接导致无法读取的问题 https://github.com/qiniu/logkit/pull/608
+* 前后端 修复mysql reader选择时会导致没有配置parser无法读取的问题  https://github.com/qiniu/logkit/pull/590

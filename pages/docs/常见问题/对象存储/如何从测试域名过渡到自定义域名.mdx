@@ -1,0 +1,79 @@
+如果您的空间正在使用测试域名，需要绑定自定义域名来避免访问受限，您可以通过以下步骤进行域名的过渡。
+# 空间绑定自定义域名的配置流程
+* 创建加速域名 
+* 保存加速域名为默认域名 
+* 添加cname解析 
+* 验证外链是否可以访问 
+* 替换旧外链 
+`请勿跳过任何步骤`
+</p>
+
+
+-----
+
+
+## 详细步骤
+1. 打开控制台中的[对象存储](https://portal.qiniu.com/bucket/privatets/index)，点击具体的空间名。
+	点击 **绑定加速域名** 进入创建加速域名页面，您可以在跳转页面中绑定一个自定义域名到存储空间。
+  <img src="https://dn-odum9helk.qbox.me/FoLxGFOG_PRaZmBX7xY-JTggDIp7" width=700 />
+	
+
+-----
+
+
+2. 创建域名过程中详细的参数解释可以参考[域名接入文档](https://developer.qiniu.com/fusion/manual/4939/the-domain-name-to-access。)
+	* 域名类型如果没有特殊需求，选择**`普通域名`**即可，如果您需要了解泛域名，请参考上面的[域名接入文档](https://developer.qiniu.com/fusion/manual/4939/the-domain-name-to-access。)。
+	* 加速域名处建议填写的您**`未在使用`**的二级或三级域名等，请勿轻易绑定www域名避免影响您的源站服务。
+	（例如，您购买的主域名是example.com，二级域名可以为cdn.example.com，前缀可以自行定义即可）
+	* 当您为存储空间绑定自定义域名的时候，源站配置**`默认为七牛云存储`**即可.
+	  <img src="https://dn-odum9helk.qbox.me/FmwjAQ9hcPfiWqmWJ-e0_yu6KPZN" width=600 />
+	
+
+
+-----
+
+
+3. 点击 创建 后，您可以在控制台中的[对象存储](https://portal.qiniu.com/bucket/privatets/index)，点击具体的空间,在 空间概览 里看到该空间绑定域名的状态
+	域名状态为 `“处理中”` 是处于创建状态，需要等待后台创建完成；
+	域名状态为 `“等待CNAME”` ，需要您配置cname解析，解析步骤可以参考教程的步骤5，您也可以先操作步骤4，再执行步骤5，解析未配置的情况下，该域名暂时还无法用于访问；
+	域名状态为` “成功”` ，域名可以正常使用，可以进入下一步骤。
+	 <img src="https://dn-odum9helk.qbox.me/FoeF0WHRlomgQCMb_zjkL6BbvVmL" width=600 />
+	
+	
+	
+
+
+-----
+
+4.域名状态为 “等待CNAME” 或 “成功” 后，在 **内容管理** 中，**外链默认域名**的下拉框里选中您需要绑定的自定义域名，点击按钮**保存默认域名**。
+* 注意：域名状态为处理中时，无法设置为默认域名，请等待域名处理完成。
+  <img src="https://dn-odum9helk.qbox.me/FlI9oy0uJJ7nIr048wQ7d1sHYDZs" width=600 />
+	
+
+-----
+
+
+
+5.绑定成功后，需要配置您域名的cname解析，您可以根据控制台的引导文档，也可以直接点击[如何配置域名的CNAME](https://developer.qiniu.com/fusion/kb/1322/how-to-configure-cname-domain-name)
+`注意：未配置解析或解析未生效，该域名将无法用于访问，确保解析生效后再使用新域名访问。`
+
+6.**内容管理**中，点击具体资源后的 **复制外链** ，即可获得新外链，您可以在浏览器中访问新外链，成功访问后，**`请在您调用旧外链的地方使用新外链替换`**。
+	如果您的新外链无法访问，请[检查域名是否配置成功](https://developer.qiniu.com/fusion/kb/5326/how-to-check-whether-the-configuration-is-successful)。
+  <img src="https://dn-odum9helk.qbox.me/Fi01HaNkIddUUxL7ifjZtsJmP4rX" width=600 />
+7. 完成上述步骤后，通过自定义域名访问资源时，不会受到限制。
+
+
+-----
+
+
+
+# 常见问题答疑
+</p>
+* Q: 保存自定义域名为默认域名后，是否之前的链接就恢复访问了呢？
+  A: 不是，保存自定义域名为默认域名后，新旧链接都可以正常访问，但是新生成的链接会通过自定义域名访问，而旧的链接依旧是通过测试域名访问，依旧会受到限制。
+
+* Q: 可以将同一个域名绑定到多个空间吗？
+  A: 不可以，一个域名只能绑定一个空间，建议您绑定二级或三级域名，按照cname配置流程在厂商处配置解析即可。
+	
+* Q: 是否可以不绑定自定义域名，申请一直使用测试域名呢？
+  A: 不可以，测试域名仅供测试使用，不在SLA保障范围内，有效期30天，请勿用于线上环境。

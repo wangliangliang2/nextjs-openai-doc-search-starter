@@ -1,0 +1,142 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                背景音乐混音回调代理，可通过 <a href='8855/QNMicrophoneAudioTrack-iOS#createAudioMusicMixer'>QNMicrophoneAudioTrack.createAudioMusicMixer</a> 创建时进行设置传入，用来回调混音状态、当前混音进度以及混音错误信息。</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didFailWithError`)'>didFailWithError</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didStateChanged`)'>didStateChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didMixing`)'>didMixing</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didFailWithError">
+didFailWithError</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)audioMusicMixer:(<a href='11930/QNAudioMusicMixer-iOS'>QNAudioMusicMixer</a> *)audioMusicMixer didFailWithError:(NSError *)error;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音效混音发生错误的回调</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>QNAudioMixErrorResampleFailed</td>
+                    <td>音频混音重采样</td>
+                    <td>请重新尝试混音操作</td>
+                </tr>
+                <tr>
+                    <td>QNAudioMixErrorAudioNotFound</td>
+                    <td>音频文件不存在</td>
+                    <td>请检查音频文件是否实际存在</td>
+                </tr>
+                <tr>
+                    <td>QNAudioMixErrorIOException</td>
+                    <td>输入输出错误</td>
+                    <td>请检查混音文件是否存在异常</td>
+                </tr>
+                <tr>
+                    <td>QNAudioMixErrorDecoderException</td>
+                    <td>解码错误</td>
+                    <td>音频格式支持 aac、mp3、mp4、wav、m4r、caf、ogg、opus、m4a、flac</td>
+                </tr>
+                <tr>
+                    <td>QNAudioMixErrorSeekFailed</td>
+                    <td>跳转失败错误</td>
+                    <td>请检查是否在开始混音前执行了 Seek 操作</td>
+                </tr>
+        </tbody>
+    </table>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            audioMusicMixer: <a href='11930/QNAudioMusicMixer-iOS'>QNAudioMusicMixer</a>
+        </div>
+                <p>音效混音实例对象</p>
+    </li>
+    <li>
+        <div>
+            error: NSError
+        </div>
+                <p>错误信息</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didStateChanged">
+didStateChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)audioMusicMixer:(<a href='11930/QNAudioMusicMixer-iOS'>QNAudioMusicMixer</a> *)audioMusicMixer didStateChanged:(<a href='9254/QNTypeDefines#QNAudioMusicMixerState'>QNAudioMusicMixerState</a>)musicMixerState;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音效混音某音效播放完成的回调</p>
+    </div>
+<section class="rtc-doc-panel rtc-doc-describe-note">
+    <blockquote class="blockquote-warning">
+    <p><a href='11930/QNAudioMusicMixer-iOS#seekTo'>QNAudioMusicMixer.seekTo</a> 操作成功后会触发 <a href='9254/QNTypeDefines#QNAudioMusicMixerState'>QNAudioMusicMixerStateMixing</a> 状态的回调，可依赖该机制优化 seek 场景下的 UI 显示</p>
+    </blockquote>
+</section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            audioMusicMixer: <a href='11930/QNAudioMusicMixer-iOS'>QNAudioMusicMixer</a>
+        </div>
+                <p>音效混音实例对象</p>
+    </li>
+    <li>
+        <div>
+            musicMixerState: <a href='9254/QNTypeDefines#QNAudioMusicMixerState'>QNAudioMusicMixerState</a>
+        </div>
+                <p>混音状态</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didMixing">
+didMixing</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)audioMusicMixer:(<a href='11930/QNAudioMusicMixer-iOS'>QNAudioMusicMixer</a>*)audioMusicMixer didMixing:(int64_t)currentPosition;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音效混音某音效播放完成的回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            audioMusicMixer: <a href='11930/QNAudioMusicMixer-iOS'>QNAudioMusicMixer</a>
+        </div>
+                <p>音效混音实例对象</p>
+    </li>
+    <li>
+        <div>
+            currentPosition: int64_t
+        </div>
+                <p>当前进度，单位 ms</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

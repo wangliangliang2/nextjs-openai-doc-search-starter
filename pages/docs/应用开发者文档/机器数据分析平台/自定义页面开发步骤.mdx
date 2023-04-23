@@ -1,0 +1,84 @@
+Pandora 支持您开发自定义页面的 App，可以将外部已经存在的 Web 服务直接嵌套在当前平台或者任何自定义页面逻辑进行页面展示。
+
+开发自定义页面 APP 分为以下几步：
+
+- 1.创建自定义页面 APP 模板
+
+- 2.开发自定义页面逻辑
+
+- 3.打包上传 APP 至平台
+
+## 1. 创建自定义页面 APP 模板 {docsify-ignore-all}
+
+使用 `create-pandora-app` 工具，选择 `view-html` 类型模板，即可生成自定义页面 APP 模板。
+
+```bash
+$ npx create-pandora-app <appName> -t view-html
+```
+
+**App 目录结构**
+
+```
+.
+├── README.md
+├── app.json
+├── appserver
+│   └── static
+├── default
+│   ├── nav.xml
+│   └── views
+│       └── page.xml
+├── develop
+│   ├── bin
+│   │   └── package.run
+│   ├── configs
+│   │   ├── env.js
+│   │   ├── paths.js
+│   │   ├── webpack.common.conf.js
+│   │   ├── webpack.dev.conf.js
+│   │   ├── webpack.dll.conf.js
+│   │   └── webpack.prod.conf.js
+│   ├── package.json
+│   ├── scripts
+│   │   └── mock.js
+│   ├── src
+│   │   ├── App.tsx
+│   │   ├── Boot.tsx
+│   │   ├── apis
+│   │   ├── components
+│   │   ├── constants
+│   │   ├── index.tsx
+│   │   ├── style.module.less
+│   │   └── styles
+│   │   └── style.less
+│   ├── tsconfig.json
+│   └── types
+│   └── index.d.ts
+├── resources
+│   ├── extractions
+│   └── sourcetypes
+└── static
+└── icon.png
+```
+
+## 2.开发自定义页面逻辑 {docsify-ignore-all}
+
+**开发步骤**
+
+- 进入 develop 目录。
+
+- 执行 `npm install`，安装开发项目相关依赖。
+
+- 执行 `npm run start`, 启动模板项目。
+
+- 修改 src 目录下根据自身需求在 develop 目录下开发自定义页面逻辑，需注意**静态资源路径需使用相对路径**。。
+
+> 自定义页面支持任意框架进行开发，可根据自身需求对脚手架进行修改，最终打包完成的文件移动到`appserver/static`目录下即可
+
+## 3.打包上传 APP 至平台
+
+使用下面命令将 APP 打包上传至平台即可。
+
+```bash
+yarn package
+```

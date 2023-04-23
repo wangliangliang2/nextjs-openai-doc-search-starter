@@ -1,0 +1,123 @@
+有用户反馈，存在非法用户盗用她们的 token 在空间上传 svg,xml,html 等垃圾文件，注入广告，或者散播涉黄视频等资源，严重影响了用户业务的正常运营，针对此类问题，这边总结了如下处理方案。
+
+
+
+<a id="方案"></a>
+
+## **通过上传策略限制上传**
+
+**a.上传策略中 scope 指定 key 值，只允许用户上传指定 key 的文件**
+
+**参数说明：**
+
+|  字段名  |说明|
+| ----------- | --- | 
+| <a id="scope"></a>scope  | 指定上传的目标资源空间 Bucket 和资源键 Key（最大为 750 字节）。有三种格式：<li>&lt;bucket&gt;，表示允许用户上传文件到指定的 bucket。在这种格式下文件只能**新增**（分片上传需要指定insertOnly为1才是新增，否则也为覆盖上传），若已存在同名资源（且文件内容/etag不一致），上传会失败；若已存在资源的内容/etag一致，则上传会返回成功。</li> <li>&lt;bucket&gt;:&lt;key&gt;，表示只允许用户上传指定 key 的文件。在这种格式下文件默认允许**修改**，若已存在同名资源则会被**覆盖**。如果只希望上传指定 key 的文件，并且不允许修改，那么可以将下面的 insertOnly 属性值设为 1。</li> <li>&lt;bucket&gt;:&lt;keyPrefix&gt;，表示只允许用户上传指定以 keyPrefix 为前缀的文件，当且仅当 isPrefixalScope 字段为 1 时生效，isPrefixalScope 为 1 时无法覆盖上传。</li> | 
+
+**python 示例：**
+
+```
+from qiniu import Auth, put_file
+access_key =""
+secret_key = ""
+# 构建鉴权对象
+q = Auth(access_key, secret_key)
+
+# 要上传的空间
+bucket_name = '2'
+key = 'key'
+#获取token的方法指定key
+token = q.upload_token(bucket_name, key, 3600)
+#put方法必须指定相同key才能上传
+ret, info = put_file(token, key, 'localfilepath'）
+print ret
+```
+
+<br>
+</br>
+
+**b.上传策略中 insertOnly  指定为 1 或者指定 forceInsertOnly 为 true，只允许用户上传指定 key ，并且不允许修改**
+
+
+
+**参数说明：**
+
+|  字段名  |说明|
+| ----------- | --- | 
+|insertOnly|默认为0，指定为 1 时，上传指定 key 的文件，并且不允许修改，即上传相同 key ，不同 hash，返回 614 "file exists"，上传相同 key，相同 hash 仍旧返回 200|
+|forceInsertOnly| 默认为 False ，指定为 True 时，上传指定 key 的文件，并且不允许修改，只允许上传一次，即上传相同 key，相同 hash 仍旧返回 614 "file exists"，|
+
+**python 示例：**
+
+```
+from qiniu import Auth, put_file
+access_key =""
+secret_key = ""
+# 构建鉴权对象
+q = Auth(access_key, secret_key)
+
+# 要上传的空间
+bucket_name = 'bucket'
+key = 'key'
+#insertOnly  指定为 1 
+policy = {"insertOnly":1} 
+#获取token的方法指定key
+token = q.upload_token(bucket_name, key, 3600, policy)
+
+"""
+#forceInsertOnly 为 true
+policy = {'forceInsertOnly':True} 
+# 注意 forceInsertOnly是新增字段，这时候生成token的方法中 strict_policy 这个参数设置成False才能生效
+token = q.upload_token(bucket_name, key, 3600, policy, strict_policy=False)
+
+"""
+
+#put方法必须指定相同key才能上传
+ret, info = put_file(token, key, 'localfilepath'）
+print ret
+```
+<br>
+</br>
+
+**c.上传策略中指定 mimetype ，限制上传文件类型**
+
+**参数说明：**
+
+|  字段名  |说明|
+| ----------- | --- |
+|<a id="put-policy-mime-limit"></a>mimeLimit|  限定用户上传的文件类型。指定本字段值，<label id="Productname">七牛</label>服务器会侦测文件内容以判断 MimeType，再用判断值跟指定值进行匹配，匹配成功则允许上传，匹配失败则返回 403 状态码。示例：<li>`image/*`表示只允许上传图片类型 <li> `image/jpeg;image/png`表示只允许上传`jpg`和`png`类型的图片 <li> `!application/json;text/plain`表示禁止上传`json`文本和纯文本。**注意最前面的感叹号！**|
+	
+
+**python 示例：**
+
+```
+from qiniu import Auth, put_file
+access_key =""
+secret_key = ""
+# 构建鉴权对象
+q = Auth(access_key, secret_key)
+
+# 要上传的空间
+bucket_name = 'bucket'
+key = 'key'
+#限制mimeLimit
+policy = {
+	"insertOnly":1,
+	"mimeLimit":"image/*" #只允许上传图片文件
+} 
+#获取token的方法指定key
+token = q.upload_token(bucket_name, key, 3600, policy)
+
+#put方法必须指定相同key才能上传
+ret, info = put_file(token, key, 'localfilepath'）
+print ret
+```
+
+
+<br>
+</br>
+
+
+
+
+

@@ -1,0 +1,95 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文提供 QNRTC iOS SDK 4.x 以上版本的发布说明。</p>
+<blockquote>
+<ul>
+<li>若您想要查看 3.x 版本之前的发布说明，可查看 <a href="https://doc.qnsdk.com/rtn/ios/docs/release_notes">3.x 及之前版本的更新日志</a></li>
+<li>若您正在使用 3.x 或者更低版本的 SDK，想要升级至 5.x，则可参考 <a href="/rtc/development_guidelines/11949/migration-guide-iOS-v5">5.x 版本迁移指南</a>。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>注意：5.x 版本是基于 4.x 版本开发的重构版本，SDK 使用了统一的 C++ RTC 内核, 保证了 QRTC 在各个端上处理逻辑的一致性，同时接口和 4.x 基本兼容。若您使用的是 4.x 的版本，可根接口 5.x 版本迁移指南进行升级；若您使用的 3.x 及之前的版本，可参考各端的迁移指南，进行版本迁移。</li>
+</ul>
+</blockquote>
+
+# 5.2.2
+<ul>
+<li>修复在重连失败再次加入房间后，离开房间会崩溃的问题</li>
+<li>修复采集分辨率和编码分辨率不一致，导致画面被裁剪的问题</li>
+<li>优化在 RTT 一定波动网络环境下视频卡顿的现象</li>
+</ul>
+
+# 5.2.1
+<ul>
+<li>支持动态修改本地视频 Track 的编码参数</li>
+<li>修复本地 Track 的 mute 状态在重连过程中有可能失效的问题</li>
+<li>修复使用在线资源进行混音时 seek 操作导致概率奔溃的问题</li>
+<li>修复断线重连失败偶现奔溃的问题</li>
+</ul>
+
+# 5.2.0
+<ul>
+<li>支持推流固定分辨率</li>
+<li>支持通话模式开关</li>
+<li>支持音乐、音效通过 RTC 进行本地播放</li>
+<li>支持外部音源 (PCM) 混音</li>
+<li>优化弱网下视频质量调整策略，平衡清晰度和流畅性</li>
+<li>修复不实现摄像头采集代理本地内置美颜不生效的问题</li>
+<li>修复加房间 userData 传 NSNull 会奔溃的问题</li>
+<li>修复 iOS 16 以上开启摄像头采集线程卡顿、回声消除失效的问题</li>
+<li>修复稳定性崩溃问题</li>
+</ul>
+
+# 5.1.1
+<ul>
+<li>支持创建纯音频合流转推任务</li>
+<li>去除合流转推对 isHoldLastFrame 的支持</li>
+<li>缩小 FFmpeg 的包体大小，改为静态库由 QNRTCKit.framework 内部链路</li>
+<li>修复远端音视频传输统计数据中 uplinkRTT 以及 uplinkLostRate 值错误的问题</li>
+<li>修复本地质量等级变更回调 didNetworkQualityNotified 未触发的问题</li>
+<li>修复跨房信息配置初始化方法 initWithToken 设置 token 无效的问题</li>
+</ul>
+
+# 5.1.0
+<ul>
+<li>新增多重混音功能，支持同时混音背景音乐和音效</li>
+</ul>
+
+# 5.0.0
+<ul>
+<li>发布 QNRTCKit.framework</li>
+<li>发布 FFmpeg.framework</li>
+<li>删除 HappyDNS.framework</li>
+</ul>
+
+# 4.0.4
+<ul>
+<li>升级 DNS 解析依赖库 HappyDNS 版本为 1.0</li>
+</ul>
+
+# 4.0.3
+<ul>
+<li>新增本地音频 track 获取音量接口</li>
+<li>修复 iOS 15.4 视频帧率不稳定问题</li>
+<li>修复配置跨房连麦信息后 crash 问题</li>
+</ul>
+
+# 4.0.2
+<ul>
+<li>新增远端音频获取音量接口</li>
+</ul>
+
+# 4.0.1
+<ul>
+<li>新增使用场景 <code>QNClientMode</code> 和用户角色 <code>QNClientRole</code></li>
+<li>新增跨房媒体转发功能</li>
+</ul>
+
+# 4.0.0
+<ul>
+<li>发布 QNRTCKit.framework v4.0.0</li>
+<li>新增核心类 <code>QNRTC</code> 和 <code>QNRTCClient</code>，移除 <code>QNRTCCEngine</code> 接口类</li>
+<li>新增 <code>QNLocalTrack</code> 和 <code>QNRemoteTrack</code> 及其衍生的子类，对不同类型的音视频轨道做了区分，并提供了丰富的控制接口</li>
+<li>优化事件监听逻辑，提供更丰富更具体的事件监听</li>
+</ul></div></div>

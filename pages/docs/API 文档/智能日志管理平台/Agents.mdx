@@ -1,0 +1,181 @@
+# **获取 agent 列表**
+
+```
+GET /v1/api/agents?tag=<tagValue>&id=<idValue>&state=<stateValue1,stateValue2>&sort=<sortKey>&order=<order>&page=<pageNum>&size=<pageSize>&search=<search>
+```
+
+## **返回值**
+
+- 如果没有错误, 返回：
+```
+{
+    "agentList":[
+    {
+        "id": "<agent_id>",
+        "ip":"10.10.0.1",
+        "tags":["tag1", "tag2"],
+        "hostname":"nb110",
+        "create_time": <timestamp>,
+        "state": "<state>",
+        "runners": ["runner1", "runner2"],
+        "machine": {
+            "hostname": "<hostname>",
+            "boot_time": <启动时间>,
+            "kernel": "<内核类型>",
+            "kernel_version": "<内核版本>",
+            "platform": "<平台类型>",
+            "platform_version": "<平台版本>",
+            "cpu": {
+                "model": "<cpu_model_name>",
+                "Mhz": <主频, 单位 Mhz>,
+                "Cache": <二级缓存大小>,
+                "Cores": <cpu 核数>,
+                "count": <cpu 个数>
+            },
+            "memory": <内存大小>,
+            "interface": [ //网卡信息
+                {
+                    "name": "<名称>",
+                    "mtu": <最大数据包大小(字节)>,
+                    "mac": "<Mac 地址>",
+                    "ip": [
+                        "<ip1>",
+                        "<ip2>",
+                        ...
+                    ],
+                    "mask": [
+                        "<子网掩码1>",
+                        "<子网掩码2>",
+                        ...
+                    ] // 子网掩码的与 ip 一一对应
+                },
+                ...
+            ],
+            "disk": [
+                {
+                    "device": "<名称>",
+                    "fstype": "<文件系统类型>",
+                    "mount": "<挂载点>",
+                    "size": <容量>
+                },
+                ...
+            ]
+        }
+    },
+    ...
+    ],
+    "totalSize":<total_size>
+}
+```
+- 如果有错误则返回相应错误
+
+## **参数说明**
+
+- 参数 `tag`、`id` 和 `state` 非空时将作为被操作 agent 的过滤条件，即上述操作只对满足对应条件的 agent 有效
+- 参数 `sort`、`order` 会根据 `sort` 的值进行升序/降序排序，`order` 的值可以是 ascend/descend，`sort` 默认为 hostname，`order` 默认为 ascend
+- 参数 `search` 会对 hostname 进行搜索，将包含 `search` 值的结果搜索出来
+- status 状态有三种，`ok` 表示正常（30s 内有联系）；`bad` 表示 1 分钟内有联系；`lost` 表示超过 1 分钟无心跳
+- 如果需要分页则提供当前页数 `page` 以及每页的数量 `size`
+- 状态有三种:
+    - `register`: 注册了但是还没有发第一次心跳
+    - `online`: 与 tcpserver 保持连接时
+    - `offline`: 与 tcpserver 断开连接时
+
+# **删除 agents**
+
+```
+DELETE /v1/api/agents?tag=tagValue&id=idvalue&state=stateValue
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误
+
+## **参数说明**
+
+- 参数 `tag`、`id` 和 `state` 非空时将作为被操作 agent 的过滤条件，即上述操作只对满足对应条件的 agent 有效
+- 执行该操作进行后，agent 必须重启才能重新注册到 server 端
+
+# **删除多个 agent**
+
+```
+DELETE /v1/api/agents/batch?id=<agent_id1>,<agent_id2>
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误
+
+# **为 agent 添加标签**
+
+```
+POST /v1/api/agents/<agent_id>/tags/<tag_name>
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误
+
+# **为 agent 添加多个标签**
+
+```
+POST /v1/api/agents/<agent_id>/tags
+Content-Type: application/json
+{
+   "tags": ["<tag_name1>","<tag_name2>"]
+}
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误
+
+# **删除 agent 标签**
+
+```
+DELETE /v1/api/agents/<agent_id>/tags/<tag_name>
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误
+
+# **获取 release 的最新信息**
+
+```
+GET /v1/api/release
+```
+
+## **返回值**
+
+```
+[
+    {
+        "os": "<os>",
+        "arch":"<arch>",
+        "hash":"<hash>",
+        "message":"<message>",
+        "version":"<version>",
+        "package":"<package>",
+        "download_url":"<download_url>",
+        "version_stamp":"<version_stamp>"
+    }
+    ...
+]
+```
+
+# **升级 agent**
+
+```
+POST /v1/api/agents/upgrade
+Content-Type: application/json
+{
+    "agent_ids": [],
+    "tags": []
+}
+```

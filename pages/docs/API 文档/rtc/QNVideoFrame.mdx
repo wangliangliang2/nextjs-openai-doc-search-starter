@@ -1,0 +1,211 @@
+<div data-v-md-line="1"><link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                视频数据帧描述类</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createFromNV21`)'>createFromNV21</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createFromTextureRGB`)'>createFromTextureRGB</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">Properties</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#type`)'>type</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#buffer`)'>buffer</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#texture`)'>texture</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#width`)'>width</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#height`)'>height</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#rotation`)'>rotation</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#timestampNs`)'>timestampNs</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createFromNV21">
+createFromNV21</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">static QNVideoFrame createFromNV21(byte[] data, int width, int height, int rotation, long timestampNs)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建包含 NV21 视频数据的视频帧</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            data: byte[]
+        </div>
+                <p>视频 NV21 数据</p>
+    </li>
+    <li>
+        <div>
+            width: int
+        </div>
+                <p>视频宽度</p>
+    </li>
+    <li>
+        <div>
+            height: int
+        </div>
+                <p>视频高度</p>
+    </li>
+    <li>
+        <div>
+            rotation: int
+        </div>
+                <p>视频旋转角度</p>
+    </li>
+    <li>
+        <div>
+            timestampNs: long
+        </div>
+                <p>时间戳，单位：ns</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createFromTextureRGB">
+createFromTextureRGB</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">static QNVideoFrame createFromTextureRGB(<a href='8691/QNTexture'>QNTexture</a> texture, int width, int height, int rotation, long timestampNs)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建包含 <a href='8691/QNTexture'>QNTexture</a> 视频数据的视频帧</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            texture: <a href='8691/QNTexture'>QNTexture</a>
+        </div>
+                <p>视频纹理数据</p>
+    </li>
+    <li>
+        <div>
+            width: int
+        </div>
+                <p>视频宽度</p>
+    </li>
+    <li>
+        <div>
+            height: int
+        </div>
+                <p>视频高度</p>
+    </li>
+    <li>
+        <div>
+            rotation: int
+        </div>
+                <p>视频旋转角度</p>
+    </li>
+    <li>
+        <div>
+            timestampNs: long
+        </div>
+                <p>时间戳，单位：ns</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">Properties</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="type">
+type</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">type: QNVideoFrameType</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>视频数据类型</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="buffer">
+buffer</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">buffer: byte[]</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>视频数据 NV21 buffer</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="texture">
+texture</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">texture: <a href='8691/QNTexture'>QNTexture</a></li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p> 视频数据纹理对象</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="width">
+width</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">width: int</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>视频宽度</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="height">
+height</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">height: int</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>视频高度</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="rotation">
+rotation</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">rotation: int</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>视频旋转角度</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="timestampNs">
+timestampNs</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">timestampNs: long</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>视频帧时间戳，单位：ns</p>
+    </div>
+</li>
+</ul>
+</section>
+</div>
+
+
+</div>

@@ -1,0 +1,45 @@
+## 集成准备
+
+本文为您介绍 iOS qplayer2 SDK 的集成准备的环境要求和具体操作步骤。
+
+
+
+### 环境要求
+
+| 类别     | 说明                          |
+| -------- | ----------------------------- |
+| 系统版本 | iOS 10.0 及 以上版本的iOS设备 |
+
+
+
+### 获取 QPlayer2 License
+
+联系技术支持获取
+
+
+
+### 添加 QPlayer2 依赖
+
+1.进入[https://github.com/pili-engineering/QPlayer2-IOS.git](https://github.com/pili-engineering/QPlayer2-IOS) 查看最新QPlayer2的版本
+![readme.png](https://dn-odum9helk.qbox.me/FqQlVjD4BFesWFkeCq_PRyBK4_S-)
+
+
+
+2.配置 podfile 文件，引入 qplayer2-core
+```
+ pod 'qplayer2-core', '1.0.2'
+```
+![image-20220915165921376](/Users/wangshenglu/Library/Application Support/typora-user-images/image-20220915165921376.png)
+![podfile.png](https://dn-odum9helk.qbox.me/Fkljc-uk9aTusyX1qoBDKd12hakM)
+
+
+如需要真机 ＋ 虚拟机可以改用如下配置：
+
+```
+  pod "qplayer2-core", :podspec => 'https://raw.githubusercontent.com/pili-engineering/QPlayer2-IOS/main/qplayer2-core-Universal.podspec'
+```
+
+
+
+3.关闭Bitcode
+![bitcode.png](https://dn-odum9helk.qbox.me/FpevbowCqHa-QO-fs9oIidMW80Lg)

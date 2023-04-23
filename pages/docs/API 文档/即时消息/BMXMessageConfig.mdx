@@ -1,0 +1,580 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>class im.floo.floolib.BMXMessageConfig</p>
+                <p>消息配置</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getCPtr`)'>getCPtr</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#finalize`)'>finalize</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#delete`)'>delete</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setMentionAll`)'>setMentionAll</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getMentionAll`)'>getMentionAll</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setMentionList`)'>setMentionList</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getMentionList`)'>getMentionList</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setMentionedMessage`)'>setMentionedMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getMentionedMessage`)'>getMentionedMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPushMessage`)'>setPushMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getPushMessage`)'>getPushMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setSenderNickname`)'>setSenderNickname</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getSenderNickname`)'>getSenderNickname</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setGroupMemberList`)'>setGroupMemberList</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getGroupMemberList`)'>getGroupMemberList</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#addGroupMember`)'>addGroupMember</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#removeGroupMember`)'>removeGroupMember</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#clearGroupMemberList`)'>clearGroupMemberList</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setIOSConfig`)'>setIOSConfig</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getIOSConfig`)'>getIOSConfig</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setAndroidConfig`)'>setAndroidConfig</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getAndroidConfig`)'>getAndroidConfig</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPushShowBeginTime`)'>setPushShowBeginTime</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getPushShowBeginTime`)'>getPushShowBeginTime</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPushShowEndTime`)'>setPushShowEndTime</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getPushShowEndTime`)'>getPushShowEndTime</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPushTitle`)'>setPushTitle</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getPushTitle`)'>getPushTitle</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isSilence`)'>isSilence</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getBadgeCountType`)'>getBadgeCountType</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getBadgeCount`)'>getBadgeCount</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getUsername`)'>getUsername</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#serialize`)'>serialize</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createMessageConfig`)'>createMessageConfig</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getCPtr">getCPtr</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+protected static long getCPtr(BMXMessageConfig obj);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="finalize">finalize</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+protected void finalize();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="delete">delete</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public synchronized void delete();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setMentionAll">setMentionAll</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setMentionAll(boolean mentionAll);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置是否@全员</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            mentionAll: boolean
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getMentionAll">getMentionAll</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public boolean getMentionAll();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取是否@全员</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setMentionList">setMentionList</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setMentionList(ListOfLongLong mentionList);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置通知成员id列表</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            mentionList: ListOfLongLong
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getMentionList">getMentionList</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public ListOfLongLong getMentionList();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取@成员列表</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>ListOfLongLong</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setMentionedMessage">setMentionedMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setMentionedMessage(String mentionedMessage);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置@消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            mentionedMessage: String
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getMentionedMessage">getMentionedMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String getMentionedMessage();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取@消息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPushMessage">setPushMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setPushMessage(String pushMessage);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置推送消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            pushMessage: String
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getPushMessage">getPushMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String getPushMessage();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取推送消息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setSenderNickname">setSenderNickname</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setSenderNickname(String senderNickname);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置发送者昵称</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            senderNickname: String
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getSenderNickname">getSenderNickname</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String getSenderNickname();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取发送者昵称</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setGroupMemberList">setGroupMemberList</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setGroupMemberList(ListOfLongLong groupMemberList);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置需要群已读消息的群成员id列表</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            groupMemberList: ListOfLongLong
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getGroupMemberList">getGroupMemberList</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public ListOfLongLong getGroupMemberList();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取需要群已读消息的群成员id列表</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>ListOfLongLong</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="addGroupMember">addGroupMember</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void addGroupMember(long id);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>添加群已读消息的群成员id列表成员</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="removeGroupMember">removeGroupMember</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void removeGroupMember(long id);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>清除需要群已读消息的群成员id列表成员</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="clearGroupMemberList">clearGroupMemberList</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void clearGroupMemberList();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>清空群已读消息的群成员id列表</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setIOSConfig">setIOSConfig</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setIOSConfig(String iosConfig);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getIOSConfig">getIOSConfig</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String getIOSConfig();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取iOS消息配置</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setAndroidConfig">setAndroidConfig</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setAndroidConfig(String androidConfig);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getAndroidConfig">getAndroidConfig</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String getAndroidConfig();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取Android消息配置</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPushShowBeginTime">setPushShowBeginTime</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setPushShowBeginTime(int beginTime);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getPushShowBeginTime">getPushShowBeginTime</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public int getPushShowBeginTime();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取推送消息开始展示时间</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>int</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPushShowEndTime">setPushShowEndTime</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setPushShowEndTime(int endTime);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getPushShowEndTime">getPushShowEndTime</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public int getPushShowEndTime();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取推送消息结束展示时间</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>int</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPushTitle">setPushTitle</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setPushTitle(String pushTitle);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getPushTitle">getPushTitle</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String getPushTitle();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取推送消息标题</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isSilence">isSilence</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public boolean isSilence();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getBadgeCountType">getBadgeCountType</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXMessageConfig.BadgeCountType getBadgeCountType();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>BadgeCountType</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getBadgeCount">getBadgeCount</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public int getBadgeCount(int count);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>int</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getUsername">getUsername</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String getUsername();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取消息发送者用户名</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="serialize">serialize</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String serialize();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>序列化操作</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createMessageConfig">createMessageConfig</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public static BMXMessageConfig createMessageConfig(boolean mentionAll);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span><a href='/IM/api/8248/bmxmessageconfig'>BMXMessageConfig</a></span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

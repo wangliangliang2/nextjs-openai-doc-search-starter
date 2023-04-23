@@ -1,0 +1,51 @@
+# **简介**
+
+文本文件合并接口(concat)用于将数个七牛云上的源文件的二进制内容按指定顺序合并到新文件。
+
+## **限制说明**
+
+- 不能用于[音视频拼接](/dora/api/audio-and-video-stitching-avconcat)和图片拼接。
+- 本接口只能以 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 形式来使用。
+
+<a id="concat-specification"></a>
+# **接口规格**
+
+**注意**：接口规格不含任何空格与换行符，下列内容经过格式化以便阅读。  
+
+
+```
+Url1?concat/mimeType/<encodedMimeType>
+            /<encodedUrl2>             
+            /<encodedUrl3>             
+            /<encodedUrl4>             
+            /...                      
+```
+
+|参数名称  | 必填 | 说明 |
+| :-------------------- | :--- | :----------------------------------------|
+|Url1|是|第一个源文件的完整URL，无需经过URL安全的Base64编码。例如：`http://oano6er4n.bkt.clouddn.com` |
+| encodedMimeType | 是   | 目标文件的MIME类型，必须填经过[URL安全的Base64编码](/kodo/manual/appendix#urlsafe-base64)的值|
+| encodedUrlN | 是 | ● 必须是源文件完整的URL经过URL安全的Base64编码的值<br> ● 所有源文件必须在同一个存储空间<br> ● 最多可以合并1000个文件<br> ● 文件内容按照文件名顺序合并 |
+# **操作方式**
+
+文本文件合并，目前只能以 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 形式来使用。
+
+
+
+# **示例**
+
+以 `对已有资源手动触发` 形式，将多个文本文件拼接成一个（分别是 a.txt、b.txt 和 c.txt 在同一个空间中，并且绑定域名 test.clouddn.com）
+
+```
+POST /pfop HTTP/1.1
+Host: api.qiniu.com
+Content-Type: application/x-www-form-urlencoded
+Authorization: QBox <AccessToken>
+
+bucket=qiniu-ts-demo
+&key=a.txt
+&fops=concat/mimeType/dGV4dC9wbGFpbg==/aHR0cDovL3Rlc3QuY2xvdWRkbi5jb20vYi50eHQ=/aHR0cDovL3Rlc3QuY2xvdWRkbi5jb20vYy50eHQ=&notifyURL=http://fake.com/qiniu/notify
+```
+
+**注意**：要在 Authorization 头部的 `<AccessToken>` 前添加 QBox 和半角空格。
+

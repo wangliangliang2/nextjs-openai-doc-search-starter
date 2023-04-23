@@ -1,0 +1,31 @@
+# 直播推流鉴权SignStr
+
+**SignStr**是直播推流鉴权使用的被编码签名的原始字符串， 用来生成鉴权的Token，推流使用到**SignStr**的鉴权有[限时鉴权](/pili/api/6678/push-the-current-authentication), [限时鉴权sk](/pili/api/6678/push-the-current-authentication), [动态鉴权](/pili/api/6678/push-the-current-authentication)。
+
+* SignStr - 通常取推流地址的path加上SignQuery
+* SignQuery - 是推流地址query参数token之前的query参数
+
+
+示例：
+```
+推流地址为： rtmp://<RTMPPublishDomain>/<Hub>/<streamTitle>?e=<ExpireAt>&token=<Token>
+	
+<SignQuery> = "?e=<ExpireAt>"
+<SignStr> = "/<Hub>/<streamTitle>?e=<ExpireAt>"
+```
+	
+```
+推流地址为: rtmp://<IP>/Hub/<streamTitle>?e=<ExpireAt>&domain=<RTMPPublishDOmain>&token=<Token>
+	
+<SignQuery> = "?e=<ExpireAt>&domain=<RTMPPublishDOmain>"
+<SignStr> = "/Hub/<streamTitle>?e=<ExpireAt>&domain=<RTMPPublishDOmain>"
+```
+	
+```
+推流地址为: rtmp://<IP>/Hub/<streamTitle>?e=<ExpireAt>&token=<Token>&domain=<RTMPPublishDOmain>
+	
+<SignQuery> = "?e=<ExpireAt>"
+<SignStr> = "/Hub/<streamTitle>?e=<ExpireAt>"
+```
+
+

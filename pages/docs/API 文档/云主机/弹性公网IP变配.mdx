@@ -1,0 +1,18 @@
+# 请求路径
+> `PUT` /v1/vm/eip/:allocation_id/spec
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+allocation_id | string | path | 是 | 弹性公网 IP 的 ID
+region_id     | string | body | 是 | 地域 ID
+bandwidth     | string | body | 是 | EIP 的带宽峰值，取值：1~500，单位为 Mbps
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID
+
+
+注： 预付费 EIP 调用该接口会生成订单，需要支付后才能变配生效

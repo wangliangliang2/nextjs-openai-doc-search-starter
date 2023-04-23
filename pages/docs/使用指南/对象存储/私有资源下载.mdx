@@ -1,0 +1,15 @@
+当您将空间设置成私有时，必须获得授权，才能对空间内的资源进行访问。
+
+私有资源下载是通过<span style="color:red">HTTP GET</span>的方式访问特定的 URL。私有资源URL与公开资源URL相比只是增加了两个参数`e`和`token`，分别表示过期时间和[下载凭证](/kodo/manual/1202/download-token)。一个完整的私有资源 URL 如下所示：
+
+```
+http://<domain>/<key>?e=<deadline>&token=<downloadToken>
+```
+
+参数`e`表示 URL 的过期时间，采用[Unix时间戳](/kodo/glossary/1647/u#unixtime)，单位为秒。超时的访问将返回 401 错误。参数`token`表示下载凭证。下载凭证是对资源访问的授权，不带下载凭证或下载凭证不合法都会导致 401 错误，表示验证失败。
+
+**注意：**
+
+- 如果请求方的时钟未校准，可能会造成有效期验证不正常，例如直接认为已过期。因此需要进行时钟校准。
+- 由于开发者无法保证客户端的时间都校准，所以应该在业务服务器上创建时间戳，并周期性校准业务服务器时钟。
+	- token 必须放在请求的最后，token 之后的参数会被忽略。以请求 `http://test.cinem.net/aaaa.jpg?e=1778754963&token=sQvk4AXf0rEkzcytkr...XjI0M:zwvwiM0wsMBRj46xcby05U=&attname=geral_TS-PFS3010-8ET`为例,此时`attname=geral_TS-PFS3010-8ET`会被忽略，并不生效

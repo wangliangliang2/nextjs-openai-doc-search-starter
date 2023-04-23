@@ -1,0 +1,358 @@
+logkit-pro 采用 Go 语言编写，无法直接部署安装在 AIX 机器上，为此，我们提供了 java 编写的 agent，将logkit作为代理，接受AIX上的java agent传来的数据，完成AIX机器上的数据采集场景。
+
+
+# 环境准备
+
+在 AIX 机器上安装 Java 环境，一般系统都会有，我们的 AIX java agent 所需的最低版本为 Java 5 (1.5) 及以上，若您的机器没有安装Java 或 没有升级到对应版本，可以查看[IBM官方的文档](http://www-01.ibm.com/support/docview.wss?uid=isg3T1022693)，或者咨询其售后。
+
+除了 AIX 的机器之外，我们还需要一台 Linux（Windows/MacOS 三种系统均可） 的机器，与 AIX 机器在同一网段，为下文描述更简单，我们假设另外一台机器是Linux系统，并假设其IP为 `10.0.0.2` 。 
+
+
+# 安装 logkit-pro 和AIX agent
+
+在 Linux 系统所在机器安装 logkit-pro， 具体的安装步骤可以参见文档[logkit-pro安装指南](/insight/manual/4682/logkit-pro-install)
+
+在 AIX 系统所在机器安装 java agent， 针对 “机器监控数据采集” 和 “日志采集”， 我们提供了2种不同的agent，可以根据您的需要选择安装，也可以同时安装，每个agent均设计的很轻 (内存20MB以内，CPU 3%以下), 可以放心使用。
+
+# 机器监控数据采集
+
+## 配置AIX监控数据采集agent
+
+首先，您需要先下载机器监控数据的采集agent，下载链接: https://pandora-dl.qiniu.com/aix-metrics.tar.gz
+
+解压缩后，得到如下文件：
+
+```
+aix-metrics
+├── config
+│   ├── plugin.json
+│   ├── plugin.json.aix
+│   └── tool.json
+└── tp-1.0-SNAPSHOT-jar-with-dependencies.jar
+```
+
+其中主配置文件为 `tool.json`, 其示例配置如下，`该配置请根据实际情况修改`：
+
+```
+{
+  "log_level": "info",
+  "log_file_name": "plugin.log",
+  "log_file_path": "logs",
+  "log_limit_in_kbytes": 10000,
+  "collect_interval":15,
+  "send_url":"http://10.0.0.2:4001/logkit/data"
+}
+```
+
+> 请注意，需要将 `send_url` 中的发送字段改为实际logkit接收的地址，包括 IP、端口、请求路径等，下文介绍logkit如何配置时，会以此`http://10.0.0.2:4001/logkit/data`为例。
+
+监控项的收集配置主要放在 `plugin.json` 进行，（`plugin.json.aix`）并非必须的，只是放置了针对 AIX 机器的一些特殊命令，可以直接用 `plugin.json.aix` 替换 `plugin.json`。
+
+```
+{
+    "global": {
+		"OS": "auto",
+		"hostname": "auto",
+		"debug": false
+    },
+    "agents": [
+        {
+            "command": "df"
+        },
+        {
+            "command": "entstat"
+        },
+        {
+            "command": "iostat"
+        },
+        {
+            "command": "lparstat"
+        },
+        {
+            "command": "ps"
+        },
+        {
+            "command": "svmon"
+        },
+        {
+            "command": "uptime"
+        },
+        {
+            "command": "vmstat"
+        },
+        {
+            "command": "VmstatThreads"
+        },
+        {
+            "command": "VmstatTotals"
+        }
+    ]
+}
+```
+
+配置文件中包含了查看机器各类系统资源的命令，可以根据实际需要监控的内容进行配置修改。
+
+修改完成后，在 `aix-metrics`目录下，可以执行如下命令运行：
+
+```
+java -cp tp-1.0-SNAPSHOT-jar-with-dependencies.jar unix.Main
+```
+
+命令会自动去当前路径下寻找 `config/`文件夹中的 `tool.json` 和 `plugin.json` 您也可以根据实际需要调整运行方式，如使用`nohup`后台运行等，`若变更了运行路径，请注意放置对应配置文件`。
+
+
+
+## 配置logkit-pro
+
+安装完 logkit-pro 后，可以在 https://logkit-pro.qiniu.com 网站上配置。
+
+
+进入数据收集页面，点击 **添加收集器** -> **日志收集**。
+
+![](https://pandora-kibana.qiniu.com/k8s/collect.png)
+
+## **选择 http 数据源读取**
+
+AIX上的机器监控是通过http协议发送过来的，所以我们在logkit接受端选择 http 读取，参考如下配置：
+
+![](https://dn-odum9helk.qbox.me/Ft0aiSoylyAaKrTBetZ3eM3eegfi)
+
+其中，根据前文我们在 AIX agent 端的配置，我们此处监听的端口可以配置为 `:4001`，监听的路径可以配置为 `/logkit/data`
+
+填写完毕后，可以选择您安装的 agent，尝试获取实际的数据，方便后面做数据解析。
+
+> 注意： `获取数据的前提是AIX机器上的agent已经配置好并在持续发送`。
+
+## **根据数据的实际格式选择解析方式**
+
+读取到实际的数据后，使用 `json` 解析方式对数据解析。
+
+![](https://dn-odum9helk.qbox.me/FvMFlk97PIV7S27LxfAORi-CKzX5)
+
+具体的不同解析方式选择和详细介绍，可以参考[解析器](/insight/manual/4755/parsers)文档进一步查看。
+
+## **【可选功能】转换数据**
+
+监控数据的采集可以跳过该步骤的配置，直接点击下一步。
+
+## **发送数据**
+
+### **发送到七牛智能日志管理平台，进行丰富的监控分析**
+
+七牛智能日志管理平台提供丰富而详尽的日志查询分析、报表展示、监控报警、数据智能等能力，解决您大规模数据量下的数据分析难题。可以查看[智能日志管理平台](https://developer.qiniu.com/insight/manual/4684/product-induction)、[搜索分析](https://developer.qiniu.com/insight/manual/4629/search-analysis)、[报表展示](https://developer.qiniu.com/insight/manual/4692/reports-and-dashboards)等文档，获得更多详细的功能说明。
+
+![](https://dn-odum9helk.qbox.me/FjP7uizRmMB7JrVzZOqhwwjU3fr4)
+
+如图所示，填写一个实时仓库名称和工作流名称即可，若仓库不存在会自动创建。默认情况下就会导出到日志仓库。发送到七牛智能日志管理平台的数据，可以同时存一份到七牛云存储，只需要开启`自动导出到七牛云存储`功能即可。
+
+## **添加并分发到机器**
+
+接下来，点击下一步，提交并分发到机器即可。
+
+![](https://dn-odum9helk.qbox.me/FqaOkhmw-d4pYB14oLjH_5TWKO3n)
+
+
+## **查看运行状态**
+
+分发完成后，您可以在【数据收集】页面，也可以在【机器管理】页面，进入查看您的收集任务运行状态。
+
+![](https://dn-odum9helk.qbox.me/FpmV26zI-I7qkffdSwc8GZ17WdLM)
+
+
+至此，AIX监控数据的收集就完成了。
+
+
+# 日志数据采集与同步
+
+## 配置AIX日志采集agent
+
+AIX机器的日志采集，可以使用开源的 `logstash-forwarder-java` 工具，下载链接(选择任意一个下载即可)： 
+
+https://pandora-dl.qiniu.com/logstash-forwarder-java-0.2.6-SNAPSHOT-bin.tar.gz
+https://pandora-dl.qiniu.com/logstash-forwarder-java-0.2.6-SNAPSHOT-bin.tar.bz2
+https://pandora-dl.qiniu.com/logstash-forwarder-java-0.2.6-SNAPSHOT-bin.zip
+
+解压缩后获得如下内容：
+
+```
+logstash-forwarder-java-0.2.5-SNAPSHOT
+├── LICENSE.md
+├── README.md
+├── lib
+│   ├── commons-cli-1.2.jar
+│   ├── commons-io-2.2.jar
+│   ├── commons-lang-2.6.jar
+│   ├── hamcrest-core-1.3.jar
+│   ├── jackson-annotations-2.1.5.jar
+│   ├── jackson-core-2.1.5.jar
+│   ├── jackson-databind-2.1.5.jar
+│   ├── junit-4.11.jar
+│   └── log4j-1.2.17.jar
+└── logstash-forwarder-java-0.2.5-SNAPSHOT.jar
+```
+
+安装包中默认没有提供配置文件，可以自己配置，我们给出一份示例配置文件如下:
+
+```
+{
+  "network": {
+    "servers": [ "10.0.0.1:4002"],
+    "ssl ca": "/Your/path/to/keystore.jks"
+  },
+  "files": [
+    {
+      "paths": [ "/Your/Path/to/app.log" ],
+      "fields": { "type": "sadb" }
+    }
+  ]
+}
+```
+
+***注意：servers 配置的是logkit端的地址，可以配置多个（这样 `logstash-forwarder` 如果一个 logkit 连接不上可以连接另外）。***
+
+其余配置信息，可以参考[logstash-forwarder](https://github.com/elastic/logstash-forwarder#configuring)，它完全兼容。主要包括下面几个可用配置项：
+
+* `network.servers`: 用来指定远端(此处即logkit)服务器的 IP 地址和端口。这里可以写数组，但是 `logstash-forwarder-java` 只会随机选一台作为对端发送数据，一直到对端故障，才会重选其他服务器。
+* `network.ssl*`: 网络交互中使用的 SSL 证书路径，证书可以使用[OpenSSL工具生成](https://www.jianshu.com/p/b2a9655fe687)。
+* `files.*.paths`: 读取的文件路径。 logstash-forwarder 只支持两种输入，一种就是示例中用的文件方式，和 logstash 一样也支持 glob 路径，即 * "/var/log/*.log" 这样的写法；一种是标准输入，写法为 "paths": [ "-" ]
+
+***需要注意的是配置`ssl ca`选项时应该填入`.jks`文件的地址而非`.crt`文件的地址。否则可能会出现`java.io.IOException: Invalid keystore format`的错误。官方对于该错误的解释为：***
+
+```
+the ssl ca parameter points to a java keystore containing the root certificate of the server, not a PEM file
+```
+
+***即此时你的 logstash-forwarder 端`ssl ca`这个域配置的应该是keystore，而不是PEM，因此需要从你生成的`crt`中创建出 keystore（jks）文件。你可以使用以下命令从已有`.crt`文件中生成出`.jks`文件。***
+
+## ** 从crt中生成jks文件的方法 **
+
+```
+keytool -importcert -trustcacerts -file logstash-forwarder.crt -alias ca -keystore keystore.jks
+```
+
+配置完上述信息之后, 就可以开始运行了。
+
+## 运行日志采集 agent
+
+执行运行：
+
+    java -jar logstash-forwarder-java-0.2.5-SNAPSHOT.jar -config /path/to/config/file.json
+
+获取帮助信息：
+
+    java -jar logstash-forwarder-java-0.2.5-SNAPSHOT.jar -help
+		
+您也可以根据实际需要调整运行方式，如使用`nohup`后台运行等。
+
+## 配置logkit-pro
+
+安装完 logkit-pro 后，可以在 https://logkit-pro.qiniu.com 网站上配置。
+
+进入数据收集页面，点击 **添加收集器** -> **日志收集**。
+
+![](https://pandora-kibana.qiniu.com/k8s/collect.png)
+
+## **选择 lumberjack 数据源读取**
+
+AIX上的机器日志采集(logstash-forwarder-java)是通过lumberjack协议发送数据的，所以我们在logkit接受端选择 lumberjack 读取，参考如下配置：
+
+![](https://dn-odum9helk.qbox.me/FrAnqV-tUb625pkZVKuzybmyms0s)
+
+其中，根据前文我们在 logstash-forwarder-java 端的配置，我们此处监听的端口可以配置为 `:4001`, 私钥和证书的配置方法可以使用[OpenSSL工具生成](https://www.jianshu.com/p/b2a9655fe687)。
+
+填写完毕后，可以选择您安装的 logkit-pro ，尝试获取实际的数据，方便后面做数据解析。
+
+> 注意： `获取数据的前提是AIX机器上的 logstash-forwarder-java 已经配置好并在持续发送`。
+
+## **根据数据的实际格式选择解析方式**
+
+读取到实际的数据后，可以根据数据实际的格式选择解析方式，如图所示，我们读取到的是 `json` 格式的数据，可以直接使用 `json` 解析方式对数据解析。
+
+![](https://dn-odum9helk.qbox.me/FvMFlk97PIV7S27LxfAORi-CKzX5)
+
+具体的不同解析方式选择和详细介绍，可以参考[解析器](/insight/manual/4755/parsers)文档进一步查看。
+
+## **【可选功能】转换数据**
+
+解析完毕后，会进入到数据转换界面，可以根据您的需要进行数据转换。常见的一些转换需求如下：
+
+### 1. **针对 IP 进行扩展，有助于在服务端进行日志分析时绘制中国地图及世界地图。**
+
+选择 `IP` 转换工具，将数据中的 IP 字段扩展出相应的区域、地理、运营商等信息。支持本地( IP 库)、服务端(七牛 IP 库)两种方式解析。如图所示，我们将 `myip` 字段的IP值解析出来了 `myip_country` 等字段。
+
+![](https://dn-odum9helk.qbox.me/Fvo3oopHIgejGFAIfZ9795qFyBsw)
+
+### 2. **过滤掉不关心的数据，有助于在客户端做边缘计算，去除大量无用的字段，节省传输带宽。**
+
+选择 `discard` 转换工具，勾选需要去掉的字段，当然也可以选择 `pick` 工具，勾选需要保留的字段，其他都删除。如图所示，我们勾选了 `haah` 字段，在转换后的数据中已经没有这个字段。
+
+![](https://dn-odum9helk.qbox.me/FmR9oxKLlSV92Z1g8YPXNy6RrVH6)
+
+### 3. **重命名，有助于解决大数据平台数据字段类型冲突问题**
+
+选择 `rename` 转换工具，将需要改名的字段，命名为新的名称。新的名称可以在随后定义为新的类型，不会与老的数据命名冲突。如图所示，我们将 `myip` 字段改名为了 `client_ip`。如果要从本地解析 IP 转为使用服务端解析 IP，记得用重命名功能改个名字，因为服务端解析 IP 会将字段定义为 IP 类型，而本地解析只是字符串类型。
+
+![](https://dn-odum9helk.qbox.me/FupHNf-koyxQCxsEpGmITqpl5jqa)
+
+
+### 4. **时间类型转换，确定时间字段有助于后续按照日志的事件时间进行分析**
+
+选择 `date` 转换工具后，大多数情况下能自动识别出时间格式并转换，若无法识别，可以按照智能推荐填写，也可以根据[date 转换文档](https://developer.qiniu.com/insight/manual/4791/date-transformer)中的说明填写自定义格式。如图所示，选择 `time` 字段后会自动识别并转化为 `RFC3339` 格式，转化后的数据字段没有改变只是因为我没有点击添加，您配置转换工具的时候也不要忘了添加哦。
+
+![](https://dn-odum9helk.qbox.me/Fl6yi2mWh6cSPlRiG0fx-hV7wQUx)
+
+## 5. **字段类型转换，有助于按特定类型进行分析，如数值类型求平均值等**
+
+选择 `convert` 转换工具，可以勾选字段，并转换为对应类型。如图所示，我们将 `mynumber` 字段改为了 `long` 类型，在样例日志中还是字符串类型，转换后就变成了整数，在这个例子中不想丢失精度也可以转为 `float` 类型。
+
+![](https://dn-odum9helk.qbox.me/FkgbRyNHjs7AfOROej-P-zyrRioA)
+
+还有非常多转换工具，不再一一介绍，可以参考 [转换器](https://developer.qiniu.com/insight/manual/4767/transformers)相关文档了解更多内容。
+
+
+## **发送数据**
+
+### 1. **发送到七牛智能日志管理平台，进行丰富的日志分析**
+
+七牛智能日志管理平台提供丰富而详尽的日志查询分析、报表展示、监控报警、数据智能等能力，解决您大规模数据量下的数据分析难题。可以查看[智能日志管理平台](https://developer.qiniu.com/insight/manual/4684/product-induction)、[搜索分析](https://developer.qiniu.com/insight/manual/4629/search-analysis)、[报表展示](https://developer.qiniu.com/insight/manual/4692/reports-and-dashboards)等文档，获得更多详细的功能说明。
+
+![](https://dn-odum9helk.qbox.me/FjP7uizRmMB7JrVzZOqhwwjU3fr4)
+
+如图所示，填写一个实时仓库名称和工作流名称即可，若仓库不存在会自动创建。默认情况下就会导出到日志仓库。发送到七牛智能日志管理平台的数据，可以同时存一份到七牛云存储，只需要开启`自动导出到七牛云存储`功能即可。
+
+
+### 2. **发送到七牛云存储，进行数据备份和分析**
+
+若您的数据不需要实时查询分析，也可以将数据单独发送到七牛云存储进行备份，后续也可以通过七牛的[Spark 服务](https://developer.qiniu.com/insight/manual/4965/xspark)对数据进行批量分析。七牛云存储与七牛Spark服务相结合，使得您可以以极低的成本对海量数据进行分析。
+
+![](https://dn-odum9helk.qbox.me/FhjF_CahyO-fUVJeGEVlGlJwduLV)
+
+### 3. **发送到 Kafka，进行机房间数据同步**
+
+当然，您完全可以选择其他发送服务，如发送到其他机房的 Kafka，进行数据同步功能。
+
+![](https://dn-odum9helk.qbox.me/Fp0VdIWxnW1-pKHD0zY60Nx8wLiM)
+
+### 4. **发送到其他 HTTP 服务端，使用 logkit-pro 作为数据中转代理**
+
+您也可以选择http 发送，如发送您自己的http服务端，使用 logkit-pro 作为数据中转代理。
+
+![](https://dn-odum9helk.qbox.me/FtM2me0YLmnUs4Y_OI-WKmIoeH13)
+
+更多发送源，可以查看[发送源](https://developer.qiniu.com/insight/manual/4782/senders)进行了解。
+
+## **添加并分发到机器**
+
+接下来，点击下一步，提交并分发到机器即可。
+
+![](https://dn-odum9helk.qbox.me/FqaOkhmw-d4pYB14oLjH_5TWKO3n)
+
+
+## **查看运行状态**
+
+分发完成后，您可以在【数据收集】页面，也可以在【机器管理】页面，进入查看您的收集任务运行状态。
+
+![](https://dn-odum9helk.qbox.me/FpmV26zI-I7qkffdSwc8GZ17WdLM)
+
+
+至此，AIX日志数据的采集就完成了。

@@ -1,0 +1,30 @@
+# 在实例上完成扩容
+假设用户在虚拟机 VM1 上已挂载了一块 100G 的云磁盘，挂载设置为 
+```
+/dev/vdb1    /data1    ext4    defaults    0    0；
+```
+
+在使用过程中发现该磁盘空间不足，需要扩容磁盘空间   
+
+1. 为了防止数据丢失的风险， 扩容前请先在控制台为云磁盘创建磁盘快照
+
+- 登录虚拟机执行 ```umount /dev/vdb1```  命令卸载主分区，让后在控制台界面卸载云磁盘
+
+- 在进行 Linux 磁盘扩容操作之前，请先在控制台进行 EVM 磁盘资源的 [扩容](/evm/manual/4053/the-cloud-disk-capacity)
+
+- 在控制台界面把云磁盘挂载回虚拟机
+    
+- 使用 fdisk 命令将原来的磁盘分区 /dev/vdb 删除，然后使用 fdisk 命令创建新的分区 /dev/vdb  
+<img src="https://dn-odum9helk.qbox.me/2ed3715f2ed998e3ab9529447244fd14" width=800 />  
+</br>
+<img src="https://dn-odum9helk.qbox.me/86aebd9ab1404d1045c9d96dbf0af2fe" width=800 />
+     
+- 检查磁盘分区 ``` e2fsck -f /dev/vdb1 ``` 并对磁盘进行扩容 ``` resize2fs /dev/vdb1 ```  
+<img src="https://dn-odum9helk.qbox.me/d753bf8ab2f6efcdf488f9b280672a99" width=800 />
+    
+- 重新将 /dev/vdb1 挂载到 /data 上 ```mount /dev/vdb1 /data```
+    
+- 执行 ``` df -h ``` 可以看到 /data 已经是扩容后的容量了
+<img src="https://dn-odum9helk.qbox.me/c33b9aca741c68d567278d267e33ce45" width=800 />
+
+    

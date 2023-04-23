@@ -1,0 +1,92 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                QNRTC 全局事件回调接口，用来监听设备相关的回调事件，如音频路由改变等。可以在 QNRTC 的初始化函数 QNRTC.init 中传入。</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnVideoDeviceStateChanged`)'>OnVideoDeviceStateChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnAudioDeviceStateChanged`)'>OnAudioDeviceStateChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnAudioRouteChanged`)'>OnAudioRouteChanged</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnVideoDeviceStateChanged">OnVideoDeviceStateChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnVideoDeviceStateChanged(<a href='9459/QNVideoDeviceState'>QNVideoDeviceState</a> device_state, const std::string& device_name)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>摄像头插拔消息通知，该方法仅适用于 Windows 平台</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            device_state: <a href='9459/QNVideoDeviceState'>QNVideoDeviceState</a>
+        </div>
+                <p>摄像头设备状态</p>
+    </li>
+    <li>
+        <div>
+            device_name: string
+        </div>
+                <p>摄像头设备名</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnAudioDeviceStateChanged">OnAudioDeviceStateChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnAudioDeviceStateChanged(<a href='9400/QNAudioDeviceState'>QNAudioDeviceState</a> device_state, const std::string& device_guid)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音频设备插拔消息通知，该方法仅适用于 Windows 平台</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            device_state: <a href='9400/QNAudioDeviceState'>QNAudioDeviceState</a>
+        </div>
+                <p>设备状态设备状态</p>
+    </li>
+    <li>
+        <div>
+            device_guid: string
+        </div>
+                <p>音频设备 id</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnAudioRouteChanged">OnAudioRouteChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnAudioRouteChanged(QNAudioDevice device)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音频路由改变通知， 仅适用于 Android 和 iOS 平台</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            device: QNAudioDevice
+        </div>
+                <p>当前的音频路由信息</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

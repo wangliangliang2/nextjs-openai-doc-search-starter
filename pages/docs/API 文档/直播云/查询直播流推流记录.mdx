@@ -1,0 +1,101 @@
+# 接口描述
+
+查询目标直播流在一段时间内的推流记录
+
+# 请求参数
+
+```
+GET /v2/hubs/<hub>/streams/<encodedStreamTitle>/historyactivity?start=<start>&end=<end>
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/x-www-form-urlencoded 
+```
+
+| 参数             | 类型 | 必填 | 描述                     |
+| ------------------ | ------ | -------- | -------------------------- |
+| hub                | string | 是   | 直播空间名            |
+| encodedStreamTitle | string | 是   | 经过[base64编码](/kodo/manual/appendix)的直播流名   |
+| start | int64 | 否      | 开始时间，Unix时间戳，默认为0 |
+| end   | int64 | 否      | 结束时间，Unix时间戳，默认为当前时间 |
+
+# 返回数据
+
+<html>
+ <head></head>
+ <body>
+  <table> 
+   <thead class="ant-table-thead"> 
+    <tr> 
+     <th key="name">参数</th>
+     <th key="type">类型</th>
+     <th key="desc">描述</th>
+    </tr> 
+   </thead>
+   <tbody classname="ant-table-tbody">
+    <tr key="0-0">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> items</span></td>
+     <td key="1"><span>object[]</span></td>
+     <td key="2"><span style="white-space: pre-wrap">直播流推流记录列表</span></td>
+    </tr>
+    <tr key="0-0-1">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> start</span></td>
+     <td key="1"><span>int64</span></td>
+     <td key="2"><span style="white-space: pre-wrap">推流开始时间，Unix时间戳</span></td>
+    </tr>
+    <tr key="0-0-2">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> end</span></td>
+     <td key="1"><span>int64</span></td>
+     <td key="2"><span style="white-space: pre-wrap">推流结束时间，Unix时间戳</span></td>
+    </tr> 
+    <tr key="0-0-3">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> clientIP</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">推流端IP</span></td>
+    </tr>
+    <tr key="0-0-4">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> serverIP</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">服务端IP</span></td>
+    </tr>
+   </tbody> 
+  </table> 
+ </body>
+</html>
+
+# 示例
+
+请求体:
+
+```
+GET /v2/hubs/test/streams/dGltZXN0YW1w/historyactivity?end=1635164952&start=1635078552 HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/x-www-form-urlencoded 
+```
+
+返回体:
+
+```
+200 OK
+
+{
+    "items":[
+        {
+            "start": 1635162331,
+            "end": 1635164952,
+            "clientIP": "127.0.0.1:19866",
+            "serverIP": "127.0.0.1:1935"
+        },
+        {
+            "start": 1635161931,
+            "end": 1635162330,
+            "clientIP": "127.0.0.1:10002",
+            "serverIP": "127.0.0.1:1935"
+        }
+    ]
+}
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

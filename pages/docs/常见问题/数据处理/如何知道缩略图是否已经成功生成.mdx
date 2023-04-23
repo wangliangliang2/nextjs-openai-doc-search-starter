@@ -1,0 +1,9 @@
+> 在上传图片 API 中使用预处理指令生成缩略图之后，如何知道缩略图是否已经成功生成？
+
+可以通过持久化处理返回的persistenId查询，可以看到处理后的key值，通过拼接到下述链接获取  
+[http://api.qiniu.com/status/get/prefop?id=](http://api.qiniu.com/status/get/prefop?id=)  
+具体文档参考  
+[http://developer.qiniu.com/code/v6/api/dora-api/pfop/prefop.html](http://developer.qiniu.com/code/v6/api/dora-api/pfop/prefop.html)
+
+但是不建议大家使用pfop生成缩略图，因为缩略图生成过程通常比较快，而且缩略图有缓存机制（但不是存到你的存储空间），用户下次访问的时候，会直接访问上次已经生成好的缩略图。因此可以直接在线生成缩略图即可
+

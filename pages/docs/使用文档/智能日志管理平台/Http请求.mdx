@@ -1,0 +1,16 @@
+HttpFetch Reader 是 logkit-pro 提供的以 `GET`、 `POST` 、`PUT` 请求的方式接受并读取日志的 reader。
+
+
+1. `http_method`: 值可以为 默认为 `GET` `POST` 和 `PUT`，默认为 `GET`
+2. `http_service_address`: `必填`， 请求的服务端地址，例如 `http://127.0.0.1:4001` 协议为可选，不填默认为http://
+3. `http_service_path`: 请求发送的路径，可填多个，如配置 `/logkit/data` ，则向 `http://127.0.0.1:4001/logkit/data`发送请求。路径必须以`'/'`开头。
+4.  `http_cron`: 定时任务触发周期，第一种直接写"loop"循环执行，例如`loop10s`表示每个10秒执行一次 `loop` + 数字 + 单位（`ms`|`s`|`m`|`h`），第二种为crontab的写法，类似于* * * * * *，对应的是秒(0~59)，分(0~59)，时(0~23)，日(1~31)，月(1-12)，星期(0~6)，填*号表示所有遍历都执行
+5.  `http_exec_onstart`: http_cron为crontab的写法时，是否启动时立即执行一次 
+6.  `http_headers`: 请求的表头，为json格式，不同的header项使用 `,`分割，例如`{Content-Type": "application/json;charset=utf-8", "X-Appid":"100001"}`
+7.  `http_body`: 请求的body
+8.  `http_dial_timeout`: 连接超时时间间隔
+9.  `http_response_timeout`: 等待响应的超时间隔
+
+>注：
+ 魔法变量 `$(pageSize)` 和 `$(pageNo)` 可以用于http请求参数，其中 `$(pageSize)` 默认值为10，可以通过 `http_page_size` 设置初始值，`$(pageNo)`默认值为1，可以通过 `http_page_no`设置初始值，且`$(pageNo)`会每次请求后都加1。例如分页请求 `http://127.0.0.1:4001/logkit/data?pageSize=$(pageSize)&pageNo=$(pageNo)`，会随请求次数增加，`$(pageNo)`会不停增加，第9次成功后，第10次请求则为 `http://127.0.0.1:4001/logkit/data?pageSize=10&$pageNo=10`。另外logkit-pro会保存 `$(pageSize)` 和 `$(pageNO)`的值，重启logkit-pro，会从上一次请求后开始请求。
+

@@ -1,0 +1,82 @@
+# **描述**
+本接口用于更新模版信息。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：PATCH
+* 接口路径：`/v1/templates/{templateId}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|templateId|是|string|模版ID|
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|operations|是|op数组|op集合，详见：*表一*
+
+*表一：* OP集合参数
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|operations.key|是|string|要修改的参数
+|operations.op|是|string|op操作(目前支持replace和delete)
+|operations.value|是|object|要修改的参数对应的value(当op为delete的时候可以忽略)
+
+*表二：* 可编辑参数说明
+
+|参数名称|字段类型|说明|
+|---|---|---|---|
+|name|string|模版名称
+|desc|string|模版描述	
+|bucket|string|模版对应的对象存储的bucket
+|deleteAfterDays|integer|存储过期时间，默认永久不过期
+|fileType|integer|文件存储类型，取值：0（普通存储），1（低频存储）
+|recordType|integer|录制模式，取值：0（不录制），1（实时录制），2(按需录制)
+|jpgOverwriteStatus|boolean|开启覆盖式截图(一般用于流封面)
+|recordInterval|integer|录制文件时长，单位为秒，600~7200
+|snapInterval|integer|截图间隔，单位为秒，1~600，按需截图可以忽略
+|jpgSequenceStatus|boolean|开启实时截图
+|jpgOnDemandStatus|boolean|开启按需截图
+|recordFileFormat|integer|录制文件存储格式(多选)，范围：1(001)～7(111), 从左往右的三位二进制数分别代表MP4，FLV，M3U8；0代表不选择该格式，1代表选择；例如：2(010)代表选择FLV格式，6(110)代表选择MP4和FLV格式，1(001)代表选择M3U8格式，7(111)代表三种格式均选择
+
+# **响应参数**
+响应参数与创建模板一致，请参阅**创建模板**[响应参数](https://developer.qiniu.io/qvs/api/6721/create-template#3)
+# **示例**
+
+**请求示例**
+
+```
+curl --request PATCH \
+  --url http://qvs.qiniuapi.com/v1/templates/d102sns2mwhd \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{"operations":[{"key":"recordType","op":"replace","value":1}]
+}'
+```
+
+**响应示例**
+
+```
+{
+  "id": "d102sns2mwhd",
+  "name": "test009",
+  "bucket": "bucket-test1",
+  "deleteAfterDays": 0,
+  "templateType": 0,
+  "fileType": 0,
+  "recordType": 1,
+  "recordFileFormat": 1,
+  "tsFileNameTemplate": "record/ts/${namespaceId}/${streamId}/${startMs}-${endMs}.ts",
+  "recordSnapFileNameTemplate": "record/snap/${namespaceId}/${streamId}/${startMs}.jpg",
+  "jpgOverwriteStatus": false,
+  "jpgSequenceStatus": false,
+  "jpgOnDemandStatus": false,
+  "snapInterval": 10,
+  "createdAt": 1585104103,
+  "updatedAt": 1586849432
+}
+```

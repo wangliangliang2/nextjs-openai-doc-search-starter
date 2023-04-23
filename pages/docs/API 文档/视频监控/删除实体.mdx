@@ -1,0 +1,44 @@
+# **描述**
+本接口用于删除某个图像库里的实体信息。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：DELETE
+* 接口路径：`/v1/imagelibs/{libId}/entities`
+
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|libId|是|string|图像库ID
+
+**请求 body参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|entityIds|是|string数组|需要删除的实体ID列表, 从API(实体列表)获取
+
+# **响应参数**
+
+无
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request DELETE \
+  --url http://qvs.qiniuapi.com/v1/imagelibs/xxxx/entities\
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --data '{
+	"entityIds":["id1","id2"]
+    }'
+```
+**响应示例**
+
+```
+{
+  "code": 200
+}
+```

@@ -1,0 +1,605 @@
+数据集管理包括对用户数据集、组共享数据集和共享数据集的管理。
+
+用户数据集的功能包括新建数据集、删除数据集、复制数据集、格式化数据、共享、数据集预处理等。共享数据集的功能包括复制数据集、格式化数据、数据集预处理等。
+
+![](https://dn-odum9helk.qbox.me/FlSBtmN-Vb5S4L23OnWCWBMGZPJZ)
+
+平台管理的数据集包括图片数据集和视频数据集。因为数据集在训练的过程中，对于不同的框架需要使用不同的缓存格式，所以在数据集模块，我们不仅提供了数据集的管理功能，更提供了格式化数据集的功能，目前图片数据支持的格式有lmdb,recordio和原图格式，视频数据现在只支持原图。
+
+用户数据集中的数据集可以共享，共享成功后的数据集将会从用户数据集tab移到共享数据集tab中，用户将不能在用户数据集tab看到这个数据集。共享数据集不能删除。
+
+# 1.新建数据集
+
+图片数据在平台上的数据集有三种数据形式，一种是源数据列表（带标签信息或者不带标签信息），一种是格式化后的数据文件，还可以是存储在七牛云bucket中的图片。
+
+视频数据在平台上的数据集目前仅支持源数据列表（带标签信息或者不带标签信息）。
+
+下面我们就以图片数据为例，介绍新建数据集支持的三种方式：
+
+1）源数据集列表
+
+源数据集列表必须是满足特定格式的jsonlist。如果源数据集列表是在七牛云存储中，那么可以把这个源数据集列表文件的地址按照七牛协议填入。平台会验证用户是否可以找到文件，文件不存在或者用户没有权限访问该文件，平台都会给出提示信息。
+![](https://dn-odum9helk.qbox.me/FjPvp4_n8F2P3YTkW69m-i49I_QG)
+
+如果源数据集列表在用户本地，则可以直接通过本地上传。
+
+![](https://dn-odum9helk.qbox.me/FguKfpvwReULHnJFPigTs-CTEQFM)
+
+填入数据集名称、描述，然后点击“确定创建”的按钮，即可成功创建数据集。
+
+图片源数据列表的jsonlist格式如下：
+
+```
+{
+	"url": "http://any_url",//必填, 图片的url, 支持公网和bucket中的http链接。如果是七牛私有bucket中的图片必须使用七牛协议，格式为 qiniu:///bucketname/prefix/filename, 例如qiniu:///newdata/0081.jpg_wh1200.jpg
+  "type": "image",// 必填, 现支持图片"image"和"video", 后期会支持文字
+  "source_url":"http://source_url",//图片的来源，augment等操作生成的图片，来源为原图片url，下载操作的图片，来源为原url
+  "ops":"augment(param1,param2...)",//图片上进行的操作，下载为download()"
+	"label":
+	[
+		{ 
+			"name":"pulp",
+			"type":"classification",
+			"version":"1",
+			"data":[
+				{
+					"class":"sexy"
+				}
+			]
+		},
+		{ 
+			"name":"terror",
+			"type":"classification",
+			"version":"1",
+			"data":[
+				{
+					"class":"normal"
+				}
+			]
+		},
+		{ 
+			"name":"general",
+			"type":"classification",
+			"version":"1",
+			"data":[
+				{
+					"class":"human"
+				}
+			]
+		},
+		{ 
+			"name":"general_d",
+			"type":"detection",
+			"version":"1",
+			"data":[
+				{"class":"dog","bbox":[[4,5], [23,45], [67, 89]]},
+				{ "class": "cat", "bbox":[[4,5], [23,45], [67, 89]]}
+			]
+		},
+		{
+			"name":"face",
+			"type":"face",
+			"version":"1",
+                        "perfect": true,
+			"data":[
+				{"bbox": [[10, 20], [21, 31], [81, 91]],
+				"bbox_score": 0.992,
+                                "roll_cls": 0,
+                                "roll": 0,
+                                "yaw": 0,
+                                "pitch":0,
+                                “lm_num": 68,
+                                “difficult": false,
+				"landmarks":[
+					{"index": 1, "pt": [1,2], "score": 0.91},
+					{"index": 2, "pt": [1,2], "score": 0.91},
+					{"index": 3, "pt": [1,2], "score": 0.91},
+					{"index": 4, "pt": [1,2], "score": 0.91},
+                                        {"index": 5, "pt": [1,2], "score": 0.91},
+					{"index": 6, "pt": [1,2], "score": 0.91},
+					{"index": 7, "pt": [1,2], "score": 0.91},
+                                        {"index": 8, "pt": [1,2], "score": 0.91},
+					{"index": 9, "pt": [1,2], "score": 0.91},
+					{"index": 10, "pt": [1,2], "score": 0.91},
+                                        {"index": 11, "pt": [1,2], "score": 0.91},
+					{"index": 12, "pt": [1,2], "score": 0.91},
+					{"index": 13, "pt": [1,2], "score": 0.91},
+                                        {"index": 14, "pt": [1,2], "score": 0.91},
+					{"index": 15, "pt": [1,2], "score": 0.91},
+					{"index": 16, "pt": [1,2], "score": 0.91},
+                                        {"index": 17, "pt": [1,2], "score": 0.91},
+					{"index": 18, "pt": [1,2], "score": 0.91},
+					{"index": 19, "pt": [1,2], "score": 0.91},
+                                        {"index": 20, "pt": [1,2], "score": 0.91},
+					{"index": 21, "pt": [1,2], "score": 0.91},
+					{"index": 22, "pt": [1,2], "score": 0.91},
+                                        {"index": 23, "pt": [1,2], "score": 0.91},
+					{"index": 24, "pt": [1,2], "score": 0.91},
+					{"index": 25, "pt": [1,2], "score": 0.91},
+                                        {"index": 26, "pt": [1,2], "score": 0.91},
+					{"index": 27, "pt": [1,2], "score": 0.91},
+					{"index": 28, "pt": [1,2], "score": 0.91},
+                                        {"index": 29, "pt": [1,2], "score": 0.91},
+					{"index": 30, "pt": [1,2], "score": 0.91},
+                                        {"index": 31, "pt": [1,2], "score": 0.91},
+					{"index": 32, "pt": [1,2], "score": 0.91},
+					{"index": 33, "pt": [1,2], "score": 0.91},
+                                        {"index": 34, "pt": [1,2], "score": 0.91},
+					{"index": 35, "pt": [1,2], "score": 0.91},
+					{"index": 36, "pt": [1,2], "score": 0.91},
+                                        {"index": 37, "pt": [1,2], "score": 0.91},
+					{"index": 38, "pt": [1,2], "score": 0.91},
+					{"index": 39, "pt": [1,2], "score": 0.91},
+                                        {"index": 40, "pt": [1,2], "score": 0.91},
+                                        {"index": 41, "pt": [1,2], "score": 0.91},
+					{"index": 42, "pt": [1,2], "score": 0.91},
+					{"index": 43, "pt": [1,2], "score": 0.91},
+                                        {"index": 44, "pt": [1,2], "score": 0.91},
+					{"index": 45, "pt": [1,2], "score": 0.91},
+					{"index": 46, "pt": [1,2], "score": 0.91},
+                                        {"index": 47, "pt": [1,2], "score": 0.91},
+					{"index": 48, "pt": [1,2], "score": 0.91},
+					{"index": 49, "pt": [1,2], "score": 0.91},
+                                        {"index": 50, "pt": [1,2], "score": 0.91},
+                                        {"index": 51, "pt": [1,2], "score": 0.91},
+					{"index": 52, "pt": [1,2], "score": 0.91},
+					{"index": 53, "pt": [1,2], "score": 0.91},
+                                        {"index": 54, "pt": [1,2], "score": 0.91},
+					{"index": 55, "pt": [1,2], "score": 0.91},
+					{"index": 56, "pt": [1,2], "score": 0.91},
+                                        {"index": 57, "pt": [1,2], "score": 0.91},
+					{"index": 58, "pt": [1,2], "score": 0.91},
+					{"index": 59, "pt": [1,2], "score": 0.91},
+                                        {"index": 60, "pt": [1,2], "score": 0.91},
+                                        {"index": 61, "pt": [1,2], "score": 0.91},
+					{"index": 62, "pt": [1,2], "score": 0.91},
+					{"index": 63, "pt": [1,2], "score": 0.91},
+                                        {"index": 64, "pt": [1,2], "score": 0.91},
+					{"index": 65, "pt": [1,2], "score": 0.91},
+					{"index": 66, "pt": [1,2], "score": 0.91},
+                                        {"index": 67, "pt": [1,2], "score": 0.91},
+					{"index": 68, "pt": [1,2], "score": 0.91}
+				],
+				"cluster": {"id": 1, "score": 0.3}
+				},
+				{"bbox": [[10, 20], [21, 31], [81, 91]],
+				"bbox_score": 0.992,
+                                "roll_cls": 0,
+                                "roll": 0,
+                                "yaw": 0,
+                                "pitch":0,
+                                “lm_num": 68,
+				"landmarks":[
+					{"index": 1, "pt": [1,2], "score": 0.91},
+					{"index": 2, "pt": [1,2], "score": 0.91},
+					{"index": 3, "pt": [1,2], "score": 0.91},
+					{"index": 4, "pt": [1,2], "score": 0.91},
+                                        {"index": 5, "pt": [1,2], "score": 0.91},
+					{"index": 6, "pt": [1,2], "score": 0.91},
+					{"index": 7, "pt": [1,2], "score": 0.91},
+                                        {"index": 8, "pt": [1,2], "score": 0.91},
+					{"index": 9, "pt": [1,2], "score": 0.91},
+					{"index": 10, "pt": [1,2], "score": 0.91},
+                                        {"index": 11, "pt": [1,2], "score": 0.91},
+					{"index": 12, "pt": [1,2], "score": 0.91},
+					{"index": 13, "pt": [1,2], "score": 0.91},
+                                        {"index": 14, "pt": [1,2], "score": 0.91},
+					{"index": 15, "pt": [1,2], "score": 0.91},
+					{"index": 16, "pt": [1,2], "score": 0.91},
+                                        {"index": 17, "pt": [1,2], "score": 0.91},
+					{"index": 18, "pt": [1,2], "score": 0.91},
+					{"index": 19, "pt": [1,2], "score": 0.91},
+                                        {"index": 20, "pt": [1,2], "score": 0.91},
+					{"index": 21, "pt": [1,2], "score": 0.91},
+					{"index": 22, "pt": [1,2], "score": 0.91},
+                                        {"index": 23, "pt": [1,2], "score": 0.91},
+					{"index": 24, "pt": [1,2], "score": 0.91},
+					{"index": 25, "pt": [1,2], "score": 0.91},
+                                        {"index": 26, "pt": [1,2], "score": 0.91},
+					{"index": 27, "pt": [1,2], "score": 0.91},
+					{"index": 28, "pt": [1,2], "score": 0.91},
+                                        {"index": 29, "pt": [1,2], "score": 0.91},
+					{"index": 30, "pt": [1,2], "score": 0.91},
+                                        {"index": 31, "pt": [1,2], "score": 0.91},
+					{"index": 32, "pt": [1,2], "score": 0.91},
+					{"index": 33, "pt": [1,2], "score": 0.91},
+                                        {"index": 34, "pt": [1,2], "score": 0.91},
+					{"index": 35, "pt": [1,2], "score": 0.91},
+					{"index": 36, "pt": [1,2], "score": 0.91},
+                                        {"index": 37, "pt": [1,2], "score": 0.91},
+					{"index": 38, "pt": [1,2], "score": 0.91},
+					{"index": 39, "pt": [1,2], "score": 0.91},
+                                        {"index": 40, "pt": [1,2], "score": 0.91},
+                                        {"index": 41, "pt": [1,2], "score": 0.91},
+					{"index": 42, "pt": [1,2], "score": 0.91},
+					{"index": 43, "pt": [1,2], "score": 0.91},
+                                        {"index": 44, "pt": [1,2], "score": 0.91},
+					{"index": 45, "pt": [1,2], "score": 0.91},
+					{"index": 46, "pt": [1,2], "score": 0.91},
+                                        {"index": 47, "pt": [1,2], "score": 0.91},
+					{"index": 48, "pt": [1,2], "score": 0.91},
+					{"index": 49, "pt": [1,2], "score": 0.91},
+                                        {"index": 50, "pt": [1,2], "score": 0.91},
+                                        {"index": 51, "pt": [1,2], "score": 0.91},
+					{"index": 52, "pt": [1,2], "score": 0.91},
+					{"index": 53, "pt": [1,2], "score": 0.91},
+                                        {"index": 54, "pt": [1,2], "score": 0.91},
+					{"index": 55, "pt": [1,2], "score": 0.91},
+					{"index": 56, "pt": [1,2], "score": 0.91},
+                                        {"index": 57, "pt": [1,2], "score": 0.91},
+					{"index": 58, "pt": [1,2], "score": 0.91},
+					{"index": 59, "pt": [1,2], "score": 0.91},
+                                        {"index": 60, "pt": [1,2], "score": 0.91},
+                                        {"index": 61, "pt": [1,2], "score": 0.91},
+					{"index": 62, "pt": [1,2], "score": 0.91},
+					{"index": 63, "pt": [1,2], "score": 0.91},
+                                        {"index": 64, "pt": [1,2], "score": 0.91},
+					{"index": 65, "pt": [1,2], "score": 0.91},
+					{"index": 66, "pt": [1,2], "score": 0.91},
+                                        {"index": 67, "pt": [1,2], "score": 0.91},
+					{"index": 68, "pt": [1,2], "score": 0.91}
+				],
+				"cluster": {"id": 1, "score": 0.3}
+				}												
+			]
+		}
+	]
+}
+
+```
+
+视频源数据列表的jsonlist格式如下：
+```
+{
+  "url":string,   ／／必填 
+  "type":"video"，／／必填 
+  "metadata":
+  {    
+      "duration":float,   ／／从视频中读出来
+      "resolution":"320x240"，  ／／从视频中读出来 
+    }
+
+  "label": string，／／整体类目标签
+  "clips":
+
+  [
+      {
+       "name"：“video_terror”，
+       “type“: "video_detection",
+       "version":"1",
+       "data":[
+          {
+             "label":string,
+             "segment":[float,float]# starttime,endtime
+           },
+        ...
+        ]
+       }
+       ...
+  ]
+  "shots":
+  [
+     {
+      "name"：“shot_detect”，
+      “type“: "shot_detection",
+      "version":"1",
+      "data":[
+         {
+            "label":string,
+            "segment":[float,float]# starttime,endtime
+          },
+       ...
+       ]
+      }
+      ...
+  ]
+  "frames":[
+  {
+    “url“: "",
+    “type“: "image",
+    "timestamp": float，／／到毫秒级别，找启超确认timestamp的格式
+
+    "label":
+
+    {
+
+        {
+
+            "name": "pulp",
+
+            "type": "classification"
+
+            “version": "1"
+
+            "data":[
+
+                  {
+
+                      "class": string
+
+                  },
+
+                  ...
+
+            ]
+
+        },
+
+        {
+
+           "name": "terror",
+
+           "type": "classification",
+
+           “version": "1"
+
+           "data":[
+
+                  {
+
+                      "class": string
+
+                  },
+
+                  ...
+
+            ]
+
+        }, 
+
+                 {
+
+	    "name":"general",
+            "type": "classification", 
+
+            “version": "1",
+
+            "data":[
+
+                   {
+
+                       "class": string
+
+                   },
+
+                   ...
+
+            ]
+
+        },
+
+        {
+
+
+
+	    "name":"general",
+            "type": "detection", 
+
+            “version": "1", 
+
+            "data":[
+
+                   {"class":string,"bbox":[[int,int],[int,int],[int,int]]},
+
+                   ...
+
+             ]            
+
+        },
+
+        {
+
+            "name": "faca",
+
+            "type": "face", 
+
+            “version": "1",
+
+            "data":[
+
+                   {
+
+                       "bbox":[[int,int],[int,int],[int,int],
+
+                       "bbox_score": float,
+
+                       "landmarks":[
+
+                           {"index":int , "pt": [int ,int],'socre':float},
+
+                           ...
+
+                        ],
+
+                        "cluster":{"id": int, "score":float}
+
+                   }  
+
+        }      
+
+            },
+
+      ...
+
+   ]
+}
+
+```
+
+2）格式化数据集
+训练时使用的数据集都是格式化好的数据，如果用户之前已经在本地把数据集格式化完成，那么就可以直接把格式化好的数据上传到平台中。目前平台支持的格式化数据类型有lmdb和recordio。AVA平台不支持直接上传格式化数据集，需要用户先把格式化好的数据上传到七牛云存储中，然后使用文件的外链创建格式化数据集。暂时只支持图片的格式化数据。
+
+![](https://dn-odum9helk.qbox.me/Fo9QzobXnt1uTkYEo-dowucOyZMe)
+
+3）样本数据
+如果用户的数据原文件（例如图片）保存在七牛云存储中，而用户想要使用这部分的图片作为数据集，那么就可以选择样本数据，然后输入图片在七牛云存储中的路径。平台会自动把路径下所有png、jpg格式的图片创建为一个数据集。目前仅支持华东存储空间的图片文件。
+
+![](https://dn-odum9helk.qbox.me/FoATcFFdcD8y0YQPtE9M0yDOVw0N)
+
+
+
+
+# 2.查看数据集详情
+
+在数据集页面，点击数据集的名称，进入到数据集详情页面。
+![](https://dn-odum9helk.qbox.me/FuAuf3ObfSu4OguflMOVCT3GhZQ8)
+
+不同的数据集类型，数据集详情页面显示的信息有所不同。
+在数据集详情页面，用户可以操作的功能：
+* 查看源数据集统计信息
+* 格式化数据
+
+## 2.1 查看源数据集统计信息
+点击统计信息字段的“查看”，系统就会弹出这个源数据集的标签统计信息。
+如果源数据集没有标签数据，点击统计信息字段的“查看”，在系统弹出的对话框中，可以看到源数据集的数据条数，并提示这个源数据集没有标签信息。
+![](https://dn-odum9helk.qbox.me/FruonGNxC7jxhEMXZvpnjelfGfxv)
+
+## 2.2 格式化数据
+训练中实际使用的数据集必须是格式化的数据，不同的训练框架能够接受的格式化都不尽相同，所以在训练之前，就需要准备好训练需要的格式化数据。在数据集详情页面可以查看格式化数据。
+
+### 数据集格式化
+目前，AVA深度学习平台支持 lmdb, recordio,roidb 以及原图等格式。用户可以根据训练的需要格式化成相应的数据。点击“格式化”按钮，进入到格式化数据页面。
+下例就是把一个有标签信息的源数据集格式化为一个lmdb格式的数据，其中测试集占70%，验证集占30%。
+![](https://dn-odum9helk.qbox.me/FtIdkW3uepdt_eIyOaPD6SV0jquj)
+
+
+在格式化数据集时，可以把一个数据集格式化成多种不同的格式，同时格式化的格式化数据集的批次是一样的。例如，同时把一个数据集格式化成lmdb,recordio两种格式，保证格式化成两种数据完全一样（仅格式不一样）的格式化数据集。
+![](https://dn-odum9helk.qbox.me/Fl6TeIiQUpUusFBMPNJ5p08XvoPB)
+
+创建成功的格式化数据可以在数据集详情页面的格式化数据部分找到。
+
+
+### 删除格式化数据
+用户可以删除格式化数据，格式化数据删除后不能再找回。
+
+
+## 2.3 查看格式化数据集详情
+格式化数据集没有源数据列表，所以无法统计源数据集的标签数据，也无法进行数据集预处理，并且不能格式化成其他格式的数据。但是，可以查看格式化数据集的标签统计信息。
+
+![](https://dn-odum9helk.qbox.me/FvVUq3dbF9a057g2FC182IwFi5DT)
+
+
+![](https://dn-odum9helk.qbox.me/Fu-ZbJRNQVfkGKGXOk7I9c9RkSuH)
+
+## 2.4 查看样本数据集详情
+样本数据集最终生成的也是特定格式的jsonlist的数据集，只是jsonlist中没有标签信息。因为没有标签信息，所以数据集也无法进行格式化。
+
+# 3.数据集删除
+用户数据集可以被删除，但是已经被使用（已经构建了任务数据集和已经在训练、评估中被使用）过的数据集不能删除。
+
+# 4.数据集复制
+在数据集列表页面，用户可以复制一个数据集。
+
+# 5.数据集共享
+为了更好的管理用户，在后台，我们会给用户提供
+当用户创建成功一个数据集后，可以点击“共享”按钮进行共享，成功共享的数据集会变成共享数据集，该数据集将不会在用户数据集列表中显示。共享后，这个数据集以及数据集的格式化数据都将被共享。平台所有的用户都可以看到共享数据集中的数据，并且可以进行格式化操作。平台用户不能删除共享数据集以及格式化后的数据，如果需要删除请联系AVA管理员。
+![](https://dn-odum9helk.qbox.me/Fo_3YOLmjnY3uxYLGBMGMU-ryRIv)
+![](https://dn-odum9helk.qbox.me/FiAY-UV-LGdNt93NHk3aCsa35l0T)
+
+共享数据集可以复制和预处理成为用户数据集（这个两个功能都待开发）。
+
+# 6.数据集预处理
+
+## 6.1 操作流程
+在训练深度神经网络模型时，为了使模型得到更好的性能，我们需要训练足够多的数据。AVA 深度学习平台提供数据集预处理功能，通过旋转，转换，扭曲图像等方式来扩展训练数据，以便获取更多的训练样本。
+
+经过数据集预处理的数据会重新生产一个新的数据集。
+
+在数据集详情页面，点击“数据集预处理”进入到预处理页面。
+
+![](https://dn-odum9helk.qbox.me/FtMho5JtFXWBpyKRhHRFaTKFXg7v)
+![](https://dn-odum9helk.qbox.me/FvB57wL_AuGoyz09SSSBhELzSORX)
+
+数据预处理可以处理有标签的数据，也可以处理没有标签的数据。
+
+对于有标签的数据，如果需要对特定的标签数据处理，那么可以添加过滤功能。具体操作步骤如下：
+
+1）找到需要处理的有标签的数据集，进入到数据集详情页面，
+
+2）点击“数据集预处理”，进入到数据集预处理页面，
+
+3）可以看到这个数据集里面的具体标签和数据量，
+
+![](https://dn-odum9helk.qbox.me/FpqeGVoDiT54Mf2XhtSdBaab2R2J)
+
+4）如果用户需要把“beheaded”标签的数据通过随机的方式扩大到2倍，并且其他的所有的标签及数量保持不变，
+
+5）鼠标选中“输入”，点击“过滤”，然后勾选“beheaded”，
+
+![](https://dn-odum9helk.qbox.me/FqbIkAP--BL2OXJGuJuPKiJn8bsJ)
+
+6）鼠标选中“过滤”，然后点击“随机处理”，选择随机处理需要的方式，例如“亮度变化”，设定预期数据的倍数，例如 2倍，
+
+7）保留其他的标签数据，那么鼠标选中“输入”，点击“过滤”，然后勾选其他所有的标签项，
+![](https://dn-odum9helk.qbox.me/Fl9IYw4kgPvP_PyuuAUVGNvtgqSE)
+
+8）点击“输出”，填入新数据集的名称和描述，
+![](https://dn-odum9helk.qbox.me/FqOE60WHObe-F7u27PLVu3ZFoIVI)
+
+9）点击“确定”按钮，生成新的数据集。最终生成的数据集里面，“beheaded”标签的数量变成了2倍，而其它标签的数量保持不变。
+
+## 6.2 预处理提供的功能
+
+![](https://dn-odum9helk.qbox.me/FjKGAchL3WiVnZHAPpgETN9dpWC7)
+
+### 6.2.1 过滤
+
+过滤的功能可以用来过滤标签。例如，当用户需要对数据集中特定的标签进行处理，就可以使用过滤功能把这些特定标签的数据过滤出来，然后再进行处理。
+
+例如，对于cifar10的数据集，用户只想要airplane和automobile的数据，并保存为一个新的数据集"cifar10-airplaneAndautomobile"
+
+![](https://dn-odum9helk.qbox.me/Fjmx9xk5IoWVVXOodOChSvNgAiLF)
+
+在输出节点，数据集名称字段填入“cifar10-airplaneAndautomobile”。
+![](https://dn-odum9helk.qbox.me/FjFmsxaRoEY_JggS7BLpSA9-pWH4)
+
+那么新生成色数据集“cifar10-airplaneAndautomobile”，我们可以查看统计信息，这个新的数据集中就只包含airplane和automobile标签的各5000条数据。
+
+![](https://dn-odum9helk.qbox.me/FnCTS3SQ30OdC9R_3DVlySjX8fIV)
+
+### 6.2.2 随机处理
+
+在数据预处理中，有时需要对数据进行增广，以提高模型的泛化能力。平台提供多种随机操作，例如图片水平翻转、亮度变化、饱和度变化等。
+
+![](https://dn-odum9helk.qbox.me/FqMr_tjsF23sVjxr8POpg_1CNGvz)
+
+勾选需要的处理方式，并“预期数据量”字段设定数据增广的倍数。例如，在预期数据量中填入2，表示把这个数据集扩充到原数据集的2倍。
+
+随机处理中的操作设定的默认值如下：
+
+随机处理                            | 默认值   | 命令参数 | 说明
+:------------------------------ | :----------------------------------------------------------------------------| :----------------------------------------------------------------------------| :----------------------------------------------------------------------------
+`图片旋转`  | rotate/[－180,180] | `rotate/[d1,d2]` | 旋转角度，d1,d2取值范围为-180~180,d1 < d2,每个文件处理时参数将在d1-d2间随机选择
+`高斯模糊`  | blur/[10,30]x5 | `blur/[d1,d2]x<sigma>`  |高斯模糊，d1,d2是模糊半径，d1,d2取值范围为1-50。sigma是正态分布的标准差，必须大于0。图片格式为gif时，不支持该参数
+`亮度变化`  |  brightness/[-80,80]| `brightness/[d1,d2]`|亮度变化，d1,d2取值范围[-100,100]整数，表示亮度变为全暗到原图亮度的一倍，0表示亮度不变
+`饱和度变化`  |  saturation/[-80,80]) |`saturation/[d1,d2]` |饱和度变化，取值范围[-100,100]整数，表示亮度变为全暗到原图饱和度的一倍，0表示饱和度不变
+
+### 6.2.3 缩放
+缩放操作是对图片进行强制缩放。填入图片的缩放尺寸，图片会强制缩放到尺寸内，有可能会使图片发生形变。
+![](https://dn-odum9helk.qbox.me/FsjXMgykUMX2ZNFmBNmm-dx5-D68)
+
+### 6.2.4 裁剪
+
+对图片进行裁剪操作，请填入裁剪的尺寸。图片裁剪是以原图的左顶点开始裁剪，当原图 宽高小于指定宽高时，处理失败。
+
+![](https://dn-odum9helk.qbox.me/FqegdCTkZVoRudOaSBPL3WJT-SeS)
+
+### 6.2.5 图片旋转
+
+对图片进行旋转操作，请输入旋转角度范围，取值范围是（-180，180）的正整数。操作时会随机选取范围内的某一个值进行旋转。
+
+![](https://dn-odum9helk.qbox.me/FhiGQnhvNwBGj5rLh8f9sKKaRcD4)
+
+### 6.2.6 高斯模糊
+
+高斯模糊参数。radius是模糊半径，取值范围为1-50。sigma是正态分布的标准差，必须大于0。图片格式为gif时，不支持该参数。
+
+![](https://dn-odum9helk.qbox.me/FlmwCEXwXihDZgslE7cwg2KGr0Sg)
+
+### 6.2.7 亮度变化
+
+![](https://dn-odum9helk.qbox.me/FsjiS7ADNrg5v-LA9B63pbDzFchx)
+
+### 6.2.8 饱和度变化
+
+![](https://dn-odum9helk.qbox.me/FneFrMurVo41OvUXcvABfkJYYbo1)

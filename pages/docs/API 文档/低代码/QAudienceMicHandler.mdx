@@ -1,0 +1,301 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>interface com.qlive.linkmicservice.QAudienceMicHandler</p>
+                <p>观众连麦器</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#addLinkMicListener`)'>addLinkMicListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#removeLinkMicListener`)'>removeLinkMicListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#startLink`)'>startLink</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isLinked`)'>isLinked</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#stopLink`)'>stopLink</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#switchCamera`)'>switchCamera</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#muteCamera`)'>muteCamera</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#muteMicrophone`)'>muteMicrophone</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setVideoFrameListener`)'>setVideoFrameListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setAudioFrameListener`)'>setAudioFrameListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setDefaultBeauty`)'>setDefaultBeauty</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="addLinkMicListener">addLinkMicListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void addLinkMicListener(LinkMicHandlerListener listener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>添加连麦监听</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            listener: <a href='https://developer.qiniu.com/lowcode/api/12090/QAudienceMicHandler.LinkMicHandlerListener'>QAudienceMicHandler.LinkMicHandlerListener</a>
+        </div>
+                <p>监听</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="removeLinkMicListener">removeLinkMicListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void removeLinkMicListener(LinkMicHandlerListener listener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>移除连麦监听</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            listener: <a href='https://developer.qiniu.com/lowcode/api/12090/QAudienceMicHandler.LinkMicHandlerListener'>QAudienceMicHandler.LinkMicHandlerListener</a>
+        </div>
+                <p>监听</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="startLink">startLink</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void startLink(HashMap&lt;String, String&gt; extension, QCameraParam cameraParams, QMicrophoneParam microphoneParams, QLiveCallBack&lt;Void&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>开始上麦</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            extension: HashMap
+        </div>
+                <p>麦位扩展字段</p>
+    </li>
+    <li>
+        <div>
+            cameraParams: <a href='https://developer.qiniu.com/lowcode/api/12074/QCameraParam'>QCameraParam</a>
+        </div>
+                <p>摄像头参数 空代表不开</p>
+    </li>
+    <li>
+        <div>
+            microphoneParams: <a href='https://developer.qiniu.com/lowcode/api/12073/QMicrophoneParam'>QMicrophoneParam</a>
+        </div>
+                <p>麦克参数  空代表不开</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>上麦成功失败回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isLinked">isLinked</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+boolean isLinked();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>我是不是麦上用户</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="stopLink">stopLink</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void stopLink(QLiveCallBack&lt;Void&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>结束连麦</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>操作回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="switchCamera">switchCamera</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void switchCamera(QLiveCallBack&lt;QCameraFace&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>上麦后可以切换摄像头</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="muteCamera">muteCamera</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void muteCamera(boolean muted, QLiveCallBack&lt;Boolean&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>上麦后可以禁言本地视频流</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            muted: boolean
+        </div>
+                <p></p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="muteMicrophone">muteMicrophone</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void muteMicrophone(boolean muted, QLiveCallBack&lt;Boolean&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>上麦后可以禁用本地音频流</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            muted: boolean
+        </div>
+                <p></p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setVideoFrameListener">setVideoFrameListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void setVideoFrameListener(QVideoFrameListener frameListener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>上麦后可以设置本地视频帧回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            frameListener: <a href='https://developer.qiniu.com/lowcode/api/12092/QVideoFrameListener'>QVideoFrameListener</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setAudioFrameListener">setAudioFrameListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void setAudioFrameListener(QAudioFrameListener frameListener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>上麦后可以设置音频帧回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            frameListener: <a href='https://developer.qiniu.com/lowcode/api/12091/QAudioFrameListener'>QAudioFrameListener</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setDefaultBeauty">setDefaultBeauty</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void setDefaultBeauty(QBeautySetting beautySetting);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>上麦后可以设置免费的默认美颜参数</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            beautySetting: <a href='https://developer.qiniu.com/lowcode/api/12067/QBeautySetting'>QBeautySetting</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

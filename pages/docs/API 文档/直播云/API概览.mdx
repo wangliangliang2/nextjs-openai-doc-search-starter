@@ -1,0 +1,84 @@
+本文为您介绍了七牛云直播服务的所有API列表，建议您使用服务端SDK进行调用
+
+# 直播空间管理API
+
+|接口|描述|
+|-|-|
+|[GET /v2/hubs](/pili/9888/live-hub-list)|查询直播空间列表|
+|[GET /v2/hubs/&lt;hub&gt;](/pili/9889/live-hub-information)|查询直播空间信息|
+|[POST /v2/hubs/&lt;hub&gt;/security](/pili/9890/live-hub-publish-authentication)|修改直播空间推流鉴权配置|
+|[POST /v2/hubs/&lt;hub&gt;/hlsplus](/pili/9891/live-hub-hls-low-latency-configuration)|修改直播空间 hls 低延迟配置|
+|[POST /v2/hubs/&lt;hub&gt;/persistence](/pili/9892/live-hub-bucket-configuration)|修改直播空间存储配置|
+|[POST /v2/hubs/&lt;hub&gt;/snapshot](/pili/9893/live-hub-cover-configuration)|修改直播空间封面配置|
+
+# 域名管理API
+
+|接口|描述|
+|-|-|
+|[GET /v2/hubs/&lt;hub&gt;/domains](/pili/9895/live-domain-list)|查询域名列表|
+|[GET /v2/hubs/&lt;hub&gt;/domains/&lt;domain&gt;](/pili/9896/live-domain-information)|查询域名信息|
+|[POST /v2/hubs/&lt;hub&gt;/newdomains](/pili/9897/live-new-domain)|绑定直播域名|
+|[DELETE /v2/hubs/&lt;hub&gt;/domains/&lt;domain&gt;](/pili/9898/live-delete-domains)|解绑直播域名|
+|[POST /v2/hubs/&lt;hub&gt;/voddomain](/pili/9899/live-new-vod-domain)|绑定点播域名|
+|[POST /v2/hubs/&lt;hub&gt;/domains/&lt;domain&gt;/cert](/pili/9900/live-domain-certificate)|修改域名证书配置|
+|[POST /v2/hubs/&lt;hub&gt;/domains/&lt;domain&gt;/urlrewrite](/pili/9901/live-domain-rewrite-rules)|修改域名改写规则配置|
+
+# 直播流管理API
+
+|接口|描述|
+|-|-|
+|[POST /v2/hubs/&lt;hub&gt;/streams](/pili/2515/create-a-flow)|创建直播流|
+|[GET /v2/hubs/&lt;hub&gt;/streams](/pili/2774/current-list)|查询直播流列表|
+|[GET /v2/hubs/&lt;hub&gt;/streams/&lt;encodedStreamTitle&gt;](/pili/2773/query-stream)|查询直播流信息|
+|[POST /v2/hubs/&lt;hub&gt;/streams/&lt;encodedStreamTitle&gt;/disabled](/pili/2775/off-the-air-flow)|禁用直播流|
+|[GET /v2/hubs/&lt;hub&gt;/streams/&lt;encodedStreamTitle&gt;/live](/pili/2776/live-broadcast-of-real-time-information)|查询在线流信息|
+|[POST /v2/hubs/&lt;hub&gt;/livestreams](/pili/3764/batch-query-broadcast-real-time-information)|批量查询在线流信息|
+|[GET /v2/hubs/&lt;hub&gt;/streams/&lt;encodedStreamTitle&gt;/historyactivity](/pili/2778/live-history)|查询直播流推流记录|
+|[POST /v2/hubs/&lt;hub&gt;/streams/&lt;encodedStreamTitle&gt;/saveas](/pili/2777/save-the-live-playback)|录制直播回放|
+|[POST /v2/hubs/&lt;hub&gt;/streams/&lt;encodedStreamTitle&gt;/snapshot](/pili/2520/save-the-live-capture)|保存直播截图|
+|[POST /v2/hubs/&lt;hub&gt;/streams/&lt;encodedStreamTitle&gt;/converts](/pili/2521/modify-the-flow-configuration)|修改直播流转码配置|
+
+# 数据统计API
+
+|接口|描述|
+|-|-|
+|[GET /statd/upflow](/pili/9862/live-statd-upflow)|查询直播上行流量|
+|[GET /statd/downflow](/pili/9863/live-statd-downflow)|查询直播下行流量|
+|[GET /statd/codec](/pili/9864/live-statd-transcoding-usage)|查询直播转码使用量|
+|[GET /statd/nrop](/pili/9865/live-statd-nrop-usage)|查询直播鉴黄使用量|
+|[GET /statd/caster](/pili/9866/statd-caster-usage)|查询导播台使用量|
+|[GET /statd/pub](/pili/9867/statd-pub-usage)|查询Pub转推服务使用量|
+
+# 云导播API
+
+|接口|描述|
+|-|-|
+|[POST /v1/casters](/pili/4709/caster-create)|创建云导播|
+|[POST /v1/casters/&lt;CasterID&gt;](/pili/4711/csater-update)|更新云导播|
+|[DELETE /v1/casters/&lt;CasterID&gt;](/pili/4712/caster-delete)|删除云导播|
+|[POST /v1/casters/&lt;CasterID&gt;/start](/pili/4713/caster-start)|开启云导播|
+|[POST /v1/casters/&lt;CasterID&gt;/stop](/pili/4714/caster-stop)|关闭云导播|
+|[GET /v1/casters](/pili/4715/caster-list)|云导播列表|
+|[GET /v1/casters/&lt;CasterID&gt;](/pili/4716/caster-info)|云导播信息|
+|[POST /v1/static/casters/&lt;CasterID&gt;/pvw](/pili/4718/caster-static-pvw)|更新云导播PVW监视器频道|
+|[POST /v1/static/casters/&lt;CasterID&gt;/pgm](/pili/4719/caster-static-pgm)|更新PGM监视器频道|
+|[POST /v1/static/casters/&lt;CasterID&gt;/switch](/pili/4720/caster-static-switch)|云导播PVW切换至PGM|
+|[POST /v1/static/casters/&lt;CasterID&gt;/monitors](/pili/4721/caster-static-monitors)|更新云导播监视器配置|
+|[POST /v1/static/casters/&lt;CasterID&gt;/pvw/layouts](/pili/4723/caster-static-pvw-layouts)|更新云导播PVW布局ID|
+|[POST /v1/static/casters/&lt;CasterID&gt;/publish](/pili/4722/caster-static-publish)|更新云导播输出配置|
+|[POST /v1/static/casters/&lt;CasterID&gt;/layouts](/pili/4724/caster-static-layouts)|更新云导播布局配置|
+
+# Pub转推服务API
+
+|接口|描述|
+|-|-|
+|[POST /tasks](/pili/7320/create-a-task)|创建Pub转推任务|
+|[POST /tasks/&lt;taskID&gt;](/pili/7327/editing-tasks)|编辑Pub转推任务|
+|[GET /tasks/&lt;taskID&gt;](/pili/7328/task-details)|Pub转推任务详情|
+|[GET /tasks](/pili/7329/the-task-list)|Pub转推任务列表|
+|[DELETE /tasks/&lt;taskID&gt;](/pili/7330/delete-the-task)|删除Pub转推任务|
+|[POST /tasks/&lt;taskID&gt;/start](/pili/7331/start-task)|开始Pub转推任务|
+|[POST /tasks/&lt;taskID&gt;/stop](/pili/7332/stop-the-task)|停止Pub转推任务|
+|[GET /tasks/&lt;taskID&gt;/runinfo](/pili/7333/task-run-log)|Pub转推任务运行日志|
+|[GET /history](/pili/7334/task-history)|Pub转推任务历史记录|
+|[POST /tasks/&lt;taskID&gt;/seek](/pili/7743/the-seek-interface)|Pub转推任务seek|

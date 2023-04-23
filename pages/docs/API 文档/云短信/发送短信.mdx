@@ -1,0 +1,182 @@
+# 发送短信 (POST Message)
+
+## 请求定义
+
+```
+POST /v1/message HTTP/1.1
+Host: sms.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+```
+
+### 请求头
+
+> 请参考 [请求认证](/sms/api/5842/sms-api-authentication)
+
+### 请求数据
+
+> 该接口定义以下请求数据:
+
+```json
+{
+    "signature_id": string,
+    "template_id": string,
+    "mobiles": []string,
+    "parameters": map[string]string|number
+}
+```
+
+参数名称 | 类型 | 必填 | 说明
+--------|------|-----|-------
+signature_id | string | 否 | 签名ID，如果模板是未绑定签名的，可以发送时指定签名ID。
+template_id | string | 是 | 模板 ID
+mobiles | []string | 是 | 手机号
+parameters | map[string]string|否| 自定义模板变量，变量设置在创建模板时，参数template指定
+
+注意：传递的变量参数不支持中文，请使用英语或数字。
+
+
+## 响应定义
+
+### 该接口正确处理请求时返回如下 JSON 数据
+
+```json
+{
+    "job_id": string
+}
+```
+
+# 发送单条短信 (POST Single Message)
+
+## 请求定义
+
+```
+POST /v1/message/single HTTP/1.1
+Host: sms.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+```
+
+### 请求头
+
+> 请参考 [请求认证](/sms/api/5842/sms-api-authentication)
+
+### 请求数据
+
+> 该接口定义以下请求数据:
+
+```json
+{
+    "signature_id": string,
+    "template_id": string,
+    "mobile": string,
+    "parameters": map[string]string|number
+}
+```
+
+参数名称 | 类型 | 必填 | 说明
+--------|------|-----|-------
+signature_id | string | 否 | 签名ID，如果模板是未绑定签名的，可以发送时指定签名ID。
+template_id | string | 是 | 模板 ID
+mobile | string | 是 | 手机号
+parameters | map[string]string|否| 自定义魔法变量，变量设置在创建模板时，参数template指定
+
+
+## 响应定义
+
+### 该接口正确处理请求时返回如下 JSON 数据
+
+```json
+{
+    "message_id": string
+}
+```
+
+# 发送国际/港澳台短信 (POST Oversea Message)
+
+## 请求定义
+
+```
+POST /v1/message/oversea HTTP/1.1
+Host: sms.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+```
+
+### 请求头
+
+> 请参考 [请求认证](/sms/api/5842/sms-api-authentication)
+
+### 请求数据
+
+> 该接口定义以下请求数据:
+
+```json
+{
+    "signature_id": string,
+    "template_id": string,
+    "mobile": string,
+    "parameters": map[string]string|number
+}
+```
+
+参数名称 | 类型 | 必填 | 说明
+--------|------|-----|-------
+signature_id | string | 否 | 签名ID，如果模板是未绑定签名的，可以发送时指定签名ID。
+template_id | string | 是 | 模板 ID
+mobile | string | 是 | 手机号，例如：+17245678901
+parameters | map[string]string|否| 自定义魔法变量，变量设置在创建模板时，参数template指定
+
+
+## 响应定义
+
+### 该接口正确处理请求时返回如下 JSON 数据
+
+```json
+{
+    "message_id": string
+}
+```
+
+# 发送全文本短信(不需要传模版 ID) (POST Fulltext Message)
+
+## 请求定义
+
+```
+POST /v1/message/fulltext HTTP/1.1
+Host: sms.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+```
+
+### 请求头
+
+> 请参考 [请求认证](/sms/api/5842/sms-api-authentication)
+
+### 请求数据
+
+> 该接口定义以下请求数据:
+
+```json
+{
+    "mobiles": []string,
+    "content": string,
+    "template_type": string
+}
+```
+
+参数名称 | 类型 | 必填 | 说明
+--------|------|-----|-------
+mobiles | []string | 是 | 手机号
+content | string | 是 | 短信内容，必须是已经审核通过的签名和模版。例如：```【七牛云】您的验证码是 287712，5分钟内有效```
+template_type | string | 是 | 短信类型，支持的值：`notification`(通知类)、`verification`(验证码类)、`marketing`(营销推广类)、`voice`(语音类)
+
+## 响应定义
+
+### 该接口正确处理请求时返回如下 JSON 数据
+
+```json
+{
+    "job_id": string
+}
+```

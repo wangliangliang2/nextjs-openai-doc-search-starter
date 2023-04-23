@@ -1,0 +1,34 @@
+**本文简述了使用ONVIF协议接入时配置流程**。
+
+# 1. 添加ONVIF用户名和密码
+
+## **大华设备添加ONVIF用户名和密码示例**
+
+（1） 登录摄像头web页面
+（2） 依次点击"系统管理"→"用户管理"→"ONVIF用户"
+（3）点击"增加用户"
+![增加用户.png](https://dn-odum9helk.qbox.me/FsOChR7Qe4x5y53AfprS-cvSy0uA)
+（4） 输入用户名和密码
+![用户名密码.png](https://dn-odum9helk.qbox.me/FrfcPZfjIdgmer-mGIeI6d2Kqpsp)
+
+# 2. 七牛控制台创建ONVIF空间
+
+创建空间时接入类型选择`ONVIF`
+![创建空间.png](https://dn-odum9helk.qbox.me/FmecmPBlJUaR98Q3EX9t43JrYrRb)
+
+# 3. 创建ONVIF设备
+
+在第2步创建好的`ONVIF`空间，创建一个设备
+
+（1）设备ip地址，填入设备的`公网IP`（内网设备可以使用内映射工具，比如花生壳）。
+（2）填入设备ONVIF的端口，一般是80。如果设备没有公网ip，也可以将80端口映射到公网的某个端口，比如`8080`,则这里需要填入映射后的端口`8080`。
+（3）填入流端口号，如果设备有`公网IP`，一般这个端口默认是`554`；如果设备没有公网IP，需要将该设备的`554`端口映射到公网的某个端口，例如映射到`8554`端口，则这里的流端口号填入`8554`。
+（4）填入第1步在摄像头添加的ONVIF用户名和密码。
+![创建onvif设备.png](https://dn-odum9helk.qbox.me/FvWCd_6blNETdEq9-Tig9ks2tsIC)
+
+# 4. 实时预览
+
+（1） 在设备列表页面，选择添加好的设备，点`实时预览`，进入到实时预览页面。
+![设备列表.png](https://dn-odum9helk.qbox.me/FpAkrkIxvTBoIXY-J3F_NkksU7RW)
+（2）点`启动拉流`，观看摄像头的实时流。
+![实时预览.png](https://dn-odum9helk.qbox.me/FvowrYQXDPsNcUPQne8o25Termfy)

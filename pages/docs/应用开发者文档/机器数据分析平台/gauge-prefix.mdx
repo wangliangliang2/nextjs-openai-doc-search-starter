@@ -1,0 +1,44 @@
+`<gauge-prefix>`元素定义数字单值图前缀。
+`<gauge-suffix>`元素定义数字单值图后缀。
+
+### 父元素 {docsify-ignore-all}
+
+在`<chart>`元素下，只有当 type 属性指定如下值时，可以使用 `<color-splitter>`元素。
+
+* `<chart type="single-value">`
+
+### 子元素
+
+|子元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<value>`|前缀或后缀的值|无|
+|`<font-size>`|前缀或后缀的字体大小, 可选值[12, 20, 32, 44, 64, 70, 76, 96, 108, 128] |64|
+|`<font-color>`|前缀或后缀的字体颜色 |无|
+|`<layout>`|前缀或后缀的位置，'horizontal'或'vertical' |'horizontal'|
+
+示例1：
+
+```
+<gauge-prefix>
+  <value>前缀</value>
+  <font-size>64</font-size>
+  <font-color>#cddc39</font-color>
+  <layout>horizontal</layout>
+</gauge-prefix>
+```
+
+该例子设置单值图前缀。
+
+示例2：
+
+``` 
+<gauge-suffix>
+  <value>前缀</value>
+  <font-size>64</font-size>
+  <font-color>#cddc39</font-color>
+  <layout>horizontal</layout>
+</gauge-suffix>
+```
+
+该例子设置单值图后缀。
+

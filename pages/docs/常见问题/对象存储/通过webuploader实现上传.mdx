@@ -1,0 +1,31 @@
+### **简介**
+七牛官方的js sdk是基于plupload开发的，考虑到webuploader也是一个比较流行的上传组件，本文提供一个使用webuploader上传文件至七牛的示例
+<br><br>
+### **github地址** 
+https://github.com/GuGaobai1994/webuploader-qiniu
+<br><br>
+### **使用方法**
+可以clone github中的代码，打开demo.html看到简单的页面 <br>https://github.com/GuGaobai1994/webuploader-qiniu/blob/master/demo.html<br>
+初始化时需要填入几个关键参数
+```
+    var options = {
+        host : "http://upload.qiniu.com",
+        tokenUrl : "http://localhost:8083/uptoken",
+        domain : "http://orqjqg7zj.bkt.clouddn.com/",
+        mockToken : true,
+        mockTokenValue : "FMVCRs2-LO1ivRNi4l7mEZE6ZDvPv-519D12kZCO:ZXOlC4-SKwZfalWNIvXUNUZg1wA=:eyJzY29wZSI6InJ0Y3Rlc3QiLCJkZWFkbGluZSI6MjUwMjY5NjAxNH0=",
+        hash : true
+    }
+```
+<br><br>
+host: 上传空间对应的上传地址，建议使用客户端上传地址，参考 https://developer.qiniu.com/kodo/manual/1671/region-endpoint
+
+tokenUrl: 获取上传token的地址
+
+domain: 空间对应域名
+
+hash: 是否使用hash值作为空间内文件名
+<br><br>
+### **初始化代码**
+
+参考 https://github.com/GuGaobai1994/webuploader-qiniu/blob/master/main.js

@@ -1,0 +1,61 @@
+<div data-v-md-line="1"><link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                摄像头切换回调接口，可在调用 <a href='8640/QNCameraVideoTrack#switchCamera'>QNCameraVideoTrack.switchCamera</a> 切换摄像头时传入。</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onCameraSwitchDone`)'>onCameraSwitchDone</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onCameraSwitchError`)'>onCameraSwitchError</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onCameraSwitchDone">
+onCameraSwitchDone</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">void onCameraSwitchDone(boolean isFrontCamera)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>成功切换摄像头时回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            isFrontCamera: boolean
+        </div>
+                <p>是否是前置摄像头</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onCameraSwitchError">
+onCameraSwitchError</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">void onCameraSwitchError(String errorMessage)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>切换摄像头失败时回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            errorMessage: String
+        </div>
+                <p>失败的错误原因</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+
+</div>

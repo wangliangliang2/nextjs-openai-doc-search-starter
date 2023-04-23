@@ -1,0 +1,123 @@
+
+`<input>`元素定义内容输入。可写入type属性：
+
+* `type`：用于不同类型的输入，支持文本框、下拉列表、多选框、单选框、复选框、事件选择器.
+
+
+### 子元素
+
+* `<label>`：设置input标签
+* `<initial-value>`：设置 input 初始值
+* `<choice>`:对于拥有可选项的input类型，如下拉列表、多选框元素，可以通过 choice 设置可选项。
+* `<prefix>`：指定输入内容的前缀字符串。
+* `<suffix>`：指定输入内容的后缀字符串。
+* `<value-prefix>`：若输入内容为数组，为数组里的每个值指定前缀字符串。
+* `<value-suffix>`：若输入内容为数组，为数组里的每个值指定后缀字符串。
+* `<delimiter>`：：若输入内容为数组，指定在每个值中间插入的分隔符。
+
+>注意1：`<input>` type 为 "multiselect" 或 "checkbox" 时，`<initial-value>`支持使用数组类型。
+>注意2:输入的内容可以通过 token 进行绑定，具体使用方式参见[token](/express/extend/6569/token)。当`<input>`标签使用 `<token>` 标签绑定内容时，支持设置 changeWhen 属性来控制 token 的变化时机，目前支持 'change', 'blur' 两个值。
+
+
+
+#### 普通文本类输入
+
+```
+<input type="text" token="token">
+  <label>标签</label>
+  <initial-value>文本内容</initial-value>
+</input>
+```
+
+#### 下拉选择列表类输入
+
+```
+<input type="dropdown" token="token">
+  <label>选择一个选项</label>
+  <initial-value>one</initial-value>
+  <choice value="one">选项一</choice>
+  <choice value="two">选项二</choice>
+  <choice value="third">选项三</choice>
+</input>
+```
+
+#### 多选列表类输入
+
+```
+<input type="multiselect" token="token">
+  <label>选择一个或者多个选项</label>
+  <initial-value>{['one', 'two']}</initial-value>
+  <choice value="*">全选</choice>
+  <choice value="one">选项一</choice>
+  <choice value="two">选项二</choice>
+  <choice value="third">选项三</choice>
+</input>
+```
+
+#### 单选框类输入
+
+```
+<input type="radio" token="token">
+  <label>选择一个选项</label>
+  <initial-value>one</initial-value>
+  <choice value="one">选项一</choice>
+  <choice value="two">选项二</choice>
+</input>
+```
+
+#### 复选框类输入
+
+```
+<input type="checkbox" token="token">
+  <label>选择一个选项</label>
+  <initial-value>one</initial-value>
+  <choice value="one">选项一</choice>
+  <choice value="two">选项二</choice>
+  <choice value="third">选项三</choice>
+</input>
+```
+
+#### 时间选择器类输入
+
+```
+<input type="time" token="token">
+    <label>时间</label>
+    <initial-value>
+      <earliest>-5m</earliest>
+      <latest>-2m</latest>
+    </initial-value>
+</input>
+```
+
+
+#### search
+
+支持在 input 标签内嵌入 search 标签，调用搜索接口将搜索结果作为 input 的选项。支持嵌入 search标签的input类型包括：下拉列表、复选框、多选列表、单选框。
+对于嵌入search标签的input，需设置 fieldForLabel 标签和 fieldForValue 标签来标记选项的 label 和 value 字段。
+
+例如： 若search标签返回的结果中包括 hostname 和 ip 两个字段:
+
+|hostname|ip|
+|:--:|:--:|
+|a's mac|221.12.13.189|
+|b's mac|221.12.12.111|
+
+通过指定 field-for-label 标签的值为 hostname ，field-for-value 标签的值为 ip，则在下拉列表中的选项呈现的是a's mac和 b's mac，但 每个选项返回的值是每个 hostname 对应的 ip 值。
+
+**用法示例：**
+
+```
+<input type="dropdown" token="source_tok">
+  <label>Select a source type</label>
+  <choice value="*">All</choice>
+  <search>
+    <query>
+      index=_internal | stats count by sourcetype
+    </query>
+    <earliest>-7d@h</earliest>
+    <latest>now</latest>
+  </search>
+  <field-for-label>sourcetype</field-for-label>
+  <field-for-value>sourcetype</field-for-value>
+</input>
+```

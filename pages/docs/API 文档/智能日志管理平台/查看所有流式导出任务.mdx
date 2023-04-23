@@ -1,0 +1,18 @@
+**请求语法**
+
+```
+GET /v2/repos/<RepoName>/exports
+Authorization: Pandora <auth>
+```
+
+**响应报文** 
+
+```
+Content-Type: application/json
+{
+    "name": <ExportName>,
+    "type": <ExportSchema>,
+    "spec": <Spec>,
+    "whence": <ExportWhence>
+}
+```

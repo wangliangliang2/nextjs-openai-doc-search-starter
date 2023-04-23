@@ -1,0 +1,21 @@
+# **MPEG2-TS 封装和上传模块接口返回错误码**
+本节为您提供请求出现错误时，返回的错误码和对应的错误信息。
+
+错误码 | 错误码定义 | 错误码说明
+:-: | :-: |:-: 
+0   | QNLINK_UPLOAD_SUCCESS | 成功返回 
+-1  | QNLINK_UPLOAD_ARG_ERROR | 参数错误 
+-2  | QNLINK_UPLOAD_NO_MEMORY | 内存分配错误 
+-3  | QNLINK_UPLOAD_INIT_FAILD | 实例初始化失败 
+-4  | QNLINK_UPLOAD_CHANNELID_EXIST | 参数中的 channelid 重复 
+-5  | QNLINK_UPLOAD_INSTANCE_NO_EXIST | 实例不存在 
+-6  | QNLINK_UPLOAD_REGISTING | 正在注册中 
+-7  | QNLINK_UPLOAD_REGIST_FAIL | 注册失败 
+-8  | QNLINK_UPLOAD_REGISTED | 已经注册 
+-9  | QNLINK_UPLOAD_UNREGEISTED | 未注册 
+-10 | QNLINK_UPLOAD_CREATE_HTTP_ERROR | 创建上传实例失败 
+-11 | QNLINK_UPLOAD_CREATE_TSMUX_ERROR | 创建TS封装实例失败 
+-12 | QNLINK_UPLOAD_NEED_I_FRAME | 需要传入视频 I 帧 
+-13 | QNLINK_UPLOAD_TSMUX_ERROR | TS封装错误 
+-14 | QNLINK_UPLOAD_PUSH_ERROR | 推送数据错误 
+

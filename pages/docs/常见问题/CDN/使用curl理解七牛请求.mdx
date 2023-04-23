@@ -1,0 +1,32 @@
+使用七牛的 curl 实现表单上传 
+
+```
+curl -v upload.qiniup.com -F'token=JOiPUijNB0t8vbNKIufpn5gDKmg0G-uFHBlrQoV2:rmU9wAEmrSV9FxPuD0V1Z1BgzKw=:eyJzY29wZSI6Impzc2RrIiwiZGVhZGxpbmUiOjE0ODQwMzY0NTJ9' -F'file=abc'
+```
+
+注释：其中参数 `-F/--form` 模拟http表单提交数据
+
+使用 curl 模拟七牛的刷新接口
+
+```
+curl -i -X POST "http://fusion.qiniuapi.com/refresh" -H 'Content-Type: application/json' -H 'Authorization: QBox vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:0KPRVoBiHR2c9K-t9bBr5DVDuUU=' -d '{"urls":["http://7xr0n9.com1.z0.glb.clouddn.com/3.txt.zip"]}'
+```
+
+注释：参数的 -H 其实就是 http 请求的头部   而七牛是靠这个签证头部 Authorization 来识别你的请求是否非法
+
+-X POST 是以 post 的形式来请求 -d 就是 post 携带的数据
+
+
+
+七牛的大部分接口其实用简单的 curl 理解起来就是  签算 Authorization 鉴权 post 请求数据
+
+![](https://dn-odum9helk.qbox.me/FpIElrLbI39iefxXUXL939s4hsQk)
+
+这个请求如果说你的已经签算好：
+
+`Authorization QBox vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:0KPRVoBiHR2c9K-t9bBr5DVDuUU=`  
+那么请求就如下
+
+```
+curl -i -X POST "http://fusion.qiniuapi.com/v2/tune/refresh" -H 'Content-Type: application/json' -H 'Authorization: QBox vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:0KPRVoBiHR2c9K-t9bBr5DVDuUU=' -d '{"urls":["http://7xr0n9.com1.z0.glb.clouddn.com/3.txt.zip"],"dirs":["http://7xr0n9.com1.z0.glb.clouddn.com/*"]}'
+```

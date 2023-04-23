@@ -1,0 +1,38 @@
+* `<y-axis>`元素用于定义二维图表的 y 轴：
+
+### 父元素
+ 
+在 `<chart>`元素下，只有当 type 属性指定如下值时，可以使用 `<y-axis>`元素。
+	
+* `<chart type="line">`
+* `<chart type="bar">`
+*	`<chart type="area">`
+*	`<chart type="scatter">`
+* `<chart type="bubble">`
+
+### 子元素
+
+|子元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<name>`|y轴名称|无|
+|`<hide-name>`|是否隐藏 y 轴名称|false|
+|`<min>`|y 轴显示的最小值，不填时自适应|无|
+|`<max>`|y 轴显示的最大值，不填时自适应|无|
+|`<fields>`|y轴展示的字段，支持配置多个|无|
+|`<scale>`|y 轴的刻度模式， 支持线性和 log 模式， 仅在 y 轴为数值类型时生效， 可选值为 linear: 刻度模式为线性模式; log: 刻度模式为 log 模式|'linear'|
+|`<null-value-mode>`|定义y 轴数值为 null 或 undefined 时， 图的显示方式， 可选值为 0: 空值被当做 0 来处理; gap: 空值不被处理， 也不产生连线; line: 空值连线处理。||
+|`<label-show-mode>`|x 轴上标签的显示形式。支持三种值类型:showauto: 根据数据多少以及空间大小自适应显示; showall: 显示全部的标签; hide: 隐藏标签|'showauto'|
+|`<label-rotation>`|x 轴标签的显示旋转方式， 支持 5 种值类型， 0: 水平显示; -45: 右偏移 45 度; 45: 左偏移 45 度; -90: 右偏移 90 度; 90: 左偏移 90 度|0|
+|`<field>`|x 轴的字段名|无|
+|`<unit>`|当x轴的字段为数值类型时，可设置数值单位，通常应用于散点图、气泡图|['none'， 'short']|
+
+示例：
+```
+<y-axis>
+  <name>count</name>
+  <hide-name>false</hide-name>
+  <fields>[count, avg(host)]</fields>
+  <unit>['none', 'percentunit']</unit>
+  <null-value-mode>0</null-value-mode>
+</y-axis>
+```

@@ -1,0 +1,28 @@
+告警规则触发后，告警平台将产生新的告警事件，同时根据（告警事件所属的）[告警服务](/insight/manual/5464/alert-service)里配置的`合并规则`合并告警事件。使用事件合并规则可以避免短时间内的告警风暴，同时告警事件的合并并有助于运维人员快速排查问题。本教程讲解事件合并规则的使用。
+
+进入[服务管理](https://portal.qiniu.com/insight/nb/alert/service/manage) tab，切换至服务配置页面，您可以看到事件合并规则的管理列表。
+
+![](https://pandora-kibana.qiniu.com/alert/mergr_rule_new.png)
+
+点击右上角新建事件合并规则按钮，新建一条事件合并规则，您需要填写以下内容：
+
+![](https://pandora-kibana.qiniu.com/alert/create_merge_rule_new.png)
+
+这条合并规则的意思是：事件描述包含 “nginx” 关键词、且事件程度包含“警告”或者“严重”、在 10 分钟内触发的告警事件，予以合并。
+
+这里需要注意以下几点：
+
+* 关键词对应告警事件的事件描述，关于告警事件的定义可跳转阅读[告警规则配置](/insight/manual/5454/configure-the-alarm-rules)。
+
+* 若新事件的事件内容包含关键词，予以合并。
+
+* 若事件合并规则包含多个事件程度，新事件满足其中一种程度即可合并。
+
+如：以图中合并规则为例，若新事件的事件描述为 “nginx 告警事件”，事件程度为严重，新事件将会被合并。
+
+在事件合并规则列表，可查看/编辑/删除事件合并规则。
+
+![](https://pandora-kibana.qiniu.com/alert/mergeRule_list.png)
+
+`注意：`编辑/删除事件合并规则需要先解决应用了该条合并规则的事件。
+

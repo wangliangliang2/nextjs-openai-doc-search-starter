@@ -1,0 +1,604 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>class im.floo.floolib.BMXRosterManager</p>
+                <p>好友管理器</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#get`)'>get</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#search`)'>search</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#search`)'>search</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#search`)'>search</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setItemExtension`)'>setItemExtension</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setItemAlias`)'>setItemAlias</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setItemMuteNotification`)'>setItemMuteNotification</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#apply`)'>apply</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#remove`)'>remove</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getApplicationList`)'>getApplicationList</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#accept`)'>accept</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#decline`)'>decline</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#block`)'>block</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#unblock`)'>unblock</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getBlockList`)'>getBlockList</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#downloadAvatar`)'>downloadAvatar</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#addRosterListener`)'>addRosterListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#removeRosterListener`)'>removeRosterListener</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="get">get</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void get(final boolean forceRefresh, final BMXDataCallBack&lt;ListOfLongLong&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取好友列表，如果forceRefresh == true，则强制从服务端拉取</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            forceRefresh: boolean
+        </div>
+                <p>是否从服务器读取数据，true为强制从服务器获取，false情况下本地读取列表为空的情况下会自动从服务器读取</p>
+    </li>
+    <li>
+        <div>
+            callBack: &lt;any&gt;
+        </div>
+                <p>BMXErrorCode 好友id列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="search">search</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void search(final long rosterId, final boolean forceRefresh, final BMXDataCallBack&lt;BMXRosterItem&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>搜索用户</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            rosterId: long
+        </div>
+                <p>搜索的好友id</p>
+    </li>
+    <li>
+        <div>
+            forceRefresh: boolean
+        </div>
+                <p>为true强制从服务器获取，为false情况下查询结果为空时自动从服务器获取。</p>
+    </li>
+    <li>
+        <div>
+            callBack: &lt;any&gt;
+        </div>
+                <p>BMXErrorCode 查询返回的用户的信息</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="search">search</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void search(final String name, final boolean forceRefresh, final BMXDataCallBack&lt;BMXRosterItem&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>搜索用户</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            name: String
+        </div>
+                <p>搜索的用户名</p>
+    </li>
+    <li>
+        <div>
+            forceRefresh: boolean
+        </div>
+                <p>为true强制从服务器获取，为false情况下查询结果为空时自动从服务器获取。</p>
+    </li>
+    <li>
+        <div>
+            callBack: &lt;any&gt;
+        </div>
+                <p>BMXErrorCode 查询返回的用户的信息</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="search">search</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void search(final ListOfLongLong rosterIdList, final boolean forceRefresh, final BMXDataCallBack&lt;BMXRosterItemList&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>批量搜索用户</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            rosterIdList: ListOfLongLong
+        </div>
+                <p>需要搜索的用户id列表</p>
+    </li>
+    <li>
+        <div>
+            forceRefresh: boolean
+        </div>
+                <p>是否强制从服务器获取，为true则强制从服务器获取</p>
+    </li>
+    <li>
+        <div>
+            callBack: &lt;any&gt;
+        </div>
+                <p>BMXErrorCode 返回的好友信息列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setItemExtension">setItemExtension</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setItemExtension(final BMXRosterItem item, final String extension, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>更新好友本地扩展信息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            item: <a href='/IM/api/8274/bmxrosteritem'>BMXRosterItem</a>
+        </div>
+                <p>用户信息</p>
+    </li>
+    <li>
+        <div>
+            extension: String
+        </div>
+                <p>本地扩展信息</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setItemAlias">setItemAlias</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setItemAlias(final BMXRosterItem item, final String alias, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>更新好友别名</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            item: <a href='/IM/api/8274/bmxrosteritem'>BMXRosterItem</a>
+        </div>
+                <p>用户信息</p>
+    </li>
+    <li>
+        <div>
+            alias: String
+        </div>
+                <p>好友别名</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setItemMuteNotification">setItemMuteNotification</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setItemMuteNotification(final BMXRosterItem item, final boolean status, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置是否拒收用户消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            item: <a href='/IM/api/8274/bmxrosteritem'>BMXRosterItem</a>
+        </div>
+                <p>用户信息</p>
+    </li>
+    <li>
+        <div>
+            status: boolean
+        </div>
+                <p>是否拒收用户消息，true拒收，false不拒收</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="apply">apply</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void apply(final long rosterId, final String message, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>申请添加好友</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            rosterId: long
+        </div>
+                <p>申请添加的用户id</p>
+    </li>
+    <li>
+        <div>
+            message: String
+        </div>
+                <p>好友申请信息</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="remove">remove</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void remove(final long rosterId, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>删除好友</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            rosterId: long
+        </div>
+                <p>删除的好友id</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getApplicationList">getApplicationList</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void getApplicationList(final String cursor, final int pageSize, final BMXDataCallBack&lt;ApplicationPage&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取申请添加好友列表</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            cursor: String
+        </div>
+                <p>分页获取的起始cursor，第一次传入为空，后续传入上次操作返回的result中的cursor</p>
+    </li>
+    <li>
+        <div>
+            pageSize: int
+        </div>
+                <p>分页大小</p>
+    </li>
+    <li>
+        <div>
+            callBack: &lt;any&gt;
+        </div>
+                <p>BMXErrorCode 返回的申请好友列表信息</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="accept">accept</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void accept(final long rosterId, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>接受加好友申请</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            rosterId: long
+        </div>
+                <p>申请加为好友的用户id</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="decline">decline</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void decline(final long rosterId, final String reason, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>拒绝加好友申请</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            rosterId: long
+        </div>
+                <p>申请加为好友的用户id</p>
+    </li>
+    <li>
+        <div>
+            reason: String
+        </div>
+                <p>拒绝的原因</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="block">block</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void block(final long rosterId, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>加入黑名单</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            rosterId: long
+        </div>
+                <p>加入黑名单的用户id</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="unblock">unblock</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void unblock(final long rosterId, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>从黑名单移除</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            rosterId: long
+        </div>
+                <p>从黑名单移除的用户id</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getBlockList">getBlockList</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void getBlockList(final boolean forceRefresh, final BMXDataCallBack&lt;ListOfLongLong&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取黑名单，如果forceRefresh == true，则强制从服务端拉取</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            forceRefresh: boolean
+        </div>
+                <p>是否从服务器读取数据，true为强制从服务器获取，false情况下本地读取列表为空的情况下会自动从服务器读取</p>
+    </li>
+    <li>
+        <div>
+            callBack: &lt;any&gt;
+        </div>
+                <p>BMXErrorCode 好友id列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="downloadAvatar">downloadAvatar</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void downloadAvatar(final BMXRosterItem item, final FileProgressListener listener, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>下载头像</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            item: <a href='/IM/api/8274/bmxrosteritem'>BMXRosterItem</a>
+        </div>
+                <p>用户信息</p>
+    </li>
+    <li>
+        <div>
+            listener: FileProgressListener
+        </div>
+                <p>下载回调函数</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="addRosterListener">addRosterListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void addRosterListener(BMXRosterServiceListener listener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>添加好友变化监听者</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            listener: <a href='/IM/api/8283/bmxrosterservicelistener'>BMXRosterServiceListener</a>
+        </div>
+                <p>好友变化监听者</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="removeRosterListener">removeRosterListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void removeRosterListener(BMXRosterServiceListener listener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>移除好友变化监听者</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            listener: <a href='/IM/api/8283/bmxrosterservicelistener'>BMXRosterServiceListener</a>
+        </div>
+                <p>好友变化监听者</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

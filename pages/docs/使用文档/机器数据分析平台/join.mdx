@@ -1,0 +1,127 @@
+join 命令通过关联查询返回分析结果，两个查询结果须至少有一个共同字段。
+
+**语法：**
+```
+join join-options field-list subsearch 
+```
+
+**参数说明：**
+
+* `subsearch`：被关联的查询语句，需用[ ]括起来。
+
+* `join-options`：必选字段，执行的连接类型，必须提供。具体集中join 类型 如下图所示
+  * `type=inner`：返回关联成功的数据，即如果关联字段的值既存在于当前搜索，又存在于被关联搜索，才返回该数据。
+  * `type=left`：返回当前搜索的所有数据以及被关联搜索匹配成功的数据，对于关联失败的数据，同样返回被关联搜索的字段，但是值为 null。
+  * `type=diff`：返回当前搜索中关联失败的数据。
+  * `max=N`：指定被关联查询的最大数量。max=0表示没有关联数量限制。
+  
+* `field-list`：可选参数，用于关联查询的字段，可指定多个字段。
+
+
+![Join](https://pandora-kibana.qiniu.com/join.png)
+
+
+> 注意：为了保证避免内存溢出， Join 命令的 subsearch 的最大查询结果会受限制，默认子查询会返回至多5万条数据。
+> 如果需要提高该参数，可以在后台 pandora 服务配置中增加 `phoenix.join.max.events: N`。N为需要的限制数量。
+> 这个参数如果过大可能会导致查询性能降低。
+
+
+
+
+**用法示例：**
+
+1.关联用户登陆数据与用户信息分析，原始日志如下：
+
+|_time| uid |loginIp |
+|:--:|:--:|:--:|
+|2019-01-01 08:00:00 |1|`<ip1>`|
+|2019-01-02 08:00:00 |2|`<ip2>`|
+|2019-01-02 09:00:00 |1|`<ip2>`|
+|2019-01-02 09:00:00 |3|`<ip3>`|
+
+被关联数据如下：
+
+|uid|username|
+|:--:|:--:|
+|1|john|
+|2|mike|
+
+```
+sourcetype="login" | join type=left uid [ search sourcetype="username" ]
+```
+
+返回如下：
+
+|_time|uid|loginIp|username|
+|:--:|:--:|:--:|:--:|
+|2019-01-02 09:00:00 |1| `<ip2>`| john|
+|2019-01-02 09:00:00| 3 |`<ip3>`|null|
+|2019-01-02 08:00:00.000 |2| `<ip2>` |mike|
+|2019-01-01 08:00:00.000 |1 |`<ip1>` |john|
+
+(使用max示例如下)
+```
+sourcetype="username" | join type=left max=1 uid [ search sourcetype="login"]
+```
+
+返回如下:
+
+|_time|uid|loginIp|username|
+|:--:|:--:|:--:|:--:|
+|2019-01-01 08:00:00|1|`<ip1>`|Join|
+|2019-01-02 08:00:00|2|`<ip2>`|mike|
+
+```
+sourcetype="login" |  join type=inner uid [ search sourcetype="username" ] 
+```
+
+返回如下：
+
+|_time|uid|loginIp|username|
+|:--:|:--:|:--:|:--:|
+|2019-01-02 09:00:00 |1| `<ip2>`| john|
+|2019-01-02 08:00:00.000 |2| `<ip2>` |mike|
+|2019-01-01 08:00:00.000 |1 |`<ip1>` |john|
+
+```
+sourcetype="login" | join type=diff uid [ search sourcetype="username" ]
+```
+
+返回如下：
+
+|_time|uid|loginIp|
+|:--:|:--:|:--:|
+|2019-01-02 09:00:00 |3|`<ip3>`|
+
+2.如果两种数据源中的字段名不匹配，您可以重命名⼦搜索结果集中的对应字段。
+
+原始日志如下：
+
+|_time| uid |loginIp |
+|:--:|:--:|:--:|
+|2019-01-01 08:00:00 |1|`<ip1>`|
+|2019-01-02 08:00:00 |2|`<ip2>`|
+|2019-01-02 09:00:00 |1|`<ip2>`|
+|2019-01-02 09:00:00 |3|`<ip3>`|
+
+被关联数据如下：
+
+|id|username|
+|:--:|:--:|
+|1|john|
+|2|mike|
+
+用登陆数据的 uid 和 用户信息的 id 关联，须 rename id 字段为 uid。
+
+```
+sourcetype="login" | join type=left uid [ search sourcetype="username"  | rename id as uid  ]
+```
+
+返回如下：
+
+|_time|uid|loginIp|username|
+|:--:|:--:|:--:|:--:|
+|2019-01-02 09:00:00 |1| `<ip2>`| john|
+|2019-01-02 09:00:00| 3 |`<ip3>`|null|
+|2019-01-02 08:00:00.000 |2| `<ip2>` |mike|
+|2019-01-01 08:00:00.000 |1 |`<ip1>` |john|

@@ -1,0 +1,198 @@
+# **简介**
+倍速转码接口(avfast)加速对视频资源进行编码。
+倍速转码不推荐用于转封装、转音频等低开销任务。建议用于时长大于25分钟。
+
+## **使用限制**
+
+- 若输入文件过小，可能无法达到预期的加速效果，仍按照当前功能计费。
+- 请不要用于变帧率（Variable Frame Rate, 简称VFR）的文件，这种类型的文件不适合做视频倍速转码。
+- 倍速转码仅支持视频转码和视频音频同时转码，其他的基础音视频转码接口（avthumb）提供的功能，比如水印、转封装等，暂不支持。
+
+# **接口规格**
+**注意**：接口规格不含任何空格与换行符，下列内容经过格式化以便阅读。
+```
+    avfast/<Format>
+            /vcodec/<VideoCodec>
+            /s/<Resolution>
+            /autoscale/<Autoscale>
+            /r/<FrameRate>
+            /hr/<HighFrameRate>
+            /vb/<VideoBitRate>
+            /crf/<Crf>	
+            /acodec/<AudioCodec>
+            /ab/<BitRate>
+            /scodec/<SubtitleCodec>
+            /avsmart/<0|1>
+            /smtEnhance/<Enhance>
+            /smtMaxvbr/<Maxvbr>
+            /smtQuality/<Quality>
+```
+| 参数                      | 类别 | 必填 | 说明                                                         |
+| :------------------------ | :--: | :--: | :----------------------------------------------------------- |
+| `<Format>`                | A/V  |  Y   | 要转换输出的目标视频格式。目前可以支持mp4和HLS。参考: [支持转换的音/视频格式](http://ffmpeg.org/general.html#Supported-File-Formats_002c-Codecs-or-Features) |
+| `/vcodec/<VideoCodec>`    |  V   |  N   | 视频编码方案，支持方案：libx264，libx265。                   |
+| `/s/<Resolution>`         |  V   |  N   | 0、指定目标视频分辨率，格式为`w`x`h`，vcodec 为libx265/libx264时，长边取值范围[20,8192]，短边取值范围[20,4320]。vcodec 取其他值时长边范围[20,3840]，短边取值范围[20,2160]。<br/>1. w、h 都为空时，则和原视频保持一致。<br/>2. `w`为空，`h`不为空，则按`h`的值对原视频等比例缩放。<br/>3. `w`不为空，`h`为空时，则按`w`的值对原视频等比例缩放。<br/>4. `w`、`h`都不为空时，则根据`w`、`h`来缩放。 |
+| `/autoscale/<Autoscale>`  |  V   |  N   | 配合参数/s/使用，指定为2时，把视频按/s/中指定的比例添加黑框后再等比例缩放到/s/指定到矩形框内，指定为1时，把视频按原始比例缩放到/s/指定的矩形框内，0或者不指定会强制缩放到对应分辨率，可能造成视频变形。 |
+| `/vb/<VideoBitRate>`      |  V   |  N   | 视频比特率，单位：比特每秒（bit/s），常用视频比特率：128k 1.25m 5m 等。 默认情况下, 若指定码率大于原视频码率，则使用原视频码率进行转码, 参数末尾使用 `!` 可以以强制使用指定码率转码, 如 `128k!` |
+| `/r/<FrameRate>`           |  V  |  N   | 1、视频帧率，每秒显示的帧数，单位：赫兹（Hz），常用帧率：24，25，30 等。<br>2、默认等于源视频帧率，HighFrameRate=0，取值[1,30],超出范围取25帧；HighFrameRate=1时允许高帧率，取值[1,60]，超出范围取60帧。|
+| `/hr/<HighFrameRate>`           |  V  |  N   | 视频高帧率，与`r`配合使用，默认为 `HighFrameRate=0`，即常规帧率；`HighFrameRate=1`表示保留高帧率。|
+| `/crf/<Crf>`              |  V   |  N   | 1、设置 crf 值，为整数；vcodec 为 libx264 时取值为范围 [18,28]，vcodec 为 libx265 时取值范围为 [23,33]，默认取值为范围 [18,28]。<br>2、其值越小，输出视频质量越好，输出文件可能变大。其不可与 vb 共用 。 |
+| `/sdr/<SDR>`                           |  V   |  N   | 是否启用HDR转SDR，设置为 "1" 时开启，默认关闭跟随源视频。当输入源为HDR时，设置为 "1" 时，转为 SDR 视频。 |
+| `/acodec/<AudioCodec>`    |  A   |  N   | 音频编码方案，支持方案：libmp3lame，libfdk_aac，ac3。        |
+| `/ab/<BitRate>`           |  A   |  N   | 静态码率（CBR），单位：比特每秒（bit/s），常用码率：320k, 256k, 192k, 128k, 64k 等。 默认情况下, 若指定码率大于原视频码率，则使用原音频码率进行转码, 参数末尾使用 `!` 可以以强制使用指定码率转码, 如 `64k!` |
+| `/scodec/<SubtitleCodec>` |  S   |  N   | 字幕编码方案，支持方案：mov_text。                           |
+| `/avsmart/<avsmart>`      |  V   |  N   | 0、是否启用锐智转码，设置为 1 时开启。<br> 1、支持使用H.264和H.265编码，默认使用H.264。<br> 2、`使用 avsmart 的计费和 avthumb 有区别`，[价格参考](https://www.qiniu.com/prices/dora?source=dora)。<br>3、默认使用锐智转码2.0，[锐智转码2.0](https://www.qiniu.com/products/avsmart) 是基于 锐智转码1.0 的升级版本，1.0和2.0 支持的[参数范围详情](https://developer.qiniu.com/dora/api/12158/1-0-and-2-0-perceptive-transcoding-parameter-scope-of-support)，建议使用锐智转码1.0的客户咨询客服进行升级。 |
+| `/smtMaxvbr/<maxvbr>`     |  V   |  N   | 开启 `avsmart`时生效。最大平均码率, 单位：比特每秒（bit/s），常用视频比特率：128k 1.25m 5m 等。小于 1k 会默认使用 1k。暂时对 H.265 无效。|
+| `/smtQuality/<quality>`   |  V   |  N   | 开启`avsmart`时生效。瘦身时的转码质量等级，值越大，画质越好。整数，取值范围[-7,9]。|
+
+# **M3U8相关接口**
+
+常规处理参数与其他格式相同，后续接口说明仅针对HLS/m3u8格式。
+```
+    avfast/m3u8
+            /...
+            /segtime/<SegSeconds>
+            /pattern/<Pattern>
+```
+| 参数                    | 说明                                                         |
+| ----------------------- | ------------------------------------------------------------ |
+| `/segtime/<SegSeconds>` | 用于 HLS 自定义每一小段音/视频流的播放时间长度，取值范围为: 2 - 120 （秒），默认值为 10（单位:秒）。 |
+| `/pattern/<Pattern>`     | 结果文件 key 格式的 base64_urlsafe 编码，$(count) 作为第几个文件输出的魔法变量（6个占位符，%06d）必须存在。**注意**，使用该参数指定的输出文件的文件名后缀如果不是输出文件的真实格式，可能使某些媒体播放器不兼容。 |
+
+
+# **操作方式**
+
+可以通过 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 的方式来调用：
+- `资源上传时自动触发`：可以在上传时指定[persistentOps](/kodo/manual/put-policy#put-policy-persistent-ops-explanation)参数
+- `对已有资源手动手动触发`：调用[pfop]()命令
+
+
+
+
+# **计费说明**
+<table>
+<thead>
+  <tr>
+    <th>类型<br></th>
+    <th>输出规格<br></th>
+    <th>普通帧率价格（&lt;= 30 帧/秒）<br></th>
+    <th>高帧率价格（30 帧/秒 &lt; r &lt;= 60 帧/秒）<br></th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td rowspan="7">倍速转码（H.264）</td>
+    <td>倍速转码 SD240（320x240）</td>
+    <td>0.0086 元/分钟</td>
+    <td>0.0172 元/分钟</td>
+  </tr>
+  <tr>
+    <td>倍速转码 SD480（640x480）</td>
+    <td>0.0108 元/分钟</td>
+    <td>0.0216元/分钟</td>
+  </tr>
+  <tr>
+    <td>倍速转码 SD（1280x720）</td>
+    <td>0.0284 元/分钟</td>
+    <td>0.057 元/分钟</td>
+  </tr>
+  <tr>
+    <td>倍速转码 HD（1920x1080）</td>
+    <td>0.0486 元/分钟</td>
+    <td>0.0972元/分钟</td>
+  </tr>
+  <tr>
+    <td>倍速转码 2K（2560x1440）</td>
+    <td>0.09 元/分钟</td>
+    <td>0.18 元/分钟</td>
+  </tr>
+  <tr>
+    <td>倍速转码 4K（4096x2160）</td>
+    <td>0.18 元/分钟</td>
+    <td>0.36 元/分钟</td>
+  </tr>
+  <tr>
+     <td>倍速转码 8K（8192x4320）</td>
+    <td>0.87 元/分钟</td>
+    <td>1.74 元/分钟</td>
+  </tr>
+  <tr>
+    <td rowspan="7">倍速转码（H.265）</td>
+    <td>倍速转码 SD240（320x240）</td>
+    <td>0.0428 元/分钟</td>
+    <td>0.0856 元/分钟</td>
+  </tr>
+  <tr>
+    <td>倍速转码 SD480（640x480）</td>
+    <td>0.054 元/分钟</td>
+    <td>0.108 元/分钟</td>
+  </tr>
+  <tr>
+    <td>倍速转码 SD（1280x720）</td>
+    <td>0.1418 元/分钟</td>
+    <td>0.2836 元/分钟</td>
+  </tr>
+  <tr>
+    <td>倍速转码 HD（1920x1080）</td>
+    <td>0.243 元/分钟</td>
+    <td>0.486 元/分钟</td>
+  </tr>
+  <tr>
+    <td>倍速转码 2K（2560x1440）</td>
+    <td>0.45 元/分钟</td>
+    <td>0.9 元/分钟</td>
+  </tr>
+  <tr>
+    <td>倍速转码 4K（4096x2160）</td>
+    <td>0.9 元/分钟</td>
+    <td>1.8 元/分钟</td>
+  </tr>
+  <tr>
+     <td>倍速转码 8K（8192x4320）</td>
+    <td>3.6 元/分钟</td>
+    <td>7.2 元/分钟</td>
+  </tr>
+  <tr>
+    <td rowspan="5">倍速转码（H.264）/启用 avsmart<br></td>
+    <td>倍速转码 SD（1280x720）及以下</td>
+    <td colspan="2">0.12 元/分钟（不分帧率）</td>
+  </tr>
+  <tr>
+    <td>倍速转码 HD（1920x1080）</td>
+    <td colspan="2">0.24 元/分钟（不分帧率）</td>
+  </tr>
+  <tr>
+    <td>倍速转码 2K（2560x1440）</td>
+    <td colspan="2">0.48 元/分钟（不分帧率）</td>
+  </tr>
+  <tr>
+    <td>倍速转码 4K（4096x2160）</td>
+    <td colspan="2">0.96 元/分钟（不分帧率）</td>
+  </tr>
+  <tr>
+    <td>倍速转码 8K（8192x4320）</td>
+    <td colspan="2">4.86 元/分钟（不分帧率）</td>
+  </tr>
+  <tr>
+    <td rowspan="5">倍速转码（H.265）/启用avsmart<br></td>
+    <td>倍速转码 SD（1280x720）及以下</td>
+    <td colspan="2">0.6 元/分钟（不分帧率）</td>
+  </tr>
+  <tr>
+    <td>倍速转码 HD（1920x1080）</td>
+    <td colspan="2">1.2 元/分钟（不分帧率）</td>
+  </tr>
+  <tr>
+    <td>倍速转码 2K（2560x1440）</td>
+    <td colspan="2">2.4 元/分钟（不分帧率）</td>
+  </tr>
+  <tr>
+    <td>倍速转码 4K（4096x2160）</td>
+    <td colspan="2">4.8 元/分钟（不分帧率）</td>
+    </tr>
+  <tr>
+    <td>倍速转码 8K（8192x4320）</td>
+    <td colspan="2">8.4 元/分钟（不分帧率）</td>
+  </tr>
+</tbody>
+</table>

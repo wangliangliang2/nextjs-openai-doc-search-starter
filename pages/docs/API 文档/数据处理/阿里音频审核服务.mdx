@@ -1,0 +1,174 @@
+音频审核（`ali_audio`）能够有效帮助您检测出您的音视频中的语音是否存在违规的风险内容。
+
+本服务由`阿里云计算有限公司`（以下简称`阿里云`）提供。启用服务后，您存储在七牛云空间的文件将在您主动请求的情况下被提供给阿里云以供其计算使用。七牛不能保证鉴别结果的正确性，请您自行评估后选择是否启用。服务价格请您参考具体的服务价格，您使用本服务产生的费用由七牛代收。启用服务则表示您知晓并同意以上内容。
+
+**注意**
+
+- 服务地域：华东、华北、华南。
+- 支持的语音文件大小 < 100 M。
+- 支持的语音文件时长 >=1秒钟且< 30分钟。
+- 支持的音频文件格式：.mp3、.wav、.aac、.wma、.ogg、.m4a、.amr。
+- 支持的视频文件格式：.avi、.flv、.mp4、.mpg、.asf、.wmv、.mov、.rmvb、.rm。
+- 只接受异步调用。
+
+
+# 如何开启
+
+如果您的文件存储在七牛云，则需先开启本服务。点此进入[七牛开发者平台](https://portal.qiniu.com/dora/thirdparty/create/ali_audio/quickstart)，点击右上角**开始使用**按钮。
+如果您的文件存储在其他地方，则直接调用本接口。
+# 使用方式
+
+使用方式分成三步：
+
+1. 发送异步请求
+2. 查询异步请求状态
+3. 查询结果
+
+# 一.发送异步请求
+
+## 请求语法和请求头部信息
+
+相关参考[持久化处理](https://developer.qiniu.com/dora/api/1291/persistent-data-processing-pfop)
+
+## 请求参数
+
+请求参数以表单形式组织，作为请求内容提交，格式如下：
+
+`bucket=<urlEncodedBucket>&key=<urlEncodedKey>&fops=<urlEncodedFops>&notifyURL=<urlEncodedPersistentNotifyUrl>&force=<Force>&pipeline=<Pipeline Name>`
+
+| 参数名称  | 必填 | 需要URL编码: | 说明                                                         |
+| --------- | ---- | ------------ | ------------------------------------------------------------ |
+| bucket    | 是   | 是           | 资源空间                                                     |
+| key       | 是   | 是           | 源资源名                                                     |
+| fops      | 是   | 是           | fops名称：ali_audio。                                        |
+| notifyURL |      | 是           | 处理结果通知接收 URL，七牛将会向你设置的 URL 发起 `Content-Type: application/json` 的 POST 请求。请参考[持久化处理结果通知](https://developer.qiniu.com/dora/api/1291/persistent-data-processing-pfop#pfop-notification)。 |
+| force     |      |              | 强制执行数据处理。 当服务端发现 **fops** 指定的数据处理结果已经存在，那就认为已经处理成功，避免重复处理浪费资源。加上本字段并设为 1，则可强制执行数据处理并覆盖原结果。 |
+| pipeline  |      |              | 为空则表示使用默认队列。建议指定[队列](https://developer.qiniu.com/dora/kb/3853/how-to-create-audio-and-video-processing-private-queues)，转码时与其他队列分别使用独立的计算资源。 |
+
+## 响应
+
+响应语法相关参考：[持久化处理](https://developer.qiniu.com/dora/api/1291/persistent-data-processing-pfop)
+
+# 二.查询异步请求状态
+
+请求参数相关参考： [持久化处理](https://developer.qiniu.com/dora/api/1294/persistent-processing-status-query-prefop)
+
+## 响应
+
+请求状态的响应内容，如果请求成功，返回类似如下结果：
+
+```
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Length: 427
+Content-Type: application/json
+Date: Fri, 27 Dec 2019 07:57:27 GMT
+Server: openresty
+X-Log: BOOTS-BROKER-WORKER;STATUS:1;APIS:1;ZONEPROXY:27;APIS:27
+X-Reqid: awIAACQb__FcK-QV
+
+{
+    "code": 0,
+    "desc": "The fop was completed successfully",
+    "id": "z2.0A2C241C106D99415A5E05B7427CD33C",
+    "inputBucket": "publicbucket_z2",
+    "inputKey": "ffmpeg_async_frame_1612",
+    "items": [
+        {
+            "cmd": "ali_audio",
+            "code": 0,
+            "desc": "The fop was completed successfully",
+            "hash": "FqJnzvHbjY2ciWKBg5fYOzZuoX6x",
+            "key": "VFa6GGuRzbsSO7XgV_IxGmPolJo=/llI_rprtiP9N8VPR-RVNcaKXZr2N",
+            "returnOld": 0
+        }
+    ],
+    "pipeline": "1380469261.pipeline",
+    "reqid": "PzkAAHVVquDiKuQV"
+}
+```
+
+# 三.查询结果
+
+根据二中成功返回的结果中key字段查询结果，查询结果参数格式如下：`http://inputBucket的域名/key`
+
+查询结果如下：
+
+```
+{
+    "code": 200,
+    "data": [
+        {
+            "code": 200,
+            "msg": "OK",
+            "results": [
+                {
+                    "details": null,
+                    "label": "normal",
+                    "rate": 99.91,
+                    "scene": "antispam",
+                    "suggestion": "pass"
+                }
+            ],
+            "taskId": "vc_f_6o3Rz2gjr8s68Ddpao$SnJ-1rQpGz"
+        }
+    ],
+    "msg": "OK",
+    "requestId": "0EA9CB1A-8F1D-4014-9E7A-EB69438ADCA8"
+}
+```
+
+## 结果参数说明
+
+**公共头响应头参数说明**
+
+| 字段      | 类型     | 是否必选 | 说明                                                         |
+| --------- | -------- | -------- | ------------------------------------------------------------ |
+| code      | 整型     | Y        | 错误码，和HTTP状态码一致（但有扩展）。<br>• 2xx 表示成功。<br>• 4xx 表示请求有误。<br>• 5xx 表示后端有误。<br>具体参照公共错误码说明 |
+| msg       | 字符串   | Y        | 错误的进一步描述。                                           |
+| requestId | 字符串   | Y        | 唯一标识该请求的ID，可用于定位问题。                         |
+| data      | JSON对象 | Y        | API（业务）相关的返回数据。出错情况下，该字段可能为空。一般来说，该字段为一个JSON结构体或数组，参见下表 |
+
+**响应返回的data参数说明**
+
+| 字段    | 类型     | 是否必选 | 说明                                                         |
+| ------- | -------- | -------- | ------------------------------------------------------------ |
+| code    | 整型     | Y        | 错误码，和HTTP的status code一致。                            |
+| msg     | 字符串   | Y        | 错误的进一步描述。                                           |
+| taskId  | 字符串   | Y        | 该检测任务的ID。                                             |
+| results | JSON数组 | N        | 返回结果。调用成功时（code=200），返回结果中包含一个或多个元素。每个元素是个结构体，具体结构描述见result结构表。 |
+
+**响应返回的results中JSON对象结构说明**
+
+| 名称       | 类型     | 是否必须 | 描述                                                         |
+| ---------- | -------- | -------- | ------------------------------------------------------------ |
+| scene      | 字符串   | Y        | 检测场景，和调用请求中的场景对应。                           |
+| label      | 字符串   | Y        | 检测结果的分类，与具体的scene对应。取值范围参考scene 和 label说明 |
+| suggestion | 字符串   | Y        | 建议您执行的操作，取值：pass：内容不违规，建议放行review：内容可能违规，建议进行人工审核block：内容违规，建议隔离 |
+| rate       | 浮点数   | Y        | 结果为该分类的概率，取值范围为[0.00-100.00]。值越高，表示越有可能属于该分类。分值仅供参考，您需要关注**label**和**suggestion**内容。 |
+| details    | JSON数组 | Y        | 语音对应的文本详情。每一句文本对应一个元素，包含一个或者多个元素，每个元素的具体结构见detail结构体说明。 |
+
+**detail结构体说明**
+
+| 名称      | 类型   | 是否必须 | 描述                                                         |
+| --------- | ------ | -------- | ------------------------------------------------------------ |
+| startTime | 整型   | Y        | 句子开始的时间，单位是秒。                                   |
+| endTime   | 整型   | Y        | 句子结束的时间，单位是秒。                                   |
+| text      | 字符串 | Y        | 语音转换成文本的结果。                                       |
+| label     | 字符串 | Y        | 检测结果的分类，与具体的scene对应。取值范围参考scene和label说明 |
+
+**scene和label说明**
+
+| 场景     | 描述                                                      | scene    | label                                                        |
+| -------- | --------------------------------------------------------- | -------- | ------------------------------------------------------------ |
+| 语音检测 | 识别语音中的违规内容。<br />**说明** 默认识别语言为中文。 | antispam | • normal：正常文本<br>• spam：含垃圾信息<br>• ad：广告<br>• politics：涉政<br>• terrorism：暴恐<br>• abuse：辱骂<br>• porn：色情<br>• flood：灌水<br>• contraband：违禁<br>• meaningless：无意义 |
+
+# 计费说明
+**服务价格**
+
+0.012元/分钟
+
+
+**计费示例**
+
+某公司2019年5月使用该服务，共发起10万分钟请求，则当月使用该服务的费用为`100000*0.012=1200.0元`

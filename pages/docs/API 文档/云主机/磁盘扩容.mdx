@@ -1,0 +1,86 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `POST` /v1/vm/disk/:disk_id/resize
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>地域 ID。</p>
+        <p>您可以调用 DescribeRegions 查看最新的七牛云地域列表。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>disk_id</td>
+      <td>string</td>
+      <td>path</td>
+      <td>是</td>
+      <td>
+        <p>磁盘 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>目标 ECS 实例的 ID。</p>
+      </td>
+    </tr>
+   <tr>
+      <td>new_size</td>
+      <td>int64</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>指定的新云盘容量必须比原云盘容量大。</p>
+      </td>
+    </tr>
+   <tr>
+      <td>type</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>扩容云盘的方式。取值范围：</p>
+        <ul>
+          <li>offline：默认，离线扩容，扩容后您必须重启实例以生效。</li>
+          <li>online：在线扩容，无需重启实例即可完成扩容。云盘类型支持高效云盘、SSD云盘和ESSD云盘。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>client_token</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+| 名称 | 类型 | 是否必须 | 描述 |
+| ----- | ----- | ----- | ----- |
+| request_id | string | 是 | 请求 ID

@@ -1,0 +1,17 @@
+防火墙日志是一种自动解析防火墙日志格式的解析方式,目前支持 cisco,shorewall,susefirewall2
+
+```
+Teardown dynamic TCP translation from Inside:100.20.50.100/70000 to Outside:8.8.8.8/40000 duration 0:00:00
+```
+
+如果您有这种格式的日志，可以选择 `防火墙日志` 直接进行解析。
+![](https://dn-odum9helk.qbox.me/FrgNrSnI565Piw3r_aMbhkvGP9HI)
+
+解析后：
+![](https://dn-odum9helk.qbox.me/FrX9BMqW9_no8KoaWGQyrRUe2jqj)
+
+* 防火墙日志类型(`category`): 默认为 cisco, 支持 cisco, shorewall, susefirewall2
+
+* 禁止记录解析失败数据(`disable_record_errdata`)：默认为 false，解析失败的数据会默认出现在`pandora_stash`字段，该选项可以禁止记录解析失败的数据。
+
+* 保留原始数据（`keep_raw_data`):默认为`false`，配置此选项之后会保留原始数据在`raw_data`字段下。 

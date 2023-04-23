@@ -1,0 +1,115 @@
+# 请求路径
+> `GET` /v1/cm/region
+
+
+# 返回值
+| 名称 | 类型 | 描述 |
+| ----- | ----- | ----- | ----- |
+| request_id | string | 请求 ID |
+| data | \[]Region | 区域集合 |
+
+### Region
+| 名称 | 类型 | 描述 |
+| ----- | ----- | ----- | ----- |
+| region_id | string | 地域 ID |
+| local_name | string | 地域名称 |
+| zones | \[]Zone | 可用区集合 |
+
+### Zone
+| 名称 | 类型 | 描述 |
+| ----- | ----- | ----- | ----- |
+| region_id | string | 地域 ID |
+| zone_id | string | 或用区 ID |
+| local_name | string | 或用区名称 |
+
+## 返回值示例
+```json
+{
+  "data": [
+    {
+      "region_id": "cn-qingdao",
+      "local_name": "青岛1",
+      "zones": [
+        {
+          "region_id": "cn-qingdao",
+          "zone_id": "cn-qingdao-c",
+          "local_name": "华北 1 可用区 C"
+        },
+        {
+          "region_id": "cn-qingdao",
+          "zone_id": "cn-qingdao-b",
+          "local_name": "华北 1 可用区 B"
+        }
+      ]
+    },
+    {
+      "region_id": "cn-beijing",
+      "local_name": "北京1",
+      "zones": [
+        {
+          "region_id": "cn-beijing",
+          "zone_id": "cn-beijing-e",
+          "local_name": "华北 2 可用区 E"
+        },
+        {
+          "region_id": "cn-beijing",
+          "zone_id": "cn-beijing-d",
+          "local_name": "华北 2 可用区 D"
+        },
+        {
+          "region_id": "cn-beijing",
+          "zone_id": "cn-beijing-a",
+          "local_name": "华北 2 可用区 A"
+        },
+        {
+          "region_id": "cn-beijing",
+          "zone_id": "cn-beijing-b",
+          "local_name": "华北 2 可用区 B"
+        },
+        {
+          "region_id": "cn-beijing",
+          "zone_id": "cn-beijing-c",
+          "local_name": "华北 2 可用区 C"
+        },
+        {
+          "region_id": "cn-beijing",
+          "zone_id": "cn-beijing-f",
+          "local_name": "华北 2 可用区 F"
+        },
+        {
+          "region_id": "cn-beijing",
+          "zone_id": "cn-beijing-g",
+          "local_name": "华北 2 可用区 G"
+        },
+        {
+          "region_id": "cn-beijing",
+          "zone_id": "cn-beijing-h",
+          "local_name": "华北 2 可用区 H"
+        }
+      ]
+    },
+    {
+      "region_id": "cn-zhangjiakou",
+      "local_name": "张家口1",
+      "zones": [
+        {
+          "region_id": "cn-zhangjiakou",
+          "zone_id": "cn-zhangjiakou-a",
+          "local_name": "华北 3 可用区 A"
+        },
+        {
+          "region_id": "cn-zhangjiakou",
+          "zone_id": "cn-zhangjiakou-b",
+          "local_name": "华北 3 可用区 B"
+        },
+        {
+          "region_id": "cn-zhangjiakou",
+          "zone_id": "cn-zhangjiakou-c",
+          "local_name": ""
+        }
+      ]
+    }
+  ],
+  "request_id": "ScKvEUXsKNUd1FAW"
+}
+```

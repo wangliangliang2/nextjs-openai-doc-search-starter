@@ -1,0 +1,14 @@
+通过国标接入的视频监控设备支持查询设备端的报警事件通知，当发生报警事件时，源设备将报警信息发送给QVS的SIP服务器；SIP服务器接收到报警事件后，将报警信息进行分发给目标设备。
+
+# **报警事件通知**
+### **操作说明**
+
+1.登录[七牛开发者平台](https://sso.qiniu.com/?client_id=PIapUKqa3u6S24H868BelwrG0OFu8dS7AxVQ8oz8HznLXhgrl2BnjaO9cs9LzxK2&redirect_url=https:%2F%2Fportal.qiniu.com%2Fapi%2Fgaea%2Fsso%2Fsignin%3Fredirect%3D%252Fcreate)。
+2.选择视频监控产品，进入产品控制台，选择**设备管理**，进入设备管理页面，**添加设备**或者**编辑设备**时，可以开启**报警事件通知**选择对应的报警方式保存配置后就可以接收设备端的报警信息了。
+**注：**
+开启接收国标报警后，需`确保设备端开启`了报警；为避免报警数据太多，请选择必要的报警方式；可以通过 portal 或空间配置的回调地址接收设备报警信息。
+![1.png](https://dn-odum9helk.qbox.me/Fqms_e-R5xG7DRU8ko5rFctHtdrF)
+3.查询报警事件通知信息
+（1）设备列表中选择要查看的设备，点击**查看**进入设备详情页面，选择**报警事件通知**模块查询设备报警事件信息，如下图所示：
+![1.png](https://dn-odum9helk.qbox.me/FlSZmtdm67xBsXgFX4I_lg1g5f0a)
+（2）通过空间中配置的回调地址进行接收，详见[消息通知](https://developer.qiniu.com/qvs/10240/the-message-callback)

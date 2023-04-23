@@ -1,0 +1,691 @@
+# 七牛低延时直播接入指南
+步骤一： 提供拉流域名做低延迟配置[（提交工单）](https://support.qiniu.com/tickets/new/form?category=%E5%85%B6%E4%BB%96%E7%B1%BB%E5%92%A8%E8%AF%A2&description=%E4%B8%83%E7%89%9B%E4%BD%8E%E5%BB%B6%E6%97%B6%E7%9B%B4%E6%92%AD%E6%8E%A5%E5%85%A5%E6%B5%8B%E8%AF%95%E7%94%B3%E8%AF%B7&method=PC%20%E6%8E%A8%E6%B5%81&space=%E7%9B%B4%E6%92%AD%E4%BA%91&title=%E4%B8%83%E7%89%9B%E4%BD%8E%E5%BB%B6%E6%97%B6%E7%9B%B4%E6%92%AD)
+步骤二： 推流端推流（不能包含 B 帧）
+步骤三： 使用七牛的播放器拉流
+
+**服务 TIPS**
+1.低延时直播采用 RTC 相关技术，大部分浏览器原生支持 RTC 播放，适用性更强；播放延迟小于 1 秒，适用于大部分对延迟有要求的直播场景。
+
+2.推流端推流直播流中不包含 B 帧【推流命令样例：./ffmpeg -re -i "/*/*/*/*.mp4" -c copy -c:v libx264 -bf 0 -f flv 'rtmp://pili-publish.marsyu.site/lb-test/20200125h265test?expire=1610992020&token=W9G5v8_h5k6mgwshHQ2l7zB6NC4='】，不符合要求的直播流可能会出现卡顿/画面撕裂等问题；若推流侧无法自行适配，可以使用我们的服务端转码功能，在播放 URL 流名称后面添加 `@zerolatency` 转码规格 (转码将增加 200-400ms 延时，对播放延时有极高要求的客户请适配低延时推流规格，[转码将收取额外费用](https://developer.qiniu.com/pili/kb/2653/on-live-streaming-real-time-transcoding-control-multi-rate-service-side-watermark))。
+
+3.[<低延时 Web SDK>](https://developer.qiniu.com/pili/7730/geek-web-sdk) 需要浏览器支持 RTC 和 H264 解码，目前部分 Android 手机自带浏览器并未支持 RTC，在这种情况下，我们建议更换浏览器或直接使用移动端的 SDK [<低延时 iOS SDK>](https://developer.qiniu.com/pili/7732/geek-ios-sdk)[<低延时 Android SDK>](https://developer.qiniu.com/pili/7731/geek-android-sdk)。
+
+4.低延时直播 SDK 仅能播放低延时直播类型的直播流，如果需要播放 rtmp/flv/hls 或者 mp4 等视频流，请使用[标准播放器](https://developer.qiniu.com/pili/4262/player-sdk-introduction-and-demo-download)进行播放。
+
+# 产品介绍
+
+七牛低延时直播（Geek）直播构建了全新的低延时直播互动体验，相比于传统的直播能力降低了延时、优化了协议与底层技术，目前对于**微信内直播**的多业务场景提供了更为优渥的使用体验。支持千万级并发同时拥有毫秒级开播体验，打通了用户对于直播低延时性的核心诉求。
+
+# 浏览器兼容性说明
+
+快直播依赖于浏览器提供的 WebRTC API 和 H264 解码能力，因此，SDK 是否可用，依赖于当前浏览器的支持情况。
+
+下面是分别针对桌面端和移动端浏览器的兼容性报告。注意，由于平台和一些应用内置浏览器的实现各不相同，无法涵盖所有的浏览器，以下文档中未列举的浏览器并不代表不支持。建议在使用前，先通过下面列出的 getPlayerSupport 接口来判断 SDK 是否可用。
+
+## 桌面端
+
+<style>
+  table td {
+    text-align: center;
+  }
+  table th {
+    text-align: center;
+  }
+</style>
+
+
+<table class="relative-table confluenceTable" style="width: 50%;">
+  <colgroup>
+    <col style="width: 20.1668%;">
+    <col style="width: 33.8259%;">
+    <col style="width: 45.9712%;">
+  </colgroup>
+  <tbody>
+    <tr>
+      <th class="confluenceTh">操作系统</th>
+      <th class="confluenceTh">浏览器</th>
+      <th class="confluenceTh"><span>版本兼容性</span></th>
+    </tr>
+    <tr>
+      <td rowspan="5" class="confluenceTd">Mac OS</td>
+      <td class="confluenceTd">Safari 浏览器</td>
+      <td class="confluenceTd">11.0 或以上版本支持</td>
+    </tr>
+    <tr>
+      <td class="confluenceTd">Chrome 浏览器</td>
+      <td class="confluenceTd">56.0 或以上版本支持</td>
+    </tr>
+    <tr>
+      <td class="confluenceTd">Firefox 浏览器</td>
+      <td class="confluenceTd">56.0 或以上版本支持</td>
+    </tr>
+    <tr>
+      <td class="confluenceTd">Edge 浏览器</td>
+      <td class="confluenceTd"><span>80.0 或以上版本支持</span></td>
+    </tr>
+    <tr>
+      <td class="confluenceTd">微信内置浏览器</td>
+      <td class="confluenceTd">支持</td>
+    </tr>
+    <tr>
+      <td rowspan="5" class="confluenceTd">Windows</td>
+      <td colspan="1" class="confluenceTd">Chrome<span>浏览器</span></td>
+      <td colspan="1" class="confluenceTd"><span>56.0 或以上版本支持</span></td>
+    </tr>
+    <tr>
+      <td colspan="1" class="confluenceTd">Firefox 浏览器</td>
+      <td colspan="1" class="confluenceTd">56 或以上版本支持</td>
+    </tr>
+    <tr>
+      <td colspan="1" class="confluenceTd">QQ 浏览器</td>
+      <td colspan="1" class="confluenceTd">10.4 或以上版本支持</td>
+    </tr>
+    <tr>
+      <td colspan="1" class="confluenceTd">Edge 浏览器</td>
+      <td colspan="1" class="confluenceTd">80 或以上版本支持</td>
+    </tr>
+    <tr>
+      <td colspan="1" class="confluenceTd">微信内置浏览器</td>
+      <td colspan="1" class="confluenceTd">支持（建议最新版本）</td>
+    </tr>
+  </tbody>
+</table>
+
+## iOS
+
+<table class="relative-table confluenceTable tablesorter tablesorter-default stickyTableHeaders"
+  style="width: 50%; padding: 0px;" role="grid">
+  <colgroup>
+    <col style="width: 37.6434%;">
+    <col style="width: 62.4841%;">
+  </colgroup>
+  <thead class="tableFloatingHeaderOriginal"
+    style="position: static; margin-top: 0px; left: 349px; z-index: 3; width: 350px; top: 84px;">
+    <tr role="row" class="tablesorter-headerRow">
+      <th class="confluenceTh tablesorter-header sortableHeader tablesorter-headerUnSorted" data-column="0" tabindex="0"
+        scope="col" role="columnheader" aria-disabled="false" unselectable="on" aria-sort="none"
+        aria-label="浏览器: No sort applied, activate to apply an ascending sort"
+        style="user-select: none; min-width: 8px; max-width: none;">
+        <div class="tablesorter-header-inner">浏览器</div>
+      </th>
+      <th class="confluenceTh tablesorter-header sortableHeader tablesorter-headerUnSorted" data-column="1" tabindex="0"
+        scope="col" role="columnheader" aria-disabled="false" unselectable="on" aria-sort="none"
+        aria-label="支持情况: No sort applied, activate to apply an ascending sort"
+        style="user-select: none; min-width: 8px; max-width: none;">
+        <div class="tablesorter-header-inner">支持情况</div>
+      </th>
+    </tr>
+  </thead>
+  <thead class="tableFloatingHeader" style="display: none;">
+    <tr role="row" class="tablesorter-headerRow">
+      <th class="confluenceTh tablesorter-header sortableHeader tablesorter-headerUnSorted" data-column="0" tabindex="0"
+        scope="col" role="columnheader" aria-disabled="false" unselectable="on" aria-sort="none"
+        aria-label="浏览器: No sort applied, activate to apply an ascending sort" style="user-select: none;">
+        <div class="tablesorter-header-inner">浏览器</div>
+      </th>
+      <th class="confluenceTh tablesorter-header sortableHeader tablesorter-headerUnSorted" data-column="1" tabindex="0"
+        scope="col" role="columnheader" aria-disabled="false" unselectable="on" aria-sort="none"
+        aria-label="支持情况: No sort applied, activate to apply an ascending sort" style="user-select: none;">
+        <div class="tablesorter-header-inner">支持情况</div>
+      </th>
+    </tr>
+  </thead>
+  <tbody aria-live="polite" aria-relevant="all">
+    <tr role="row">
+      <td class="confluenceTd">Safari 浏览器</td>
+      <td class="confluenceTd">iOS 11 或以上版本支持</td>
+    </tr>
+    <tr role="row">
+      <td class="confluenceTd">Chrome 浏览器</td>
+      <td class="confluenceTd">iOS 12.1.4 或以上版本支持</td>
+    </tr>
+    <tr role="row">
+      <td colspan="1" class="confluenceTd">Edge 浏览器</td>
+      <td colspan="1" class="confluenceTd">iOS 12.1.4 或以上版本支持</td>
+    </tr>
+    <tr role="row">
+      <td colspan="1" class="confluenceTd">企业微信浏览器</td>
+      <td colspan="1" class="confluenceTd">iOS 12.1.4 或以上版本支持</td>
+    </tr>
+    <tr role="row">
+      <td class="confluenceTd">微信浏览器</td>
+      <td class="confluenceTd">iOS 12.1.4 或以上版本支持</td>
+    </tr>
+    <tr role="row">
+      <td class="confluenceTd">内嵌WebView</td>
+      <td class="confluenceTd">iOS 12.1.4 或以上版本支持</td>
+    </tr>
+  </tbody>
+</table>
+
+## Android
+
+<table class="relative-table confluenceTable tablesorter tablesorter-default stickyTableHeaders"
+  style="width: 50%; padding: 0px;" role="grid">
+  <colgroup>
+    <col style="width: 39.1478%;">
+    <col style="width: 60.9777%;">
+  </colgroup>
+  <thead class="tableFloatingHeaderOriginal">
+    <tr role="row" class="tablesorter-headerRow">
+      <th class="confluenceTh tablesorter-header sortableHeader tablesorter-headerUnSorted" data-column="0" tabindex="0"
+        scope="col" role="columnheader" aria-disabled="false" unselectable="on" aria-sort="none"
+        aria-label="浏览器: No sort applied, activate to apply an ascending sort" style="user-select: none;">
+        <div class="tablesorter-header-inner">浏览器</div>
+      </th>
+      <th class="confluenceTh tablesorter-header sortableHeader tablesorter-headerAsc" data-column="1" tabindex="0"
+        scope="col" role="columnheader" aria-disabled="false" unselectable="on" aria-sort="ascending"
+        aria-label="支持情况: Ascending sort applied, activate to apply a descending sort" style="user-select: none;">
+        <div class="tablesorter-header-inner">支持情况</div>
+      </th>
+    </tr>
+  </thead>
+  <thead class="tableFloatingHeader" style="display: none;">
+    <tr role="row" class="tablesorter-headerRow">
+      <th class="confluenceTh tablesorter-header sortableHeader tablesorter-headerUnSorted" data-column="0" tabindex="0"
+        scope="col" role="columnheader" aria-disabled="false" unselectable="on" aria-sort="none"
+        aria-label="浏览器: No sort applied, activate to apply an ascending sort" style="user-select: none;">
+        <div class="tablesorter-header-inner">浏览器</div>
+      </th>
+      <th class="confluenceTh tablesorter-header sortableHeader tablesorter-headerUnSorted" data-column="1" tabindex="0"
+        scope="col" role="columnheader" aria-disabled="false" unselectable="on" aria-sort="none"
+        aria-label="支持情况: No sort applied, activate to apply an ascending sort" style="user-select: none;">
+        <div class="tablesorter-header-inner">支持情况</div>
+      </th>
+    </tr>
+  </thead>
+  <tbody aria-live="polite" aria-relevant="all">
+    <tr role="row">
+      <td class="confluenceTd">Chrome 60+</td>
+      <td class="confluenceTd">支持</td>
+    </tr>
+    <tr role="row">
+      <td colspan="1" class="confluenceTd">企业微信浏览器</td>
+      <td colspan="1" class="confluenceTd">支持</td>
+    </tr>
+    <tr role="row">
+      <td class="confluenceTd">微信浏览器</td>
+      <td class="confluenceTd">支持</td>
+    </tr>
+    <tr role="row">
+      <td class="confluenceTd">内嵌 Web View</td>
+      <td class="confluenceTd">部分设备支持接收</td>
+    </tr>
+  </tbody>
+</table>
+
+以上列表中提供的浏览器可以大致表明兼容性情况，但由于 Android 设备上浏览器情况比较复杂，不同手机产商对自带浏览器内核或多或少做出改动，所以无法保证自带浏览器能够很好地支持 WebRTC，建议开发者使用 Chrome 浏览器。
+
+# 接口说明
+
+## 引入 SDK
+
+SDK 提供了两种引入方式，可以直接下载 JS 文件，也可以通过 npm 完成引入。
+
+### 1. npm 引入
+
+首先使用 npm 来将 SDK 安装到项目中。
+
+```
+npm install --save qn-rtplayer-web
+```
+
+然后在项目中使用 `import` 语法引入。
+
+```typescript
+import { QNRTPlayer } from "qn-rtplayer-web";
+const player = new QNRTPlayer();
+```
+
+### 2. 直接导入 JS 文件
+
+每次发布版本，我们都会将最新的 SDK JS 文件放在我们的 Github 上，每次想要升级版本时，只需要访问我们的 [Github](https://github.com/pili-engineering/QNRTPlayer-Web/tree/main/releases) 页面，然后替换一下自己的 JS 文件即可。
+
+SDK 的 JS 文件在导入页面后，会自动创建一个全局对象 `QNRTPlayer`，这个对象的成员包括了 SDK 所导出的所有模块和对象。
+
+```typescript
+const player = new QNRTPlayer.QNRTPlayer();
+```
+
+## 快速开始
+
+使用 SDK 非常简单，完成以下几个步骤即可。
+
+```typescript
+import { QNRTPlayer } from "qn-rtplayer-web";
+
+// 1. 创建 QNRTPlayer 对象
+const player = new QNRTPlayer();
+
+// 2. 初始化配置信息
+player.init();
+
+// 3. 传入播放地址及容器，开始播放
+player.play(
+  "webrtc://...",
+  document.getElementById("container");
+);
+```
+
+## API 参考
+
+### `init`
+
+```typescript
+/**
+ * 传入配置对象，完成初始化配置
+ * @param {Config} config - 配置对象
+ */
+public init(config: Config): void
+```
+
+其中，配置对象 `Config` 的结构如下：
+
+```typescript
+interface Config {
+  /**
+   * 配置到媒体元素上的 class 值
+   */
+  className?: string;
+
+  /**
+   * 媒体宽度，合法的 CSS 字符串值
+   */
+  width?: string;
+
+  /**
+   * 媒体高度，合法的 CSS 字符串值
+   */
+  height?: string;
+
+  /**
+   * 合法的 CSS object-fit 值
+   */
+  objectFit?: string;
+
+  /**
+   * 音量 0-1 范围
+   */
+  volumn?: number;
+
+  /**
+   * 是否开启 video 媒体元素控制 UI
+   */
+  controls?: boolean;
+
+  /**
+   * opens the inline mode of ios and WeChat on the mobile phone
+   * see: https://webkit.org/blog/6784/new-video-policies-for-ios/
+   */
+  playsinline?: boolean;
+}
+```
+
+配置对象在 SDK 中的默认值如下：
+
+```typescript
+const DEFAULT_CONFIG: Required<Config> = {
+  className: 'qn-rtplayer-media',
+  width: '100%',
+  height: '100%',
+  objectFit: 'contain',
+  volumn: 0.6,
+  controls: false,
+  playsinline: true,
+};
+```
+
+### `setConfig`
+
+在播放之后，如果想要动态修改播放器的配置信息，SDK 还提供了 `setConfig` 方法，传入相应修改值即可完成修改，函数签名如下。
+
+```typescript
+/**
+ * 修改配置
+ * @param {Partial<Config>} config
+ */
+public setConfig(config: Partial<Config>): void
+```
+
+### `getConfig`
+
+```typescript
+/**
+ * 获取当前播放器配置信息
+ * @return {Config} config
+ */
+public getConfig(): Config
+```
+
+### `play`
+
+在调用 `init` 方法之后，再调用 `play` 方法，即可开始播放。
+
+```typescript
+/**
+ * 播放
+ * @param {string} url 播放地址
+ * @param {HTMLElement} container 容器
+ */
+public async play(url: string, container: HTMLElement): Promise<void>
+```
+
+如果不是在用户操作回调函数中调用该方法，可能出现播放失败的情况。建议将该方法放在用户操作回调函数中，防止浏览器自动播放策略阻止播放。如果播放失败，返回值 Promise 会进入 reject 状态。建议始终监控返回值，当出现播放失败的情况后，通过弹窗等方式引导用户操作，并在用户操作回调函数中调用 `resume` 方法来恢复播放。
+
+### `pause`
+
+```typescript
+/**
+ * 暂停
+ */
+public pause(): void
+```
+
+### `resume`
+
+```typescript
+/**
+ * 恢复播放
+ */
+public resume(): Promise<void>
+```
+
+### `hasAudio`
+
+```typescript
+/**
+ * 是否存在音频流
+ * @return {boolean}
+ */
+public hasAudio(): boolean
+```
+
+### `hasVideo`
+
+```typescript
+/**
+ * 是否存在视频流
+ * @return {boolean}
+ */
+public hasVideo(): boolean
+```
+
+### `setAudioVolume`
+
+```typescript
+/**
+ * 设置音量
+ * @param {Number} volume - 音量，范围 0-1
+ */
+public setAudioVolume(volume: number)
+```
+
+### `getAudioVolume`
+
+```typescript
+/**
+ * 获取当前音量
+ * @return {number} - 音量，范围 0-1
+ */
+public getAudioVolume(): number
+```
+
+### `muteAudio`
+
+```typescript
+/**
+ * 静音音频
+ */
+public muteAudio(): void
+```
+
+### `unmuteAudio`
+
+```typescript
+/**
+ * 取消音频静音
+ */
+public unmuteAudio(): void
+```
+
+### `muteVideo`
+
+```typescript
+/**
+ * 仅播放音频，不播放视频
+ */
+public muteVideo(): void
+```
+
+> 视频 mute 状态时，SDK 仍在接收视频流数据，但是不做渲染。
+
+### `unmuteVideo`
+
+```typescript
+/**
+ * 取消视频 mute 状态
+ */
+public unmuteVideo(): void
+```
+
+### `isPlaying`
+
+```typescript
+/**
+ * 当前是否处于播放状态
+ * @return {boolean}
+ */
+public isPlaying(): boolean
+```
+
+### `stop`
+
+```typescript
+/**
+ * 停止播放
+ */
+public stop(): void
+```
+
+### `release`
+
+```typescript
+/**
+ * 释放状态
+ */
+public release(): void
+```
+
+> 注意，调用 `release` 方法之后，SDK 会清空所有状态，如果想要再次播放，需要重新调用 `init` 方法。
+
+### `getPlayerSupport`
+
+```typescript
+/**
+ * 获取支持信息
+ * @return {PlayerSupport | undefined} undefined 表示支持信息尚未获取完成
+ */
+public getPlayerSupport(): PlayerSupport | undefined
+```
+
+其中 `PlayerSupport` 接口结构如下：
+
+```typescript
+interface PlayerSupport {
+  /**
+   * 是否支持 RTC
+   */
+  peerConnection: boolean,
+
+  /**
+   * 是否支持 H264
+   */
+  H264: boolean,
+
+  /**
+   * 是否支持获取流状态
+   */
+  getStats: boolean,
+}
+```
+
+### `setLogLevel`
+
+指定 SDK 日志输出等级。注意这是一个静态方法。
+
+```typescript
+public static setLogLevel(level: LogLevel)
+```
+
+### `version`
+
+```typescript
+/**
+ * 获取 SDK 版本号
+ */
+public get version(): string
+```
+
+### `playerStateChanged` 事件
+
+播放器内部状态改变时，会触发该事件。
+
+```typescript
+player.on('playerStateChanged', (state: PlayerState) => {
+  // ...
+});
+```
+
+其中，`PlayerState` 是下面的枚举值。
+
+```typescript
+export enum PlayerState {
+  /**
+   * 播放器默认状态，release 后也回到该状态
+   */
+  STATE_IDLE = 0,
+
+  /**
+   * 播放器已完成初始化，init 之后进入该状态
+   */
+  STATE_INIT = 1,
+
+  /**
+   * 播放器连接完成状态，完成和媒体服务连接后进入该状态
+   */
+  STATE_READY = 2,
+
+  /**
+   * 播放器正在播放状态，当有音视频帧渲染后进入该状态
+   */
+  STATE_PLAYING = 3,
+
+  /**
+   * 播放器停止状态，stop 之后进入该状态
+   */
+  STATE_STOP = 4,
+
+  /**
+   * 播放器错误状态，当播放发生错误进入该状态
+   */
+  STATE_ERROR = 5,
+}
+```
+
+### `stats` 事件
+
+监听 `stats` 事件，可以获得当前媒体流的状态数据。
+
+```typescript
+player.on('stats', (data: StatReport) => {
+  // ...
+});
+```
+
+其中，`StatReport` 的结构如下：
+
+```typescript
+interface StatReport {
+  /**
+   * 音频码率（kbps）
+   */
+  audioBitrate: number;
+
+  /**
+   * 视频码率（kbps）
+   */
+  videoBitrate: number;
+
+  /**
+   * 视频流宽
+   */
+  frameWidth: number;
+
+  /**
+   * 视频流高
+   */
+  frameHeight: number;
+
+  /**
+   * 帧率
+   */
+  frameRate: number;
+}
+```
+
+### `error` 事件
+
+SDK 内部对常见的错误进行了封装，可以通过监听 `error` 事件获取错误信息。
+
+当连接因网络等原因异常断开时，会触发 `disconnect` 事件。
+
+```typescript
+player.on('error', (error: SDKError) => {
+  // ...
+});
+```
+
+其中，`SDKError` 的格式为：
+
+```typescript
+interface SDKError {
+  code: number;
+  errorType: string;
+  msg: string;
+}
+```
+
+`SDKError` 中使用 `code` 与不同类型的错误做了分类，不同 code 的含义具体如下：
+
+| code | errorType | 含义 |
+|:-:|:-:|:-:|
+|20001|networkError|网络错误|
+|20002|authFailed|请求服务鉴权失败|
+|20003|playStreamNotExist|媒体流不存在|
+|20004|playRequestFailed|请求参数/服务端错误|
+|20005|descriptionError|SDP Description 错误|
+|20006|connectFailed|PeerConnection 连接异常断开|
+|30001|rtcNotSupport|设备不支持 RTC/H264|
+
+### `log` 事件
+
+监听 `log` 事件可以获取 SDK 的日志信息。
+
+```typescript
+player.on('log', (data: SDKLogInfo) => {
+    // ...
+});
+```
+
+其中，`SDKLogInfo` 的结构如下：
+
+```typescript
+interface SDKLogInfo {
+  time: string;
+  level: LogLevel;
+  msg: string;
+  id: string;
+}
+
+type LogLevel = 'disable' | 'error' | 'warning' | 'debug' | 'log';
+```

@@ -1,0 +1,27 @@
+本文以Windows操作系统的客户端为例介绍如何通过VPN网关拨号接入VPC。
+![image.png](https://dn-odum9helk.qbox.me/FpAENCwVXndet02LNfmj7DSyi1SC)
+# 开始之前
+在部署VPN网关前，确保您的环境满足以下条件：
+- 本地设备和VPC的私网IP地址段不能相同，否则无法通信。
+- 客户端必须能访问Internet。
+
+# 步骤一：创建VPN网关
+完成以下操作，创建用户网关。
+
+1. 登录[控制台](https://portal.qiniu.com/qvm/network/vpnGateway)。
+2. 在左侧导航栏，单击VPN网关 。
+3. 在VPN网关页面，单击创建VPN网关。
+4. 在购买页面，配置VPN网关，然后单击立即购买完成支付。
+注：选择选择VPN网关的地域时，确保VPC的地域和VPN网关的地域相同。
+# 步骤二：创建SSL服务端
+# 步骤三：创建并下载SSL客户端证书
+# 步骤四：客户端配置
+完成以下操作，配置Windows客户端。
+注：需要以管理员身份运行客户端。
+1. 下载并安装OpenVPN客户端。
+2. 将步骤三中下载的证书解压后复制到OpenVPN安装目录中的config文件夹中。
+3. 单击Connect发起连接。
+![image.png](https://dn-odum9helk.qbox.me/FvGbSnxPbGlJHh7nHFOYIvWNrUo0)
+# 步骤五：连接测试
+在客户端ping已连接的VPC内的一台QVM实例，测试连通性。
+注：确保测试的ECS实例的安全组规则允许客户端远程连接。

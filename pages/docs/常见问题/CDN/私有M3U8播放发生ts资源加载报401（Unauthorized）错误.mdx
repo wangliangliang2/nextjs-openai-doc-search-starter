@@ -1,0 +1,40 @@
+# 问题描述
+
+私有空间的M3U8文件在调用pm3u8接口无法播放，提示下面的报错：
+
+![](https://dn-odum9helk.qbox.me/Ftc3UGvs0OkmCLvGN7nDWJKn5scL)
+
+
+# 问题原因 
+
+
+这样的报错原因基本有两种：
+
+## 原因一
+pm3u8接口在设置 expires 或者 deadline 参数值过小，而视频播放时长较长，导致私有ts资源url下载凭证链接失效，致使视频无法播放。
+
+## 原因二
+客户私有空间的缓存策略选择默认缓存，或者m3u8文件的缓存时间过长，并且开启了回源鉴权策略，导致客户在播放的时候命中的是之前的ts文件，而之前的ts文件已经失效，导致播放失败。
+
+回源鉴权请参考：https://developer.qiniu.com/fusion/manual/3930/back-to-the-source-authentication
+
+
+# 解决方法
+
+##  原因一解决办法
+
+pm3u8接口在设置 expires 或者 deadline 参数值要比视频的播放总时长要大
+
+##  原因二解决办法
+
+以下方法推荐选择第二种：
+
+1：关闭回源鉴权策略（不推荐）
+
+
+![](https://dn-odum9helk.qbox.me/FvuL6HAwsQwhEDQls7P3E9jiWoqG)
+
+2：设置m3u8文件的缓存时间为0s;
+
+
+![](https://dn-odum9helk.qbox.me/FqjL6tzzLUNx9L1T_5vvnQ7tFZdw)

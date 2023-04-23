@@ -1,0 +1,19 @@
+标签编码是一种将对分类变量数值化的手段，它建立起变量标签与一组整数编码的映射关系，并将分类变量编码为一个数值变量。
+
+标签编码会给予那些较小的字符串更小的整数编码，且整数编码从1开始递增。对于单个数字，英文字母或标点字符，由ascii码对应。对于中文字符（或其他语言字符），由unicode码对应，unicode码整体上会大于ascii码。对于多个字符的，则从其首个字符，依次向后进行比较。这实际上也是按照Python的ord()函数进行排序。
+
+
+
+语法：
+
+```
+..｜fit LabelEncoder handle_unknown=<raise (default) | retrain | ignore> <feature_field_1> [into model_name]...
+```
+
+
+参数说明：
+
+- handle_unknown参数，用来指定如何处理在训练过程中没见过的数据，例如：原始数据中只有北京和上海，模型会将北京转换成0，上海转换成1，该参数用来处理如何处理在原始数据中未见过的数据，比如，深圳。默认值为raise。
+  + handle_unknown=raise（默认值），即一旦遇到未见过的数据，就终止程序并报错。
+  + handle_unknown=retrain，即每次遇到未见过的数据，都重新训练模型。
+  + handle_unknown=ignore，忽略该数据并返回原始数据。

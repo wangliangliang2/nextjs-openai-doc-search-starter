@@ -1,0 +1,12 @@
+**token 示例：**
+
+```
+JmTcjiVWsoRxql3OA2krgoW-Fu9bzBZZGCd2lXem:hnuOE5rHuQjyfTIBTH06IaFY0ME=:eyJzY29wZSI6ImF0ZXN0IiwiZGVhZGxpbmUiOjE1MDY5Mzg5NDF9
+```
+
+**token 字符串分为三段，以“：”分割，base64解码第二个”：“后的字符串，可以查看设置的上传策略，如下：**
+
+```
+ base64 -D <<< eyJzY29wZSI6ImF0ZXN0IiwiZGVhZGxpbmUiOjE1MDY5Mzg5NDF9
+{"scope":"atest","deadline":1506938941}
+```

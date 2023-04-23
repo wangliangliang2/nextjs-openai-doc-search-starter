@@ -1,0 +1,49 @@
+# **描述**
+图像底库是一组图像的集合, 和AI模板配合使用。 AI模板里的某些算法，需要依赖图像底库进行比对，例如人脸识别。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/imagelibs`
+
+# **请求参数**
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|name|是|string|库名称，可包含字母、数字、中划线、下划线
+|desc|否|string|备注
+
+
+
+# **响应参数**
+|参数名称|类型|说明|
+|---|---|---|
+|name|string|库名称
+|id|string|库ID
+|desc|string|描述	
+|createdAt|integer|创建时间
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/imagelibs \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{
+	"name":"test0013",
+	"desc":"this is a test"
+}'
+```
+**响应示例**
+
+```
+{
+  "id": "2akrars59hm2l",
+  "name": "test0013",
+  "desc": "this is a test",
+  "createdAt": 1586847620
+}
+```

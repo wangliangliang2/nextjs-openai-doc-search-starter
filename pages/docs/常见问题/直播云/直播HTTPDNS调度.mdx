@@ -1,0 +1,95 @@
+## 背景
+由于客户端网络环境复杂，部分地区的DNS服务器无法正确返回预期的结果，
+为了避免解析不出七牛的节点去播放可以利用七牛的IP调度的接口
+
+## 接口
+```
+GET /v1/query/<Method>?domain=<Domain>&clientIP=<ClientIP>
+Host: pili-ipswitch.qiniuapi.com
+200 OK
+{
+  "items": [
+    {
+      "ip": "<IP1>"
+    },
+    {
+      "ip": "<IP2>"
+    }
+ 
+  ] 
+ "ttl": <TTL>
+}
+```
+Method: 请求类型，支持推流(publish)/播放(play)两类配置<br/>
+Domain: 播放或者推流的域名<br/>
+ClientIP :客户端IP<br/>
+IP: 服务节点IP, 例如"183.136.233.189"<br/>
+TTL: 有效缓存时间，单位为秒<br/>
+
+## 举例
+### 推流
+例子: 希望使用推流域名`pili-publish.qiniu.com`，从上海电信(222.73.202.226)进行推流，请求七牛HTTPDNS服务
+
+```
+ curl  "http://pili-ipswitch.qiniuapi.com/v1/query/publish?domain=pili-publish.qiniu.com&clientIP=222.73.202.226" -i
+ HTTP/1.1 200 OK
+ Server: openresty
+ Date: Fri, 08 Nov 2019 10:30:08 GMT
+ Content-Type: application/json
+ Content-Length: 716
+ Connection: keep-alive
+ X-Log: PILI-IPSWITCH
+ X-Reqid: OohltOQHsEPFXcKd
+
+{
+  "items": [
+    {
+      "ip": "180.101.136.154"
+    },
+    {
+      "ip": "180.101.136.155"
+    }
+  ]
+  "ttl": 60
+}
+```
+
+从返回值中随意取一个ip作为推流IP<br/>
+
+推流URL拼接
+```
+rtmp://180.101.136.154/live/stream?key=676c9a66-08e7-473b-a2f4-321ddc770438&domain=pili-publish.qiniu.com
+```
+
+### 播放
+例子：希望使用推流域名`pili-live.qiniu.com`，从上海电信(222.73.202.226)进行推流，请求七牛HTTPDNS服务
+
+
+```
+curl "http://pili-ipswitch.qiniuapi.com/v1/query/play?domain=pili-live.qiniu.com&clientIP=222.73.202.226" -i
+HTTP/1.1 200 OK
+Server: openresty
+Date: Wed, 07 Jun 2017 01:58:57 GMT
+Content-Type: application/json
+Content-Length: 716
+Connection: keep-alive
+X-Log: PILI:1;PILI-ZEUSD:2;PILI-IPSWITCH:34
+X-Reqid: cl_get1b4V03WVCq
+
+{
+  "items": [
+    {
+      "ip": "183.136.233.189"
+    },
+    {
+      "ip": "183.136.233.188"
+    }
+  ]
+  "ttl": 60
+}
+```
+从返回值中随意取一个ip作为拉流IP<br/>
+播放url 
+```
+rtmp://183.136.233.189/live/stream?domain=pili-live.qiniu.com
+```

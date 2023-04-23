@@ -1,0 +1,254 @@
+缓存刷新，是指将缓存过的客户资源在 CDN 节点内设置为过期状态；当用户再次发起访问时，节点回源站拉取所需资源，并重新缓存在节点上。具体做法是客户提交资源 url 到 CDN，由 CDN 来操作刷新。  
+
+<a id="access-domain"></a>
+# 访问域名
+```
+Host: fusion.qiniuapi.com
+```
+
+<a id="refresh-authenticated"></a>
+# 认证授权
+```
+Authorization: <access_token>
+```
+access_token 详细描述请查阅[这里](/kodo/manual/access-token)。
+
+<a id="interface-address"></a>
+## 接口地址
+```
+/v2/tune/refresh
+```
+
+<a id="refresh-request-message"></a>
+# 刷新
+
+<a id="refresh-request-syntax"></a>
+## 请求语法
+
+```
+POST /v2/tune/refresh HTTP/1.1
+Authorization:<access_token>
+Content-Type: application/json
+
+{
+    "urls":[<url1>, <url2>, <url3>, ...],
+    "dirs":[<dir1>, <dir2>, <dir3>, ...],
+    "product":"dcdn",
+}
+```
+<a id="refresh-request-body"></a>
+## 请求内容
+
+| 参数   | 类型    | 必要性     | 说明                                  |
+| :--- | :---- | :--------- |  :--------------------------------------- |
+| urlN | array | 可选 | 要刷新的单个url列表，总数不超过60条；单个url，即一个具体的url，例如：`http://bar.foo.com/index.html` |
+| dirN | array | 可选 |要刷新的目录url列表，总数不超过10条；目录dir，即表示一个目录级的url，例如：`http://bar.foo.com/dir/`，也支持在尾部使用通配符，例如：`http://bar.foo.com/dir/*` |
+| product| string | 必选 | 此处填写固定值 dcdn |
+
+<a id="refresh-request-attentions"></a>
+
+### 注意事项
+
+* 请输入资源 url 完整的绝对路径，由 http:// 或 https:// 开始。
+* 资源 url 不支持通配符，例如：不支持 `http://www.test.com/abc/\*.\*`。
+* 进行目录刷新时，资源 url 需要以 / 结尾，例如：`http://www.test.com/abc/`。
+* 带参数的 url 刷新，根据其域名缓存配置是否忽略参数缓存决定刷新结果。如果配置了时间戳防盗链的资源 url 提交时刷新需要去掉 sign 和 t 参数。
+* 请求数量限制，以下限制达到任意一个即触发限制：
+	* 每秒钟刷新请求和[预取请求](https://developer.qiniu.com/fusion/api/1227/file-prefetching)中的url、dir的总量限制为 240。
+	* 每个请求中 url 的条数限制为 60 条。
+	* 每个请求中 dir 的条数限制为 10 条。
+
+<a id="refresh-response-status"></a>
+## 响应状态码
+
+|HTTP状态码|含义|说明|
+| :-------| :--------| :--------|
+|200 | success | 成功 |
+|400031|invalid url|请求中存在无效的 url，请确保 url 格式正确|
+|400032|invalid host|请求中存在无效的域名，请确保域名格式正确|
+|400034 |refresh url limit error |请求次数超出当日刷新限额|
+|400036|invalid request id | 无效的请求 id |
+|400037|url has existed | url 正在刷新中 |
+|400038|refresh dir authority error | 没有刷新目录的权限， 如果需要请联系[技术支持](https://support.qiniu.com/tickets/category) |
+|403024|single user QPS Rate limited | 请求达到单用户QPS限制，请重试或联系我们 |
+|403022|server QPS Rate limited | 请求达到全局QPS限制，请联系我们 |
+|500000|internal error|服务端内部错误，请联系[技术支持](https://support.qiniu.com/tickets/category)|
+
+<a id="refresh-response-body"></a>
+## 响应内容
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "code": <custom code>,
+    "error": <error string>,
+    "requestId": <request id>,
+    "taskIds": <task id map>,
+    "invalidUrls": [<url1>, <url2>, <url3>, ...],
+    "invalidDirs": [<dir1>, <dir2>, <dir3>, ...],
+    "urlQuotaDay": <url quota one day >,
+    "urlSurplusDay": <url surplus one day >,
+    "dirQuotaDay": <dir quota one day >,
+    "dirSurplusDay": <dir surplus one day >,
+}
+```
+
+| 参数            | 类型               | 说明                                       |
+| :------------ | :-----------------| :--------------------------------------- |
+| code          | int                   | 自定义错误码，整型，见[自定义状态码](#refresh-response-status) |
+| error         | string                | 自定义错误码描述，字符串                             |
+| requestId     | string               | 刷新请求id，只有在任务被接受时才有值                      |
+| taskIds       | map[string]string   | URL/DIR 对应的任务 ID，map[url/dir]taskId |
+| invalidUrls   | string array        | 无效的url列表                                 |
+| invalidDirs   | string array          | 无效的dir列表                                 |
+| urlQuotaDay   | int                  | 每日的刷新url限额                               |
+| urlSurplusDay | int                  | 每日的当前剩余的刷新url限额                          |
+| dirQuotaDay   | int                  | 每日的刷新dir限额                               |
+| dirSurplusDay | int                  | 每日的当前剩余的刷新dir限额                          |
+
+<a id="response-attention"></a>
+### 注意事项
+* 在请求成功时 code 为 200，requestId、urlQuotaDay、urlSurplusDay、dirQuotaDay、dirSurplusDay才会有有效值，否则为空。
+* 在请求失败时 code 为非 200，error 中包含描述信息。
+
+<a id="refresh-samples"></a>
+## 刷新示例
+下面是命令行示例：
+
+```
+请求命令示例：
+第一步生成token：
+echo "/v2/tune/refresh" |openssl dgst -binary -hmac "用户SK" -sha1 |base64 | tr + - | tr / _      回车
+生成的token
+
+第二步发起请求：
+curl -X POST -H "Authorization: QBox <用户AK>:<生成的token>" http://fusion.qiniuapi.com/v2/tune/refresh -d '{"urls":["<用户url>"],"product":"dcdn"}' -H 'Content-Type: application/json'
+
+响应内容示例：
+{"code":200,"error":"success","requestId":"575d1930f9537d3f2600003d","invalidUrls":null,"invalidDirs":null,"urlQuotaDay":100,"urlSurplusDay":99,"dirQuotaDay":10,"dirSurplusDay":10}
+```
+<a id="refreshlist-address"></a>
+# 刷新查询
+<a id="refreshlist-interface-address"></a>
+## 接口地址
+```
+/v2/tune/refresh／list
+```
+
+<a id="refresh-list-syntax"></a>
+## 请求语法
+
+```
+POST http://<Host>/v2/tune/refresh/list
+Authorization:<access_token>
+
+{
+    "requestId": <request id>,  
+    "taskId": <task id>,
+    "isDir": <dir flag>,
+    "urls":[<url1>, <url2>, <url3>, ...],
+    "state": <state>,
+    "pageNo": <page no>,
+    "pageSize": <page size>,
+    "startTime": <startTime>,
+    "endTime": <endTime>,
+    "product":"dcdn",
+}
+```
+<a id="refresh-list-body"></a>
+## 请求内容
+
+| 参数   | 类型    | 必要性   | 说明                                       |
+| :--- | :---- | :--- | :--------------------------------------- |
+| requestId | string | 可选 | 指定要查询记录所在的刷新请求id |
+| taskId |    string  | 可选 | 指定查询的单个任务 id |
+| isDir | string | 可选 | 指定是否查询目录，取值为 yes/no，默认不填则为两种类型记录都查询 |
+| urls | string | 可选 | 要查询的url列表，每个url可以是文件url，也可以是目录url |
+| state | string | 可选 | 指定要查询记录的状态，取值processing／success／failure |
+| pageNo | int | 可选 | 要求返回的页号，默认为0 |
+| pageSize | int | 可选 | 要求返回的页长度，默认为100 |
+| startTime | string | 可选 | 指定查询的开始日期，格式2006-01-01 |
+| endTime | string | 可选 | 指定查询的结束日期，格式2006-01-01 |
+| product | string | 必选 | 此处填写固定值 dcdn|
+
+### 注意事项
+
+* 输入参数可选部分全部为空时，服务端返回无效参数错误。
+* 查询的时间范围：当天至当天的前6天（共7天）。
+* startTime和endTime任一缺失的情况下，查询默认返回近3天的操作记录。
+
+<a id="refreshlist-response-status"></a>
+## 响应状态码
+
+|HTTP状态码|含义|说明|
+| :-------| :--------| :--------|
+|200 | success | 成功 |
+|400000|invalid input	|无效的输入参数|
+|500000|internal error|服务端内部错误|
+|500005 |query data error	 |服务端查询数据错误|
+
+<a id="refreshlist-response-body"></a>
+## 响应内容
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "code": <custom code>,
+	"error": <error string>,
+    "total": <total count>,
+    "pageNo": <page no>,
+    "pageSize": <page size>,
+    "currentSize": <current size>,
+	"items": [{
+		"uid": <user uid>,
+		"requestId": <request id>,
+		"url": <url>,
+		"state": <state>,
+		"stateDetail": <stateDetail>,
+		"createAt": <create time>,
+		"beginAt": <begin time>,
+		"endAt": <end time>,
+	}, ...],
+}
+```
+
+| 参数            | 类型             | 说明                                       |
+| :------------ | :-----------  | :--------------------------------------- |
+| code          | int             | 自定义错误码，整型，见[自定义状态码](#refreshlist-response-status) |
+| error         | string         | 自定义错误码描述，字符串                  |
+| total     | int         | 当前条件下查询的记录总数                      |
+| pageNo   | int    | 要查询的页号                                 |
+| pageSize   | int    | 要返回的页长度                             |
+| currentSize   | int             | 当前实际返回的页长度                   |
+| uid | string            | 用户id                          |
+| requestId   | string             | 记录所在的刷新请求id                    |
+| url | string            | url                         |
+| state | string             | 刷新状态，取值为success／processing／failure    |
+| stateDetail | string             | 刷新状态描述信息                          |
+| createAt | string            | 当前记录创建时间，格式为xxxx-xx-xx xx:xx:xx，例如2015-11-01 16:05:05                          |
+| beginAt | string            | 当前记录开始时间，格式为xxxx-xx-xx xx:xx:xx，例如2015-11-01 16:05:25。                          |
+| endAt | string           | 当前记录结束时间，格式为xxxx-xx-xx xx:xx:xx，例如2015-11-01 16:09:05                          |
+
+
+<a id="refreshlist-samples"></a>
+## 刷新查询示例
+下面是命令行示例：
+
+```
+请求命令示例：
+第一步生成token：
+echo "/v2/tune/refresh/list" |openssl dgst -binary -hmac "用户SK" -sha1 |base64 | tr + - | tr / _      回车
+生成的token
+
+第二步发起请求：
+curl -X POST -H "Authorization: QBox <用户AK>:<生成的token>" http://fusion.qiniuapi.com/v2/tune/refresh/list -d '{"urls":["<用户url>"，"pageNo":<page no>,"pageSize":<page size>],"product":"dcdn"}' -H 'Content-Type: application/json'
+
+响应内容示例：
+{"code":200,"error":"success","total":1,"pageNo":0,"pageSize":10,"currentSize":1,"items":[{"uid":1100000009,"requestId":"57edce1a23232391821e303b","url":"http://www.test.com/test01","state":"success","stateDetail":"","createAt":"2015-09-30 10:29:46","beginAt":"2015-09-30 10:29:48","endAt":"2015-09-30 10:30:08"}]}
+
+```
+

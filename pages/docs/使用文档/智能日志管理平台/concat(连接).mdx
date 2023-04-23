@@ -1,0 +1,35 @@
+concat transformer 会将不同键的值连接成字符串
+
+* 要进行Transform变化的键(`key`): 必填，指定要连接的数据所在字段，支持多级嵌套，多级间用 *.* 符号连接，如 abc.xyz，表示 data["abc"]["xyz"]中的数据。
+* 变换后生成的新的键(`new`): 必填，指定连接生成的字段名称。
+
+```
+{
+		"type":"concat",
+		"key":"key1,key2",
+		"new":"newKey",
+}
+```
+
+### **示例**：
+
+假设原始数据为:
+
+```
+{
+		"key1": "aaaa",
+		"key2": "bbbb",
+		"field1": "cccc"
+}
+```
+
+经过 concat transformer 变换后的数据将变为:
+
+```
+{
+		"key1": "aaaa",
+		"key2": "bbbb",
+		"newKey": "aaaabbbb",
+		"field1": "cccc"
+}
+```

@@ -1,0 +1,69 @@
+首先关于 crc32 的相关概念可以参考这个文章详细介绍：[CRC32](https://en.wikipedia.org/wiki/Cyclic_redundancy_check)
+
+七牛这边上传设置 crc32 之后，上传前会先计算本地文件的 crc32，然后和上传到七牛后文件的 crc32 进行对比，如果两者不同的话就不会保存并且会返回 406：上传的数据 CRC32 校验错误。
+
+我们不同的 SDK 用法都是类似的，就是在上传的时候设置 checkCrc 参数为 true 就可以了。  
+比如 java sdk 里面上传的 put 方法里面将 checkCrc 设置为 true 就可以了：  
+public Response put(XXXX data, String key, String token, StringMap params, String mime, **boolean checkCrc** ) throws QiniuException
+
+具体可以参考七牛这边关于设定 crc32 之后计算 crc32 以及参数传递的方法： [https://github.com/qiniu/java-sdk/blob/43713ccf93cf17fd21ddd919434e1df96d291ead/src/main/java/com/qiniu/storage/FormUploader.java#L78-L99](https://github.com/qiniu/java-sdk/blob/43713ccf93cf17fd21ddd919434e1df96d291ead/src/main/java/com/qiniu/storage/FormUploader.java#L78-L99)
+
+    private void buildParams() throws QiniuException {
+            params.put("token", token);
+            if (key == null) {
+                fileName = "filename";
+            } else {
+                fileName = key;
+                params.put("key", key);
+            }
+            if (checkCrc) {
+                long crc32 = 0;
+                if (file != null) {
+                    try {
+                        crc32 = Crc32.file(file);
+                    } catch (IOException e) {
+                        throw new QiniuException(e);
+                    }
+                } else {
+                    crc32 = Crc32.bytes(data);
+                }
+                params.put("crc32", "" + crc32);
+            }
+        }
+
+下面是关于 java sdk 的简单的 demo：
+
+    public class UploadWithCrc32 {
+    
+        String ACCESS_KEY = "AK";
+        String SECRET_KEY = "SK";
+        Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
+        UploadManager uploadManager = new UploadManager();
+    
+        // 设置指定上传策略
+       public String getUpToken(){
+            return auth.uploadToken("phpdemo", null, 3600,null);
+        }
+    
+       public void upload() throws IOException{
+           String FilePath = "/Users/dxy/sync/aaa.jpg";
+           try {
+               //设置验证crc32
+                Response res = uploadManager.put(FilePath, null, getUpToken(), null, null, true);
+                System.out.println(res.bodyString()); 
+           } catch (QiniuException e) {
+               Response r = e.response;
+               // 请求失败时简单状态信息
+               System.out.println(r.toString());           
+           }
+       }
+    
+        public static void main(String args[]) throws IOException{
+    // //可以根据七牛的计算crc32算法打印出crc32的值
+    // File f=new File("/Users/dxy/sync/aaa.jpg");
+    // System.out.println(Crc32.file(f));
+    
+            new UploadWithCrc32().upload();
+    
+        }
+

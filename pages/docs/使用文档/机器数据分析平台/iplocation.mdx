@@ -1,0 +1,37 @@
+iplocation 命令通过使用第三方数据库从IP地址提取位置信息，比如Country、City、Timezone等，并将这些字段添加到结果事件中。支持IPv4与IPv6两个版本的IP。
+
+**语法：**
+
+iplocation [prefix="`<string>`"] [allfields=`<bool>`][lang="`<string>`"] `<ip-addressfieldname>`
+
+必填参数：
+
+* `ip-address-fieldname`：指定的IP地址字段，比如clientip、serverip。
+
+可选参数：
+
+* `allfields`：是否将数据库中的所有字段添加到事件中，其值为bool类型，true 表示向结果事件中添加City、Continent、Country、lat(latitude)、lon(longitude)、MetroCode、Region、Timezone字段；false值则表示向结果事件中添加City、Country、lat、lon、Region；默认值为false。
+
+* `lang`：用不同的语言渲染结果字符串。比如设置"lang=zh-CN"则用中文显示。默认为英文显示。当前支持lang的值包括de（德语），en（英文），es（西班牙语），fr（法语），ja（日语），pt-BR（葡萄牙语），ru（俄语），zh-CN（中文）。
+
+* `prefix`：指定一个字符串作为字段名的前缀，比如可以在添加的位置信息字段中使用前缀，以避免名称与现有字段冲突。比制定如"prefix=iploc_"，则对应的Country字段会显示为iploc_Country。
+
+>注意事项：
+
+1.三个可选参数位置不能调整，如果没有该参数，直接跳过即可。
+
+```
+iplocation prefix="qiniu_pandora" lang="zh-CN" host
+```
+
+2.prefix参数与lang参数的值需加""。
+
+**用法示例：**
+
+原始数据：
+
+1.从host字段中提取位置信息，返回全部位置信息字段，并给位置信息字段加上“qiniu_”前缀。
+
+```
+……| iplocation prefix="qiniu_" allfields=true lang="zh-CN" host| stats count() as count by qiniu_city| eval count=toNumber(count)| sort by count desc
+```

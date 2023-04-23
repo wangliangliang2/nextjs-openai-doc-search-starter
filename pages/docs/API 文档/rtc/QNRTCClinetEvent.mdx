@@ -1,0 +1,336 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Method</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onAudioSubscribed`)'>onAudioSubscribed</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onConnectionStateChanged`)'>onConnectionStateChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onErrorLiveStreaming`)'>onErrorLiveStreaming</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onMessageReceived`)'>onMessageReceived</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onStartLiveStreaming`)'>onStartLiveStreaming</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onStoppedLiveStreaming`)'>onStoppedLiveStreaming</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onUpdatedLiveStreaming`)'>onUpdatedLiveStreaming</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onUserJoined`)'>onUserJoined</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onUserLeft`)'>onUserLeft</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onUserPublished`)'>onUserPublished</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onUserReconnected`)'>onUserReconnected</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onUserReconnecting`)'>onUserReconnecting</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onUserUnpublished`)'>onUserUnpublished</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onVideoSubscribed`)'>onVideoSubscribed</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Method</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onAudioSubscribed">onAudioSubscribed</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onAudioSubscribed(params: {remoteUserID:string,trackList:<a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a>[]}): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当订阅 audio Track 成功时会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            params: {remoteUserID:string,trackList:<a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a>[]}
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onConnectionStateChanged">onConnectionStateChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onConnectionStateChanged(params: {info:<a href='11387/UniappQNConnectionDisconnectedInfo'>QNConnectionDisconnectedInfo</a>,state:<a href='11407/UniappQNConnectionState'>QNConnectionState</a>}): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当房间状态改变时会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            params: {info:<a href='11387/UniappQNConnectionDisconnectedInfo'>QNConnectionDisconnectedInfo</a>,state:<a href='11407/UniappQNConnectionState'>QNConnectionState</a>}
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onErrorLiveStreaming">onErrorLiveStreaming</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onErrorLiveStreaming(params: {info:<a href='11419/UniappQNLiveStreamingErrorInfo'>QNLiveStreamingErrorInfo</a>,streamID:string}): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>转推任务出错时触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            params: {info:<a href='11419/UniappQNLiveStreamingErrorInfo'>QNLiveStreamingErrorInfo</a>,streamID:string}
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onMessageReceived">onMessageReceived</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onMessageReceived(message: <a href='11424/UniappQNCustomMessage'>QNCustomMessage</a>): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当收到自定义消息时发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            message: <a href='11424/UniappQNCustomMessage'>QNCustomMessage</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onStartLiveStreaming">onStartLiveStreaming</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onStartLiveStreaming(params: {streamID:string}): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>转推任务成功创建时触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            params: {streamID:string}
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onStoppedLiveStreaming">onStoppedLiveStreaming</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onStoppedLiveStreaming(params: {streamID:string}): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>转推任务成功停止时触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            params: {streamID:string}
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onUpdatedLiveStreaming">onUpdatedLiveStreaming</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onUpdatedLiveStreaming(params: {streamID:string}): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>转推任务合流布局更新时触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            params: {streamID:string}
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onUserJoined">onUserJoined</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onUserJoined(params: {remoteUserID:string,userData:string}): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当远端用户加入房间时会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            params: {remoteUserID:string,userData:string}
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onUserLeft">onUserLeft</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onUserLeft(params: {remoteUserID:string}): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当远端用户离开房间时会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            params: {remoteUserID:string}
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onUserPublished">onUserPublished</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onUserPublished(params: {remoteUserID:string,trackList:(<a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a> | <a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a>)[]}): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当远端 Track 发布时会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            params: {remoteUserID:string,trackList:(<a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a> | <a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a>)[]}
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onUserReconnected">onUserReconnected</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onUserReconnected(params: {remoteUserID:string}): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当远端用户重连成功时会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            params: {remoteUserID:string}
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onUserReconnecting">onUserReconnecting</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onUserReconnecting(params: {remoteUserID:string}): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当远端用户进入重连时会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            params: {remoteUserID:string}
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onUserUnpublished">onUserUnpublished</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onUserUnpublished(params: {remoteUserID:string,trackList:(<a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a> | <a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a>)[]}): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当远端 Track 取消发布时会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            params: {remoteUserID:string,trackList:(<a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a> | <a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a>)[]}
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onVideoSubscribed">onVideoSubscribed</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">onVideoSubscribed(params: {remoteUserID:string,trackList:<a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a>[]}): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当订阅 video Track 成功时会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            params: {remoteUserID:string,trackList:<a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a>[]}
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

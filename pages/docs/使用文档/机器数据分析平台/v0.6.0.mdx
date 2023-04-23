@@ -1,0 +1,81 @@
+**新功能**
+
+* [权限系统](/express/manual/6663/role-based-access-control/)相关：
+
+	* 支持将平台具体知识对象（仪表盘、告警规则、字段提取规则、字段别名、数据集、报表、搜索导出任务）的操作权限（查看、新建、编辑、删除）分配给角色。
+
+  * 支持重新分配知识对象所有者。
+
+  * 支持批量对知识对象进行数据授权。
+
+* SPL相关：
+
+  * 新增支持 from 命令；
+
+  * 新增支持 chart 命令；
+
+  * 新增支持 addtotals 命令；
+
+  * eval命令的arr_index(ARRAY, index)函数支持index参数是变量值；
+	
+  * arr_index(ARRAY, index)支持index参数为负数值；
+	
+  * eval 命令的toTimestamp(X, TIMEFORMAT, ZoneOffset)支持将多个时间戳转化为毫秒精度时间戳。`toTimestamp(X,Y,Z, TIMEFORMAT, ZoneOffset)`
+
+  * eval 命令支持取模%运算符。
+	
+  * eval 命令新增arr_filter(X)，arr_zip（X,Y,"Z"）函数；
+	
+  * join 命令增加max参数。
+	
+  * top 命令支持统计多个字段的高频值。`top N field_ list by field1[, field2 ]...`
+
+ * 数据集功能发布;
+
+ * 报表功能发布；
+
+ * 本地文档站上线。
+ 
+ * 可视化图表类型新增`经纬图`。
+
+ * 仪表盘支持根据预定义的SPL指定图表下钻行为。
+
+ * [搜索模式](/express/manual/6807/search_modes)新增智能模式。
+
+* 应用平台开发框架支持用户[开发可视化app](/express/extend/6702/visualization_app_develop)，在平台新增一种自定义图表类型来展示数据分析结果，可用于仪表盘、APP展示。
+
+* 搜索界面支持指定返回数据量限制，默认返回1000条。
+
+* 仪表盘支持为每个图表增加备注。
+
+**性能优化**
+
+* 支持`智能搜索模式`，以最优速度智能展示搜索结果，[点此](//express/manual/6807/search_modes)了解详情;
+
+* `极速模式`下精简搜索返回字段，[点此](/express/manual/6807/search_modes)了解详情;
+
+* regex 提取规则性能优化，只提取搜索中用到的字段；
+
+* json 提取规则性能优化，只提取搜索中用到的字段。
+
+**Bug修复**
+
+* eval命令的toNumber(X,BASE)函数将末尾带“0”的字符串转换成数字失败。
+
+* transaction命令的mvlist参数为true时没有对字段值进行去重。
+
+* transaction命令对事务中的数组字段聚合出现互相覆盖。
+
+* fields 命令行为修复。
+
+* HTTP收集器禁用状态时无法重新启用。
+
+* HTTP 监控上传中的Token大小写敏感。
+
+* 搜索结果导出任务停止失败。
+
+* 字段别名无法编辑。
+
+* 模板变量在全屏模式下无法选择。
+
+

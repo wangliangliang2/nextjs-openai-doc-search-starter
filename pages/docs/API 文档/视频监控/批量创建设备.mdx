@@ -1,0 +1,80 @@
+# **描述**
+本接口用于批量创建设备。所有涉及设备的API，仅适用于接入类型为“GB/T 28181”的空间。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/batches`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|cameraNum|是|integer|摄像头数量
+|platformNum|是|integer|平台数量
+|BatchName|是|string|批次名称
+|pullIfRegister|是|bool|注册后是否启用拉流
+|alarmEnable|是|bool|是否启用报警
+|autoCreate|是|bool|true：自动生成，false：批量上传（**目前仅支持自动生成方式，批量上传正在开发中**）
+|alarmMethods|否|string|报警的类型，当`alarmEnable`为true时需要
+|devices|否|array|批量上传时需要的设备数组
+|devices.gbId|是|string|设备国标id
+|devices.name|是|string|设备名称
+|devices.username|是|string|用户名
+|devices.password|是|string|密码
+|devices.rtpAudio|否|boolean|是否开启音频
+|devices.rtpAudioTranscode|否|boolean|是否开启音频转码
+|devices.onDemandPull|否|boolean|是否开启按需拉流
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|id|string|批次ID
+|cameraNum|integer|摄像头数量
+|platformNum|integer|平台数量
+|batchName|string|批次名称
+|autoCreate|bool|true：自动生成，false：批量上传
+|nsId|string|空间ID
+|createTime|integer|创建时间（单位秒）
+|rtpAudio|boolean|是否开启音频
+|rtpAudioTranscode|boolean|是否开启音频转码
+|onDemandPull|boolean|是否开启按需拉流
+
+# **示例**
+
+**请求示例**
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarvzvyijd/batches \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data-raw '{
+    "cameraNum": 1,
+    "platformNum": 1,
+    "batchName": "batch_name",
+    "pullIfRegister": false,
+    "alarmEnable": false,
+    "autoCreate": true
+}'
+```
+
+**响应示例**
+
+```
+{
+    "id": "3gzh7xdrfskl6",
+    "cameraNum": 1,
+    "platformNum": 1,
+    "batchName": "batch_name",
+    "nsId": "2akrarvzvyijd",
+    "createTime": 1637652453,
+    "autoCreate": true
+}
+```

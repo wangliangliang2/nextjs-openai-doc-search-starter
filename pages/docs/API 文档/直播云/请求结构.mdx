@@ -1,0 +1,29 @@
+# 服务地址
+
+七牛云直播使用不同的域名接入不同的功能实现，具体信息见下表及每个API的定义。
+
+| 功能类别 | 域名 |
+| ---- | ------- |
+| 直播空间管理 | pili.qiniuapi.com |
+| 域名管理 | pili.qiniuapi.com |
+| 直播流管理 | pili.qiniuapi.com |
+| 数据统计 | pili.qiniuapi.com/statd |
+| IAM账号访问 | pili-iam.qiniuapi.com |
+| 导播台服务 | pili-caster.qiniuapi.com |
+| Pub转推服务 | 国内：pili-pub.qiniuapi.com 海外：pili-hw-pub.qiniuapi.com |
+
+注意：使用IAM账号调用直播空间管理、域名管理、直播流管理和数据统计相关接口时，需要使用IAM域名。
+
+# 通信协议
+
+支持通过 HTTP 或 HTTPS 进行通信，为了更高的安全性，建议使用 HTTPS 发送API请求。
+
+# 请求方法
+
+查询类请求需要使用 `GET` 方法，新增、更新类操作请求需要使用 `POST` 方法 ，删除类操作请求需要使用 `DELETE` 方法，具体格式参考每个API定义。
+
+在使用 `POST` 方法请求接口时，需要带请求头 `Content-Type:application/json`。
+
+# 字符编码
+
+请求及返回结果都使用 UTF-8 字符集进行编码。

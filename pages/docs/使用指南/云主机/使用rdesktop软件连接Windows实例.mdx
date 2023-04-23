@@ -1,0 +1,57 @@
+## 操作场景
+本文介绍如何在 Linux 系统的本地电脑中通过远程桌面登录 Windows 实例。
+
+## 适用本地操作系统
+Linux
+
+
+## 使用限制
+- 实例必须处于运行中状态。如果实例未运行，请启动实例。
+- 实例已经设置登录密码。如果未设置密码或密码丢失，请重置密码。
+- 实例已经绑定弹性IP，能够访问公网。且该实例已开通云服务器实例的3389号端口
+
+## 操作步骤
+
+1. 检查是否安装
+2. 下载
+3. 连接
+4. 登陆成功
+
+**1.检查是否安装**
+
+执行以下命令，检查系统是否已安装 rdesktop。
+
+```
+rdesktop
+```
+如安装则直接连接。
+
+
+**2.下载**
+
+未安装则会提示command not found，可以根据以下步骤和安装rdesktop
+
+```
+wget https://github.com/rdesktop/rdesktop/releases/download/v1.9.0/rdesktop-1.9.0.tar.gz
+tar xvzf rdesktop-1.9.0.tar.gz  
+cd rdesktop-1.9.0
+./configure 
+make 
+make install
+```
+备注：如果您需要最新的安装包，可以前往[ GitHub rdesktop](https://github.com/rdesktop/rdesktop/releases)页面 查找最新安装包，并在命令行中替换为最新安装路径。
+
+**3.连接**
+
+```
+rdesktop -u Administrator -p <your-password> <hostname or IP address>
+```
+
+参数解析：
+- <your-password>：Windows 实例登陆密码
+- <hostname or IP address> ：Windows 实例公网 IP 或自定义域名。
+
+
+
+4.登陆成功
+根据以上操作即可登陆成功。

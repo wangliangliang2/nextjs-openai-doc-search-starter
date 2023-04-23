@@ -1,0 +1,21 @@
+如果您在访问资源文件时出现“no such domain”的错误，如下所示  
+```
+error: no such domain
+```
+您可以确认域名类型并参照以下方式进行排查：  
+
+# 域名是测试域名  
+
+- 登陆控制台，访问融合cdn的域名设置模块，查看测试域名的回收时间  
+![](https://dn-odum9helk.qbox.me/Fh-Sa4xkiiidvSW-0Qf-RH59DWDi)  
+
+![](https://dn-odum9helk.qbox.me/FhloDCqNT5JNydnHUK0kqnGD74Gd)  
+
+- 如果您的测试域名已经回收，需要绑定加速域名进行使用  
+	参考七牛测试域名使用规范：https://developer.qiniu.com/fusion/kb/1319/test-domain-access-restriction-rules
+	如何从测试域名过渡到自定义域名：https://developer.qiniu.com/kodo/kb/5158/how-to-transition-from-test-domain-name-to-a-custom-domain-name
+
+# 域名是自定义域名  
+
+需要您提交工单，七牛技术支持帮您处理
+https://support.qiniu.com/tickets/category

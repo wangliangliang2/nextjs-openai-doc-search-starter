@@ -1,0 +1,19 @@
+netstat监控主要用于监控处于各种状态的网络连接数, 比如Syn send/Syn Recv 等状态的网络连接数。适用于对路由服务器的监控。
+
+netstat监控界面如下:
+![](https://dn-odum9helk.qbox.me/FubxuvLS6bTECX3xN9KvzPIE0A_C)
+
+监控字段与指标的对应关系如下:
+
+1. `netstat_tcp_established`:ESTABLISHED状态的网络链接数。
+2. `netstat_tcp_syn_sent`:SYN_SENT状态的网络链接数。
+3. `netstat_tcp_syn_recv`:SYN_RECV状态的网络链接数。
+4. `netstat_tcp_fin_wait1`:FIN_WAIT1状态的网络链接数。
+5. `netstat_tcp_fin_wait2`:FIN_WAIT2状态的网络链接数。
+6. `netstat_tcp_time_wait`:TIME_WAIT状态的网络链接数。
+7. `netstat_tcp_close`:CLOSE状态的网络链接数。
+8. `netstat_tcp_close_wait`:CLOSE_WAIT状态的网络链接数。
+9. `netstat_tcp_last_ack`:LAST_ACK状态的网络链接数。
+10. `netstat_tcp_closing`:CLOSING状态的网络链接数。
+11. `netstat_tcp_none`:NONE状态的网络链接数。
+12. `netstat_udp_socket`:UDP状态的网络链接数。

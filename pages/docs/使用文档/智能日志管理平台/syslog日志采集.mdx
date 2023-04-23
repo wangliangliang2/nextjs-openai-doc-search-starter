@@ -1,0 +1,207 @@
+本场景主要教大家如何将 syslog 统一管理，主要针对比较知名的一款 syslog 管理软件，即 rsyslog。 众所周知，syslog，或者说基于 Syslog 协议的软件(如 rsyslog)，在开源的类 Unix 系统中是非常知名的，它会自动收集内核及一些核心软件的服务日志，以确保系统正常运行。 syslog 作为一种[rfc标准](https://tools.ietf.org/html/rfc5424), 不仅支持内核程序的数据，同样也支持其他上层的业务软件向其发生数据。正是基于此，我们可以通过对 syslog 的统一收集，做到日志数据的统一管理。所以程序统一向 syslog 发送数据，而我们提供中心化管理 syslog，就可以更简单的实现安全审计、应用程序监控、以及追踪其他重要数据。
+
+对于一台机器来说，我们可以将该机器上所有业务产生的日志统一发送到 syslog 服务，然后我们只需要将 syslog 日志转发到 logkit-pro，最后通过 logkit-pro 发送到 Pandora 日志分析平台。 以此类推，就可以实现完整的数据中心日志统一化管理。分为 7 个步骤：
+
+<a href="#1">1.准备工作</a>
+
+<a href="#2">2.安装 logkit-pro </a>
+
+<a href="#3">3.选择监听的 IP 和端口</a>
+
+<a href="#4">4.使用 logkit-pro 收集数据</a>
+
+<a href="#5">5.安装 rsyslog </a>
+
+<a href="#6">6.配置 rsyslog 发送</a>
+
+<a href="#7">7.在七牛云智能日志管理平台中查看日志</a>
+
+
+-----
+
+
+<a name="1"></a>
+
+# **1.准备工作**
+
+1.准备一台机器，安装 logkit-pro, 机器需要打开一个 web 界面用于收集数据和监控，默认使用的端口为 3000，请确保开启；为了接收 syslog 日志，还需要开启 ```5140``` 端口（该端口可以改为其他端口，配置中也相应变更即可）， rsyslog-client 需要能访问 logkit-pro 机器的 ```5140``` 端口。
+
+2.准备一台机器(假设为 Ubuntu14.04)，安装 rsyslog-client；最好再部署一个能将日志发送到 rsyslog 的业务程序（可选）。
+
+rsyslog-client 和 logkit-pro 确保网络联通。
+
+确保 logkit-pro 所在机器可以访问外网 [https://pipeline.qiniuapi.com](https://pipeline.qiniuapi.com) 。（私有部署没有这个要求）
+
+做好上述准备工作后，我们开始完整的实践。
+
+-----
+
+
+<a name="2"></a>
+# **2.安装 logkit-pro**
+
+1.登录 [logkit-pro](http://logkit-pro.qiniu.com/)，进入机器管理页面，点击添加机器。
+
+![](https://pandora-kibana.qiniu.com/k8s/add_machine.png)
+
+2.手动安装：根据您机器的操作系统版本选择对应的命令，复制到命令行工具即可，如图所示：
+
+![](https://pandora-kibana.qiniu.com/k8s/addbyhand.png)
+
+![](https://pandora-kibana.qiniu.com/logkit/running.png)
+
+详细的安装文档可以阅读 [logkit-pro 安装](/insight/manual/4682/download-and-install) 。
+
+3. 安装完毕后，您可以在机器列表页面看到您安装的机器:
+
+![](https://dn-odum9helk.qbox.me/FpmPwc2L2arnlHd9OpBEXkJs0rbx)
+
+-----
+
+<a name="3"></a>
+# **3.选择监听的 IP 和端口**
+
+logkit-pro 需要接收 rsyslog 发送过来的日志，所以要确保 logkit-pro 和 rsyslog 的网络连通性，只要 rsyslog 能访问 logkit Pro 即可，如果 logkit-pro 有多个 IP，为了确保安全性，我们尽可能选择 rsyslog 机器能访问到的内网 IP。
+
+查看 IP 的方法, ```ifconfig -a```
+
+可能获得的结果如下：
+```
+eth0      Link encap:Ethernet  HWaddr 04:01:06:a7:6f:01  
+          inet addr:101.46.8.0  Bcast:123.456.78.255  Mask:255.255.255.0
+          inet6 addr: fe80::601:6ff:fea7:6f01/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:168 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:137 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:18903 (18.9 KB)  TX bytes:15024 (15.0 KB)
+
+eth1      Link encap:Ethernet  HWaddr 04:01:06:a7:6f:02  
+          inet addr:10.100.20.41  Bcast:10.128.255.255  Mask:255.255.0.0
+          inet6 addr: fe80::601:6ff:fea7:6f02/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:6 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:5 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:468 (468.0 B)  TX bytes:398 (398.0 B)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+```
+
+可以看到 ```eth0``` 设备为外网可访问的 IP，而 ```eth1``` 为内网 IP，若 rsyslog 可以访问 ```10.200.20.41```，那就选择内网 IP， 通过 ping 命令可以验证网络联通性。
+```
+$ping 10.200.20.41
+sun@lcoal:~/logkit_test/_package$ ping 10.200.20.41
+PING 10.200.20.41 (10.200.20.41) 56(84) bytes of data.
+64 bytes from 10.200.20.41: icmp_seq=1 ttl=64 time=0.122 ms
+64 bytes from 10.200.20.41: icmp_seq=2 ttl=64 time=0.105 ms
+^C
+--- 10.200.20.41 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 999ms
+rtt min/avg/max/mdev = 0.105/0.113/0.122/0.013 ms
+```
+
+如上所示表示网络可以联通，我们将 ```10.200.20.41``` 选做我们监听的 IP 地址，而 ```5140``` 作为监听的端口（```514```一般为 rsyslog server 默认的监听端口，我们不使用```514```一方面是不与服务端本身可能存在的 rsyslog 的```514```冲突，另外一方面也是选用一个非常用端口，避免权限不够，logkit Pro 此处使用 ```5140``` 作为示例，也可以配置为别的端口）。
+
+
+-----
+<a name="4"></a>
+# **4.配置 logkit-pro 收集数据**
+
+
+安装好 logkit-pro 以后，您就可以使用 logkit-pro 来收集日志。
+
+进入数据收集页面，点击 **添加收集器** -> **日志收集**。
+
+![](https://pandora-kibana.qiniu.com/k8s/collect.png)
+
+1.添加数据源
+
+如下图所示，选择从 Socket 读取，在监听的地址一栏填入我们之前确定好的 IP 和端口内容，协议可以使用 udp，也可以使用 tcp，一般 syslog 使用 udp 协议传输，对于重要的数据，建议使用 tcp。
+
+```
+udp://10.200.20.40:5140
+```
+
+![](https://pandora-kibana.qiniu.com/logkitPro/sys.png)
+
+2.配置解析方式:默认的 syslog 日志选择按 syslog 格式解析即可，但是需要注意的是，对于应用程序自己定义的日志格式，默认的 syslog 格式无法解析，可以根据实际情况选择别的解析方式。
+
+![](https://pandora-kibana.qiniu.com/logkitPro/sysjiexi.png)
+
+3.继续下一步，直到发送数据。
+
+![](https://pandora-kibana.qiniu.com/k8s/send_sys.png)
+
+将数据发送至日志分析平台，填写工作流（pipeline）名称和智能日志平台的实时仓库名称即可。日志仓库名称无需填写，开启`自动创建并导出到日志分析`，系统将会自动创建与实时仓库同名的日志仓库。
+
+4.确认添加收集器：
+
+![](https://pandora-kibana.qiniu.com/logkitPro/sys_confirm.png)
+
+5.分发收集器到指定机器：确认添加收集器之后系统会提示您是否需要分发到当前机器，选择确认分发。
+
+![](https://pandora-kibana.qiniu.com/k8s/k8s_distribute.png)
+
+-----
+
+<a name="5"></a>
+
+# **5.安装 rsyslog**
+
+默认情况下，机器应该已经安装了 rsyslog，如果还没有安装，可以执行如下命令安装：
+
+```sudo apt-get install rsyslog```
+安装好以后，你会在系统的目录中看到文件夹 ```/etc/rsyslog.d/```
+
+其中包含 2 个文件：
+
+```
+sun@local:/etc/rsyslog.d$ ls
+20-ufw.conf  50-default.conf
+```
+
+-----
+<a name="6"></a>
+# **6.配置 rsyslog 发送**
+
+打开 ```sudo vi /etc/rsyslog.d/50-default.conf```，增加一行发送的配置。
+
+```*.*                         @10.200.20.41:5140```
+如图所示：
+
+![](https://pandora-dl.qiniu.com/syslog7.png)
+
+其中 ```*.* ```表示我们会发送所有的数据，当然，你也可以配置 rsyslog 只发送某些你关心的数据，关于如何配置 rsyslog 有策略性的发送数据，可以参阅 rsyslog 相关文档，在这里我们不多做展开。
+
+剩下的部分表示发送到哪里， ```@``` 符号表示用 UDP 协议传输，如果使用 TCP 协议，可以改为使用``` @@ ``` 2 个符号替换，当然，如果替换，那么 logkit Pro 端也要对应替换为 tcp 接收数据。 紧接着 @ 符号，是我们刚刚确认的 logkit Pro 所在机器的一个内网 IP，在我们这个例子中是 ```10.200.20.41```，请根据你的实际情况修改，最后是端口号，也与 logkit Pro 那边配置的保持一致，在我们的例子中是 5140。
+
+配置完成后，保存配置，并重启 rsyslog
+
+```service restart rsyslog```
+
+至此，我们的配置就全部完成了，你可以在 logkit Pro 的页面看到数据接收和发送的情况。
+
+-----
+<a name="7"></a>
+
+# **7.七牛云智能日志管理平台中查看日志**
+
+登录 [七牛云智能日志管理平台](https://portal.qiniu.com/insight/logdb/overview) 查看日志。
+
+如上文所述，智能日志平台会出现与实时仓库同名的日志仓库，我们选择并搜索： 
+
+![](https://pandora-kibana.qiniu.com/sys/syslog.png)
+
+默认情况下，系统发送的 syslog 日志就自带一些信息，如 标签(tag),设备(facility),优先级(priority),重要性(severity)等等，其他日志都在```content```字段内。
+
+如我们要搜一个优先级(priority)为 ```38``` 的日志，搜索结果如下。
+
+![](https://pandora-kibana.qiniu.com/sys/syslog_search.png)

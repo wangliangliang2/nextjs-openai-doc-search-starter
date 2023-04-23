@@ -1,0 +1,21 @@
+<a id="404-not-found"></a>
+## 自定义404响应
+
+开发者可以要求<span id="Productname">七牛云存储</span>在目标资源不存在时返回一个特定的内容，例如在网站上为这些找不到的资源显示一张特定的提示图片。通过自定义404响应可以达到这个效果。开发者只需向指定的空间上传一个资源名为`errno-404`的文件即可。
+
+<a id="download-friendly-name"></a>
+## 自定义资源下载名
+
+默认情况下，如果在浏览器中访问一个资源URL，浏览器都会试图直接在浏览器中打开这个资源，例如一张图片。如果希望浏览器的动作是下载而不是打开，可以给该资源URL添加参数`?attname=<file_name>`：
+
+```
+http://<domain>/<key>?attname=<file_name>
+```
+
+**注意**：
+对于中文文件名，为了更好的支持中文，将`attname=`后面的中文文件名部分`URLEncoder`。
+
+ 以Java举例：
+
+    
+    String URL = String.format("http://obzksbzy4.bkt.clouddn.com/4.jpg?attname=%s",URLEncoder.encode("(你好).jpg", "utf-8"))

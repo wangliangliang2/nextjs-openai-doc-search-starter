@@ -1,0 +1,54 @@
+## 一，确认是否是DNS问题。
+
+用户出现上传下载慢的问题，可以使用dig命令来检测dns服务器地址是否设置正确。如下图所示，蓝色框中即为dns服务器地址。
+
+![](https://dn-odum9helk.qbox.me/d1879337a0222244cad8fee6e9149776)
+
+把蓝色框中的ip地址放入([http://www.ipip.net/ip.html](http://www.ipip.net/ip.html) )的搜索框，如下图。
+
+![](https://dn-odum9helk.qbox.me/7b6ce6096376e2c9b7f5c208c0f2636e)
+
+查询到的结果就是你的dns服务器所在的地理位置及运营商。
+
+如果信息显示的城市结果离你很远，或者跨运营商了，就表明dns设置存在问题。
+
+比如，dns 设置为8.8.8.8或114.114.114.114可能会导致cdn网络无法定位你的位置，从而无法选择最优节点。
+
+## 二，修改DNS设置。
+
+确认dns出问题后，登录[http://www.ip.cn/dns.html](http://www.ip.cn/dns.html)
+
+查找你所在地的DNS服务器地址,根据自己的系统参照下面的更改设置方法进行修改：
+
+WIN XP：
+
+[http://jingyan.baidu.com/article/0a52e3f4007606bf62ed7292.html](http://jingyan.baidu.com/article/0a52e3f4007606bf62ed7292.html)
+
+Win7：
+
+[http://jingyan.baidu.com/article/f71d60375584591ab641d13c.html](http://jingyan.baidu.com/article/f71d60375584591ab641d13c.html)
+
+win8:
+
+[http://jingyan.baidu.com/article/2c8c281df7e5d90009252a6d.html](http://jingyan.baidu.com/article/2c8c281df7e5d90009252a6d.html)
+
+win8.1:
+
+[http://jingyan.baidu.com/article/656db9189c6661e381249c84.html](http://jingyan.baidu.com/article/656db9189c6661e381249c84.html)
+
+Windows 10:
+
+[http://jingyan.baidu.com/article/1612d50058aa86e20e1eee96.html](http://jingyan.baidu.com/article/1612d50058aa86e20e1eee96.html)
+
+MAC OS:
+
+[http://jingyan.baidu.com/article/fc07f9891f626712ffe519cf.html](http://jingyan.baidu.com/article/fc07f9891f626712ffe519cf.html)
+
+Unix:
+
+[http://os.51cto.com/art/201004/194716.htm](http://os.51cto.com/art/201004/194716.htm)
+
+linux:
+
+[https://jingyan.baidu.com/article/d3b74d64e80e281f77e609f6.html](https://jingyan.baidu.com/article/d3b74d64e80e281f77e609f6.html)
+

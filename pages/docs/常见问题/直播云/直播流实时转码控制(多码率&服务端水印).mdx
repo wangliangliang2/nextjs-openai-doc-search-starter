@@ -1,0 +1,118 @@
+## Q：如何开通实时转码？
+拨打 400-808-9176 转 1 号线咨询商务，价格以及使用详情
+
+<br/>
+
+## Q：实时转码可以实现哪些需求？
+目前支持如下三种需求
+
+1. 多码率多分辨率支持，支持 480p、720p；
+2. 服务端加水印功能，推流端不受客户控制，服务端强制给视频流加上水印；
+3. 音视频编码格式转换，如强制转换 h264+aac
+ 
+<br/>
+
+## Q：如何开启实时转码？
+开启实时转码，目前需要直接调用七牛的 API 接口（此接口调用单位是单个流）: 
+
+修改流转码配置
+
+推流开始时如果有转码配置会触发转码，推流过程中修改转码配置不会立即生效，需要重新推流。
+
+推流过程中，在直播地址后面添加 @ 即可播放转码流。例: 一路流的直播地址是 rtmp://live-rtmp.test.com/PiliSDKTest/streamkey， 是 720p，则对应转码流的直播地址是 rtmp://live-rtmp.test.com/PiliSDKTest/streamkey@720p
+
+<br/>
+
+## Q：API 接口是什么
+请求规格如下
+
+请求包:
+```
+POST /v2/hubs/<Hub>/streams/<EncodedStreamKey>/converts
+Host: pili.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+ 
+{
+    "converts": ["<ProfileName>", ...]
+}
+```
+
+converts: 数组，转码配置。
+ 
+返回包:
+```
+200 {}
+ 
+400 {
+    "error": "invalid stream key" // 只能修改原始流，包含@的流不允许
+}
+ 
+400 {
+    "error": "invalid args" // 转码配置不存在
+}
+ 
+612 {
+    "error": "stream not found"
+}
+``` 
+
+示例
+
+请求包:
+```
+POST /v2/hubs/9527/streams/dGVzdGNvbnZlcnRz/converts HTTP/1.1
+Host: pili.qiniuapi.com
+User-Agent: pili-sdk-go/v2 go1.6 darwin/amd64
+Content-Length: 28
+Authorization: Qiniu 9roGzeeJkZh4y5gHpzT7Uv1CIw0KiVV8K4dfXRY0:prhwnWzN8A3lHHcdKXOukHRSVuQ=
+Content-Type: application/json
+X-Reqid: 5ugAAHlh58T9i1wU
+Accept-Encoding: gzip
+ 
+{"converts":["720p","480p"]}
+```
+
+返回包:
+```
+HTTP/1.1 200 OK
+Content-Length: 2
+Content-Type: application/json
+Date: Wed, 29 Jun 2016 11:58:20 GMT
+X-Log: PILI:2;vs.i/vstream: stream already exists;ZEUSD:2/614;vs.u;ZEUSD:2;PILI-LINA:11
+X-Reqid: 5ugAAHlh58T9i1wU
+ 
+{}
+```
+
+<br/>
+
+## Q：如何使用实时转码？
+如上述接口所示，每一次调用接口，实际是上是针对你的一个具体的直播流。即在你直播推流之前，先调用上述接口，指定一种转码的规格：即 ProfileName
+
+目前预设的 ProfileName 有： 480p 、 720p
+
+<br/>
+
+## Q：转码后的流，拉流地址做时间戳签算是否会改变？
+是的，转码后的流可以认为是一路新的流，流名发生了变化，所以签算时流名要加上@720p
+或者@480p。注意，在m3u8拉流地址签算时，@720p或@480p应该加在流名后而不是m3u8后。
+
+例如，流名为123，拉流地址签算时对123@720p.m3u8签算。
+
+<br/>
+
+## Q：推流端没有办法加上水印，想从服务端加上，统一所有直播视频上都打上我的 logo 怎么做？
+一般使用七牛的 sdk ，sdk 中都有方法在推流端加上水印设置；  
+如果是 OBS ，推流，可以添加一个采集，选择一张图片进行水印显示  
+**服务端水印**七牛也是支持的，但是因为需要经过转发服务器，消耗资源量较大，成本因此会提高，需要先联系 400-808-9176 转2号线咨询。
+
+<br/>
+
+## Q：转码后的流也可以自动存储以及回放吗？
+是的，转码后的流，也属于一路新的流，和原始流享有相同的功能
+
+<br/>
+
+## Q：我想修改转码配置如何操作？
+即继续调用最开始提供的那个接口即可，最后针对你的单个流，提交完接口，流就会适应最后提交接口的时候里面所有的 ProfileName （取消该流转码的话，那么 ProfileName 为空数组即可）

@@ -1,0 +1,57 @@
+**本文简述了使用国标协议接入时配置流程，以及接入流程演示视频**。
+# **国标接入配置示范**
+## **操作步骤：**
+1.首先需要在七牛云视频监控产品portal上查询已经添加好的对应的配置信息，如尚未创建请参考[快速入门](https://developer.qiniu.com/qvs/6763/qvs-quick-start)。
+2.登录到摄像头的配置页面，找到国标接入配置页面。
+3.将对应信息配置到设备端配置、启用国标保存后，该设备将进行注册接入。
+4.请确保视频编码格式为h264,码流控制/码率类型选择“可变码率”;音频编码格式为g711-alaw或者aac, 采样率 8000 。
+5.平台`支持`h265接入和转发,但浏览器大都无法直接播放h265, 因此客户要自行集成[浏览器h265插件](https://github.com/numberwolf/h265web.js), `非浏览器`的h265播放，可以参考我们的[播放器sdk](https://developer.qiniu.com/qvs/7924/play-the-sdk)
+<br />
+## **海康设备国标接入配置示范**
+![](https://dn-odum9helk.qbox.me/Furkm0igA4xP_kRx3CYPEcZl3mVn)
+*配置参数说明：*
+
+|参数|说明|
+|---|--|
+|平台接入方式|选择28181
+|本地SIP端口|由于设备默认的本地Sip端口号5060,可能会被局域网屏蔽，建议修改为5061、5062等其他端口号
+|传输协议|选择UDP
+|协议版本|选择“GB/T28181-2011 或 GB/T28181-2016”
+|SIP服务器ID|填入视频监控平台（QVS）提供的SIP服务器ID
+|SIP服务器域|SIP服务器ID的前10位
+|SIP服务地址|填入视频监控平台（QVS）提供的SIP服务器IP
+|SIP服务器端口|填入视频监控平台（QVS）提供的SIP服务器端口号
+|SIP用户名|填入视频监控平台（QVS）中创建对应的设备时输入的用户名
+|SIP用户认证ID|填入视频监控平台（QVS）中创建对应的设备时输入或自动生成的设备国标ID，网络摄像头的国标ID，11-13位为132
+|密码|填入视频监控平台（QVS）中创建对应的设备时输入的密码
+|视频通道编码ID|填入视频监控平台（QVS）中创建对应的设备时输入的设备国标ID
+<br />
+
+
+## **大华设备国标接入配置示范**
+![](https://dn-odum9helk.qbox.me/Fh1UqngoGFfnoC9hoVAHGNdLEUwN)
+*配置参数说明：*
+
+|参数|说明|
+|---|--|
+|SIP服务器编号|填入视频监控平台（QVS）提供的SIP服务器ID
+|SIP域|SIP服务器ID的前10位
+|SIP服务IP|填入视频监控平台（QVS）提供的SIP服务器IP
+|SIP服务器端口|填入视频监控平台（QVS）提供的SIP服务器端口号
+|设备编号|填入视频监控平台（QVS）中创建对应的设备时输入或自动生成的设备国标ID，网络摄像头的国标ID，11-13位为132
+|密码|填入视频监控平台（QVS）中创建对应的设备时输入的密码
+|本地SIP端口|由于设备默认的本地Sip端口号5060,可能会被局域网屏蔽，建议修改为5061、5062等其他端口号
+|通道编号|填入视频监控平台（QVS）中创建对应的设备时输入的设备国标ID
+<br />
+
+
+## **视频卡顿或拉流失败时，建议的参数配置**
+当同一个网络内接入的设备过多时或者摄像头所处的网络环境波动较大时，会由于网络带宽的限制导致视频卡顿，以海康设备为例，建议的参数配置
+<br />
+![ipc_1.png](https://dn-odum9helk.qbox.me/Fph6KNGklV5gwF5Qa6cOEX2Z6vpL)
+
+
+# **接入流程演示**
+<br>
+<video id="video" controls="" preload="none" poster="https://dn-odum9helk.qbox.me/Fl4VrPs6534sJ669z2Up8ZVuDEZQ" style="width:100%;" >
+      <source id="mp4" src="https://dn-odum9helk.qbox.me/lqYSX9Bq9dC_tlxAR4y16n4x8_wS" type="video/mp4"></video>

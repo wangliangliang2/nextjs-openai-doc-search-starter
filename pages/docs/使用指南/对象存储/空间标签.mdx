@@ -1,0 +1,17 @@
+您可以通过存储空间（Bucket）的标签功能， 对 Bucket 进行分类管理，比如列举带有指定标签的 Bucket。
+
+Bucket 标签使用一组键值对（Key-Value）标记存储空间。
+
+- 只有 Bucket 的拥有者能为 Bucket 设置标签。
+- 每个 Bucket 最多可设置 10对 Bucket 标签（Key-Value 对），超出限制时服务端会返回 `400: tag num exceed limit`。
+- 同一个 Bucket 下，Key 必须是唯一的, 且一个 Key 只能有 1个 Value，Key 设置重复时服务端会返回 `400: tag contain duplicate key`。
+- Key 最大长度为 64Byte，不能为空且大小写敏感，不能以 kodo 为前缀(预留), 不支持中文字符，可使用的字符有：字母，数字，空格，+ - = . _ : / @。
+- Value 最大长度为 128Byte，不能为空且大小写敏感，不支持中文字符，可使用的字符有：字母，数字，空格，+ - = . _ : / @。
+<br>
+
+# **操作方式**
+Kodo 支持通过控制台、API 方式设置空间标签。
+|支持的操作方式|参考文档|
+|-|-|
+|控制台	|[设置空间标签](/kodo/development_guidelines/8536/set-up-the-label-management)|
+|空间标签 API|	[设置空间标签](/kodo/api/6314/put-bucket-tagging) <br>[查询空间标签](/kodo/api/6315/get-bucket-tagging) <br>[删除空间标签](/kodo/api/6316/delete-bucket-tagging)|

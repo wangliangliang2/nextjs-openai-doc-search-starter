@@ -1,0 +1,27 @@
+**使用场景及限制：**
+
+- 建议在测试数据集上运行，通过验证聚类之后的结果评估聚类模型的效果。
+- 不支持模糊搜索（ \*）
+
+**通用语法：**
+
+```
+..| score <scoring-method-name> [options] <label_field> against <feature_field_1> ... <feature_field_n>
+```
+
+以下算法评估方式可以用来评估聚类模型的预测效果
+
+<h3 id="3.1"><strong>轮廓系数 - Silhouette Score</strong></h3>
+用 silhouette_score 可以计算聚类结果的轮廓系数。通过计算样本 i 距离簇内其他样本的平均距离（即样本 i 的簇内不相似度），和样本 i 距离其他某簇 Cj 的所有样本的平均距离（样本 i 与簇 Cj 的不相似度），评估聚类模型对于簇的划分是否理想。通常来说，轮廓系数越大，说明聚类模型的分簇效果越好。
+
+**语法：**
+
+```
+...|score silhouette_score metric=<euclidean(default) | cityblock | cosine | l1 | l2 | manhattan | braycurtis | canberra | chebyshev | correlation | hamming | matching | minkowski | sqeuclidean> <label_field> against <feature_field_1> ... <feature_field_n>
+```
+
+**参数说明：**
+
+- feature_array 可以有一个或者 n 个字段，数据必须为 int 或者 float，不支持 str。feature_array 的输入为用来做聚类建模的特征字段。
+- label_array 仅允许一个字段，且该字段必须为离散型数据（例如：a,b,c 或 1,2,3）。label_arary 的输入为聚类的类别标签，可以是真实标签或者聚类之后划分的标签。
+- metric 用来设定计算样本间距离的方式，默认为 euclidean（欧式距离）。

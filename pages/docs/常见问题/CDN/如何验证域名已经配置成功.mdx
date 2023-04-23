@@ -1,0 +1,40 @@
+# 验证的使用场景
+1.您的域名创建后，无法访问资源，不返回状态码，请参考<font color=#4671D5><a href="#state">步骤一</a></font>和<font color=#4671D5><a href="#cname">步骤二</a></font>。
+2.您的域名创建后，状态为 等待CNAME ，请参考<font color=#4671D5><a href="#cname">步骤二</a></font>。<a id="state"></a>
+3.您的域名创建后，自行检查CNAME解析，请参考<font color=#4671D5><a href="#cname">步骤二</a></font>。
+**不适用场景**：访问资源时已经返回了JSON格式信息或者HTTP状态码，请您根据相关信息排查。
+
+
+
+# 第一步：检查域名是否已经创建成功
+
+在 **七牛开发者平台** 页面选择 [**CDN**](https://portal.qiniu.com/cdn/overview) ，选择 [**域名管理**](https://portal.qiniu.com/cdn/domain)，可以查看具体域名的状态。<a id="cname"></a>
+- 处理中：创建域名处理中，通常情况下 10-30 分钟完成，若超过30分钟未配置完成，您可以[提交工单](https://support.qiniu.com/)反馈。
+- 成功：当域名状态显示成功，表示您的域名已经创建成功，您可以参考<font color=#4671D5><a href="#cname">步骤二</a></font>排查。
+<img src="https://dn-odum9helk.qbox.me/Fu1QzPMNAX4qwTSJ5_wMcjKW4cjN" width=800 />
+</p>
+
+
+# 第二步：检查域名的CNAME是否配置正确
+
+在 **七牛开发者平台** 页面选择[**对象存储**](https://portal.qiniu.com/bucket)，点击具体的对象存储空间后，在空间概览中查看 CDN 加速域名 的状态。
+- 成功：CNAME正确解析。
+- 等待CNAME：CNAME未正确解析。
+   <img src="https://dn-odum9helk.qbox.me/Fp3cSx_sEhSAnJvGVpCWk9O9UGn1" width=800 />
+
+</p>
+
+	
+## 如果您在域名厂商处已经配置CNAME解析后，仍旧是“等待CNAME”状态。
+
+您可以根据下面提供的方法进行测试，如果已经成功解析到您的CNAME，则可以忽略不计。
+**注意：如果未成功解析到您的CNAME，请您重新检查您的解析记录，主机记录和记录值是否填写有误，请参考[如何配置域名的CNAME](https://developer.qiniu.com/fusion/kb/1322/how-to-configure-cname-domain-name)。**
+
+- linux/mac系统您可以通过如图所示的命令 `dig 您的加速域名` 查看，第一条是否解析到您配置的CNAME值。
+   <img src="https://dn-odum9helk.qbox.me/FhZC_DzsNzPA6PzpD2ApNdy1udEE" width=600 />
+	 
+- windows系统可以通过Win+R 或 点击左下角的“开始”按钮打开“开始”菜单，打开“运行”，输入cmd回车。
+ 在命令行模式下输入`nslookup 您的加速域名`，在结果中可以看到您复制的cname值即可。
+
+   <img src="https://dn-odum9helk.qbox.me/FpCsAmZwHyxWvWpIUSQE59GXgGpV" width=400 />
+

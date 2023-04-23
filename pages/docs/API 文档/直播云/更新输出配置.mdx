@@ -1,0 +1,52 @@
+# 请求包
+```
+POST /v1/static/casters/<CasterID>/publish
+Host: pili-caster.qiniuapi.com
+Authorization: <StaticKey>
+Content-Type: application/json
+{
+  "url": "",
+  "vb": 0,
+  "ab": 0,
+  "closed": false,
+  "emergencyMode": false,
+  "emergencyChannel": 0,
+  "delay": 0
+}
+```
+
+# 请求参数
+
+参数名称 | 必填 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---|---
+CasterID | 是 | string | - | 云导播唯一ID
+url | 否 | string | - | PGM推流地址
+ab | 否 | int | [64,512] | 音频码率(Kbps)，默认值为64
+vb | 否 | int | [300,10240] | 视频码率(Kbps)，默认值为1000
+closed | 否 | bool | - | 关闭推流
+emergencyMode | 否 | bool | - | 紧急模式开关
+emergencyChannel | 否 | int | [0,7] | 紧急模式监视器频道，取值范围是[0,7]，默认使用0频道
+delay | 否 | int | [0,180] | 延时播放，单位: 秒
+
+# 返回包
+```
+200 OK
+```
+
+
+# 返回参数
+
+- 详细参数说明见[云导播参数说明](/pili/api/4735#caster)
+
+
+# 相关接口
+
+- [云导播信息 GET /v1/static/casters/<CasterID\>](/pili/api/4717)
+- [更新PVW监视器频道 POST /v1/static/casters/<CasterID\>/pvw](/pili/api/4718)
+- [更新PGM监视器频道 POST /v1/static/casters/<CasterID\>/pgm](/pili/api/4719)
+- [PVW切换至PGM POST /v1/static/casters/<CasterID\>/switch](/pili/api/4720)
+- [更新监视器配置 POST /v1/static/casters/<CasterID\>/monitors](/pili/api/4721)
+- [更新输出配置 POST /v1/static/casters/<CasterID\>/publish](/pili/api/4722)
+- [更新PVW布局ID POST /v1/static/casters/<CasterID\>/pvw/layouts](/pili/api/4723)
+- [更新布局配置 POST /v1/static/casters/<CasterID\>/layouts](/pili/api/4724)
+

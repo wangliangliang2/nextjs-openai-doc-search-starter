@@ -1,0 +1,138 @@
+# **简介**
+我们提供名为`saveas` 的数据处理接口，将处理结果作为资源保存到指定空间内，并赋以指定 Key。保存成功后，下一次可直接通过指定 Key 来访问该资源，以达到提升下载速度的效果。
+
+## **限制说明**
+- 源Bucket和目标Bucket必须在同一区域，即 `处理结果不能跨区域另存`，例如华东Bucket内的文件经处理后结果无法另存到华北的Bucket。 
+- 支持`同步调用`和`持久化(pfop)调用`，两者调用方式有轻微的差异。大多数使用场景下，建议使用 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 来实现处理结果存储，避免使用同步操作的 saveas 接口，提升访问速度。
+- urlsafe_base64_encode() 函数按照标准的RFC 4648实现，开发者可以参考github.com/qiniu上各 SDK 的样例代码。
+- 当持久化保存的 fop 耗时较长的时候，saveas 请求会返回 CDN 超时，但是只要保证发送的 saveas 请求合法，七牛服务器还是会对请求做正确处理。
+- 此处签名内容不包含 Scheme 部分，与 DownloadToken 签名不一样。
+- c# http 库发送请求的时候会把 | 转成 %7c，由于签名签的是 | ，导致报 400 错误。可以在发送请求的时候，把 url 中的 | 改为 %7c，或者签名的时候签 %7c。
+
+
+
+# **持久化调用**
+## 接口规格
+```
+saveas/<EncodedEntryURI>/deleteAfterDays/<deleteAfterDays>
+```
+
+|       参数名称       | 必填 |  类型  | 说明                                                         |
+| :------------------: | :--: | :----: | :----------------------------------------------------------- |
+| ` <EncodedEntryURI>` |  是  | string | 以[EncodedEntryURI](https://developer.qiniu.com/kodo/api/1276/data-format)格式组织的目标 Bucket 与 Key |
+| ` <deleteAfterDays>` |  否  |  int   | 最小单位为天，数值 >= 1。表示从保存数据开始算起多少天之后自动从 bucket 删除文件。不设置表示资源不会被自动删除 |
+
+fop中设置，直接在命令后跟 `|saveas/SafeBase64(bucket:key)/deleteAfterDays/< deleteAfterDays >` 即可， 如：
+```
+"persistentOps":"avthumb/mp3/ab/192k|saveas/dGVzdDoxLm1wMw==/deleteAfterDays/3"
+```
+表示处理后的数据名称为指定的 key 并且上传到指定的 bucket，在 3 天之后会从 bucket 自动删除。
+
+# **同步调用**
+同步调用需要签名。
+## 接口规格
+```
+saveas/<EncodedEntryURI>/sign/<Sign>/deleteAfterDays/<deleteAfterDays>
+```
+
+|       参数名称       | 必填 |  类型  | 说明                                                         |
+| :------------------: | :--: | :----: | :----------------------------------------------------------- |
+| `<EncodedEntryURI> ` |  是  | string | 以[EncodedEntryURI](https://developer.qiniu.com/kodo/api/1276/data-format)格式组织的目标 Bucket 与 Key |
+|       `<Sign>`       |  是  | string | 请求签名部分，算法见下方，在 pfop 操作中不用指定该参数       |
+| `<deleteAfterDays>`  |  否  |  int   | 多少天之后自动从 bucket 删除文件，从保存数据开始算起         |
+
+## 签名算法
+1.在下载 URL（不含 Scheme 部分，即去除 http : //）后附加 saveas 接口（不含签名部分）：
+```
+NewURL = URL + "|saveas/<EncodedEntryURI>"
+```
+
+2.使用 SecretKey 对新的下载 URL 进行HMAC1-SHA1签名：
+```
+Sign = hmac_sha1(SecretKey, NewURL)
+```
+
+3.对签名进行URL安全的Base64编码：
+```
+EncodedSign = urlsafe_base64_encode(Sign)
+```
+
+4.在新的下载 URL 后拼接签名参数：
+```
+FinalURL = NewURL + "/sign/<AccessKey>:<EncodedSign>"
+```
+
+**同步调用 saveas 算法示例，生成 saveas 请求的完整 Go 代码如下：**
+```
+func makeSaveasUrl(URL, accessKey string, secretKey []byte, saveBucket, saveKey string) string {
+      encodedEntryURI := base64.URLEncoding.EncodeToString([]byte(saveBucket+":"+saveKey))
+      URL += "|saveas/" + encodedEntryURI
+      h := hmac.New(sha1.New, secretKey)
+      // 签名内容不包括Scheme，仅含如下部分：
+    // <Domain>/<Path>?<Query>
+      u, _ := url.Parse(URL)
+      io.WriteString(h, u.Host + u.RequestURI())
+      d := h.Sum(nil)
+      sign := accessKey + ":" + base64.URLEncoding.EncodeToString(d)
+      return URL + "/sign/" + sign
+}
+```
+
+
+
+# **EncodedEntryURI 格式**
+
+本格式用于在 URI中指定目标资源空间与目标资源名，格式如下：
+
+```
+entry = '<Bucket>:<Key>'
+encodedEntryURI = urlsafe_base64_encode(entry)
+```
+
+假设 **entry** 为 `qiniuphotos:gogopher.jpg` ，则对应的 **encodedEntryURI** 为 `cWluaXVwaG90b3M6Z29nb3BoZXIuanBn=` 。
+
+## URL安全的Base64编码
+
+URL安全的Base64编码适用于以URL方式传递Base64编码结果的场景。该编码方式的基本过程是先将内容以Base64格式编码为字符串，然后检查该结果字符串，将字符串中的加号`+`换成中划线`-`，并且将斜杠`/`换成下划线`_`。
+
+
+
+# **自定义资源名支持变量**
+
+自定义目标资源名时，可以使用变量，支持 [预定义变量和自定义变量](https://developer.qiniu.com/dora/6502/upload-video-files)，变量引用格式为` {{.meta.var}}` 或 `字符串与{{.meta.var}}的组合` 形式求值。
+
+
+
+# **示例**
+
+1.原资源是一个名为 resource/Ship.jpg 的图片：
+```
+http://78re52.com1.z0.glb.clouddn.com/resource/Ship.jpg
+```
+
+2.将图片做缩略处理：
+```
+http://78re52.com1.z0.glb.clouddn.com/resource/Ship.jpg?imageView2/2/w/200/h/200
+```
+
+3.对上述云处理结果进行持久化保存：
+```
+# 另存操作的目标空间与资源名
+entryURI = "qiniu-developer:Ship-thumb-200.jpg"
+#编码结果
+encodedEntryURI = "cWluaXUtZGV2ZWxvcGVyOlNoaXAtdGh1bWItMjAwLmpwZw=="
+#需要签名的部分
+signingStr = "78re52.com1.z0.glb.clouddn.com/resource/Ship.jpg?imageView2/2/w/200/h/200|saveas/cWluaXUtZGV2ZWxvcGVyOlNoaXAtdGh1bWItMjAwLmpwZw=="
+#签名结果
+sign = "bcgojLbLKTsTlhm3XFMYq0cn3lW2G3NAuJYXZDDf:jGo09Pmq5vyG4c-rRb4qF3_dH1g="
+```
+
+4.最终得到的完整下载 URL：
+```
+http://78re52.com1.z0.glb.clouddn.com/resource/Ship.jpg?imageView2/2/w/200/h/200|saveas/cWluaXUtZGV2ZWxvcGVyOlNoaXAtdGh1bWItMjAwLmpwZw==/sign/bcgojLbLKTsTlhm3XFMYq0cn3lW2G3NAuJYXZDDf:jGo09Pmq5vyG4c-rRb4qF3_dH1g=
+```
+
+5.保存转码后资源可通过如下 URL 访问：
+```
+http://78re52.com1.z0.glb.clouddn.com/Ship-thumb-200.jpg
+```

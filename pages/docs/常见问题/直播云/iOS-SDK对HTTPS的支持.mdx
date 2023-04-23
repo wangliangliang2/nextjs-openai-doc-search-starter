@@ -1,0 +1,19 @@
+## Q：iOS-SDK 对 HTTPS 支持
+推流 SDK：2.1.5 版本大部分换成了 HTTPS 访问，还有下面两个是通过 HTTP 访问的：
+
+```
+pili-zeus.qiniuapi.com
+119.29.29.29
+```
+
+这两个可以添加 `NSExceptionDomains` 来说明
+
+<br/>
+
+## Q：App Store 强制 ats，直播依赖的 HappyDns 好像用的是 HTTP 的，这个目前有什么解决办法吗
+happyDns 当中 QNDnsManager ipv4 走的是 53 端口，不会受到影响，可以放心使用。ipv6 的地址可能会受到影响，不过目前基本没有用户使用 ipv6。
+
+<br/>
+
+## Q：连麦呢？
+支持。

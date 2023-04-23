@@ -1,0 +1,65 @@
+# 登录
+1. 首先 [创建云主机](/evm/manual/4005/create-a-cloud-host) 在镜像中选择Linux 系统
+
+2. 为主机 [绑定公网IP](/evm/manual/4008/manage-cloud-host#bind_ip)
+
+3. 登录 Linux 云主机 ``` ssh root@ip``` 
+    
+# 配置主机SSH密钥
+
+**SSH密钥** 提供用户一种比直接使用密码更加隐私和安全的方式远程登录云主机。
+为了能够通过 **SSH密钥** 登陆到我们创建的远程云主机，我们需要创建一对 SSH 密钥并且绑定到某个云主机之上。
+ 
+- 我们首先要使用 ```ssh-keygen``` 命令在本地机器上创建一对公私钥
+
+```
+ssh-keygen -t rsa
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/demo/.ssh/id_rsa): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/demo/.ssh/id_rsa.
+Your public key has been saved in /home/demo/.ssh/id_rsa.pub.
+The key fingerprint is:
+4a:dd:0a:c6:35:4e:3f:ed:27:38:8c:74:44:4d:93:67 demo@a
+The key's randomart image is:
++--[ RSA 2048]----+
+|          .oo.   |
+|         .  o.E  |
+|        + .  o   |
+|     . = = .     |
+|      = S = .    |
+|     o + = +     |
+|      . o + o .  |
+|           . o   |
+|                 |
++-----------------+
+
+```
+这样目录 ``` /home/demo/.ssh/ ``` 下会生成两个文件
+分别是公钥 ``` id_rsa.pub ``` 和私钥 ``` id_rsa ```
+
+- 下面登录云主机把公钥文件的内容添加到 ``` ~/.ssh/authorized_keys ``` 文件中
+
+```
+cat ~/.ssh/id_rsa.pub | ssh user@ip "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys"
+```
+再次登录云主机就不会再提示需要输入密码进行登录
+
+- 禁止 ** root ** 用户密码登录
+密码登录可能会带来额外的被破解的隐患，所以我们建议用户设置好 **SSH密钥** 登录后为了提高云主机的安全性；
+禁止 root 用户使用密码登录
+
+打开云主机上SSH 配置文件
+
+```
+sudo nano /etc/ssh/sshd_config
+```
+
+找到有 ```PermitRootLogin``` 的一行进行修改
+```
+PermitRootLogin without-password
+```
+
+最后重新加载 sshd 使配置生效
+``` reload ssh ``` 

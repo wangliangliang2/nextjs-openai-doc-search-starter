@@ -1,0 +1,537 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div>
+# 推送开发指南（PUSH）
+<h3 id="推送-sdk-集成说明"><a href="#%E6%8E%A8%E9%80%81-sdk-%E9%9B%86%E6%88%90%E8%AF%B4%E6%98%8E" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>推送 SDK 集成说明</h3>
+<p>七牛IM推送是基于七牛IM技术基础上研发，只需要一次集成，就可以同时拥有推送和IM两大服务，提高研发效率的同时，也会极大降低企业的 IT 支出。</p>
+<p>使用七牛IM推送没有额外费用。</p>
+<p>由于默认即支持各主流厂商通道，为了进一步减低集成难度，七牛IM推送实现时也内置了证书设置与更新机制。简单来说，就是开发者集成七牛IM推送之后，只需要在控制台设置好各厂商推送的证书，前端将厂商推送 SDK 打包，即可自动完成系统厂商的适配。不再需要针对性调整各种推送令牌的申请和设置。</p>
+<p>注意：与其他推送厂商不同的是，七牛IM推送 SDK 专注于推送通道的建设和服务，并不会收集终端信息，如果你有类似广告业务，需要单独集成广告 SDK，或者将业务数据标签通过接口设置后才能使用。</p>
+<p>如前所述，由于七牛IM推送 SDK 与 IM SDK 是同一个 SDK，推送功能只是在原有 IM SDK 基础上增加了推送接口。因此集成方式均与 IM SDK 相同，快速集成文档亦可参见七牛IM安卓端快速集成，七牛IM iOS 端快速集成。</p>
+<h3 id="sdk-架构"><a href="#sdk-%E6%9E%B6%E6%9E%84" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>SDK 架构</h3>
+<p>推送功主要涉及以下三个类：</p>
+<pre><code>BMXClient
+<span></span>|<span class="hljs-comment">----BMXPushService</span>
+<span></span>    |<span class="hljs-comment">----BMXPushServiceListener</span>
+<span></span>    |<span class="hljs-comment">----BMXPushManager</span>
+<span></span></code></pre>
+<p>其中 BMXPushService、BMXPushManager 均为推送设置类，前者是同步调用类，后者异步调用类，实现时根据需要在两者中二选一即可。</p>
+<p>其他功能类分别是：</p>
+<ul>
+<li>BMXCallBack : 无类型接口回调</li>
+<li>BMXDataCallBack : 泛型类型带数据回调</li>
+<li>BMXPushServiceListener : 推送事件监听</li>
+<li>BMXMessage : 推送消息</li>
+<li>BMXUserProfile : 推送用户信息</li>
+</ul>
+<p>下文以安卓 SDK 为例介绍推送 API。</p>
+<h3 id="权限配置"><a href="#%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>权限配置</h3>
+<p>在AndroidManifest.xml 里增加加以下权限：</p>
+<pre><code>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.ACCESS_NETWORK_STATE&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.INTERNET&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.ACCESS_FINE_LOCATION&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.ACCESS_COARSE_LOCATION&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.ACCESS_LOCATION_EXTRA_COMMANDS&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.READ_EXTERNAL_STORAGE&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.WRITE_CONTACTS&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.CAMERA&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.READ_PHONE_STATE&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.ACCESS_WIFI_STATE&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.CHANGE_WIFI_STATE&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.RECORD_AUDIO&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.VIBRATE&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.CALL_PHONE&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.READ_CONTACTS&quot;</span> /&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">uses-permission</span> <span class="hljs-attr">android:name</span>=<span class="hljs-string">&quot;android.permission.WAKE_LOCK&quot;</span> /&gt;</span>
+<span></span></code></pre>
+<h3 id="快速集成"><a href="#%E5%BF%AB%E9%80%9F%E9%9B%86%E6%88%90" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>快速集成</h3>
+<h4 id="bmxclient初始化"><a href="#bmxclient%E5%88%9D%E5%A7%8B%E5%8C%96" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>BMXClient初始化</h4>
+<ul>
+<li>在app入口类中导入so库文件：</li>
+</ul>
+<pre><code>    <span class="hljs-keyword">static</span> {
+<span></span>        System.<span class="hljs-built_in">loadLibrary</span>(<span class="hljs-string">&quot;floo&quot;</span>);
+<span></span>    }
+<span></span></code></pre>
+<ul>
+<li>初始化BMXClient</li>
+</ul>
+<pre><code>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">initClient</span><span class="hljs-params">(<span class="hljs-type">int</span> index)</span> {
+<span></span>       
+<span></span>        <span class="hljs-type">String</span> <span class="hljs-variable">appPath</span> <span class="hljs-operator">=</span> AppContextUtils.getAppContext().getFilesDir().getPath();
+<span></span>        <span class="hljs-type">File</span> <span class="hljs-variable">dataPath</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>(appPath + <span class="hljs-string">&quot;/data_dir&quot;</span>);
+<span></span>        <span class="hljs-type">File</span> <span class="hljs-variable">cachePath</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>(appPath + <span class="hljs-string">&quot;/cache_dir&quot;</span>);
+<span></span>        dataPath.mkdirs();
+<span></span>        cachePath.mkdirs();
+<span></span>
+<span></span>        <span class="hljs-type">String</span> <span class="hljs-variable">pushId</span> <span class="hljs-operator">=</span> getPushId();<span class="hljs-comment">//设置推送平台对应的ID</span>
+<span></span>        <span class="hljs-type">BMXSDKConfig</span> <span class="hljs-variable">conf</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BMXSDKConfig</span>(BMXClientType.Android, <span class="hljs-string">&quot;1&quot;</span>, dataPath.getAbsolutePath(),
+<span></span>                cachePath.getAbsolutePath(), TextUtils.isEmpty(pushId) ? <span class="hljs-string">&quot;MaxIM&quot;</span> : pushId);
+<span></span>        conf.setConsoleOutput(<span class="hljs-literal">true</span>);
+<span></span>        conf.setLogLevel(BMXLogLevel.Debug);
+<span></span>        <span class="hljs-comment">//设置推送appId</span>
+<span></span>        conf.setAppID(<span class="hljs-string">&quot;appId&quot;</span>);
+<span></span>        <span class="hljs-comment">//设置推送secret</span>
+<span></span>        conf.setAppSecret(<span class="hljs-string">&quot;appSecret&quot;</span>);
+<span></span>        <span class="hljs-comment">//设置设备的唯一设备id</span>
+<span></span>        conf.setDeviceUuid(deviceId);
+<span></span>        <span class="hljs-comment">//设置生产环境</span>
+<span></span>        conf.setEnvironmentType(BMXPushEnvironmentType.Production);
+<span></span>        <span class="hljs-comment">//根据设备机型设置pushProviderType</span>
+<span></span>        conf.setPushProviderType(getProviderType(context));
+<span></span>        BMXSDKConfig.<span class="hljs-type">HostConfig</span> <span class="hljs-variable">hostConfig</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BMXSDKConfig</span>.HostConfig(<span class="hljs-string">&quot;sync.maxim.top&quot;</span>, <span class="hljs-number">443</span>, <span class="hljs-string">&quot;https://api.maxim.top&quot;</span>);
+<span></span>        conf.setHostConfig(hostConfig);
+<span></span>        <span class="hljs-comment">//初始化QNIMClient实例</span>
+<span></span>      
+<span></span>        QNIMClient.init(conf)
+<span></span>    }
+<span></span>
+<span></span>
+<span></span>    <span class="hljs-comment">//根据机型获取type</span>
+<span></span>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> BMXPushProviderType <span class="hljs-title function_">getProvideType</span><span class="hljs-params">(Context context)</span>{
+<span></span>        <span class="hljs-keyword">if</span> (isHuawei(context)) {
+<span></span>            <span class="hljs-keyword">return</span> BMXPushProviderType.HuaWei;
+<span></span>        }
+<span></span>        <span class="hljs-keyword">if</span> (isXiaomi(context)) {
+<span></span>            <span class="hljs-keyword">return</span> BMXPushProviderType.XiaoMi;
+<span></span>        }
+<span></span>        <span class="hljs-keyword">if</span> (isMeizu(context)) {
+<span></span>            <span class="hljs-keyword">return</span> BMXPushProviderType.MeiZu;
+<span></span>        }
+<span></span>        <span class="hljs-keyword">if</span> (isOppo(context)) {
+<span></span>            <span class="hljs-keyword">return</span> BMXPushProviderType.OPPS;
+<span></span>        }
+<span></span>        <span class="hljs-keyword">if</span> (isVivo(context)) {
+<span></span>            <span class="hljs-keyword">return</span> BMXPushProviderType.VIVO;
+<span></span>        }
+<span></span>        <span class="hljs-keyword">return</span> BMXPushProviderType.Unknown;
+<span></span>    }
+<span></span></code></pre>
+<h4 id="高级调用形式"><a href="#%E9%AB%98%E7%BA%A7%E8%B0%83%E7%94%A8%E5%BD%A2%E5%BC%8F" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>高级调用形式</h4>
+<ul>
+<li>BMXPushManager: 通过QNIMClient.getPushManager()获取到推送的manager对象。</li>
+</ul>
+<h4 id="开启推送"><a href="#%E5%BC%80%E5%90%AF%E6%8E%A8%E9%80%81" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>开启推送</h4>
+<p>参数说明: alias(push别名), bmxToken(推送token) callBack</p>
+<pre><code>     如果不传入<span class="hljs-built_in">alias</span>  SDK会自动生成
+<span></span>     如果不传入token  SDK会自动生成并通过BMXPushServiceListener回调
+<span></span></code></pre>
+<pre><code>同步调用形式
+<span></span>   调用说明: 通过返回值BMXErrorCode判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushService</span>().<span class="hljs-title function_">start</span>();<span class="hljs-comment">//不传入参数</span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushService</span>().<span class="hljs-title function_">start</span>(<span class="hljs-string">&quot;zhangsan&quot;</span>);<span class="hljs-comment">//传入alias</span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushService</span>().<span class="hljs-title function_">start</span>(<span class="hljs-string">&quot;zhangsan&quot;</span>, token);<span class="hljs-comment">//传入alias  token</span>
+<span></span>异步调用形式
+<span></span>   调用说明: 通过QNIMClient.<span class="hljs-title function_">getPushManager</span>()获取manager对象,在BMXCallBack回调中返回BMXErrorCode 判断是否成功。
+<span></span>
+<span></span>   <span class="hljs-comment">//不传入参数</span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushManager</span>().<span class="hljs-title function_">start</span>(<span class="hljs-keyword">new</span> BMXCallBack&lt;&gt;(){
+<span></span>        <span class="hljs-meta">@Override</span>
+<span></span>        <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onResult</span>(<span class="hljs-params">BMXErrorCode bmxErrorCode</span>) {
+<span></span>
+<span></span>        }
+<span></span>   	});
+<span></span>   <span class="hljs-comment">//传入alias</span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushManager</span>().<span class="hljs-title function_">start</span>(<span class="hljs-string">&quot;zhangsan&quot;</span>,<span class="hljs-keyword">new</span> BMXCallBack&lt;&gt;(){
+<span></span>        <span class="hljs-meta">@Override</span>
+<span></span>        <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onResult</span>(<span class="hljs-params">BMXErrorCode bmxErrorCode</span>) {
+<span></span>
+<span></span>        }
+<span></span>    });
+<span></span>   <span class="hljs-comment">//传入alias token</span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushManager</span>().<span class="hljs-title function_">start</span>(<span class="hljs-string">&quot;zhangsan&quot;</span>, token, <span class="hljs-keyword">new</span> BMXCallBack&lt;&gt;(){
+<span></span>        <span class="hljs-meta">@Override</span>
+<span></span>        <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onResult</span>(<span class="hljs-params">BMXErrorCode bmxErrorCode</span>) {
+<span></span>
+<span></span>        }
+<span></span>    });
+<span></span></code></pre>
+<h4 id="停止推送"><a href="#%E5%81%9C%E6%AD%A2%E6%8E%A8%E9%80%81" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>停止推送</h4>
+<p>参数说明: callBack</p>
+<pre><code>同步调用
+<span></span>   调用说明: 通过返回值BMXErrorCode判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-built_in">getPushService</span>().<span class="hljs-built_in">stop</span>();
+<span></span>异步调用
+<span></span>   调用说明: 通过QNIMClient.<span class="hljs-built_in">getPushManager</span>()获取manager对象,在BMXCallBack回调中返回BMXErrorCode 判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-built_in">getPushManager</span>().<span class="hljs-built_in">stop</span>(new <span class="hljs-built_in">BMXCallBack</span>(){
+<span></span>   	      @Override
+<span></span>          public void <span class="hljs-built_in">onResult</span>(BMXErrorCode bmxErrorCode) {
+<span></span>
+<span></span>          }
+<span></span>   	});
+<span></span></code></pre>
+<h4 id="唤起推送"><a href="#%E5%94%A4%E8%B5%B7%E6%8E%A8%E9%80%81" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>唤起推送</h4>
+<pre><code>同步调用
+<span></span>   调用说明: 通过返回值BMXErrorCode判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-built_in">getPushService</span>().<span class="hljs-built_in">resume</span>();
+<span></span>
+<span></span>异步调用
+<span></span>   调用说明: 通过QNIMClient.<span class="hljs-built_in">getPushManager</span>()获取manager兑现, 在BMXCallBack回调中返回BMXErrorCode 判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-built_in">getPushManager</span>().<span class="hljs-built_in">remuse</span>(new BMXCallBack&lt;&gt;() {
+<span></span>       @Override
+<span></span>        public void <span class="hljs-built_in">onResult</span>(BMXErrorCode bmxErrorCode) {
+<span></span>        }
+<span></span>   });
+<span></span></code></pre>
+<h4 id="获取推送的状态"><a href="#%E8%8E%B7%E5%8F%96%E6%8E%A8%E9%80%81%E7%9A%84%E7%8A%B6%E6%80%81" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>获取推送的状态</h4>
+<p>返回值说明: public static enum PushSdkStatus { Starting(1), Started, Stoped, Offline; }</p>
+<pre><code>同步调用:
+<span></span>
+<span></span>   BMXPushService.PushSdkStatus status = QNIMClient.<span class="hljs-built_in">getPushService</span>().<span class="hljs-built_in">status</span>();
+<span></span>
+<span></span>异步调用:
+<span></span>
+<span></span>   BMXPushService.PushSdkStatus status = QNIMClient.<span class="hljs-built_in">getPushManager</span>().<span class="hljs-built_in">status</span>();
+<span></span></code></pre>
+<h4 id="解绑别名"><a href="#%E8%A7%A3%E7%BB%91%E5%88%AB%E5%90%8D" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>解绑别名</h4>
+<p>参数说明: alias(push别名)</p>
+<pre><code>同步调用
+<span></span>   调用说明: 通过返回值BMXErrorCode判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-built_in">getPushService</span>().<span class="hljs-built_in">unbindAlias</span>(alias);
+<span></span>异步调用
+<span></span>   调用说明: 通过QNIMClient.<span class="hljs-built_in">getPushManager</span>()获取manager对象,在BMXCallBack回调中返回BMXErrorCode 判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-built_in">getPushManager</span>().<span class="hljs-built_in">unbindAlias</span>(alias, new <span class="hljs-built_in">BMXCallBack</span>(){
+<span></span>          @Override
+<span></span>          public void <span class="hljs-built_in">onResult</span>(BMXErrorCode bmxErrorCode) {
+<span></span>
+<span></span>          }
+<span></span>    });
+<span></span></code></pre>
+<h4 id="获取token"><a href="#%E8%8E%B7%E5%8F%96token" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>获取token</h4>
+<pre><code>   需要在start成功之后调用才有值
+<span></span>
+<span></span>同步调用:
+<span></span>
+<span></span>   String token = QNIMClient.<span class="hljs-built_in">getPushService</span>().<span class="hljs-built_in">getToken</span>();
+<span></span>
+<span></span>异步调用:
+<span></span>
+<span></span>   String token = QNIMClient.<span class="hljs-built_in">getPushManager</span>().<span class="hljs-built_in">getToken</span>();
+<span></span></code></pre>
+<h4 id="获取cert"><a href="#%E8%8E%B7%E5%8F%96cert" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>获取cert</h4>
+<pre><code>   需要在start成功之后调用才有值,  同时需要在对应厂商注册证书并且设置对应的provideType才可获取到
+<span></span>   目前支持   华为  小米  魅族  oppo  vivo
+<span></span>
+<span></span>同步调用:
+<span></span>
+<span></span>   String cert = QNIMClient.<span class="hljs-built_in">getPushService</span>().<span class="hljs-built_in">getCert</span>();
+<span></span>
+<span></span>异步调用:
+<span></span>
+<span></span>   String cert = QNIMClient.<span class="hljs-built_in">getPushManager</span>().<span class="hljs-built_in">getCert</span>();
+<span></span></code></pre>
+<h4 id="绑定厂商token"><a href="#%E7%BB%91%E5%AE%9A%E5%8E%82%E5%95%86token" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>绑定厂商token</h4>
+<p>参数说明: token(注册厂商推送返回的token)</p>
+<pre><code>同步调用
+<span></span>   调用说明: 通过返回值BMXErrorCode判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-built_in">getPushService</span>().<span class="hljs-built_in">bindDeviceToken</span>(token);
+<span></span>异步调用
+<span></span>   调用说明: 通过QNIMClient.<span class="hljs-built_in">getPushManager</span>()获取manager对象,在BMXCallBack回调中返回BMXErrorCode 判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-built_in">getPushManager</span>().<span class="hljs-built_in">bindDeviceToken</span>(token, new <span class="hljs-built_in">BMXCallBack</span>(){
+<span></span>          @Override
+<span></span>          public void <span class="hljs-built_in">onResult</span>(BMXErrorCode bmxErrorCode) {
+<span></span>
+<span></span>          }
+<span></span>    });
+<span></span></code></pre>
+<h4 id="获取推送用户信息"><a href="#%E8%8E%B7%E5%8F%96%E6%8E%A8%E9%80%81%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>获取推送用户信息</h4>
+<p>参数说明: forceRefresh(是否从server拉取)</p>
+<pre><code>同步调用
+<span></span>   调用说明: 通过传入BMXPushUserProfile对象引用, 调用成功后可获取推送用户信息。
+<span></span>
+<span></span>   <span class="hljs-type">BMXPushUserProfile</span> <span class="hljs-variable">profile</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BMXPushUserProfile</span>();
+<span></span>   QNIMClient.getPushService().getPushProfile(profile, forceRefresh);
+<span></span>异步调用
+<span></span>   调用说明: 通过QNIMClient.getPushManager()获取到manager对象, 在BMXDataCallBack&lt;BMXPushUserProfile&gt;回调中获取推送用户信息。
+<span></span>
+<span></span>   QNIMClient.getPushManager().getPushProfile(forceRefresh, <span class="hljs-keyword">new</span> <span class="hljs-title class_">BMXDataCallBack</span>&lt;BMXPushUserProfile&gt;(){
+<span></span>          <span class="hljs-meta">@Override</span>
+<span></span>          <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onResult</span><span class="hljs-params">(BMXErrorCode bmxErrorCode, BMXPushUserProfile profile)</span> {
+<span></span>            <span class="hljs-comment">//返回BMXPushUserProfile实例</span>
+<span></span>          }
+<span></span>    });
+<span></span></code></pre>
+<h3 id="高级接口"><a href="#%E9%AB%98%E7%BA%A7%E6%8E%A5%E5%8F%A3" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>高级接口</h3>
+<h4 id="设置推送标签tag"><a href="#%E8%AE%BE%E7%BD%AE%E6%8E%A8%E9%80%81%E6%A0%87%E7%AD%BEtag" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>设置推送标签（tag）</h4>
+<p>参数说明: tags(tag列表) operationId(此次操作的唯一id 手动生成唯一标识)</p>
+<pre><code>    <span class="hljs-title class_">TagList</span> tags = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TagList</span>();
+<span></span>    tags.<span class="hljs-title function_">add</span>(<span class="hljs-string">&quot;tag内容&quot;</span>);
+<span></span>
+<span></span>同步调用
+<span></span>   调用说明: 通过返回值BMXErrorCode判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushService</span>().<span class="hljs-title function_">setTags</span>(tags, operationId);
+<span></span>异步调用
+<span></span>   调用说明: 通过QNIMClient.<span class="hljs-title function_">getPushManager</span>()获取manager对象,在BMXCallBack回调中返回BMXErrorCode 判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushManager</span>().<span class="hljs-title function_">setTags</span>(tags, operationId, <span class="hljs-keyword">new</span> <span class="hljs-title function_">BMXCallBack</span>(<span class="hljs-params"></span>){
+<span></span>          <span class="hljs-meta">@Override</span>
+<span></span>          <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onResult</span>(<span class="hljs-params">BMXErrorCode bmxErrorCode</span>) {
+<span></span>
+<span></span>          }
+<span></span>    });
+<span></span></code></pre>
+<h4 id="获取推送标签tag列表"><a href="#%E8%8E%B7%E5%8F%96%E6%8E%A8%E9%80%81%E6%A0%87%E7%AD%BEtag%E5%88%97%E8%A1%A8" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>获取推送标签（tag）列表</h4>
+<p>参数说明: operationId(此次操作的唯一id 手动生成唯一标识)</p>
+<p>调用说明: 通过传入TagList对象引用, 调用成功后可获取tag列表信息。</p>
+<pre><code>同步调用
+<span></span>
+<span></span>   <span class="hljs-type">TagList</span> <span class="hljs-variable">tags</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TagList</span>();
+<span></span>   QNIMClient.getPushService().getTags(tags, operationId);
+<span></span>
+<span></span>异步调用
+<span></span>   调用说明: 通过QNIMClient.getPushManager()获取到manager对象, 在BMXCallBack回调中返回BMXErrorCode 判断是否成功。
+<span></span>
+<span></span>   <span class="hljs-type">TagList</span> <span class="hljs-variable">tags</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TagList</span>();
+<span></span>   QNIMClient.getPushManager().getTags(tags, operationId, <span class="hljs-keyword">new</span> <span class="hljs-title class_">BMXCallBack</span>&lt;&gt;(){
+<span></span>          <span class="hljs-meta">@Override</span>
+<span></span>          <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onResult</span><span class="hljs-params">(BMXErrorCode bmxErrorCode)</span> {
+<span></span>
+<span></span>          }
+<span></span>    });
+<span></span></code></pre>
+<h4 id="删除推送标签tag"><a href="#%E5%88%A0%E9%99%A4%E6%8E%A8%E9%80%81%E6%A0%87%E7%AD%BEtag" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>删除推送标签（tag）</h4>
+<p>参数说明: operationId(此次操作的唯一id 手动生成唯一标识)</p>
+<pre><code>    <span class="hljs-type">TagList</span> <span class="hljs-variable">tags</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TagList</span>();
+<span></span>    tags.add(<span class="hljs-string">&quot;tag内容&quot;</span>);
+<span></span>
+<span></span>同步调用
+<span></span>
+<span></span>   QNIMClient.getPushService().deleteTags(tags, operationId);
+<span></span>
+<span></span>异步调用
+<span></span>   调用说明: 通过QNIMClient.getPushManager()获取到manager对象, 在BMXCallBack回调中返回BMXErrorCode 判断是否成功。
+<span></span>
+<span></span>   QNIMClient.getPushManager().deleteTags(tags, operationId, <span class="hljs-keyword">new</span> <span class="hljs-title class_">BMXCallBack</span>&lt;&gt;(){
+<span></span>          <span class="hljs-meta">@Override</span>
+<span></span>          <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onResult</span><span class="hljs-params">(BMXErrorCode bmxErrorCode)</span> {
+<span></span>
+<span></span>          }
+<span></span>    });
+<span></span></code></pre>
+<h4 id="清除所有标签tag"><a href="#%E6%B8%85%E9%99%A4%E6%89%80%E6%9C%89%E6%A0%87%E7%AD%BEtag" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>清除所有标签（tag）</h4>
+<p>参数说明: operationId(此次操作的唯一id 手动生成唯一标识)</p>
+<pre><code>同步调用
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushService</span>().<span class="hljs-title function_">clearTags</span>(operationId);
+<span></span>
+<span></span>异步调用
+<span></span>   调用说明: 通过QNIMClient.<span class="hljs-title function_">getPushManager</span>()获取到manager对象, 在BMXCallBack回调中返回BMXErrorCode 判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushManager</span>().<span class="hljs-title function_">clearTags</span>(operationId, <span class="hljs-keyword">new</span> BMXCallBack&lt;&gt;(){
+<span></span>          <span class="hljs-meta">@Override</span>
+<span></span>          <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onResult</span>(<span class="hljs-params">BMXErrorCode bmxErrorCode</span>) {
+<span></span>
+<span></span>          }
+<span></span>    });
+<span></span></code></pre>
+<h4 id="设置推送开关"><a href="#%E8%AE%BE%E7%BD%AE%E6%8E%A8%E9%80%81%E5%BC%80%E5%85%B3" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>设置推送开关</h4>
+<p>参数说明: enable(boolean 推送开关)</p>
+<pre><code>同步调用
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushService</span>().<span class="hljs-title function_">setPushMode</span>(enable);
+<span></span>
+<span></span>异步调用
+<span></span>   调用说明: 通过QNIMClient.<span class="hljs-title function_">getPushManager</span>()获取到manager对象, 在BMXCallBack回调中返回BMXErrorCode 判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushManager</span>().<span class="hljs-title function_">setPushMode</span>(enable, <span class="hljs-keyword">new</span> BMXCallBack&lt;&gt;(){
+<span></span>          <span class="hljs-meta">@Override</span>
+<span></span>          <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onResult</span>(<span class="hljs-params">BMXErrorCode bmxErrorCode</span>) {
+<span></span>
+<span></span>          }
+<span></span>    });
+<span></span></code></pre>
+<h4 id="设置推送时间"><a href="#%E8%AE%BE%E7%BD%AE%E6%8E%A8%E9%80%81%E6%97%B6%E9%97%B4" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>设置推送时间</h4>
+<p>参数说明: startHour(推送开启时间) endHour(推送结束时间) 24小时制 设置每天的推送时间区间</p>
+<pre><code>同步调用
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushService</span>().<span class="hljs-title function_">setPushTime</span>(startHour, endHour);
+<span></span>
+<span></span>异步调用
+<span></span>   调用说明: 通过QNIMClient.<span class="hljs-title function_">getPushManager</span>()获取到manager对象, 在BMXCallBack回调中返回BMXErrorCode 判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushManager</span>().<span class="hljs-title function_">setPushTime</span>(startHour, endHour, <span class="hljs-keyword">new</span> BMXCallBack&lt;&gt;(){
+<span></span>          <span class="hljs-meta">@Override</span>
+<span></span>          <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onResult</span>(<span class="hljs-params">BMXErrorCode bmxErrorCode</span>) {
+<span></span>
+<span></span>          }
+<span></span>    });
+<span></span></code></pre>
+<h4 id="设置推送静默时间"><a href="#%E8%AE%BE%E7%BD%AE%E6%8E%A8%E9%80%81%E9%9D%99%E9%BB%98%E6%97%B6%E9%97%B4" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>设置推送静默时间</h4>
+<p>参数说明: startHour(推送开启时间) endHour(推送结束时间) 24小时制 设置每天的不推送时间区间</p>
+<pre><code>同步调用
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushService</span>().<span class="hljs-title function_">setSilenceTime</span>(startHour, endHour);
+<span></span>
+<span></span>异步调用
+<span></span>   调用说明: 通过QNIMClient.<span class="hljs-title function_">getPushManager</span>()获取到manager对象, 在BMXCallBack回调中返回BMXErrorCode 判断是否成功。
+<span></span>
+<span></span>   QNIMClient.<span class="hljs-title function_">getPushManager</span>().<span class="hljs-title function_">setSilenceTime</span>(startHour, endHour, <span class="hljs-keyword">new</span> BMXCallBack&lt;&gt;(){
+<span></span>          <span class="hljs-meta">@Override</span>
+<span></span>          <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onResult</span>(<span class="hljs-params">BMXErrorCode bmxErrorCode</span>) {
+<span></span>
+<span></span>          }
+<span></span>    });
+<span></span></code></pre>
+<h4 id="发送推送消息"><a href="#%E5%8F%91%E9%80%81%E6%8E%A8%E9%80%81%E6%B6%88%E6%81%AF" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>发送推送消息</h4>
+<p>参数说明: content(推送内容)</p>
+<pre><code>同步调用
+<span></span>
+<span></span>   QNIMClient<span class="hljs-selector-class">.getPushService</span>()<span class="hljs-selector-class">.sendMessage</span>(content);
+<span></span>
+<span></span>异步调用
+<span></span>
+<span></span>   QNIMClient<span class="hljs-selector-class">.getPushManager</span>()<span class="hljs-selector-class">.sendMessage</span>(content);
+<span></span></code></pre>
+<h4 id="获取推送的消息列表"><a href="#%E8%8E%B7%E5%8F%96%E6%8E%A8%E9%80%81%E7%9A%84%E6%B6%88%E6%81%AF%E5%88%97%E8%A1%A8" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>获取推送的消息列表</h4>
+<p>参数说明: refMsgId(起始消息id 第一次传0) size(获取的消息数量)</p>
+<pre><code>同步调用
+<span></span>   调用说明: 通过传入BMXMessageList对象引用, 调用成功后可获取推送消息列表。
+<span></span>
+<span></span>   <span class="hljs-type">BMXMessageList</span> <span class="hljs-variable">messageList</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BMXMessageList</span>();
+<span></span>   QNIMClient.getPushService().loadLocalPushMessages(refMsgId, size, messageList);
+<span></span>异步调用
+<span></span>   调用说明: 通过QNIMClient.getPushManager()获取到manager对象, 在BMXCallBack回调中返回BMXErrorCode 判断是否成功。
+<span></span>
+<span></span>   <span class="hljs-type">BMXMessageList</span> <span class="hljs-variable">messageList</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BMXMessageList</span>();
+<span></span>   QNIMClient.getPushManager().loadLocalPushMessages(refMsgId, size, messageList, <span class="hljs-keyword">new</span> <span class="hljs-title class_">BMXCallBack</span>&lt;&gt;(){
+<span></span>          <span class="hljs-meta">@Override</span>
+<span></span>          <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onResult</span><span class="hljs-params">(BMXErrorCode bmxErrorCode)</span> {
+<span></span>          }
+<span></span>    });
+<span></span></code></pre>
+<h3 id="设置监听"><a href="#%E8%AE%BE%E7%BD%AE%E7%9B%91%E5%90%AC" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>设置监听</h3>
+<ul>
+<li>注册推送回调</li>
+</ul>
+<pre><code>同步调用:
+<span></span>   QNIMClient.<span class="hljs-built_in">getPushService</span>().<span class="hljs-built_in">addPushListener</span>(mListener);
+<span></span>
+<span></span>异步调用:
+<span></span>   QNIMClient.<span class="hljs-built_in">getPushManager</span>().<span class="hljs-built_in">addPushListener</span>(mListener);
+<span></span></code></pre>
+<ul>
+<li>移除推送回调</li>
+</ul>
+<pre><code>同步调用:
+<span></span>   QNIMClient.<span class="hljs-built_in">getPushService</span>().<span class="hljs-built_in">removePushListener</span>(mListener);
+<span></span>
+<span></span>异步调用:
+<span></span>   QNIMClient.<span class="hljs-built_in">getPushManager</span>().<span class="hljs-built_in">removePushListener</span>(mListener);
+<span></span></code></pre>
+<ul>
+<li>回调示例</li>
+</ul>
+<pre><code>    <span class="hljs-keyword">private</span> BMXPushServiceListener mListener = <span class="hljs-keyword">new</span> <span class="hljs-title function_">BMXPushServiceListener</span>(<span class="hljs-params"></span>) {
+<span></span>
+<span></span>        <span class="hljs-meta">@Override</span>
+<span></span>        <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onPushStart</span>(<span class="hljs-params"><span class="hljs-built_in">String</span> bmxToken</span>) {
+<span></span>            <span class="hljs-variable language_">super</span>.<span class="hljs-title function_">onPushStart</span>(bmxToken);
+<span></span>            <span class="hljs-comment">//推送开启返回token</span>
+<span></span>            <span class="hljs-title class_">Log</span>.<span class="hljs-title function_">d</span>(<span class="hljs-variable constant_">TAG</span>, <span class="hljs-string">&quot;onPushStart&quot;</span> + bmxToken);
+<span></span>        }
+<span></span>
+<span></span>        <span class="hljs-meta">@Override</span>
+<span></span>        <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onPushStop</span>(<span class="hljs-params"></span>) {
+<span></span>            <span class="hljs-variable language_">super</span>.<span class="hljs-title function_">onPushStop</span>();
+<span></span>            <span class="hljs-title class_">Log</span>.<span class="hljs-title function_">d</span>(<span class="hljs-variable constant_">TAG</span>, <span class="hljs-string">&quot;onPushStop&quot;</span>);
+<span></span>        }
+<span></span>
+<span></span>        <span class="hljs-meta">@Override</span>
+<span></span>        <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onGetTags</span>(<span class="hljs-params"><span class="hljs-built_in">String</span> operationId</span>) {
+<span></span>            <span class="hljs-variable language_">super</span>.<span class="hljs-title function_">onGetTags</span>(operationId);
+<span></span>            <span class="hljs-title class_">Log</span>.<span class="hljs-title function_">d</span>(<span class="hljs-variable constant_">TAG</span>, <span class="hljs-string">&quot;onGetTags&quot;</span> + operationId);
+<span></span>        }
+<span></span>
+<span></span>        <span class="hljs-meta">@Override</span>
+<span></span>        <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onSetTags</span>(<span class="hljs-params"><span class="hljs-built_in">String</span> operationId</span>) {
+<span></span>            <span class="hljs-variable language_">super</span>.<span class="hljs-title function_">onSetTags</span>(operationId);
+<span></span>            <span class="hljs-title class_">Log</span>.<span class="hljs-title function_">d</span>(<span class="hljs-variable constant_">TAG</span>, <span class="hljs-string">&quot;onSetTags&quot;</span> + operationId);
+<span></span>        }
+<span></span>
+<span></span>        <span class="hljs-meta">@Override</span>
+<span></span>        <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onDeleteTags</span>(<span class="hljs-params"><span class="hljs-built_in">String</span> operationId</span>) {
+<span></span>            <span class="hljs-variable language_">super</span>.<span class="hljs-title function_">onDeleteTags</span>(operationId);
+<span></span>            <span class="hljs-title class_">Log</span>.<span class="hljs-title function_">d</span>(<span class="hljs-variable constant_">TAG</span>, <span class="hljs-string">&quot;onDeleteTags&quot;</span> + operationId);
+<span></span>        }
+<span></span>
+<span></span>        <span class="hljs-meta">@Override</span>
+<span></span>        <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onClearTags</span>(<span class="hljs-params"><span class="hljs-built_in">String</span> operationId</span>) {
+<span></span>            <span class="hljs-variable language_">super</span>.<span class="hljs-title function_">onClearTags</span>(operationId);
+<span></span>            <span class="hljs-title class_">Log</span>.<span class="hljs-title function_">d</span>(<span class="hljs-variable constant_">TAG</span>, <span class="hljs-string">&quot;onClearTags&quot;</span> + operationId);
+<span></span>        }
+<span></span>
+<span></span>        <span class="hljs-meta">@Override</span>
+<span></span>        <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onStatusChanged</span>(<span class="hljs-params">BMXMessage msg, BMXErrorCode error</span>) {
+<span></span>            <span class="hljs-variable language_">super</span>.<span class="hljs-title function_">onStatusChanged</span>(msg, error);
+<span></span>            <span class="hljs-title class_">Log</span>.<span class="hljs-title function_">d</span>(<span class="hljs-variable constant_">TAG</span>, <span class="hljs-string">&quot;onStatusChanged&quot;</span> + msg.<span class="hljs-title function_">content</span>());
+<span></span>        }
+<span></span>
+<span></span>        <span class="hljs-meta">@Override</span>
+<span></span>        <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onReceivePush</span>(<span class="hljs-params">BMXMessageList list</span>) {
+<span></span>            <span class="hljs-variable language_">super</span>.<span class="hljs-title function_">onReceivePush</span>(list);
+<span></span>            <span class="hljs-title class_">Log</span>.<span class="hljs-title function_">d</span>(<span class="hljs-variable constant_">TAG</span>, <span class="hljs-string">&quot;onReceivePush&quot;</span>);
+<span></span>        }
+<span></span>
+<span></span>        <span class="hljs-meta">@Override</span>
+<span></span>        <span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-title function_">onCertRetrieved</span>(<span class="hljs-params"><span class="hljs-built_in">String</span> cert</span>) {
+<span></span>            <span class="hljs-variable language_">super</span>.<span class="hljs-title function_">onCertRetrieved</span>(cert);
+<span></span>            <span class="hljs-title class_">Log</span>.<span class="hljs-title function_">d</span>(<span class="hljs-variable constant_">TAG</span>, <span class="hljs-string">&quot;onCertRetrieved&quot;</span> + cert);
+<span></span>            <span class="hljs-comment">//返回厂商注册的证书   获取到证书之后可以对厂商的push通道进行注册</span>
+<span></span>        }
+<span></span>    };
+<span></span></code></pre>
+<h3 id="厂商推送集成"><a href="#%E5%8E%82%E5%95%86%E6%8E%A8%E9%80%81%E9%9B%86%E6%88%90" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>厂商推送集成</h3>
+<p>各平台集成只需要按照平台推送文档将集成SDK放入应用中, 对应的配置按照平台要求配置即可（华为除外）。</p>
+<h4 id="华为"><a href="#%E5%8D%8E%E4%B8%BA" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>华为</h4>
+<p>需要按照华为推送平台设置 <a href="https://developer.huawei.com/consumer/cn/doc/development/HMSCore-Guides/android-app-quickstart-0000001071490422">华为推送</a></p>
+<ol>
+<li>project级别的build.gradle文件增加</li>
+</ol>
+<pre><code>repositories {
+<span></span>    <span class="hljs-title function_ invoke__">google</span>()
+<span></span>    <span class="hljs-title function_ invoke__">jcenter</span>()
+<span></span>    maven {
+<span></span>        url <span class="hljs-symbol">&#x27;https</span>:<span class="hljs-comment">//developer.huawei.com/repo/&#x27;</span>
+<span></span>    }
+<span></span>}
+<span></span>
+<span></span>allprojects {
+<span></span>    repositories {
+<span></span>        <span class="hljs-title function_ invoke__">google</span>()
+<span></span>        <span class="hljs-title function_ invoke__">jcenter</span>()
+<span></span>        maven {
+<span></span>            url <span class="hljs-symbol">&#x27;https</span>:<span class="hljs-comment">//developer.huawei.com/repo/&#x27;</span>
+<span></span>        }
+<span></span>    }
+<span></span>}
+<span></span></code></pre>
+<ol>
+<li>app级别build.gradle</li>
+</ol>
+<pre><code>apply plugin: <span class="hljs-string">&#x27;com.huawei.agconnect&#x27;</span>
+<span></span>dependencies{
+<span></span>    implementation <span class="hljs-string">&quot;com.huawei.hms:push:5.0.4.302&quot;</span>
+<span></span>}
+<span></span></code></pre>
+<ol>
+<li>最后从推送平台下载 agconnect-services.json，放入app目录下。</li>
+</ol>
+<h4 id="小米"><a href="#%E5%B0%8F%E7%B1%B3" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>小米</h4>
+<p>按照小米推送平台集成 <a href="https://dev.mi.com/console/doc/detail?pId=230">小米推送</a></p>
+<h4 id="oppo"><a href="#oppo" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>Oppo</h4>
+<p>按照OPPO推送平台集成 <a href="https://open.oppomobile.com/wiki/doc#id=10195">oppo推送</a></p>
+<h4 id="魅族"><a href="#%E9%AD%85%E6%97%8F" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>魅族</h4>
+<p>按照魅族推送平台集合 <a href="http://open-wiki.flyme.cn/doc-wiki/index">魅族推送</a></p>
+<h4 id="谷歌推送fcm"><a href="#%E8%B0%B7%E6%AD%8C%E6%8E%A8%E9%80%81fcm" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>谷歌推送（FCM）</h4>
+<p>Google推送指南 <a href="https://firebase.google.cn/docs/cloud-messaging/android/client?hl=zh-cn">FCM</a></p></div></div>

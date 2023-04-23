@@ -1,0 +1,24 @@
+# 实时截图访问方式
+通过域名拼接文件名的形式访问，首先需要开启`直播空间设置`中的`直播封面`  
+![](https://dn-odum9helk.qbox.me/7efa2fef07293a95bd5e9b51a3e2195d)
+
+
+# 解决方式：绑定融合 CDN 加速域名
+## 1.添加一个融合 CDN 加速域名
+![](https://dn-odum9helk.qbox.me/b9969a962ad6d69f551c165ec365dbbc)
+
+## 2.填写自定义域名，源站配置选择源站域名
+**注意：**源站域名填写 `src.live-snapshot.z1.pili.qiniudns.com` ，源站测试中测试资源名填写`crossdomain.xml`  
+![](https://dn-odum9helk.qbox.me/c451d63f5be50e76cbe347fb3631adc2)
+
+## 3.创建完成，等待域名处理，预计 1 小时左右，然后配置 CNAME 解析
+![](https://dn-odum9helk.qbox.me/24c7c2e752797c9df08d0c87f6991788)
+
+## 4.CNAME 解析配置完成
+可以通过`http://<domain>/<hub>/<title>.jpg?<时间戳>`的形式进行访问  
+`domain`为刚才创建的域名  
+`hub`为直播空间名  
+`title`为流名称  
+`时间戳`由于资源访问走 CDN 加速，会存在 CDN 缓存，加上 ?<时间戳> 可以穿透 CDN 直接回源拉取到最新的资源  
+
+**注意：**直播空间所对应的存储空间需要为**公开空间**，且**不能开启原图保护**

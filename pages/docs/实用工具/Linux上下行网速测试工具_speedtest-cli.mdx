@@ -1,0 +1,62 @@
+**speedtest-cli**是Linux下的一个上下行网速测试工具，是一个用python写的命令行脚本。
+
+需要python2.4-3.3的支持。
+
+项目地址：[https://github.com/sivel/speedtest-cli](https://github.com/sivel/speedtest-cli)
+
+## 安装方式
+安装方式有多种
+### 下载安装
+```
+wget -O speedtest-cli https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest_cli.py
+chmod +x speedtest-cli
+```
+or
+```
+curl -Lo speedtest-cli https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest_cli.py
+chmod +x speedtest-cli
+```
+### pip / easy_install安装
+```
+pip install speedtest-cli
+```
+or
+```
+easy_install speedtest-cli
+```
+### 其他安装方式
+参考项目地址：[https://github.com/sivel/speedtest-cli](https://github.com/sivel/speedtest-cli)
+
+## 使用方法
+- speedtest-cli命令会查找距离最近的Speedtest.net服务器。并打印出你的下行和上行带宽。
+```
+#speedtest-cli 
+Retrieving speedtest.net configuration...
+Retrieving speedtest.net server list...
+Testing from China Telecom Shanghai (222.73.202.226)...
+Selecting best server based on latency...
+Hosted by Shanghai Branch, China Unicom (Shanghai) [9.27 km]: 9.241 ms
+Testing download speed........................................
+Download: 16.46 Mbit/s
+Testing upload speed..................................................
+Upload: 18.80 Mbit/s
+```
+- 使用“--share”参数，会将测试结果上传到Speedtest.net服务器并以图形的方式展示。通过链接地址获得图形报告。
+```
+speedtest-cli --share
+Retrieving speedtest.net configuration...
+Retrieving speedtest.net server list...
+Testing from China Telecom Shanghai (222.73.202.226)...
+Selecting best server based on latency...
+Hosted by Shanghai Branch, China Unicom (Shanghai) [9.27 km]: 10.583 ms
+Testing download speed........................................
+Download: 17.47 Mbit/s
+Testing upload speed..................................................
+Upload: 25.04 Mbit/s
+Share results: http://www.speedtest.net/result/5126413660.png
+```
+
+ ![](https://dn-odum9helk.qbox.me/FhR8KD4mhm56FRVAsRx0ce4eCQ5j)
+ 
+- 其他用法
+使用`speedtest-cli -h`获取使用帮助

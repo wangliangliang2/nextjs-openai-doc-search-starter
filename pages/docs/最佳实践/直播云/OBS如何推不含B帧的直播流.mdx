@@ -1,0 +1,12 @@
+# 关于B帧
+低延时直播对编码有一定限制，要求直播流中不包含 B 帧，用户可以通过调整推流端软件（如 OBS）的视频编码参数来去除 B 帧。本文介绍如何设置OBS，来实现推不含B帧的直播流
+# OBS推不含B帧的直播流
+第一步：进入OBS页面，点击设置，进入OBS设置页面
+![image.png](https://dn-odum9helk.qbox.me/FjqAtnQAaJgqdLd66TrZTbaeZ9C7)
+
+第二步：进入输出设置，输出模式选择高级，根据下图配置OBS的输出配置
+![image.png](https://dn-odum9helk.qbox.me/FhW7PA_yBvY6ARNIQxGFOp-f4Ihg)
+第三步：进入推流设置，服务选择自定义，将七牛云的推流地址复制粘贴到服务器和串流密钥上，点击确定
+![image.png](https://dn-odum9helk.qbox.me/Fp8te-_5JrDCnVGJgevAgMDXKMnU)
+第四步：点击开始推流，即可推不含B帧的直播流到七牛云直播服务上。
+

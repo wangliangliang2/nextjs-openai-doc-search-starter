@@ -1,0 +1,36 @@
+# 请求路径
+>`POST` /v1/vpc/common_bandwidth/:cb_id/charge_type
+
+# 请求参数 ([查看付费参数](https://developer.qiniu.com/qvm/8006/common-params))
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region_id | string | body | 是 | 地域 ID|
+| cb_id | string | body | 是 | 共享带宽 ID |
+| cost_charge_type | string | body | 是 | 付费类型, 只能填 PrePaid |
+| cost_charge_mode | string | body | 是 | 计费方式, 只能填 PayByBandwidth |
+| cost_period_unit | string | body | 是 | 付费周期 |
+| cost_period | int | body | 是 | 付费周期长度|
+| client_token | string | body | 是 | 保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。 |
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| data | OrderInfo | 是 | 订单详情 |
+| request_id | string | 是 | 请求记录 ID |
+
+### OrderInfo 订单信息
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| order | string | 否 | 订单号，选择预付费返回该参数 |
+
+# 示例
+### 正常返回示例
+```json
+{
+    "data": {
+        "order": "1QW2F998-8642-2346-I2K3-0OKMNHY65TG4"
+    },
+    "request_id": "04F0F334-AC1"
+}
+```

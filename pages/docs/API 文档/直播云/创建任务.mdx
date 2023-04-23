@@ -1,0 +1,123 @@
+在服务端创建一个pub任务。
+
+# 请求包
+**备注：如果是海外的pub转推任务，请将Host改为：pili-hw-pub.qiniuapi.com**
+
+```
+POST /tasks
+Host: pili-pub.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+
+{
+    "name": "",
+    "desc": "",
+    "sourceUrls": [
+        {
+            "url":<URL>,
+            "isp":<ISP>,
+            "seek":<SEEK>,
+            "videoType":<VIDEOTYPE>,
+            "rtspType":<RTSPTYPE>
+        }
+    ],  
+    "runType": "seek",         
+    "forwardUrls": [ 
+        {
+            "url":<URL>,
+            "isp":<ISP>
+        }
+    ],
+    "filter": {
+       "ips": <IP LIST>,
+       "area": <AREA>,
+       "isp": <ISP>
+    },
+    "loopTimes": 0,
+    "retryTime": 60,
+    "deliverStartTime": 1637100000000, 
+    "deliverStopTime": 1637100000000,
+    "sustain": false,
+    "preload": {
+       "enable": true,
+       "preloadTime": 1637000600000
+    },
+    "statusCallback": {
+       "type": "JSON",
+       "url": <URL>,
+       "vars": {
+          "taskid": "$(taskID)",
+          "status": "$(status)",
+          "startTime": "$(startTime)",
+          "stopTime": "$(stopTime)"
+       }
+    }
+}
+```
+
+| 参数名称 | 必填 | 说明 |
+| :----------- |:--------------------------------------------------------------- |:--------------------------------------------------------------- |
+| name | 是 | 字符串，任务名称 必须满足 `1-20个数字或字母`，单用户创建pub任务名唯一。 |
+| desc | 否 | 字符串，任务描述信息。 |
+| sourceUrls | 是 | 对象数组，源地址，数组必须长度必须大于等于1，大于1的情况下为播单模式。详见[参数说明](/pili/api/7326/parameters-that-pub)|
+| runType | 是 | 字符串，任务类型， normal：普通转推，seek：seek转推。 |
+| forwardUrls | 是 | 对象数组，转推地址，数组必须长度必须大于等于1。|
+| filter | 否 | 用于筛选转推机器，有area、isp和ips字段，详见[参数说明](/pili/api/7326/parameters-that-pub)|
+| loopTimes | 否 |整型， 表示pub任务的循环次数，不填写此参数则默认为0，不循环；-1表示无限循环。|
+| retryTime | 否 |整型， 表示pub任务的总断流重试时间，pub任务转推中断后会在断流重试时间内不断进行重新连接，直至重连成功或者达到设定的总断流重试时间。在单位：s，必须大于等于60。**注：任务中断（正常结束或者失败）重试后，运行时间超过1分钟，认为重连成功，会重置retryTime。（不适合点播流，存在无限循环的可能）**|
+| deliverStartTime | 否 | 整型，任务定时开始时间，单位：ms，必须要大于当前时间且小于设置定时关闭的时间。|
+| deliverStopTime | 否 | 整型，任务定时关闭时间，单位：ms，必须要大于当前时间且大于设置定时开始的时间。|
+| sustain | 否 | bool，循环转推不中断设置，true表示循环不中断由一个ffmpeg进程，false（默认项）表示每次循环起一个ffmpeg。|
+| preload | 否 | 预加载相关配置，有enable和preloadTime字段，详见[参数说明](/pili/api/7326/parameters-that-pub) |
+| statusCallback | 否 | 任务状态通知相关配置（任务正常结束或失败重试完后回调通知），详见[参数说明](/pili/api/7326/parameters-that-pub) |
+# 参数
+
+- 详细参数说明见[参数说明](/pili/api/7326/parameters-that-pub)
+
+# 返回包
+
+```
+200 {
+    "taskID":"taskID"
+}
+
+400 {
+    "error": "invalid parameter name"
+}
+
+400 {
+    "error": "invalid parameter deliverTime"
+}
+
+400 {
+    "error": "invalid parameter filter"
+}
+
+400 {
+    "error": "invalid parameter url"
+}
+
+400 {
+    "error": "invalid parameter runType"
+}
+
+400 {
+    "error": "invalid parameter loopTimes"
+}
+
+400 {
+    "error": "invalid parameter retryTime"
+}
+
+400 {
+    "error": "invalid parameter preload"
+}
+
+400 {
+    "error": "create task conflict"
+}
+
+500 {
+    "error": "create task fail"
+}
+```

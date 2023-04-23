@@ -1,0 +1,62 @@
+# 请求路径
+> `GET` /v1/ess/group/:id/activity
+
+# 请求参数
+
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region_id | string | query | 是 | 地域 ID |
+| id | string | path | 是 | 伸缩组 ID |
+| scaling_activity_id | string | query | 否 | 待查询伸缩活动的ID，最多可以输入10个，用逗号','分隔。 |
+| status_code | string | query | 否 | 伸缩活动的状态。取值范围：Successful：执行成功的伸缩活动; Warning：部分执行成功的伸缩活动; Failed：执行失败的伸缩活动; InProgress：正在执行的伸缩活动; Rejected：执行伸缩活动请求被拒绝。 |
+| page | int | query | 否 | 页码 |
+| size | int | query | 否 | 分页大小 |
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| data | []ScalingActivity | 是 | 伸缩组规则 |
+| request_id | string | 是 | 请求记录 ID |
+| page | int | 是 | 页码 |
+| size | int | 是 | 分页大小 |
+| total | int | 是 | 查询到的总数 |
+
+
+### ScalingActivity 伸缩组规则详情
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| scaling_activity_id | string | 是 | 伸缩活动 ID |
+| scaling_group_id | string | 是 | 伸缩组 ID |
+| description | string | 是 | 伸缩活动的描述信息。 |
+| cause | string | 是 | 触发伸缩活动的原因 |
+| start_time | string | 是 | 伸缩活动的开始时间 |
+| end_time | string | 是 | 伸缩活动的结束时间|
+| progress | int | 是 | 伸缩活动的运行进度 |
+| status_code | string | 是 | 伸缩活动的当前状态 |
+| status_message | string | 是 | 伸缩活动的状态信息 |
+
+
+# 示例
+### 正常返回示例
+```json
+{
+    "total_count": 1,
+    "page_number": 1,
+    "page_size": 10,
+    "data": [
+        {
+            "scaling_activity_id": "asa-uf6b4cly11t2hcs9xehh",
+            "scaling_group_id": "asg-uf61cm05cpiu8v7e2zuf",
+            "description": "Add \"1\" ECS instance",
+            "cause": "A user requests to execute scaling rule \"asr-uf6fwqeyx00da6kpmckj\", changing the Total Capacity from \"0\" to \"1\".",
+            "start_time": "2021-12-21T11:31Z",
+            "end_time": "2021-12-21T11:31Z",
+            "progress": 100,
+            "status_code": "Rejected",
+            "status_message": "The current status of the specified scaling group does not support this action."
+        }
+    ],
+    "request_id": "ioRxAh6mHLxGwsIW"
+}
+```

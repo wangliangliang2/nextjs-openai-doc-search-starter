@@ -1,0 +1,26 @@
+在 个人面板 中 点击 [CDN 日志](https://portal.qiniu.com/domain/clog) 查看。
+
+> 日志文件默认按小时下载，如果单小时内日志过大会进行切分( **分片大小128MB** )，日志文件采用gzip压缩。
+> 
+> 日志延迟8-10小时，举例：1月18日0点-1点的日志，会在1月18日8点-10点左右可下载。&nbsp;
+
+**日志文件格式：** 域名\_{yyyy-MM-dd-HH}\_块.gz
+
+    # 样例：
+    www.qiniu.com_2017-03-01-00_part-00000.gz
+
+**日志内容格式：** 
+
+`ClientIP Hit/Miss/UNKNOWN ResponseTime [Time Zone] "Method URL Protocol" StatusCode TrafficSize "Referer" "UserAgent"`
+
+说明：<font color="#333333" face="Vollkorn, Palatino, Times"><span style="font-size: 12px; white-space: pre-wrap;">Hit/Miss/UNKNOWN 或占位符 “-”, UNKNOWN 为客户端主动断开链接 </span></font>
+
+| IP   | 命中率      | 响应时间         | 请求时间         | 请求方法   | 请求URL | 请求协议     | 状态码  | 响应大小 | referer | 用户代理 |
+| ---- | -------- | ------------ | ------------ | ------ | ----- | -------- | ---- | ---- | ------- | ---- |
+| ClientIP   | Hit/Miss/UNKNOWN | ResponseTime(ms) | [Time Zone] | Method | URL   | Protocol | StatusCode | TrafficSize(Byte) | Referer | UserAgent   |
+
+```
+# 样例：
+110.110.110.110 HIT 10 [19/Apr/2016:00:00:00 +0800] "GET 
+http://example.qiniu.info/in/2016/02/04/F01A9B39-45BF-AFF4-DB19-F85B9E4BD142.jpg?imageMogr2/format/png/thumbnail/480x%320E/quality/80! HTTP/1.1" 200 5136 "-" "Dalvik/1.6.0 (Linux; U; Android 4.4.4; 1105 Build/KTU84P)"
+```

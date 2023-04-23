@@ -1,0 +1,84 @@
+**请求语法**
+
+```
+POST /v2/repos/<RepoName>/transforms/<TransformName>/to/<DestinationRepoName>
+Content-Type: application/json
+Authorization: Pandora <auth>
+{
+  "plugin": {
+    "name": <PluginName>,
+    "output": [
+      {
+        "name": <FieldName1>,
+        "type": <FieldType>
+      },
+      {
+        "name": <FieldName2>
+      },
+      ......
+    ],
+  },
+  "mode": <Mode>,
+  "code": <Code>,
+  "interval": <Interval>,
+  "container": {
+       "type": <ContainerType>,
+       "count": <ContainerCount>
+  },
+  "whence": <TransformWhence>,
+  "destrepo": [
+      {
+        "key": <Key>,
+        "valtype": <ValueType>,
+        "elemtype": <ElemType>,
+        "required": <Required>,
+        "schema": [
+            ...
+        ]
+      },
+      ...
+  ]
+
+}
+```
+
+**请求内容**
+
+|参数|类型|必填|说明|
+|:---|:---|:---:|:---|
+| RepoName |string|是|指定一个消息队列的名称|
+| TransformName |string|是|计算任务名称</br>用来标识该消息队列的唯一性</br>命名规则: `^[a-zA-Z_][a-zA-Z0-9_]{0,127}$`|
+| DestinationRepoName |string|是|计算结果输出消息队列</br>如果该消息队列不存在</br>将自动创建一个|
+| plugin |json|否|自定义计算|
+| name |string|是|自定义计算名称|
+| output |json|是|输出数组</br>即这个plugin计算完成后，输出的数据结果的结构和类型</br>也可以理解为一张表,包含字段名称和字段类型|
+|output.name|string|是|输出字段名称</br>命名规则: `^[a-zA-Z_][a-zA-Z0-9_]{0,127}$`|
+|output.type|string|否|输出字段类型</br>支持`string`、`long`和`float`三种</br>时间类型使用`long`类型</br>默认为`string`类型|
+| mode |string|否|该计算任务使用的语言类型</br>目前仅支持`sql`|
+| code |string|否|`sql`语句代码|
+| interval |string|否|计算任务的运行时间间隔</br>目前支持`5s`、`10s`、`20s`、`30s`、</br>`1m`、`5m`和`10m`的粒度</br>如果不指定，系统默认使用`1m`|
+|container|map|否|计算资源的数量及类型|
+|type|string|否|目前支持`1U2G`、`1U4G`、`2U4G`、`4U8G`、`4U16G`和`8U16G`</br>分别代表</br>`1核(CPU)2G(内存)`、`1核(CPU)4G(内存)`、`2核(CPU)4G(内存)`、`4核(CPU)8G(内存)`、`4核(CPU)16G(内存)`、`8核(CPU)16G(内存)`|
+|count|int|否|指资源`type`的数量,最小为1,没有上限|
+|whence|string|否|计算数据的起始位置, 目前支持oldest、newest, 分别表示从指定仓库的最早、最新数据开始计算, 默认值为newest|
+
+!> 注意:`mode`加`code`是基础的数据计算方式,自定义计算(plugin)是更为高级的数据计算方式,要注意`mode/code`和自定义计算两种计算方式可以共存,但不可以一种都不指定。当自定义计算和`mode/code`共存时,系统优先执行自定义计算,后执行mode/code。
+
+
+
+**示例**
+
+```
+curl -X POST https://nb-pipeline.qiniuapi.com/v2/repos/test_repo/transforms/transform_job/to/compute_repo \
+	 -H 'Content-Type: application/json' \
+	 -H 'Authorization: Pandora 2J1e7iG13J66GA8vWBzZdF-UR_d1MF-kacOdUUS4:NTi3wH_WlGxYOnXsvgUrO4XMD6Y=' \
+	 -d {
+  		"mode": "sql",
+  		"code": "select count(*) from test_repo",
+  		"interval": "1m",
+  		"container": {
+       		"type": "M16C4",
+       		"count": 5
+  			}
+		}
+```

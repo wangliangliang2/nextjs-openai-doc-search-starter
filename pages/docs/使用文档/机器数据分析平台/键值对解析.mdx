@@ -1,0 +1,26 @@
+使用键值对(Key-Value)的方式解析日志，形如 a=1&b=2&c=3 的日志格式，可以通过指定字段分隔符为 &，键值分隔符为 =，进行字段提取。
+
+Key-Value 解析方式主要用来解析明显的有 Key-Value 的字符串，例如一段日志的 request 内容为：
+
+```
+timestamp=time_local&repo=export_applog&queryString=status%3A>400
+```
+
+用 Key-Value 解析，选择字段分隔符为 & ，键值分隔符为 等号：
+
+![](http://pw7x36qrk.bkt.clouddn.com/key_value.png)
+
+**键值对解析方法的使用：**
+
+需填写字段分隔符与键值分隔符，以 `a=1&b=2` 为例。
+
+* 字段分隔符：如 a=1&b=2 中应该填入 &
+
+* 键值分隔符：如 a=1&b=2 中应该填入 =
+
+解析结果为：
+
+|字段名称|字段值|
+|:-:|:-:|
+|a|1|
+|b|2|

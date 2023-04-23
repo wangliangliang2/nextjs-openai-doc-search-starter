@@ -1,0 +1,43 @@
+CSV transformer 解析 csv 字符串，以分隔符分隔，然后通过 `csv_schema` 命名分隔出来的字段名称以及字段类型。
+
+
+* 要进行 Transform 变化的键(`key`): 指定要解析的 csv 数据所在的字段，支持多级嵌套，多级间用 *.* 符号连接，表示 data["abc"]["xyz"] 中的数据。
+
+* 解析后数据的字段(`new`): 指定要解析 csv 数据字段的新字段，必须指定新字段，或者为空，为空会将解析后的 map 平铺设置在data中。
+
+* 额外的标签信息(`labels`): 填一些额外的标签信息，同样逗号分隔，每个部分由空格隔开，左边是标签的key，右边是value。
+
+* 分隔符(`csv_splitter`): csv文件的分隔符定义，默认为‘,’，可以配置的分隔符包括但不限于, 各类字母、数字、特殊符号(`#`、`!`、`*`、`@`、`%`、`^`、...)等等。
+
+* 指定字段类型(`csv_schema`): 是按照逗号分隔的字符串，每个部分格式按照字段名、字段类型构成，字段类型现在支持 string, long, jsonmap, float, date。
+  - 类型说明
+		* string：go 的 string
+		* long：go 的 int 64
+		* float：go 的 float 64
+	
+		 
+		
+### **示例**：
+
+例如， parser 解析后的数据为:
+
+```
+{ 
+   "key1": "value1", 
+	 "csv_key" : "123,fufu,3.16,{\"x\":1}",
+}
+```
+csv_schema 为 "a long, b string, c float, d jsonmap"，经过 csv 变换后的数据将变为:
+
+```
+{
+	"key1": "value1",
+	"csv_key" : "123,fufu,3.16,{\"x\":1}",
+	"csv":{
+	    "a": 123,
+			"b": "test",
+			"c": "3.16",
+			"d":{"d-x": "1"},
+	},
+},
+```

@@ -1,0 +1,45 @@
+# 请求路径
+>`POST` /v1/security/waf/:cn/renew
+
+# 请求参数 ([查看付费参数](https://developer.qiniu.com/qvm/8006/common-params))
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region | string | path | 是 | 区域信息，只能填cn，国内区域|
+| X-Qiniu-Regionid | string | header | 是 | 地域 ID, 只能填cn-hangzhou，大陆通用地域|
+| instance_id | string | body | 是 | WAF实例ID |
+| cost_charge_type | string | body | 是 | 付费类型 |
+| cost_period_unit | string | body | 是 | 付费周期 |
+| cost_period | int | body | 是 | 付费周期长度|
+| client_token | string | body | 否 | 接口请求幂等参数 |
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| data | OrderInfo | 是 | 订单详情 |
+
+### OrderInfo 订单信息
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| order | string | 是 | 订单号 |
+
+# 示例
+### 请求body示例
+```json
+{
+    "instance_id": "waf-xxx,
+    "client_token": "0.33729492396085137",
+    "cost_charge_type": "PrePaid",
+    "cost_period_unit": "Month",
+    "cost_period": 1
+}
+```
+
+### 正常返回示例
+```json
+{
+    "data": {
+        "order": "1QW2F998-8642-2346-I2K3-0OKMNHY65TG4"
+    }
+}
+```

@@ -1,0 +1,156 @@
+lua transformer 的主要功能是支持用户自定义脚本执行对数据的变换，是最为灵活的变换方式。
+
+顾名思义，lua transformer所支持的语言就是lua脚本语言，目前支持的lua标准库包括 `table`(对象操作), `string`(字符串操作), `math`(数学计算) 三个。其他如系统调用、IO操作则不支持。
+
+lua transformer 的原理就是允许您自定义一段lua脚本，其中主体为一个函数，这个函数的参数为一个table，我们会将您数据中所有基础类型(string,float,long)的字段注入到这个table中，然后经过函数的计算，返回一个字符串。
+这个返回的字符串会作为一个字段赋值到您的数据中。
+
+
+* 新字段名称(`new`): 经过 lua transformer 变换后生成的新字段名称。
+* Lua脚本代码(`script`): 填写一段lua脚本，必须包含一个函数，函数的参数为table，返回值为一个字符串。（lua脚本中可以包含多个函数，如在函数内调用其他小函数，应用于数据变换的函数才需要满足该规则。）
+* Lua脚本中的函数名(`function_name`): 填写您lua脚本中写的函数名称。（lua脚本中可以包含多个函数，如在函数内调用其他小函数，此处填写应用于数据变换的函数名称。）
+* transform运行的阶段(parser前还是parser后)(`stage`): 默认情况下，transformer运行的阶段都是数据解析后，但是这个transformer也可以运行在数据解析前，及刚读到的字符串就可以只写该lua transformer，再进行解析。次数函数传入的参数不再是table类型，而是字符串类型，返回的同样是字符串。
+
+
+
+我们来看一个实际调用 lua 转换器的例子，示例配置如下所示：
+
+![](https://dn-odum9helk.qbox.me/FmMYksiqIzXao6pqgBWsWfy5c1lG)
+
+
+我们的样例日志已经包含了4个字段，如下所示：
+
+```
+{
+  "f3": "s",
+  "f4": "s",
+  "f1": "a",
+  "f2": "c"
+}
+```
+
+我们编写了一段lua脚本：
+
+```
+function my_function(param)
+	return param['f1']..param['f2']
+end
+```
+
+传入的参数类型是固定的，必须是table，里面已经注入了我们的字段(`param['f1']`包含的值为`"a"`, `param['f2']`包含的值为`"c"`...)，函数的功能是把 `f1` 和 `f2` 两个字符串拼接串联起来。
+
+然后我们要将`my_function`这个函数名称填入"Lua脚本中的函数名"(`function_name`)配置项中，表示我们要应用这个函数。
+
+新的字段我们命名为 `newfield` ,可以看到变换后的结果，出现了`newfield`字段。
+
+
+让我们再来看一个数学计算的例子：
+
+![](https://dn-odum9helk.qbox.me/FrBswR1_wNwLVEvJDDVTuEvmLs-0)
+
+其中 `f1`, `f2`的字段值为数字，然后我们对其进行相加，结果赋值到 `newfield` 字段中，注意返回的是字符串，如果需要转化为整型，可以使用[convert transformer](/insight/manual/4789/convert-transformer)
+
+
+
+若您对lua的语法不是很熟悉，可以参考Lua的[官方文档](http://www.lua.org/manual/5.1)， 我们目前支持的版本为 `5.1` 。
+
+
+# Lua 常用函数
+
+固定填入的函数名称都是  `my_function`
+
+## 简单数学函数
+
+### 加减乘除
+
+```
+function my_function(tb)
+      nb = tb['x'] / tb['y'] + tb['x'] - tb['y']
+      return nb
+end
+```
+
+上述函数的功能就是把字段 `x` 的值除以字段 `y` 的值, 再加上`x`最后减去`y`，当然前提是这两个字段都是 `long`或者 `float` 类型，lua脚本执行后返回的都是`string`类型。
+
+
+### 比较大小
+
+```
+function my_function(tb)
+	 a = math.floor(tb['x'])
+	 b = math.ceil(tb['y'])
+   return math.max(a,b)
+end
+```
+
+上述函数的功能是向上取整字段`x`的值，向下取整字段`y`的值，最后取更大的值。
+
+
+## 条件语句
+
+```
+function my_function(tb)
+    if tb['send'] ~= nil then
+      return "send"
+    end
+    if tb['rec'] ~= nil then
+      return "rec"
+  end
+end
+```
+
+上述函数的功能会检查，如果字段 `send` 不为空则返回 `send`, 如果 `rec` 不为空则返回`rec`, 如果都为空返回`nil`。
+
+## 循环检查
+
+```
+function my_function(tb)
+  local result = "other"
+	local array = {"a", "b", "c", "d", "e", "f", "g", "h"}
+	
+	for i = 0, 8 do
+		if (tb[array[i]]) 
+		then
+			result = array[i]
+			break
+		end
+  end
+  return result
+end
+```
+
+上述函数的功能是检查所有字段中是否存在 `array` 中的key， 如果存在就返回，否则返回 `other`。 这个场景可以把某些变化的字段变成某个固定字段的值。
+
+
+
+## 字符串操作
+
+### 字符串拼接
+
+```
+function my_function(param)
+	return param['f1']..param['f2']
+end
+```
+
+将 `f1` 和 `f2` 的字符串内容拼接起来。
+
+### 字符串替换
+
+```
+replacements = { 
+   ["nice"] = "windy",
+   ["walk"] = "stroll",
+   }
+
+function my_function(tb)
+   s = tb['x']
+   return string.gsub (s, "%a+", 
+   function (str)
+      return replacements [str]
+   end
+   )
+end
+```
+
+上述函数的功能会把字段 `x` 的值替换，替换的规则就是 `replacements` 中的内容。

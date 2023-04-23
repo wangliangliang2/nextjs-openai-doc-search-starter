@@ -1,0 +1,17 @@
+* 数据库地址(`influxdb_host`): influxdb 服务地址。
+
+**高级选项**
+
+* 自动创建数据库(`influxdb_auto_create`): 自动创建 influxdb 的 database、series 以及 retention policy
+
+* retention名称(`influxdb_retention`): influxdb 的retention policy 名字，可不填。
+
+* retention时长(`influxdb_retetion_duration`): 指定的 retention 名称若不存在对应 retention，会根据  `influxdb_auto_create` 选为 true 时自动创建，自动创建指定的时间周期由该选项确定。
+
+* 标签列数据(`influxdb_tags`): influxdb 的 tag 列名,用","逗号分隔，分隔后每一个字符串中间有空格，则认为是起了别名，如 "name alias,name2" 这样
+
+* 普通列数据(`influxdb_fields`): influxdb 的 field 列名，同 tags。
+
+* 时间戳列(`influxdb_timestamp`): influxdb 的时间戳列名。
+
+* 普通列数据(`influxdb_timestamp_precision`): 时间戳列的精度，如果设置 100，那么就会在 send 的时候将 `influxdb_timestamp`*100 作为 nano 时间戳发送到 influxdb。

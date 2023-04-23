@@ -1,0 +1,28 @@
+通过插件下发的方式自动下发 MySQL 驱动，然后通过执行 sql 语句的方式来采集 MySQL 里的数据（目前仅支持 linux 版本的 logkit-pro）。
+
+![](https://dn-odum9helk.qbox.me/FtTTnPeMQeXGLEQ1eFZdWJVJgCy_)
+![](https://dn-odum9helk.qbox.me/FstS5VAJw0xwiYKcM025DLnGdnH5)
+
+
+### 基础配置信息
+* 数据库连接字符串(`DSN`):由用户名、密码、请求协议、数据库地址、数据库访问端口、数据库名组成，一个完整 `DSN` 示例:"`root:password@tcp(127.0.0.1:3306)/<database>?parseTime=true`"。如果指定递增的时间列名称，则需要加上`parseTime=true`来保证正确解析时间类型数据。
+> **注意：请使用内网方式访问，以免出现安全隐患。**
+* 数据查询语句(`mysql_plugin_sql`):需要要执行的 sql 语句;暂只支持配置单条语句，不支持 where 条件过滤。多条 sql 请添加新的收集器分开收集。
+
+### 高级选项
+* 递增的列名称(`mysql_plugin_offset_key`)：分批查询的主键，目前只支持整形和浮点型。
+* 递增的时间列名称(`mysql_plugin_offset_time_key`):指定一个 MySQL 列名，该列必须是时间类型`TIMESTAMP`。每次查询会指定一个查询的时间窗口且会从上次结束的时间窗口开始查询。查询的时间范围由填写的分批查询的单批次大小(`mysql_plugin_limit_batch`) 指定。
+`递增的列名称和递增的时间列名称填一个即可，使用多表联合查询时不支持`
+* 分批查询的单批次大小(`mysql_plugin_limit_batch`)：分批查询时，每次移动的 mysql_plugin_offset_key 大小。
+* 导入历史数据(`history_all`)：是否导入历史数据，如果选择 true，则会从 mysql_plugin_offset_key 最小值开始拉取历史数据。
+* 定时任务(`sql_cron`)：定时任务触发周期。
+   * `"loop"`表示任务会不停的循环，执行完一次再接着执行下一次，后面可以跟循环的间歇时间，如 `"loop 10s"`，表示每次循环间隔 `10s`，支持的单位还有"m（分钟）"，"h(小时)"
+   * crontab 的写法，类似于`* * * * * *` ，对应的是秒(0~59)，分(0~59)，时(0~23)，日(1~31)，月(1-12)，星期(0~6)，填*号表示所有遍历都执行。
+   * 描述式写法,类似于 `"@midnight"`， `"@every 1h30m"`，必须`@`符合开头，目前支持 `@hourly`，`@weekly`，`@monthly`，`@yearly`，`@every <time duration>`
+   * 为空表示不执行，如果为空并且选择了sql_exec_onstart，表示只执行一次
+* 启动时立即执行(`mysql_plugin_exec_onstart`)：true 表示启动时执行一次，以后再按 cron 处理；false 则表示到cron 预设的时间才执行，默认为 true。
+* 起始时间(`simplemysql_start_time`): 指定一个 mysql 的时间戳开始时间，单位秒，此处填数字。
+* 结束时间(`simplemysql_end_time`): 指定一个 mysql 的时间戳结束时间，单位秒，此处填数字。
+* 采集延迟时间(`simplemysql_delay_time`): 采集延迟时间单位秒，比如增量采集时，每次查询的最新时间为now-delay，只有mysql_plugin_offset_time_key被设置了才生效。
+* 时区延迟时间(`simplemysql_zone_offset`): 因时区原因延迟时间，单位s，比如本地是北京时间，则需要配置28800。
+

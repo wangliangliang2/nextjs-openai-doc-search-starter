@@ -1,0 +1,60 @@
+# 服务端状态码
+# 创建流 
+|状态码|错误信息|
+|:--|:--|
+|614| `{"error":"stream already exists"}` 流已经存在|
+# 查询流 
+|状态码|错误信息|
+|:--|:--|
+|612| `{"error":"stream not found"}` 流不存在|
+# 流列表
+|状态码|错误信息|
+|:--|:--|
+|612| `{"error":"hub not found"}` hub不存在|
+# 禁播流
+|状态码|错误信息|
+|:--|:--|
+|612| `{"error":"stream not found"}` 流不存在|
+# 直播实时信息
+|状态码|错误信息|
+|:--|:--|
+|619| `{"error":"no live"}` 不在直播|
+|619| `{"error":"no data"}` 没有数据|
+|612| `{"error":"stream not found"}` 流不存在|
+# 保存直播回放
+|状态码|错误信息|
+|:--|:--|
+|404| `{"error":"not found"}` 这个应该为 612|
+|619| `{"error":"no data"}` 没有数据|
+|612| `{"error":"no such file or directory"}`|
+# 回放预览
+|状态码|错误信息|
+|:--|:--|
+|619| `{"error":"no data"}` 流不存在也是no data|
+# 直播历史记录
+|状态码|错误信息|
+|:--|:--|
+|612| `{"error":"stream not found"}` hub 不存在也返回了stream not found (虽然hub下的流也是不存在的)|
+# 修改流转码配置
+|状态码|错误信息|
+|:--|:--|
+|400| `{"error":"invalid stream key"}`  只允许修改原始流,包含@的不行|
+|400| `{"error":"invalid args"}` 该转码配置不存在|
+|612| `{"error":"hub not found"}` hub不存在|
+|612| `{"error":"stream not found"}` 流不存在|
+# 推流信息
+|状态码|错误信息|
+|:--|:--|
+|612| `{"error":"hub not found"}` hub不存在|  
+# 转推信息
+|状态码|错误信息|
+|:--|:--|
+|612| `{"error":"hub not found"}` hub不存在| 
+# 推流错误信息
+|状态码|错误信息|
+|:--|:--| 
+|612| `{"error":"hub not found"}` hub不存在| 
+# 转推错误信息
+|状态码|错误信息|
+|:--|:--| 
+|612| `{"error":"hub not found"}` hub不存在| 

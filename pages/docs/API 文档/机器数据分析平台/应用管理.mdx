@@ -1,0 +1,146 @@
+# 1. 接口清单
+
+应用管理是 Pandora 2.0 实现自动化管理APP的一系列接口，通过API方式操作安装、卸载、启用、禁用APP。
+
+1. 安装应用接口：`POST /api/v1/apps/import`
+2. 卸载应用接口：`PUT /api/v1/apps/<APP_NAME>/uninstall`
+3. 启用应用接口：`PUT /api/v1/apps/<APP_NAME>/enable`
+4. 禁用应用接口：`PUT /api/v1/apps/<APP_NAME>/disable`
+
+
+> 注意：搜索接口的请求格式是json格式，所以请求Header中必须添加 'Content-Type: application/json' 
+
+# 2. 接口描述
+
+## 2.1 安装应用接口
+
+请求路径：`/api/v1/apps/import?resumableChunkNumber=2&resumableChunkSize=5242880&resumableCurrentChunkSize=5242880&resumableTotalSize=19788575&resumableType=application%2Fx-gzip&resumableIdentifier=19788575-apptargz&resumableFilename=app.tar.gz&resumableRelativePath=app.tar.gz&resumableTotalChunks=4&upgrade=true`
+
+请求方法：`POST`
+
+请求体示例：
+
+``` json
+------WebKitFormBoundarygkdqRM1DQnA1KDcP
+Content-Disposition: form-data; name="resumableChunkNumber"
+
+1
+------WebKitFormBoundarygkdqRM1DQnA1KDcP
+Content-Disposition: form-data; name="resumableChunkSize"
+
+5242880
+------WebKitFormBoundarygkdqRM1DQnA1KDcP
+Content-Disposition: form-data; name="resumableCurrentChunkSize"
+
+6963
+------WebKitFormBoundarygkdqRM1DQnA1KDcP
+Content-Disposition: form-data; name="resumableTotalSize"
+
+6963
+------WebKitFormBoundarygkdqRM1DQnA1KDcP
+Content-Disposition: form-data; name="resumableType"
+
+application/x-gzip
+------WebKitFormBoundarygkdqRM1DQnA1KDcP
+Content-Disposition: form-data; name="resumableIdentifier"
+
+6963-pure-apptargz
+------WebKitFormBoundarygkdqRM1DQnA1KDcP
+Content-Disposition: form-data; name="resumableFilename"
+
+pure-app.tar.gz
+------WebKitFormBoundarygkdqRM1DQnA1KDcP
+Content-Disposition: form-data; name="resumableRelativePath"
+
+pure-app.tar.gz
+------WebKitFormBoundarygkdqRM1DQnA1KDcP
+Content-Disposition: form-data; name="resumableTotalChunks"
+
+1
+------WebKitFormBoundarygkdqRM1DQnA1KDcP
+Content-Disposition: form-data; name="upgrade"
+
+true
+------WebKitFormBoundarygkdqRM1DQnA1KDcP
+Content-Disposition: form-data; name="file"; filename="pure-app.tar.gz"
+Content-Type: application/octet-stream
+
+<APP包文件二进制内容>
+```
+
+
+安装APP支持将安装包分块上传，具体的流程是
+1. 计算总的安装包大小，按照resumableChunkSize 每个分块的大小，将安装包拆成若干个小的二进制包
+2. 将每个小的分块用HTTP请求方式上传到平台，需要在请求中设置每个分块的序号，每个分块大小，当前分块的大小等信息
+3. 当所有分块上传完毕，平台会检查所有分块序号都已经接收到，最终安装APP完成。
+
+请求url请求参数和请求体form字段解释如下：
+
+```
+resumableChunkNumber: 当前块的index
+resumableChunkSize: 每个分块的大小
+resumableCurrentChunkSize: 当前块的大小
+resumableTotalSize: 文件总共大小
+resumableType: 文件类型
+resumableIdentifier: 请求中包含的文件的唯一标识符
+resumableFilename: 文件名称
+resumableRelativePath: 文件相对路径
+resumableTotalChunks: 总共的块数
+upgrade: 是否覆盖上传
+```
+
+ 
+响应体示例：
+
+``` json
+{}
+```
+
+
+
+
+## 2.2 卸载应用接口 
+
+
+请求路径：`/api/v1/apps/<APP_NAME>/uninstall` 
+
+请求方法：`PUT`
+
+响应体示例：
+
+``` json
+{}
+```
+
+
+
+## 2.3 启用应用接口 
+
+
+请求路径：`/api/v1/apps/<APP_NAME>/enable` 
+
+
+请求方法：`PUT`
+
+
+响应体示例：
+
+``` json
+{}
+```
+
+
+
+## 2.4 搜索时间柱 timeline
+
+请求路径：`/api/v1/apps/<APP_NAME>/disable`
+
+
+请求方法：`PUT`
+
+响应体示例：
+
+``` json
+{}
+```
+

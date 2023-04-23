@@ -1,0 +1,41 @@
+## Track 介绍
+
+在一个简单音视频通话的场景中，视频画面一般和发布这个视频画面的用户是一个一对一的关系，即一个用户发布一路流，其他用户订阅这个用户就等于订阅他发布的那一路流。   
+   
+但是在某些特殊的业务场景中，是不希望有这个一对一关系的。一个用户应该可以发布多路不一样的流（比如来自不同的摄像头、屏幕、窗口等等），而用户在订阅他的时候也可以动态选择到底要订阅他的哪些流。在这种场景下，房间的用户和房间中用户发布的流就变成了一对多的关系。
+   
+七牛实时音视频云 SDK 从 `2.0.0` 版本起正式支持了一个用户对应多路流的需求，但是在这种一对多的场景下，我们不再将这些音视频画面称之为**流**，在之后的叙述和介绍中，我们都会用 **Track(轨道)** 这个词。
+     
+如果您对音视频开发有一定的了解可能会知道，Stream(流) 是由 Track(轨道) 组成的。默认情况下，一路 Stream 只会包含一个音频 Track 和一个视频 Track。在 `2.0.0` 以后，我们取消了这个默认假设，一个 Stream 可以由任意多个 Track 来组成，并把用户可以操作的最小单元改为 Track, 以此来实现了这个一对多的对应关系。
+
+> 如果您是正在使用我们 `2.0.0` 以下版本的老客户，可能会考虑这种对应关系的变化要如何向下兼容的问题。其实我们的解决思路很简单，在一个用户所有发布的 Track 中，会有一个属性叫做 `master`，我们只允许一个用户发布至多一个 video master Track 和至多一个 audio master Track。master 属性为 `true`  的 Track 会被自动映射成之前版本中的流。
+
+
+## 开发语言以及系统要求
+
+- 开发语言：C++14
+- 系统要求：Windows 7 及以上版本的 Windows 系统
+
+## 开发环境
+
+- [Visual Studio 2017](https://www.visualstudio.com/zh-hans/vs/older-downloads/) 或 [Qt Creator](http://download.qt.io/archive/qt/)
+- Windows Platform
+
+## 导入 SDK
+
+将下载好的 SDK 拷贝到你的工程目录中 `$(ProjectDir)`，添加 `$(ProjectDir)Release\include` 到头文件引用目录，添加 `$(ProjectDir)Release\lib` 到依赖库查找目录中，并拷贝 `QNRtcStreaming.dll` 工程运行目录下，然后在代码中通过静态加载的方式加载 SDK 库，如下：
+
+```C++
+#include "QNRoomInterface.h"
+#include "QNAudioInterface.h"
+#include "QNVideoInterface.h"
+#include "qn_rtc_errorcode.h"
+
+using namespace qiniu_v2;
+
+#pragma comment(lib, "QNRtcStreaming.lib")
+```
+
+## 编译运行
+
+编译运行，验证以上配置是否正确，如果运行时提示缺少 `XXX.dll`，则说明以上目录配置错误，需再检查下目录配置，以及动态库是否被拷贝至应用程序的工作目录。

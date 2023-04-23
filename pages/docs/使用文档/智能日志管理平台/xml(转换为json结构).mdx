@@ -1,0 +1,54 @@
+解析 xml, 将 xml 格式转变为 json 结构，内存中为`map[string]interface{}`。
+
+* 要进行 Transform 变化的键(`key`): 指定要解析的 xml 数据所在的字段，支持多级嵌套，多级间用 *.* 符号连接，表示 data["abc"]["xyz"] 中的数据。
+* 解析后数据的字段(`new`): 指定要解析 xml 数据字段的新字段，必须指定新字段。
+* 是否保持值为字符串(`keep`): 值解析为字符串，不进行转换。
+* 是否删除要进行 Transfomr 变化的键值对(`discard_key`): 删除指定要解析的 xml 数据原始的键值对。
+* 是否展开(`expand`): 对指定要解析的 xml 数据，是否将数据中键值对提取出来。要保证数据中字段名的唯一性，否则同名字段的值不确定
+* 去除xml里属性相关值(`no_attr`): 去除属性相关值，默认为 false。
+
+### **示例**：
+
+例如， parser 解析后的数据为:
+
+```
+{ 
+   "key1": "value1", 
+  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<note>
+  <to>Tove</to>
+  <from>Jani</from>
+  <heading>Reminder</heading>
+  <body>Don't forget me this weekend!</body>
+</note>"
+}
+```
+
+此时我们设置 `xml` transformer，配置如下：
+
+![](https://dn-odum9helk.qbox.me/FrcavUT6_ayhWRFDKWz28KFkPAyI)
+
+经过 xml 变换后的数据将变为:
+
+```
+{
+	"key1": "value1",
+	"xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<note>
+  <to>Tove</to>
+  <from>Jani</from>
+  <heading>Reminder</heading>
+  <body>Don't forget me this weekend!</body>
+</note>"
+	"new_xml":{
+	    "note": {
+	    "heading": "Reminder",
+	    "body":    "Don't forget me this weekend!",
+	    "to":      "Tove",
+	    "from":    "Jani"
+	    }
+	}
+}
+```
+
+可以看到原来的`xml`字段还在，而新出现的`new_xml`字段就解析出了新的字段。

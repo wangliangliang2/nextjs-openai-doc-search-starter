@@ -1,0 +1,19 @@
+Wilcoxon 检验是两个配对组的非参数统计检验，用来检测两组配对数据之间是否存在显著性差异。是配对 T-test 的非参数检验版本。
+
+**语法：**
+
+```
+...| score wilcoxon zero_method=<pratt | wilcox(default) | zsplit> correction=<True | False(default)> alpha=<float> <a_field> against <b_field>
+```
+
+**参数说明：**
+
+- zero_method，用来指定对相同数据的处理方式，默认是 wilcox。
+- correction，用来指定是否在计算 z-statstic 的过程中对 wilcoxon 符号检验结果做修正，默认是 False。如果 correction=True，则在计算过程中，不断将 wilcoxon 符号检验结果减少 0.5。
+- alpha，用来指定显著性水平，即在零假设为真时拒绝零假设的概率，默认是 0.05。
+
+**使用场景：**
+
+- 只支持 1-1 的比较。
+- 不支持模糊搜索（ \*）。
+- Wilcoxon 检验的 H0 假设：两个样本之间没有显著差别；H1 假设：两个样本之间存在显著差别

@@ -1,0 +1,130 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+
+> `GET` /v1/order/detail/<order_hash>
+
+# 请求参数
+
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th> 
+    </tr>    
+  </thead>
+  <tbody>
+    <tr>
+      <td>order_hash</td>
+      <td>string</td>
+      <td>url</td>
+      <td>是</td>
+      <td>
+        <p>订单 Hash</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+# 返回值
+
+| 名称               | 类型     | 描述                 |
+| ------------------ | -------- | -------------------- |
+| request_id         | string   | 请求 ID              |
+| data               | OrderInfo[] | 订单信息    |
+
+### OrderInfo
+
+| 名称               | 类型     | 描述                 |
+| ------------------ | -------- | -------------------- |
+| order | string | 订单 Hash |
+| fee | float64 | 订单原价 |
+| c_fee | float64 | 订单实付金额 |
+| create_time | string | 创建时间 |
+| pay_time | string | 支付时间 |
+| cancel_time | string | 取消时间 |
+| expire_time | string | 支付过期时间 |
+| status | OrderStatus | 订单状态 |
+| items | OrderItemInfo | 订单资源信息 |
+
+### OrderStatus
+
+| 名称               | 类型     | 描述                 |
+| ------------------ | -------- | -------------------- |
+| new | string | 新建状态 |
+| paid | string | 已经支付状态 |
+| canceled | string | 被取消状态 |
+| complete | string | 订单下所有子订单都已经发货完成 |
+| refund | string | 用户订单执行了退款 |
+
+
+### OrderItemInfo
+
+| 名称               | 类型     | 描述                 |
+| ------------------ | -------- | -------------------- |
+| order_type | string | 订单类型 |
+| price | float64 | 金额 |
+| region | string | 地域 |
+| resource_type | string | 资源类型 |
+| resource_id | string | 资源 ID |
+| status | OrderItemStatus | 发货状态 |
+| life_start_time | string | 生命周期生效时间 |
+| life_start_time | string | 生命周期失效时间 |
+
+
+### OrderItemStatus
+
+| 名称               | 类型     | 描述                 |
+| ------------------ | -------- | -------------------- |
+| non_executable | string | 不可执行状态 |
+| executable | string | 可执行状态 |
+| processing | string | 正在执行中 |
+| success | string | 执行成功 |
+| failed | string | 执行失败 |
+| fail_over | string | 失败次数过多 |
+| cancelled | string | 被取消 |
+| refunded | string | 已退款 |
+
+
+## 返回值示例
+
+```json
+{
+  "data": {
+    "order": "602892b7b500000eed4190e932000000",
+    "fee": 29.55,
+    "c_fee": 29.55,
+    "create_time": "2020-09-16T11:57:18Z",
+    "pay_time": "2020-09-17T14:58:22Z",
+    "cancel_time": "0001-01-01T00:00:00Z",
+    "expire_time": "2020-09-23T19:57:18+08:00",
+    "status": "complete",
+    "items": [
+      {
+        "order_type": "create",
+        "resource_type": "instance",
+        "resource_id": "i-xxxx",
+        "region": "cn-qingdao",
+        "price": 16.25,
+        "status": "success",
+        "life_start_time": "2020-09-17T14:59:07Z",
+        "life_expire_time": "2020-10-18T00:00:00Z"
+      },
+      {
+        "order_type": "create",
+        "resource_type": "disk",
+        "resource_id": "d-xxxx",
+        "region": "cn-qingdao",
+        "price": 13.3,
+        "status": "success",
+        "life_start_time": "2020-09-17T14:59:07Z",
+        "life_expire_time": "2020-10-18T00:00:00Z"
+      }
+    ]
+  },
+  "request_id": "TRBUBYEtcQWEg18W"
+}
+```

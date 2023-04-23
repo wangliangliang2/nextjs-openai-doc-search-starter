@@ -1,0 +1,356 @@
+<style>
+    .rtc-doc{
+        font-family: PingFangSC-Light;
+        background:white!important;
+        color:black
+    }
+    .rtc-doc * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    .rtc-doc a {
+        font-style: italic;
+        font-weight: 400;
+        color: #00aae7;
+        word-break:break-all;
+        text-decoration: none;
+    }
+
+    .rtc-doc-panel {
+        background-color: #fff;
+        box-shadow: 0 0 4px rgb(0 0 0 / 25%);
+        padding-top:20px!important;
+        margin-top:0!important;
+        padding: 20px;
+        color: #707070;
+        font-size: 15px;
+        line-height: 26px;
+        letter-spacing: 0;
+        margin-bottom:20px;
+    }
+
+    .rtc-doc-panel a {
+        font-style: italic;
+        font-weight: 400;
+        color: #00aae7;
+        word-break:break-all;
+        text-decoration: none;
+    }
+</style>
+<style>
+    .rtc-doc-catalogue{
+        column-gap: 20px;
+        column-count: 3;
+        padding: 0;
+        list-style: none;
+        line-height: 1.5em;
+        margin: 20px 0 40px;
+    }
+    @media (min-width: 901px) and (max-width: 1024px) {
+        .rtc-doc-catalogue{
+            column-count: 2
+        }
+    }
+    
+    @media (max-width: 900px){
+        .rtc-doc-catalogue{
+            column-count: 1
+        }
+    }
+    
+    .rtc-doc-catalogue li{
+        list-style: none;
+        line-height: 40px;
+        cursor: pointer;
+        color: #00aae7
+    }
+    .rtc-doc-catalogue li a{
+        line-height:40px;
+        text-decoration:none
+    }
+ </style>
+<style>
+    .rtc-doc {
+            color: #707070;
+            font-size: 15px;
+        }
+        .rtc-doc hr {
+            margin:20px 0!important;
+        }
+        .rtc-doc p {
+            line-height: 26px;
+            margin-top: 20px!important;
+            margin-bottom: 20px!important;
+            padding-left:10px;
+        }
+        .rtc-doc a {
+            white-space: nowrap;
+            font-style:normal!important
+        }
+        .rtc-doc p code {
+            padding: 3px 5px;
+            white-space: pre;
+            color:#707070!important;
+            white-space: nowrap;
+            background: #f9f9fc;
+            border-radius: 4px;
+            line-height: 28px;
+            margin-left: 2px;
+            margin-right: 2px;
+        }
+        .rtc-doc h2 {
+            padding: 0 10px!important;
+            font-size: 20px!important;
+            margin: 0.8em 0;
+            font-weight: bold!important;
+            color:black!important;
+            font-weight: bold!important;
+        }
+
+        .rtc-doc h3 {
+            padding-top:0!important;
+            padding: 0 15px;
+            color: #222!important;
+            font-size: 18px!important;
+            font-weight: 400!important;
+            line-height: 25px!important;
+        }
+
+        .rtc-doc h4 {
+            padding-left: 20px;
+            padding-top:0!important;
+            line-height: 25px!important;
+            color: #707070!important;
+            font-size: 15px!important;
+            font-weight:bold!important;
+        }
+
+        .rtc-doc h5 {
+            padding-left: 20px;
+            padding-top:0!important;
+            line-height: 25px!important;
+            color: #707070!important;
+            font-size: 12px!important;
+            font-weight:bold!important;
+
+        }
+
+        .rtc-doc h2,h3,h4,h5 {
+            margin-top: 0.8em!important;
+            margin-bottom: 0.8em!important
+        }
+
+        .rtc-doc pre code.hljs{
+            display:block;
+            overflow-x:auto;
+            padding:1em;
+        }
+        .rtc-doc code.hljs{
+            padding:3px 5px
+        }
+        .rtc-doc .hljs{
+            background:#f0f0f0;color:#444
+        }
+        .rtc-doc .hljs-comment{
+            color:#888
+        }
+        .rtc-doc .hljs-punctuation,.hljs-tag{
+            color:#444a
+        }
+        .rtc-doc .hljs-tag .hljs-attr,.hljs-tag .hljs-name{
+            color:#444
+        }
+        .rtc-doc .hljs-attribute,.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-name,.hljs-selector-tag{
+            font-weight:700
+        }
+        .rtc-doc .hljs-deletion,.hljs-number,.hljs-quote,.hljs-selector-class,.hljs-selector-id,.hljs-string,.hljs-template-tag,.hljs-type{
+            color:#800
+        }
+        .rtc-doc .hljs-section,.hljs-title{
+            color:#800;font-weight:700
+        }
+        .rtc-doc .hljs-link,.hljs-operator,.hljs-regexp,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-symbol,.hljs-template-variable,.hljs-variable{
+            color:#bc6060
+        }
+        .rtc-doc .hljs-literal{
+            color:#78a960
+        }
+        .rtc-doc .hljs-addition,.hljs-built_in,.hljs-bullet,.hljs-code{
+            color:#397300
+        }
+        .rtc-doc .hljs-meta{
+            color:#1f7199
+        }
+        .rtc-doc .hljs-meta .hljs-string{
+            color:#4d99bf
+        }
+        .rtc-doc .hljs-emphasis{
+            font-style:italic
+        }
+        .rtc-doc .hljs-strong{
+            font-weight:700
+        }
+        .rtc-doc pre {
+            padding: 10px;
+            background: #f2f2f7;
+            margin-bottom: 20px;
+            line-height:25px;
+            font-size:15px;
+            overflow-x: scroll;
+            border:none!important
+        }
+        .rtc-doc pre ol li {
+            list-style:none!important;
+            border-left:none!important;
+            padding:0!important;
+            line-height:25px!important;
+            margin: 0!important
+        }
+        .rtc-doc pre ol {
+            margin:0!important;
+            padding: 0!important
+        }
+        .rtc-doc ol {
+            padding-left: 20px;
+            margin-left: 10px
+        }
+        .rtc-doc ul {
+            padding-left: 20px;
+            margin-left: 10px
+        }
+        .rtc-doc li {
+            color: #707070;
+            font-size: 15px;
+            line-height: 26px;
+            letter-spacing: 0;
+            padding: 5px 0;
+            /* list-style: none; */
+        }
+        .rtc-doc li ul {
+            padding-left: 0;
+            margin-left:18px;
+        }
+        .rtc-doc-example {
+            margin-bottom: 20px;
+            line-height:25px;
+            font-size:15px;
+        }
+        
+
+        .rtc-doc blockquote {
+            padding: 10px 20px 10px 20px;
+            margin: 20px 0;
+            font-size: 14px;
+            border-left: 5px solid rgba(135, 206, 250, 0.4);
+            background:rgba(135, 206, 250, 0.2)
+        }
+        .rtc-doc blockquote code {
+            background:rgba(135, 206, 250, 0.3)
+        }
+        .rtc-doc blockquote ol {
+            padding: 20px 0;
+        }
+        .rtc-doc blockquote li {
+            padding: 5px 0;
+        }
+
+        .rtc-doc img {
+            width: 100%
+        }
+        .rtc-doc table {
+            background-color: #fff!important;
+            box-shadow: 0 0 4px rgb(0 0 0 / 25%);
+            padding: 20px 0;
+            color: #707070;
+            border-spacing: 0;
+            font-size: 15px;
+            width: auto!important;
+            border: none!important;
+            overflow: auto;
+            table-layout: fixed;
+            display: table;
+            border-collapse: collapse;
+            line-height: 26px;
+            letter-spacing: 0;
+            margin-bottom:20px!important
+        }
+        .rtc-doc thead {
+            display: table-header-group;
+            vertical-align: middle;
+        }
+        .rtc-doc tbody {
+            display: table-header-group;
+            vertical-align: middle;
+        }
+        .rtc-doc th {
+            white-space: inherit;
+            border-top: none!important;
+            vertical-align:middle!important;
+            padding: 6px 13px!important;
+            border: 1px solid #dfdfdf;
+            border-bottom: 1px solid #dfdfdf!important;
+            color: #222;
+            font-size: 16px;
+            font-weight: 400;
+        }
+        .rtc-doc tbody tr:nth-of-type(odd) {
+            background-color: white!important
+        }
+        .rtc-doc td {
+            white-space: inherit;
+            padding: 5px 13px!important;
+            vertical-align:middle!important;
+            border-top:none!important;
+            border: 1px solid #dfdfdf;
+            font-size: 14px;
+            word-break: break-all;
+        }  
+</style>
+<div class="rtc-doc">
+    <div><p>为了方便开发者快速部署业务服务端对接实时音视频云，我们提供了Go、Java、Node.js、PHP、Python这五种代码的服务端SDK</p>
+<h2 id="go-sdk"><a href="#go-sdk" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>Go SDK</h2>
+<p>Github 地址： <a href="https://github.com/qiniu/go-sdk/tree/master/rtc">https://github.com/qiniu/go-sdk/tree/master/rtc</a></p>
+<p><br></br>这里示例了 RoomToken 的生成代码，其他 API 可以参考具体的代码文件</p>
+<pre><code className="language-go">accessKey := <span class="hljs-string">&quot;your ak&quot;</span>
+<span></span>secretKey := <span class="hljs-string">&quot;your sk&quot;</span>
+<span></span>
+<span></span>mac := qbox.NewMac(accessKey, secretKey)
+<span></span>manager = NewManager(mac)
+<span></span>
+<span></span>appID := <span class="hljs-string">&quot;xxxxx&quot;</span>
+<span></span>roomName := <span class="hljs-string">&quot;xxxxx&quot;</span>
+<span></span>userID := <span class="hljs-string">&quot;xxxxxx&quot;</span>
+<span></span>
+<span></span>token, err := manager.GetRoomToken(RoomAccess{AppID: appID, RoomName: roomName, UserID: userID, ExpireAt: time.Now().Unix() + <span class="hljs-number">3600</span>})
+<span></span></code></pre>
+<h2 id="java-sdk"><a href="#java-sdk" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>Java SDK</h2>
+<p>Github 地址： <a href="https://github.com/qiniu/java-sdk/tree/master/src/main/java/com/qiniu/rtc">https://github.com/qiniu/java-sdk/tree/master/src/main/java/com/qiniu/rtc</a></p>
+<p><br></br>这里示例了 RoomToken 的生成代码，其他 API 可以参考具体的代码文件</p>
+<pre><code className="language-java"><span class="hljs-keyword">import</span> com.qiniu.util.Auth;
+<span></span>
+<span></span><span class="hljs-type">Auth</span> <span class="hljs-variable">auth</span> <span class="hljs-operator">=</span> Auth.create(accessKey, secretKey);
+<span></span><span class="hljs-type">RtcRoomManager</span> <span class="hljs-variable">rmanager</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RtcRoomManager</span>(auth);
+<span></span><span class="hljs-type">String</span> <span class="hljs-variable">token</span> <span class="hljs-operator">=</span> rmanager.getRoomToken(<span class="hljs-string">&quot;appid&quot;</span>, <span class="hljs-string">&quot;roomname&quot;</span>, <span class="hljs-string">&quot;userid&quot;</span>, <span class="hljs-number">1525410499</span>, <span class="hljs-string">&quot;user&quot;</span>)
+<span></span></code></pre>
+<h2 id="nodejs"><a href="#nodejs" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>Node.js</h2>
+<p>Github 地址： <a href="https://github.com/qiniu/nodejs-sdk/tree/master/qiniu/rtc">https://github.com/qiniu/nodejs-sdk/tree/master/qiniu/rtc</a></p>
+<p><br></br>这里示例了 RoomToken 的生成代码，其他 API 可以参考具体的代码文件</p>
+<pre><code className="language-node"><span class="hljs-keyword">const</span> ak = <span class="hljs-string">&quot;your ak&quot;</span>;
+<span></span><span class="hljs-keyword">const</span> sk = <span class="hljs-string">&quot;your sk&quot;</span>;
+<span></span>
+<span></span><span class="hljs-keyword">const</span> credentials = <span class="hljs-keyword">new</span> qiniu.<span class="hljs-title class_">Credentials</span>(ak, sk);
+<span></span><span class="hljs-keyword">const</span> roomToken = qiniu.<span class="hljs-property">room</span>.<span class="hljs-title function_">getRoomToken</span>({
+<span></span>  <span class="hljs-attr">appId</span>: <span class="hljs-variable constant_">QINIU_RTN_APPID</span>,
+<span></span>  <span class="hljs-attr">roomName</span>: roomName,
+<span></span>  <span class="hljs-attr">userId</span>: userId,
+<span></span>  <span class="hljs-attr">expireAt</span>: <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>() + (<span class="hljs-number">1000</span> * <span class="hljs-number">60</span> * <span class="hljs-number">60</span> * <span class="hljs-number">3</span>), <span class="hljs-comment">// token 的过期时间默认为当前时间之后 3 小时</span>
+<span></span>  <span class="hljs-attr">permission</span>: <span class="hljs-string">&#x27;user&#x27;</span>,
+<span></span>}, credentials);
+<span></span></code></pre>
+<h2 id="php-sdk"><a href="#php-sdk" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>PHP SDK</h2>
+<p>Github 地址：
+<a href="https://github.com/qiniu/php-sdk/blob/master/src/Qiniu/Rtc/AppClient.php">https://github.com/qiniu/php-sdk/blob/master/src/Qiniu/Rtc/AppClient.php</a></p>
+<h2 id="python-sdk"><a href="#python-sdk" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>Python SDK</h2>
+<p>Github 地址：
+<a href="https://github.com/qiniu/python-sdk/blob/master/qiniu/services/pili/rtc_server_manager.py">https://github.com/qiniu/python-sdk/blob/master/qiniu/services/pili/rtc_server_manager.py</a></p></div></div>

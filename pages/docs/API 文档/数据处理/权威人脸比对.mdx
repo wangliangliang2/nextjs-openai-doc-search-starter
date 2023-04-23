@@ -1,0 +1,87 @@
+# 接口简介
+face-hdphotoauth 返回权威人脸比对的相似度
+
+**注意**
+
+- 接口超时时间为 30 秒。
+- 资源的 Mime 文件格式仅支持图片类型：image/*，如：image/jpeg、image/png。
+- 请求接口为标准的HTTP/HTTPS 协议。
+- 前端SDK采集的刷脸照，会resize到480×640，有些机型会是240×360；证件照则一般在178×220 ~ 480×640之间。resize之后，可以有效控制模型输入源，确保模型有比较好的性能。
+- 上传图片base64编码后小于30k，图片格式可以 jpg 和 png，尽量图片清晰，背景不要超过人脸图片的三分之一占比，正方向上传。
+
+# 请求语法
+
+```
+POST http(s)://face-hdphotoauth.qiniuapi.com/hdphoto_auth
+Host: face-hdphotoauth.qiniuapi.com
+Content-Type: application/json
+Authorization: QiniuToken
+```
+
+## 头部信息
+| 头部名称      | 必填 | 说明                                                         |
+| ------------- | ---- | ------------------------------------------------------------ |
+| Host          | 是   | 固定为  face-hdphotoauth.qiniuapi.com                     |
+| Content-Type  | 是   | 固定为 application/json                                      |
+| Authorization | 是   | 该参数应严格按照[管理凭证](https://developer.qiniu.com/kodo/manual/access-token)格式进行填充，否则会返回 401 错误码。一个合法的 Authorization 值应类似于：`Qiniu QNJi_bYJlmO5LeY08FfoNj9w_r7...` |
+
+
+## 请求 body
+字段             | 是否必填 |   类型  |说明
+:-------------  | :--- | :---------| :---------------------------------
+realname        | 是   | string    |  姓名
+idcard          | 是   | string    |  身份证号
+data_uri        | 是   | string    |  base64 编码或者 http url 的人脸照片
+session_id      | 否   | string    |  唯一会话id
+
+## 返回
+
+字段         | 类型 | 说明
+:-------------  | :--- | :------------------------------------------
+session_id        | string      |  会话id
+similarity        | float       |  人脸比对相似度。 71大约千分之一误识率，79大约万分之一误识率
+Errorcode         | int         |  返回状态码
+Errormsg          | string      |  返回错误消息
+
+
+## 示例
+```
+POST face-hdphotoauth.qiniuapi.com/hdphoto_auth
+    HTTP/1.1
+    Host:face-hdphotoauth.qiniuapi.com
+    Authorization: Qiniu aWQ6lF1Zxxse43jB6V7lsdfaadf:7cWZPxxxxxasdffed60zkI8=
+    Content-Type: application/json 
+{
+    “session_id”: “12345678”,
+    “realname”: “张三”,
+    “idcard”: “12342354345346456”,
+    “photo_b64”: “BASE64”
+}
+```
+**返回示例**
+
+```
+{
+    “session_id”: “12345678”,
+    “similarity”: 70,
+    “Errorcode”: 0,
+    “Errormsg”: “OK”
+}
+```
+
+## 错误码
+| 错误码   | 错误信息                  | 说明                         |
+| -------- | -------------------------- | ---------------------------- |
+| 0      | OK                         | 请求成功，无错误             |
+|55060001 | ERROR_PARAMETER_INVALID | 请求字段有非法传输|
+|55060004| FACE_DETECT_FAILED | 高清照人脸检测失败|
+|55060006 | FEATURE_EXTRACT_FAILED| 人脸特征提取失败 |
+|55060019| IMAGE_BASE64_DECODE_FAILED | 人脸检测图片 Base64 解码失败|
+|55060029| FACE_IDENTIFY_FAILED | 人脸鉴别失败|
+|55060044| REALNAME_FORMAT_ERROR | 姓名格式不正确| 
+|55060045| IDCARD_NUMBER_ERROR | 身份证号码有误 |
+|55060046| PHOTO_SIZE_NOT_SUITABLE | 照片大小不在1kb-30kb的范围内 |
+|55060047 | AUTH_INFORMATION_NOT_EXISTED | 认证信息不存在 |
+|55060048| IDCARD_PHOTO_NOT_EXISTED| 证件照不存在 |
+|55060049 | PHOTO_NOT_ACCEPTED| 照片质量检验不合格|
+|55060050| PHOTO_MULTIFACE_DETECTED | 照片出现多张人脸|

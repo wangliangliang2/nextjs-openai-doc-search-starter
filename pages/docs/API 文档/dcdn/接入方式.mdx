@@ -1,0 +1,37 @@
+# 对外域名
+
+Host: `api.qiniu.com`
+
+# 授权
+
+Authorization: `QBox <AccessToken>`
+
+详细描述见[文档](http://developer.qiniu.com/docs/v6/api/overview/security.html#accesstoken)。
+
+# API 请求格式
+
+- RESTful api, 具体格式参考每个API定义
+- `POST方法，需要带请求头 Content-Type:application/json，请留意`
+
+# API 响应格式
+
+- 响应成功的格式
+
+```
+HTTP/1.1 200 OK
+{
+    // 如果API下面包含有body的响应，会列出body的结构，否则说明响应不包含body
+}
+
+```
+
+- 响应错误的格式
+
+```
+HTTP/1.1 4xx/5xx
+{
+	"code":<Code>, // 错误码在每个API下面都有列出, code为6位数字码，前三位与http code一致
+	"error":<ErrorMessage>
+}
+
+```

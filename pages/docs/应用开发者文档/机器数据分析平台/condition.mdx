@@ -1,0 +1,163 @@
+`<condition>` 有条件地做出响应。支持对 `value`、`label` 或 `match` 进行匹配，若同时传入多个属性，按照 `[value、match、label]` 顺序优先级，以高优先级属性为准。
+
+### 父元素 {docsify-ignore-all}
+
+* `<change>`
+
+### 子元素
+
+|子元素|说明|
+|:--:|:--:|
+|`<set>`|设置或更新标记值， 参见 [set](/xml_set)。|
+|`<eval>`|设置或更新标记值，支持表达式计算， 参见 [eval](/xml_eval)。|
+|`<link>`|链接到目标网站，如另一个仪表盘、报表、搜索或外部网站，参见 [link](/xml_link)。|
+
+### 示例
+
+- `value` 为组件的值，支持文本或者复杂对象，复杂对象需要用 `JSONString` 来表示，并用 `单引号` 包裹
+```xml
+  <dashboard>
+    <input type="time" token="time">
+      <label>时间，值为对象，用单引号包裹JSONString</label>
+      <initial-value>
+        <earliest>-5m</earliest>
+        <latest>-2m</latest>
+      </initial-value>
+      <change>
+        <set token="time1">{ "earliest": "m5", "latest": "m2" }</set>
+        <condition
+          value='{"earliest": "m5", "latest": "h0"}'
+        >
+          <set token="time1">$time$</set>
+        </condition>
+      </change>
+    </input>
+    <input type="time" token="time1" />
+  </dashboard>
+```
+
+- `label` 是 `type` 为 `dropdown`、`radio` 等单选框时，choice 选中项的内容
+```xml
+<dashboard>
+  <input type="radio">
+    <label>单选框</label>
+    <initial-value>one</initial-value>
+    <choice value="one">选项一</choice>
+    <choice value="two">选项二</choice>
+    <choice value="third">选项三</choice>
+    <change>
+      <condition label="选项一">
+        <set token="text_radio">choice 1</set>
+      </condition>
+      <condition label="选项二">
+        <set token="text_radio">choice 2</set>
+      </condition>
+    </change>
+  </input>
+  <text>$text_radio$</text>
+</dashboard>
+```
+
+- `match` 支持用户自定义表达式判断组件本身的值或者用 `token` 定义的变量值是否匹配
+```xml
+  <dashboard>
+    <input type="text" token="text">
+      <label>text 变量</label>
+      <initial-value>bbb</initial-value>
+      <change>
+        <condition match="$text$ === 'aaa'">
+          <set token="text1">ccc</set>
+        </condition>
+      </change>
+    </input>
+    <input type="text" token="text1" />
+  </dashboard>
+```
+
+- `label`、`value` 支持使用 `*` 来表示任意匹配
+```xml
+<dashboard>
+  <input type="radio">
+    <label>单选框</label>
+    <initial-value>one</initial-value>
+    <choice value="one">选项一</choice>
+    <choice value="two">选项二</choice>
+    <choice value="third">选项三</choice>
+    <change>
+      <condition value="*">
+        <set token="text_radio">任意匹配</set>
+      </condition>
+      <condition label="选项二">
+        <set token="text_radio">choice 2</set>
+      </condition>
+    </change>
+  </input>
+  <text>$text_radio$</text>
+</dashboard>
+```
+
+##### 特殊变量 `$lable$`、`$value$`
+
+`$value$` 为组件的值
+```xml
+<dashboard>
+  <input type="text" token="text1">
+    <label>with token</label>
+     <change>
+      <set token="text2">$text1$</set>
+      <set token="text3">$value$</set>
+     </change>
+  </input>
+  <row>
+    <col>
+      <text>value：$text2$</text>
+    </col>
+  </row>
+  <row>
+    <col>
+      <text>text2：$text3$</text>
+    </col>
+  </row>
+</dashboard>
+```
+
+`$lable$` 是 type 为 `dropdown`、`radio` 等单选框时，choice 选中项的内容
+```xml
+<dashboard>
+  <input type="radio">
+    <label>单选框</label>
+    <initial-value>one</initial-value>
+    <choice value="one">选项一</choice>
+    <choice value="two">选项二</choice>
+    <choice value="three">选项三</choice>
+    <change>
+      <set token="text_radio">label: $label$ value: $value$</set>
+    </change>
+  </input>
+  <text>$text_radio$</text>
+</dashboard>
+```
+
+在 `match` 中 使用
+```xml
+<dashboard>
+  <input type="radio">
+    <label>单选框</label>
+    <initial-value>one</initial-value>
+    <choice value="fruit: apple">水果：苹果</choice>
+    <choice value="watermelon">西瓜</choice>
+    <choice value="vegetable: tomato">蔬菜：西红柿</choice>
+    <choice value="vegetable: cucumber">蔬菜：黄瓜</choice>
+    <change>
+      <set token="text_radio">未分类</set>
+      <condition match="$value$ === 'fruit: apple'">
+        <set token="text_radio">苹果</set>
+      </condition>
+      <condition match="/蔬菜：/.test($label$)">
+        <set token="text_radio">蔬菜类</set>
+      </condition>
+    </change>
+  </input>
+  <text>$text_radio$</text>
+</dashboard>
+```

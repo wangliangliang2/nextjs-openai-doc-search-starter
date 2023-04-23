@@ -1,0 +1,24 @@
+ vsphere reader用于读取vsphere ESXI虚拟机中相关的事件日志和审计日志。
+ 
+ 成功安装logkit之后，选择`日志收集`可以看到如下页面：
+ 
+ ![](https://dn-odum9helk.qbox.me/FtjVlvHnjf7ICVplNUErUZWVS5rO)
+ 
+ 其中的vsphere即为从vsphere中读取相应的日志信息。进入配置页面后可以看到如下的配置项。
+ 
+ ![](https://dn-odum9helk.qbox.me/FvaNv0rsx-5vcTVchoXbDaxmRyDF)
+ 
+ 其中，`需要监控的虚拟机地址(host)`:`必填`,用于填写vsphere ESXI的URL地址。`(形如：https://100.100.69.161)`。
+ `登录虚拟机的用户名(username)`:`必填`,用于填写vsphere ESXI的用户名。
+ `登录虚拟机的密码(password)`:`必填`,用于填写vsphere ESXI的密码。
+ `是否跳过校验SSL证书(insecure)`:默认为`true`，跳过证书校验。
+ 
+ `虚拟机地址`在启动ESXI虚拟机之后在相应的控制台页面就会有所展示。
+ 
+ ![](https://dn-odum9helk.qbox.me/Fr9Xs_p_q3vF2aiolh4wIR1DM8fK)
+ 
+ 其中`登录用户名`和`密码`可以参考登录ESXI web client是填写的用户名和密码。
+ 
+ ### **高级选项**
+
+* 支持选择采集时间间隔，默认30s。

@@ -1,0 +1,95 @@
+七牛的流媒体队列 （英文简称 pipeline ）
+
+七牛首创云端音视频、流媒体处理服务，依托高性能硬件及私有任务队列机制，保障任务高效完成。
+
+
+# 共有队列
+共有队列是所有的客户都在使用的队列, 所以如果任务量比较大需要排队比较久。这个共有队列就是不定状态的 如果需要快速处理需要使用私有队列。
+
+
+问题1：怎么样查看自己提交的数据处理的情况呢？
+
+答案：每个处理都会返回一个类似于 z0.58b5338645a2653715350b20  z0.开头得的 PersistentId
+可以通过 get [请求这个接口查到](https://developer.qiniu.com/dora/api/persistent-processing-status-query-prefop) 处理的状态 
+
+```
+{
+    "code": 1,
+    "desc": "The fop is waiting for execution",
+    "id": "z0.58b5338645a2653715350b20",
+    "inputBucket": "echohu",
+    "inputKey": "./hh.wmv",
+    "items": [
+        {
+            "cmd": "avthumb/mp4|saveas/dmlkZW86dGVzdDExMC5tcDQ=",
+            "code": 1,
+            "desc": "The fop is waiting for execution",
+            "returnOld": 0
+        }
+    ],
+    "pipeline": "0.default",
+    "reqid": ""
+}
+
+```
+参考：[处理化数据处理查询](https://developer.qiniu.com/dora/api/persistent-processing-status-query-prefop)
+
+"pipeline": "0.default"如果是0.default 就是使用默认的共有队列
+
+
+# 私有队列  
+创建私有队列
+
+在七牛的 portal 平台的主界面,点击 多媒体处理 的“立即添加”。这个就是私有队列 pipeline 
+![](https://dn-odum9helk.qbox.me/Fl1HWJAUBpOJC_mNI0epwfVIDQLw)
+
+在代码处理时候传入这个得名字即是使用它下面给出php demo的使用私有队列 队列名是abc
+
+```
+  <?php
+  require_once 'path_to_sdk/vendor/autoload.php';
+
+  use Qiniu\Auth;
+  use Qiniu\Storage\UploadManager;
+
+  $accessKey = 'Access_Key';
+  $secretKey = 'Secret_Key';
+  $auth = new Auth($accessKey, $secretKey);
+
+  $bucket = 'Bucket_Name';
+  
+  //转码时使用的队列名称 
+  $pipeline = 'abc';
+
+  //要进行转码的转码操作 
+  $fops = "avthumb/mp4/s/640x360/vb/1.25m";
+  
+  //可以对转码后的文件进行使用saveas参数自定义命名，当然也可以不指定文件会默认命名并保存在当间
+  $savekey = Qiniu\base64_urlSafeEncode('目标Bucket_Name:自定义文件key');
+  $fops = $fops.'|saveas/'.$savekey;
+ 
+  $policy = array(
+    'persistentOps' => $fops,
+    'persistentPipeline' => $pipeline
+  );
+  $uptoken = $auth->uploadToken($bucket, null, 3600, $policy);
+
+  //上传文件的本地路径
+  $filePath = './php-logo.png';
+
+  $uploadMgr = new UploadManager();
+
+  list($ret, $err) = $uploadMgr->putFile($uptoken, null, $filePath);
+  echo "\n====> putFile result: \n";
+  if ($err !== null) {
+      var_dump($err);
+  } else {
+      var_dump($ret);
+  }
+
+```
+
+还有关于价格私有队列收费价格看这里的多媒体处理  [价格](http://www.qiniu.com/pricing)
+
+
+

@@ -1,0 +1,28 @@
+使用支持向量机完成分类任务。
+
+```
+..| fit SVM degree=<int> random_state=<int> kernel=<linear | poly | rbf(default) | sigmoid | cosine> gamma=<float | scale(default | auto)> coef0=<floats> C=<floats> <target_field> from <feature_field_1> <feature_field_2>...
+```
+**参数说明：**
+
+- degree参数仅在kernel=poly时有效，它作为多项式核函数中的一个参数。默认值为3。
+
+- random_state用来指定随机种子，用来控制模型的随机性。如果给定特定值，重新跑模型的时候，可以得出同样的结果。
+
+- kernel用来指定核函数类型。
+  - kernel=linear，即采用线性核函数。
+  - kernel=poly，即采用多项式核函数。
+  - kernel=rbf，即采用径向基核函数。（默认值）
+  - kernel=sigmoid，即采用sigmoid核函数。
+  - kernel=cosine，即采用余弦相似度作为核函数。
+  
+- gamma参数仅在kernel为rbf或者poly或者sigmoid时有效，它作为核函数中的一个参数。默认值为scale。/
+  + gamma = float，指定一个小数常数作为gamma值。
+  + gamma = 'scale'，gamma值会被设定为1 / (n_features * X.var()) 。（默认值）
+  + gamma = 'auto'，gamma值会被设定1 / n_features。
+  
+- coef0参数仅在kernel为poly或者sigmoid时有效，它作为核函数的常数项，默认值为0。
+
+- C参数是损失函数中的一个参数，它起到控制正则化强度的效果，必须是正数。C值越大，则正则化强度越小。默认值为1.0。
+
+  

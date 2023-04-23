@@ -1,0 +1,37 @@
+Bucket 创建后，用户可以绑定自定义域名为其源站域名，然后使用自定义域名直接访问存储空间内的文件。
+### **按照中华人民共和国《互联网管理条例》的要求，所有需要绑定自定义域名的用户，必须提前将域名在工信部备案。**
+<br>
+
+# **应用场景**
+例如，用户 A 拥有一个域名为 `img.abc.org.cn` 的网站，网站的一个图片链接为 `http://img.abc.org.cn/logo.png` 。为方便后续管理，用户 A 想要访问网站中图片的请求转到七牛云存储，并且不想修改任何网页的代码，也就是对外链接不变。绑定自定义域名可以满足这个需求。流程如下：
+
+1. 在私有云存储上创建一个名为 abc-img 的 Bucket (华东)，并将其网站上的图片上传至 Bucket。
+2. 通过控制台，将 `img.abc.org.cn` 这个自定义的域名与空间 abc-img 绑定。 绑定成功之后，七牛云对象存储会将 `img.abc.org.cn` 做一个映射到空间 abc-img。
+3. 在用户自己的域名服务器上，添加一条 CNAME 规则，将 `img.abc.org.cn` 映射成七牛云存储对应区域（华东-浙江）的下载服务地址：`iovip.qiniuio.com`。
+4. 当 `http://img.abc.org.cn/logo.png` 的请求到达七牛云存储后，通过 `img.abc.org.cn` 和 abc-img 的映射关系，将访问转到 abc-img 这个 Bucket。也就是说，对 `http://img.abc.org.cn/logo.png` 的访问，实际上访问的是七牛云对象存储 abc-img 空间里的 logo.png 文件。
+<br>
+
+
+# **具体说明**
+### **注：当创建空间后，系统已自动为该新空间配备测试域名，有效期 30 天，仅限用于业务对接测试。为了您的业务进展一切顺利，您需要先给空间绑定域名以提供正式的生产环境。**
+<br>
+
+
+通过自定义域名访问存储空间，需要给该域名添加 CNAME 记录指向存储空间所在区域对应的 CNAME 域名。
+- 各区域对应的 CNAME 域名
+   - 华东-浙江 `iovip.qiniuio.com`
+   - 华东-浙江2 `iovip-cn-east-2.qiniuio.com`
+   - 华北-河北 `iovip-z1.qiniuio.com`
+   - 华南-广东 `iovip-z2.qiniuio.com`
+   - 北美-洛杉矶 `iovip-na0.qiniuio.com`
+   - 亚太-新加坡（原东南亚） `iovip-as0.qiniuio.com`
+   
+<br>
+
+
+# **操作方式**
+Kodo 支持通过控制台方式设置源站域名，或通过 API 方式进行域名相关操作。
+|支持的操作方式|参考文档|
+|-|-|-|
+|控制台	|[设置自定义源站域名](/kodo/development_guidelines/8556/set-the-custom-source-domain-name)|
+|API	|[获取空间域名](/kodo/api/3949/get-the-bucket-space-domain)|

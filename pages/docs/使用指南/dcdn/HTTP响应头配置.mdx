@@ -1,0 +1,41 @@
+
+HTTP 消息头是指，在超文本传输协议（ Hypertext Transfer Protocol，HTTP）的请求和响应消息中，协议头部的组件。在 HTTP 消息头中，按其出现的上下文环境，分为通用头、请求头、响应头等。
+
+其中 HTTP 响应头向客户端提供一些额外信息，比如谁在发送响应、响应者的功能，甚至与响应相关的一些特殊指令。这些头部有助于客户端处理响应，并在将来发起更好的请求。
+
+当您的网站接入 DCDN 后，由于客户端和源站会根据 HTTP 响应头的字段信息进行相关的行为处理，所以会有修改 HTTP 响应头的需求。由于 HTTP 响应头配置是针对域名，因此一旦配置生效，对该域名下任意一个资源的响应消息中均会加入所配置头部。配置 HTTP 响应头仅影响客户端（如浏览器）的响应行为，不会影响到节点的缓存行为。
+
+# 操作说明
+您可以登录七牛开发者平台，并进入[**DCDN控制台**](https://portal.qiniu.com/dcdn/overview)，选择【域名管理】，点击【配置】。
+<img src="https://dn-odum9helk.qbox.me/FkoWzzj8HeSDrTkiCnfY99AjqN7x" width=600></img>
+进入域名配置界面，点击【修改配置】对 HTTP 响应头进行配置。
+<img src="https://dn-odum9helk.qbox.me/FjdnXEy0O8hfn1qB2liA-d36WkJ0" width=600></img>
+响应头支持【删除】【设置】操作。
+<img src="https://dn-odum9helk.qbox.me/Ft6srrqb5o6kHcty8Om3FJPv_qid" width=600></img>
+<br>
+请根据实际情况选择 HTTP 响应头、响应头操作并配置相应的值。
+目前七牛云CDN提供11个 HTTP 响应头参数可供您自定义取值，解释如下表所示。 如果您有其他 HTTP 头设置需求，请[提交工单](https://support.qiniu.com/tickets/new/form?category=%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98&space=CDN)处理。
+|HTTP 响应头|描述|示例|
+|----|-------|------|
+|Access-control-allow-origin|指定允许的跨域请求的来源。|\* （\*表示全部域名；也可填写完整域名，例如 http://www.qiniu.com 、http://\*.qiniu.com )|
+|Access-Control-Allow-Headers|指定允许的跨域请求的字段。|X-Custom-Header|
+|Access-Control-Allow-Methods|指定允许的跨域请求方法。|POST,GET,OPTIONS|
+|Content-Type|指定客户端程序响应对象的内容类型。|Content-Type|
+|Cache-Control|指定客户端程序请求和响应遵循的缓存机制。|no-cache,no-store|
+|Content-Disposition|指定客户端程序把请求所得的内容存为一个文件时提供的默认的文件名。|attachment; filename="filename.jpg"|
+|Content-Language|指定客户端程序响应对象的语言。|zh-CN,en-US|
+|Expires|指定客户端程序响应对象的过期时间。|Wed, 21 Oct 2015 07:28:00 GMT|
+|Access-Control-Max-Age|指定跨域请求时，对特定资源的预请求返回结果的缓存时间。|600（单位为秒，600表示10分钟）|
+|Access-Control-Expose-Headers|指定允许访问的自定义头信息。|Content-Length（可以输入多个头部时，需用 “,” 隔开。）|
+|Access-Control-Allow-Credentials|指定是否允许跨域请求携带验证信息，验证信息可以是cookies。|true|
+
+```
+注：跨域是指某一个域名，如 www.aaa.com 下的某资源，向另一个域名 www.bbb.com 下的某资源发起请求，此时由于资源所属域名不同，即出现 跨域，不同的协议、不同的端口均会造成跨域访问的出现。此时必须在 Response Header 中增加跨域相关配置，才能让前者成功拿到数据。
+```
+
+	
+	
+	
+	
+	
+	

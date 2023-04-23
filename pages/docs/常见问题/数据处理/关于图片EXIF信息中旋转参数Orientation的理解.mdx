@@ -1,0 +1,32 @@
+EXIF（Exchangeable Image File）是 “可交换图像文件” 的缩写，当中包含了专门为数码相机的照片而定制的元数据，可以记录数码照片的拍摄参数、缩略图及其他属性信息，简单来说，Exif 信息是镶嵌在 JPEG/TIFF 图像文件格式内的一组拍摄参数，需要注意的是 EXIF 信息是不支持 png,webp 等图片格式的。 对于七牛，可以在图片后面加? exif 参数来获取图片的 exif 信息。
+
+对于 Orientation 参数，简单的说是记录图片拍摄的相机的旋转信息，浏览器 (需要浏览器支持) 可以根据这个参数中的 val 信息自动旋转图片到正确的方向。
+
+**eg：**
+
+- 在浏览器中输入以下图片链接，由于浏览器自动旋转了，我们可以看到一个显示正常的图片：
+
+[http://dn-odum9helk.qbox.me/exif.png](http://dn-odum9helk.qbox.me/exif.png)
+
+- 其实这张图片拍摄的时候相机是有旋转的，我们可以去掉图片的 exif 信息显示如下：
+
+[http://dn-odum9helk.qbox.me/exif.png?imageMogr2/strip](http://dn-odum9helk.qbox.me/exif.png?imageMogr2/strip)
+
+- 
+
+可以查询到图片的 exif 信息如下：
+
+[http://dn-odum9helk.qbox.me/exif.png?exif](http://dn-odum9helk.qbox.me/exif.png?exif)
+
+    {"ColorSpace":{"val":"sRGB","type":3},"ExifVersion":{"val":"Exif Version 2.1","type":7},"FlashPixVersion":{"val":"FlashPix Version 1.0","type":7},"Orientation":{"val":"Right-top","type":3},"PixelXDimension":{"val":"3264","type":4},"PixelYDimension":{"val":"2448","type":4},"ResolutionUnit":{"val":"Inch","type":3},"XResolution":{"val":"72","type":5},"YResolution":{"val":"72","type":5}}
+
+由以上我们可以得到图片拍摄时的 val 信息得到图片拍摄时相机的旋转信息是 Right-top 信息，我们可以由以下文档得到相机拍摄时应该是在逆时针选择了 90 度的基础上拍摄的：  
+[http://sylvana.net/jpegcrop/exif\_orientation.html](http://sylvana.net/jpegcrop/exif_orientation.html)   
+[http://www.impulseadventure.com/photo/exif-orientation.html](http://www.impulseadventure.com/photo/exif-orientation.html)
+
+![111](https://dn-odum9helk.qbox.me/71a7c382de4df5315df4c71614f9fdcf)
+
+![222](https://dn-odum9helk.qbox.me/8942949faa9b806a94e86406472323fc)
+
+需要注意的是，七牛显示的 exif 信息 Orientation":{"val":"Right-top","type":3}，其中 type 信息是可以忽略，以 value 信息为准
+

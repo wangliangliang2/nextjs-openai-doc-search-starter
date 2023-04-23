@@ -1,0 +1,60 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                远端各用户音频数据混音后的回调接口</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnRemoteAudioMixedFrame`)'>OnRemoteAudioMixedFrame</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnRemoteAudioMixedFrame">OnRemoteAudioMixedFrame</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnRemoteAudioMixedFrame(const uint8_t* data, uint32_t data_size, uint32_t bits_per_sample, uint32_t sample_rate, uint32_t channels) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端各用户音频数据混音后的回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            data: const uint8_t*
+        </div>
+                <p>音频数据内存指针</p>
+    </li>
+    <li>
+        <div>
+            bits_per_sample: uint32_t
+        </div>
+                <p>位宽，即每个采样点占用位数</p>
+    </li>
+    <li>
+        <div>
+            sample_rate: uint32_t
+        </div>
+                <p>采样率</p>
+    </li>
+    <li>
+        <div>
+            channels: uint32_t
+        </div>
+                <p>声道数</p>
+    </li>
+    <li>
+        <div>
+            data_size: uint32_t
+        </div>
+                <p>音频数据大小</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

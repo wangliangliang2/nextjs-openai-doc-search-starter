@@ -1,0 +1,104 @@
+
+
+# 请求包
+**备注：如果是海外的pub转推任务，请将Host改为：pili-hw-pub.qiniuapi.com**
+
+```
+GET /tasks/<taskID>
+Host: pili-pub.qiniuapi.com
+Authorization: <QiniuToken>
+
+```
+
+| 参数名称 | 必填 | 说明 |
+| - | - | - |
+| taskId | 是 | 字符串，任务Id。 |
+
+
+# 返回包
+
+```
+200 {
+    "taskID": "123",
+    "uid": ,
+    "name": "",
+    "desc": "",
+    "runType":"seek",
+    "sourceUrls": [
+        {
+            "url":<URL>,
+            "isp":<ISP>,
+            "seek":<SEEK>,
+            "videoType":<VIDEOTYPE>,
+            "rtspType":<RTSPTYPE>
+        }
+    ],           
+    "forwardUrls": [
+        {
+            "url":<URL>,
+            "isp":<ISP>
+        }
+    ],
+    "filter": {},
+    "status": "",
+    "deliverStartTime": 1637100000000, 
+    "deliverStopTime": 1637100000000, 
+    "startTime": 1637100000000, 
+    "stopTime": 1637100000000,
+    "createTime": 1637100000000,
+    "loopTimes": 0,
+    "retryTime": 60,
+    "retry": 5,
+    "preload": {
+        "enable": true,
+        "preloadTime": 1637000600000
+    },
+    "preloadStatus": "finished",
+    "statusCallback": {
+       "type": "JSON",
+       "url": <URL>,
+       "vars": <VARS>,
+       "timeout": 5,
+       "retryTimes": 3,
+       "retryInterval": 1
+    }
+}
+
+400 {
+    "error": "invalid parameter"
+}
+
+404 {
+    "error": "not fond"
+}
+
+500 {
+    "error": "query task fail"
+}
+```
+
+# 返回参数
+| 参数名称 | 类型 | 说明 |
+| :----------- |:--------------------------------------------------------------- |:--------- |
+| taskID | 字符串 | 任务ID。 |
+| uid | 整型 | 用户ID。 |
+| name | 字符串 | 任务名称。 |
+| desc | 字符串 | 任务描述。 |
+| runType | 字符串 | 任务类型，normal：普通转推，seek：seek转推。 |
+| sourceUrls | 对象数组 | 源地址。|
+| forwardUrls | 对象数组 | 转推地址。|
+| filter | 对象 | 任务过滤条件。|
+| status | 字符串 | 任务状态，pending 初始状态，running，stopped，failed，finished。|
+| deliverStartTime | 整型 | 任务定时开始时间，单位：ms。|
+| deliverStopTime | 整型 | 任务定时关闭时间，单位：ms。|
+| startTime | 整型 | 任务开始时间，单位：ms。|
+| stopTime | 整型 | 任务停止时间，单位：ms。|
+| createTime | 整型 | 任务创建时间，单位：ms。|
+| loopTimes | 整型 | 循环次数。|
+| retryTime | 整型 | 断流重试时间，单位：s。|
+| retry | 整型 | 剩余重试次数。|
+| preload | 对象 | 预加载相关配置。|
+| preloadStatus | 字符串 | 预加载状态，预加载运行中 running，预加载失败 failed，预加载完成finished。|
+
+
+- 详细参数说明见[参数说明](/pili/api/7326/parameters-that-pub)

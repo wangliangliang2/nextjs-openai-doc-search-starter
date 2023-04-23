@@ -1,0 +1,36 @@
+
+# **描述**
+本接口用于获取域名列表
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/domains`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间名称ID
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|items|域名数组|域名数组
+|items.domain|string|域名
+|items.type|string|域名类型
+|items.cname|string|cname
+|items.state|integer|0: 未配置CNAME，1: 可用，2: 不可用
+|items.isDefault|boolean|是否默认域名
+|items.createdAt|integer|创建时间，Unix时间戳，秒	
+|items.playSecurity|playSecurity|时间戳防盗链
+|items.playSecurity.open|boolean|时间戳防盗链开关
+|items.playSecurity.primary|string|时间戳防盗链主KEY
+|items.playSecurity.secondary|string|时间戳防盗链备用KEY
+|items.playSecurity.expireAfter|integer|防盗链过期时长（单位：秒）
+|items.httpsSwitch|httpsSwitch|https开关
+|items.httpsSwitch.httpsOpen|boolean|https开关
+|items.httpsSwitch.certid|string|证书id
+
+

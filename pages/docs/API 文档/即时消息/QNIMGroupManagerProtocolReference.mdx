@@ -1,0 +1,293 @@
+# QNIMGroupManager Protocol Reference
+
+Conforms to | NSObject  
+---|---  
+Declared in | QNIMGroupManager.h  
+  
+### `- getGroupListForceRefresh:completion:`
+
+获取群组列表
+
+`- (void)getGroupListForceRefresh:(BOOL) _forceRefresh_ completion:(void ( ^ )
+( NSArray *groupList , QNIMError *error )) _aCompletionBlock_`
+
+#### Parameters
+
+forceRefresh |如果设置了forceRefresh则从服务器拉取  
+---|---  
+aCompletionBlock |GroupList, Error  
+  
+#### Discussion
+
+获取群组列表
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- getGroupInfoByGroupId:forceRefresh:completion:`
+
+获取群信息
+
+`- (void)getGroupInfoByGroupId:(long long) _groupId_ forceRefresh:(BOOL)
+_forceRefresh_ completion:(void ( ^ ) ( QNIMGroup *group , QNIMError *error ))
+_aCompletionBlock_`
+
+#### Parameters
+
+groupId |群id  
+---|---  
+forceRefresh |如果设置了forceRefresh则从服务器拉取  
+aCompletionBlock |群  
+  
+#### Discussion
+
+获取群信息
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- getGroupInfoByGroupIdArray:forceRefresh:completion:`
+
+获取传入群组id的群组信息列表，如果设置了forceRefresh则从服务器拉取
+
+`- (void)getGroupInfoByGroupIdArray:(NSArray<NSNumber*> *) _groupIdArray_
+forceRefresh:(BOOL) _forceRefresh_ completion:(void ( ^ ) ( NSArray *aGroups ,
+QNIMError *aError )) _aCompletionBlock_`
+
+#### Discussion
+
+获取传入群组id的群组信息列表，如果设置了forceRefresh则从服务器拉取
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- getGroupByName:completion:`
+
+通过群名称查询本地群信息，从本地数据库中通过群名称查询获取群组
+
+`- (void)getGroupByName:(NSString *) _name_ completion:(void ( ^ ) ( NSArray
+*groupList , QNIMError *error )) _aCompletionBlock_`
+
+#### Parameters
+
+name |查询的群名称关键字  
+---|---  
+aCompletionBlock |搜索结果返回的群列表信息,[QNIMErrorCode](../Constants/QNIMErrorCode.html)  
+  
+#### Discussion
+
+通过群名称查询本地群信息，从本地数据库中通过群名称查询获取群组
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- destroyGroup:completion:`
+
+销毁群(群主权限)
+
+`- (void)destroyGroup:(QNIMGroup *) _group_ completion:(void ( ^ ) ( QNIMError
+*error )) _aCompletionBlock_`
+
+#### Parameters
+
+group |[QNIMGroup](../Classes/QNIMGroup.html)  
+---|---  
+aCompletionBlock |Error  
+  
+#### Discussion
+
+销毁群(群主权限)
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- joinGroup:message:completion:`
+
+加入一个群，根据群设置可能需要管理员批准
+
+`- (void)joinGroup:(QNIMGroup *) _group_ message:(NSString *) _message_
+completion:(void ( ^ ) ( QNIMError *error )) _aCompletionBlock_`
+
+#### Parameters
+
+group |[QNIMGroup](../Classes/QNIMGroup.html)  
+---|---  
+message |申请信息  
+aCompletionBlock |Error  
+  
+#### Discussion
+
+加入一个群，根据群设置可能需要管理员批准
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- leaveGroup:completion:`
+
+退出群
+
+`- (void)leaveGroup:(QNIMGroup *) _group_ completion:(void ( ^ ) ( QNIMError
+*error )) _aCompletionBlock_`
+
+#### Parameters
+
+group |[QNIMGroup](../Classes/QNIMGroup.html)  
+---|---  
+aCompletionBlock |Error  
+  
+#### Discussion
+
+退出群
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- loadGroupInfo:completion:`
+
+获取群详情，从服务端拉取最新信息
+
+`- (void)loadGroupInfo:(QNIMGroup *) _group_ completion:(void ( ^ ) (
+QNIMGroup *group , QNIMError *error )) _aCompletionBlock_`
+
+#### Parameters
+
+group |[QNIMGroup](../Classes/QNIMGroup.html)  
+---|---  
+aCompletionBlock |[QNIMGroup](../Classes/QNIMGroup.html),QNIMError  
+  
+#### Discussion
+
+获取群详情，从服务端拉取最新信息
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- getMembersNickName:memberIdlist:completion:`
+
+批量获取群组成员昵称
+
+`- (void)getMembersNickName:(QNIMGroup *) _group_
+memberIdlist:(NSArray<NSNumber*> *) _memberIdlist_ completion:(void ( ^ ) (
+NSArray *aGroupMembers , QNIMError *aError )) _aCompletionBlock_`
+
+#### Discussion
+
+批量获取群组成员昵称
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- getMemberList:cursor:pageSize:completion:`
+
+分页获取群成员列表
+
+`- (void)getMemberList:(QNIMGroup *) _group_ cursor:(NSString *) _cursor_
+pageSize:(int) _pageSize_ completion:(void ( ^ ) ( NSArray *memberList ,
+NSString *cursor , long long offset , QNIMError *error )) _aCompletionBlock_`
+
+#### Parameters
+
+group |[QNIMGroup](../Classes/QNIMGroup.html)  
+---|---  
+cursor |String  
+pageSize |int  
+aCompletionBlock |NSArray *memberList,  
+  
+#### Discussion
+
+分页获取群成员列表
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- setGroupName:name:completion:`
+
+设置群名称
+
+`- (void)setGroupName:(QNIMGroup *) _group_ name:(NSString *) _name_
+completion:(void ( ^ ) ( QNIMGroup *group , QNIMError *error ))
+_aCompletionBlock_`
+
+#### Discussion
+
+设置群名称
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- setMyNicknameWithGroup:nickName:completion:`
+
+设置在群里的昵称
+
+`- (void)setMyNicknameWithGroup:(QNIMGroup *) _group_ nickName:(NSString *)
+_nickName_ completion:(void ( ^ ) ( QNIMError *error )) _aCompletionBlock_`
+
+#### Discussion
+
+设置在群里的昵称
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- setHistoryVisibleWithGroup:enable:completion:`
+
+设置群成员是否开可见群历史聊天记录
+
+`- (void)setHistoryVisibleWithGroup:(QNIMGroup *) _group_ enable:(BOOL)
+_enable_ completion:(void ( ^ ) ( QNIMError *error )) _aCompletionBlock_`
+
+#### Parameters
+
+group |进行操作的群组  
+---|---  
+enable |是否开启  
+aCompletionBlock |QNIMError  
+  
+#### Discussion
+
+设置群成员是否开可见群历史聊天记录
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- addGroupListener:`
+
+添加群组变化监听者
+
+`- (void)addGroupListener:(id<QNIMGroupServiceProtocol>) _listener_`
+
+#### Discussion
+
+添加群组变化监听者
+
+#### Declared In
+
+`QNIMGroupManager.h`
+
+### `- removeGroupListener:`
+
+移除群组变化监听者
+
+`- (void)removeGroupListener:(id<QNIMGroupServiceProtocol>) _listener_`
+
+#### Discussion
+
+移除群组变化监听者
+
+#### Declared In
+
+`QNIMGroupManager.h`
+

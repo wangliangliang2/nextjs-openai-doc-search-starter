@@ -1,0 +1,31 @@
+makemv 命令用于将一个单值字段，通过固定分隔符或正则表达式，切分成多值字段。
+**语法**
+
+```
+makemv [delim=<string> | tokenizer=<string>] [allowempty=<bool>] [setsv=<bool>] <field>
+```
+
+**参数说明**
+必填参数：
+`field`:被切分的字段。
+
+可选参数：
+`delim`:字符串形式的固定分隔符。 
+`tokenizer`：正则表达式。
+`allowempty`：用于确认分隔后的多值字段是否包含空字符串值，默认为false不包含。
+`setsv`：用于确认是否将切分后的多值字段，再通过分隔符连接起来，默认为false不连接。
+
+> 注意事项：
+- 四个参数的相对位置需要按语法所示排列
+- 当allowempty=true和setsv=true时，会返回和切分前一样的字段
+- 当allowempty=false和setsv=true时，返回忽略空值后连接的字段
+
+**用法示例**
+1、返回被@符号切分后的字符串数组
+```
+ ……| makemv delim="@" str
+```
+2、返回去掉相邻的@符后的str字段
+```
+ ……| makemv delim="@" allowempty=false setsv=true str
+```

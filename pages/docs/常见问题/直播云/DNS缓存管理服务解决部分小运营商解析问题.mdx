@@ -1,0 +1,68 @@
+
+问题 部分客户会存在这样的现象 部分的流存拉取不了的（这类客户主要是小运营商问题 例如 长宽）因为我们内部有做解析缓存，把之前的成功的缓存了，后面进来的时候，就直接用，但是因为运营商的缘故，运营商的出口ip 和dns 都是比较容易改变  所以之前成功的现在可能无法访问，所以要把缓存清掉，重新解析播放 
+
+# 安卓的播放器操作：
+
+传入的播放地址：protocol://domain/path
+
+转换后的播放地址：protocol://ip/path?domain=xxxx.com
+
+PLNetworkManager 类的使用方法描述如下：
+
+添加 happydns 的依赖
+```
+dependencies {
+    compile 'com.qiniu:happy-dns:0.2.+'
+}
+```
+添加网络状态监测的权限
+```
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+```
+启动 DNS 缓存管理服务
+```
+public void startDnsCacheService(Context context);
+public void startDnsCacheService(Context context, String[] domainList);
+```
+提前传入待解析的域名列表会在第一次播放时得到更好的体验，不提前传入也没有问题，每次播放前，DNS 缓存服务会自动缓存播放域名。
+
+停止 DNS 缓存管理服务
+```
+public void stopDnsCacheService(Context context);
+```
+使用自己的 DNS 解析服务器
+PLNetworkManager 类默认使用了 "119.29.29.29" 服务器完成域名解析，当然，你也可以配置为自己的域名服务器，接口如下：
+```
+public void setDnsServer(String server);
+```
+DNS 缓存更新时间间隔
+PLNetworkManager 类默认的DNS缓存更新时间间隔是 100 秒，内部会根据域名服务器返回的 TTL 来判断是否需要向服务器发起一次查询请求，一般的域名服务器的 TTL 是 600 秒，建议这个更新时间间隔不要超过 600 秒，配置接口如下：
+```
+public void setDnsCacheUpdateInterval(int milliseconds);
+```
+
+# ios播放器的操作
+
+传入的播放地址：protocol://domain/path
+
+转换后的播放地址：protocol://ip/path?domain=xxxx.com
+
+添加 happydns 的依赖  
+```
+pod 'HappyDNS'
+```  
+开启与关闭 DNS 解析状态，默认为开启  
+```
+extern NSString * _Nonnull PLPlayerOptionKeyHappyDNSEnable;  
+```
+提前传入待解析的域名列表会在第一次播放时得到更好的体验，不提前传入也没有关系，每次播放前，DNS 缓存服务会自动缓存播放域名
+预解析播放地址的域名  
+```
++ (void)preDNSHost:(nullable NSURL *)URL;
+```  
+使用 DNS 解析,默认使用了 "119.29.29.29" 服务器完成域名解析，当然，你也可以配置为自己的域名服务器  
+```  
+extern NSString * _Nonnull PLPlayerOptionKeyDNSManager;  
+```  
+
+

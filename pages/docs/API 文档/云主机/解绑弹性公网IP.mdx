@@ -1,0 +1,84 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `DELETE` /v1/vm/eip/:allocation_id/associate
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>allocation_id</td>
+      <td>string</td>
+      <td>path</td>
+      <td>是</td>
+      <td>
+        <p>绑定云产品实例的 EIP 的 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>要绑定云产品实例的 EIP 所属的地域 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_type</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>要绑定 EIP 的实例的类型</p>
+        取值：
+        <ul>
+          <li><code>Nat</code>：NAT 网关。</li>
+          <li><code>SlbInstance</code>：负载均衡 SLB。</li>
+          <li><code>EcsInstance</code>：云服务器 ECS（（默认值））。</li>
+          <li><code>NetworkInterface</code>：辅助弹性网卡。</li>
+          <li><code>HaVip</code>：高可用虚拟 IP。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>要解绑 EIP 的云产品实例的 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>force</td>
+      <td>boolean</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>当EIP绑定了NAT网关，且NAT网关添加了DNAT或SNAT条目时，是否强制解绑EIP</p>
+         <ul>
+           <li><code>false</code>：不强制解绑 EIP（默认值）。</li>
+           <li><code>true</code>：强制解绑 EIP。</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID

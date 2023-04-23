@@ -1,0 +1,91 @@
+# 描述
+该接口用于查询指定设备的密钥。
+
+# 请求
+**请求语法**
+
+```
+GET /v1/apps/<appid>/devices/<encodeDeviceName>/keys HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/x-www-form-urlencoded
+```
+
+**请求参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|appid|是|string|设备所属应用的appid，设备名称只能由 4-200 位英文字母和数字组成|
+|encodeDeviceName|是|string|设备名称进行[URL安全的Base64编码](https://developer.qiniu.com/kodo/manual/1231/appendix#1)后得到的字符串|
+**请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+**请求元素**
+该请求操作的请求体为空。
+# 响应
+**响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)
+**响应元素**
+
+```
+200 {
+  "device": "<deviceName>",
+  "keys": [ 
+    {
+      "accessKey": "<deviceAccessKey>",
+      "secretKey": "<deviceSecretKey>",
+      "state": "<state>"
+    },
+    {
+      "accessKey": "<deviceAccessKey>",
+      "secretKey": "<deviceSecretKey>",
+      "state": "<state>"
+    }
+  ]
+}
+```
+
+| 参数名称   | 说明  |
+| ---| ---|
+| device   | 设备名称  |
+| keys   | 设备密钥对，初始时只有一对密钥 |
+| accessKey   | 设备端的 accessKey |
+| secretKey   | 设备端的  secretKey|
+| state   |密钥对状态，1表示被禁用,0表示已启用| 
+
+
+# 示例
+
+**请求示例**
+```
+GET /v1/apps/test/devices/dGVzdGRldmljZTE=/keys HTTP/1.1
+
+Host: linking.qiniuapi.com
+Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=
+Content-Type: application/x-www-form-urlencoded
+```
+
+**响应示例**
+
+```
+HTTP/1.1 200 OK
+Access-Control-Allow-Origi: *
+Connection: keep-alive
+Content-Length: xxx
+Content-Type: application/json
+Date: Wed, 26 Sep 2018 11:42:10 GMT
+Server: nginx/1.8.0
+Vary: Accept-Encoding
+X-Reqid: 6SAAABDWHM1o8FcV
+X-Whom: cs1
+
+200 {
+  "device": "test123",
+  "keys": [ 
+    {
+      "accessKey": "Ves3WTXC8XnEHT0I_vacEQQz-9jrJZxNExcxxxxx",
+      "secretKey": "eNFrLXKG3R8TJ-DJAxxxxxLwuEfQnw8krrDuZzoy",
+      "state": 0 
+    }
+  ]
+}
+```

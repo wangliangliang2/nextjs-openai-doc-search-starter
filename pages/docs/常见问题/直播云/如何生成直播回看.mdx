@@ -1,0 +1,15 @@
+# 直播回看的配置入口
+![](https://dn-odum9helk.qbox.me/FuRso1IssdD69qWTrfbO7aRqvcoB)
+1. 个人控制台左栏点击直播云服务
+2. 选择一个直播空间
+3. 点击直播流管理
+4. 选择一个直播流，点击直播记录
+5. 选择直播时间范围
+6. 根据列出的直播记录选择需要生成回看的记录，点击“生成”，进入直播回看配置详情界面
+
+# 直播回看的配置界面
+![](https://dn-odum9helk.qbox.me/FoljScTfsbp7zGS3pCvQJ7qelJV1)
+1. 给回看文件起个文件名。默认使用流名和时间作为文件名
+2. 时间范围，继承自上一条设定直播记录的时间范围
+3. 生成格式。**目前支持：m3u8,mp4,flv**
+4. 点击“进行录制”，系统后台相应开始一个生成回看的任务，并给出任务ID，用户可以根据任务ID查看回看生成进度（[查看方法](https://developer.qiniu.com/dora/manual/1294/persistent-processing-status-query-prefop)）。

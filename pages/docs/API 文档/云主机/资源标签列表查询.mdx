@@ -1,0 +1,89 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `GET` /v1/tag/resource/:resource_id
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+     <tr>
+      <td>resource_id</td>
+      <td>string</td>
+      <td>path</td>
+      <td>是</td>
+      <td>
+      资源ID
+      </td>
+    </tr>
+ <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>query</td>
+      <td>是</td>
+      <td>
+      资源所在地域ID
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string | 请求 ID
+data | \[]Tag | 标签列表
+
+
+### Tag
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>name</td>
+      <td>string</td>
+      <td>
+        <p>标签名</p>
+      </td>
+    </tr>
+    <tr>
+      <td>description</td>
+      <td>string</td>
+      <td>
+        <p>描述信息</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+## 返回值示例
+```json
+{
+  "data": [
+    {
+      "name": "proxy",
+      "description": "proxy resources",
+    }
+  ],
+  "request_id": "N8cGF3EvRnQOSFMW"
+}
+```

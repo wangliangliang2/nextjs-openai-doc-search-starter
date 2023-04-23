@@ -1,0 +1,351 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `GET` /v1/vm/disk
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+instance_id | string  | path  | 是 | 云主机实例ID 
+region_id   | string  | query | 是 | 实例所属的地域 ID
+page        | integer | query | 否 | 页码。默认：1 
+size        | integer | query | 否 | 分页大小，最大100。默认20
+disk_id     | string  | query | 否 | 磁盘 ID
+disk_name   | string  | query | 否 | 磁盘名称
+instance_id | string  | query | 否 | 实例 ID
+zone_id     | string  | query | 否 | 可用区 ID
+type        | string  | query | 否 | 磁盘类型<br /><ul><li>`all`: 所有</li><li>`system`: 系统盘</li><li>`data`: 数据盘</li><ul>
+tag         | string  | query | 否 | 标签
+
+
+# 返回值
+| 名称 | 类型 | 是否必须 | 描述 |
+| ----- | ----- | ----- | ----- |
+| total | integer | 是 | 主机数量 |
+| page | integer | 是 | 页码。默认：1 |
+| size | integer | 是 | 分页大小，最大100。默认20 |
+| request_id | string | 是 | 请求 ID
+| data | \[]Disk | 否 | 磁盘列表 |
+
+### Disk
+
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>zone_id</td>
+      <td>string</td>
+      <td>
+        <p>可用区 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>
+        <p>区域 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>disk_id</td>
+      <td>string</td>
+      <td>
+        <p>磁盘 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>disk_name</td>
+      <td>string</td>
+      <td>
+        <p>磁盘名称</p>
+      </td>
+    </tr>
+    <tr>
+      <td>type</td>
+      <td>string</td>
+      <td>
+        <p>磁盘类型</p>
+      </td>
+    </tr>
+    <tr>
+      <td>size</td>
+      <td>integer</td>
+      <td>
+        <p>云盘或本地盘大小，单位 GiB。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>status</td>
+      <td>string</td>
+      <td>
+        <p>云盘状态。可能值：In_use, Available, Attaching, Detaching, Creating, ReIniting</p>
+      </td>
+    </tr>
+    <tr>
+      <td>device</td>
+      <td>string</td>
+      <td>
+        <p>云盘或本地盘挂载的实例的设备名，例如 <code>/dev/xvdb</code>。该参数仅在 Status 参数值为 <code>In_use</code> 时才有值，其他状态时为空。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>category</td>
+      <td>string</td>
+      <td>
+        <p>云盘种类</p>
+      </td>
+    </tr>
+    <tr>
+      <td>portable</td>
+      <td>boolean</td>
+      <td>
+        <p>云盘或本地盘是否支持卸载。取值范围：</p>
+        <ul>
+          <li>true：支持。可以独立存在，且可以在可用区内自由挂载和卸载。</li>
+          <li>false：不支持。不可以独立存在，且不可以在可用区内自由挂载和卸载。</li>
+        </ul>
+        <p>以下类型块存储的 Portable 属性都为 false，生命周期与实例等同：</p>
+        <ul>
+          <li>本地盘</li>
+          <li>本地 SSD 盘</li>
+          <li>包年包月数据盘</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>encrypted</td>
+      <td>boolean</td>
+      <td>
+        <p>是否只筛选出加密云盘。默认值：false</p>
+      </td>
+    </tr>
+    <tr>
+      <td>description</td>
+      <td>string</td>
+      <td>
+        <p>云盘或本地盘描述。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>expired_time</td>
+      <td>string</td>
+      <td>
+        <p>过期时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>attached_time</td>
+      <td>string</td>
+      <td>
+        <p>挂载时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>detached_time</td>
+      <td>string</td>
+      <td>
+        <p>卸载时间。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>disk_charge_type</td>
+      <td>string</td>
+      <td>
+        <p>云盘或本地盘的计费方式。</p>
+        <p>可能值：</p>
+        <ul>
+          <li>PrePaid：包年包月</li>
+          <li>PostPaid：按量付费</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>enable_auto_snapshot</td>
+      <td>boolean</td>
+      <td>
+        <p>云盘是否启用自动快照策略功能。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>delete_auto_snapshot</td>
+      <td>boolean</td>
+      <td>
+        <p>是否同时删除自动快照。</p>
+        <p>可能值：</p>
+        <ul>
+          <li>true：删除云盘上的快照。</li>
+          <li>false：保留云盘上的快照。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>enable_automated_snapshot_policy</td>
+      <td>boolean</td>
+      <td>
+        <p>云盘是否设置了自动快照策略。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>delete_with_instance</td>
+      <td>boolean</td>
+      <td>
+        <p>是否随实例释放。可能值：</p>
+        <ul>
+          <li>true：释放实例时，这块云盘随实例一起释放。</li>
+          <li>false：释放实例时，这块云盘保留不释放。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>image_id</td>
+      <td>string</td>
+      <td>
+        <p>创建 ECS 实例时使用的镜像 ID，只有通过镜像创建的云盘才有值，否则为空。这个值在云盘的生命周期内始终不变。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_id</td>
+      <td>string</td>
+      <td>
+        <p>云盘或本地盘挂载的实例 ID。</p>
+        <p>该参数值仅在 Status 参数值为 In_use 时才有值，其他状态时为空。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_name</td>
+      <td>string</td>
+      <td>
+        <p>云盘或本地盘挂载的实例名称</p>
+      </td>
+    </tr>
+    <tr>
+      <td>source_snapshot_id</td>
+      <td>string</td>
+      <td>
+        <p>创建云盘使用的快照 ID。</p>
+        <p>如果创建云盘时，没有指定快照，则该参数值为空。该参数值在云盘的生命周期内始终不变。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>auto_snapshot_policy_id</td>
+      <td>string</td>
+      <td>
+        <p>云盘采用的自动快照策略 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>performance_level</td>
+      <td>string</td>
+      <td>
+        <p>ESSD 云盘的性能等级。</p>
+        <p>可能值：PL1, PL2, PL3</p>
+      </td>
+    </tr>
+    <tr>
+      <td>iops</td>
+      <td>integer</td>
+      <td>
+        <p>每秒读写（I/O）操作的次数，单位：次/s。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>iops_read</td>
+      <td>integer</td>
+      <td>
+        <p>每秒读操作的次数，单位：次/s。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>iops_write</td>
+      <td>integer</td>
+      <td>
+        <p>每秒写操作的次数，单位：次/s。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>created_at</td>
+      <td>string</td>
+      <td>
+        <p>创建时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>updated_at</td>
+      <td>string</td>
+      <td>
+        <p>更新时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>cost_charge_type</td>
+      <td>string</td>
+      <td>付费方式</td>
+    </tr>
+    <tr>
+      <td>cost_charge_mode</td>
+      <td>string</td>
+      <td>按什么计费</td>
+    </tr>
+  </tbody>
+</table>
+
+## 返回值示例
+```json
+{
+  "data": [
+    {
+      "_id": "5fd1f41243c29c26ee98b4ce",
+      "zone_id": "grand-cn-east-3c",
+      "region_id": "grand-cn-east-3",
+      "disk_id": "7fc9c9e5-4a01-4b78-96fb-9f8754884bc4",
+      "disk_name": "I-0PIn3",
+      "type": "system",
+      "size": 50,
+      "status": "In_use",
+      "device": "/dev/vda",
+      "is_bind": false,
+      "category": "H_GPSSD",
+      "portable": true,
+      "encrypted": false,
+      "product_code": "",
+      "description": "",
+      "expired_time": "3000-01-01T00:00:00+08:00",
+      "attached_time": "2020-12-10T18:21:25.269+08:00",
+      "detached_time": "0001-01-01T00:00:00Z",
+      "disk_charge_type": "PostPaid",
+      "operation_locks": {
+        "operation_lock": []
+      },
+      "enable_auto_snapshot": false,
+      "delete_auto_snapshot": false,
+      "enable_automated_snapshot_policy": false,
+      "delete_with_instance": false,
+      "image_id": "",
+      "instance_id": "6cc3f0fa-2739-4384-8e85-8f212e7edbef",
+      "instance_name": "I-0PIn3",
+      "resource_group_id": "0",
+      "source_snapshot_id": "",
+      "auto_snapshot_policy_id": "",
+      "performance_level": "",
+      "iops": 0,
+      "iops_read": 0,
+      "iops_write": 0,
+      "created_at": "2020-12-10T18:10:26.778+08:00",
+      "updated_at": "2020-12-18T14:52:16.286+08:00",
+      "cost_charge_type": "PostPaid",
+      "cost_charge_mode": "PayByDisk"
+    }
+  ],
+  "page": 1,
+  "size": 10,
+  "total": 1,
+  "request_id": "ScKvES8HUEOkwVEW"
+}
+```

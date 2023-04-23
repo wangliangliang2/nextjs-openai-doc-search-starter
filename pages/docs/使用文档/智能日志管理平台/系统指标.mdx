@@ -1,0 +1,19 @@
+system监控主要用于监控 load1、load5、load15、用户数、cpu核数以及系统启动时间等。适用于对系统指标敏感的设备监控。
+
+system监控配置界面如下：
+![](https://dn-odum9helk.qbox.me/Fk8c0R3oynaEC8jyuiwyQWQ_gXVr)
+监控字段与指标的对应关系如下：
+
+1. `system_load1`:1分钟平均load值。
+2. `system_load5`:5分钟平均load值。
+3. `system_load15`:15分钟平均load值。
+4. `system_n_users`:用户数。
+5. `system_n_cpus`:CPU核数。
+6. `system_uptime`:系统启动时间。
+7. `system_uptime_format`:格式化的系统启动时间。
+8. `system_n_net_cards`:网卡数。
+9. `system_n_disks`:磁盘数。
+10. `system_n_services`:总服务数。
+
+其中系统服务数(`system_n_services`)目前只支持获取通过`supervisorctl`启动的服务。
+

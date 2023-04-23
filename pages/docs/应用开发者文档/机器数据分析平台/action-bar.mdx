@@ -1,0 +1,24 @@
+`<action-bar>` 元素定义仪表盘的操作集合。
+
+### 父元素
+
+* `<dashboard>`
+
+### 示例
+	
+```
+<action-bar token="actionBarToken">
+  <!-- 操作集合的初始值 -->
+  <initial-value>
+    <!-- 主题，可以使用actionBarToken.theme访问 -->
+    <theme>light</theme>
+    <!-- 刷新频率，可以使用actionBarToken.refreshInterval访问 -->
+    <refresh-interval>m5</refresh-interval>
+    <!-- 时间，可以使用actionBarToken.time访问 -->
+    <time>
+      <earliest>m5</earliest>
+      <latest>now</latest>
+    </time>
+  </initial-value>
+</action-bar>
+```

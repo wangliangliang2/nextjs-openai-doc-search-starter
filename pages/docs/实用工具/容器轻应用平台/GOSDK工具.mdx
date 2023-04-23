@@ -1,0 +1,87 @@
+此SDK用于提交异步任务到七牛，用来将任务发给容器集群进行调度执行。七牛会将提交的任务持久化，然后转发给容器集群上对应端口。
+
+**主要功能有：**
+
+1. 提交异步任务
+2. 查询异步任务执行情况
+
+**项目地址：**
+
+https://github.com/qiniupd/qiniu-fog-go
+
+
+
+# **安装**
+
+推荐使用 go mod , `github.com/qiniupd/qiniu-fog-go`
+
+
+
+# **鉴权**
+
+Go SDK 的所有的功能，都需要合法的授权。授权凭证的签算需要七牛账号下的一对有效的Access Key和Secret Key，这对密钥可以通过如下步骤获得：
+
+1. 开通一个[七牛账号](https://portal.qiniu.com/)
+2. 如果已有账号，进入【个人中心-> 密钥管理】，查看 Access Key 和 Secret Key。
+
+
+
+引入SDK
+
+```go
+import (
+	"bytes"
+	"context"
+	"net/http"
+
+	"github.com/qiniupd/qiniu-fog-go/api"
+)
+```
+
+
+
+# **提交任务**
+
+提交任务时用户需要填写执行任务的http method，header，body。如果没有body，可以不填body（nil）和body length（0），header没有也可以用nil。执行成功会返回 job id，用来查询执行结果
+
+函数签名
+
+```go
+func (a *Api)SendJob(ctx context.Context, method string, url string, body io.Reader, bodyLength int, header http.Header) (id string, err error)
+```
+
+示例代码
+
+```go
+a := api.NewApi("ak", "sk")
+data := []byte("abc")
+	ctx := context.Background()
+	h := http.Header{
+		"qiniu1":[]string{"1", "2"},
+	}
+	body := bytes.NewReader(data)
+	job, err := a.SendJob(ctx, "POST", "http://demoe.app-async-gate.qa.qiniu.io/c2u", body, len(data), h)
+
+```
+
+
+
+# **查询任务**
+
+传入 job id，返回执行的结果
+
+函数签名
+
+```go
+func (a *Api)QueryJob(ctx context.Context, id string) (resp *TaskInfo, err error)
+```
+
+示例代码
+
+```go
+t, err := a.QueryJob(ctx, "jobid")
+```
+
+
+
+

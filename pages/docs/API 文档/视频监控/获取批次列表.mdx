@@ -1,0 +1,60 @@
+# **描述**
+本接口用于查询批次列表。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/batches?offset=<offset>&line=<line>&name=<name>`
+*  Get请求，通过`非SDK`方式调用的客户，http头部Content-Type `要么设置为application/x-www-form-urlencoded`,`要么置空`, `要么不要携带`; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|line|否|integer|一次返回多少条, 默认最大值为1000条,当超过1000条时，需要结合offset 循环读取。
+|offset|否|integer|在全部批次中的偏移量, 当需要循环读取时, 第N次请求时offset = (N -1) * line
+|name|否|string|搜索所有批次名包含`name`的批次
+
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|items|array|`Batch`结构的数组
+|items.id|string|批次ID
+|items.cameraNum|integer|摄像头数量
+|items.platformNum|integer|平台数量
+|items.batchName|string|批次名称
+|items.autoCreate|bool|true：自动生成，false：批量上传
+|items.nsId|string|空间ID
+|items.createTime|integer|创建时间(单位秒)
+|total|integer|含有多少条
+
+# **示例**
+
+**请求示例**
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akras1vdttwy/batches \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+```
+
+**响应示例**
+
+```
+{
+    "items": [
+        {
+            "id": "3gzh7xdrfskl6",
+            "cameraNum": 1,
+            "platformNum": 1,
+            "batchName": "batch_name",
+            "nsId": "2akras1vdttwy",
+            "createTime": 1637652453,
+            "autoCreate": true
+        }
+    ],
+    "total": 1
+}
+```

@@ -1,0 +1,18 @@
+**问题分析**：我们默认偏移为 10，超过偏移 watermark/1 就会返回原图
+
+```
+http://oepw6i5pr.qnssl.com/10221446?watermark/1/image/aHR0cDovL29lcHc2aTVwci5xbnNzbC5jb20vMTAyMjE0NDc=
+```
+
+- 原图
+
+  "width": 4654,"height": 2362
+
+- 水印图
+  "width": 2327,"height": 2362
+
+**处理方案**：重新设置dx、dy偏移量，如下：
+
+```
+http://oepw6i5pr.qnssl.com/10221446?watermark/1/image/aHR0cDovL29lcHc2aTVwci5xbnNzbC5jb20vMTAyMjE0NDc=/dx/0/dy/0
+```

@@ -1,0 +1,313 @@
+Terraform 是一个开源的自动化的资源编排工具，可以用代码来管理维护 IT 资源。Terraform 的命令行接口（CLI） 提供一种简单机制，用于将配置文件部署到七牛云或其他任意支持的云上，并对其进行版本控制。它编写了描述云资源拓扑的配置文件中的基础结构，例如虚拟机、存储帐户和网络接口等。Terraform 通过 Provider 来支持新的基础架构，是一个高度可扩展的工具。
+
+[七牛云Provider](https://github.com/qiniu/terraform-provider-qiniu) 依据标准定义了对象存储的 Resource 和 Data Source，您可以使用 Terraform 来管理七牛云对象存储的资源。
+
+
+<a id="install"></a>
+# **安装七牛云 Provider**
+
+**1. Clone repository**
+```
+$ git clone git@github.com:qiniu/terraform-provider-qiniu.git --recurse-submodules
+```
+
+**2. Build the provider**
+```
+$ cd terraform-provider-qiniu
+$ make
+```
+
+**3. Install the provider**
+```
+mkdir -p ~/.terraform.d/plugins
+mv bin/terraform-provider-qiniu ~/.terraform.d/plugins
+```
+
+**4. 创建配置文件**
+配置 provider 信息，创建 provider.tf 文件，按以下格式配置身份认证信息
+```
+provider "qiniu" {
+  access_key = "<Qiniu Access Key>"
+  secret_key = "<Qiniu Secret Key>"
+}
+```
+
+**5. 初始化目录**
+```
+$ terraform init
+```
+
+<br>
+
+<a id="function"></a>
+# **使用 Terraform 管理七牛云对象存储**
+
+Provider 安装以后，就可以通过 Terraform 的操作命令来管理七牛云对象存储了。
+
+## **创建 Bucket**
+```
+resource "qiniu_bucket" "basic_bucket" {
+  name      = "basic-test-terraform-1" 
+  region_id = "z0"                    
+  private   = false                    
+}
+```
+参数说明：
+
+参数   |    必填   |    说明
+--------|------ | -------------
+name       | 是   | 空间名
+region_id      | 是  | 空间所属区域
+private    | 否  | 空间是否为 private
+
+<br>
+
+## **设置空间标签**
+七牛云 Provider 1.0.2 及以上的版本支持。
+
+```
+resource "qiniu_bucket" "basic_bucket" {
+  name      = "basic-test-terraform-1" 
+  region_id = "z0"                    
+  tagging = {
+      env = "test"                       
+      kind = "basic"                     
+  }
+}
+```
+参数说明：
+
+参数   |    必填   |    说明
+------|-------- | -------------
+name       | 是   | 空间名
+region_id      | 是  | 空间所属区域
+tagging    | 是  | 空间标签，每对标签由一对 key-value 组成；每个空间最多设置 10 对标签
+
+<br>
+
+## **开启默认首页功能**
+七牛云 Provider 1.0.2 及以上的版本支持。
+
+```
+resource "qiniu_bucket" "basic_bucket" {
+  name      = "basic-test-terraform-1" 
+  region_id = "z0"                    
+  index_page_on   = true                    
+}
+```
+参数说明：
+
+参数   |    必填   |    说明
+------|-------- | -------------
+name       | 是   | 空间名
+region_id      | 是  | 空间所属区域
+index_page_on    | 是  | 是否开启默认首页功能；true 表示开启
+<br>
+
+## **设置客户端缓存 maxAge**
+七牛云 Provider 1.0.2 及以上的版本支持。
+
+```
+resource "qiniu_bucket" "basic_bucket" {
+  name      = "basic-test-terraform-1" 
+  region_id = "z0"                    
+  max_age   = 3600                    
+}
+```
+参数说明：
+
+参数   |    必填   |    说明
+-------|------- | -------------
+name       | 是   | 空间名
+region_id      | 是  | 空间所属区域
+max_age    | 是  | 客户端缓存最大时长，单位秒。不设置时，默认为 31536000。
+<br>
+
+## **设置生命周期规则**
+七牛云 Provider 1.0.2 及以上的版本支持。
+
+```
+resource "qiniu_bucket" "basic_bucket" {
+  name      = "basic-test-terraform-1" 
+  region_id = "z0"                    
+  lifecycle_rules {
+    name = "rule_1"                    
+    prefix = "users/"                  
+    to_line_after_days = 20            
+    delete_after_days = 30             
+  }
+  lifecycle_rules {                    
+    name = "rule_2"                    
+    prefix = "admin/"                  
+    to_line_after_days = 40            
+    delete_after_days = 60             
+  }                   
+}
+```
+参数说明：
+
+参数   |    必填   |    说明
+------|-------- | -------------
+name       | 是   | 空间名
+region_id      | 是  | 空间所属区域
+lifecycle_rules    | 是  | 空间的生命周期规则
+
+lifecycle_rules的配置支持：
+
+参数   |    必填   |    说明
+------|-------- | -------------
+name       | 是   | 规则名称
+prefix      | 是  | 规则匹配的 Objects 的前缀；为空时表示整个 Bucket 生效；前缀为空的规则只能设置一条
+to_line_after_days    | 否  | 设置新创建的文件在指定天数后自动转为低频存储
+delete_after_days    | 否  | 设置新创建的文件在指定天数后自动删除；与 to_line_after_days 同时设置时，值需要大于 to_line_after_days
+<br>
+
+## **设置空间 Referer 防盗链**
+七牛云 Provider 1.0.2 及以上的版本支持。
+
+```
+resource "qiniu_bucket" "basic_bucket" {
+  name      = "basic-test-terraform-1" 
+  region_id = "z0"                    
+  anti_leech_mode = "blacklist"                            
+  referer_pattern = ["foo.com", "*.bar.com", "sub.foo.com"] 
+  allow_empty_referer = true                               
+  only_enable_anti_leech_for_cdn = false                   
+}
+```
+参数说明：
+
+参数   |    必填   |    说明
+------|-------- | -------------
+name       | 是   | 空间名
+region_id      | 是  | 空间所属区域
+anti_leech_mode    | 是  | 防盗链模式；支持白名单 (whitelist) 或黑名单模式 (blacklist)
+referer_pattern    | 是  | referer 规则；支持多条，以 , 分隔
+only_enable_anti_leech_for_cdn    | 是  | 是否开启源站防盗链；必须设置为 false，表示开启源站防盗链，对空间的所有访问请求均生效
+allow_empty_referer    | 否  | 是否允许空 Referer
+
+详细配置说明可以参见 [设置空间的Referer防盗链规则](https://developer.qiniu.com/kodo/manual/6093/set-the-hotlinking-prevention)
+<br>
+
+## **设置跨域访问规则**
+七牛云 Provider 1.0.2 及以上的版本支持。
+不做设置时，默认允许任何跨域访问请求。
+
+```
+resource "qiniu_bucket" "basic_bucket" {
+  name      = "basic-test-terraform-1" 
+  region_id = "z0"                    
+  cors_rules {
+    allowed_origins = ["http://www.test1.com"]    
+    allowed_methods = ["GET", "POST"]             
+    allowed_headers = ["X-Reqid", "Content-Type"] 
+    exposed_headers = ["X-Test-1", "X-Test-2"]    
+    max_age = 20                                  
+  }
+  cors_rules {                                    
+    allowed_origins = ["http://www.test2.com"]    
+    allowed_methods = ["GET", "POST", "HEAD"]     
+  }                 
+}
+```
+参数说明：
+
+参数   |    必填   |    说明
+-------|------- | -------------
+name       | 是   | 空间名
+region_id      | 是  | 空间所属区域
+cors_rules    | 是  | 空间的跨域访问规则；最多10条
+
+cors_rules的配置支持：
+
+参数   |    必填   |    说明
+------|-------- | -------------
+allowed_origins       | 是   | 允许的跨域请求的来源
+allowed_methods      | 是  | 允许的跨域请求方法
+allowed_headers    | 否  | 允许的跨域请求的响应头
+exposed_headers    | 否  | 允许用户从应用程序中访问的响应头
+max_age    | 否  | 浏览器对特定资源的预取（OPTIONS）请求返回结果的缓存时间
+
+详细配置说明可以参见 [设置空间的跨域资源共享](https://developer.qiniu.com/kodo/manual/6094/set-cors)
+<br>
+
+## **创建 Object**
+```
+resource "qiniu_bucket_object" "basic_object" {
+  bucket    = "basic-test-terraform-1"  
+  key       = "qiniu-key"             
+  source    = "/path/to/file"
+  storage_type    = "infrequent"
+}
+```
+参数说明：
+
+参数   |    必填   |    说明
+------|-------- | -------------
+bucket       | 是   | 空间名
+key      | 是  | Object name
+source    | 否  | 待上传 Object 的存放路径
+storage_type | 否  | Object 的存储类型；infrequent 表示低频存储类型，为空或不设置表示标准存储类型
+<br>
+
+## **导入已有资源**
+可以通过 import 命令导入已有的 Bucket 和 Object。以 Bucket 举例如下：
+首先，配置 Bucket 信息
+```
+resource "qiniu_bucket" "importbucket" {
+  name      = "video" 
+  region_id = "z0"                                      
+}
+```
+然后使用 import 命令导入 video 这个 Bucket
+```
+terraform import qiniu_bucket.importbucket video
+```
+<br>
+
+<a id="Datasource"></a>
+# **七牛云对象存储 Data Source**
+## **qiniu_regions**
+
+```
+data "qiniu_regions" "China" {
+    id_regex = "^z"                             
+    description_regex = "China"               
+}
+```
+参数说明：
+
+参数   |    必填   |    说明
+-------|------- | -------------
+id_regex       | 否   | 区域 id 的正则匹配规则
+description_regex      | 否  | 区域描述的正则匹配规则
+<br>
+
+## **qiniu_buckets**
+
+```
+data "qiniu_buckets" "z1" {
+  name_regex = "^bucket-"
+  region_id = "z1"
+}
+```
+参数说明：
+
+参数   |    必填   |    说明
+-------|------- | -------------
+name_regex       | 是   | 空间名的正则匹配规则
+region_id      | 是  | 空间所属区域
+<br>
+
+## **qiniu_buckets_objects**
+
+```
+data "qiniu_buckets_objects" "all" {
+  bucket = "basic-test-terraform-1"
+}
+```
+参数说明：
+
+参数   |    必填   |    说明
+------|-------- | -------------
+bucket       | 是   | 空间名的正则匹配规则

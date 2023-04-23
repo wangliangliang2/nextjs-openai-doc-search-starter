@@ -1,0 +1,63 @@
+# 接口描述
+
+可根据业务需求自定义推拉流URL，改写后的URL应符合七牛的直播URL规范: `<scheme>://<domain>/<hub>/<stream>[.<ext>]?<query>`
+
+# 请求参数
+
+```
+POST /v2/hubs/<hub>/domains/<domain>/urlrewrite
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+
+{
+    "rules":[
+        {
+            "pattern":"<pattern>",
+            "replace":"<replace>"
+        }
+    ]
+}
+```
+
+|      参数         |      类型          |  必填   |                  描述                      |
+| -------------------- | -------------------- | ----------- | ------------------------------------------ |
+|       Hub           |    string           | 是    |     直播空间名                                       |
+|    Domain           |    string           | 是    |  域名                                          |
+|     Rules           |  []object           | 是    |    URL 改写规则列表                       |
+|├─ Pattern           |    string           | 是    | 匹配规则，针对完整URL的正则表达式，形式如：(.+)/live/(.+)/playlist.m3u8，括号中的内容允许在 Replacement 中使用${n}引用（n表示括号顺序） |
+|├─ Replace           |    string           | 是    | 改写规则，希望得到的改写结果，形式如：${1}/hub/${2}.m3u8，改写后的URL应符合七牛的直播URL规范: `<scheme>://<domain>/<hub>/<stream>[<ext>]?<query>` |
+
+# 返回数据
+
+空
+
+# 示例
+
+请求体:
+
+```
+POST /v2/hubs/testhub/domains/pili-publish.test.com/urlrewrite HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+
+{
+    "rules":[
+        {
+            "pattern":"(.+)/test/(.+)",
+            "replace":"${1}/test/live/${2}"
+        }
+    ]
+}
+```
+
+返回体:
+
+```
+200 OK
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

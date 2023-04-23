@@ -1,0 +1,12 @@
+Birch算法是层次聚类的一种优化算法，适合于数据量啊，类别数也比较多的情况，并且运行速度很快。它使用聚类特征来表示一个簇，并使用聚类特征树（CF-树）来表示聚类的层次结构来实现快速的聚类。
+
+**语法：**
+```
+...|fit Birch threshold=<float> branching_factor=<int> n_clusters=<int> <feature_field_1> <feature_field_2> [into model_name]... 
+```
+
+- threshold用来指定叶节点每个CF的最大样本半径阈值T，它决定了每个CF里所有样本形成的超球体的半径阈值。如不提供，默认值为0.5。一般来说threshold越小，则CF Tree的建立阶段的规模会越大，即BIRCH算法第一阶段所花的时间和内存会越多，如果样本的方差较大，则一般需要增大这个默认值。
+
+- branching_factor用来指定CF Tree内部节点的最大CF数B，以及叶子节点的最大CF数L。如不提供，默认值为50。如果样本量非常大（>10万），推荐增大该参数。
+
+- n_clusters用来指定类别数。如不提供，默认值为3。如果类别数非常多，且没有先验知识，则一般输入None。

@@ -1,0 +1,40 @@
+# 申请直播域名的访问日志
+
+客户如果想要获得直播空间内某个域名的访问日志，可以向七牛提工单，工单内需包含以下内容。
+
+1. 相关域名，例如 `pili-live-rtmp.aaa.xxx.cn` 必须属于提交工单的账号。
+
+2. 日志的存储空间，必须属于提交工单的账号。
+
+3. 存储有效期，永久或指定天数
+
+如果想要申请的域名不属于提交工单的账号，需单独联系销售，提供身份证，营业执照等信息证明域名、空间所有权
+
+## 日志格式
+```
+# rtmp
+以下字段依次排列，以 '\t' 分割
+`time_local` 结束时间(RFC3339)
+`url` 服务端解析出来的 url 
+`remote_addr` 客户端地址
+`bytes_sent` 返回总字节数
+`request_time` 请求耗时(毫秒)
+`flash_ver`
+`page_url`
+
+# flv hls
+以下字段依次排列，以 '\t' 分割
+$time_iso8601
+$remote_addr
+$request( $Method   $request_url    $protocol 以空格分割)
+$status
+$bytes_sent
+$request_time (秒)
+$http_referer
+$http_user_agent
+```
+## 日志命名格式：
+`vdn-log/<type>/<domain>/<date>/<hourAndMinute>/part-<number>.gz`
+
+## 日志上传时间：
+延迟一天

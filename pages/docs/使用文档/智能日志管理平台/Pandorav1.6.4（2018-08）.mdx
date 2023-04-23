@@ -1,0 +1,31 @@
+**新功能：**
+
+1.告警新增支持`企业微信`通知方式。【[文档](/insight/manual/4631/warning)】
+
+![](https://pandora-kibana.qiniu.com/warning/e_wechat.png)
+
+2.实时仓库和工作流新增支持 ip 类型数据字段。
+
+3.在工作流支持 ip 字段解析：将 ip 字段解析为对应的国家、省市、运营商信息。【[文档](/insight/manual/4668/data-delivery#1)】
+
+  * 在工作流导出节点开启 ip 解析功能
+
+![](https://pandora-kibana.qiniu.com/ip/workflow_ip.png)
+
+  * 在日志仓库搜索数据即可看到新增的 ip_country、ip_region、ip_city 字段。
+
+![](https://pandora-kibana.qiniu.com/ip/searh_ip.png)
+
+4.上传文件提取字段：支持 date 字段类型并指定时间格式。
+
+![](https://pandora-kibana.qiniu.com/fileupload/date.png)
+
+5.对子账号支持默认开通 pandora 服务，无需重复申请开通。
+
+**调整：**
+
+[上传文件](/insight/manual/4882/file-upload)大小限制从 2 MB调整到 100 MB。
+
+**定制化**
+
+告警支持对单个客户设置告警数量。

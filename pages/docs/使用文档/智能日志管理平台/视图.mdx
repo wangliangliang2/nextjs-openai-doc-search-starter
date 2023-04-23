@@ -1,0 +1,47 @@
+**视图：**视图可被视为一种特殊的日志仓库，用于存储一个或多个仓库中的部分数据。对于视图的搜索、可视化、授权、告警与日志仓库无异。
+
+`注意：`视图中存储的数据来源于已经存在的日志仓库，数据并不能直接进入视图。
+
+<a href="#1">视图使用指南</a>
+
+<a href="#2">视图使用场景</a>
+
+<a name="1"></a>
+
+## **视图使用指南**
+
+**新建视图**
+
+1.进入[日志搜索分析页面](https://portal.qiniu.com/insight/nb/logdb/overview)，选择仓库与过滤条件（可选多个仓库），搜索日志内容，您可以点击`另存为`将此条件下的日志数据另存为视图。
+
+![](https://pandora-kibana.qiniu.com/alert/view_save.png)
+
+如：选择仓库为 `workflow_dag_v1_log`，输入搜索条件为 `metrictype: *` ，点击另存为视图即可将此仓库下包含 metrictype 字段的数据存在视图中。
+
+同时，视图支持搜索，如，在下拉框选择视图 `test_view`，在此视图中输入搜索条件为 `jobTyp: *` ，相当于在仓库 `workflow_dag_v1_log` 中输入搜索条件 `metrictype: * AND jobType: *` 进行搜索。（`test_view` 为在日志仓库 `workflow_dag_v1_log` 中通过条件` metrictype: *` 搜索得出的数据创建的视图）
+
+![](https://pandora-kibana.qiniu.com/view/re_search.png)
+
+对于视图的搜索、可视化、授权、告警与日志仓库无异，详情阅读[日志搜索分析](/insight/manual/4629/search-analysis)。
+
+2.进入视图管理页面，点击右上角`添加视图`按钮，选择来源仓库，填写搜索条件、指定仓库字段创建视图。
+
+![](https://pandora-kibana.qiniu.com/view/view_field.png)
+
+**视图管理**
+
+进入视图管理页面，可查看所有视图，包括视图的来源仓库和搜索条件等信息。
+
+![](https://pandora-kibana.qiniu.com/view/management.png)
+
+**视图快速搜索**
+
+进入[日志搜索分析首页](https://portal.qiniu.com/insight/nb/logdb/overview)，在日志仓库/视图列表点击`极速搜索`或`详细搜索`可对仓库/视图进行快速搜索。
+
+![](https://pandora-kibana.qiniu.com/view/quick_search.png)
+
+<a name="2"></a>
+
+## **视图使用场景**
+
+在进行授权时，常常有希望被授权对象只看到日志仓库里面部分数据的场景。使用视图功能，预先把日志仓库里的部分数据存为视图，再直接对视图进行授权即可。

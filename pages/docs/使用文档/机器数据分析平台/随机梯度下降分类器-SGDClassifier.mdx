@@ -1,0 +1,46 @@
+随机梯度下降分类器基于线性模型（例如逻辑回归，支持向量机），并使用随机梯度下降的方式进行优化、求解。
+```
+..| fit SGDClassifier fit_intercept=<True(default)|False> random_state=<int> n_iter_no_change=<int>  max_iter=<int> l1_ratio=<floats> alpha=<floats> eta0=<floats> power_t=<floats> tol=<floats> loss=<hinge(default) | log | modified_huber | perception | squared_error | huber | epsilon_insensitive | squared_epsilon_insensitive> penalty=<l1 | l2 | elasticnet(default)> learning_rate=<constant | optimal(default) | invscaling | adaptive> <target_field> from <feature_field_1> <feature_field_2>... 
+```
+**参数说明：**
+
+- fit_intercept参数用来指定模型是否要拟合截距项，如果数据已经中心化，可以设为False。默认值为True。
+
+- random_state用来指定随机种子，用来控制模型的随机性。如果给定特定值，重新跑模型的时候，可以得出同样的结果。
+
+- n_iter_no_change，每当超过n_iter_no_change参数的迭代次数损失函数没有显著变化时，训练停止。默认值为5。
+
+- max_iter用来指定神经网络的最大迭代次数，默认值为1000。
+
+- l1_ratio用于弹性网络模型(ElasticNet)，表示L1正则的比例。默认值为0.15。
+
+- alpha用来指定一个常数，用于在损失函数中乘以正则项。该值越高，正则程度越高。
+
+- eta0参数用来指定初始的学习率。
+
+- tol参数用于指定优化器的忍耐度。当损失函数的值的变化小于了忍耐度，便认为训练结束，从而停止训练。默认值为1e-4。
+
+- loss参数用于指定损失函数的形式。
+  + loss = hinge，采用铰链损失函数（适用于分类任务）。（默认值）
+  + loss = log，采用对数损失函数（适用于分类任务）。
+  + loss = modified_huber,采用调整huber损失函数（适用于分类任务）。
+  + loss = perception，采用perception损失函数（适用于分类任务）。
+  + loss = squared_error，采用平方损失函数（适用于回归任务）。
+  + loss = huber，采用huber损失函数（适用于回归任务）。
+  + loss = epsilon_insensitive，采用经epsilon调整的铰链损失函数（适用于回归任务）。
+  + loss = squared_epsilon_insensitive，采用经平方epsilon调整的铰链损失函数（适用于回归任务）。
+  
+- penalty参数用于指定正则项的形式。
+  + penalty = l1，表示使用L1正则项。
+  + penalty = l2，表示使用L2正则项。（默认值）
+  + penalty = elasticnet，表示使用弹性网络的正则项，它是L1正则项和L2正则项的融合。
+  
+- learning_rate用来指定学习率的模式。
+  + learning_rate= constant，即使用常数作为学习率。用eta0参数来设置其值。
+  + learning_rate = optimal，eta = 1.0 / (alpha * (t + t0))。其中t是迭代的步数，t0是由Leon Bottou提出的启发式选择。（默认值）
+  + learning_rate = invscaling，使用一种逐渐自动下降的学习率。在训练的第t步，学习率会变为eta0 / pow(t, power_t)。其中power_t可以手动设定，其默认值为0.5。
+  + learning_rate = adaptive，使用自适应的学习率。每当n_iter_no_change次迭代，误差函数变化很小时，就会降低学习率。
+  
+- power_t参数仅在learning_rate = invscaling时有效，其作用见learning_rate参数下invscaling取值时的说明。默认值为0.5。
+
+  

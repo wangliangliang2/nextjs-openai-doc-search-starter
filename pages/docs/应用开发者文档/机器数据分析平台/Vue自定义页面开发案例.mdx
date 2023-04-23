@@ -1,0 +1,421 @@
+本文档以开发 Grid 展示 APP 为例，介绍在 Pandora 2.0 应用平台开发 Vue 的自定义页面 App 的最佳实践。
+
+开发步骤
+
+#### 一. 使用 `create-pandora-app` 创建自定义页面应用模板。
+
+```bash
+$ npx create-pandora-app grid -t view-html
+```
+
+#### 二. 在 `grid/develop` 目录下开发自定义页面逻辑。
+
+1. 安装相关依赖
+
+```bash
+npm install
+```
+
+2. 配置 vue 环境
+
+a、在 develop 目录加入 .babelrc 文件
+
+```json
+{
+  "presets": [
+    [
+      "env",
+      {
+        "modules": false,
+        "targets": {
+          "browsers": ["> 1%", "last 2 versions", "not ie <= 8"]
+        }
+      }
+    ],
+    "stage-2"
+  ],
+  "plugins": ["transform-vue-jsx", "transform-runtime"],
+  "env": {
+    "test": {
+      "presets": ["env", "stage-2"],
+      "plugins": [
+        "transform-vue-jsx",
+        "transform-es2015-modules-commonjs",
+        "dynamic-import-node"
+      ]
+    }
+  }
+}
+```
+
+b、配置 webpack
+
+```
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+  {
+    entry: {
+      index: path.join(srcPath, 'index.ts')
+     },
+    resolve: {
+    modules: [srcPath, 'node_modules'],
+    extensions: [ '.ts', '.js', '.vue'],
+    alias: {
+      'vue$': 'vue/dist/vue.esm.js' //内部为正则表达式  vue结尾的
+    }
+  },
+  module:{
+    rules:[{
+        test: /\.vue$/,
+        loader: 'vue-loader',
+      },{
+        test:/\.(ts)?$/,
+        loader:'ts-loader',
+        options:{
+          transpileOnly: true,
+          appendTsSuffixTo: [/\.vue$/]
+        }
+     }, {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'vue-style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 2,
+              sourceMap: false,
+              modules: false,
+              localsConvention: 'camelCase'
+            }
+          }
+        ],
+        sideEffects: true
+      }]
+   }
+   plugins:[new VueLoaderPlugin(), // 最新版的vue-loader需要配置插件]
+  }
+```
+
+c、在 develop/src 下加入 html 文件
+
+```Html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>grid</title>
+  </head>
+  <body>
+  <div id="app" style="  text-align: center;">
+      <img style="height:40px;width:40px;margin-top: 20px;" src="./loading.svg"/>
+    </div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
+```
+
+3. 实现代码逻辑，index.ts
+
+```typescript
+import Vue from 'vue'
+import { LoginManager, ELoginType } from '@qn-pandora/app-sdk'
+import { router as routerUtil } from '@qn-pandora/app-sdk'
+import VueRouter from 'vue-router'
+import router from './router'
+import App from './App.vue'
+
+Vue.config.productionTip = false
+
+async function init() {
+  if (!IS_ENV_PRODUCTION) {
+    const loginManager = new LoginManager(ELoginType.PANDORA)
+    await loginManager.login({
+      username: USERNAME,
+      password: PASSWORD
+    })
+  }
+}
+
+init()
+
+Vue.use(VueRouter)
+
+new Vue({
+  el: '#app',
+  router,
+  components: { App },
+  template: '<App/>',
+  watch: {
+    $route(_to) {
+      if (window.frameElement) {
+        const basepath = window.frameElement.getAttribute('data-basepath')
+        const path = `${basepath}${this.$route.fullPath}`
+        if (path && path.length > 0) {
+          routerUtil.push(path)
+        }
+      }
+    }
+  }
+})
+```
+
+在 `App.vue` 中使用路由,初始化样式
+
+```vue
+<template>
+  <div id="app">
+    <router-view />
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'App'
+}
+</script>
+
+<style>
+a {
+  text-decoration: none;
+}
+/*正常的未被访问过的链接*/
+a:link {
+  text-decoration: none;
+}
+/*已经访问过的链接*/
+a:visited {
+  text-decoration: none;
+}
+/*鼠标划过(停留)的链接*/
+a:hover {
+  text-decoration: none;
+}
+/* 正在点击的链接*/
+a:active {
+  text-decoration: none;
+}
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+</style>
+```
+
+定义 router 的 routes
+
+```typescript
+import Hello from '../pages/hello/index.vue'
+import Grid from '../pages/grid/index.vue'
+import App from '../App.vue'
+
+export default [
+  {
+    path: '/',
+    component: App, //顶层路由，对应index.html
+    children: [
+      {
+        path: '',
+        redirect: '/hello'
+      },
+      {
+        path: '/hello',
+        name: 'Hello',
+        component: Hello
+      },
+      {
+        path: '/grid',
+        name: 'Grid',
+        component: Grid
+      }
+    ]
+  }
+]
+```
+
+生成 router
+
+```typescript
+import Vue from 'vue'
+import Router from 'vue-router'
+import routes from './routes'
+
+Vue.use(Router)
+
+export default new Router({
+  routes,
+  mode: 'hash'
+})
+```
+
+实现 grid 组件
+
+```
+<template>
+  <table>
+    <thead>
+      <tr>
+        <th
+          v-for="key in columns"
+          :key="key"
+          @click="sortBy(key)"
+          :class="{ active: sortKey == key }"
+        >
+          {{ key | capitalize }}
+          <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+          </span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(entry, index) in filteredHeroes" :key="index">
+        <td v-for="key in columns" :key="key">
+          {{ entry[key] }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</template>
+
+<script>
+export default {
+  name: 'grid',
+  props: {
+    heroes: Array,
+    columns: Array,
+    filterKey: String
+  },
+  data: function () {
+    var sortOrders = {}
+    this.columns.forEach(function (key) {
+      sortOrders[key] = 1
+    })
+    return {
+      sortKey: '',
+      sortOrders: sortOrders
+    }
+  },
+  computed: {
+    filteredHeroes: function () {
+      var sortKey = this.sortKey
+      var filterKey = this.filterKey && this.filterKey.toLowerCase()
+      var order = this.sortOrders[sortKey] || 1
+      var heroes = this.heroes
+      if (filterKey) {
+        heroes = heroes.filter(function (row) {
+          return Object.keys(row).some(function (key) {
+            return String(row[key]).toLowerCase().indexOf(filterKey) > -1
+          })
+        })
+      }
+      if (sortKey) {
+        heroes = heroes.slice().sort(function (a, b) {
+          a = a[sortKey]
+          b = b[sortKey]
+          return (a === b ? 0 : a > b ? 1 : -1) * order
+        })
+      }
+      return heroes
+    }
+  },
+  filters: {
+    capitalize: function (str) {
+      return str.charAt(0).toUpperCase() + str.slice(1)
+    }
+  },
+  methods: {
+    sortBy: function (key) {
+      this.sortKey = key
+      this.sortOrders[key] = this.sortOrders[key] * -1
+    }
+  }
+}
+</script>
+<style lang="less">
+@import './style.less';
+</style>
+```
+
+grid 的 page 用来使用 grid 组件
+
+```
+<template>
+ <div id="grid">
+  <div class="header">
+    <router-link to="/">Home</router-link>
+  </div>
+   <form id="search">
+        Search <input name="query" v-model="searchQuery" />
+    </form>
+      <demo-grid
+        :heroes="gridData"
+        :columns="gridColumns"
+        :filter-key="searchQuery"
+      >
+      </demo-grid>
+  </div>
+</template>
+
+<script>
+import demoGrid from '../../components/Grid/index'
+export default {
+  name: 'Grid',
+  components:{
+    demoGrid
+  },
+     mounted(){
+       this.searchQuery=this.$route.query['search']
+     },
+    data: ()=>{
+    return {
+    searchQuery: "",
+    gridColumns: ["name", "power"],
+    gridData: [
+      { name: "Chuck Norris", power: Infinity },
+      { name: "Bruce Lee", power: 9000 },
+      { name: "Jackie Chan", power: 7000 },
+      { name: "Jet Li", power: 8000 }
+      ]
+     }
+  }
+}
+</script>
+
+<style lang='less'>
+@import '@qn-pandora/pandora-component/lib/style/mixin.less';
+@import '@qn-pandora/pandora-component/lib/style/theme.less';
+
+#search{
+  margin-top: 40px;
+  margin-bottom: 10px;
+}
+#grid {
+  text-align: center;
+  color: #2c3e50;
+  font-size: 20px;
+  padding: 20px;
+   .header{
+    border: 1px solid bisque;
+    width: 50px;
+    text-align: center;
+}
+}
+</style>
+```
+
+4. 编译打包
+
+```bash
+$ npm run package
+```
+
+> 您可以选择任意自己擅长的前端开发技术栈开发页面，最终您所开发的页面会被以 iframe 的方式嵌入的 Pandora 平台。模板提供使用 React 的方式开发，Vue 开发需要在 `develop` 目录下做上述脚手架修改
+> Pandora 平台为您提供了以下 SDK 方便您快速构建自己的应用，具体请参考[APP 开发工具库](/app-tools)
+
+#### 三. 上传应用至平台
+
+将打包完成的 `grid.tar.gz` 应用包上传至平台。

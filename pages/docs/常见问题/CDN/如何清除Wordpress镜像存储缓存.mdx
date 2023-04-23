@@ -1,0 +1,14 @@
+### 
+
+### 问题描述：
+
+在wordpress中用wp super cache 插件启用七牛CDN后, 对style.css进行修改, 但是七牛的缓存不更新,这要怎么解决? 相当于现在无法调整网页样式了.
+
+### 解决方案：
+
+启用七牛的插件之后，你的静态文件会被镜像到七牛来，但是修改过之后七牛不会重新去你的源站取，需要去 portal 后台手工删除这个 css 文件后七牛才会重新把它镜像过来。
+
+在新版的 wordpress 插件中，已经有了清除缓存的界面了，只需将要清除缓存的文件放上去就行，插件从这里下载：[http://wordpress.org/plugins/wpjam-qiniu/](http://wordpress.org/plugins/wpjam-qiniu/)
+
+插件使用方法可以参考这篇文章：[http://blog.wpjam.com/project/wpjam-qiniutek/](http://blog.wpjam.com/project/wpjam-qiniutek/)
+

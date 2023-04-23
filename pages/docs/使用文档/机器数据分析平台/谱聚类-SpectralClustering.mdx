@@ -1,0 +1,31 @@
+谱聚类是一种基于图的聚类方法：通过构建邻接图，将样本数据看作空间中的点，根据这些点之间的距离构建带权重值的边，距离越远的点权重值越低，再通过切图，使一个子图之内的边权重和尽可能高，而不同子图之间的边权重和尽可能低，实现聚类的目的。**不支持模型保存**。
+
+
+**语法：**
+```
+...|fit SpectralClustering n_clusters=<int> affinity=<nearest_neighbors | rbf(default) | linear | poly | sigmoid> assign_labels=<kmeans (default)| discretize> n_init=<int> gamma=<float> degree=<int> n_neighbors=<int> coef0=<float> <feature_field_1> <feature_field_2>... 
+```
+
+**参数说明：**
+- n_clusters参数，用来指定谱聚类切图时降维到的维数，也是最后聚类到的簇数。如不提供，默认值为8。
+
+- affinity参数，用来指定相似矩阵的建立方式。
+	+ affinity=nearest_neighbors，使用K邻近法
+	+ affinity=rbf（默认值），使用高斯核函数
+	+ affinity=linear，使用线性核函数
+	+ affinity=poly，使用多项式核函数
+	+ affinity=sigmoid，使用sigmoid核函数
+
+- assign_labels参数，用来指定最后的聚类方法。
+	+ assign_labels=kmeans（默认值），使用K-Means聚类方法
+	+ assign_labels=discretize，使用discretize聚类方法
+
+- n_init参数，在assign_labels=kmeans的情况下，用来指定用不同的初始值组合跑K-Means聚类的次数。如不提供，默认值为10。
+
+- gamma参数，在affinity=rbf或者linear或者poly或者sigmoid的情况下，指定核函数系数。当affinity指定为其他核函数时会被忽略。
+
+- degree参数，在affinit=poly的情况下，用来指定函数的次数。当affinity指定为其他核函数时会被忽略。
+
+- n_neighbors参数，在affinity=nearest_neighbors的情况下，用来指定K（邻居）的数量。若不提供，默认为10。当affinity指定为其他核函数时会被忽略。
+
+- coef0参数，在affinity=poly或者sigmoid的情况下，用来指定函数的独立项。若不提供，默认为1.0。

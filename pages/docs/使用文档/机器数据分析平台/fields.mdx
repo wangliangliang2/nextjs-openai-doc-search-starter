@@ -1,0 +1,54 @@
+fields 命令对字段进行筛选。
+
+## 语法
+
+fields （ [+|-] ）`<field1,field2,field3>`
+
+示例：返回结果数据包含a, b, c三个字段
+
+```
+fields a  # 只留下a字段
+fields + a # 只留下a字段
+fields - a # 排除a字段，即只留下b, c 字段
+```
+
+
+> 注意：在搜索型spl中，即便在fields 中删除了部分或者全部内置字段，返回结果中仍会包含全部内置字段。具体参考实际举例第二个示例
+
+
+## 实际举例 
+
+### 1. 报表型spl 配合 fields 
+
+使用fields 进行结果筛选，以下两个spl 作用等价 
+
+```
+// 将统计结果中的host和cnt 字段保留
+* 
+| stats count() as cnt by origin,host 
+| fields + host, cnt
+
+// 将统计结果中origin 字段去除
+* 
+| stats count() as cnt by origin,host 
+| fields - origin
+```
+
+返回结果如图：
+
+![统计结果字段筛选](https://dn-odum9helk.qbox.me/FsL94FviEByy4fgci9WqvaDJhgsV)
+
+### 2. 搜索结果型spl 配合 fields
+
+使用 fields 进行结果筛选，除了按照指定的字段增加或者删除之外，会额外返回所有内置字段。
+
+
+```
+*
+| fields + user.id
+```
+
+
+返回结果如图，除包含指定的`user.id` 字段之外，也包含所有内置字段：
+
+![搜索结果型spl字段筛选](https://dn-odum9helk.qbox.me/FkEAyirWaTTk43vLP0UOezjExa4m)

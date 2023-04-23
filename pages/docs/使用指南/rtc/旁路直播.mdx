@@ -1,0 +1,313 @@
+<style>
+    .rtc-doc{
+        font-family: PingFangSC-Light;
+        background:white!important;
+        color:black
+    }
+    .rtc-doc * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    .rtc-doc a {
+        font-style: italic;
+        font-weight: 400;
+        color: #00aae7;
+        word-break:break-all;
+        text-decoration: none;
+    }
+
+    .rtc-doc-panel {
+        background-color: #fff;
+        box-shadow: 0 0 4px rgb(0 0 0 / 25%);
+        padding-top:20px!important;
+        margin-top:0!important;
+        padding: 20px;
+        color: #707070;
+        font-size: 15px;
+        line-height: 26px;
+        letter-spacing: 0;
+        margin-bottom:20px;
+    }
+
+    .rtc-doc-panel a {
+        font-style: italic;
+        font-weight: 400;
+        color: #00aae7;
+        word-break:break-all;
+        text-decoration: none;
+    }
+</style>
+<style>
+    .rtc-doc-catalogue{
+        column-gap: 20px;
+        column-count: 3;
+        padding: 0;
+        list-style: none;
+        line-height: 1.5em;
+        margin: 20px 0 40px;
+    }
+    @media (min-width: 901px) and (max-width: 1024px) {
+        .rtc-doc-catalogue{
+            column-count: 2
+        }
+    }
+    
+    @media (max-width: 900px){
+        .rtc-doc-catalogue{
+            column-count: 1
+        }
+    }
+    
+    .rtc-doc-catalogue li{
+        list-style: none;
+        line-height: 40px;
+        cursor: pointer;
+        color: #00aae7
+    }
+    .rtc-doc-catalogue li a{
+        line-height:40px;
+        text-decoration:none
+    }
+ </style>
+<style>
+    .rtc-doc {
+            color: #707070;
+            font-size: 15px;
+        }
+        .rtc-doc hr {
+            margin:20px 0!important;
+        }
+        .rtc-doc p {
+            line-height: 26px;
+            margin-top: 20px!important;
+            margin-bottom: 20px!important;
+            padding-left:10px;
+        }
+        .rtc-doc a {
+            white-space: nowrap;
+            font-style:normal!important
+        }
+        .rtc-doc p code {
+            padding: 3px 5px;
+            white-space: pre;
+            color:#707070!important;
+            white-space: nowrap;
+            background: #f9f9fc;
+            border-radius: 4px;
+            line-height: 28px;
+            margin-left: 2px;
+            margin-right: 2px;
+        }
+        .rtc-doc h2 {
+            padding: 0 10px!important;
+            font-size: 20px!important;
+            margin: 0.8em 0;
+            font-weight: bold!important;
+            color:black!important;
+            font-weight: bold!important;
+        }
+
+        .rtc-doc h3 {
+            padding-top:0!important;
+            padding: 0 15px;
+            color: #222!important;
+            font-size: 18px!important;
+            font-weight: 400!important;
+            line-height: 25px!important;
+        }
+
+        .rtc-doc h4 {
+            padding-left: 20px;
+            padding-top:0!important;
+            line-height: 25px!important;
+            color: #707070!important;
+            font-size: 15px!important;
+            font-weight:bold!important;
+        }
+
+        .rtc-doc h5 {
+            padding-left: 20px;
+            padding-top:0!important;
+            line-height: 25px!important;
+            color: #707070!important;
+            font-size: 12px!important;
+            font-weight:bold!important;
+
+        }
+
+        .rtc-doc h2,h3,h4,h5 {
+            margin-top: 0.8em!important;
+            margin-bottom: 0.8em!important
+        }
+
+        .rtc-doc pre code.hljs{
+            display:block;
+            overflow-x:auto;
+            padding:1em;
+        }
+        .rtc-doc code.hljs{
+            padding:3px 5px
+        }
+        .rtc-doc .hljs{
+            background:#f0f0f0;color:#444
+        }
+        .rtc-doc .hljs-comment{
+            color:#888
+        }
+        .rtc-doc .hljs-punctuation,.hljs-tag{
+            color:#444a
+        }
+        .rtc-doc .hljs-tag .hljs-attr,.hljs-tag .hljs-name{
+            color:#444
+        }
+        .rtc-doc .hljs-attribute,.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-name,.hljs-selector-tag{
+            font-weight:700
+        }
+        .rtc-doc .hljs-deletion,.hljs-number,.hljs-quote,.hljs-selector-class,.hljs-selector-id,.hljs-string,.hljs-template-tag,.hljs-type{
+            color:#800
+        }
+        .rtc-doc .hljs-section,.hljs-title{
+            color:#800;font-weight:700
+        }
+        .rtc-doc .hljs-link,.hljs-operator,.hljs-regexp,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-symbol,.hljs-template-variable,.hljs-variable{
+            color:#bc6060
+        }
+        .rtc-doc .hljs-literal{
+            color:#78a960
+        }
+        .rtc-doc .hljs-addition,.hljs-built_in,.hljs-bullet,.hljs-code{
+            color:#397300
+        }
+        .rtc-doc .hljs-meta{
+            color:#1f7199
+        }
+        .rtc-doc .hljs-meta .hljs-string{
+            color:#4d99bf
+        }
+        .rtc-doc .hljs-emphasis{
+            font-style:italic
+        }
+        .rtc-doc .hljs-strong{
+            font-weight:700
+        }
+        .rtc-doc pre {
+            padding: 10px;
+            background: #f2f2f7;
+            margin-bottom: 20px;
+            line-height:25px;
+            font-size:15px;
+            overflow-x: scroll;
+            border:none!important
+        }
+        .rtc-doc pre ol li {
+            list-style:none!important;
+            border-left:none!important;
+            padding:0!important;
+            line-height:25px!important;
+            margin: 0!important
+        }
+        .rtc-doc pre ol {
+            margin:0!important;
+            padding: 0!important
+        }
+        .rtc-doc ol {
+            padding-left: 20px;
+            margin-left: 10px
+        }
+        .rtc-doc ul {
+            padding-left: 20px;
+            margin-left: 10px
+        }
+        .rtc-doc li {
+            color: #707070;
+            font-size: 15px;
+            line-height: 26px;
+            letter-spacing: 0;
+            padding: 5px 0;
+            /* list-style: none; */
+        }
+        .rtc-doc li ul {
+            padding-left: 0;
+            margin-left:18px;
+        }
+        .rtc-doc-example {
+            margin-bottom: 20px;
+            line-height:25px;
+            font-size:15px;
+        }
+        
+
+        .rtc-doc blockquote {
+            padding: 10px 20px 10px 20px;
+            margin: 20px 0;
+            font-size: 14px;
+            border-left: 5px solid rgba(135, 206, 250, 0.4);
+            background:rgba(135, 206, 250, 0.2)
+        }
+        .rtc-doc blockquote code {
+            background:rgba(135, 206, 250, 0.3)
+        }
+        .rtc-doc blockquote ol {
+            padding: 20px 0;
+        }
+        .rtc-doc blockquote li {
+            padding: 5px 0;
+        }
+
+        .rtc-doc img {
+            width: 100%
+        }
+        .rtc-doc table {
+            background-color: #fff!important;
+            box-shadow: 0 0 4px rgb(0 0 0 / 25%);
+            padding: 20px 0;
+            color: #707070;
+            border-spacing: 0;
+            font-size: 15px;
+            width: auto!important;
+            border: none!important;
+            overflow: auto;
+            table-layout: fixed;
+            display: table;
+            border-collapse: collapse;
+            line-height: 26px;
+            letter-spacing: 0;
+            margin-bottom:20px!important
+        }
+        .rtc-doc thead {
+            display: table-header-group;
+            vertical-align: middle;
+        }
+        .rtc-doc tbody {
+            display: table-header-group;
+            vertical-align: middle;
+        }
+        .rtc-doc th {
+            white-space: inherit;
+            border-top: none!important;
+            vertical-align:middle!important;
+            padding: 6px 13px!important;
+            border: 1px solid #dfdfdf;
+            border-bottom: 1px solid #dfdfdf!important;
+            color: #222;
+            font-size: 16px;
+            font-weight: 400;
+        }
+        .rtc-doc tbody tr:nth-of-type(odd) {
+            background-color: white!important
+        }
+        .rtc-doc td {
+            white-space: inherit;
+            padding: 5px 13px!important;
+            vertical-align:middle!important;
+            border-top:none!important;
+            border: 1px solid #dfdfdf;
+            font-size: 14px;
+            word-break: break-all;
+        }  
+</style>
+<div class="rtc-doc">
+    <div><p>客户端调用SDK合流接口，或者服务端调用合流接口，成功的进行合流操作以后，即可在七牛直播云中查看旁路直播。 上文中配置的旁路直播空间是“sdk-live”;旁路直播的流名称设置为魔法变量 $(roomName)，我们可以选择 roomName= wetest 的房间开始合流。</p>
+<p>打开<a href="https://portal.qiniu.com/pili">七牛直播用户管理界面</a> ，进入“云直播”模块。 选择 “sdk-live” 直播空间，进入 “直播流管理” 模块，即可看到包括流名称为 wetest 在内的所有活跃流，可以查看该流的实时信息，以及 RTMP、HLS、FLV 的播放地址。
+<img src="https://dn-odum9helk.qbox.me/FpGLJ897DPZArau6YIgkt-WtLHy4" alt="image.png"></img></p></div></div>

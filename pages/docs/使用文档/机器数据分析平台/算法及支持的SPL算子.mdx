@@ -1,0 +1,135 @@
+## Classification/ 分类
+
+**分类算法使用场景**：
+
+- 需要预测的目标变量为离散数据（例如：A、B、C）
+- 用来帮助预测的特征变量为离散数据或者连续数据（例如：1、2、3.5）
+- 如果没有偏好的算法，默认推荐使用随机森林算法。
+
+|                                   Algorithm Name                                    |        算法名称        | fit | apply | summary |
+| :---------------------------------------------------------------------------------: | :--------------------: | :-: | :---: | :-----: |
+|     [[LogisticRegression]](/express/manual/11036/logistic-regression-logistic-regression)    |        逻辑回归        |  Y  |   Y   |    Y    |
+|   [[DecisionTreeClassifier]](/express/manual/11037/the-decision-tree-decision-tree-classifier)  |         决策树         |  Y  |   Y   |    Y    |
+|   [RandomForestClassifier](/express/manual/11038/random-forests-the-random-forest-classifier)   |        随机森林        |  Y  |   Y   |    Y    |
+| [GradientBoostingClassifier](/express/manual/11039/gradient-boosting-classifier-gbdt-classifier) |       GBDT 算法        |  Y  |   Y   |    Y    |
+|       [XGBClassifier](/express/manual/11040/xgboost-classifier-xgboost-classifier)        |      XGBoost 算法      |  Y  |   Y   |    Y    |
+|        [BernoulliNB](/express/manual/11045/bernoulli-bernoullinb-naive-bayesian-classifier)         | 伯努利朴素贝叶斯分类器 |  Y  |   Y   |    Y    |
+|         [GaussianNB](/express/manual/11046/gaussiannb-gaussian-naive-bayes-classifier)         |  高斯朴素贝叶斯分类器  |  Y  |   Y   |    Y    |
+|       [MLPClassifier](/express/manual/11041/multilayer-perceptron-classifier-mlpclassifier)        |    多层感知机分类器    |  Y  |   Y   |    Y    |
+|       [SGDClassifier](/express/manual/11042/stochastic-gradient-descent-sgdclassifier-classifier)        |   随机梯度下降分类器   |  Y  |   Y   |    Y    |
+|            [SVM](/express/manual/11043/support-vector-machine-svm-svm)            |       支持向量机       |  Y  |   Y   |  **N**  |
+|       [MultinomialNB](/express/manual/11044/multinomial-distribution-multinomialnb-naive-bayes-model)       | 多项分布朴素贝叶斯模型 |  Y  |   Y   |    Y    |
+
+## Regression/ 回归
+
+**回归算法使用场景**：
+
+- 需要预测的目标变量为连续数据（例如：1、2、3.5）
+- 用来帮助预测的特征变量为离散数据（例如：A、B、C）或者连续数据
+- 如果没有偏好的算法，默认推荐使用随机森林算法。
+
+|                                  Algorithm Name                                   |     算法名称     | fit | apply | summary |
+| :-------------------------------------------------------------------------------: | :--------------: | :-: | :---: | :-----: |
+|     [LinearRegression](/express/manual/11047/linear-regression-and-linear-regression)      |     线性回归     |  Y  |   Y   |    Y    |
+|   [DecisionTreeRegressor](/express/manual/11048/the-decision-tree-decision-tree-regressor)   |      决策树      |  Y  |   Y   |    Y    |
+|   [RandomForestRegressor](/express/manual/11049/random-forests-the-random-forest-regressor)   |     随机森林     |  Y  |   Y   |    Y    |
+| [GradientBoostingRegressor](/express/manual/11050/gradient-boosting-regression-tree-gbdt-regressor) |    GBDT 算法     |  Y  |   Y   |    Y    |
+|       [XGBRegressor](/express/manual/11051/xgboost-regression-tree-xgboost-regressor)        |   XGBoost 算法   |  Y  |   Y   |    Y    |
+|        [ElasticNet](/express/manual/11052/elasticnet-elastic-network)         |     弹性网络     |  Y  |   Y   |    Y    |
+|        [KernelRidge](/express/manual/11053/kernelridge-kernel-ridge-regression)        |     核岭回归     |  Y  |   Y   |  **N**  |
+|           [Lasso](/express/manual/11054/lasso-lasso-regression)           |    Lasso 回归    |  Y  |   Y   |    Y    |
+|           [Ridge](/express/manual/11055/ridge-ridge-regression)           |      岭回归      |  Y  |   Y   |    Y    |
+|       [SGDRegressor](//express/manual/11056/stochastic-gradient-descent-sgdregressor-handover)       | 随机梯度下降回归 |  Y  |   Y   |    Y    |
+|       [MLPRegressor](/express/manual/11057/multilayer-perceptron-regression-mlpregressor)       |  多层感知机回归  |  Y  |   Y   |    Y    |
+|           [SVR](/express/manual/11058/support-vector-regression-svr)            |   支持向量回归   |  Y  |   Y   |  **N**  |
+
+## Clustering/ 聚类
+
+**聚类算法使用场景**：
+
+- 用于通过给定的特征变量将数据分成 n 类类似的群组。
+- 原始数据中没有目标变量，即无监督学习。
+- 用来帮助预测的特征变量可以为离散数据（例如：A、B、C）或者连续数据（例如：1、2、3.5）
+- 如果没有偏好的算法，默认推荐使用 K 均值算法。
+
+|                        Algorithm Name                         |  算法名称   | fit | apply | summary |
+| :-----------------------------------------------------------: | :---------: | :-: | :---: | :-----: |
+|         [KMeans](/express/manual/11059/k-means-kmeans)         |   K 均值    |  Y  |   Y   |    Y    |
+| [HierarchicalClustering](/express/manual/11060/hierarchical-clustering-method-hierarchical-clustering) |  层次聚类   |  Y  | **N** |  **N**  |
+|   [SpectralClustering](/express/manual/11061/spectral-clustering-spectral-clustering)   |   谱聚类    |  Y  | **N** |  **N**  |
+|         [DBSCAN](/express/manual/11062/density-dbscan-clustering-algorithm)         | DBSCAN 算法 |  Y  | **N** |  **N**  |
+|         [Birch](/express/manual/11063/birch-clustering-birch)          | BIRCH 算法  |  Y  |   Y   |  **N**  |
+
+## Anomaly Detection/ 异常值检测
+
+**异常值检测算法使用场景**：
+
+- 用于判断数据中是否有明显区别于其他数据的异常数据。
+- 原始数据中没有目标变量，即无监督学习。
+- 可以分为离群点（Outlier Detection）和新颖点（Novelty Detection）检测。
+  - 离群点检测：假设原始数据中存在异常点，离群点检测的目的在于区分原始数据中的异常部分和正常部分。
+    - LocalOutlierFactor (novelty=False)/局部异常因子算法
+    - IsolationForest/孤立森林
+    - EllipticEnvelope
+  - 新颖点检测：假设原始数据中不存在异常点，新颖点检测的目的在于判断一个新的数据点是否明显区分于原始数据。
+    - OneClassSVM
+    - LocalOutlierFactor (novelty=True)/局部异常因子算法
+- 用来帮助预测的特征变量可以为离散数据（例如：A、B、C）或者连续数据（例如：1、2、3.5）
+- 如果没有偏好的算法，默认推荐使用局部异常因子算法(LocalOutlierFactor)做离群点检测，推荐使用 OneClassSVM 做新颖点检测。
+
+|                          Algorithm Name                          |       算法名称        | fit |                 apply                  | summary |
+| :--------------------------------------------------------------: | :-------------------: | :-: | :------------------------------------: | :-----: |
+| [LocalOutlierFactor](/express/manual/11064/local-anomalies-factor-the-local-outlier-factor-lof) |   局部异常因子算法    |  Y  | Y (只有在添加参数 novelty=True 的时候) |  **N**  |
+|    [OneClassSVM](/express/manual/11065/a-support-vector-machine-svm-one-class-svm)     |   OneClassSVM 算法    |  Y  |                   Y                    |  **N**  |
+|  [IsolationForest](/express/manual/11066/isolated-forests-the-isolation-forest)   |       孤立森林        |  Y  |                   Y                    |  **N**  |
+|  [EllipticEnvelope](/express/manual/11067/based-on-the-variance-of-the-robust-ellipticenvelope-anomaly-detection-value-of-detection)  | EllipticEnvelope 算法 |  Y  |                   Y                    |  **N**  |
+
+## Time Series Analysis/ 时间序列分析
+
+**时间序列分析算法使用场景**：
+
+- 用于预测有时间维度的连续数据（例如：1、2、3.5），比如通过一个月的历史数据预测下一周的数据。
+- 特征变量可选提供一个或者提供多个或者不提供。但如果提供，必须为连续数据。
+- 如果没有偏好的算法，默认推荐 ARIMA 算法。
+
+|                       Algorithm Name                        |  算法名称  | fit | apply | summary |
+| :---------------------------------------------------------: | :--------: | :-: | :---: | :-----: |
+| [ARIMA](/express/manual/7461/continuous_value_forecast) | ARIMA 算法 |  Y  |   Y   |  **N**  |
+
+## Feature Extraction/ 特征加工
+
+**特征加工算法使用场景**：
+
+- 对原始数据做特征提取和特征加工，对数据类型不作限制。
+
+|                                  Algorithm Name                                  |   算法名称   | fit | apply | summary |
+| :------------------------------------------------------------------------------: | :----------: | :-: | :---: | :-----: |
+|          [FieldSelector](/express/manual/11068/characteristics-of-the-filter-fieldselector)           |   特征筛选   |  Y  |   Y   |    Y    |
+|            [KernelPCA](/express/manual/11069/kernel-principal-component-analysis-kernelpca)             | 核主成分分析 |  Y  |   Y   |  **N**  |
+| [Principal Component Analysis/PCA](/express/manual/11070/principal-component-analysis-principal-component-analysis-pca) |  主成分分析  |  Y  |   Y   |    Y    |
+|              [TFIDF](/express/manual/11071/tfidf)               |    TFIDF     |  Y  |   Y   |  **N**  |
+
+## Data Preprocessing/ 数据预处理
+
+**数据预处理算法使用场景**：
+
+- 对原始数据做数据预处理，包括类型转换，数据缩放等方式。
+- 类型转化类算法（独热编码、标签编码）只适用于离散型数据字段，数据缩放类算法（数据标准化，稳健标准化）只适用于连续性数据字段。
+
+|                         Algorithm Name                         |  算法名称  | fit | apply | summary |
+| :------------------------------------------------------------: | :--------: | :-: | :---: | :-----: |
+| [StandardScaler](/express/manual/11072/data-standardization-standardscaler) | 数据标准化 |  Y  |   Y   |    Y    |
+|  [RobustScaler](/express/manual/11073/standardized-robustscaler-steadily)  | 稳健标准化 |  Y  |   Y   |    Y    |
+| [OneHotEncoder](/express/manual/11074/hot-coding-onehotencoder-alone)  |  独热编码  |  Y  |   Y   |  **N**  |
+|  [LabelEncoder](/express/manual/11075/encoding-labelencoder-tags)  |  标签编码  |  Y  |   Y   |    Y    |
+
+## Utility Functions/ 效用函数
+
+**效用函数算法使用场景**：
+
+- 提供一些数据或者统计学的工具，可以用于计算一些辅助量。
+
+|                   Algorithm Name                   |   算法名称   | fit | apply | summary |
+| :------------------------------------------------: | :----------: | :-: | :---: | :-----: |
+| [ACF](/express/manual/11076/autocorrelation-function-acf)  |  自相关函数  |  Y  |   Y   |  **N**  |
+| [PACF](/express/manual/11077/partial-autocorrelation-function-pacf) | 偏自相关函数 |  Y  |   Y   |  **N**  |

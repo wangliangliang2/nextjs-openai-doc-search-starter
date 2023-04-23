@@ -1,0 +1,25 @@
+# streams 输出流信息
+
+| 属性 | 说明 | 属性 | 说明 |
+| ------------- | ------------- | ----- | ----- |
+| index | 流所在的索引区域 | r_frame_rate/avg_frame_rate | 实际帧率/平均帧率 |
+| Codec_name | 编码名 | time\_base&nbsp; | 时间基数(用来做timestamp计算) |
+| Codec_long_name; | 编码全名 | start_time | 起始时间 |
+| Codec_type | 编码类型 | duration | 总时长 |
+| Codec_time_base | 编码的时间戳计算基础单位 | n_frames | 帧数 |
+| Codec_tag_string | 编码的标签数据 | handle_name | 句柄名称 |
+| width/height | 视频的宽和高 | sample_fmt | 音频的原始采样格式 |
+| pix_fmt | 图像显示图像色彩格式 | sample_rate | 音频的采样率 |
+| level | 编码的level | channels | 信道数目 |
+  
+
+
+# format 输出封装格式信息
+
+| 属性 | 说明 | 属性 | 说明 |
+| ------------- |-------------| ----- | ----- |
+| nb_streams | 流通道数 | format_name | 封装格式 |
+| format_long_time | 封装格式全称 | start_time | 起始时间 |
+| duration | 总时长 | size | 文件大小 |
+| bit_rate | 码率 ||||
+

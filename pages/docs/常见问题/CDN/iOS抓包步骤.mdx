@@ -1,0 +1,50 @@
+## 需求：  
+
+iOS设备获取http请求或响应报文，适用于 无线 或 3/4G移动网络环境
+
+## 软件：  
+
+Replica  
+ ![001579af2f5128a56484e9580bb8267](https://oi2ix6x26.qnssl.com/attachments/download/891815/001579af2f5128a56484e9580bb8267/)
+
+首次运行需添加VPN配置：  
+ ![001579af9ba76ab0c92d2dad73f50c9](https://oi2ix6x26.qnssl.com/attachments/download/891941/001579af9ba76ab0c92d2dad73f50c9/)
+
+## 上传抓包示例：
+
+#### 1.打开Replica App，点击Start开始抓包（注意免费版只能记录20条）
+
+![001579afe33bb2b716f57c8452e77e8](https://oi2ix6x26.qnssl.com/attachments/download/892104/001579afe33bb2b716f57c8452e77e8/)
+
+#### 2.在手机浏览器或app中进行上传操作（这里以七牛js sdk demo为例：[http://jssdk.demo.qiniu.io](http://jssdk.demo.qiniu.io)）：
+
+![001579affd88a006a1b5a75fdaf96d6](https://oi2ix6x26.qnssl.com/attachments/download/892153/001579affd88a006a1b5a75fdaf96d6/)
+
+#### 3.返回Replica ，点击Stop停止抓包--\>然后点击屏幕下方Analytics按钮
+
+此时可以看到抓包信息，点击最上面的进入本次抓包：
+
+![001579b0121602eb88b34dc94a2d50f](https://oi2ix6x26.qnssl.com/attachments/download/892200/001579b0121602eb88b34dc94a2d50f/)
+
+#### 4.从中找出本次上传记录,并点击进入（ **POST** 方法，域名一般是:`http://upload.qiniup.com` 或 `http://up.qiniup.com` ）
+
+![001579b02047c1e5be45bb1a12361aa](https://oi2ix6x26.qnssl.com/attachments/download/892220/001579b02047c1e5be45bb1a12361aa/)
+
+#### 5.可以得到以下信息：
+
+**Overview标签可以得到远程ip信息：**
+
+![001579b07c88e67f79eefb3705c8ab6](https://oi2ix6x26.qnssl.com/attachments/download/892346/001579b07c88e67f79eefb3705c8ab6/)
+
+**Request标签中显示请求头：**
+
+![001579b03bf8e3cf5989388a4159863](https://oi2ix6x26.qnssl.com/attachments/download/892256/001579b03bf8e3cf5989388a4159863/)
+
+**Response标签可以看到响应头** （可以获得reqid信息，必要的时候可以将文本复制出来发给七牛技术支持）：
+
+![001579b04523679397b65c42d397d18](https://oi2ix6x26.qnssl.com/attachments/download/892275/001579b04523679397b65c42d397d18/)
+
+## 其他  
+
+如果是下载或播放视频抓包的话，方式类似。先打开Replica开始抓包，然后访问资源，点击停止后进入分析界面，提供相关信息即可。
+

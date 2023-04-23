@@ -1,0 +1,59 @@
+convert命令用于将搜索结果中的字段值转换为数值，通过as子句将转换后的值赋给新的字段。如果没有as子句，原始字段值会被转换后的值替换。
+
+**语法: **
+
+`convert [timeformat=string] <convert-function>[as field])...`
+
+**参数说明：**
+
+必填参数：
+
+* `convert-function`: 转换函数。函数的参数可以是某个字段，也支持参数为`*`， 参数为`*`的含义是该转换函数将作用于所有字段。目前支持以下9种转换函数`auto`、`ctime`、`dur2sec`、`memk`、`mktime`、`mstime`、`none`、`rmcomma`、`rmunit`。详情阅读下文【convert命令支持的转换函数】。
+	
+选填参数：
+
+* `timeformat`:若果转换后的字段为时间字段，可通过`timeformat`指定字段的输出格式。`timeformat`参数用于`ctime`、`mktime`转换函数中，`mktime`函数必须指定timeformat，`ctime`函数支持默认timeformat格式（`yyyy-MM-dd HH:mm:ss`）。
+
+* `as field`：将转换后的值放入指定的新字段中，原始字段和值保持不变。
+
+**convert命令支持的转换函数**
+
+|函数|描述|示例|
+|:--:|:--:|:--:|
+|auto()|自动使用最佳转换函数将字段中的值转换为数字；</p>将`yyyy-MM-dd HH:mm:ss`、`HH:mm:ss`时间格式的字符串转换为Unix时间戳</p>仅包含数字的字符串转换为数字</p>包含数字前缀的字符串转换为数字（去掉数字后跟随的其他字符）|convert auto(a) as aaa</p>convert auto(*)</p>convert auto("2018-12-30 12:34:56") as timestamp|
+|ctime()|将13位时间戳转换成指定timeformat的时间字段， timeformat支持形如`yyyy-MM-dd HH:mm:ss`、`HH:mm:ss`的时间格式|convert timeformat="yyyy-MM-dd HH:mm:ss" ctime(*) none(h)|
+|dur2sec()|将形如`HH:mm:ss`的时间格式字符串转化为秒|convert dur2sec("12:14:05") as seconds|
+|memk()|将形如`"xxx.k/m/g"`(xxx可以是浮点数、整数，须为正数)形式的的字符串转换为以k/m/g结尾的数值。`k`代表kilobyte，`m`代表megabyte，`g`代表gigabyte|convert memk(100.k)|
+|mktime()|将指定timeformat形式的字符串转换为13位时间戳|convert timeformat="HH:mm:ss" mktime(new)|
+|mstime()| 将`mm:ss`形式的字符串转换为秒|convert mstime(20:30) none(m)|
+|none()|在转换所有字段的情况下，可使用none函数指定不需转换的字段|convert auto(*) none(a) none(b)|
+|rmcomma()|移除原始数字字符串中的逗号|convert rmcomma(100,200) none(m)|
+|rmunit()|移除以数字开头的字符串除数字之外的所有字符|convert rmunit(12dhu5) none(m)|
+
+	
+**用法示例：**
+
+1.将所有字段值转换为数值。
+```
+……| convert auto(*)
+```
+
+2.转换除指定字段之外的所有字段值为数值。
+```
+……| convert auto(*) none(order)
+```
+
+3.将指定字段的持续时间值更改为秒。
+```
+……| convert dur2sec(delay)
+```
+
+4.对包含数值和字符串值的字段值通过移除值的字符串部分，转换为数值。例如，如果duration="30s"，则结果值为duration="30"。本示例使用rmunit convert函数。
+```
+……| convert rmunit(duration)
+```
+
+5.将UNIX时间转换为更易读的时间戳格式
+```
+……|convert timeformat="yyyy-MM-dd HH:mm:ss" ctime(_time)
+```

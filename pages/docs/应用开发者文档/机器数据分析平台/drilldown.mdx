@@ -1,0 +1,127 @@
+
+
+`<drilldown>`元素定义图表的下钻动作，默认下钻到搜索。
+
+当前不支持的图表类型
+* 指标饼图
+* 指标环图
+* 指标玫瑰图
+* 时间轴
+* 富文本
+* 自定义图表
+
+### 父元素
+
+您可以将`<drilldown>`元素放入以下父元素中。
+
+* `<chart>`
+
+### 子元素
+
+|子元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<link>`|下钻到其它页面|`<search />`|
+|`<chart>`|当前图表层级下钻|无|
+
+
+#### `link`元素定义下钻到具体的页面类型
+
+* 属性
+
+|属性|说明|默认值|
+|:--:|:--:|:--:|
+|`tab`|是否在新的标签页打开|无|
+
+* 子元素
+
+|子元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<search>`|下钻到搜索页面。当用户指定SPL时，下钻到指定的SPL搜索；当不指定SPL时，系统智能推断出搜索SPL|`<search />`|
+|`<dashboard>`|下钻到仪表盘|无|
+|`<report>`|下钻到报表|无|
+|`<url>`|下钻到自定义URL|无|
+|`<none>`|无下钻|无|
+
+#### `chart`元素定义图表的层级下钻，支持定义多个`chart`
+
+* 属性
+
+|属性|说明|默认值|
+|:--:|:--:|:--:|
+|`type`|目标图表类型|'grid-table'|
+
+* 子元素
+
+|子元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<query>`|目标SPL|无|
+
+
+#### 示例：
+
+* 下钻到图表
+```
+<drilldown>
+    <chart type="grid-table">
+		<query>This is a SPL</query>
+	</chart>
+	<chart type="line">
+		<query>This is a SPL</query>
+	</chart>
+    ...
+</drilldown>
+```	
+
+* 下钻到搜索(智能模式)
+```
+<drilldown>
+    <link tab="true">
+		<search />
+    </link>
+</drilldown>
+```	
+
+* 下钻到搜索(自定义)
+```
+<drilldown>
+    <link>
+		<search>some query</search>
+    </link>
+</drilldown>
+```	
+
+* 下钻到仪表盘
+```
+<drilldown>
+    <link>
+		<dashboard>dashboardID</dashboard>
+    </link>
+</drilldown>
+```	
+
+* 下钻到报表
+```
+<drilldown>
+    <link>
+		<report>reportID</report>
+    </link>
+</drilldown>
+```	
+
+* 下钻到URL
+```
+<drilldown>
+    <link>
+		<url>https://developer.qiniu.com/</url>
+    </link>
+</drilldown>
+```	
+
+* 无下钻
+```
+<drilldown>
+	<link>
+		<none />
+    </link>
+</drilldown>
+```	

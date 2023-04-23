@@ -1,0 +1,21 @@
+hdfs reader支持从hdfs上读取日志文件。
+
+安装完logkit之后进入日志收集的页面，可以在左侧的选择栏中看到从hdfs读取数据的选项。
+### 注意：从hdfs中读取数据必须将logkit的agent部署在hdfs集群的namenode节点上，否则可能会导致数据读取的不成功。###
+
+![](https://dn-odum9helk.qbox.me/FrbVlPpDRXcx7NlFlrCGNNG3KS1o)
+
+进入从hdfs读取数据的页面后你可以看到如下的配置选项：
+
+![](https://dn-odum9helk.qbox.me/FlQqpiUMWV0l4Upp3IyrqOG7hQ74)
+
+ `连接IP地址(ip)`:hdfs中提供webhdfs服务的IP地址。可以在配置文件`hdfs-site.xml`的 `<name>dfs.namenode.http-address</name>`中找到有关webhdfs的配置，若未配置，则默认使用`127.0.0.1`。
+ `访问端口(host)`:hdfs中提供webhdfs服务的端口。可以在配置文件`hdfs-site.xml`的 `<name>dfs.namenode.http-address</name>`中找到有关webhdfs端口的配置，若未配置，则默认使用`本机的50070`端口。
+ `用户名(username)`:部署hdfs集群时，hdfs所属的用户。
+ `hadoop安装根目录(hdfs_conf)`:安装hdfs时Hadoop所在的目录，具体到`bin目录`所在的路径。例：hadoop bin文件夹所在的路径为`/root/hadoop/bin`,则填写的路径应为`/root/hadoop`。
+ `namenode存储fsimage文件的地址`:hdfs用于存放fsimage文件的路径，可以在配置文件`hdfs-site.xml`的`<name>dfs.namenode.name.dir</name>`选项下查找具体路径。
+ `单次读取字节数(read_bytes_once)`:`选填`，单次从hdfs上读取数据的大小，单位`字节`，默认读取大小`1M`。正确的路径下应该可以看到如下文件：
+ 
+ ![](https://dn-odum9helk.qbox.me/FrZbI4j32fJmz_jcSODKJbmfMybQ)
+ 
+ 正确配置上述选项之后，点击右侧的`获取数据`按钮就可以看到尝试获取的数据。

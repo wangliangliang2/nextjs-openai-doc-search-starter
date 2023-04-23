@@ -1,0 +1,228 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `DELETET` /v1/vm/sgr/:security_group_id/egress
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>security_group_id</td>
+      <td>string</td>
+      <td>path</td>
+      <td>是</td>
+      <td>
+        <p>安全组 ID。您可以调用 DescribeSecurityGroups 查看您可用的安全组。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>安全组所属地域 ID。您可以调用 DescribeRegions 查看最新的七牛云地域列表。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>security_group_rule_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>安全组入网规则 ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>ip_protocol</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>传输层协议。不区分大小写。取值范围：</p>
+        <ul>
+          <li>icmp</li>
+          <li>gre</li>
+          <li>tcp</li>
+          <li>udp</li>
+          <li>all：支持所有协议</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>port_range</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>目的端安全组开放的传输层协议相关的端口范围。取值范围：</p>
+        <ul>
+          <li>TCP/UDP 协议：取值范围为 1~65535。使用斜线（/）隔开起始端口和终止端口。例如：1/200</li>
+          <li>ICMP 协议：-1/-1</li>
+          <li>GRE 协议：-1/-1</li>
+          <li>all：-1/-1</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>dest_group_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>需要撤销访问权限的目的端安全组 ID。</p>
+        <ul>
+          <li>必须设置 DestGroupId 或者 DestCidrIp 参数。</li>
+          <li>如果指定了 DestGroupId 没有指定参数 DestCidrIp，则参数 NicType 取值只能为 intranet。</li>
+          <li>如果同时指定了 DestGroupId 和 DestCidrIp，则默认以 DestCidrIp 为准。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>dest_group_owner_account</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>跨账户删除安全组规则时，目的端安全组所属的七牛云账户。</p>
+        <ul>
+          <li>如果 DestGroupOwnerAccount 及 DestGroupOwnerId 均未设置，则认为是撤销您其他安全组的访问权限。</li>
+          <li>如果已经设置参数 DestCidrIp，则参数 DestGroupOwnerAccount 无效。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>dest_group_owner_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>跨账户删除安全组规则时，目的端安全组所属的七牛云账户 ID。</p>
+        <ul>
+          <li>如果 DestGroupOwnerId 及 DestGroupOwnerAccount 均未设置，则认为是撤销您其他安全组的访问权限。</li>
+          <li>如果您已经设置参数 DestCidrIp，则参数 DestGroupOwnerId 无效。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>dest_cidr_ip</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>目的端 IP 地址范围。支持 CIDR 格式和 IPv4 格式的 IP 地址范围。 默认值：无</p>
+        <p>IPv4 only</p>
+      </td>
+    </tr>
+    <tr>
+      <td>source_cidr_ip</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>源端 IP 地址范围</p>
+        <p>支持 CIDR 格式和 IPv4 格式的 IP 地址范围</p>
+        <p>默认值：0.0.0.0/0</p>
+      </td>
+    </tr>
+    <tr>
+      <td>source_port_range</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>源端安全组开放的传输层协议相关的端口范围。取值范围：</p>
+        <ul>
+          <li>TCP/UDP 协议：取值范围为 1~65535。使用斜线（/）隔开起始端口和终止端口。例如：1/200</li>
+          <li>ICMP 协议：-1/-1</li>
+          <li>GRE 协议：-1/-1</li>
+          <li>all：-1/-1</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>policy</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>访问权限。取值范围：</p>
+        <ul>
+          <li>accept：接受访问。</li>
+          <li>drop：拒绝访问，不发回拒绝信息。</li>
+        </ul>
+        <p>默认值：accept</p>
+      </td>
+    </tr>
+    <tr>
+      <td>nic_type</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>经典网络类型安全组规则的网卡类型。取值范围：</p>
+        <ul>
+          <li>internet：公网网卡</li>
+          <li>intranet：内网网卡</li>
+        </ul>
+        <p>默认值：internet</p>
+        <p>在以下情况中，参数 NicType 取值只能为 intranet：</p>
+        <ul>
+          <li>专有网络 VPC 类型安全组规则无需设置网卡类型，默认为 intranet，只能为 intranet。</li>
+          <li>设置安全组之间互相访问时，即指定了 DestGroupId 且没有指定 DestCidrIp，只能为 intranet。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>priority</td>
+      <td>integer</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>安全组规则优先级。取值范围：1~100 默认值：1</p>
+      </td>
+    </tr>
+    <tr>
+      <td>ipv6_source_cidr_ip</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>源端 IPv6 CIDR 地址段。</p>
+        <p>支持 CIDR 格式和 IPv6 格式的 IP 地址范围。 默认值：无</p>
+        <div class="marker marker-note">
+          <p>说明： 仅支持 VPC 类型的 IP 地址。</p>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>ipv6_dest_cidr_ip</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>目的端 IPv6 CIDR 地址段。支持 CIDR 格式和 IPv6 格式的 IP 地址范围。 默认值：无</p>
+        <div class="marker marker-note">
+          <p>说明： 仅支持 VPC 类型的 IP 地址。</p>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID

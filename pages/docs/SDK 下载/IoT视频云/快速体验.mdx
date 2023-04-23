@@ -1,0 +1,45 @@
+本章主要介绍如何快速使用 Qnlink Upload SDK 完成基本的视频文件的切片上传，缩略图上传等操作。
+
+# **Qnlink Upload SDK 演示程序使用方法**
+
+## **开发前准备**
+
+**添加应用**
+登录七牛云 IoT视频云产品控制台，https://portal.qiniu.com/linking ；进行添加应用操作，完成云存的相关配置。
+
+**添加设备**
+在对应的应用下完成设备的添加，获取设备的 DAK、DSK 信息。
+
+## **获取 Qnlink Upload SDK**
+**版本：** v2.2.4
+**更新时间：** 2019/12/27
+
+|平台|下载链接|
+|---|---|
+|Linux x86平台（32位）|[SDK下载](http://pvdqkyxq9.bkt.clouddn.com/v2.2.4/qnlink-device-sdk_v2.2.4_x86_glibc_7.4.0_Release.tar.gz)|
+|Linux x86平台（64位）|[SDK下载](http://pvdqkyxq9.bkt.clouddn.com/v2.2.4/qnlink-device-sdk_v2.2.4_x86-64_glibc_7.4.0_Release.tar.gz)|
+|Linux arm64|[SDK下载](http://pvdqkyxq9.bkt.clouddn.com/v2.2.4/qnlink-device-sdk_v2.2.4_Aarch64_glibc_7.4.0_Release.tar.gz)|
+
+其他平台 sdk 请发送申请邮件[【SDK申请】](https://developer.qiniu.com/linking/sdk/5715/get-link-device-sdk)
+
+## **运行演示程序**
+
+解压 Qnlink Upload SDK
+```
+tar zvxf qnlink-device-sdk_v2.1.3_x64_Debug.tar.gz
+```
+
+进入 sample/qnlink_upload/ 路径，执行 make ，成功编译后当前目录下生成 sample 可执行文件。
+
+## **运行演示程序**
+
+演示程序将上传一段 30 秒视频到 IoT视频云 平台，程序运行返回后(大约运行40秒)可以登陆 IoT视频云 平台查看并播放上传的视频。
+
+将获取的 DAK/DSK 作为参数，运行示例程序
+```
+./sample_upload -a DAK -s DSK
+```
+
+## **功能体验**
+
+登录七牛云 IoT视频云产品控制台，https://portal.qiniu.com/linking ；进入设备管理模块，选择对应的设备，点击【回放】按钮可以查看 sample 程序的上传结果。

@@ -1,0 +1,40 @@
+本文档介绍了用户从本地登录 Linux 云主机的方法。
+
+## 1.
+
+对于有购买公网带宽/流量的Linux云主机，这里介绍一种使用密码从本地 Windows 登录的方法：
+
+购买云主机成功后，登录 [云主机控制台](https://portal.qiniu.com/kylin/)，获取主机弹性公网 IP 地址。  
+
+<div style="padding: 10px;background-color: #e6e6e6;width: auto;float: left;">![](https://dn-odum9helk.qbox.me/Fl1AXmcJypdBI9ZfxPIZxlbxMnSP)</div>
+
+<br style="clear: both;"/>
+
+下载远程链接软件 Putty，参考下载地址：[http://www.chiark.greenend.org.uk/~sgtatham/putty/](http://www.chiark.greenend.org.uk/~sgtatham/putty/)
+
+打开 Putty 客户端，在 PuTTY Configuration 窗口中输入以下内容：
+
+- Host Name：Linux云主机的公网IP。
+- Port：云主机的端口，必须填22。（请确保云主机22端口已开放）
+- Connect type：选择“SSH”。
+
+全部输入完后，点击“Open”，创建一个新对话。  
+
+![](https://dn-odum9helk.qbox.me/FmKTEYUeIg4h7vzU_rRL0ry-pWY5)
+
+在 Putty 会话窗口中， 输入管理员帐号，按回车键。
+
+> 管理员帐号：  
+> SUSE/CentOS/Debian：root  
+> ubuntu：ubuntu
+
+再输入初始密码，回车完成登录过程。
+
+<div style="padding: 10px;background-color: #e6e6e6;width: auto;float: left;">![](https://dn-odum9helk.qbox.me/FhLoW_VdDjjcaK13pFuBrYWbJL_x)</div>
+
+<br style="clear: both;"/>
+
+## 2.
+
+从本地 Linux 或 Mac OS 登录 Linux 云主机，直接使用 SSH 命令进行连接，如：ssh root@Linux 云主机公网IP，然后输入 root 用户的初始密码，即可完成登录。
+

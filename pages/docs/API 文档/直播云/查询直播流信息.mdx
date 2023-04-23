@@ -1,0 +1,117 @@
+# 接口描述
+
+查询目标直播流基本信息和配置信息
+
+# 请求参数
+
+```
+GET /v2/hubs/<hub>/streams/<encodedStreamTitle>
+Host: pili.qiniuapi.com
+Authorization: <QiniuToken> 
+Content-Type: application/x-www-form-urlencoded
+```
+
+| 参数             | 类型 | 必填 | 描述                     |
+| ------------------ | ------ | -------- | -------------------------- |
+| hub                | string | 是   | 直播空间名            |
+| encodedStreamTitle | string | 是   | 经过[base64编码](/kodo/manual/appendix)的直播流名   |
+
+# 返回数据
+
+<html>
+ <head></head>
+ <body>
+  <table> 
+   <thead class="ant-table-thead"> 
+    <tr> 
+     <th key="name">参数</th>
+     <th key="type">类型</th>
+     <th key="desc">描述</th>
+    </tr> 
+   </thead>
+   <tbody classname="ant-table-tbody">
+    <tr key="0-0">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> createdAt</span></td>
+     <td key="1"><span>int64</span></td>
+     <td key="2"><span style="white-space: pre-wrap">直播流创建时间，Unix 时间戳</span></td>
+    </tr>
+    <tr key="0-1">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> updatedAt</span></td>
+     <td key="1"><span>int64</span></td>
+     <td key="2"><span style="white-space: pre-wrap">直播流更新时间，Unix 时间戳，对一个流的配置做修改操作会更新这个值</span></td>
+    </tr>
+    <tr key="0-2">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> expireAt</span></td>
+     <td key="1"><span>int64</span></td>
+     <td key="2"><span style="white-space: pre-wrap">直播流过期时间，默认流过期时间为15天，Unix 时间戳，过期的流会被自动清除。如您设置的默认存储过期时间是 N 天，那么一个流持续 N 天不推流就会被自动清除</span></td>
+    </tr>
+    <tr key="0-3">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> disabledTill</span></td>
+     <td key="1"><span>int</span></td>
+     <td key="2"><span style="white-space: pre-wrap">禁播结束时间，Unix 时间戳，-1 表示永久禁播</span></td>
+    </tr> 
+    <tr key="0-4">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> converts</span></td>
+     <td key="1"><span>string[]</span></td>
+     <td key="2"><span style="white-space: pre-wrap">转码配置</span></td>
+    </tr> 
+    <tr key="0-5">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> watermark</span></td>
+     <td key="1"><span>bool</span></td>
+     <td key="2"><span style="white-space: pre-wrap">是否开启水印</span></td>
+    </tr> 
+    <tr key="0-6">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> publishSecurity</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">推流鉴权类型</span></td>
+    </tr> 
+    <tr key="0-7">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> publishKey</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">推流密钥</span></td>
+    </tr> 
+    <tr key="0-8">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> nropEnable</span></td>
+     <td key="1"><span>bool</span></td>
+     <td key="2"><span style="white-space: pre-wrap">是否开启鉴黄</span></td>
+    </tr> 
+   </tbody> 
+  </table> 
+ </body>
+</html>
+
+# 示例
+
+请求体:
+
+```
+GET /v2/hubs/test/streams/dGltZXN0YW1w HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/x-www-form-urlencoded
+```
+
+返回体:
+
+```
+200 OK
+
+{
+    "createdAt": 1631796534,
+    "updatedAt": 1634205648,
+    "expireAt": 1730108940,
+    "disabledTill": 0,
+    "converts": [
+        "480p",
+        "720p"
+    ],
+    "watermark": false,
+    "publishSecurity": "",
+    "publishKey": "",
+    "nropEnable": false,
+}
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

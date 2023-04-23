@@ -1,0 +1,49 @@
+<a id="kodo-bucket"></a>
+## **空间**
+
+空间是资源的组织管理单位，一个资源必然位于某个空间中。可以为每个空间设置一系列的属性，以对资源提供合理的管理动作。
+
+空间提供两种访问控制：公开空间和私有空间。公开和私有仅对空间的读文件生效，修改、删除、写入等对空间的操作均需要拥有者的授权才能进行操作。空间访问控制可通过对象存储控制台[空间设置](https://portal.qiniu.com/bucket/test07/setting)的**访问控制**修改。<br> 
+**公开空间**：可通过文件对象的 URL 直接访问。<br>
+**私有空间**：文件对象的访问则必须获得拥有者的授权才能访问。
+
+<br>
+
+<a id="kodo-object"></a>
+## **资源**
+
+资源是七牛云存储服务中的逻辑存储单元。对于每一个账号，该账号里存放的每个资源都有唯一的空间与[键(Key)](/kodo/glossary/1645/j#key)标识。资源名称是一个字符串，例如`level1/level2/example1.jpg`，它可以是任意字符包括 UTF-8 编码形式的 Unicode 字符。
+
+您可以在上传资源时为其指定一个方便管理的资源名，通过前缀来达到类似于文件目录的分类和层次效果。以下是合法的资源名称示例：
+
+```
+index.html
+features/index.html
+imgs/features/feature1.png
+about.html
+```
+
+假设资源名为`features/index.html`的资源位于某个绑定了域名`example.com`的公开空间中，则您可以在浏览器里输入以下 URL 访问资源：
+
+```
+http://www.example.com/features/index.html 
+
+或省略掉 index.html：
+http://www.example.com/features/
+```
+<br>
+
+<a id="kodo-region"></a>
+## **存储区域**
+
+存储区域是在创建空间时指定的，一旦指定后就无法修改。存储区域表示七牛云对象存储服务的数据中心所在区域。您可以根据费用、请求来源等因素选择合适的存储区域。一般选择离您近的存储区域访问速度更快。有关存储区域的详细介绍请查阅[存储区域](/kodo/manual/1671/region-endpoint)选择说明。
+
+<br>
+
+
+<a id="ak-sk"></a>
+## **访问密钥**
+
+AccessKey . SecretKey 合称为七牛云的密钥，用于对操作请求进行签名验证。一个账号最多拥有两对密钥，用于不同的访问。<br>**AccessKey:** 用于标识用户，用户将 AccessKey 放入访问请求，以便七牛云存储识别访问者的身份。<br>**SecretKey:** 是用于加密签名字符串和服务器端验证签名字符串的密钥。
+
+可通过对象存储控制台中的[密钥管理](https://portal.qiniu.com/user/key)查询访问密钥。

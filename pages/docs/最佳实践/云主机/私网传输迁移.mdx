@@ -1,0 +1,14 @@
+如果您能直接从自建机房 IDC、虚拟机环境或者云主机访问七牛云某一地域下的专有网络 VPC，建议您使用 QSMC 的私网传输迁移方案。通过 QSMC 的私网传输迁移，比公网更快速、更稳定，能提高迁移的效率。
+
+
+# 前提条件
+已通过云企业网将本地数据中心和云上 VPC 打通。更多信息，请参见 [云企业网互通](https://developer.qiniu.com/qvm/6525/CEN-across-accounts-authorized-network-instance) 。
+本地数据中心的防火墙已放行 8703、8080 端口，用于保证迁移源与中转实例数据传输畅通。
+
+
+# 操作步骤
+具体操作，请参见 [步骤二：创建并启动迁移任务 ](https://developer.qiniu.com/qvm/7815/create-and-start-the-migration-task)。在创建迁移任务的过程中，需要注意将网络模式设置为私网传输，并配置已打通专线的 VPC 以及交换机。
+
+![image.png](https://dn-odum9helk.qbox.me/FveVkDFxQ8kRvgJeRIzv_Nrea7Pl)
+
+

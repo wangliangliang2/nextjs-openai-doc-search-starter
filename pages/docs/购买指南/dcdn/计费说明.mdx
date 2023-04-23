@@ -1,0 +1,103 @@
+七牛云 DCDN 计费组成包括：**动态请求数计费**和**流量计费**。
+
+# 动态请求数计费
+## 1、价格说明
+动态加速请求次数不分区域，全球统一价格。
+<table>	<tr>	<th colspan = "3">动态请求数</th>	</tr>	<tr>	<th>名目</th>	<th>请求数</th>	<th>价格</th>	</tr>	<tr>		<td rowspan = "2">动态加速请求数</td>		<td>第 0 次至 5 万次</td>		<td>免费</td>	</tr>	<tr>		<td>第 5 万次及以上</td>		<td>0.19 元/万次</td>	</tr></table>
+
+<br>
+
+## 2、计费方式
+默认后付费按量计费。
+
+## 3、细则说明
+- 该计费项仅对动态请求计费，静态请求不额外收费。
+- 请求次数以每万次请求为单位进行计算，不足万按万计算。
+
+
+# 流量计费
+## 1、价格说明
+七牛云 DCDN 默认按国内海外[不同区域阶梯流量价格](https://www.qiniu.com/prices/qcdn)计费，当月分别超额累进，每个自然月为一个累计周期。其他计费方式请联系七牛商务（400-808-9176 转 2 号线）或工单咨询。
+**1.1 国内流量价格**
+
+<table>		<tr>	    <th>名目</th>	    <th>流量阶梯		（元/GB）</th>	    <th>价格</th>  	</tr >	<tr >	    <td rowspan="4" vertical-align:='middle'>HTTP 下载流量/动态加速 HTTP 流量</td>	    	</tr>	<tr>	    <td>第 0 GB 至 100 TB</td>	    <td>0.24</td>	</tr>	<tr>	    <td>第 100 TB 至 1 PB</td>	    <td>0.19</td>	</tr>	<tr>	    <td>第 1PB 以上</td>	    <td>0.14</td>	</tr>	<tr>	    <td rowspan="3" valian='middle'>HTTPS 下载流量/动态加速 HTTPS 流量</td>	    <td>第 0 GB 至 100 TB</td>	    <td>0.28</td>	</tr>	<tr>	    <td>第 100 TB 至 1 PB</td>	    <td>0.23</td>	</tr>	<tr>	    <td>第 1PB 以上</td>	    <td>0.18</td>	</tr></table>
+
+**1.2 海外流量价格**
+<table><tr>	    <th>名目</th>	    <th>流量阶梯		（元/GB）</th>			<th>亚洲（港澳台/东南亚/印度）</th>			<th>亚洲（其他地区）</th>			<th>欧洲/北美洲</th>			<th>南美洲</th>			<th>大洋洲与其他</th>  	</tr >	<tr >	    <td rowspan="5" valian='middle'>HTTP 下载流量/动态加速 HTTP 流量</td>	   	</tr>	<tr>	    <td>第 0 GB 至 10 TB</td>	    <td>0.76</td>			<td>0.50</td>			<td>0.34</td>			<td>0.76</td>			<td>0.94</td>	</tr>	<tr>	    <td>第 10 TB 至 50 TB</td>	    <td>0.66</td>			<td>0.44</td>			<td>0.30</td>			<td>0.66</td>			<td>0.82</td>	</tr>	<tr>	    <td>第 50 TB 至 100 TB</td>	    <td>0.57</td>			<td>0.38</td>			<td>0.26</td>			<td>0.57</td>			<td>0.71</td>	</tr>	<tr>	    <td>第 100TB 以上</td>	    <td colspan="5" align='center'>请联系我们 400-808-9176 转 1</td>	</tr>	<tr>	    <td rowspan="4" valian='middle'>HTTPS 下载流量/动态加速 HTTPS 流量</td>	    <td>第 0 GB 至 10 TB</td>	    <td>0.91</td>			<td>0.60</td>			<td>0.40</td>			<td>0.91</td>			<td>1.12</td>	</tr>	<tr>	    <td>第 10 TB 至 50 TB</td>	    <td>0.79</td>			<td>0.52</td>			<td>0.36</td>			<td>0.79</td>			<td>0.98</td>	</tr>	<tr>	    <td>第 50 TB 至 100TB</td>	    <td>0.68</td>			<td>0.45</td>			<td>0.31</td>			<td>0.68</td>			<td>0.85</td>	</tr>	<tr>	    <td>第 100TB 以上</td>	    <td colspan="5" align='center'>请联系我们 400-808-9176 转 1</td>	</tr></table>
+
+<br>
+
+## 2、计费方式
+针对流量计费，七牛云 DCDN 提供两种付费方式，即后付费按量计费和预付费资源包，默认计费方式为后付费按量计费。
+<br>
+**2.1 按量后付费**
+您可使用[CDN价格计算器](https://www.qiniu.com/prices/qcdn?tab=calc)进行用量预估；
+
+**2.2 按资源包预付费**
+七牛云 DCDN 可与 CDN 共用融合资源包，同时共享每月各分区 10GB HTTP 下载流量的免费额度，历史已购买的融合资源包支持抵扣。购买时请根据域名的加速范围选择类型：[CDN 中国大陆资源包](https://qmall.qiniu.com/template/NTI?spec_combo=MTk0OA) 或 [CDN 海外资源包](https://qmall.qiniu.com/template/NTU?ref=category&spec_combo=MjEzNA)
+
+（1）资源包类型
+“CDN 下行通用流量”适用于 http 和 https 的静态或全站加速下行流量，其中 http 和 https 协议按照1: 1.15 的系数抵扣，https 协议不额外收取静态加速请求次数费用。
+> **如何理解系数？** 实际使用 https 流量100GB，相当于抵扣资源包流量115GB。资源包的额度可以理解成诸如“点数”的概念，同单位的不同商品需要抵扣的点数不同。
+
+> **按什么顺序抵扣？** 当资源包额度充足时（账单额度<资源包余量），资源包可全部抵扣金额；当资源包额度不够时（账单额度<资源包余量），按以下顺序抵扣：静态加速 HTTP、静态加速 HTTPS、动态加速 HTTP、动态加速 HTTPS。
+
+（2）可用区域
+可根据域名的实际加速区域选择资源包的可用区域；如果加速区域为全球，可能同时产生国内流量和海外流量。
+
+（3）可用时段
+为方便不同类型的用户优化 CDN 成本，七牛提供以下几种时段的资源包：
+
+- **全时段流量包**：全时段指每天 0:00 - 24:00
+- **日间时段流量包**：日间时段指每天 09:00 - 18:00
+- **闲时流量包**：闲时段指每天 00:00 - 09:00
+
+叠加使用规则和抵扣顺序参考 <a href="#Q3">资源包可以叠加使用吗？抵扣顺序是什么？</a>
+
+（4）用量额度（用量预估）
+可根据历史用量和实际使用需求预估资源包大小，建议可预估一年用量购买。
+
+（5）分配方式
+一次性分配资源包的流量在生效期内均可使用。
+
+
+（6）余量查询
+七牛云按量付费资源采取月结算模式，实时消费明细仅为预估账单和余额预扣除，没有实际完成扣除，所以资源包使用情况最终以月账单更新为准，我们可通过以下方法预估资源包使用情况：
+- [资源包管理](https://portal.qiniu.com/financial/orders/respack-mgr/current)，查看估算资源包的使用情况
+- [实时消费明细](https://portal.qiniu.com/financial/bills/estimated-consume)，查看本月资源包抵扣明细
+
+注：实时消费明细每日8点更新一次，非实时动态更新，更新用量的使用时间截止为本日0点。
+
+
+
+# 3. 常见问题
+<div id="Q1"></div>
+
+ **Q：开启 HTTPS 以后如何收费？**
+域名开启 HTTPS 配置以后，该域名下所有流量（包括 HTTPS 和 HTTP 请求）即开始按照 HTTPS 协议的价格进行收费。静态加速下 HTTPS 协议不额外收请求次数费用。对于月中升级为 https 的用户，本月计量都按照https计算。
+默认配置下可兼容 HTTP 和 HTTPS 两种协议的请求，如需强制 HTTPS 访问，请在控制台开启“强制 HTTPS 访问”配置。
+
+<div id="Q2"></div>
+
+**Q：欠费以后还可以继续使用吗？**
+欠费以后，无法新增域名和修改域名。更多信息请见：
+[欠费状态下各产品的限制功能](https://developer.qiniu.com/af/manual/6650/owe-the-protection-limit-function)
+[新版欠费流程](https://developer.qiniu.com/af/kb/5996/new-owe-the-process-description)
+
+<div id="Q3"></div>
+
+**Q：资源包可以叠加使用吗？抵扣顺序是什么？**
+资源包可叠加购买，出账时将按照以下规则进行抵扣：
+<img src ="https://dn-odum9helk.qbox.me/FiDJc7qCvgUYYjQ_YpRpljIwEbwY" width=500>
+<div id="Q4"></div>
+
+**Q：使用量超出资源包后如何计费？**
+在资源包生效期间内，若当月用量超出可用资源包额度，出账时将优先抵扣完资源包额度，超出部分再按照官网 [CDN 后付费价格 ](https://www.qiniu.com/prices)结算。 
+
+<div id="Q5"></div>
+
+**Q：今天8点后购买的资源包，为什么没有进行抵扣？**
+实时消费明细 每日8点更新，更新用量的使用时间是截止本日0点，非实时动态更新，当月生效的资源包，您可以在购买后第二天，在财务中心查看实时消费明细账单。
+
+
+

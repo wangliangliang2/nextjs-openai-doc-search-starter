@@ -1,0 +1,30 @@
+表单上传需要通过formdata构建表单即可，配合Angular Material或者其他组件库，可以起到比较好的效果，建议在Angular中使用这种方法
+```
+        const inputEl = this.el.nativeElement.firstElementChild;
+        if (inputEl.files.length === 0) {
+            return;
+        };
+        const files: FileList = inputEl.files;
+        for (let i = 0; i < files.length; i++) {
+            const formData = new FormData();
+            formData.append('file', files[i]);
+            formData.append('key', files[i].name);
+            formData.append('token', this.uptoken);
+            this.loading = true;
+            const request = new HttpRequest(
+                'POST', this.upHost , formData,
+                {reportProgress: true});
+            this.http.request(request)
+                .retry(3)
+                .subscribe(
+                    event => {
+                        if (event.type === HttpEventType.UploadProgress) {
+                            this.loading = true;
+                            this.percentDone = Math.round(100 * event.loaded / event.total);
+                            this.progress = `File is ${this.percentDone}% uploaded.`;
+                        } else if (event instanceof HttpResponse) {
+                            this.progress = `${event.body['key']} is uploaded`;}});
+            this.loading = false;
+        }
+    }
+```

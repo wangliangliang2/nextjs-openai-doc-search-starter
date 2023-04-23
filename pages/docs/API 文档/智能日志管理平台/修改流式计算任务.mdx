@@ -1,0 +1,36 @@
+**请求语法**
+
+```
+PUT /v2/repos/<RepoName>/transforms/<TransformName>
+Content-Type: application/json
+Authorization: Pandora <auth>
+{
+	"plugin": {
+      "name": <PluginName>,
+      "output": [
+        {
+          "name": <FieldName1>,
+          "type": <FieldType>
+        },
+        {
+          "name": <FieldName2>
+        },
+        ...
+      ],
+    },
+    "code": <Code>,
+    "interval": <Interval>,
+    "container": {
+      "type":  <ContainerType>,
+      "count": <ContainerCount>
+    }
+}
+```
+
+
+
+>**注意:** 
+>
+>1.更新计算任务,可以同时更新`plugin`、`sql代码`、`运行时间间隔`和`配额`,也可以只更新其中一种,但不能一种都不指定。
+
+>2.在更新`sql`和`plugin的输出字段`时,只能添加新的字段,不能删除和更改已经存在的字段。

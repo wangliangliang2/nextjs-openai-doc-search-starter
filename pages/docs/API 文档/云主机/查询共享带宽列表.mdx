@@ -1,0 +1,87 @@
+# 请求路径
+> `GET` /v1/vpc/common_bandwidth
+
+# 请求参数
+
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region_id | string | query | 否 | 支持多个地域 ID, 按逗号分隔 |
+| cb_id | string | query | 否 | 共享带宽包 ID |
+| name | string | query | 否 | 名称模糊搜索 |
+| page | int | query | 否 | 页码 |
+| size | int | query | 否 | 分页大小 |
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| data | []CommonBandwidth | 是 | 共享带宽列表 |
+| request_id | string | 是 | 请求记录 ID |
+| page | int | 是 | 页码 |
+| size | int | 是 | 分页大小 |
+| total | int | 是 | 查询到的总数 |
+
+
+### CommonBandwidth 共享带宽详情
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| region_id | string | 是 | 地域 ID |
+| cb_id | string | 是 | 带宽包 ID |
+| name | string | 是 | 带宽包名称 |
+| description | string | 是 | 带宽包描述 |
+| bandwidth | int | 是 | 带宽大小, 单位 Mbps |
+| status | string | 是 | 共享带宽状态, 默认 Available |
+| public_address | []AddressInfo | 是 | 加入带宽包的弹性 IP 列表 |
+| create_time | string | 是 | 创建时间 |
+| expire_time | string | 是 | 过期时间 |
+| ratio | int | 是 | 保底百分比 |
+| cost_charge_type | string | 是 | 付费类型 |
+| cost_charge_mode | string | 是 | 计费方式 |
+
+### AddressInfo 弹性 IP 信息
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| ip_address | string | 是 | IP 地址 |
+| eip_id | string | 是 | IP 实例 ID |
+
+# 示例
+### 正常返回示例
+```json
+{
+    "data": [
+        {
+            "_id": "60800ad3ca2a31b4d27286a2",
+            "uid": 1381403989,
+            "region_id": "cn-zhangjiakou",
+            "cb_id": "cbwp-8vb7ta6zzkl83pq6bzv4i",
+            "name": "test_qxy",
+            "description": "null",
+            "bandwidth": 2,
+            "internet_charge_type": "PayByBandwidth",
+            "ratio": 100,
+            "instance_charge_type": "PostPaid",
+            "status": "Available",
+            "business_status": "Normal",
+            "public_address": [{
+                 "ip_address": "1.2.3.4",
+                 "eip_id": "eip-xxx"
+            }],
+            "has_reservation_data": false,
+            "isp": "BGP",
+            "deletion_protection": false,
+            "resource_group_id": "rg-acfm2aglnh2ecpa",
+            "human_spec": "2Mbps",
+            "create_time": "2021-04-21T19:21:55+08:00",
+            "expire_time": "2121-04-22T03:26:56+08:00",
+            "update_time": "2021-04-21T19:26:56.458+08:00",
+            "customized_expire_time": null,
+            "cost_charge_type": "PostPaid",
+            "cost_charge_mode": "PayByBandwidth",
+        }
+    ],
+    "page": 1,
+    "size": 10,
+    "total": 1,
+    "request_id": "3xV5Lp2NuUUM3XcW"
+}
+```

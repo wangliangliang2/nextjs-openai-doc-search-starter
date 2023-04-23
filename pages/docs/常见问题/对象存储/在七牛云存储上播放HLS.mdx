@@ -1,0 +1,52 @@
+# 在七牛云存储上播放 HLS
+
+HLS 是在移动端使用广泛的播放协议，可以用于直播，也可以用于点播。七牛云存储提供多种类型的视频文件向 HLS 的转换功能：[音视频切片](http://developer.qiniu.com/docs/v6/api/reference/fop/av/segtime.html)。同时，也提供了 m3u8 和 ts 文件的分发下载功能。
+
+用户有两种方式使用七牛云存储提供的 HLS 功能。如果用户已经有视频的 m3u8 文件和相应的 ts 文件，那么只需上传到七牛云存储中即可。播放时将 m3u8 文件的[下载 url](http://developer.qiniu.com/docs/v6/api/overview/dn/download.html) 作为播放地址，便可以播放 HLS 视频。但有两点需要注意：
+
+1,m3u8 文件中，必须指向 ts 文件所在的位置。包括两种形态：相对引用和绝对引用。相对引用就是当 m3u8 文件同 ts 文件在同一 bucket 中时，可以直接将 ts 文件名放在 m3u8 文件中，不需要额外的前缀：
+
+    #EXTM3U
+        #EXT-X-VERSION:3
+        #EXT-X-MEDIA-SEQUENCE:0
+        #EXT-X-ALLOW-CACHE:NO
+        #EXT-X-TARGETDURATION:300
+        #EXTINF:300.000,
+        seg00000.ts
+        #EXTINF:300.000,
+        seg00001.ts
+        #EXTINF:300.000,
+        seg00002.ts
+        #EXTINF:300.000,
+        seg00003.ts
+        #EXTINF:300.000,
+        seg00004.ts
+        #EXT-X-ENDLIST
+
+对于 m3u8 文件同 ts 文件放在不同的 bucket 的情况，需要在 ts 文件名之前增加域名前缀：
+
+    #EXTM3U
+        #EXT-X-VERSION:3
+        #EXT-X-MEDIA-SEQUENCE:0
+        #EXT-X-ALLOW-CACHE:NO
+        #EXT-X-TARGETDURATION:300
+        #EXTINF:300.000,
+        http://test-hls.u.qiniudn.com/seg00000.ts
+        #EXTINF:300.000,
+        http://test-hls.u.qiniudn.com/seg00001.ts
+        #EXTINF:300.000,
+        http://test-hls.u.qiniudn.com/seg00002.ts
+        #EXTINF:300.000,
+        http://test-hls.u.qiniudn.com/seg00003.ts
+        #EXTINF:300.000,
+        http://test-hls.u.qiniudn.com/seg00004.ts
+        #EXT-X-ENDLIST
+
+2,为了保证 flash 播放器能够正确播放 HLS 视频，必须在 m3u8 和 ts 文件所在的 bucket 中放置 crossdomain.xml 文件。
+
+如果用户所用的是其他类型的视频格式，比如 MP4、FLV 等，可以上传至七牛云存储，然后使用七牛云存储的[音视频切片](http://developer.qiniu.com/docs/v6/api/reference/fop/av/segtime.html)功能，将其转化成 HLS 视频。用户可以在视频上传的同时启动转换操作：[数据预处理](http://developer.qiniu.com/article/developer/security/put-policy.html#put-policy-persistent-ops-explanation)，也可以对已经上传的视频文件进行转换：[触发持久化处理](http://developer.qiniu.com/docs/v6/api/reference/fop/pfop/pfop.html)。
+
+在启动 HLS 转换操作时，需要指定视频切片的长度。这个值过长会造成拖放响应降低，废流量增加；这个值过短，会造成 ts 文件过多，管理不便。通常，ts 文件片的长度取 5 分钟到 10 分钟比较合适。
+
+有的用户希望将 m3u8 和 ts 文件所在的 bucket 置为私有，以保护视频内容。但是，一旦 bucket 置为私有，那么对 ts 文件的访问必须每次都进行授权，从而导致每次访问的 url 都不一样，进而使得每次播放都需要生成不同的 m3u8 文件。为解决这个问题，七牛云存储提供了[私有 m3u8 功能](http://developer.qiniu.com/docs/v6/api/reference/fop/av/pm3u8.html)。用户借助此功能，可以直接访问一个私有 bucket 中的 HLS 视频。
+

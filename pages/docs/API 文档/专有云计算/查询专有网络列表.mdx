@@ -1,0 +1,59 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `GET` /api/rio/v1/network/vpc
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id      | string | header | 是 | 区域 ID
+marker           | string | query | 否 | 查询起始标记
+limit            | int | query | 否 | 查询数量
+
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+data		| VPC    | 专有网络信息
+
+## VPC 专有网络信息
+名称 | 类型 |  描述
+----- | ----- | -----
+vpc_id        | string | 专有网络 ID
+vpc_name      | string | 专有网络名
+description      | string | 主机描述
+zone_id          | string | 区域 ID
+status           | string | 主机状态 <ul><li>`Pending` 准备中 </li><li>`Available` 可用的 </li> </ul>
+vswitch_ids      | []string | 交换机 ID
+cidr             | string | 网段
+description      | string | 描述
+created_at       | int64 | 创建时间
+
+
+## 请求示例
+> `GET` /api/rio/v1/network/vpc
+
+## 返回值示例
+```json
+{
+    "request_id": "ZsPWvmhcFDq4uUoX",
+    "data": [
+
+        {
+            "vpc_id": "9d8b2bd1-3f68-441a-a169-4d697a93021b",
+            "zone_id": "zhuozhou",
+            "status": "Available",
+            "vpc_name": "NewVPC",
+            "vswitch_ids": [
+                "55bc2fed-8266-4e14-ad48-ae91a7415064"
+            ],
+            "cidr": "0.0.0.0/0",
+            "description": "",
+            "created_at": 1660119553000
+        },
+       
+    ]
+}
+```

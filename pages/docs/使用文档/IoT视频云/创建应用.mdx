@@ -1,0 +1,36 @@
+使用IoT视频云平台的第一步需要在控制台上创建一个应用。应用是设备的集合，通常是一组具有相同属性设备集合。例如：测试环境与生产环境分别创建不同的应用，可以有效的做到资源、业务的有效隔离。
+
+# **创建应用**
+
+### **操作说明**
+
+1.登录[七牛开发者平台](https://sso.qiniu.com/?client_id=PIapUKqa3u6S24H868BelwrG0OFu8dS7AxVQ8oz8HznLXhgrl2BnjaO9cs9LzxK2&redirect_url=https:%2F%2Fportal.qiniu.com%2Fapi%2Fgaea%2Fsso%2Fsignin%3Fredirect%3D%252Fcreate)。
+
+2.选择IoT视频云产品，进入产品控制台，选择**我的应用**，点击**添加应用**。
+![我的应用](https://dn-odum9helk.qbox.me/FpUSZTKIP0Bfg0eHB_XY7hMQGjEv)
+
+3.进行应用相关配置后点击**创建**即可完成。
+![应用配置](https://dn-odum9helk.qbox.me/FogApLSeoUFjic4vzdK0lqCY9FTN)
+
+**配置项说明**
+
+|配置项|说明|
+|---|---|
+|应用名称|应用的名称，只能由 4-200 位英文字母和数字组成|
+|选择视频文件上传的存储空间|配置视频文件存储的bucket，如该uid下未创建bucket，请移步至[云存储](https://portal.qiniu.com/bucket/create)产品portal下进行添加[【新建存储空间说明】](https://developer.qiniu.com/kodo/manual/4263/operational-guidelines-for-the-new-bucket)。|
+|上传文件的生命周期|配置视频文件的生存周期，默认为永久保存，支持自定义设置，还可设置为不启用（生存周期为0）|
+|上传文件的存储类型|设置视频文件上传到云存储后的存储类型，普通存储或低频存储。|
+|视频文件上传模式|设置设备采集端的视频文件的上传模式。|
+|用于视频回放的存储空间的外链域名|选择存储空间下绑定的外网访问域名用于云端视频文件的回看。|
+|备注|用于备注应用的相关信息|
+
+# **应用管理**
+### **操作说明**
+
+1.登录[七牛开发者平台](https://sso.qiniu.com/?client_id=PIapUKqa3u6S24H868BelwrG0OFu8dS7AxVQ8oz8HznLXhgrl2BnjaO9cs9LzxK2&redirect_url=https:%2F%2Fportal.qiniu.com%2Fapi%2Fgaea%2Fsso%2Fsignin%3Fredirect%3D%252Fcreate)
+
+2.选择IoT视频云产品，进入产品控制台，选择**我的应用**，进入应用列表。
+
+3.应用列表中可以指定对应的应用，点击【配置】进行修改。可以查询、修改基本信息、云存配置。
+4.删除应用：删除指定的应用，删除应用前需确保此应用下没有关联的设备。
+![应用列表](https://dn-odum9helk.qbox.me/FjzR_PnalW549XdAES6JL-PNNixZ)

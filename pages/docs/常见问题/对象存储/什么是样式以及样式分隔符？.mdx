@@ -1,0 +1,38 @@
+# 什么是样式
+
+样式是将冗长的数据处理重新定义的一个友好别名，其本质仍然是对图片的处理模式，
+
+可以参考图片处理的相关文档:
+
+[样式](https://developer.qiniu.com/dora/manual/1204/processing-mechanism#3)
+
+[图片处理参数](https://developer.qiniu.com/dora/manual/3683/img-directions-for-use)
+
+
+# 设置图片样式
+可以在 [控制台](https://portal.qiniu.com/) - 对象存储 中选择需要配置的存储空间，在图片样式标签配置
+
+![图片样式](https://dn-odum9helk.qbox.me/FuXGqOGi88Dl6ekcGfXX3e3r2h0k)
+
+# 什么是样式分隔符
+样式分隔符是用于连接资源链接和图片样式的特殊符号，为防止访问出错，样式名中不可出现当前所启用的识别符
+
+# 设置样式分隔符
+可以在 [控制台](https://portal.qiniu.com/) - 对象存储 中选择需要配置的存储空间，在图片样式-样式分隔符设置中做分隔符配置
+
+![样式分隔符设置](https://dn-odum9helk.qbox.me/FjZI9eYPo2VBnSlFN6XyhFKiV6Jn)
+
+# 示例
+
+样式名称为imageFop，样式内容为：imageView2/0/w/48/h/48，样式分隔符为 -
+
+原始图片链接[http://dn-odum9helk.qbox.me/qiniu-picture1.jpg](http://dn-odum9helk.qbox.me/qiniu-picture1.jpg)
+
+通过访问[http://dn-odum9helk.qbox.me/qiniu-picture1.jpg-imageFop](http://dn-odum9helk.qbox.me/qiniu-picture1.jpg-imageFop)&nbsp; 即可获得效果缩放效果
+
+注意事项：
+
+1、创建分隔符时，不建议使用在样式名称中出现的符号作为分隔符。
+
+2、修改分隔符是个危险操作，全网生效须24小时。
+

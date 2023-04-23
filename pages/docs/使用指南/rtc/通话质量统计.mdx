@@ -1,0 +1,135 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文主要介绍 SDK 如何对通话过程中的网络以及音视频的质量进行监控。</p>
+<blockquote>
+<p>获取通话中的质量监测信息前，请确保您已经<strong>加入了房间</strong>并且<strong>已经发布或订阅了相关的音视频 Track</strong>。</p>
+</blockquote>
+
+# 上下行网络质量
+<h3 id="获取上下行网络质量"><a href="#%E8%8E%B7%E5%8F%96%E4%B8%8A%E4%B8%8B%E8%A1%8C%E7%BD%91%E7%BB%9C%E8%B4%A8%E9%87%8F" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>获取上下行网络质量</h3>
+<p>在<strong>加入了房间</strong>并且<strong>已经发布或者订阅了音视频 Track 后</strong>，可通过主动调用 <a href="/rtc/11402/UniappQNRTCClient#getUserNetworkQuality">QNRTCClient.getUserNetworkQuality</a> 获取上下行网络质量，这里需要传入目标 <strong>userID</strong>。</p>
+<p>其中，获取到的质量等级可参考 <a href="/rtc/11414/UniappQNNetworkGrade">QNNetworkGrade</a>。</p>
+
+# 音频质量统计
+<h3 id="获取本地音频质量统计"><a href="#%E8%8E%B7%E5%8F%96%E6%9C%AC%E5%9C%B0%E9%9F%B3%E9%A2%91%E8%B4%A8%E9%87%8F%E7%BB%9F%E8%AE%A1" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>获取本地音频质量统计</h3>
+<p>SDK 质量统计接口均为<strong>主动调用接口</strong>，您可以在适当的时机通过调用 <a href="/rtc/11402/UniappQNRTCClient#getLocalAudioTrackStats">QNRTCClient.getLocalAudioTrackStats</a> 接口获取当前本地的音频质量统计信息，并通过 trackID 来获取对应轨道的质量统计。获取到的质量统计内容 <a href="rtc/11420/UniappQNLocalAudioTrackStats">QNLocalAudioTrackStats</a> 主要包含如下信息：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>属性</th><th>描述</th></tr></thead><tbody><tr><td>uplinkBitrate</td><td>本地音频上行的码率，单位 bps</td></tr><tr><td>uplinkRTT</td><td>本地音频上行的网络延时，单位 ms</td></tr><tr><td>uplinkLostRate</td><td>本地音频上行的丢包率，范围 [0, 100]</td></tr></tbody></table>
+<h3 id="获取远端音频质量统计"><a href="#%E8%8E%B7%E5%8F%96%E8%BF%9C%E7%AB%AF%E9%9F%B3%E9%A2%91%E8%B4%A8%E9%87%8F%E7%BB%9F%E8%AE%A1" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>获取远端音频质量统计</h3>
+<p>SDK 质量统计接口均为<strong>主动调用接口</strong>，您可以在适当的时机通过调用 <a href="/rtc/11402/UniappQNRTCClient#getRemoteAudioTrackStats">QNRTCClient.getRemoteAudioTrackStats</a> 接口获取当前远端的音频质量统计信息，并通过 trackID 来获取对应轨道的质量统计。获取到的质量统计内容 <a href="/rtc/11384/UniappQNRemoteAudioTrackStats">QNRemoteAudioTrackStats</a> 主要包含如下信息：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>属性</th><th>描述</th></tr></thead><tbody><tr><td>downlinkBitrate</td><td>本地拉取远端音频时下行的码率，单位 bps</td></tr><tr><td>downlinkLostRate</td><td>本地拉取远端音频时下行的丢包率，范围 [0, 100]</td></tr><tr><td>uplinkRTT</td><td>远端音频上行的网络延时，单位 ms</td></tr><tr><td>uplinkLostRate</td><td>远端音频上行的丢包率，范围 [0, 100]</td></tr></tbody></table>
+
+# 视频质量统计
+<h2 id="获取本地视频质量统计"><a href="#%E8%8E%B7%E5%8F%96%E6%9C%AC%E5%9C%B0%E8%A7%86%E9%A2%91%E8%B4%A8%E9%87%8F%E7%BB%9F%E8%AE%A1" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>获取本地视频质量统计</h2>
+<p>SDK 质量统计接口均为<strong>主动调用接口</strong>，您可以在适当的时机通过调用 <a href="/rtc/11402/UniappQNRTCClient#getLocalVideoTrackStats">QNRTCClient.getLocalVideoTrackStats</a> 接口获取当前本地的视频质量统计信息，并通过 trackID 来获取对应轨道的质量统计。获取到的质量统计内容 <a href="/rtc/11389/UniappQNLocalVideoTrackStats">QNLocalVideoTrackStats</a> 主要包含如下信息：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>属性</th><th>描述</th></tr></thead><tbody><tr><td>profile</td><td>当前所统计视频的<a href="/rtc/11427/UniappQNTrackProfile">质量等级</a>，profile 说明亦可参考<a href="/rtc/11844/video-size-flow-uniapp">视频大小流</a>文档</td></tr><tr><td>uplinkFrameRate</td><td>本地视频上行的帧率</td></tr><tr><td>uplinkBitrate</td><td>本地视频上行的码率，单位 bps</td></tr><tr><td>uplinkRTT</td><td>本地视频上行的网络延时，单位 ms</td></tr><tr><td>uplinkLostRate</td><td>本地视频上行的丢包率，范围 [0, 100]</td></tr></tbody></table>
+<h2 id="获取远端视频质量统计"><a href="#%E8%8E%B7%E5%8F%96%E8%BF%9C%E7%AB%AF%E8%A7%86%E9%A2%91%E8%B4%A8%E9%87%8F%E7%BB%9F%E8%AE%A1" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>获取远端视频质量统计</h2>
+<p>SDK 质量统计接口均为<strong>主动调用接口</strong>，您可以在适当的时机通过调用 <a href="/rtc/11402/UniappQNRTCClient#getRemoteVideoTrackStats">QNRTCClient.getRemoteVideoTrackStats</a> 接口获取当前远端的视频质量统计信息，并通过 trackID 来获取对应轨道的质量统计。获取到的质量统计内容 <a href="/rtc/11428/UniappQNRemoteVideoTrackStats">QNRemoteVideoTrackStats</a> 主要包含如下信息：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>属性</th><th>描述</th></tr></thead><tbody><tr><td>profile</td><td>当前订阅的视频的<a href="/rtc/11427/UniappQNTrackProfile">质量等级</a>，profile 说明亦可参考<a href="/rtc/11844/video-size-flow-uniapp">视频大小流</a>文档</td></tr><tr><td>downlinkFrameRate</td><td>本地拉取远端视频时下行的帧率</td></tr><tr><td>downlinkBitrate</td><td>本地拉取远端视频时下行的码率，单位 bps</td></tr><tr><td>downlinkLostRate</td><td>本地拉取远端视频时下行的丢包率，范围 [0, 100]</td></tr><tr><td>uplinkRTT</td><td>远端视频上行的网络延时，单位 ms</td></tr><tr><td>uplinkLostRate</td><td>远端视频上行的丢包率，范围 [0, 100]</td></tr></tbody></table></div></div>

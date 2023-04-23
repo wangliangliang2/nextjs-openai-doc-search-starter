@@ -1,0 +1,22 @@
+您可以先在本文查看实例规格（族）的变配支持情况，然后再选择一种升降配方式变更实例规格。
+
+# 实例规格变配影响
+变更实例规格会产生以下影响。
+
+比如，对于已停售的实例规格，非I/O优化实例变配到I/O优化实例时，云服务器存储设备名和软件授权码会发生变化。Linux实例的普通云盘（cloud）会被识别为xvda或者xvdb，高效云盘（cloud_efficiency） 和SSD云盘（cloud_ssd）会被识别为vda或者vdb 。
+
+# 不支持变配的实例规格族
+以下规格族不支持规格族之间以及规格族内部变更：
+- 安全增强型：g7t、c7t、r7t
+- 大数据型：d2c、d2s、d1、d1ne
+- 本地SSD型：i1、i2、i2g、i2ne、i2gne、i3、i3g
+- GPU计算型：vgn5i、gn5
+- FPGA计算型：f1、f3
+
+# 可变配的实例规格
+## 共享实例
+<table><thead><tr><th>源实例规格族</th><th>可变配的目标规格族</th></tr></thead><tbody><tr><td>t6</td><td>t6<br>s6<br>g6、c6、r6、hfg6、hfc6、hfr6</td></tr><tr><td>t5</td><td>t5<br>sn1ne、sn2ne、se1ne、c4、cm4、ce4、hfc5、hfg5、g5、r5、c5、ic5、re4、n4、mn4、xn4、e4</td></tr><tr><td>s6</td><td>s6<br>t6<br>g6、c6、r6、hfg6、hfc6、hfr6</td></tr><tr><td>n4、mn4、xn4、 e4</td><td>n4、mn4、xn4、 e4<br>sn1、sn2、se1、n1、n2、e3、sn1ne、sn2ne、se1ne、c4、cm4、ce4、hfc5、hfg5、g5、r5、c5、ic5、re4、t5</td></tr></tbody></table>
+
+
+## 企业级实例
+<table><thead><tr><th>源实例规格（族）</th><th>可变配的目标规格族</th></tr></thead><tbody><tr><td>g7、c7、r7</td><td>g7、c7、r7</td></tr><tr><td>g7ne</td><td>g7ne<br>g7、c7、r7<br>hfc7、hfg7、hfr7</td></tr><tr><td>g6、c6、r6</td><td>g6、c6、r6<br>g7、c7、r7<br>hfg7、hfc7、hfr7<br>g6e、c6e、r6e<br>re6、hfg6、hfc6、hfr6<br>t6、s6<br></td></tr><tr><td>g6se</td><td>g6se<br>g7、c7、r7<br>g6e、c6e、r6e</td></tr><tr><td>g6a、c6a、r6a</td><td>g6a、c6a、r6a</td></tr><tr><td>g6t、c6t</td><td>g6t、c6t</td></tr><tr><td>g6e、c6e、r6e</td><td>g6e、c6e、r6e<br>ebmg6e、ebmc6e、ebmr6e<br>g6se<br>g7、c7、r7<br>hfc7、hfg7、hfr7<br>g7ne<br></td></tr><tr><td>ebmg6a、ebmc6a、ebmr6a</td><td>ebmg6a、ebmc6a、ebmr6a</td></tr><tr><td>ebmg6e、ebmc6e、ebmr6e</td><td>ebmg6e、ebmc6e、ebmr6e<br>g6e、c6e、r6e</td></tr><tr><td>g5、g5ne、r5、c5、ic5</td><td>g5、g5ne、r5、c5、ic5<br>sn1ne、sn2ne、se1ne、c4、cm4、ce4、hfc5、hfg5、re4、t5、n4、mn4、xn4、e4<br></td></tr><tr><td>sn1ne、sn2ne、se1ne</td><td>sn1ne、sn2ne、se1ne<br>c4、cm4、ce4、hfc5、hfg5、g5、g5ne、r5、c5、ic5、re4、t5、n4、mn4、xn4、e4</td></tr><tr><td>se1</td><td>se1<br>sn1、sn2、 n1、n2、e3、sn1ne、sn2ne、se1ne、c4、cm4、ce4、hfc5、hfg5、g5、r5、c5、ic5、re4、t5、n4、mn4、xn4、e4</td></tr><tr><td>re6p</td><td>re6p</td></tr><tr><td>re6</td><td>re6<br>g6、c6、r6、hfc6、hfg6、hfr6、re4<br><br>说明 ：ecs.ebmre6-6t.52xlarge、ecs.re6.26xlarge、ecs.re4.40xlarge、ecs.re4e.40xlarge支持互相变配。</td></tr><tr><td>re4</td><td>re4<br>re6、sn1ne、sn2ne、se1ne、c4、cm4、ce4、hfc5、hfg5、g5、r5、c5、ic5、t5、n4、mn4、xn4、e4、ecs.se1.14xlarge<br><br>说明：ecs.ebmre6-6t.52xlarge、ecs.re6.26xlarge、ecs.re4.40xlarge、ecs.re4e.40xlarge支持互相变配。</td></tr><tr><td>hfc7、hfg7、hfr7</td><td>hfc7、hfg7、hfr7<br>g7、c7、r7<br>g7ne</td></tr><tr><td>hfc6、hfg6、hfr6</td><td>hfc6、hfg6、hfr6<br>hfc7、hfg7、hfr7<br>g6、c6、r6、re6<br>t6、s6</td></tr><tr><td>hfc5、 hfg5</td><td>hfc5、 hfg5<br>sn1ne、sn2ne、se1ne、c4、cm4、ce4、g5、r5、c5、ic5、re4、t5、n4、mn4、xn4、e4</td></tr><tr><td>gn7</td><td>gn7</td></tr><tr><td>vgn6i</td><td>vgn6i</td></tr><tr><td>gn6i</td><td>gn6i</td></tr><tr><td>gn5i</td><td>gn5i</td></tr><tr><td>gn6e</td><td>gn6e</td></tr><tr><td>gn6v</td><td>gn6v</td></tr><tr><td>t1、s1、s2、s3、m1、m2、c1、c2</td><td>t1、s1、s2、s3、m1、m2、c1、c2<br>sn1、sn2、se1、n1、n2、e3、sn1ne、sn2ne、se1ne、c4、cm4、ce4、hfc5、hfg5、g5、r5、c5、ic5、re4、t5、n4、mn4、xn4、e4</td></tr><tr><td>n1、n2、e3</td><td>n1、n2、e3<br>sn1、sn2、se1、sn1ne、sn2ne、se1ne、c4、cm4、ce4、hfc5、hfg5、g5、r5、c5、ic5、re4、t5、n4、mn4、xn4、e4</td></tr><tr><td>sn1、sn2</td><td>sn1、sn2<br>se1、 n1、n2、e3、sn1ne、sn2ne、se1ne、c4、cm4、ce4、hfc5、hfg5、g5、r5、c5、ic5、re4、t5、n4、mn4、xn4、e4</td></tr><tr><td>c4、ce4、cm4</td><td>c4、ce4、cm4<br>sn1ne、sn2ne、se1ne、hfc5、hfg5、g5、r5、c5、ic5、re4、t5、n4、mn4、xn4、e4</td></tr></tbody></table>

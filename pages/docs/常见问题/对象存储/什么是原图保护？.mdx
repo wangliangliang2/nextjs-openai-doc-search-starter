@@ -1,0 +1,45 @@
+# 概述
+原图保护是七牛云存储针对媒体类源文件的保护措施。
+
+对整个存储空间内`所有的资源`生效，开启后，空间内的文件无法直接通过url进行访问，需要配合[样式分隔符](https://developer.qiniu.com/kodo/kb/1327/what-is-the-style-and-the-style-separators)和[图片样式](https://developer.qiniu.com/dora/manual/1204/processing-mechanism#3)才能访问
+
+# 使用场景
+
+用于控制客户只能访问处理后的资源，如：
+
+1. 对于存储在七牛上的图片资源，只希望客户访问携带水印的图片
+2. 对于存储在七牛上的图片资源，进行统一的规格化处理
+
+特别需要注意的是，原图保护是一种空间属性，对整个空间的资源都会生效，因此强烈建议对于开启原图保护的空间只存储需要保护原图的图片文件，其他文件使用其他空间存放。
+
+# 访问方式
+
+开启原图(或源文件)保护后，不能通过如下方式访问:
+
+- `http://绑定域名/文件key或相对路径`
+- `http://绑定域名/文件key或相对路径?操作符/操作符参数`
+
+可以通过如下方式进行公开访问（其中加号“+”忽略）：
+
+- `http://绑定域名/文件key或相对路径 + 已设定的样式分隔符 + 已设定的图片样式`
+
+如配置分隔符为"-",图片样式名称为"watermarked.jpg"，则以下形式的链接可以访问
+- `http://(Domain)/(Key)-watermarked.jpg`
+
+如果希望对源文件进行访问，可以通过[私有链接签名](https://developer.qiniu.com/kodo/manual/1656/download-private)的方式，携带鉴权参数访问，但不建议这样使用。
+
+# 设置方法
+1. 设置样式分隔符，可以在 [控制台](https://portal.qiniu.com/) - 对象存储 中选择需要配置的存储空间，在样式分隔符设置标签配置
+
+ ![样式分隔符设置](https://dn-odum9helk.qbox.me/FheTsGtzc73YVbZxzfobwwPnPh6U)
+
+2. 设置图片样式，可以在 [控制台](https://portal.qiniu.com/) - 对象存储 中选择需要配置的存储空间，在图片样式标签配置
+
+ ![图片样式](https://dn-odum9helk.qbox.me/FoUC1-NRJxJWY_CfEpJ-wuMenlrR)
+3. 设置原图保护
+
+ a. 使用 [qrsctl](/kodo/tools/1300/qrsctl\) protected 命令
+
+ b. 在 [控制台](https://portal.qiniu.com/) 的 对象存储中选择需要配置的存储空间，在空间设置标签选择开启或关闭原图保护功能
+
+ ![空间设置](https://dn-odum9helk.qbox.me/Fs1lMcZI-gJSPiuqCMxRU1ZmZQNl)

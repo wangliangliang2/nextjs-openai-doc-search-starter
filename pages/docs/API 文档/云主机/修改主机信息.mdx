@@ -1,0 +1,80 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `PUT` /v1/vm/instance/:instance_id/attribute
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+   <tr>
+      <td>instance_id</td>
+      <td>string</td>
+      <td>path</td>
+      <td>是</td>
+      <td>
+      云主机实例ID
+      </td>
+    </tr>
+     <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+      云主机实例所在地域
+      </td>
+    </tr>
+ <tr>
+      <td>instance_name</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>实例的名称。长度为 2~128 个英文或中文字符。必须以大小字母或中文开头，不能以 http:// 和 https:// 开头。 可以包含数字、半角冒号（:）、下划线（_）、英文句号（.）或者连字符（-）。 如果没有指定该参数，默认值为实例的 InstanceId。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>password</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>实例的密码。长度为 8 至 30 个字符，必须同时包含大小写英文字母、数字和特殊符号中的三类字符。特殊符号可以是：</p>
+        <pre><code>()`~!@#$%^&amp;*-_+=|{}[]:;'&lt;&gt;,.?/</code></pre>
+        <p>其中，Windows 实例不能以斜线号（/）为密码首字符。</p>
+        <p>@GSE:NOTE: 如果传入 Password 参数，建议您使用 HTTPS 协议发送请求，避免密码泄露。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>host_name</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>云服务器的主机名。</p>
+        <ul>
+          <li>英文句号（.）和短横线（-）不能作为首尾字符，更不能连续使用。</li>
+          <li>Windows 实例：字符长度为 2~15，不支持英文句号（.），不能全是数字。允许大小写英文字母、数字和短横线（-）。</li>
+          <li>其他类型实例（Linux 等）：字符长度为 2~64，支持多个英文句号（.），英文句号之间为一段，每段允许大小写英文字母、数字和短横线（-）。</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string | 请求 ID

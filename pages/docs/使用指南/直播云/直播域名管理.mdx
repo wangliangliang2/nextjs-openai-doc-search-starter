@@ -1,0 +1,58 @@
+在直播云管理控制台，您可以对域名完成直播域名绑定，加速域名绑定，域名设置，解绑等操作
+1. [直播域名绑定](#tutorial)
+2. [加速域名绑定](#tutorial1)
+3. [直播域名设置](#tutorial2)
+4. [解绑直播域名](#tutorial3)
+5. [CNAME直播域名](#tutorial4)
+
+# <span id="tutorial">直播域名绑定</span>
+1. 登录直播云控制台
+2. 点击需要查询的直播空间名称
+3. 点击**域名管理**或切换导航栏至域名管理 
+
+![image.png](https://dn-odum9helk.qbox.me/Flcvbi3UgIGOQTp-voleKI4mnnU7)
+
+4. 进入域名详情后，点击导航栏切换至**域名绑定**，输入要绑定的域名及域名类型，每个直播空间可添加多个RTMP/SRT推流域名，RTMP播放域名，HDL播放域名以及HLS播放域名
+注意：根据国家工信部规定，域名必须进行**备案**，请您在域名绑定前完成对域名的备案。[如何备案？](https://developer.qiniu.com/af/kb/3987/how-to-make-website-and-inquires-the-police-put-on-record-information)
+
+![image.png](https://dn-odum9helk.qbox.me/FlgHjv88Ww7P7BEFXQlYf5sUTkjQ)
+
+# <span id="tutorial1">加速域名绑定</span>
+1. 点击**域名管理**或切换导航栏至域名管理
+2. 进入域名详情，在页面底部可以配置**加速域名**，包括直播封面域名和点播域名
+3. 加速的域名需要完成在中国大陆的备案，新创建的加速域名将在12个小时内配置完成，**高级配置**可前往融合CDN控制台完成。
+
+![image.png](https://dn-odum9helk.qbox.me/FkEgc_ayZgBqtC93fIsL8IeUIv_Z)
+
+# <span id="tutorial2">直播域名设置</span>
+1. 点击**域名管理**或切换导航栏至域名管理 ，进入域名详情，点击**管理**设置域名的配置项
+
+![image.png](https://dn-odum9helk.qbox.me/Fh-fAGXMoiO69Bgt_WAMw6u_Yt1D)
+
+2. 可设置的字段包括：
+   **设置默认域名**：可为RTMP/SRT推流域名，RTMP/HDL/HLS播放域名，直播封面域名，TS切片域名等设置唯一的默认域名 
+   **HTTPS配置**：选择已上传的证书，或在证书管理处完成证书购买或上传后，即可开启该域名的 HTTPS 功能。HTTPS 功能不会产生额外费用。HTTPS 配置仅支持可使用HTTP协议的流媒体播放域名(即HDL和HLS)开启
+   **Referer防盗链配置**：开启 Referer 防盗链后，可以通过 http 头部的 referer 信息进行访问控制，达到防盗的效果。Referer 防盗链配置仅支持可使用HTTP协议的流媒体播放域名(即HDL和HLS)。
+   **时间戳防盗链配置**：播放域名的时间戳防盗链。 设置时间戳防盗链后，播放地址需要带上相应的防盗签名才能播放，可以有效避免被盗链的问题
+  **直播日志**
+  **直播状态通知**：域名级别的直播状态通知只支持RTMP/SRT推流格式的设置
+
+![image.png](https://dn-odum9helk.qbox.me/FkWUonnIh2yt9OUkTxRJWFdWf8gC)
+# <span id="tutorial3">解绑直播域名</span>
+在直播云控制台页面，可完成对域名的解绑，一旦解绑域名，将会影响正在使用该域名的直播业务，解绑域名操作不可逆，请谨慎操作
+默认域名不可解绑
+
+![image.png](https://dn-odum9helk.qbox.me/FpOdTggLMu90PETGMj-mud7XRl9h)
+																																																																																																																	
+# <span id="tutorial2">CNAME直播域名</span>
+
+添加域名成功后，域名需要指向直播云的云服务集群。
+
+
+1. 进入直播空间首页，查看您的直播域名信息及状态
+2. 鼠标定位至各域名未**配置CNAME状态**，查看域名 CNAME 信息；
+3. 根据直播域名及 CNAME 信息，到域名所归属的 DNS 管理平台配置 CNAME；
+4. CNAME 配置成功后，域名状态自动更改为 **“可用”** 状态；
+注意：根据国家工信部规定，域名必须进行备案，若您尚未备案，则域名状态提示为 “域名未备案，请进行备案”，CNAME 信息将在域名备案审核成功后生成
+
+![image.png](https://dn-odum9helk.qbox.me/FnHrYzskXSAFi5zeNCFlGzAQIOed)

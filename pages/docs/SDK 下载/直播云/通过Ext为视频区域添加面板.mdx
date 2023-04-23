@@ -1,0 +1,593 @@
+# 通过Ext 为视频区域添加面板
+
+视频区域的面板通常作为操作面板出现，比如暂停/播放，进度条，选集等操作控件都会展示在面板上。在通常视频播放场景中，视频在半屏播放和全屏播放时，面板的样式是不一样的，并且面板在视频播放但没有操作输入时，在一段时间内会自动隐藏，直到用户触碰视频区域，面板才会再次显示，下面我们针对面板的这些特性，讲讲Ext中面板的使用。
+
+
+
+## 布局一个半屏场景下的横屏视频面板
+
+### 暂停播放按钮
+
+这里的暂停播放按钮是一个图片，所以会这里是用`AppCompatImageView`，所有面板上的控件都是继承自`IControlWidget`,
+
+```kotlin
+class CommonPlayerPausePlayWidget : AppCompatImageView, View.OnClickListener,
+    IControlWidget<LongLogicProvider, LongPlayableParams, LongVideoParams> {
+
+    //播放核心类，一切的播放器操作都是通过这个对象
+    private lateinit var mPlayerCore: CommonPlayerCore<LongLogicProvider, LongPlayableParams, LongVideoParams>
+
+    //播放器状态变更回调
+    private val mPlayerStateChangeListener = object : QIPlayerStateChangeListener {
+        override fun onStateChanged(state: QPlayerState) {
+            //播放器状态变更时，变更UI
+            updateIcon(state)
+        }
+    }
+
+    constructor(context: Context) : super(context) {
+    }
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+    }
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+    }
+
+    private fun updateIcon(state: QPlayerState) {
+        //播放状态时，按钮展示暂停
+        if (state == QPlayerState.PLAYING) {
+            setImageResource(R.drawable.qmedia_player_pause_vector)
+        }//非播放状态时，按钮展示播放
+        else if (state == QPlayerState.PAUSED_RENDER ||
+            state == QPlayerState.PREPARE ||
+            state == QPlayerState.INIT ||
+            state == QPlayerState.NONE
+        ) {
+            setImageResource(R.drawable.qmedia_player_play_vector)
+
+        } //结束状态时，按钮展示重播
+        else if( state == QPlayerState.COMPLETED) {
+            setImageResource(R.drawable.qmedia_ic_player_replay_vector)
+
+        }
+    }
+
+    override fun onClick(v: View?) {
+        //根据当前播放状态 处理点击时的行为
+        val playerState = mPlayerCore.mPlayerContext.getPlayerControlHandler().currentPlayerState
+        if (playerState == QPlayerState.PLAYING) {
+            mPlayerCore.mPlayerContext.getPlayerControlHandler().pauseRender()
+        } else if (playerState == QPlayerState.COMPLETED){
+            //根据切集控制器重播当前视频
+            mPlayerCore.mCommonPlayerVideoSwitcher.replayCurrentVideo()
+        } else {
+            mPlayerCore.mPlayerContext.getPlayerControlHandler().resumeRender()
+
+        }
+    }
+
+    //控件激活(显示)时，绑定事件，并且更新icon
+    override fun onWidgetActive() {
+        setOnClickListener(this)
+        
+        updateIcon(
+            mPlayerCore.mPlayerContext.getPlayerControlHandler().currentPlayerState)
+        
+        mPlayerCore.mPlayerContext.getPlayerControlHandler()
+            .addPlayerStateChangeListener(mPlayerStateChangeListener)
+
+
+    }
+    //控件不活跃时(隐藏)时，解绑事件，
+    override fun onWidgetInactive() {
+        setOnClickListener(null)
+        
+        mPlayerCore.mPlayerContext.getPlayerControlHandler()
+            .removePlayerStateChangeListener(mPlayerStateChangeListener)
+    }
+
+    //当播控件初始化时会回调这个方法，在此方法中保存好playerCore 方便后续使用
+    override fun bindPlayerCore(playerCore: CommonPlayerCore<LongLogicProvider, LongPlayableParams, LongVideoParams>) {
+        mPlayerCore = playerCore
+    }
+}
+```
+### 面板布局
+其他控件的实现请参阅demo中长视频的源码实现，这里不一一举例。实现完所有的控件后，我们通过xml来进行布局，布局形式和一般的布局一样，只是用的控件都是我们自己实现的。
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerDownloadTextWidget
+        android:id="@+id/download_speed_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerBiteRateTextWidget
+        android:id="@+id/biterate_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/download_speed_TV"
+        app:layout_constraintBottom_toBottomOf="@+id/download_speed_TV"
+        app:layout_constraintLeft_toRightOf="@+id/download_speed_TV"
+        android:layout_marginLeft="4dp"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerFPSTextWidget
+        android:id="@+id/fps_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/download_speed_TV"
+        app:layout_constraintBottom_toBottomOf="@+id/download_speed_TV"
+        app:layout_constraintLeft_toRightOf="@+id/biterate_TV"
+        android:layout_marginLeft="4dp"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerPausePlayWidget
+        android:id="@+id/pause_play_Btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="4dp"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerSeekWidget
+        android:id="@+id/seek_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:minHeight="2dp"
+        android:maxHeight="4dp"
+        android:max="1000"
+        android:thumbOffset="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/pause_play_Btn"
+        app:layout_constraintTop_toTopOf="@+id/pause_play_Btn"
+        app:layout_constraintStart_toEndOf="@+id/pause_play_Btn"
+        app:layout_constraintEnd_toStartOf="@+id/progress_TV"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerProgressTextWidget
+        android:id="@+id/progress_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/fullscreen_IV"
+        app:layout_constraintTop_toTopOf="@+id/fullscreen_IV"
+        app:layout_constraintRight_toLeftOf="@+id/fullscreen_IV"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerFullScreenWidget
+        android:id="@+id/fullscreen_IV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="3dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/qmedia_ic_player_fullscreen_vector"
+        android:layout_marginEnd="4dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
+```
+
+### 将面板布局文件和播放元素绑定
+​	在播放元素切换的时候，基于一些业务场景，可能会出现不同的播放元素需要有不同的面板，所以在这里一般一个播放元素，会对应2个播放面板，一个半屏面板，一个全屏面板。
+
+​	面板的配置也在config中，此处`DisplayOrientation`是指代视频的宽高比类型，`ScreenType`是指代手机的屏幕方向。
+
+
+```kotlin
+ val config = CommonPlayerConfig.Builder<Any,
+                LongLogicProvider, LongPlayableParams, LongVideoParams>()
+            .addControlPanel(
+                ControlPanelConfig(
+                //面板类型名称-用户自定，用来和播放元素绑定
+                    LongControlPanelType.Normal.type,
+                    arrayListOf(
+                        //一个面板布局的配置
+                        ControlPanelConfigElement(
+                            //布局文件
+                            R.layout.control_panel_halfscreen_landscape_normal,
+                            //对应的屏幕类型(半屏/全屏(横屏全屏/竖屏全屏)/反向全屏(横屏全屏/竖屏全屏))
+                            arrayListOf(ScreenType.HALF_SCREEN),
+                            //对应横屏的视频 还是竖屏的视频
+                            DisplayOrientation.LANDSCAPE)
+                    )
+                )
+            )
+```
+
+在`LongPlayableParams`有2个参数一个是`displayOrientation: DisplayOrientation` 和`controlPanelType: String`通过这两个参数播放元素就和面版绑定了，然后再根据手机的屏幕方向展示对应的面板`ControlPanelConfigElement`
+
+### 半屏全屏面板切换
+
+首先我们为视频元素再创建个横屏视频的全屏面板。
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerInsetControllerWidget
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:topBackground="@mipmap/common_player_control_panel_shape_shadow_top"
+    app:topBackgroundHeight="140dp"
+    app:bottomBackground="@mipmap/common_player_control_panel_shape_shadow_bottom"
+    app:bottomBackgroundHeight="150dp"
+    app:contentLeftPadding="16dp"
+    tools:ignore="VectorDrawableCompat">
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerBackWidget
+        android:id="@+id/back_IV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        app:srcCompat="@drawable/qmedia_ic_player_back_vector"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerDownloadTextWidget
+        android:id="@+id/download_speed_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/back_IV"
+        app:layout_constraintBottom_toBottomOf="@+id/back_IV"
+        app:layout_constraintLeft_toRightOf="@+id/back_IV"
+        android:layout_marginStart="10dp"
+        android:paddingStart="11dp"
+        android:paddingLeft="11dp"
+        android:paddingEnd="11dp"
+        android:paddingRight="11dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:focusable="false"
+        android:textColor="@color/white"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="14sp"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerBiteRateTextWidget
+        android:id="@+id/biterate_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/download_speed_TV"
+        app:layout_constraintBottom_toBottomOf="@+id/download_speed_TV"
+        app:layout_constraintLeft_toRightOf="@+id/download_speed_TV"
+        android:layout_marginStart="10dp"
+        android:paddingStart="11dp"
+        android:paddingLeft="11dp"
+        android:paddingEnd="11dp"
+        android:paddingRight="11dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:focusable="false"
+        android:textColor="@color/white"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="14sp"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerFPSTextWidget
+        android:id="@+id/fps_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/download_speed_TV"
+        app:layout_constraintBottom_toBottomOf="@+id/download_speed_TV"
+        app:layout_constraintLeft_toRightOf="@+id/biterate_TV"
+        android:layout_marginStart="10dp"
+        android:paddingStart="11dp"
+        android:paddingLeft="11dp"
+        android:paddingEnd="11dp"
+        android:paddingRight="11dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:focusable="false"
+        android:textColor="@color/white"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="14sp"/>
+
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerMoreSettingWidget
+        android:id="@+id/setting_IV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:paddingStart="11dp"
+        android:paddingLeft="11dp"
+        android:paddingEnd="11dp"
+        android:paddingRight="11dp"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerProgressTextWidget
+        android:id="@+id/progress_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/pause_play_Btn"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="8dp"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerSeekWidget
+        android:id="@+id/seek_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:minHeight="2dp"
+        android:maxHeight="4dp"
+        android:max="1000"
+        android:thumbOffset="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/progress_TV"
+        app:layout_constraintTop_toTopOf="@+id/progress_TV"
+        app:layout_constraintStart_toEndOf="@+id/progress_TV"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="4dp"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerPausePlayWidget
+        android:id="@+id/pause_play_Btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="12dp"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerSelectVideoWidget
+        android:id="@+id/select_video_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/select_speed_TV"
+        app:layout_constraintTop_toTopOf="@+id/pause_play_Btn"
+        app:layout_constraintBottom_toBottomOf="@+id/pause_play_Btn"
+        android:layout_marginEnd="10dp"
+        android:paddingStart="11dp"
+        android:paddingLeft="11dp"
+        android:paddingEnd="11dp"
+        android:paddingRight="11dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:focusable="false"
+        android:textColor="@color/white"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="14sp"/>
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerSelectSpeedWidget
+        android:id="@+id/select_speed_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/select_quality_TV"
+        app:layout_constraintTop_toTopOf="@+id/pause_play_Btn"
+        app:layout_constraintBottom_toBottomOf="@+id/pause_play_Btn"
+        android:layout_marginEnd="10dp"
+        android:paddingStart="11dp"
+        android:paddingLeft="11dp"
+        android:paddingEnd="11dp"
+        android:paddingRight="11dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:focusable="false"
+        android:textColor="@color/white"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="14sp"
+
+        />
+
+    <com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerSelectQualityWidget
+        android:id="@+id/select_quality_TV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/pause_play_Btn"
+        app:layout_constraintBottom_toBottomOf="@+id/pause_play_Btn"
+        android:layout_marginEnd="10dp"
+        android:paddingStart="11dp"
+        android:paddingLeft="11dp"
+        android:paddingEnd="11dp"
+        android:paddingRight="11dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:focusable="false"
+        android:textColor="@color/white"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="14sp"/>
+
+</com.qiniu.qplayer2.ui.widget.commonplayer.controlwidget.CommonPlayerInsetControllerWidget>
+```
+
+在config中将其配置成横屏视频的全屏面板
+```kotlin
+val config = CommonPlayerConfig.Builder<Any,
+                LongLogicProvider, LongPlayableParams, LongVideoParams>()
+            .addControlPanel(
+                ControlPanelConfig(
+                    LongControlPanelType.Normal.type,
+                    arrayListOf(
+                        ControlPanelConfigElement(
+                            R.layout.control_panel_halfscreen_landscape_normal,
+                            arrayListOf(ScreenType.HALF_SCREEN),
+                            DisplayOrientation.LANDSCAPE),
+                        ControlPanelConfigElement(
+                            R.layout.control_panel_fullscreen_landscape_normal,
+                            arrayListOf(ScreenType.FULL_SCREEN, ScreenType.REVERSE_FULL_SCREEN),
+                            DisplayOrientation.LANDSCAPE)
+                    )
+                )
+            )
+```
+因为半屏转全屏，除了面板会变化，横屏视频全屏时，`activity`的`requestedOrientation`也需要修改成`SCREEN_ORIENTATION_LANDSCAPE`，那么这里的逻辑在EXT中已经实现，但是对于`activity`和window上的属性，比如statusbar的改变，还有视频view的容器，因为每个应用自己的规则，需要用户继承`ICommonPlayerScreenChangedListener`自行实现
+以下是长视频demo中的实现，当切换全屏时，需要把视频view的容器宽高设置成`MATCH_PARENT`，同时把statusbar设置成透明，还有针对刘海屏的处理
+```kotlin
+class LongCommonPlayerScreenChangedListener(
+    private val mActivity: ComponentActivity,
+    private val mVideoContainer: ViewGroup
+) : ICommonPlayerScreenChangedListener {
+    override fun onScreenTypeChanged(screenType: ScreenType) {
+
+        if (screenType == ScreenType.HALF_SCREEN) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                mActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            } else {
+                mActivity.window.insetsController?.show(WindowInsetsCompat.Type.statusBars())
+            }
+            mVideoContainer.layoutParams.height = DpUtils.dpToPx(200)
+            mVideoContainer.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+            fitSystemWindow(false)
+            NotchCompat.blockDisplayCutout(mActivity.window)
+            mVideoContainer.requestLayout()
+            restoreVideoContainer()
+            if (NotchCompat.hasDisplayCutout(mActivity.window)) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P && !RomUtils.isSamsungRom()) { //samsuang with cutout device excluded
+                    setStatusBarColor(Color.BLACK)
+                }
+            }
+        } else {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                mActivity.window.setFlags(
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN
+                )
+            } else {
+                mActivity.window.insetsController?.hide(WindowInsetsCompat.Type.statusBars())
+            }
+            mVideoContainer.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+            mVideoContainer.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+            fitSystemWindow(false)
+            NotchCompat.immersiveDisplayCutout(mActivity.window)
+            mVideoContainer.requestLayout()
+
+            changeVideoContainerToTop()
+
+            if (NotchCompat.hasDisplayCutout(mActivity.window) && !RomUtils.isSamsungRom()) {
+                setStatusBarColor(Color.TRANSPARENT)
+            }
+        }
+    }
+
+    private fun changeVideoContainerToTop() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ViewCompat.setElevation(mVideoContainer, 100f)
+        } else {
+            mVideoContainer.bringToFront()
+        }
+    }
+
+    private fun restoreVideoContainer() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ViewCompat.setElevation(mVideoContainer, 0f)
+        } else {
+            val parent = mVideoContainer.parent
+            if (parent is ViewGroup) {
+                val mOldVideoPageIndex = 0
+                if (parent.indexOfChild(mVideoContainer) != mOldVideoPageIndex) {
+                    parent.removeView(mVideoContainer)
+                    parent.addView(mVideoContainer, mOldVideoPageIndex)
+                }
+            }
+        }
+    }
+
+
+    private fun setStatusBarColor(color: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mActivity.window.statusBarColor = color
+        }
+    }
+
+    private fun fitSystemWindow(landscape: Boolean) {
+        var rootView: View? = mVideoContainer
+        while (rootView != null && rootView.id != android.R.id.content) {
+            if (rootView is ViewGroup) {
+                rootView.clipToPadding = !landscape
+                rootView.clipChildren = !landscape
+            }
+            rootView = rootView.parent as View
+        }
+    }
+}
+```
+定义完后将它设置到config中
+```
+val config = CommonPlayerConfig.Builder<Any,
+                LongLogicProvider, LongPlayableParams, LongVideoParams>()
+ .setCommonPlayerScreenChangedListener(LongCommonPlayerScreenChangedListener(this, findViewById(R.id.video_container_FL)))
+```
+
+然后通过全屏按钮进行处理，以下就是半屏面板上的全屏按钮控件的实现
+```kotlin
+class CommonPlayerFullScreenWidget: AppCompatImageView, View.OnClickListener,
+    IControlWidget<LongLogicProvider, LongPlayableParams, LongVideoParams> {
+
+    private lateinit var mPlayerCore: CommonPlayerCore<LongLogicProvider, LongPlayableParams, LongVideoParams>
+
+
+    constructor(context: Context) : super(context) {
+        init(context, null)
+    }
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context, attrs)
+    }
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(context, attrs)
+
+    }
+
+    private fun init(context: Context, attrs: AttributeSet?) {
+        contentDescription = "bbplayer_halfscreen_expand"
+    }
+
+    override fun onClick(v: View?) {
+       
+       //点击操作切换成全屏
+       mPlayerCore.getCommonPlayerScreenHandler()?.switchScreenType(ScreenType.FULL_SCREEN)
+    }
+
+    override fun onWidgetActive() {
+        setOnClickListener(this)
+    }
+
+    override fun onWidgetInactive() {
+        setOnClickListener(null)
+    }
+
+    override fun bindPlayerCore(playerCore: CommonPlayerCore<LongLogicProvider, LongPlayableParams, LongVideoParams>) {
+        mPlayerCore = playerCore
+    }
+}
+```
+
+### 关于DisplayOrientation和ScreenType的逻辑补充
+DisplayOrientation参数的影响
+- LANDSCAPE：ScreenType切换成FULL_SCREEN时，activity的requestedOrientation会切换成SCREEN_ORIENTATION_LANDSCAPE
+- VERTICAL：ScreenType切换成FULL_SCREEN时，activity的requestedOrientation会切换成SCREEN_ORIENTATION_PORTRAIT
+
+所以横屏视频和竖屏视频在配置`LongPlayableParams`时，不一定横屏视频一定是DisplayOrientation.LANDSCAPE 竖屏视频是 DisplayOrientation.VERTICAL，主要是看业务需求上是否要转屏，然后根据业务需求来配置。
+
+### 关于面板的自动隐藏逻辑
+因为自动隐藏逻辑可能每个app都有自己的实现，所以隐藏逻辑有业务方自行实现，demo中有一个简单的实现可以参考
+com.qiniu.qplayer2.ui.page.longvideo.service.controlpanelcontainervisible.PlayerControlPanelContainerVisibleService
+可以在看完[通过Ext为播放器添加业务逻辑](http://)后再来读该类的源码
+
+

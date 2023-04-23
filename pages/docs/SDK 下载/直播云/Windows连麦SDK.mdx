@@ -1,0 +1,874 @@
+# 七牛 Windows 连麦 SDK 接入文档
+
+
+# 1. 概述
+
+`RTCStreaming` 是 Windows 平台下一套具有连麦功能的 SDK，提供了简单易用的连麦 API，帮助开发者快速实现连麦互动功能。
+
+
+
+## 1.1 最新版下载地址
+
+- [点击下载](http://ok23ejxum.bkt.clouddn.com/%E4%B8%83%E7%89%9B%E8%BF%9E%E9%BA%A6SDK-Windows-1.0.0-Beta-2017-04-25.zip)
+
+## 1.2 最新版本发布信息
+
+
+- **1.0.0**
+  - 发布了 RTCStreaming
+  - 实现了基本的连麦对讲功能
+  - 支持外部 Camera 采集
+  - 支持连麦状态信息回调
+  - 支持音频输入、输出设备的枚举
+  - 支持视频采集设备的媒体
+  - 支持音视频设备的插拔检测
+  - 支持用户视频的自由发布和订阅
+  - 支持踢人功能
+  
+## 1.3 最新注意事项
+
+**连麦 SDK 登录房间超时**
+
+首先请检查 PC 网络环境是否正常，其次检查 PC 是否使用了某些网络代理工具，因为 SDK 内部使用了多种标准和私有网络协议，开发者在使用连麦的网络中不可使用 http 或 https 网络代理，建议使用 socks5 网络代理，或者不是用任何的网络代理，否则将影响 SDK 内部正常的网络通信，最终影响用户使用。
+
+
+# 2. 功能列表
+
+- 连麦对讲功能
+- 支持本地视频采集设备枚举
+- 支持音频输入、输出设备枚举
+- 支持输入外部视频数据，支持的格式为 I420，YV12，NV21，NV12，YUY2，UYVY，MJPG，ARGB，24BG 原始图像数据，以及 H.264 已编码数据
+- 支持踢人功能
+- 支持静音功能
+- 支持视频帧率配置
+- 支持视频码率的配置
+- 支持视频尺寸配置
+- 支持视频采集设备的选择
+- 支持音频输入、输出设备的选择
+- 支持获取系统麦克风和扬声器音量大小
+- 支持视频采集设备的插拔检测
+- 支持音频输入、输出设备的插拔检测
+- 支持网络断线重连
+- 拥有丰富的连麦消息回调
+- 支持纯音频连麦
+- 支持图像旋转
+- 支持图像镜像功能
+- 支持回音消除
+
+# 3. 阅读对象
+
+本文档为技术文档，需要阅读者具有基本的 Visual Studio C++ 开发能力。
+
+
+# 4 设备以及系统要求
+
+- 拥有内置或外接摄像头设备，或安装第三方虚拟摄像头
+- 拥有内置或外接音频采集和播放设备
+- 系统要求：Windows 7 SP1（x86 或 x64） 及其以上
+- ​
+
+# 5 快速开始
+
+
+## 5.1 工具下载
+
+* Microsoft Visual Studio 2013 开发工具，官方[下载地址](http://download.microsoft.com/download/B/1/9/B1932B8C-1046-4773-A1DD-4AB5C0978637/vs2013.2_ult_chs.iso)
+* QT 5.7.1 （Demo编译运行依赖），官方[下载地址](http://download.qt.io/official_releases/qt/5.7/5.7.1/qt-opensource-windows-x86-msvc2013-5.7.1.exe)。
+* QT VS TOOLS（Demo编译依赖），官方[下载地址](http://download.qt.io/official_releases/vsaddin/qt-vs-tools-msvc2013-2.1.1.vsix)
+
+注：QT 5.7.1 和 QT VS TOOLS 为 Demo（基于 Qt 开发）编译运行所必须依赖的开发包和工具，开发者可选择性的下载安装。
+
+
+## 5.2 配置开发环境
+此章节介绍如何导入配置 QT 编译开发环境，如果开发这不需要编译运行连麦 SDK Demo 程序，可跳过此章节。
+
+
+### 5.2.1 安装
+依次安装以上三个安装包。
+
+
+### 5.2.2 Virtual Studio 中添加QT版本
+打开 Virtual Studio 2013，点击菜单“QT VS TOOLS”，选择“Qt Options”选项：
+
+![](https://dn-odum9helk.qbox.me/9e273524b1774e05326073c7457e1304)
+
+点击“Add”添加QT版本，"Version name"填写QT SDK版本，如“Qt 5.7.1”， “Path”浏览选择 QT 5.7.1 安装目录下的“Qt5.7.1\5.7\msvc2013”:
+
+![](https://dn-odum9helk.qbox.me/d53fc8c55e65f71364516b2d9bd519a8)
+
+点击“OK”确认：
+
+![](https://dn-odum9helk.qbox.me/221cada0332cd9156700182f15904f1a)
+
+
+### 5.2.3 配置Qt应用程序工程对应的Qt版本
+在 Virtual Studio 解决方案资源管理器中，右键 Qt 应用程序工程弹出菜单，选择"Qt Project Settings":
+![](https://dn-odum9helk.qbox.me/de4082d59f55d83fc421364d75063e3a)
+
+展开 Qt 工程配置，version 栏选择刚才添加的Qt版本：
+![](https://dn-odum9helk.qbox.me/4debd6e34bca522c6d4a2782eaf797aa)
+
+
+## 5.3 导入连麦 SDK 
+
+连麦 SDK 主要包含 Demo 源码、SDK 头文件、lib、dll，以及 连麦 SDK 所依赖的动态库文件，建议开发者使用静态方式去链接 SDK dll。
+
+其中，Release 目录是 SDK 开发包所有文件存放目录，您可以将其拷贝到您的工程目录下，或者其它目录，后面将在工程属性中引用此目录下的 include 和 lib 目录，如需调试运行，您需要拷贝 dll 目录中，模式对应的动态库至您的可执行程序的工作（调试）目录。
+
+
+### 5.3.1 添加头文件包含目录
+展开工程属性，选择 C/C++-->常规-->附加包含目录 添加 SDK include 文件夹所在的相对路径或绝对路径，如果 SDK 所在目录在此工程所在目录的上两层目录，则添加如下目录：
+```
+..\..\Release\include
+```
+
+
+### 5.3.2 添加附加库查找目录
+在工程属性中，选择链接器-->常规-->附加库目录 中添加 SDK 中 lib 文件夹所在的相对路径或绝对路径，如果 SDK 所在目录在此工程所在目录的上两层目录，如:
+```
+..\..\Release\lib
+```
+
+
+### 5.3.3 配置调试运行环境
+
+开发者可手动拷贝 dll 目录下对应模式的动态库至应用程序工作目录，或者通过 Visual Studio 的工程“配置属性-->>生成事件-->> 预先生成事件” 自动将 SDK 所依赖的 Dlls 拷贝至可执行程序的调试运行目录；
+
+
+### 5.3.4 配置工程运行库编译选项
+
+#### Debug 模式下：
+在工程属性中，选择C/C++-->代码生成-->运行库 中选择 “MDD”
+#### Release 模式下：
+在工程属性中，选择C/C++-->代码生成-->运行库 中选择 “MD”
+
+具体可以参考 SDK 包含的 Demo 工程。
+
+
+## 5.4 快速开发
+
+连麦 SDK 内部一共拥有四个开发接口，分别负责不同的功能模块，所有控制接口除了 `RTCEngine`外都有一个与之对应的异步通知接口，开发者可以通过实现此接口，以获得 SDK 接口调用相关的消息通知，接口文件基本功能介绍如下：
+
+* ```RTCEngine.h``` ： 负责连麦 SDK 全局引擎上下文的基本配置，包括引擎的初始化、反初始化，SDK 日志的输出配置等；
+* ```RTCRoom.h ```： 负责房间相关的操作，包括房间的创建与销毁，用户的进入和离开，踢出某用户，获取音视频接口等；
+* ```RTCVideo.h ```： 负责本地的视频采集设备的枚举和插拔检测，预览和发布本机的视频，其它用户视频的订阅和取消订阅等；
+* ```RTCAudio.h ```： 负责本地的音频设备的枚举和插拔检测，管理本地音频输入和输出设备的打开和关闭（或静音）。
+
+
+开发基本流程为：
+初始化引擎-->>创建房间-->>加入房间-->>发布本地音视频-->>订阅远端音视频-->>离开房间-->>反初始化引擎。
+![](https://dn-odum9helk.qbox.me/27abcb953cf38fd6f0c14579bed29c71)
+
+
+### 5.4.1 引擎初始化
+
+* RTCEngineInterface：引擎控制接口，单实例接口，通过```Obtain```获取接口指针
+
+首先，在应用程序的入口处，通过单实例类 `RTCEngineInterface` 的静态方法 `InitEngine` 完成连麦 SDK 引擎的初始化如：
+```
+qiniu::RTCEngineInterface::Obtain()->InitEngine();
+```
+
+如果开发需要打开 SDK 日志输出，同样可在入口处进行日志输出的配置，否则 SDK 不输出日志，如：
+```
+qiniu::RTCEngineInterface::Obtain()->SetSdkLog(qiniu::LOG_NORMAL, "RTCLog", "log");
+```
+引擎初始化成功后，开发者便可以进行后续开发了。
+
+
+### 5.4.2  进出房间
+
+* RTCRoomListener：房间异步通知接口，开发者需实现此接口
+* RTCRoomInterface：房间操作接口，开发者创建后，自行保存指针地址
+
+**创建、销毁房间：**
+
+引擎初始化成功后，开发者要创建并进入某连麦房间，首先需要通过 `RTCRoomInterface` 静态方法```Create```传递房间ID `room_id_` 创建此房间的接口指针，如：
+```
+qiniu::RTCRoomInterface* _rtc_room_interface = qiniu::RTCRoomInterface::Create(room_id_);
+```
+创建成功后，开发者需自行记录此房间接口指针，切勿重复创建，此后进行该房间的其它相关接口调用，均需使用此指针既可，释放则使用 `Release()` 接口。
+
+**加入、离开房间：**
+
+加入房间前，用户需首先实现 `qiniu::RTCRoomListener` 回调接口，用于接收相关的异步消息，并通过 `SetListener` 方法设置房间回调接口指针，然后开发者便可以尽情的调用 `RTCRoomInterface` 中的其它方法了。
+开发者可通过调用 `Join` （异步）方法，申请加入已有的连麦房间，或通过 `Leave` （同步）方法离开连麦房间，用户加入房间成功与否通过房间回调接口的 `void onJoinResult(int result_)` 接口进行通知；
+注：由于 `Leave` 离开房间操作为同步操作，故没有相应的回调通知。
+​    
+**用户进出&状态通知：**
+​    
+其它用户的进出消息和音视频发布状态变化信息可以通过`RTCRoomListener`的其它回调接口获得，如：
+```
+//其它用户进入房间通知
+virtual void onParticipantJoin(const UserInfo& user_) = 0;
+//其它用户离开房间通知
+virtual void onParticipantLeave(const UserInfo& user_) = 0;
+//其它用户音视频发布状态变化通知
+virtual void onParticipantStatusChange(const UserInfo& user_) = 0;
+```
+
+
+### 5.4.3 视频
+
+* RTCVideoListener： 视频相关异步通知接口，开发者需实现此接口
+* RTCVideoInterface：视频功能操作接口，通过 RTCRoomInterface 获取
+
+每个房间分别对应有一个视频功能操作接口`RTCVideoInterface`此接口不提供独立的创建和销毁方法，由SDK内部进行资源的创建和销毁；获取视频管理接口可 通过`RTCRoomInterface`的`ObtainVideoInterface`去获取;如：
+
+```
+qiniu::RTCVideoInterface* _rtc_video_interface = _rtc_room_interface->ObtainVideoInterface();
+```
+**枚举本地设备：**
+通过
+```
+int GetVideoCapDevList(std::vector<VideoCapDeviceInfo>& device_vec_)
+```
+获取并保存，以后预览和发布本地视频，需要使用其中的 Device ID。
+
+**预览本地视频：**
+通过`PreviewLocalCamera(const std::string& device_id_, void* hwnd_`接口，传入需要预览的视频设备 ID（设备 ID 需首先由`GetVideoCapDevList`获取）和负责渲染视频画面的窗口句柄，既可，此方法为同步方法；
+
+**发布本地视频：**
+通过`PublishLocalCamera`传入视频设备的 ID，以及其它画面渲染、采集、编码等参数，即可发布本地视频；
+
+**订阅远端视频：**
+用户成功发布视频后，会通知房间内的所有其它用户，其它用户便可通过```Subscribe```接口并传入用户 ID 以及用于渲染视频的窗口句柄，查看指定用户视频；
+
+
+### 5.4.4 音频
+
+* RTCAudioListener： 音频相关异步通知接口，开发者需实现此接口
+* RTCAudioInterface：音频模块操作接口，通过 RTCRoomInterface 获取
+
+**设备枚举：**
+
+获取麦克风设备列表：
+```
+int GetMicDevList(std::vector<qiniu::AudioDeviceInfo>& device_vec_)
+```
+获取扬声器设备列表：
+```
+int GetSpeakerDevList(std::vector<qiniu::AudioDeviceInfo>& device_vec_)
+```
+
+**本地音频：**
+通过`PublishLocalMicrophone`接口传入对应的麦克风设备 ID，即可发布本地音频，远端用户无需订阅，只要在此房间中，即播放此路音频；
+通过`UnPublishLocalMicrophone`关闭麦克风，即停止发布此音频；
+
+**远端音频**
+远端用户音频仅提供静音和获取其音量值的相关接口；
+
+
+### 5.4.5 离开房间
+调用`RTCRoomInterface`的接口`Leave`接口，退出房间，此方法为同步方法，没有异步通知；房间资源释放可通过接口`Release`释放；
+离开房间后，便不再可以进行用户和音视频相关的操作了。
+
+
+### 5.4.6 退出程序
+程序退出前，请先卸载引擎上下文，如：
+```
+qiniu::RTCEngineInterface::Obtain()->Release();
+```
+
+
+# 6. SDK 接口的设计
+
+
+## 6.1 连麦 SDK 接口概述
+
+连麦 SDK 的核心接口文件有四个，每个接口文件中都有一个操作接口（如 RTCRoomInterface ）和一个与之对应的回调接口（如 RTCRoomListener ），回调接口是用来接收操作接口中相关的异步通知消息，具体如下：
+
+* `RTCEngine.h`：
+  控制接口`RTCEngineInterface`提供 SDK 引擎的初始化、反初始化，SDK 日志的输出配置等；
+
+  ​
+
+* `RTCRoom.h`： 
+  控制接口`RTCRoomInterface`提供房间的创建与销毁，用户的进入和离开，踢出某用户，获取音、视频控制接口等；
+  回调接口`RTCRoomListener`提供用户进出房间，以及房间状态变化、网络连接状态变化，用户音、视频发布状态变化等通知；
+  负责房间相关的操作，包括房间的创建与销毁，用户的进入和离开，踢出某用户，获取音视频接口等；
+
+  ​
+
+* `RTCVideo.h`： 
+  控制接口`RTCVideoInterface`提供枚举本地视频采集设备，自定义参数预览和发布本地摄像头，发布各种格式的外部压缩或未压缩的视频帧数据，以及对远端用户视频的订阅和取消订阅等功能接口；此接口由`RTCRoomInterface`获取；
+  回调接口`RTCVideoListener`提供本地视频设备的插拔事件通知，本地视频设备发布和远端视频订阅等异步操作的通知回调；
+
+  ​
+
+* `RTCAudio.h`： 
+  控制接口`RTCAudioInterface`提供枚举音频输入、输出设备列表，可以打开指定的输入、输出音频设备，或者当前使用的输入、输出设备；此接口由`RTCRoomInterface`获取；
+  回调接口`RTCAudioListener`提供本地音频设备的插拔事件通知，本地输入音频设备打开和关闭的异步通知；
+
+  ​
+
+
+## 6.2 全局配置
+
+`RTCEngineInterface` 是负责管理整个连麦生命周期的核心类之一，该接口目前仅提供初始化、反初始化和日志的输出配置等功能，该接口为单实例接口，全局唯一。
+
+
+### 6.2.1 引擎初始化及销毁
+
+* 接口名：`RTCEngineInterface`
+
+
+```
+/** 通过此静态方法获取接口指针
+*
+* @return 返回此接口的全局唯一实例的对象指针
+*/
+static RTCEngineInterface* Obtain();
+
+/** 
+* 释放此接口实例对象
+*/
+virtual void Release() = 0;
+
+/** 初始化引擎，SDK中其它所有的接口及方法必须在本方法调用并成功后才能使用
+*
+* @return 成功返回0，其它可参考SDK错误码
+*/
+virtual int InitEngine() = 0;
+
+/** 反初始化音频，调用此方法后，其它所有接口和方法均不能再使用
+*
+* @return 成功返回0，其它可参考SDK错误码
+*/
+virtual int UnInitEngine() = 0;
+
+/** SDK日志输出，如果不调用此接口，或者设置日志文件名为空，则不输出任何日志文件
+*
+* @param[in] log_level_ 输出日志等级，按照输出的日志量划分
+* @param[in] path_ 输入日志文件所在的目录，如果不存在，则创建此目录
+* @param[in] file_name_ 日志输出目标文件名，如果为空，则不输出任何日志
+*/
+virtual void SetSdkLog(RTCLogLevel log_level_, const std::string& path_, 
+    const std::string& file_name_) = 0;
+```
+
+
+
+
+
+## 6.3 房间管理 
+
+`RTCRoomInterface` ： 负责提供以房间为单位的管理，其中包括本房间的创建及销毁、用户的加入及离开，踢出某用户，获取与房间一一对应的音视频控制接口等功能。
+
+
+### 6.3.1 房间管理接口
+* RTCRoomInterface
+
+
+```
+/** 创建并返回指定房间 ID 的此接口指针
+*
+* @param[in] room_id_ 房间 ID，连麦房间的唯一标识
+* @return 返回一个新的指定房间 ID 的接口实例指针
+*
+* @note 每个房间只需创建一次，创建成功后，开发者需自行保存此接口指针，切勿重复创建
+*/
+static RTCRoomInterface* Create(const std::string& room_id_);
+
+/** 释放此接口指针
+* 释放后，此指针无效
+*/
+virtual void Release() = 0;
+
+/** 加入由 Create 接口创建的连麦房间
+* @param[in] user_id_ 用户 ID，由开发者保证此 ID 全局唯一，重复 ID 将影响其它用户的正常使用
+* @param[in] token_ 房间登录凭证
+* @return 成功返回0，具体可参考错误码列表
+* RTCRoomListener::onJoinResult(int result_)
+*/
+virtual int Join(const std::string& user_id_, const std::string& token_) = 0;
+
+/** 离开房间
+* @note 此方法为同步的，没有异步通知
+*/
+virtual int Leave() = 0;
+
+/** 获取 Create 时传入的房间 ID
+* @return 返回房间 ID
+*/
+virtual std::string GetRoomId() = 0;     
+
+/** 设置回调接口指针 RTCRoomListener，
+* @note 请在 Create 调用后，立即调用此接口，否则可能不能正确收到异步通知
+*/
+virtual void SetListener(RTCRoomListener* listener_) = 0;
+
+/** 将某用户踢出此房间
+* @param[in] reason_ 踢出此用户的原因，开发者可自定义
+* @param[in] user_id_ 被踢出房间的用户 ID
+* @return 成功返回0，具体可参考错误码列表
+* @note 连麦 SDK 设计房间中，每个用户拥有任意的踢人权限，如果开发者需要设定某用户是否拥有踢人权限，请在应用层实现
+*/
+virtual int KickoutUser(int reason_, const std::string& user_id_) = 0;
+
+/** 获取与此房间对应的视频模块接口实例指针
+* @return 返回一个 RTCVideoInterface 接口指针
+* @note 房间创建成功后，可以通过此接口获取视频模块接口指针，其资源由 SDK 内部进行管理，开发者无需管理
+*/
+virtual RTCVideoInterface* ObtainVideoInterface() = 0;
+
+/** 获取与此房间对应的音频模块接口实例指针
+* @return 返回一个 RTCAudioInterface 接口指针
+* @note 房间创建成功后，可以通过此接口获取音频模块接口指针，其资源由 SDK 内部进行管理，开发者无需管理
+*/
+virtual RTCAudioInterface* ObtainAudioInterface() = 0;
+```
+
+
+### 6.3.2 房间管理异步通知接口
+* RTCRoomListener，开发者需实现此接口；
+
+```
+/** 用户加入房间操作异步返回结果
+* @param[in] result_ 加入房间操作结果，0：成功，其它请参考错误码列表
+* @note 此通知方法可能会在子线程中触发，请不要在此方法中做只允许在主线程做的操作，如UI
+*/
+virtual void onJoinResult(int result_) = 0;
+
+/** 此用户非正常原因离开房间异步通知
+* @param[in] reason_ 用户离开房间原因，0代表被其它用户踢出房间；RTC_ERROR_USER_DUPLICATE_JOIN 代表有相同ID的用户在别处登录；开发者也可以使用自定义 值
+* @param[in] fromId_ 触发此事件的源用户 ID，如踢出此用户的用户 ID
+* @note 此时 SDK 内部已经释放房间资源，开发者无需再调用 Leave 接口了
+*/
+virtual void onLeaveIndication(int reason_, const std::string& from_id_) = 0;
+
+/** 房间状态通知
+* @param[in] status_ 房间状态通知, 具体请参考本接口文件中的枚举类型： enum qiniu::RoomStatus
+*/
+virtual void onRoomStatusNotify(RoomStatus status_) = 0;
+
+/** 房间网络状态变化通知
+* @param[in] status_ 房间网络状态，具体请参考本接口文件中的枚举类型： enum qiniu::ConnectionStatus
+*/
+virtual void onConnectionStatus(ConnectionStatus status_) = 0;
+
+/** 其它用户加入房间通知
+* @param[in] user_ 加入房间的用户信息
+*/
+virtual void onParticipantJoin(const UserInfo& user_) = 0;
+
+/** 其它用户离开房间通知
+* @param[in] user_ 离开房间的用户信息
+*/
+virtual void onParticipantLeave(const UserInfo& user_) = 0;
+
+/** 用户状态变化通知, 如用户音视频发布状态的变化通知
+* @param[in] user_ 用户状态信息
+*/
+virtual void onParticipantStatusChange(const UserInfo& user_) = 0;
+```
+
+
+## 6.4 视频管理
+通过`RTCVideoInterface`接口，开发者可枚举本地视频采集设备，并可以通过自定义参数预览和发布本地摄像头，或者发布开发者自己的视频帧数据，此接口支持丰富的外部自定义数据输入格式，包括未编码的原始图像，或者已编码的视频ES流；并且可以通过订阅接口实现对对远端用户视频的实时查看；
+通过`RTCVideoListener`接口，开发者通过实现此接口，可以得到本地视频设备的插拔事件通知，以及本地视频设备发布和远端视频订阅等异步操作结果的通知等；
+
+
+### 6.4.1 视频控制接口
+* RTCVideoInterface 接口指针必须通过`RTCRoomInterface`获取；
+
+
+```
+/** 设置用来接收视频操作异步通知的接口
+* @param listener_  实现了 RTCVideoListener 的实例指针
+*/
+virtual void SetListener(RTCVideoListener* listener_) = 0;
+
+/** 发布本地摄像头，只有发布后，同房间的其它用户才能通过订阅查看到你的视频
+* @param device_id_ 视频设备 ID，设备 ID 需开发者提前由 GetVideoCapDevList 方法获得，如果为空，则发布默认设备
+* @param hwnd_ 渲染摄像头视频画面的窗口句柄，如果不需要预览，请传入空指针
+* @param width_ 发布视频的宽度
+* @param height_ 发布视频的高度
+* @param fps_ 发布视频的帧率
+* @param bitrate_ 发布视频的码率
+* @return 0代表成功，其它请参考错误码列表
+* @note RTCVideoListener:onCameraPublish 方法会通知发布结果
+*/
+virtual int PublishLocalCamera(const std::string& device_id_, const void* hwnd_, 
+    int width_ = 640, int height_ = 480, int fps_ = 15, int bitrate_ = 500000) = 0;
+    
+/** 停止发布本地摄像头视频，停止发布后，其它用户将不能看到你的视频
+* @param device_id_ 视频设备 ID，设备 ID 需开发者提前由 GetVideoCapDevList 方法获得，如果为空，则发布默认设备
+* @return 0代表成功，请参考错误码列表 
+* @note RTCVideoListener:onCameraUnpublish 方法会通知操作结果
+*/
+virtual int UnPublishLocalCamera(const std::string& device_id_) = 0;
+
+/** 发布模拟数据源摄像头，由开发者提供外部采集数据，可以是原始图像数据，或者已编码数据
+* @param[out] dev_id_ 发布视频后，开发者需自行记录此设备 ID
+* @param[in] hwnd_ 用于渲染开发者传入的原始图像窗口句柄，如果为空，则不显示
+* @param[in] format_ 开发者将要传入的视频数据格式，请参考本接口文件中的 FourCC
+* @param[in] width_ 视频宽度
+* @param[in] height_ 视频高度
+* @param[in] fps_ 输入视频图像的帧率，此帧率由开发者自行控制
+* @param[in] bitrate_ 视频码率，单位为 bps
+* @return 0代表成功，其它请参考错误码列表
+*/
+virtual int PublishFakeCamera(std::string& device_id_, const void* hwnd_, 
+    qiniu::FourCC format_, int width_ = 640, int height_ = 480,
+    int fps_ = 15, int bitrate_ = 500000) = 0;
+    
+/** 停止发布模拟摄像头
+* @param[out] dev_id_ 传入 PublishFakeCamera 返回的设备 ID
+* @return 0代表成功，其它请参考错误码列表
+*/
+virtual int UnPublishFakeCamera(const std::string& device_id_) = 0;
+
+/** 如果开发者使用了 PublishFakeCamera 方法，那么通过此方法输入原始未编码压缩的视频帧数据
+* @param[in] timestamp_ms_ 视频帧时间戳，单位 ms
+* @param[in] format_ 图像数据格式
+* @param[in] width_ 输入图像宽度
+* @param[in] height_ 输入图像高度
+* @param[in] data_ 输入图像数据
+* @param[in] len_ 输入图像数据长度
+* @param[in] rotation_ 图像顺时针反转角度
+* @param[in] mirror_ 是否需要左右反转
+* @return 0代表成功，其它请参考错误码列表
+*/
+virtual int InputCapturedFrame(unsigned int timestamp_ms_, qiniu::FourCC format_, 
+    int width_, int height_, const unsigned char* data_, unsigned int len_,
+    int rotation_ = 0, bool mirror_ = false) = 0;
+    
+/** 如果开发者使用了 PublishFakeCamera 方法，并且希望传入已编码的视频帧数据，那么通过此方法可输入视频帧数据
+* @param[in] timestamp_ms_ 视频帧事件戳，单位 ms
+* @param[in] width_ 视频宽度
+* @param[in] height_ 视频高度
+* @param[in] data_ 输入数据
+* @param[in] len_ 输入数据长度
+* @return 0代表成功，其它请参考错误码列表
+*/
+virtual int InputEncodedFrame(unsigned int timestamp_ms_, int width_, int height_, 
+    const unsigned char* data_, unsigned int len_) = 0;
+    
+/** 预览本地摄像头
+* @param[in] device_id_ 设备 ID，设备 ID 需开发者提前由 GetVideoCapDevList 方法获得，如果为空，则使用默认设备
+* @param[in] hwnd_ 视频渲染窗口句柄，如果为空，则不显示 
+* @return 成功返回０，其它请参考错误码列表
+* @note 这个方法是同步的
+*/
+virtual int PreviewLocalCamera(const std::string& device_id_, void* hwnd_) = 0;
+
+/** 停止预览本地摄像头
+* @param[in] device_id_ 设备 ID
+* @return 成功返回０，其它请参考错误码列表
+* @note 这个方法是同步的
+*/
+virtual int UnPreviewLocalCamera(const std::string& device_id_) = 0;
+
+/** 订阅用户视频
+* @param[in] user_id_ 用户 ID
+* @param[in] hwnd_ 用于视频渲染的窗口句柄
+* @return 成功返回０，其它请参考错误码列表
+*/
+virtual int Subscribe(const std::string& user_id_, void* hwnd_) = 0;
+
+/** 停止订阅用户视频
+* @param[in] user_id_ 用户ID
+* @return 成功返回０，其它请参考错误码列表
+*/
+virtual int UnSubscribe(const std::string& user_id_) = 0;
+
+/** 枚举本地视频采集设备
+* @param[out] device_vec_ 将枚举信息输出到此参数中
+* @return 成功返回设备数量，其它请参考错误码列表
+*/
+virtual int GetVideoCapDevList(std::vector<VideoCapDeviceInfo>& device_vec_) = 0;
+
+/** 获取摄像头设备当前正在使用的采集信息
+* @param[in] device_id_ 设备ID
+* @param[out] capability_info_ 设备采集信息
+* @return 成功返回０，其它请参考错误码列表
+*/
+virtual int GetRealCaptureCapability(const std::string& device_id_, 
+    CameraCapabilityInfo& capability_info_) = 0;
+    
+/** 获取摄像头设备所有的设备采集信息，并输出到传入参数中
+* @param[in] device_id_ 设备ID
+* @param[out] capability_vec_ 指定设备所支持的采集参数列表
+* @return 成功返回０，其它请参考错误码列表
+*/
+virtual int GetCameraCapability(const std::string& device_id_, CapabilitiesVec& capability_vec_) = 0;
+```
+
+
+### 6.4.2 视频异步通知
+* RTCVideoListener 开发者需实现此接口；
+
+```
+/** 本地视频设备插入通知
+* @param device_info_ 插入设备信息
+*/
+virtual void onCameraPlugin(const qiniu::VideoCapDeviceInfo& device_info_) = 0;
+
+/** 本地视频设备拔出通知
+* @param device_info_ 拔出设备信息
+*/
+virtual void onCameraPlugout(const qiniu::VideoCapDeviceInfo& device_info_) = 0;
+
+/** 用户发布本地摄像头通知
+* @param result_ 请参考错误码列表
+* @param device_id_ 发布的摄像头设备 ID
+*/
+virtual void onLocalCameraPublish(int result_, const std::string& device_id_) = 0;
+
+/** 用户取消发布本地摄像头通知
+* @param result_ 请参考错误码列表
+* @param device_id_ 取消发布的摄像头设备 ID
+*/
+virtual void onLocalCameraUnpublish(int result_, const std::string& device_id_) = 0;
+
+/** 远端用户发布摄像头通知
+* @param user_id_ 远端用户 ID
+* @param device_id_ 设备 ID
+*/
+virtual void onRemoteCameraPublish(const std::string& user_id_ , const std::string& device_id_) = 0;
+
+/** 远端用户取消发布摄像头通知
+* @param user_id_ 远端用户 ID
+* @param device_id_ 设备 ID
+*/
+virtual void onRemoteCameraUnpublish(const std::string& user_id_, const std::string& device_id_) = 0;
+        
+/** 用户订阅视频操作异步通知
+* @param result_ 请参考错误码列表
+* @param user_id_ 被订阅的用户 ID
+*/
+virtual void onSubscribe(int result_, const std::string& user_id_) = 0;
+
+/** 用户取消订阅视频操作异步通知
+* @param result_ 请参考错误码列表
+* @param user_id_ 被取消订阅的用户 ID
+*/
+virtual void onUnsubscribe(int result_, const std::string& user_id_) = 0;
+```
+
+
+## 6.5　音频管理
+通过`RTCAudioInterface`接口，开发者可枚举本地音频输入、输出设备，可以打开指定的音频输入、输出设备，也可以静音、取消静音相关设备；
+通过`RTCAudioListener`接口，开发者通过实现此接口，可以得到本地音频设备的插拔事件通知，以及本地音频设备打开和关闭（发布和取消发布）等异步操作结果的通知等；
+
+
+
+### 6.5.1 音频控制接口
+* RTCAudioInterface 接口指针必须通过`RTCRoomInterface`获取；
+
+```
+/** 设置用来接收音频操作异步通知的接口
+* @param listener_  指向实现了 RTCAudioListener 接口的实例指针
+*/
+virtual void SetListener(RTCAudioListener* listener_) = 0;
+
+/** 打开并发布本地音频，发布成功后房间内的其它用户便能听到发布者的声音
+* @param[in] device_id_ 设备 ID，如果填空，则使用默认设备
+* @return 成功返回０，其它请参考错误码列表
+* @note 音频发布结果，在 RTCAudioListener:onMicrophonePublish 方法中进行通知
+*/
+virtual int PublishLocalMicrophone(const std::string& device_id_) = 0;
+
+/** 关闭并停止发布本地音频
+* @return 成功返回０，其它请参考错误码列表
+* @note 音频停止发布结果，在 RTCAudioListener:onMicrophoneUnpublish 方法中进行通知
+*/
+virtual int UnPublishLocalMicrophone() = 0;
+
+/** 静音当前正在使用的麦克风设备
+* @return 成功返回０，其它请参考错误码列表
+*/
+virtual int MuteMicrophone() = 0;
+
+/** 取消静音当前正在使用的麦克风设备
+* @return 成功返回０，其它请参考错误码列表
+*/
+virtual int UnMuteMicrophone() = 0;
+
+/** 判断当前是否静音了麦克风设备
+*/
+virtual bool IsMuteMicrophone() = 0;
+
+/** 设置音频播放使用的音频输出设备
+* @param[in] device_id_ 设备 ID
+* @return 成功返回０，其它请参考错误码列表
+*/
+virtual int SetSpeakerDevice(const std::string& device_id_) = 0;
+
+/** 静音当前正在使用的音频输出设备
+* @return 成功返回０，其它请参考错误码列表
+*/
+virtual int MuteSpeaker() = 0;
+
+/** 取消静音当前正在使用的音频输出设备
+* @return 成功返回０，其它请参考错误码列表
+*/
+virtual int UnMuteSpeaker() = 0;
+
+/** 判断当前是否静音了音频输出设备
+*/
+virtual bool IsSpeakerMute() = 0;
+
+/** 获取本地音频输入设备列表
+* @param[out] device_vec_ 将枚举到的音频输入设备信息输出到此参数
+* @return 成功返回设备数量，否则返回错误码
+*/
+virtual int GetMicDevList(std::vector<qiniu::AudioDeviceInfo>& device_vec_) = 0;
+
+/** 获取本地音频输出设备列表
+* @param[out] device_vec_ 将枚举到的音频输出设备信息输出到此参数
+* @return 成功返回设备数量，否则返回错误码
+*/
+virtual int GetSpeakerDevList(std::vector<qiniu::AudioDeviceInfo>& device_vec_) = 0;
+```
+
+
+### 6.5.2 音频异步通知
+* RTCAudioListener 开发者需实现此接口；
+
+```
+/** 打开并发布本地麦克风设备操作异步通知
+* @param result_ 请参考错误码列表
+*/
+virtual void onMicrophonePublish(int result_) = 0;
+
+/** 用户关闭并停止发布本地麦克风设备操作异步通知
+* @param result_ 请参考错误码列表
+*/
+virtual void onMicrophoneUnpublish(int result_) = 0;
+
+/** 麦克风设备插入事件通知
+* @param device_info_ 麦克风设备信息
+*/
+virtual void onMicrophonePlugin(const AudioDeviceInfo &device_info_) = 0;
+
+/** 麦克风设备拔出事件通知
+* @param device_info_ 麦克风设备信息
+*/
+virtual void onMicrophonePlugout(const AudioDeviceInfo &device_info_) = 0;
+
+/** 音频输出设备插入事件通知
+* @param device_info_ 音频输出设备信息
+*/
+virtual void onSpeakerPlugin(const AudioDeviceInfo &device_info_) = 0;
+
+/** 音频输出设备拔出事件通知
+* @param device_info_ 音频输出设备信息
+*/
+virtual void onSpeakerPlugout(const AudioDeviceInfo &device_info_) = 0;
+
+/** 麦克风系统音量变化通知
+* @param[in] volume_ 麦克风音量值, 0~100
+*/
+virtual void onMicrophoneVolumeChanged(unsigned int volume_) = 0;
+
+/** 音频输出设备音量变化通知
+* @param[in] volume_ 音频值, 0~100
+*/
+virtual void onSpeakerVolumeChanged(unsigned int volume_) = 0;
+
+```
+
+
+# 7. 常见问题
+
+## 7.1 连麦 SDK 基于 C++ 哪个版本进行开发的 ？
+
+连麦 SDK 是基于 C++11 标准，借助于 Visual Studio C++ 2013 进行开发的，请在选择开发工具时选择相同或者更高的版本。
+
+
+## 7.2 连麦 SDK 支持什么编译平台 ？ 
+目前仅支持 WIN32，即 X86 平台编译。
+
+
+## 7.3 连麦是否也需要主动去订阅音频？
+开发者不需要去主动订阅其它用户的音频，只要用户成功打开了麦克风设备，那么房间内的其它用户便可以听到此用户的声音，这一点同视频是不一样的。
+
+
+## 7.4 用户 ID 和房间 ID 最大字符长度分别是多少？
+用户 ID 最多可以有40个字节，房间 ID 最多可以有64个字节。
+
+
+## 7.5 房间内最多可以接入多少用户数呢？
+目前房间内可接入视频路数和话筒路数最大均为4路。
+
+
+## 7.6 如何降低用户的资源占用？
+SDK 为开发者提供了视频编码参数配置的相关接口，详情请查看 PublishLocalCamera 接口，开发者可以为用户提供多种采集编码方案，如果用户 PC 资源比较紧张，那么用户可以选择使用较低的采集编码参数。
+
+
+## 7.7 SDK 是否提供断线重连的功能？
+
+连麦断线后，SDK 内部会自动重连，断线和重连的状态消息会通过 `RTCStreamingListener::onConnectionStatus` 进行回调，`cs_connecting` 表示与服务器断线了，正在重连；`cs_connected` 表示与服务器连接成功；`cs_connectFailed` 表示多次重连尝试后，重连失败。
+
+
+# 8. 常见的错误码
+
+连麦常见的错误码对照表如下：
+
+
+| 错误码  | 描述                               |
+| ---- | -------------------------------- |
+| 0    | RTC_SUCCESS                      |
+| 401  | RTC_ERROR_UNAUTHORIZED           |
+| 404  | RTC_ERROR_ROOM_NOT_FOUND         |
+| 405  | RTC_ERROR_LICENSE_EXPIRED        |
+| 406  | RTC_ERROR_USER_NOT_FOUND         |
+| 407  | RTC_ERROR_SUBSCRIBE_SELF         |
+| 408  | RTC_ERROR_NO_DEVICE              |
+| 503  | RTC_ERROR_SERVICE_UNAVAILABLE    |
+| 504  | RTC_ERROR_SERVER_TIMEOUT         |
+| 505  | RTC_ERROR_VERSION_INVALID        |
+| 601  | RTC_ERROR_ROOMID_INVALID         |
+| 602  | RTC_ERROR_SERVER_AUTH_FAILED     |
+| 700  | RTC_ERROR_DATABASE_ERROR         |
+| 802  | RTC_ERROR_DUPLICATE_PUBLISH      |
+| 803  | RTC_ERROR_ROOM_TOKEN             |
+| 804  | RTC_ERROR_USER_DUPLICATE_JOIN    |
+| 1001 | RTC_ERROR_FAILURE                |
+| 1002 | RTC_ERROR_NOT_INITIALIZED        |
+| 1003 | RTC_ERROR_ALREADY_INITIALIZED    |
+| 1006 | RTC_ERROR_UNEXPECTED             |
+| 1007 | RTC_ERROR_OUT_OF_MEMORY          |
+| 1008 | RTC_ERROR_INVALID_ALG            |
+| 1009 | RTC_ERROR_NOT_AVAILABLE          |
+| 1011 | RTC_ERROR_NOT_FOUND              |
+| 1014 | RTC_ERROR_TIMEOUT                |
+| 1015 | RTC_ERROR_WRONG_STATUS           |
+| 1016 | RTC_ERROR_NETWORK_FAILURE        |
+| 1017 | RTC_ERROR_NO_TOKEN               |
+| 1018 | RTC_ERROR_IMAGE_CONVERT_FAILED   |
+| 1020 | RTC_ERROR_DEVICE_OCCUPIED        |
+| 2002 | RTC_ERROR_NOT_JOIN_ROOM          |
+| 2003 | RTC_ERROR_CAMERA_NOT_READY       |
+| 2004 | RTC_ERROR_AUTH_DNSLOOKUP_FAILED  |
+| 2005 | RTC_ERROR_AUTH_CONNECT_FAILED    |
+| 2006 | RTC_ERROR_AUTH_HTTP_BAD_REQUEST  |
+| 2007 | RTC_ERROR_AUTH_HTTP_UNAUTHORIZED |
+| 2008 | RTC_ERROR_AUTH_HTTP_NOT_FOUND    |
+| 2009 | RTC_ERROR_MALFORMEDURL_EXCEPTION |
+| 2010 | RTC_ERROR_JSON_EXCEPTION         |
+| 2011 | RTC_ERROR_IO_EXCEPTION           |
+
+
+
+# 9. 历史记录
+- **1.0.0**
+  - 发布了 RTCStreaming
+  - 实现了基本的连麦对讲功能
+  - 支持外部 Camera 采集
+  - 支持连麦状态信息回调
+  - 支持音频输入、输出设备的枚举
+  - 支持视频采集设备的媒体
+  - 支持音视频设备的插拔检测
+  - 支持用户视频的自由发布和订阅
+  - 支持踢人功能
+
+
+# 10. 注意事项
+
+
+## 10.1 连麦 SDK 登录房间超时
+首先请检查 PC 网络环境是否正常，其次检查 PC 是否使用了某些网络代理工具，因为 SDK 内部使用了多种标准和私有网络协议，开发者在使用连麦的网络中不可使用 http 或 https 网络代理，建议使用 socks5 网络代理，或者不是用任何的网络代理，否则将影响 SDK 内部正常的网络通信，最终影响用户使用。
+

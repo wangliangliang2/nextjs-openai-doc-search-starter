@@ -1,0 +1,48 @@
+## 1. 下载应用模板
+
+Pandora 为您提供应用程序模版，包含了一个简单应用的基本框架和内容，请点击[下载模版应用](https://pandora-kibana.qiniu.com/sample_app.tar.gz)。
+
+## 2. 应用目录结构
+
+```
+sample-app
+├── app.json     // 应用基本描述
+├── appserver
+│   └── static   // 自定义应用使用到的静态资源
+│       ├── font
+│       │   └── sampleFont.woff
+│       ├── img
+│       │   └── sampleImg.svg
+│       ├── css
+│       │   └── sampleCss.css
+│       ├── js
+│       │   └── sampleCss.js
+│       └── html
+│           └── sample.html
+|—— bins // app相关的脚本
+│   ├── apisample.py // 脚本文件
+|   ├── splsample.py //脚本文件
+├── default      // 应用默认提供的视图、导航相关配置
+│   ├── nav.xml // 导航栏配置
+│   └── views    // 视图文件
+│       └── sampleView.xml
+├── local        // 用户自定义修改之后的配置
+│   ├── nav.xml // 用户自定义修改后的导航栏配置
+│   └── views    // 用户自定义修改后的视图文件
+│       └── sampleView.xml
+├── resources    // 解析和分析数据用到的资源
+│   ├── extractions // 预置提取规则
+│   │   └── sampleExtractions.json
+│   └── sourcetypes // 预置来源类型配置
+│   |   └── sampleSourceType.json
+|   |—— customapis  // 自定义api的描述
+|       └── api.json
+|   |—— customoperators // 自定义算子的描述
+|       └── spl.json
+└── static       // 应用自带的静态资源，包含应用的icon等。
+    ├── icon.svg // 应用图标
+    └── preview  // 应用预览图
+        ├── nginxPreview.png
+        └── securityOverviewPreview.png
+
+```

@@ -1,0 +1,140 @@
+Zipkin 是 Twitter 开源的一款分布式实时数据追踪系统，其主要功能是聚集来自各个异构系统的实时监控数据，用来追踪微服务架构下的系统延时问题，从而改进系统的性能和定位故障。Zipkin 实现数据追踪主要由以下角色完成：
+
+Client：负责将各系统报告过来的追踪数据进行接收（在用户服务代码中插桩 Zipkin client 相关的代码，就可以在应用运行过程中生成 tracing 数据，并追踪调用链，将数据发往本地 Reporter）；
+
+Reporter：负责收集全链路上每个调用点的监控数据，并发往 collector；
+
+Collector：负责收集所有 Reporter 发送来的 tracing 数据，并存入存储设备。
+
+Pandora 智能日志平台的**全链路追踪服务**兼容 Zipkin tracing 方案，通过 logkit-pro 收集 zipkin tracing 的监控数据，发送到智能日志平台进行存储，并使用全链路追踪应用追踪链路细节。
+
+本文档将展示如何通过 logkit-pro 接收 Zipkin tracing 埋点的 PHP 服务数据，发送到智能日志平台，并使用全链路追踪服务查看链路详情。
+
+# **1. 基础环境准备**
+* 安装 php 包管理器 composer
+
+  MAC 环境安装命令：
+```
+brew install composer
+```
+
+* 安装 mysql 并配置 root 账户密码，创建 test 数据库，在 test 数据库中创建 users 表
+
+ users表格结构如下图：
+ 
+ <img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-12%20%E4%B8%8B%E5%8D%883.03.24.png" width="350" height="150" align=center />
+
+ 表格内容如下图：
+
+ <img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-11%20%E4%B8%8B%E5%8D%884.34.14.png" width="200" hegiht="120" align=center />
+
+# **2. 构建 PHP 服务** 
+
+本 Demo 包含 3 个 php 服务，1 个 mysql 数据库，各个服务之间的依赖关系如下图：
+
+<img src="https://pandora-kibana.qiniu.com/%E5%9B%BE%E7%BA%B80%20%281%29.png" width="500" height="300" align=center />
+
+## **Demo 源码**
+
+[请下载源码](https://pandora-kibana.qiniu.com/zipkin-php-src.tar.gz)
+
+解压缩zipkin-php-src.tar.gz，生成 zipkin-php-src 目录，目录结构如下图：
+
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-18%20%E4%B8%8A%E5%8D%8811.32.20.jpg" width="450" height="200" align=center />
+
+`zipkin_util.php` 是公共模块，负责 zipkin tracing 结构体的初始化，其中可以设置采样率等参数。该模块在 hello，service1，service2 中均有使用。
+
+`mysql_util.php` 负责与数据库交互，包括数据库链接的创建和关闭，查询数据库。该模块在 service1，service2 中被使用。请确保您配置的 mysql 账户、密码以及db 名与 `mysql_util.php` 中的配置一致。
+
+`hello.php` hello 服务源码，监听 `18081` 端口：
+
+`service1.php` service1 服务源码，监听 `18082` 端口：
+
+`service2.php` service2 服务源码，监听 `18083` 端口：
+
+`composer.json` composer 配置文件，启动服务时需要。
+
+## **启动 Demo 各个服务**
+
+``` shell
+# 解决 php 包依赖
+rm composer.lock && composer install
+# 逐个启动 hello service1 service2 服务
+composer run-hello
+composer run-service1
+composer run-service2
+# 确保数据库启动，且测试数据准确，如第1章节所示
+```
+
+# **3.通过 logkit-pro 收集 Zipkin tracing 数据**
+
+## **安装 logkit-pro**
+
+首先需要在机器上安装 logkit-pro。
+
+1.登录 [logkit-pro](http://logkit-pro.qiniu.com/)，进入机器管理页面，点击添加机器。
+
+![](https://pandora-kibana.qiniu.com/k8s/add_machine.png)
+
+2.手动安装：根据您机器的操作系统版本选择对应的命令，复制到命令行工具即可，如图所示：
+
+![](https://pandora-kibana.qiniu.com/k8s/addbyhand.png)
+
+![](https://pandora-kibana.qiniu.com/logkit/running.png)
+
+详细的安装文档可以阅读 [logkit-pro 安装](/insight/manual/4682/download-and-install) 。
+
+3. 安装完毕后，您可以在机器列表页面看到您安装的机器:
+
+![](https://dn-odum9helk.qbox.me/FpmPwc2L2arnlHd9OpBEXkJs0rbx)
+
+## **配置数据源 Reader**
+
+选择 socket reader 读取数据：
+
+各配置项如下图：
+
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-11%20%E4%B8%8B%E5%8D%885.18.53.jpg"/>
+
+跳过数据解析与转换。
+
+## **配置发送源 Sender**
+
+发送到智能日志管理平台全链路追踪服务；
+
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8B%E5%8D%882.34.57.jpg"/>
+
+## **观察 logkit-pro 中，收集器接收和转发的数据记录**
+
+进入数据收集页面，找到刚刚创建的收集器，点击`查看机器运行信息`：
+
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-11%20%E4%B8%8B%E5%8D%888.43.45.jpg" />
+
+有读取成功条数和发送成功条数证明数据采集成功。
+
+`注意：`发送到智能日志平台同时生成两个日志仓库：tracingspan 和 tracingservice。tracingspan 仓库里只记录 tracing 数据， tracingservice 仓库里记录服务数据。
+
+# **4.验证结果**
+## **通过终端 curl 访问 hello 服务**
+
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-11%20%E4%B8%8B%E5%8D%888.45.45.jpg" width="600" hegiht="400" align=center />
+
+注意：这里没有使用浏览器访问 hello 服务，因为浏览器访问 hello 端口的时候，会自动多发一个请求`http://localhost:18081/favicon.ico`，导致 hello 的方法被访问两次，产生两次 tracing 数据，不利于示例讲解。
+
+## **到智能日志平台，搜索 tracingspan 仓库是否有 tracing 数据记录**
+
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-11%20%E4%B8%8B%E5%8D%888.44.11.jpg" />
+
+这里需要说明一下，在 logkit-pro 中观察到 14 条记录，其中包含 7 条 tracing 数据和 7 条服务相关的信息。所以在 tracingspan 仓库中只有 7 条 tracing 记录。
+
+## **到全链路追踪服务查询服务链路**
+
+选择服务为 hello，时间范围为服务发生的时间，可以看到系统追踪到了一条链路，它包含 3 个 span，符合预期：
+
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-11%20%E4%B8%8B%E5%8D%888.44.49.jpg" />
+
+## **追踪链路详情**
+
+点击具体的链路记录，可浏览链路调用的详情，与设计的 Demo 服务依赖关系一致，如下图：
+
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-09-11%20%E4%B8%8B%E5%8D%888.45.17.jpg" />

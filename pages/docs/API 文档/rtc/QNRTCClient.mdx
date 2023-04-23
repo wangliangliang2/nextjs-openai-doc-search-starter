@@ -1,0 +1,680 @@
+<div data-v-md-line="1"><link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Method</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getConnectionState`)'>getConnectionState</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getLocalAudioTrackStats`)'>getLocalAudioTrackStats</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getLocalVideoTrackStats`)'>getLocalVideoTrackStats</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getPublishedTracks`)'>getPublishedTracks</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getRemoteAudioTrackStats`)'>getRemoteAudioTrackStats</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getRemoteUsers`)'>getRemoteUsers</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getRemoteVideoTrackStats`)'>getRemoteVideoTrackStats</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getSubscribedTracks`)'>getSubscribedTracks</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getUserNetworkQuality`)'>getUserNetworkQuality</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#join`)'>join</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#leave`)'>leave</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#off`)'>off</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#on`)'>on</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#publish`)'>publish</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#removeTranscodingLiveStreamingTracks`)'>removeTranscodingLiveStreamingTracks</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#sendMessage`)'>sendMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setAutoSubscribe`)'>setAutoSubscribe</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setTranscodingLiveStreamingTracks`)'>setTranscodingLiveStreamingTracks</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#startLiveStreamingWithDirect`)'>startLiveStreamingWithDirect</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#startLiveStreamingWithTranscoding`)'>startLiveStreamingWithTranscoding</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#stopLiveStreamingWithDirect`)'>stopLiveStreamingWithDirect</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#stopLiveStreamingWithTranscoding`)'>stopLiveStreamingWithTranscoding</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#subscribe`)'>subscribe</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#unpublish`)'>unpublish</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#unsubscribe`)'>unsubscribe</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Method</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getConnectionState">
+getConnectionState</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getConnectionState(): <a href='11407/UniappQNConnectionState'>QNConnectionState</a></li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取 RTC client 的房间状态</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span><a href='11407/UniappQNConnectionState'>QNConnectionState</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getLocalAudioTrackStats">
+getLocalAudioTrackStats</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getLocalAudioTrackStats(): Record&lt;string,<a href='11420/UniappQNLocalAudioTrackStats'>QNLocalAudioTrackStats</a>&gt;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取已发布的近端音频轨道统计信息</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>返回以 trackID 为 key，<a href='11420/UniappQNLocalAudioTrackStats'>QNLocalAudioTrackStats</a> 为 value 的对象</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-returns-title">Returns <span>Record&lt;string,<a href='11420/UniappQNLocalAudioTrackStats'>QNLocalAudioTrackStats</a>&gt;</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getLocalVideoTrackStats">
+getLocalVideoTrackStats</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getLocalVideoTrackStats(): Record&lt;string,<a href='11389/UniappQNLocalVideoTrackStats'>QNLocalVideoTrackStats</a>[]&gt;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取已发布的近端视频轨道统计信息</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>返回以 trackID 为 <a href='11389/UniappQNLocalVideoTrackStats'>QNLocalVideoTrackStats</a>[] 为 value 的对象，数组表示包括各个大小流信息</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-returns-title">Returns <span>Record&lt;string,<a href='11389/UniappQNLocalVideoTrackStats'>QNLocalVideoTrackStats</a>[]&gt;</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getPublishedTracks">
+getPublishedTracks</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getPublishedTracks(): <a href='11386/UniappQNLocalTrack'>QNLocalTrack</a>[]</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取已发布 Track 列表</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span><a href='11386/UniappQNLocalTrack'>QNLocalTrack</a>[]</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getRemoteAudioTrackStats">
+getRemoteAudioTrackStats</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getRemoteAudioTrackStats(): Record&lt;string,<a href='11420/UniappQNLocalAudioTrackStats'>QNLocalAudioTrackStats</a>&gt;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取已订阅的远端音频轨道统计信息</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>返回以 trackID 为 key，<a href='11420/UniappQNLocalAudioTrackStats'>QNLocalAudioTrackStats</a> 为 value 的对象</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-returns-title">Returns <span>Record&lt;string,<a href='11420/UniappQNLocalAudioTrackStats'>QNLocalAudioTrackStats</a>&gt;</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getRemoteUsers">
+getRemoteUsers</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getRemoteUsers(): <a href='11422/UniappQNRemoteUser'>QNRemoteUser</a>[]</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>getRemoteUsers</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>获取房间内所有的远端用户</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-returns-title">Returns <span><a href='11422/UniappQNRemoteUser'>QNRemoteUser</a>[]</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getRemoteVideoTrackStats">
+getRemoteVideoTrackStats</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getRemoteVideoTrackStats(): Record&lt;string,<a href='11428/UniappQNRemoteVideoTrackStats'>QNRemoteVideoTrackStats</a>&gt;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取已订阅的远端视频轨道统计信息</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>返回以 trackID 为 <a href='11428/UniappQNRemoteVideoTrackStats'>QNRemoteVideoTrackStats</a> 为 value 的对象</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-returns-title">Returns <span>Record&lt;string,<a href='11428/UniappQNRemoteVideoTrackStats'>QNRemoteVideoTrackStats</a>&gt;</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getSubscribedTracks">
+getSubscribedTracks</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getSubscribedTracks(userID: string): (<a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a> | <a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a>)[]</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取指定用户已被自己订阅的 Tracks</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            userID: string
+        </div>
+                <p>用户 ID</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>(<a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a> | <a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a>)[]</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getUserNetworkQuality">
+getUserNetworkQuality</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getUserNetworkQuality(userID: string): <a href='11408/UniappQNNetworkQuality'>QNNetworkQuality</a></li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>getUserNetworkQuality</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>获取当前订阅的远端用户网络质量</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            userID: string
+        </div>
+                <p>用户 ID</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='11408/UniappQNNetworkQuality'>QNNetworkQuality</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="join">
+join</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">join(token: string, userData: string): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>加入房间</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            token: string
+        </div>
+                <p>房间 Token</p>
+    </li>
+    <li>
+        <div>
+            userData: string
+        </div>
+                <p>用户信息
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="leave">
+leave</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">leave(): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>离开房间</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="off">
+off</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">off(name: event, listener: <a href='11404/UniappQNRTCClinetEvent'>QNRTCClinetEvent</a>[event]): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>取消监听对应的事件</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>取消监听对应的事件</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            name: event
+        </div>
+                <p>事件名</p>
+    </li>
+    <li>
+        <div>
+            listener: <a href='11404/UniappQNRTCClinetEvent'>QNRTCClinetEvent</a>[event]
+        </div>
+                <p>事件句柄
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="on">
+on</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">on(name: event, listener: <a href='11404/UniappQNRTCClinetEvent'>QNRTCClinetEvent</a>[event]): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>监听对应的事件</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>支持多次调用同一事件</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            name: event
+        </div>
+                <p>事件名</p>
+    </li>
+    <li>
+        <div>
+            listener: <a href='11404/UniappQNRTCClinetEvent'>QNRTCClinetEvent</a>[event]
+        </div>
+                <p>事件句柄
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="publish">
+publish</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">publish(tracks: <a href='11386/UniappQNLocalTrack'>QNLocalTrack</a>[], callback: <a href='11557/UniappQNPublishResultCallback'>QNPublishResultCallback</a>): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>发布本地 Track 列表</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            tracks: <a href='11386/UniappQNLocalTrack'>QNLocalTrack</a>[]
+        </div>
+                <p>要发布的本地 Track 列表</p>
+    </li>
+    <li>
+        <div>
+            callback: <a href='11557/UniappQNPublishResultCallback'>QNPublishResultCallback</a>
+        </div>
+                <p>发布结果回调
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="removeTranscodingLiveStreamingTracks">
+removeTranscodingLiveStreamingTracks</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">removeTranscodingLiveStreamingTracks(streamID: string, transcodingTracks: <a href='11425/UniappQNTranscodingLiveStreamingTrack'>QNTranscodingLiveStreamingTrack</a>[]): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>移除合流转推布局配置</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>更新成功会触发 RTCClinetEvent.onUpdatedLiveStreaming 回调</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            streamID: string
+        </div>
+                <p>合流 ID</p>
+    </li>
+    <li>
+        <div>
+            transcodingTracks: <a href='11425/UniappQNTranscodingLiveStreamingTrack'>QNTranscodingLiveStreamingTrack</a>[]
+        </div>
+                <p>待移除合流转推布局配置
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="sendMessage">
+sendMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">sendMessage(message: string, users: string[], messageId: string): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>发送自定义消息到指定用户群</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            message: string
+        </div>
+                <p>自定义消息内容</p>
+    </li>
+    <li>
+        <div>
+            users: string[]
+        </div>
+                <p>用户 ID 列表</p>
+    </li>
+    <li>
+        <div>
+            messageId: string
+        </div>
+                <p>自定义消息 ID
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setAutoSubscribe">
+setAutoSubscribe</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">setAutoSubscribe(autoSubscribe: boolean): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置是否自动订阅</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>默认开启自动订阅</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            autoSubscribe: boolean
+        </div>
+                <p>是否自动订阅
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setTranscodingLiveStreamingTracks">
+setTranscodingLiveStreamingTracks</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">setTranscodingLiveStreamingTracks(streamID: string, transcodingTracks: <a href='11425/UniappQNTranscodingLiveStreamingTrack'>QNTranscodingLiveStreamingTrack</a>[]): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>新增、更新合流转推布局配置</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>更新成功会触发 RTCClinetEvent.onUpdatedLiveStreaming 回调
+新增 Track 布局以及对已有的 Track 的合流布局进行更新均可通过该接口实现，只需修改 transcodingTracks 对应的 Track 内容即可</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            streamID: string
+        </div>
+                <p>合流 ID</p>
+    </li>
+    <li>
+        <div>
+            transcodingTracks: <a href='11425/UniappQNTranscodingLiveStreamingTrack'>QNTranscodingLiveStreamingTrack</a>[]
+        </div>
+                <p>待新增、更新的合流转推布局配置
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="startLiveStreamingWithDirect">
+startLiveStreamingWithDirect</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">startLiveStreamingWithDirect(config: <a href='11391/UniappQNDirectLiveStreamingConfig'>QNDirectLiveStreamingConfig</a>): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>开始单路 CDN 转推</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>转推成功会触发 RTCClinetEvent.onStartLiveStreaming 回调</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            config: <a href='11391/UniappQNDirectLiveStreamingConfig'>QNDirectLiveStreamingConfig</a>
+        </div>
+                <p>单路转推配置
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="startLiveStreamingWithTranscoding">
+startLiveStreamingWithTranscoding</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">startLiveStreamingWithTranscoding(config: <a href='11416/UniappQNTranscodingLiveStreamingConfig'>QNTranscodingLiveStreamingConfig</a>): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>开始合流转码 CDN 转推</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>转推成功会触发 RTCClinetEvent.onStartLiveStreaming 回调</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            config: <a href='11416/UniappQNTranscodingLiveStreamingConfig'>QNTranscodingLiveStreamingConfig</a>
+        </div>
+                <p>合流转推配置
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="stopLiveStreamingWithDirect">
+stopLiveStreamingWithDirect</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">stopLiveStreamingWithDirect(config: <a href='11391/UniappQNDirectLiveStreamingConfig'>QNDirectLiveStreamingConfig</a>): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>停止单路 CDN 转推</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>停止成功会触发 RTCClinetEvent.onStoppedLiveStreaming 回调</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            config: <a href='11391/UniappQNDirectLiveStreamingConfig'>QNDirectLiveStreamingConfig</a>
+        </div>
+                <p>单路转推配置
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="stopLiveStreamingWithTranscoding">
+stopLiveStreamingWithTranscoding</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">stopLiveStreamingWithTranscoding(config: <a href='11416/UniappQNTranscodingLiveStreamingConfig'>QNTranscodingLiveStreamingConfig</a>): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>停止合流转码 CDN 转推</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>停止成功会触发 RTCClinetEvent.onStoppedLiveStreaming 回调</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            config: <a href='11416/UniappQNTranscodingLiveStreamingConfig'>QNTranscodingLiveStreamingConfig</a>
+        </div>
+                <p>合流转推配置
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="subscribe">
+subscribe</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">subscribe(tracks: (<a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a> | <a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a>)[]): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>订阅远端 Track</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            tracks: (<a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a> | <a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a>)[]
+        </div>
+                <p>要订阅的远端 Track
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="unpublish">
+unpublish</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">unpublish(tracks: <a href='11386/UniappQNLocalTrack'>QNLocalTrack</a>[]): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>取消发布本地 Track</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            tracks: <a href='11386/UniappQNLocalTrack'>QNLocalTrack</a>[]
+        </div>
+                <p>要取消的本地 Track 列表
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="unsubscribe">
+unsubscribe</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">unsubscribe(tracks: (<a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a> | <a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a>)[]): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>取消订阅远端 Track</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            tracks: (<a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a> | <a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a>)[]
+        </div>
+                <p>要取消订阅的远端 Track
+</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+
+</div>

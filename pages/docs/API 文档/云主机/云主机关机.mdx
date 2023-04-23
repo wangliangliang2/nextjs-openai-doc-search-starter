@@ -1,0 +1,80 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `POST` /v1/vm/instance/:instance_id/stop
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>instance_id</td>
+      <td>string</td>
+      <td>path</td>
+      <td>是</td>
+      <td>实例 ID</td>
+    </tr>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>实例所属地域 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>stopped_mode</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>停止按量付费 ECS 实例后，是否继续计费。取值：</p>
+        <ul>
+          <li>`StopCharging`：停止计费。有关 `StopCharging` 生效的条件，请参见按量付费实例停机不收费的停机不收费开启条件章节。</li>
+          <li>`KeepCharging`：继续计费。
+            默认值：如果您在 ECS 控制台上开启了 VPC 类型实例默认停机不收费（详情请参见开启按量付费实例停机不收费），并符合开启条件，则默认为 `StopCharging`。否则，默认为 `KeepCharging`。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>force_stop</td>
+      <td>boolean</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>停止实例时的是否强制关机策略。取值范围：</p>
+        <ul>
+          <li>`true`：强制关机。</li>
+          <li>`false`（默认）：正常关机流程</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>confirm_stop</td>
+      <td>boolean</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>是否确认关机。仅对 `i1` 型实例规格族生效，且为 `i1` 型的实例规格族的必选参数。默认值：`false`。</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+# 返回值
+关机成功 http 状态码为200
+
+| 名称 | 类型 | 描述 |
+| ----- | ----- | ----- |
+| request_id | string | 请求 ID |

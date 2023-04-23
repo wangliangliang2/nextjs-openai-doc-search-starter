@@ -1,0 +1,111 @@
+# qlogfetch
+
+## 简介
+
+CDN日志查询和下载工具，该工具是根据七牛的[日志下载](/fusion/api/1226/download-the-log)开发的。
+本工具提供有两种类型，一种是命令行工具，适用于Windows，Linux，Mac平台，另外一种是Windows下面的图形工具。
+
+## 安装
+
+本组工具不需要安装，直接下载即可使用，当然如果你使用的是命令行工具，记得从终端里面去运行，如果是图形工具直接双击打开即可使用。
+
+##  下载
+
+|类型|适用平台|下载链接|
+|----|-------|------|
+|命令行工具|Windows, Linux, Mac|[qlogfetch-v1.0.6.zip](http://devtools.qiniu.com/qlogfetch-v1.0.6.zip)|
+|图形工具|Windows|[QLogFetch-win-v1.1.1.zip](http://devtools.qiniu.com/QLogFetch-win-v1.1.1.zip)|
+
+
+## 命令行工具使用
+
+|命令|描述|
+|------|----------|
+|reg|设置当前用户的`AccessKey`和`SecretKey`|
+|info|显示当前设置的`AccessKey`和`SecretKey`|
+|listlog|列出指定日期，指定域名的日志文件列表|
+|downlog|下载指定日期，指定域名下的所有日志文件|
+|domains|查询账户下的所有域名|
+
+由于查询日志和下载日志都需要七牛的API鉴权，所以我们在运行命令之前，需要设置下账号对应的`AccessKey`和`SecretKey`，它们可以从七牛的后台[这里](https://portal.qiniu.com/user/key)获取。
+
+首先要使用必须设置`AccessKey`和`SecretKey`，命令如下：
+
+```
+Usage: qlogfetch reg -ak <AccessKey> -sk <SecretKey>
+	set access key and secret key
+	example: qlogfetch reg -ak 'your access key' -sk 'your secret key'
+```
+
+如果你想查看当前的`AccessKey`和`SecretKey`设置，使用命令：
+
+```
+qlogfetch info
+```
+
+注意为了方便多账号切换使用，工具把`AccessKey`和`SecretKey`的内容存储在命令执行的目录下面。
+
+查看当前帐号下的所有域名：
+
+```
+qlogfetch domains
+```
+
+获取指定日期，某个域名的日志文件列表：
+
+```
+Usage: qlogfetch [-pretty] -date <Date> -domains <Domains>
+	list the log files of a domain of a date
+	example: qlogfetch listlog -date '2016-11-23' -domains 'img.abc.com'
+```
+
+可以指定`-pretty`选项，让输出变得更可读：
+
+```
+qlogfetch listlog -date '2016-11-23' -domains 'img.abc.com' -pretty
+```
+
+下载指定日期，某个域名的所有日志文件：
+
+```
+Usage: qlogfetch downlog -date <Date> -domains <Domains> -dest <DestDir> -worker <Worker>
+	donwload all the log files of a domain of a date
+	example: qlogfetch downlog -date '2016-11-23' -domains 'img.abc.com' -dest '/tmp/logs'
+```
+其中注意`-dest`的选项指本地日志的存储路径，这个下载日志的功能具有如下的特点：
+
+1. 支持单个日志文件的断点续传，这个很重要，因为文件一般都比较大，如果因为意外结束的话，可以直接运行原始命令进行文件的续传
+2. 支持日志文件列表的增量下载，假设有10个日志文件，第一次下载3个，后面运行原始命令，可以继续下载剩下的文件
+3. 注意为了能够实现上面的功能，命令必须在和之前相同的路径之下运行，因为相关的信息都保存在那个目录之下
+
+
+当然如果希望同时列举多个域名某天的日志列表或者下载多个域名某天的日志文件时，可以指定多个域名，每个域名用分号（;）分开。
+例如：
+
+```
+qlogfetch listlog -date '2016-11-23' -domains 'img.abc.com;video.abc.com' -pretty
+```
+
+```
+qlogfetch downlog -date '2016-11-23' -domains 'img.abc.com;video.abc.com' -dest '/tmp/logs'
+```
+
+当然如果使用过程中，忘记了命令的用法，可以查看命令帮助信息，可以通过如下的两种方法：
+
+```
+qlogfetch -h
+```
+
+```
+qlogfetch <cmd>
+```
+
+例如：
+
+```
+qlogfetch listlog
+```
+
+就可以显示`listlog`命令的使用方式。
+
+

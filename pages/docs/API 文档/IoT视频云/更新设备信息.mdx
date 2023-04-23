@@ -1,0 +1,122 @@
+# 描述
+本接口用于更新设备配置信息的操作。
+
+# 请求
+**请求语法**
+
+```
+PATCH /v1/apps/<appid>/devices/<encodeDeviceName> HTTP/1.1
+Host: linking.qiniuapi.com
+Content-Type: application/json
+Authorization: <QiniuAdminToken>
+
+{
+  "operations":[
+    {
+      "op": "<replace|delete>",
+      "key": "<fieldName>",
+      "value": "<value>"
+    }
+    {
+      "op": "<replace|delete>",
+      "key": "<fieldName>",
+      "value": "<value>"
+    }
+   ]
+}
+```
+
+**请求参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|appid|是|string|设备所属应用的appid，设备名称只能由 4-200 位英文字母和数字组成|
+|encodeDeviceName|是|string|设备名称进行[URL安全的Base64编码](https://developer.qiniu.com/kodo/manual/1231/appendix#1)后得到的字符串|
+
+**请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+**请求元素**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|op|是|string|更该或删除某个属性，replace：更改，delete：删除|
+|key|是|string|要修改或删除的属性|
+|value|是|string|要修改或删除属性的值|
+
+注：当key为 meta 信息时, value为用户自定义的 json 对象。
+# 响应
+**响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)
+**响应元素**
+
+```
+200 {
+  "device": "<deviceName>",
+  "loginAt": "<loginTimestamp>",
+  "state": "<state>",
+  "segmentExpireDays": "<segmentExpireDays>", 
+  "activedAt": "<activedTimestamp>", 
+  "createdAt": "<createdTimestamp>", 
+  "updatedAt": "<updatedTimestamp>" 
+}
+```
+
+|参数名称|说明|
+|---|---|
+|device|设备名称|
+|loginAt|设备是否在线，设备在线才会出现此字段|
+|state|设备激活状态，1表示被禁用, 0表示已启用|
+|segmentExpireDays|设备录制文件的生命周期天数<br>>0:自定义设置文件保存天数<br>0:不录制 <br> -1:永久<br> -2:继承app配置|
+|activedAt|设备首次激活时间|
+|createdAt|设备创建时间|
+|updatedAt|设备更新时间|
+
+# 示例
+
+**请求示例**
+
+```
+PATCH /v1/apps/test/devices/dGVzdGRldmljZTE= HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=
+Content-Type: application/json
+
+{
+  "operations":[
+    {
+      "op": "replace",
+      "key": "segmentExpireDays",
+      "value": 10
+    }
+   ]
+}
+```
+
+**响应示例**
+
+```
+HTTP/1.1 200 OK
+Access-Control-Allow-Origi: *
+Connection: keep-alive
+Content-Length: xxx
+Content-Type: application/json
+Date: Wed, 26 Sep 2018 11:42:10 GMT
+Server: nginx/1.8.0
+Vary: Accept-Encoding
+X-Reqid: 6SAAABDWHM1o8FcV
+X-Whom: cs1
+
+200 {
+  "device": "testdevice1",
+  "loginAt": 1537853919,
+  "state": 0,
+  "segmentExpireDays": 10,
+  "activedAt": 1537853919, 
+  "createdAt": 1537853912,
+  "updatedAt": 1537853919 
+}
+
+400  {
+    "error":  "bad request"
+}
+```

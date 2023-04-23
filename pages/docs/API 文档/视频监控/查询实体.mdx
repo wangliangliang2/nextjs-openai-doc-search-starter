@@ -1,0 +1,52 @@
+# **描述**
+本接口用于查询某个图像底库里的某一个实体信息。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/imagelibs/{libId}/entities/{entityId}`
+
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|libId|是|string|图像库ID
+|entityId|是|string|实体ID
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|libId|string|图像库ID
+|id|string|实体ID
+|urls|string数组|实体图片数组列表,1个实体可以附加上传多个图片,默认展示第一个
+|name|string|姓名
+|gender|string|性别 male 或 female
+|phoneNum|string|手机号
+|certNum|string|证件号
+|addr|string|地址
+|desc|string|备注描述	
+|createdAt|integer|实体创建时间
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/imagelibs/xxx/entities/yyy \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+    "libId":"xxx",
+    "id": "yyy",
+    "name":"whoami",
+    "urls": ["http://qvs.com/demo", "http://qiniu.com/demo.jpg"],
+    "desc": "this is a entity test",
+    "createdAt": 1586850533
+}
+```

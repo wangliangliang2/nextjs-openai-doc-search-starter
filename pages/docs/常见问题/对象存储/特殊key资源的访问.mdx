@@ -1,0 +1,94 @@
+> 文件key为`/log.jpg`,为什么访问不了？
+
+## 概要
+
+一般情况下，访问公有资源可以通过以下形式的url:
+
+```
+http://<domain>/<key>
+```
+
+例如:
+
+```
+http://qiniuphotos.qiniudn.com/gogopher.jpg
+```
+
+基于此种简单规则的url在实际应用中非常方便。七牛云存储对key的格式几乎没有限制，因此任何可打印字符皆可作为资源的key。但是,如果key中包含特殊字符，如首字符为`/`、两个连接以上的`/`、以及`?`等，则无法通过上面形式的url在浏览器中进行访问。产生此类key的来源主要有：
+
+1. 使用 sdk 上传文件
+2. 使用 qboxrsctl put 上传
+
+> **注：采用qrsync工具时不会产生此类key**
+
+这里强调了两点，一是key中包含了特殊字符，二是通过浏览器访问文件。 这是因为浏览器对这些符号是保留使用的，例如：`/`用于分隔目录，`?`用于分隔Url和查询，多个连续的`/`会被处理为一个等等。 对于这类key,需要对其进行转义，其方法为：
+
+将特殊字符转换成 ASCII码，格式为：%加字符的 ASCII码，即一个百分号 %，后面跟对应字符的 ASCII（16进制）码值。例如 空格的编码值是 %20。
+
+## 示例
+
+下面4个资源：
+
+- 资源1，`key:hello%2Fqiniu.jpg`
+- 资源2，`key:hello/qiniu.jpg`
+- 资源3，`key:hello?qiniu.jpg`
+- 资源4，`key:/hello/qiniu2.jpg`
+
+对于资源 1 和 2，无论在浏览器中输入下面的哪种形式的 url，最终访问到的是资源 2
+
+```
+http://test.qiniudn.com/hello%2Fqiniu.jpg
+```
+
+或
+
+```
+http://test.qiniudn.com/hello/qiniu.jpg
+```
+
+对于资源4，如果在浏览器中输入`http://test.qiniudn.com//hello/qiniu2.jpg`，浏览器中将会显示: `{"error":"E404"}`，说明这个资源不存在
+
+## 解决方案
+
+对于示例中的资源 1 和 3，可分别通过下面的 url 进行访问：
+
+```
+http://test.qiniudn.com/hello%252Fqiniu.jpg
+
+http://test.qiniudn.com/hello%3Fqiniu.jpg
+```
+
+多数情况下不需要手工对 url 进行转换，例如php语言，可以调用 urlencode 方法对 key 进行编码，其它语言类似。
+
+```
+<?php
+    echo "http://test.qiniudn.com/".urlencode("hello%2Fqiniu.jpg")
+    echo "http://test.qiniudn.com/".urlencode("hello?qiniu.jpg")
+?>
+
+```
+
+对于示例中的资源4，上面的解决方法失效。需要通过下面的url访问：
+
+```
+http://test.qiniudn.com/@/hello/qiniu2.jpg
+```
+
+具体的编码算法如下：
+
+```
+func qiniuescape(key string) string 
+{  
+   needesc := true 
+   for i, ch := range key {  
+       if ch == '/' && needesc {
+         //转义为 "@/"     
+       } else if ch == '@' && needesc {
+         //转义为 "@@"
+       }
+       needesc = (ch == '/')
+   }
+}
+```
+
+> **如无特殊需求，建议开发者避免使用以上提到的特殊key**

@@ -1,0 +1,98 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>interface com.qlive.pkservice.QPKMixStreamAdapter</p>
+                <p>pk混流适配器</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onPKLinkerJoin`)'>onPKLinkerJoin</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onPKMixStreamStart`)'>onPKMixStreamStart</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onPKLinkerLeft`)'>onPKLinkerLeft</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onPKMixStreamStop`)'>onPKMixStreamStop</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onPKLinkerJoin">onPKLinkerJoin</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+List&lt;QMixStreaming.MergeOption&gt; onPKLinkerJoin(@NotNull()
+QPKSession pkSession);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当pk开始 如何混流</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            pkSession: <a href='https://developer.qiniu.com/lowcode/api/12064/QPKSession'>QPKSession</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>List</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onPKMixStreamStart">onPKMixStreamStart</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+QMixStreaming.MixStreamParams onPKMixStreamStart(@NotNull()
+QPKSession pkSession);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>pk开始时候混流画布变成多大
+返回null则原来主播有多大就有多大</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            pkSession: <a href='https://developer.qiniu.com/lowcode/api/12064/QPKSession'>QPKSession</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='https://developer.qiniu.com/lowcode/api/12075/QMixStreaming_MixStreamParams'>QMixStreaming.MixStreamParams</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onPKLinkerLeft">onPKLinkerLeft</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+default List&lt;QMixStreaming.MergeOption&gt; onPKLinkerLeft();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当pk结束后如果还有其他普通连麦者 如何混流
+ 如果pk结束后没有其他连麦者 则不会回调</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>List</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onPKMixStreamStop">onPKMixStreamStop</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+default QMixStreaming.MixStreamParams onPKMixStreamStop();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当pk结束后如果还有其他普通连麦者 如何混流 如果pk结束后没有其他连麦者 则不会回调 返回空则默认之前的不变化</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span><a href='https://developer.qiniu.com/lowcode/api/12075/QMixStreaming_MixStreamParams'>QMixStreaming.MixStreamParams</a></span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

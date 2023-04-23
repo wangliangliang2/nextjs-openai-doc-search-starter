@@ -1,0 +1,25 @@
+偏自相关系数是一组时间序列数据的统计量，可以用于为AR模型定阶。
+
+
+
+语法：
+
+```
+..｜fit PACF nlags=<float> conf_interval=<int> method=<yw(default) | ywm | ols | ols-inefficient | ols-adjusted | ld | ldb> <feature_field_1> ...
+```
+
+参数说明：
+
++ nlags参数，用于指定滞后阶数。如不提供，默认值为40。此项会影响输出PACF的数量。
+
++ conf_interval用来设定置信区间的范围,用来划定上限和下限的范围，conf_interval越大，上限和下限的范围越大。默认值为95。
+
++ method参数，用于指定计算方法，默认值为ywunbiased。
+
+  + “yw”或“ywadjusted”：（默认值）。Yule-Walker 对 acovf 的分母进行样本大小调整。
+  + “ywm”或“ywmle”：没有调整的Yule-Walker。
+  + “ols”：时间序列在滞后和常数上的回归。
+  + “ols-inefficient”：使用单个公共样本估计所有 pacf 系数的滞后时间序列回归。
+  + “ols-adjusted”：带有偏差调整的滞后时间序列回归。
+  + “ld”或“ldadjusted”：带有偏差校正的 Levinson-Durbin 递归。
+  + “ldb”或“ldbiased”：没有偏差校正的Levinson-Durbin递归。

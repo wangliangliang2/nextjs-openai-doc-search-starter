@@ -1,0 +1,18 @@
+makeresults 算子的作用是构造临时的原始数据，供后续分析使用。若要增加其它字段，makeresults 后可使用 eval 算子生成其它字段
+
+## 语法
+
+| makeresults `<count=count>` `<annotate=true|false>`
+
+示例：生成临时原始数据
+
+```
+| makeresults  # 生成 1 条原始数据，仅包含 _time 字段
+| makeresults count=10  # 生成 10 条原始数据，仅包含 _time 字段
+| makeresults count=10 annotate=true  # 生成 10 条原始数据，包含 _time,host,sourcetype,origin 字段
+```
+
+> 注意：makeresults 算子必须出现在（子）查询的第一个算子位置
+
+
+

@@ -1,0 +1,82 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                Track 信息改变回调接口</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnVideoProfileChanged`)'>OnVideoProfileChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#OnMuteStateChanged`)'>OnMuteStateChanged</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnVideoProfileChanged">OnVideoProfileChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnVideoProfileChanged(const std::string& user_id,const std::string& track_id,<a href='11293/QNTrackProfile-Linux'>QNTrackProfile</a> profile) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>视频 Track profile 改变后触发</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            user_id: string
+        </div>
+                <p>切换 pofile 的被订阅用户 ID</p>
+    </li>
+    <li>
+        <div>
+            track_id: string
+        </div>
+                <p>视频 track id</p>
+    </li>
+    <li>
+        <div>
+            profile: <a href='11293/QNTrackProfile-Linux'>QNTrackProfile</a>
+        </div>
+                <p>当前改变后的 profile</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="OnMuteStateChanged">OnMuteStateChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">virtual void OnMuteStateChanged(const std::string& user_id,const std::string& track_id,bool muted) = 0</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>Track 静默状态改变后触发</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            user_id: string
+        </div>
+                <p>是改变静默状态的远端用户 ID</p>
+    </li>
+    <li>
+        <div>
+            track_id: string
+        </div>
+                <p>改变静默状态的远端 track id</p>
+    </li>
+    <li>
+        <div>
+            muted: bool
+        </div>
+                <p>是否为静默状态</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

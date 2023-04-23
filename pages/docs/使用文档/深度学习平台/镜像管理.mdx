@@ -1,0 +1,193 @@
+现在的深度学习训练主要集中于如下几类主要的框架：MXNET/TensorFlow/Pytorch/Caffe等。这些框架有如下的特点：
+
+* 提供单机和分布式训练功能
+* 提供CPU和GPU或者混合训练功能
+* 提供多种语言和API接口
+* 提供多种算法和网络模型
+* 各训练框架在不同的操作系统上依赖不同的库和版本
+
+
+可以看出，深度训练包含的内容相当的丰富，但这也给使用者带来了很多的不便，掌握这些知识也给深度学习使用者带来了很大的负担。比如，有些训练框架版本依赖一定的运行库如CUDA8，CUDA9，让用户自己来安装这些依赖库和其他依赖将是非常繁琐的。
+
+**AVA平台提供了丰富的镜像资源，并整合了通用的深度训练框架以及相关网络算法，**极大减轻了使用者的负担。
+同时，用户可以把自己常用的镜像打包上传到七牛云镜像中心，后续启动训练的时候直接使用这些镜像。
+
+
+本文包含一下内容：
+1. 在AVA平台中查看平台提供的公开镜像和用户自己上传到七牛云镜像中心的镜像
+2. 以cifar10使用的mxnet的官方代码为例子，介绍如何添加AVA SDK
+3. 如何build一个镜像
+4. 如何把镜像上传到七牛云镜像中心
+
+# 查看镜像
+在镜像模块，用户可以查看平台提供的公开镜像。
+
+![](https://dn-odum9helk.qbox.me/FnHcjN31IBc3T0Uz9N1WxNl3AwHn)
+
+也可以查看用户自己上传到七牛云镜像中心的镜像。
+![](https://dn-odum9helk.qbox.me/FoPmccXqr3uDEmIZelbwEzRMQOpO)
+
+下面将会以 cifar10 训练代码为基础，添加 AVA SDK，以及在 AVA 平台使用用户自定义的镜像创建训练任务。
+# 安装 AVA SDK
+> pip install ava-sdk --upgrade
+
+# 添加 AVA SDK
+官方的 cifar10 训练代码的路径为：https://github.com/apache/incubator-mxnet/blob/master/example/image-classification/train_cifar10.py
+我们将在目前训练代码的基础上做以下修改：
+
+train_cifar10.py
+导入 ava sdk 包
+```
+# 调用SDK API进行训练实例的创建和状态更新
+from ava.train import base as train
+# 训练指标监控上报
+from ava.monitor import mxnet as mxnet_monitor
+from ava.utils import utils
+# 日志输出
+from ava.log.logger import logger
+```
+
+在运行训练之前初始化 AVA 平台上的训练实例
+```
+train_ins = train.TrainInstance()
+```
+
+训练结束，更新训练实例的状态，err_msg为空时表示训练正常结束
+```
+train_ins.done(err_msg=err_msg)
+```
+
+获取 GPU 信息以及获取默认 batch_size
+```
+def get_default_gpus_args():
+    # 获取环境内部 GPU 卡信息
+    use_gpu, cores = utils.get_cores()
+    gpus_list = []
+    if use_gpu:
+        for i in range(cores):
+            gpus_list.append(str(i))
+    return use_gpu, cores, ','.join(gpus_list)
+		
+default_batch_size = 128
+use_gpu, cores, default_gpus_args = get_default_gpus_args()
+default_batch_size = default_batch_size * cores if use_gpu else default_batch_size
+```
+
+去掉对于 `--data-train` 和 `--data-val` 的默认选项，改成读取 data-train 和 data-val 的本地路径
+```
+    parser.set_defaults(
+        # network
+        network        = 'resnet',
+        num_layers     = 110,
+        # data
+        # data_train     = train_fname,
+        # data_val       = val_fname,
+        num_classes    = 10,
+        num_examples  = 50000,
+        image_shape    = '3,28,28',
+```
+
+添加 epoch/batch callback，用于上报监控信息，以及上传 snapshot model
+```
+    snapshot_prefix = train_ins.get_snapshot_base_path() + "/snapshot"
+    snapshot_interval_epochs = 1
+    # batch 粒度回调
+    batch_end_cb = train_ins.get_monitor_callback(
+        "mxnet",                    # 训练框架的名称
+        batch_size=args.batch_size, # args.batch_size
+        batch_freq=10)              # 每 10 个 batch 打印一次数据
+				
+		epoch_end_cb = [
+        # mxnet default epoch callback
+        mx.callback.do_checkpoint(
+            snapshot_prefix, snapshot_interval_epochs),
+        # ava-sdk 提供的 epoch callback
+        train_ins.get_epoch_end_callback(
+            "mxnet", batch_of_epoch=batch_of_epoch,
+            epoch_interval=snapshot_interval_epochs)
+    ]
+    # AVA-SDK 中需要的 mxnet metric 列表
+    eval_metrics = mxnet_monitor.full_mxnet_metrics()
+```
+
+开始训练时，添加这些 callback
+```
+    fit.fit(args, sym, data.get_rec_iter, 
+            eval_metric=eval_metrics,
+            batch_end_callback=batch_end_cb,
+            epoch_end_callback=epoch_end_cb)
+```
+
+在 common/fit.py 中，添加支持对于 callback 的支持
+```
+def fit(args, network, data_loader, **kwargs):
+    # ...
+		
+		# save model
+    if 'epoch_end_callback' in kwargs:
+        checkpoint = kwargs['epoch_end_callback']
+    else:
+        checkpoint = _save_model(args, kv.rank)
+		
+		# callbacks that run after each batch
+    batch_end_callbacks = [mx.callback.Speedometer(args.batch_size, args.disp_batches)]
+    if 'batch_end_callback' in kwargs:
+        cbs = kwargs['batch_end_callback']
+        batch_end_callbacks += cbs if isinstance(cbs, list) else [cbs]
+    # ...
+```
+
+在 common/data.py 中，去掉 `--data-train` 和 `--data-val` 选项
+```
+def add_data_args(parser):
+    data = parser.add_argument_group('Data', 'the input images')
+    #data.add_argument('--data-train', type=str, help='the training data')
+    data.add_argument('--data-train-idx', type=str, default='', help='the index of training data')
+    #data.add_argument('--data-val', type=str, help='the validation data')
+    data.add_argument('--data-val-idx', type=str, default='', help='the index of validation data')
+    # ...
+```
+
+# 第三方镜像
+
+## 构建
+
+在 AVA 平台中使用第三方镜像，比如遵循如下原则：
+
+1. 必须基于公共基础镜像之上构建
+2. ENTRYPOINT 为 ava 框架服务，不能覆盖
+3. 可根据需要自定义 CMD，默认为 /workspace/examples/entry.sh
+
+公共基础镜像列表：
+* reg.qiniu.com/ava-public/ava-sdk-py27 包含 ava-sdk, ava 基础框架，常用 python 库，常用 utils 等，cpu/gpu 通用
+* reg.qiniu.com/ava-public/ava-mxnet-py27-cpu ava-sdk-py27 + mxnet cpu
+* reg.qiniu.com/ava-public/ava-mxnet-py27-gpu ava-sdk-py27 + mxnet gpu
+* reg.qiniu.com/ava-public/ava-caffe-py27-cpu ava-sdk-py27 + caffe cpu + opencv
+* reg.qiniu.com/ava-public/ava-caffe-py27-gpu ava-sdk-py27 + caffe gpu + opencv
+
+## 上传镜像至七牛云镜像中心
+
+### 注册
+在 https://hub.qiniu.com/home 中点击右上角 "注册"
+
+### 创建仓库
+在控制台( https://hub.qiniu.com/portal/home ) 点击 "创建新的仓库"
+
+#### 上传镜像
+在控制台点击 "上传镜像"，会显示如下操作步骤，按照步骤操作即可
+
+```
+当前镜像仓库推送地址为：
+reg.qiniu.com/<user_space>/镜像名称:镜像版本
+
+1. 手动操作 Docker 客户端登录镜像仓库地址:reg.qiniu.com
+
+docker login reg.qiniu.com -u <用户名> -p <密码>
+2. 推送镜像前需要将 Docker 镜像重设置为正确的镜像仓库资源标识, 例如:
+
+docker tag helloworld-go:demo reg.qiniu.com/<user_space>/helloworld-go:demo
+3. 执行 docker push 推送镜像, 例如:
+
+docker push reg.qiniu.com/<user_space>/helloworld-go:demo
+```
+

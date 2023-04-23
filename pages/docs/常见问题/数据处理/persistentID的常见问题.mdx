@@ -1,0 +1,10 @@
+# 什么是 persistent ID？  
+七牛给每个 [持久化处理](/dora/manual/3686) 作业，都会分配一个唯一的 ID ，用来记录和查询。  
+# 如何获取 persistent ID？
+1. 使用 [持久化处理 API 接口](/dora/manual/1291) 提交请求，可以在返回信息中得到 persistent ID 。  
+2. 对于队列中的处理作业，可以登录 [七牛开发者平台](https://portal.qiniu.com) 后，找到左侧 [智能多媒体服务](https://portal.qiniu.com/dora) ，点击需要查看的队列：  
+![](https://dn-odum9helk.qbox.me/FrMdH_vDYAslco2Av6O-3lzB5bLZ)    
+截图中红框处即为一个 persistent ID 。  
+
+# 如何使用 persistent ID 查询持久化处理作业状态？
+使用 [持久化处理作业查询](/dora/manual/1294) 服务，具体方法是浏览器地址栏输入 https://api.qiniu.com/status/get/prefop?id= 后跟 persistent ID 。

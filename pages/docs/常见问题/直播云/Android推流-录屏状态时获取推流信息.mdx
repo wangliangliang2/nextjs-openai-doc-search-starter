@@ -1,0 +1,25 @@
+Q：如何获取录屏推流时的推流信息
+
+A：在普通推流（MediaStreamingManager）或者连麦推流（RTCMediaStreamingManager），都有 setStreamStatusCallback 方法，
+在使用其回调方法 notifyStreamStatusChanged 中的 streamStatus 可以获得帧率码率信息；
+
+然而录屏推流 ScreenStreamingManager 没有设置该回调的方法，但是根据以上信息我们知道状态信息存在 streamStatus 对象中，而 streamStatus 是 StreamingProfile 的内部类，
+所以可以通过以下方法在录屏状态获取推流信息：
+
+1，将推流配置对象 streamingProfile 设为录屏 Activity 的成员变量，这样在录屏各个生命周期都可以访问该对象；
+
+2，在推流状态回调的 STREAMING case 中，获取 streamingProfile 的 streamStatus 对象来获得录屏的推流状态。
+
+```
+public void onStateChanged(StreamingState streamingState, Object extra) {
+	Log.i(TAG, "streamingState:" + streamingState);
+	switch (streamingState) {
+		case STREAMING:
+		Log.e(TAG,"bitrate:" + 
+        streamingProfile.getStreamStatus().totalAVBitrate / 1024 + " kbps" + 
+        "\naudio:" + streamingProfile.getStreamStatus().audioFps + " fps" + 
+        "\nvideo:" + streamingProfile.getStreamStatus().videoFps + " fps");
+		break;
+	}
+}
+```

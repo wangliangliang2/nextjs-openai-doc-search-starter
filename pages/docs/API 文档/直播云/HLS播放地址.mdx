@@ -1,0 +1,39 @@
+使用 HLS 观看直播的地址
+
+# 格式
+
+未开启时间戳防盗链：
+
+```
+https://<HLSPlayDomain>/<Hub>/<streamTitle>.m3u8
+```
+
+开启时间戳防盗链：
+
+```
+https://<HLSPlayDomain>/<Hub>/<streamTitle>.m3u8?sign=<md5(key+path+t).to_lower()>&t=<hex(time).to_lower()>
+```
+
+# 参数说明
+
+| 参数名称| 说明 |
+| :----------- |:--------------------------------------------------------------- |
+| HLSPlayDomain | 直播空间绑定的 HLS 直播域名 |
+| Hub | 直播空间名称 |
+| streamTitle | 直播流名称 |
+| sign | 开启时间戳防盗链时的加密字符串，生成方法见[播放地址时间戳防盗链](/pili/api/9868/play-security)  |
+| t | 开启时间戳防盗链时的播放地址过期时间，格式为经过16进制转换的UNIX时间戳，具体见[播放地址时间戳防盗链](/pili/api/9868/play-security)  |
+
+# 示例
+
+未开启时间戳防盗链：
+
+```
+https://pili-hls.pilitest.com/testHub/testStream.m3u8
+```
+
+开启时间戳防盗链：
+
+```
+https://pili-hls.pilitest.com/testHub/testStream.m3u8?sign=86ccb64b114f599e14eb660de7a813a5&t=61769c40
+```

@@ -1,0 +1,72 @@
+以定时任务的形式去执行 mysql 语句，将 mysql 读取到的内容全部获取则任务结束，等到下一个定时任务的到来。
+
+### **基础配置信息**
+
+  * 数据库地址(`mysql_datasource`):
+      - 明文填写：由 `username`: 用户名, `password`: 用户密码, `hostname`: mysql 地址, `port`: mysql 端口组成， 一个完整 mysql_datasource 示例:`"admin:123456@tcp(10.101.111.1:3306)"`。 `！注意：请使用内网方式访问，以免出现安全隐患！` 
+      - 环境变量填写：为了不在配置中明文存储，我们在 `1.0.4` 版本及以后支持使用环境变量的方式填写该字段，填写方式为：`${YOUR_ENV}`，其中 `YOUR_ENV` 为环境变量，需要在机器上将该环境变量设置为原先要填写的值，`YOUR_ENV` 可以根据您的实际使用需求进行修改。
+
+  * 数据库名称(`mysql_database`): 数据库名称也支持魔法变量，可以用`@(var)`的形式写年月日的魔法变量，具体的变量与数字的对应关系参照`魔法变量`的描述。当`history_all`为true时，表示导入历史数据，此时，数据库名称使用魔法变量只支持`@(YYYY)` `@(YY)` `@(MM)` `@(DD)` `@(hh)` `@(mm)` `@(ss)`的写法(不支持`@(M)` `@(D)` `@(h)` `@(m)` `@(s)`单个数字表示)，同时支持在最后使用通配符`*`，表示匹配所有后缀例如 `mydb@(YYYY)@(MM)@(DD)test*`，会匹配出所有以 mydb 为前缀，日期早于当前时间，同时日期后紧跟着test的数据库，如果当前时间为`20180601`，则此时`mydb20180530test`、`mydb20180530test001`、`mydb20180531test002`都符合要求。
+
+	* 魔法变量：目前支持`年`，`月`，`日`，`时`，`分`，`秒`的魔法变量，以当前时间 2017 年 6 月 5 日 6 时 35 分 24 秒为例。
+      * `@(YYYY)` 年份，就是2017 
+      * `@(YY)` 年份后两位，就是17。
+      * `@(MM)`: 月份,补齐两位，就是06
+      * `@(M)`: 月份，不补齐,就是6
+      * `@(D)`: 日，不补齐,就是5
+      * `@(DD)`: 日，补齐两位，如05
+      * `@(hh)`: 小时，补齐两位, 如06
+      * `@(h)`: 小时,如6
+      * `@(mm)`: 分钟，补齐两位,35
+      * `@(m)`: 分钟,35
+      * `@(ss)`: 秒，补齐两位,24
+      * `@(s)`: 秒,24
+
+  * 数据查询语句(`mysql_sql`)：要执行的 sql 语句，可以用 `@(var)` 使用魔法变量，用 `;`分号隔开，多条语句按顺序执行。多条 sql 输出的内容必须 `schema` 相同，否则请添加新的收集器分开收集。
+
+  * 启动时立即执行(`msql_exec_onstart`)：`true` 表示启动时执行一次，以后再按 cron 处理;`false` 则表示到cron 预设的时间才执行，默认为 `true`。
+
+  * 数据库表名(`mysql_table`): 可选项，默认为空，表示读取数据库中的所有表，表名也支持魔法变量，可以用`@(var)`的形式写年月日的魔法变量，具体的变量与数字的对应关系参照`魔法变量`的描述。当`history_all`为true时，表示导入历史数据，此时，表名使用魔法变量只支持`@(YYYY)` `@(YY)` `@(MM)` `@(DD)` `@(hh)` `@(mm)` `@(ss)`的写法(不支持`@(M)` `@(D)` `@(h)` `@(m)` `@(s)`单个数字表示)，同时支持在最后使用通配符`*`，表示匹配所有后缀例如 `mytable@(YYYY)@(MM)@(DD)test*`，会匹配出所有以 mydb 为前缀，日期早于当前时间，同时日期后紧跟着 test 的表名，如果当前时间为`20180601`，则此时`mytable20180530test`、`mytable20180530test001`、`mytable20180531test002`都符合要求。配合 `magic_lag_duration` 使用
+
+### **高级选项**
+
+  * 编码方式(`encoding`)：读取mysql 的编码方式，默认为 utf8，即按照 utf8 的编码方式读取。支持读取mysql的编码格式包括："big5", "dec8", "cp850", "hp8", "koi8r", "latin1", "latin2", "swe7", "ascii", "ujis", "sjis", "hebrew", "tis620", "euckr", "koi8u", "gb2312", "greek", "cp1250", "gbk", "latin5", "armscii8", "utf8", "ucs2", "cp866", "keybcs2", "macce", "macroman", "cp852", "latin7", "utf8mb4", "cp1251", "utf16", "utf16le", "cp1256", "cp1257", "utf32", "binary", "geostd8", "cp932", "eucjpms", "gb18030"。
+  
+  * 分批次查询(`mysql_need_offset`)：可选择按递增的时间列或者按照递增的其他列分批次查询，可以配合定时任务使用。
+
+  * 递增的时间列
+    * 时间戳列名称(`mysql_timestamp_key`)：指定一个 mysql 的列名，作为 `timestamp_key`，类型必须是整型/字符串，建议使用插入(或修改)数据的时间戳(`unixnano`)作为该字段。每次查询会从上次结束的时间戳开始查询。
+    * 时间字段是否整型(`mysql_timestamp_int`)：若不为整型，则自动进行时间转换。
+    * 起始时间(`mysql_start_time`)：开始时间戳。
+    * 单次查询范围(`mysql_batch_intervel`)：单次查询的时间戳范围，若时间戳列类型为字符串型，则不生效。
+		
+  * 递增的其他列
+    * 递增的列名称(`mysql_offset_key`)：指定一个 mysql 的列名，作为 `offset` 的记录，类型必须是整型，建议使用插入(或修改)数据的时间戳(`unixnano`)作为该字段。每次查询会指定这个 key 做 where 条件限制，避免单次查询性能消耗过大。
+    * 分批查询的单批次大小(`mysql_limit_batch`)：mysql_sql 的语句，若数据量大，可以填写该字段，分批次查询。
+      * 若 mysql_offset_key 存在，假设`mysql_limit_batch`为 100，则查询范式为 `select * from table where mysql_offset_key >= 0 and mysql_offset_key < 0 + 100;`
+      * 若没填写mysql_offset_key，则类似于 `select * from table limit 0,100`。
+  
+  * 全量采集(`mysql_fullQuery`)：采集所选数据库的所以数据，可以配合定时任务使用。
+
+  * 定时任务(`mysql_cron`)：定时任务触发周期，当选择全量采集时为全量采集的定时任务，否则为分批次采集的定时任务
+    * 直接写 `"loop"`,任务会不停的循环，执行完一次再接着执行下一次，后面可以跟循环的间歇时间，如 `"loop 10s"`，表示每次循环间隔 `10s`，支持的单位还有"m（分钟）"，"h(小时)"
+    * crontab 的写法,类似于`* * * * * *` ，对应的是秒(0~59)，分(0~59)，时(0~23)，日(1~31)，月(1-12)，星期(0~6)，填*号表示所有遍历都执行。
+    * 描述式写法,类似于 `"@midnight"`, `"@every 1h30m"`，必须`@`符合开头，目前支持`@hourly`,`@weekly`,`@monthly`,`@yearly`,`@every <time duration>`
+
+  * 数据库参数(`mysql_param`)：支持可选数据参数，不同的参数之间使用"&"符号链接，如`allowOldPasswords=true&columnsWithAlias=true`。
+  
+  * 导入匹配的数据(`history_all`): 可选项，默认为false，表示不导入历史数据，设置为true时，表示导入符合条件的历史数据，配合`mysql_database`、`mysql_table`使用。
+   
+  * 手动定义 SQL 字段类型（`sql_schema`）:  默认情况下会自动识别数据字段的类型，当不能识别时，可以 `sql_schema` 指定 mysql 数据字段的类型，目前支持 `string`、`long`、`float` 三种类型，单个字段左边为字段名称，右边为类型，空格分隔 `abc float`；不同的字段用逗号分隔。支持简写为`float=>f`，`long=>l`，`string=>s` 如："sql_schema":"abc string,bcd float,xyz long"。
+
+  * 魔法变量时间延迟(`magic_lag_duration`)：针对魔法变量进行时间延迟，单位支持 h(时)、m(分)、s(秒)，如写 24h，则渲染出来的时间魔法变量往前 1 天,2017 年 6 月 5 日 6 时 35 分 24 秒 的 `@(D)` 渲染出来的就是 4。
+ 
+### **常见使用场景配置**
+
+ * 数据库地址`mysql_datasource`必填
+ * 读取单个数据库单个表的所有数据，仅需要填写 `数据库名称(mysql_database)`、`数据库表名(mysql_table)`； 或者填写 `数据库名称(mysql_database)`和`数据查询语句(mysql_sql)`，查询语句为 `select * from <your table>`, 根据您实际的表修改SQL语句。
+ * 指定查询语句查询数据，填写 `数据库名称(mysql_database)`和`数据查询语句(mysql_sql)`，根据您实际需要填写查询语句。
+ * 读取单个数据库所有表的数据，填写 `数据库名称(mysql_database)`，设置 `导入历史数据(history_all)`设置为`true`，其他如 `数据库表名(mysql_table)` 和 `数据查询语句(mysql_sql)` 均无需填写。
+ * 读取所有数据库的所有表，设置 `导入历史数据(history_all)`为`true`，其他数据库、表名、查询语句均无需填写。
+ * 读取时间相关的数据库或者数据库表名，只需在`数据库名称(mysql_database)`、`数据库表名(mysql_table)`使用魔法变量即可，`导入历史数据(history_all)`为 `false` 并且未设置`定时任务`，则为完全匹配，`导入历史数据(history_all)`为 `true` 时，匹配所有小于等于当前时间的数据库或数据库表名的数据。
+ * 定时任务设置 `定时任务` 进行执行，`数据库名称(mysql_database)`、`数据库表名(mysql_table)`使用魔法变量时，可以和定时任务结合使用，匹配 所有小于等于定时时间的数据库或数据库表名的数据，前一个定时时间导入的数据不会重复导入。

@@ -1,0 +1,66 @@
+# **描述**
+本接口用于更新某个实体信息。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：PATCH
+* 接口路径：`/v1/imagelibs/{libId}/entities/{entityId}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|libId|是|string|库ID|
+|entityId|是|string|实体ID|
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|operations|是|op数组|op集合，详见：*表一*
+
+*表一：* OP集合参数
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|operations.key|是|string|要修改的参数
+|operations.op|是|string|op操作(目前支持replace)
+|operations.value|是|object|要修改的参数对应的value
+
+*表二：* 可编辑参数说明
+
+|参数名称|字段类型|说明|
+|---|---|---|---|
+|name|string|姓名
+|gender|string|性别 male 或 female
+|phoneNum|string|手机号
+|certNum|string|证件号
+|addr|string|地址
+|desc|string|备注描述
+
+# **响应参数**
+响应参数与查询实体一致，请参阅**查询实体**[响应参数](https://developer.qiniu.io/qvs/api/12180/query-entity)
+# **示例**
+
+**请求示例**
+
+```
+curl --request PATCH \
+  --url http://qvs.qiniuapi.com//v1/imagelibs/xxx/entities/yyy \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{"operations":[{"op":"replace", "key":"name","value":"newName"}, {"op":"replace", "key":"addr","value":"sh"}]
+}'
+```
+
+**响应示例**
+
+```
+{
+  "libId": "xxx",
+  "id": "yyy",
+  "name": "test009",
+   ....
+  "createdAt": 1585104103
+}
+```

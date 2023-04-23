@@ -1,0 +1,40 @@
+下面我们带您快速体验七牛云导播产品。云导播主要有以下几个操作：
+1. [输入设置](#tutorial)
+2. [输出设置](#tutorial1)
+4. [切换与混音](#tutorial2)
+5. [紧急切换垫片](#tutorial3)
+6. [画中画与水印文字](#tutorial4)
+
+#  <span id="tutorial">输入设置</span>
+设置输入源地址，源地址可以是任何有效的网络源url，支持几乎所有的音视频文件及图片文件
+<img src="https://dn-odum9helk.qbox.me/FusGDENk7m6dHBwzZ2h8QT8mzsry" width = "70%" height = "70%" align=center />
+
+
+设置成功后，对应的源内容会显示在对应的监播通道中。
+<img src="https://dn-odum9helk.qbox.me/FngAv4J08iFGi6UFGjALfvtwkdku" width = "70%" height = "70%" align=center />
+# <span id="tutorial1">输出设置</span>
+在输出设置中可以设置推流地址以及相关的**输出码率**及**延时输出时间**。推流开关打开后，导播台的内容开始输出至配置好的rtmp推流地址中。
+导播台的输出内容根据配置不同会有一些差别：
+1. 最优先，如果在紧急模式下，输出内容为当前**垫片通道**的内容
+2. 次优先，如果不在紧急模式下且PGM延迟输出大于0，则导播台输出内容为**延迟画面**中的内容
+3. 其它情况下，导播台输出内容为**PGM画面内容**
+<img src="https://dn-odum9helk.qbox.me/Fgu7mrwCfMrPALMXCEePohPeOT7g" width = "70%" height = "70%" align=center />
+
+# <span id="tutorial2">切换与混音</span>
+一般的画面切换流程为：先选择**绿色**的PVW通道按钮，将内容切换至PVW画面，当确认内容无误后，点击切换按钮将内容切换至PGM画面。
+同样可以直接点击**红色**的PGM通道按钮，可以快速将通道内容切换至PGM画面而不需要经过PVW画面的预览。
+**音频同步切换按钮**：当该按钮被勾选后，在点击切换按钮的时候会将音频切换到最新的PGM对应通道，其余通道则会保持静音。
+<img src="https://dn-odum9helk.qbox.me/Fg6xU0r1-btBKGPYb3Z-e7uOQjut" width = "70%" height = "70%" align=center />
+
+# <span id="tutorial3">紧急切换垫片</span>
+垫片的使用一般与PGM延迟输出参数一同使用，此时导播员可以看到实时画面，而观众则看到的是延迟的画面(最大3分钟)，当实时画面发生异常时，导播员可以强制进入**紧急模式**，于是观众会立即看到预先设定的垫片内容，而不会看到之后发生的异常画面。
+如图中所示，进入紧急模式后，垫片将会**黄色高亮**，表示客户画面已切换至垫片。再次点击紧急按钮后会退回到正常模式，观众画面将会重新切换至延迟画面中显示的内容
+<img src="https://dn-odum9helk.qbox.me/Fjq7naaCV3-pgVmpJeWz9x5nRfXg" width = "70%" height = "70%" align=center />
+
+# <span id="tutorial4">画中画与文字水印</span>
+导播台支持8个**预置模版**功能，点击任何一个模版的编辑按钮则可以编辑该布局模版，每一个模版都可以添加独立的画中画与文字水印功能，
+其中画中画来源来自于8路监播通道，文字水印则可自由创建。如下图所示:
+<img src="https://dn-odum9helk.qbox.me/FvtM3nKtiTzxfvVomXkQkKZmOSd6" width = "70%" height = "70%" align=center />
+
+添加编辑完成后务必点击右下角的**保存**按钮，关闭对话框后可以看到效果：
+<img src="https://dn-odum9helk.qbox.me/Fsc1bawtxMqdttHCd8T3_fdRDZBQ" width = "70%" height = "70%" align=center />

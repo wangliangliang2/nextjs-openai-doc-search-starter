@@ -1,0 +1,190 @@
+# OAuth 2.0 介绍
+
+OAuth 2.0 是一个开放授权标准，用于用户授权第三方应用访问该用户在七牛的资源而不需要提供账号密码信息给第三方应用。
+
+## OAuth 2.0 角色
+
+OAuth 2.0 有以下四个角色：
+
+|角色|说明|
+|-|-|
+|Resource Owner|资源拥有者|
+|Resource Server|资源服务器|
+|Client|第三方应用客户端，指任何可以消费资源服务器的第三方应用|
+|Authorization Server|授权服务器，管理上述三个角色的中间层|
+
+## OAuth 2.0 授权流程
+![oauth2.png](https://dn-odum9helk.qbox.me/FnztQDUQkR6NRasKeWetCOdjUfvx)
+（A）：客户端请求资源所有者的授权。
+（B）：资源所有者同意授权。
+（C）：客户端获得了资源所有者的授权之后，向授权服务器申请授权令牌。
+（D）：授权服务器验证客户端无误后发放授权令牌。
+（E）：客户端拿到授权令牌之后请求资源服务器发送用户信息。
+（F）：资源服务器验证令牌无误后将用户信息发放给客户端。
+
+# 使用说明
+
+## 第三方应用接入
+
+### 创建第三方应用客户端
+
+七牛目前暂未对外提供第三方应用客户端管理的入口，如有需要，需提工单或和七牛对接人申请，并提供如下信息：
+|字段|描述|示例|
+|-|-|-|
+|name|名称|极客 AI|
+|description|描述|极客 AI 七牛 OAuth 应用对接|
+|redirect_uri|重定向地址，用于授权回调|https://example.geek.ai|
+完成第三方应用创建后，会得到一组 `client_id` 和 `client_secret`，用于后续获取资源访问授权码。
+
+## 授权服务
+
+### 请求资源所有者的授权获取授权码
+
+**请求**
+
+```http
+GET|POST https://portal.qiniu.com/oauth/v2/authorize?response_type=code&client_id=<client_id>[&redirect_uri=<redirect_uri>][&state=<state>]
+```
+
+> 该接口同时支持 `GET` 方法和 `POST` 方法，`Query Paramters` 中的参数也可以 `Form` 的形式提交
+
+- `response_type`： 必须为 `code`
+- `client_id`：必填，为第三方应用的 `client_id`
+- `redirect_uri`：可选，回调地址，默认为第三方应用注册时填写的回调地址。如果提供则必须与第三方应用注册时填入的回调地址相同或是其子路径。如注册时的路径为 `http://example.qiniu.com/a`，则下列的 `redirect_uri` 的合法性为：
+	- `https://example.qiniu.com/a`：合法
+	- `http://example.qiniu.com/a/b`：合法
+	- `http://subdomain.qiniu.com/a`：非法
+	- `http://example.qiniu.com/b`：非法
+- `state`：可选，但强烈建议提供，用于防范 csrf 攻击
+
+**响应**
+
+```http
+HTTP/1.1 302 Found
+Location: https://client.example.com/cb?code=<code>[&state=<state>]
+```
+
+如果授权成功，则授权服务器会携带授权码 `code` 重定向至回调地址。
+
+**注意，授权码仅在十分钟内一次有效。**
+
+**错误**
+
+```http
+HTTP/1.1 302 Found
+Location: https://client.example.com/cb?error=<error>
+```
+
+如果授权过程中发生错误，则授权服务器会携带错误信息 `error` 重定向至回调地址。
+
+可能的错误值为：
+
+- `invalid request`：请求不合法，可能缺少必要的参数，或者是 `client_id` 不合法
+- `access denied`：授权被拒绝
+- `server error`：服务器错误
+
+### 向授权服务器申请授权令牌
+
+**请求**
+
+```http
+POST|GET https://portal.qiniu.com/oauth/v2/token
+Authorization: Basic <Auth>
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code&code=<code>&redirect_uri=<redirect_url>
+```
+
+> 该接口同时支持 `GET` 方法和 `POST` 方法，`Query Paramters` 中的参数也可以 `Form` 的形式提交
+
+- `grant_type`：必须为 `authorization_code`
+- `code`：必填，从 `/authorize` 接口回调后取得的 `code`，即上一步获取到的授权码
+- `redirect_uri`：如果在 `/authorize` 接口中也提供了该参数时必填，且必须一样
+
+第三方应用的凭证 `client_id` 和 `client_secret` 可以以两种形式提供，**一种**是以如上例请求中的 `Basic Auth` 的形式提供，**另一种**则是以表单参数的形式提供。
+
+当使用 `Basic Auth` 的方式时，需要在请求头中附加如下信息：
+
+```http
+Authorization: Basic <Auth>
+```
+
+其中 `<Auth> `为经过 base64 编码的 `client_id` 和 `client_secret`，即 `base64_encode(client_id:client_secret)`
+
+**响应**
+
+```js
+{
+  "access_token": "hoCh3nfpNKVRztaYrmq8Cmvu0AHsrDX0BVM5WrpI9YlASBkJ",
+  "expires_in": 2591999, // 单位：秒
+  "refresh_token": "1k5gVZFRM7TS8ue515s5P8ODJkjvXGgMj2zBjRTxMReJBwAL",
+  "token_type": "Bearer"
+}
+```
+
+可能返回的错误码为：
+
+- `400`：请求不合法，可能缺少必要的参数，或者是 `client_id` 不合法
+- `401`：授权被拒绝
+- `500`：服务器错误
+
+### 刷新授权令牌
+
+**请求**
+
+```http
+POST|GET https://portal.qiniu.com/oauth/v2/token
+Authorization: Basic <Auth>
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=refresh_token&refresh_token=<refresh_token>
+```
+
+> 该接口同时支持 `GET` 方法和 `POST` 方法，`Query Paramters` 中的参数也可以 `Form` 的形式提交
+
+- `grant_type`：必须为 `refresh_token`
+- `refresh_token`：必填，用于刷新的 `refresh_token`
+
+**响应**
+同`向授权服务器申请授权令牌`接口
+
+## 资源服务
+
+第三方应用从授权服务器拿到的 `Access Token` 即可用于访问资源服务器获取与用户相关的资源。
+
+### 鉴权
+
+访问的凭证为 `Access Token`，目前支持的携带方式有：
+
+- 在请求头中添加 `Authorization`头，值为 `Bearer <Access Token>`
+- `query param` 中携带 `access_token=<access_token>`
+- `POST` 请求时，Body 中以 Form 的格式携带 `access_token=<access_token>`
+
+### 接口规格
+
+#### 获取用户基本信息
+
+**请求**
+
+```http
+GET|POST https://portal.qiniu.com/oauth/v2/api/account/info
+```
+
+> 该接口同时支持 `GET` 方法和 `POST` 方法
+
+**响应**
+
+```js
+{
+	data: {
+	  "uid": 1380537799
+	},
+	"msg": "succ",
+	"ret": 0,
+}
+```
+
+可能返回的错误码为：
+
+- `400`：请求不合法，可能缺少必要的参数，如 token 不合法或已过期
+- `500`：服务器错误

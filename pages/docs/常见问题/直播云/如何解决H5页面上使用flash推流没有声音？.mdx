@@ -1,0 +1,12 @@
+# 七牛是否提供 flash 推流的 sdk？
+七牛目前有一个测试的 demo，可以参考下 `http://pili2-demo.qiniu.com/publisher`
+
+# 使用 flash 推流，发现 rtmp 有声音，但是 hls 没有
+`hls`播放地址，其实本质上播放的是音视频切片文件，因为协议标准，直播云仅支持标准的 `h264+aac`，视频`h264`没问题，但是音频却不是`aac`，一般都是`nellymoser`编码，所以导致切出来的切片没有声音，这个时候需要转码来解决这个问题。
+
+# 解决方法
+### 接入七牛实时转码服务，将音频转为 aac  
+**操作步骤如下：**  
+1.提交工单，标注 flash 推流，音频需要转码，并且提供直播空间名  
+2.工单回复配置完成之后，即已经配置实时转码  
+3.直播推流，拉流时候在播放地址的流名后拼接`@nellymoser_audio`；例如：原来的播放地址为`http://pili-live-hls.qiniu.com/qiniu/test.m3u8`，拼接后拉流地址为`http://pili-live-hls.qiniu.com/qiniu/test@nellymoser_audio.m3u8`，使用这个拉流地址，即可实现转码，播放就会有声音了

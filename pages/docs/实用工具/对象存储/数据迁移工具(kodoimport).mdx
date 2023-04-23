@@ -1,0 +1,210 @@
+<a id="kodoimport-description"></a>
+# **描述** 
+kodoimport是可以将数据迁移到七牛云存储的工具，根据说明使用 kodoimport，您可以轻松将本地或其它云存储的数据迁移到七牛云。
+迁移工具支持以下功能：
+* 支持多种源站数据类型，包括本地文件夹 local、七牛云 qiniu、AWS S3 (及兼容 S3 的对象存储)、阿里云 oss、任务文件列表 http ，如果您有其他源数据类型的支持需求可以通知我们扩展。
+* 支持单机模式和分布式模式。单机模式部署简单使用方便，但是单机模式迁移能力有限，如果有大规模数据迁移需求分布式模式更为合适。
+* 支持流量控制。
+* 支持迁移特定前缀的文件。
+* 支持为迁移目标设置特定前缀。
+* 支持断点续传。
+* 支持并行数据下载和上传。
+* 支持数据校验。
+* 支持增量迁移。
+
+<br>
+
+<a id="kodoimport-download"></a>
+# **下载** 
+| 支持平台 | 下载链接 |
+| --- | ------------ 
+| Windows x64 | [下载](https://kodo-toolbox.qiniu.com/kodoimport.windows.2022-11-18-14-07-09.tar.gz) |
+| Macos  | [下载](https://kodo-toolbox.qiniu.com/kodoimport.darwin.2022-11-18-14-07-09.tar.gz) |
+| Linux x64 | [下载](https://kodo-toolbox.qiniu.com/kodoimport.linux.2022-11-18-14-07-09.tar.gz) |
+下载完成，解压后目录结构如下
+
+kodoimport
+├── conf
+│ ├── local  # local 迁移类型配置文件相关，作为参考
+│ ├── qiniu  # qiniu 迁移类型配置文件相关，作为参考
+│ └── ...    # 其他迁移类型配置文件相关，，作为参考
+├── kodoimport          # 可运行文件
+└── README.md           # 使用文档，包含各种文件信息解释及操作步骤，强烈建议使用前仔细阅读
+
+
+<br>
+
+
+<a id="kodoimport-scheduler"></a>
+# **部署方式**
+kodoimport有单机模式和分布式模式两种部署方式。
+
+单机模式：当您需要迁移的数据量较小时，推荐部署单机模式。您可以将 kodoimport 部署在任意一台可以访问您待迁移数据，且可以访问七牛云的机器上，根据您的迁移类型,即下面配置说明中的 `src_type`，参考下方配置说明和操作步骤，完成数据迁移，参考解压后目录下 conf 中不同数据源的配置文件，执行 ./kodoimport -f [src_type]/single-mode/kodoimport.conf 即可开启迁移任务。
+分布式模式：当您需要迁移的数据量较大时，推荐部署分布式模式。在分布式模式下，迁移工作由**调度器**和**执行者**配合完成，其中**调度器**负责任务分配和整体任务信息统计及持久化，**执行者**向**调度器**申请任务，完成任务迁移工作，向**调度器**汇报任务完成情况。如果**执行者**超过一定时间没汇报任务情况，**调度器**会重新分配任务。在一个迁移任务中启动一个**调度器**，执行 ./kodoimport -f [src_type]/distributed-mode/kodoimport-scheduler.conf。根据您的机器情况和任务数据量启动适量的**执行者**，执行 ./kodoimport -f [src_type]/distributed-mode/kodopimport-worker.conf。（**调度器**和**执行者**角色根据配置信息确定，可运行文件是同一个）
+
+
+<br>
+
+<a id="kodoimport-conf"></a>
+# **配置说明** 
+| 参数 |      含义      |类型|   说明     |
+| --- | ------------ |  ------  | ------  |
+| debug_level | 运行日志级别 | 整型 | 从 0 开始，越小日志信息越详细，建议配置 1 。迁移任务开始，建议将运行输出日志重定向到本地文件，便于查看问题 |
+| bind_host  |  调度器运行监听地址 | 字符串 |  默认 8001 端口，若端口没被占用，可以不用修改 |
+| src_type | 同步数据源类型 | 字符串 | 支持不同同步源类型,注意大小写，当前支持类型：  <br> . http：通过提供的HTTP链接列表迁移数据七牛云 <br>. qiniu：从一个 qiniu bucket 迁移到另一个 bucket <br> . oss： 从阿里云oss迁移数据到七牛云  <br> . S3： 从 AWS S3 迁移数据到七牛云<br> . local：从本地文件夹迁移数据到七牛云  |
+| src_access_key | 同步数据源AccessKey | 字符串 | .如果 src_type 设置为 oss、qiniu、S3，则填写数据源的 AccessKey <br> .如果 srcType 设置为local、http，则该项不需要填写 |
+| src_secret_key | 同步数据源SecretKey | 字符串 | .如果 src_type 设置为 oss、qiniu、S3，则填写数据源的 SecretKey <br> .如果 srcType 设置为 local、http，则该项不需要填写 |
+|use_windows_separator|local 数据源类型并在 windows 系统下，文件名称是否使用 windows 系统文件路径分隔符|布尔类型|在 windows 平台上传时,保存在七牛空间的文件 文件名是否使用windows文件路径分隔符(`\`)，默认为 false，使用 unix 文件路径分隔符(`/`)。true 使用windows文件路径分隔符(`\`)|
+| src_bucket |  同步数据源 bucket 名字 | 字符串 | .如果 src_type 设置为 local、http，则该项不需要填写 |
+| src_prefix | 同步数据源前缀，默认为空，同步如所有文件 | 字符串 | .如果 src_type 设置为 local，则填写本地目录，需要完整路径并且以单个正斜线（/）结尾 <br> .如果 src_type 设置为 oss、qiniu、S3，则填写待同步 object 的前缀 |
+| src_objects_count |  同步任务总 object 数量  | 整型 | 如果与实际有偏差，进度比例信息会不准确，但不影响迁移功能,不可为 0  |
+| dst_access_key | 目标存储桶 AccessKey  | 字符串 |  可以在 [七牛云控制台](https://portal.qiniu.com/user/key) 查看 |
+| dst_secret_key | 目标存储桶 SecretKey  | 字符串 | 可以在 [七牛云控制台](https://portal.qiniu.com/user/key) 查看 |
+| dst_prefix |  目标前缀，默认你为空 | 字符串  | 默认为空，直接放在目标 bucket <br> .一个本地文件路径为 src_prefix+relativePath 的文件，迁移到七牛云的bucket路径为 dst_prefix +relativePath <br> .一个云端文件路径为 src_bucket/src_prefix+relativePath 的文件，迁移到七牛云的路径为dst_bucket /dst_prefix+src_prefix+relativePath|
+| dst_file_type | 目标目标存储类型 | 整型| 支持设置不同目标存储类型，默认值是 0，当前支持类型：  <br> . 0：标准存储 <br>. 1：低频存储 <br>. 2：归档存储 |
+|ignore_dir| 是否忽略src_type为 local 类型在本地目录层级结构，默认false|布尔类型| 如果设置为true, 例如在src_type为 local ，src_prefix 为` /testDir/dir1/`,则在该目录下的文件绝对路径为 `/testDir/dir1/dir2/test.txt` 的文件，上传到七牛云的bucket路径为 `dst_prefix+test.txt` ,会忽略 src_prefix 下的本地目录层级，如果使用默认值，上传到七牛云的 bucket 路径为 `dst_prefix+dir2/test.txt`|
+| dst_bucket |  目标存储桶 |  字符串  | 您在七牛云的 bucket 名称  |
+| insert_only | 是否覆盖目标存储桶中已有同名文件，默认为 false | 布尔类型  | .如果设置为 true，如果目标存储桶已有同名文件，则上传失败，http 错误码为 614，在 works_dirs 目录下会有以 614 为文件名前缀的文件生成，文件名 614-\*\*\*\* |
+| src_endpoint | 同步数据源 Endpoint | 字符串 |  .src_type 设置为 qiniu，则填写从七牛控制台获取的对应 bucket 的域名 <br> .src_type 设置为 oss，则填写从控制台获取的各 region 的域名，非带 bucket 前缀的二级域名 <br>.src_type 设置为 S3 或者是兼容 s3 API 的其他厂商，这里是对应厂商对应区域的 endpoint 地址 <br>.src_type为 http ,则填写下载地址除任务列表中 key 外部分(在没有downloadUrl时生效)<br>.src_type为 local,不需要填写此项 |
+| src_s3_region |同步数据源 Region| 字符串| 数据源为 S3，对应 region 名称|
+| is_incremental | 是否打开增量迁移模式，默认false | 布尔类型  |.如果设为 true，会每间隔 incremental_mode_interval 重新扫描一次增量数据，并将增量数据迁移到七牛云 |
+| incremental_mode_interval |  开启增量模式同步下的同步间隔 |  整型 | 每间隔指定时间重新扫描一次增量数据,并迁移增量数据，单位 s ,默认 7200s ,配置不低于 900s |
+| need_check_md5 | 是否对下载文件内容做 md5 校验 | 布尔类型 | 默认 false，如果文件是需要先从给定源站下载，然后通过kodoimport上传，是否需要将下载得到的数据进行 md5 校验 <br>.如果 src_type 为 http ，文件的 md5 可以直接写在任务列表中，具体格式见 README.md，打开 need_check_md5 就会进行 md5 校验 <br>.请求源站下载如果有提供 Content-MD5 的 header，打开 need_check_md5 就会进行 md5 校验<br>.默认只会进行文件大小校验|
+| scheduler_addr |  调度器地址 | 字符串 |  执行者需要知道调度器地址 |
+| input_chan_size |  调度器内存中缓存任务个数,默认 1000 | 整型 | 可缓存任务个数越大，可并发执行能力越大，可以根据您的机器性能做调整，会消耗能存，一般不需更改 |
+| dump_progress_intervals | 调度器持久化进度时间间隔 | 整型 |单位为 s ,默认 60s  <br>.设置过大任务出现中断后可能需要重做之前已经完成的任务 <br>.设置过小，磁盘读写过于频繁，一般不需更改 |
+| worker_report_timeout |调度器会重新分配任务时间  | 整型  | 调度器将任务分配之后，超过此时间任务状态未收到执行者反馈更新，调度器会重新分配任务，单位是 s,默认 1h，一般不需更改 | 
+| worker_goroutine_num |执行者并发执行迁移任务数量   | 整型  | 默认 20，可以根据您的机器性能做调整，一般不需更改|
+| worker_rate_limit_mb |执行者读取同步数据源速度限制 |    整型    |执行者速度限制，防止拖垮用户源站，单位是 MB/s ，默认 1GB/s ，可以根据您的源站数据源能力调整 |
+| local_file_dir | 执行者大文件本地缓存位置 | 字符串  | 对于大文件（可配置 worker_resumable_up_size）, 使用分片上传，开启本地缓存的情况下会在本地缓存源文件，默认是系统 TempDir|
+| file_in_memory_mb |执行者分片内存缓存阈值|整型|分片大小小于此值落内存缓存，大于此值落磁盘缓存 local_file_dir，缓存开启enable_cache 后才生效，默认16M|
+| worker_resumable_up_size| 执行者使用分片上传的阈值| 整型| 大文件可以使用分片上传，可指定使用分片上传 文件大小阈值，大于该配置 使用分片上传，单位 B, 默认 1GB，每个片大小 upload_part_size_mb|
+| upload_part_size_mb |分片上传 每个片 大小| 整型|单位 MB, 默认 8 MB,与 worker_resumable_up_size 、 file_in_memory_mb 、local_file_dir 、enable_cache 配合使用|
+| enable_cache |是否开启本地缓存|布尔类型|默认false， 是否开启本地缓存|
+| max_fail_count |执行者最多可连续失败迁移任务数量|整型|执行者任务最大连续失败次数，超过此个数程序将退出, 默认 10|
+| rs_host |七牛云 rs 域名| 字符串|.如果您将数据迁移至七牛云公有云，不需要设置该项 <br>.如果您需要将数据迁移至七牛私有云，请配置为您私有云 rs 服务域名，可配置多个，以","分隔|
+| rs_max_try_times |rs 服务调用最大尝试次数| 整型|默认为 3，一般不需更改|
+| uc_host | 七牛云 uc 域名 |  字符串  |.如果您将数据迁移至七牛云公有云，不需要设置该项 <br>.如果您需要将数据迁移至七牛私有云，请配置为您私有云 uc 服务域名|
+| region_up_host_map | 七牛云各个区域上传域名 |  字典  | .如果您将数据迁移至七牛云公有云，不需要设置该项 <br>.如果您需要将数据迁移至七牛私有云，请配置为您私有云环境 up 服务域名。其中 key 为 region；value 为对应 region 的 up 服务的 host，host可配置多个，以","分隔|
+| mode |   工作模式    |  整型  |  不填或 0 表示单机模式，其他数字表示分布式，默认单机模式；分布式模式下调度器/执行者进程独立 |
+| is_scheduler | 是否作为调度器启动，默认 false |  布尔类型  | 在分布式模式下有效，如果设置 true ，则表示分布式模式重的调度器，否者表示执行者 |
+| work_dirs | 工作目标| 字符串| 工作目录下保存了任务运行结果文件和任务进度文件，支持配置多个，防止出现坏盘等情况，任务无法重建，需要您手动在合适地方 任务运行前需要创建好，且任务开始后结束前不要手动修改|
+| key_file | 本地任务列表文件| 字符串| 需要配置绝对路径,格式见README.md，<br>.在src_type 为 http 时，表示迁移任务列表文件<br>.所有 src_type 都会在 works_dirs 目录下记录每个已经执行迁移文件的迁移状态，以迁移结果 HTTP Code 为文件名前缀，如果有迁移失败的，比如 5xx-\*\*\*\* 文件，你可以根据实际情况将本地记录失败任务列表作为 key_file ，再次迁移失败任务|
+| key_file_download_url | 任务列表文件下载地址 | 字符串 | 任务列表文件获取地址,仅在 src_type http 有效,如果没有本地 key_file，根据 url 远程拉取 |
+| key_file_size | 任务列表文件大小 | 整型 |任务列表文件大小，仅在配置 key_file 文件有效，用作校验，不配置不校验，如果任务列表较大，校验需要一定时间，校验完成后开始数据迁移|
+| key_file_md5 | 任务列表文件md5 | 字符串 |任务列表文件 md5，仅在配置 key_file 文件有效，用作校验，不配置不校验，如果任务列表较大，校验需要一定时间，校验完成后开始数据迁移|
+| src_host | 数据源站要求访问域名 |字符串| 如果任务列表文件中给定的地址源站要求传递指定的 host，则在这里配置。比如给定的是 IP 地址，但是源站要求有访问域名。仅在 src_typ 为 http 时生效|
+| io_host |七牛云 io 下载节点地址| 字符串|.如果您将数据迁移至七牛云公有云，不需要设置该项 <br>.如果您需要将数据迁移至七牛私有云，请配置为您私有云 io 服务域名，可配置多个，以","分隔|
+| io_max_try_times |io 调用最大尝试次数| 整型|仅 io_host 有值时有效，默认为 3，一般不需更改|
+<br>
+
+
+<a id="kodoimport-steps"></a>
+# **操作步骤** 
+1.在服务器磁盘合适位置创建持久化信息目录，并配置在配置文件中，单机模式下的的 kodoimport.conf 中 work_dirs 或者分布式模式下 kodoimport-scheduler.conf 的 work_dirs ;
+**建议**分布在不同的磁盘上，防止单个磁盘出现坏盘，造成持久化文件损坏，迁移任务无法继续进行。
+
+2.启动迁移任务，单机模式下执行
+```
+./kodoimport -f kodoimport.conf #或 kodoimport.conf的绝对路径
+```
+单机模式下服务启动即是调度器也是执行者
+或者分布式模式下先启动调度器，执行
+```
+./kodoimport -f kodoimport-scheduler.conf #或 kodoimport-scheduler.conf的绝对路径
+```
+然后根据实际情况启动一定数量的执行者
+```
+./kodoimport -f kodopimport-worker.conf #或 kodopimport-worker.conf 的绝对路径
+```
+执行者的配置文件可以相同，可以分布在不同的机器上
+**建议**启动所有的服务，都建议您将任务输出运行日志重定向到文件中，供后续有疑问查看，比如  
+```
+./kodoimport -f kodoimport.conf >> log
+```
+3.重试迁移失败的文件
+在迁移过程中，可能会出现各种原因造成迁移失败，所有文件执行结果在本地，根据迁移结果分不同文件记录 work_dirs 目录的 [HTTP Code] 文件中，根据实际情况可以重试迁移失败的文件
+**注意**，重试失败任务，不要手动修改 work_dirs 任何文件，只需要将记录的失败任务列表文件配置在单机模式下的的 kodoimport.conf 中 key_file 或者分布式模式下 kodoimport-scheduler.conf 的 key_file 即可,然后重启调度器服务。[HTTP Code] 文件格式参考下面文件格式说明
+
+<br>
+
+<a id="kodoimport-introduction"></a>
+# **其他问题** 
+<br>
+
+## 查看任务进度
+经过上述1、2步骤，迁移任务已经开启，您可以
+1. 查看log来看迁移进度及详细信息，例如
+		```
+		Scheduler progress : all task Count  27
+		Scheduler progress : from {.....} to {.....}, success 25,failed 2
+		```
+以上日志表示，总任务27个文件，已经完成27个，成功了25，失败2个
+2. 查看work_dirs目录下的progresses前缀文件，例如
+		```
+		{"progresses":[{"from":{"key":".xxxxxx","size":10244,"index":1,"req_id":"MkcAAOAxldA3HuUV" },"to":{"key":".xxxxxx","size":10244,"index":27,"req_id":"MkcAAOAxldA3HuUV"},"statuses":{"1":25,"2":2}}],"latest_offset":0,"latest_index":27,"latest_marker":"/.xxxxx","task_count":27,"done_percent":"100"}
+		```
+		以上文件表示，总任务27个文件，已经完成27个，失败了25（statuses中“1”状态数量），成功2个（statuses中“2”状态数量）
+
+		progresses文件格式说明
+		progresses-*文件是指持久化的进度文件，后缀格式是[src_type]-[src_access_key]-[src_bucket]-[src_prefix]
+		progresses-*文件内容不能手动修改，可以查看，文件内容格式为
+		```
+		{ "progresses":[{"from":{},"to":{}},{"from":{},"to":{}}], #详细进度信息
+		"latest_offset": , # 当前偏移量
+		"latest_index": , # 当前任务计数
+		"latest_marker":, # 当前marker
+		"task_count": # 总任务数，对象存储迁移依赖配置
+		"done_percent": # 任务进度，已完成任务计数/总任务数，如果总任务数不准确，进度会不准确，可能超过100%或者任务已经完成不足100%
+		"first_all_scan_done": #如果开启增量扫描，表示第一次全量扫描是否完成
+		"latest_scan_time": #最后一次扫描开启的时间
+		}
+		```
+3. 可以请求调度器（单机模式启动服务即时调度器也是执行者），查看任务进度，例如
+		```
+		请求：curl -i -v http://scheduluerIP:schedulerPort/progress
+
+		返回：
+		{"progresses":[{"from":{"key":".xxxxxx","size":10244,"index":1,"req_id":"MkcAAOAxldA3HuUV" },"to":{"key":".xxxxxx","size":10244,"index":27,"req_id":"MkcAAOAxldA3HuUV"},"statuses":{"1":25,"2":2}}],"latest_offset":0,"latest_index":27,"latest_marker":"/.xxxxx","task_count":27,"done_percent":"100"}
+		```
+		http请求返回结果与progresses前缀文件名内容一致
+
+<br>
+
+## 文件格式说明
+
+除了进度文件progresses-xxx外，work_dirs目录下还会有其他文件，比如work_dirs目录如下：
+```
+614-qiniu-PjFtQJWfvKrSLYkSlV-keCKWzmXzSK1Zp3R9S5MV-test-test-1574408412873886000
+700-qiniu-PjFtQJWfvKrSLYkSlV-keCKWzmXzSK1Zp3R9S5MV-test-test-1574408407508440000
+progresses-qiniu-PjFtQJWfvKrSLYkSlV-keCKWzmXzSK1Zp3R9S5MV-test-test
+```
+说明如下：
+[HTTP Code]-\*文件,后缀格式是*[src_type]-[src_access_key]-[src_bucket]-[src_prefix]-[timestamp]*
+614-\*文件是指上传失败，上传失败错误码为614，即指定校验信息，服务端校验失败
+700-\*文件是指下载失败，下载失败通常多种原因，具体根据req_id搜索log日志
+还会有其他httpCode文件，如200-\*，表示迁移成功
+[HTTP Code]-\*文件内容不能手动修改，可以查看，文件内容格式为
+```
+{"download_url":"http://test.qiniudn.com2/test5?e=1574842042\u0026token=PjFtQJWfvKrSLYkSlV-keCKWzmXzSK1Zp3R9S5MV:mk03coGY-PXVdJBH_iIA_aySk3E","key":"test5","size":36864,"req_id":"DewAAChXWoeXbdkV","worker_ua":"kodoimport/efd0ac107a (darwin/amd64; go1.13.1)/60429"}
+```
+| 参数 | 说明 |
+|----|-----|
+|download_url|数据地址|
+|key|上传文件名称|
+|size|文件大小|
+|req_id|具体迁移任务对应日志检索id|
+|work_ua|是指分布式模式下使用配置kodoimport_worker.conf运行程序的ua信息或者单机模式下使用配置kodoimport.conf运行程序的ua信息；ua格式为【程序名称/机器host名称/进程pid】|
+上述如果需要重试迁移失败的文件，只需要将文件配置到"key_file"中，启动调度器见步骤2即可。重跑可以看到work_dirs目录下有如下新增文件
+```
+progresses-qiniu-PjFtQJWfvKrSLYkSlV-keCKWzmXzSK1Zp3R9S5MV-test-test-file-90e9eb3d5e7f5344a24c72685be39c4e
+614-qiniu-PjFtQJWfvKrSLYkSlV-keCKWzmXzSK1Zp3R9S5MV-test2z0222-test-file-90e9eb3d5e7f5344a24c72685be39c4e-1574409378882783000
+```
+
+progresses-\*意思与上面描述相同，这里看到多了后缀[file]-[md5(失败重跑文件)]，是为了区分每次跑的任务；例子中意思是用了本地文件跑的，用的文件的md5值是90e9eb3d5e7f5344a24c72685be39c4e，90e9eb3d5e7f5344a24c72685be39c4e是文件700-qiniu-PjFtQJWfvKrSLYkSlV-keCKWzmXzSK1Zp3R9S5MV-test-test-1574408407508440000的md5值
+
+[HTTP Code]-\*文件614-*意思与上面描述相同，这里看到多了后缀[file]-[md5(失败重跑文件)，与progresses-*文件添加后缀目的相同
+
+如果还有迁移失败，可重复2、3步骤，直至任务完全成功
+
+<br>

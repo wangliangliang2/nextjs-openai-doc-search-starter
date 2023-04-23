@@ -1,0 +1,21 @@
+消息队列 RocketMQ 提供 .NET SDK 实现消息发送与订阅，您可通过本文了解消息发送和订阅相关接口的参数说明。
+# 通用参数
+| 参数名	| 参数说明 | 
+|----------|-------- |
+| NAMESRV_ADDR	| 设置 TCP 协议接入点，从消息队列 RocketMQ 控制台的实例详情页面获取 | 
+| AccessKey	| 您在消息队列 RocketMQ 控制台中创建的 AccessKey，用于身份认证 | 
+| SecretKey	| 您在消息队列 RocketMQ 控制台中创建的 AccessSecret，用于身份认证 | 
+# 消息发送参数
+
+| 参数名	| 参数说明 | 
+|-------|-------- |
+| ProducerId | 您在消息队列 RocketMQ 控制台上创建的 Group ID，详情参见名词解释 |
+| SendMsgTimeoutMillis	| 设置消息发送的超时时间，单位：毫秒，默认值：3000 | 
+| shardingKey（顺序消息）	| 顺序消息中用来计算不同分区的值 | 
+
+# 消息订阅参数
+| 参数名	| 参数说明	|
+|-------|-------- |
+| ConsumerId	| 您在消息队列 RocketMQ 控制台上创建的 Group ID，详情参见名词解释	|
+| MessageModel	| 设置 Consumer 实例的消费模式，取值说明如下：CLUSTERING（默认值）：表示集群消费 BROADCASTING：表示广播消费	|
+| ConsumeThreadNums	| 设置 Consumer 实例的消费线程数，默认值：20	|

@@ -1,0 +1,77 @@
+# 状态回调
+
+### 功能描述
+短信发送给用户后，将会通过回调业务 URL 的方式，通知业务方用户发送短信的状态。
+
+### 回调方法
+
+HTTP POST
+
+### 回调的内容
+```
+{
+    "items":[{
+        "mobile": "<string>",
+        "message_id": "<string>", // 单条发送的时候返回的 message_id
+        "status": "<string>", // DELIVRD 送达， FAILED 发送失败
+        "delivrd_at": <timestamp>,
+        "error": "<string>", // 当 status 为 FAILED 的时候，会有这个字段，
+        "job_id": "<string>" // 批量发送的时候返回的 job_id
+    }]
+}
+```
+
+#### 状态回调内容示例
+```
+POST https://example.com/sms/status/callback
+Content-Type: application/json
+
+{"items":[{"mobile":"13812345678","message_id":"34114035","status":"DELIVRD","delivrd_at":1558692400}]}
+```
+
+### 返回
+
+业务返回 HTTP 状态码 200 
+
+如果返回不是 200，会在10分钟内自动重试
+
+
+# 上行回调
+
+### 功能描述
+用户收到短信后，回复短信，七牛云短信服务可以通过回调业务 url 的方式，通知业务方用户回复了短信。
+
+### 回调方法
+
+HTTP POST
+
+### 回调内容
+
+```
+{
+	"items": [{
+                "dest_code":"<string>", //用户发送短信的目的号码
+		"mobile": "<string>",   //用户手机号码
+		"content": "<string>",  //短信内容
+		"time": <timestamp>     //用户发送短信时间
+	}]
+}
+```
+
+#### 上行回调内容示例
+```
+POST https://example.com/sms/reply/callback
+Content-Type: application/json
+
+{"items":[{"mobile":"13812345678","content":"TD","time":1558692400, "dest_code":"10692012345678"}]}
+```
+
+### 返回
+
+业务返回 HTTP 状态码 200 
+
+如果返回不是 200，会在10分钟内自动重试
+
+# 如何设置
+
+打开 Portal 控制台：https://portal.qiniu.com/sms/settings 即可设置

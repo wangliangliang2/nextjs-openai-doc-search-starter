@@ -1,0 +1,28 @@
+docker metric用于监控docker的资源占用信息，包括容器个数、占用文件描述符个数等信息。
+
+成功安装logkit登录后，点击右上角的`添加收集器`选择`系统信息收集`,在页面中可以看到相应的docker监控选项。
+
+![](https://dn-odum9helk.qbox.me/Fgwp0T4nIok5tVbvwFlZRdHcuVN9)
+
+打开相应的监控开关之后就可以看到如下所示的配置项：
+
+![](https://dn-odum9helk.qbox.me/Fv-i0i2k1oWIUSz4WHOJwKaWs0dy)
+
+可选的采集信息配置项如下：`docker可用的系统逻辑cpu的个数`,`docker正在使用的文件描述符的个数`,`containers个数`,`running containers个数`,`stopped containers个数`,`paused containers个数`,`本地镜像个数`,`goroutine个数`等。
+
+需要配置的选项如下：
+`服务器连接地址`：选择部署docker的地址。
+`是否收集Swarm metrics(desired_replicas, running_replicas)`：默认为`false`。
+`只收集指定 containers 的监控信息, 为空则收集所有 containers 的监控信息(逗号分隔多个)`：默认为``。
+`指定收集的 container 名称，支持通配符, 为空则默认为所有 containers(逗号分隔多个)`：默认为``。
+`指定不需要收集的 container 名称，支持通配符, 默认为空 (逗号分隔多个)`：默认为``。
+`指定收集的container state，支持通配符，为空默认为 running` 默认为``。
+`指定不需要收集的container state，支持通配符，默认为空`: 默认为``。
+`是否收集每个 container 的 blkio (8:0, 8:1...) 和  network (eth0, eth1, ...) stats`: 默认为`true`。
+`是否收集每个 container 总的 blkio 和 network stats": 默认为`false`。
+`跳过校验SSL证书`: 默认为`false`。
+`证书授权地址`：该选项只有`未跳过SSL证书校验`的时候才会生效，用于填写后缀为.ca的证书授权文件的地址。
+`证书地址`：该选项只有`未跳过SSL证书校验`的时候才会生效，用于填写后缀为.cert的证书文件的地址。
+`私钥文件地址`：该选项只有`未跳过SSL证书校验`的时候才会生效，用于填写后缀为.key的私钥文件的地址。
+
+正确配置以上选项之后，即可启动logkit开始收集数据，收集指标的字段名为docker+docker中相应监控指标的字段名。

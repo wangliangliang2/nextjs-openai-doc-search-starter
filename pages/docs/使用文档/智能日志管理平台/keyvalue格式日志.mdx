@@ -1,0 +1,17 @@
+key value是一种将key和value都写到日志里的格式，常见的一条日志格式类似如下：
+
+```
+at=info method=GET path=/ host=mutelight.org fwd="124.133.52.161" dyno=web.2 connect=4ms service=8ms status=200 bytes=1653
+```
+
+可以看到，其特征是日志的键值对用 `=`(等于)符号连接，不同的键值对中间用空格分隔，如果数据中带有空格，则使用双引号括起来。
+
+如果您有这种格式的日志，可以选择 `logfmt` 直接进行解析。
+
+![](https://dn-odum9helk.qbox.me/FrePmULlxkILI0U99QF8aKnFRLNB)
+
+* 分隔符(`splitter`): 表示日志使用该分隔符分隔键值对。
+
+* 禁止记录解析失败数据(`disable_record_errdata`)：默认为 false，解析失败的数据会默认出现在`pandora_stash`字段，该选项可以禁止记录解析失败的数据。
+
+* 保留原始数据（`keep_raw_data`):默认为`false`，配置此选项之后会保留原始数据在`raw_data`字段下。 

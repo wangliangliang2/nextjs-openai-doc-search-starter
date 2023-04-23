@@ -1,0 +1,417 @@
+# 1. 接口清单
+
+来源类型是Pandora 2.0 对于数据来源进行创建、删除、更新和查询的管理接口。以下是接口的清单：
+
+1. 获取数据来源的分类列表：`GET  /api/v1/category/list`
+2. 创建数据来源：`POST /api/v1/sourcetype/<name>`
+3. 获取数据来源列表：`GET /api/v1/sourcetype?sort=<Sort>&order=<Order>&pageNo=<PageNo>&pageSize=<PageSize>&prefix=<Prefix>`
+4. 获取单个数据来源：`GET /api/v1/sourcetype/<name>`
+5. 删除数据来源：`DELETE /api/v1/sourcetype/<name>`
+6. 更新数据来源：`PUT /api/v1/sourcetype/<name>`
+
+# 2. 接口描述
+
+## 2.1 获取数据来源的分类列表
+
+请求路径：`/api/v1/category/list`
+
+请求方法：`GET`
+
+响应体实例：
+```
+[
+    {
+        "name": "custom",
+        "description": "自定义"
+    },
+    {
+        "name": "web",
+        "description": "Web"
+    },
+    {
+        "name": "application",
+        "description": "应用"
+    },
+    {
+        "name": "metrics",
+        "description": "指标"
+    },
+    {
+        "name": "os",
+        "description": "操作系统"
+    },
+    {
+        "name": "database",
+        "description": "数据库"
+    },
+    {
+        "name": "others",
+        "description": "杂项"
+    },
+    {
+        "name": "email",
+        "description": "电子邮件"
+    },
+    {
+        "name": "login",
+        "description": "登陆"
+    },
+    {
+        "name": "structured",
+        "description": "结构化"
+    }
+]
+```
+响应体解释：
+
+## 2.2 创建数据来源
+请求路径：`/api/v1/sourcetype/<name>`
+
+请求方法：`POST`
+
+参数解释：name 必选，128字符长度
+
+请求体实例：
+```
+body:
+{
+    description:<Description>, // 可选，默认为空串, 32字符长度
+    line:{                         // @tooltip 决定如何从数据流中划分出日志事件
+       type:<auto|single|regex>,   // 必选参数，分别对应自动(多行模式), 单行, 正则分行
+       lineBreaker:"\r?\n",        // @tooltip 换行符（必填），默认为\r?\n
+                                   // 必填参数，lineBreaker默认为\r?\n。
+       "regex": ""                 // 仅regex 模式下，正则分行的正则表达式
+    }
+    datetime:{                     // @tooltip 决定如何从事件中提取时间信息，以作为事件的发生时间
+       type:<auto|now|custom>  // 必选参数，分别对应使用自动(识别日志时间)，当前时间，自定义
+       zoneId: "Asia/Shanghai"   // @tooltip 时区："若日志中存在时区信息，优先使用日志中的时区"
+                               // 可选参数仅用于custom；前端默认值为浏览器的时区。e.g. 东八区应当返回8; 西二区应当返回-2
+       dateTimePrefix:"\\["    // @tooltip 时间戳前缀: "请填入正则表达式，用于定位时间戳在每行日志中的位置，例如：timestamp\\[，参考[正则表达式教程](https://docs.oracle.com/javase/tutorial/essential/regex/)"
+                               // 可选参数仅用于custom，用来定位时间信息在行中的位置，可为空；
+                               // 为空时，默认从每一行的第一个字符开始尝试解析时间信息；不为空时，应当填入正则字符串
+       dateTimeFormat:"HH:mm:ss"// @tooltip 时间戳格式，例如：yyyy-MM-dd'T'HH:mm:ss,SSS Z，参考[时间戳格式文档](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html)
+                               // 可选参数仅用于custom，可为空。
+                               // 若为空，则仍然尝试采用自动时间戳识别；若不为空，则利用输入的诸如"MMM dd HH:mm:ss.SSSSSS yyyy"时间戳格式来解析时间信息。
+       maxDateTimeLength:100    // @tooltip 时间戳长度上限："仅从时间戳前缀之后长度为该大小的子字符串中解析时间戳信息"
+                               // 可选参数仅用于custom，用来表示时间戳可能的最长长度；前端默认值为60. 该长度用来限制时间戳信息在字符串中的搜索范围。
+    }
+    category: <categoryName>, // 必选参数, string
+    advance:{
+       charset:"utf-8",
+       field_discovery: false
+    },
+    "preset": 0,
+    "app": "search",
+    "scope": "global"   
+} 
+```
+请求体字段解释：
+
+|字段|是否必填|字段解释|默认值|
+|-|-|-|-|
+| description |是|数据来源描述，可更新，32字符长度|空|
+| line |是|换行规则，决定如何从数据流中划分出日志事件|无|
+| line.type | 是 | 换行规则，<auto，single，regex> 分别对应自动（多行模式），单行，正则分行 |无 |
+| line.lineBreaker | 是 | 换行符 | \r?\n |
+| line.regex| 否 | 正则分行的正则表达式 | 空 |
+| datetime | 是 | 时间戳，决定如何从事件中提取时间信息，以作为事件的发生时间 | 无| 
+| datetime.type | 是 | 时间类型，<auto，now，custom>分别对应使用自动(识别日志时间)，当前时间，自定义| 无 |
+| datetime.zoneId | 否 | 时区，可选参数仅用于custom，若日志中存在时区信息，优先使用日志中的时区，e.g. 东八区应当返回8; 西二区应当返回-2 | Asia/Shanghai |
+| datetime.dateTimePrefix | 否 | 时间前缀，可选参数仅用于custom，用来定位时间信息在行中的位置，可为空；为空时，默认从每一行的第一个字符开始尝试解析时间信息；不为空时，应当填入正则字符串 ||
+| datetime.dateTimeFormat | 否 | 时间戳格式，可选参数仅用于custom，可为空；若为空，则仍然尝试采用自动时间戳识别 ||
+| datetime.maxDateTimeLength | 否 | 时间戳长度上限，可选参数仅用于custom，用来表示时间戳可能的最长长度，仅从时间戳前缀之后长度为该大小的子字符串中解析时间戳信息 | 100 |
+| category | 是 | 来源分类 |无|
+| advance | 是 | 高级设置 |无|
+| advance.charset | 否 | 字符编码 | 空 |
+| advance.field_discovery | 否 | 字段自动发现 | false |
+| preset | 否 | 是否内置，0表示用户创建，1表示内置 | 0 |
+| app | 否 | 归属的应用名 | search|
+| scope | 否 | 适用范围，目前仅支持global | global |
+
+响应体实例：
+```
+{}
+```
+响应体解释：
+
+## 2.3 获取数据来源列表
+
+请求路径：`/api/v1/sourcetype?sort=<Sort>&order=<Order>&pageNo=<PageNo>&pageSize=<PageSize>&prefix=<Prefix>`
+
+请求方法：`GET`
+
+请求字段解释：
+|字段名|是否必填|字段解释|默认值|
+|-|-|-|-|
+|sort|否|排序字段|updateTime|
+|order|否|排序顺序|desc|
+|pageNo|否|分页信息，第几页|1|
+|pageSize|否|分页信息，每页数据量|10|
+|prefix|否|数据来源关键字|无|
+
+响应体实例：
+
+```
+{
+    "total": 1,
+    "pageNo": 1,
+    "pageSize": 10,
+    "sourcetypes": [
+        {
+            "name": "json",       // 数据来源名称
+            "description": "自动解析 json 格式数据",  // 数据来源描述
+            "line": {             // 换行规则
+                "type": "auto", 
+                "regex": ""
+            },
+            "datetime": {          // 时间戳
+                "type": "now"
+            },
+            "category": {          // 来源分类
+                "name": "structured",
+                "description": "结构化"
+            },
+            "advance": {                 // 高级配置
+                "charset": "utf-8",      // 编码方式
+                "fieldDiscovery": false  // 字段自动发现
+            },
+            "updateTime": 1609139880235, // 更新时间 long值毫秒时间戳
+            "createTime": 1609139880235, // 创建时间 long值毫秒时间戳
+            "preset": 1,
+            "app": "search",
+            "scope": "global"
+        }
+    ]
+}
+```
+响应体解释：
+|字段|字段解释|
+|-|-|
+|total|返回数据来源总数|
+|pageNo|页码|
+|pageSize|每页数据量|
+|sourcetypes|数据来源数组|
+
+## 2.4 获取单个数据来源
+
+请求路径：`/api/v1/sourcetype/<name>`
+
+请求方法：`GET`
+
+响应体实例：
+
+```
+{
+    "name": "json",
+    "description": "自动解析 json 格式数据",
+    "line": {
+        "type": "auto",
+        "regex": ""
+    },
+    "datetime": {
+        "type": "now"
+    },
+    "category": {
+        "name": "structured",
+        "description": "结构化"
+    },
+    "advance": {
+        "charset": "utf-8",
+        "fieldDiscovery": false
+    },
+    "extractions": [        # 字段提取
+        {
+            "id": 1,
+            "name": "json",
+            "sourcetype": "json",
+            "type": "json",
+            "createTime": 1609139880213,
+            "updateTime": 1609139880213,
+            "description": "用于结构化数据 json 类型的解析",
+            "schema": [
+                {
+                    "field": "a"
+                },
+                {
+                    "field": "b"
+                },
+                {
+                    "field": "c"
+                },
+                {
+                    "field": "d{}"
+                },
+                {
+                    "field": "d{}{}"
+                },
+                {
+                    "field": "d{}.da"
+                },
+                {
+                    "field": "d{}.db"
+                },
+                {
+                    "field": "d{}.dc"
+                },
+                {
+                    "field": "e.ea"
+                },
+                {
+                    "field": "e.eb"
+                },
+                {
+                    "field": "e.ec"
+                },
+                {
+                    "field": "e.ed{}"
+                },
+                {
+                    "field": "e.ee.eea"
+                }
+            ],
+            "config": {
+                "pattern": "",
+                "delimiter": ",",
+                "delimiterKv": ":"
+            },
+            "example": {
+                "_raw": "{\"a\": \"a\", \"b\": 1, \"c\": 1.0, \"d\": [\"d\", 1, 1.0, [\"da\", 1, 1.0], {\"da\": \"da\", \"db\": 1, \"dc\": 1.0}], \"e\": {\"ea\": \"ea\", \"eb\": 1, \"ec\": 1.0, \"ed\": [\"ea\", 1, 1.0], \"ee\": {\"eea\": \"eea\"}}}",
+                "marks": [
+                    {
+                        "field": "a",
+                        "start": 0,
+                        "end": 0,
+                        "value": "a"
+                    },
+                    {
+                        "field": "b",
+                        "start": 0,
+                        "end": 0,
+                        "value": 1
+                    },
+                    {
+                        "field": "c",
+                        "start": 0,
+                        "end": 0,
+                        "value": 1
+                    },
+                    {
+                        "field": "d{}",
+                        "start": 0,
+                        "end": 0,
+                        "value": [
+                            "d",
+                            1,
+                            1
+                        ]
+                    },
+                    {
+                        "field": "d{}{}",
+                        "start": 0,
+                        "end": 0,
+                        "value": [
+                            "da",
+                            1,
+                            1
+                        ]
+                    },
+                    {
+                        "field": "d{}.da",
+                        "start": 0,
+                        "end": 0,
+                        "value": "da"
+                    },
+                    {
+                        "field": "d{}.db",
+                        "start": 0,
+                        "end": 0,
+                        "value": 1
+                    },
+                    {
+                        "field": "d{}.dc",
+                        "start": 0,
+                        "end": 0,
+                        "value": 1
+                    },
+                    {
+                        "field": "e.ea",
+                        "start": 0,
+                        "end": 0,
+                        "value": "ea"
+                    },
+                    {
+                        "field": "e.eb",
+                        "start": 0,
+                        "end": 0,
+                        "value": 1
+                    },
+                    {
+                        "field": "e.ec",
+                        "start": 0,
+                        "end": 0,
+                        "value": 1
+                    },
+                    {
+                        "field": "e.ed{}",
+                        "start": 0,
+                        "end": 0,
+                        "value": [
+                            "ea",
+                            1,
+                            1
+                        ]
+                    },
+                    {
+                        "field": "e.ee.eea",
+                        "start": 0,
+                        "end": 0,
+                        "value": "eea"
+                    }
+                ]
+            },
+            "app": "search",
+            "scope": "global",
+            "owner": "",
+            "operations": [],
+            "indexed": false
+        }
+    ],
+    "updateTime": 1609139880235,
+    "createTime": 1609139880235,
+    "preset": 1,
+    "app": "search",
+    "scope": "global"
+}
+```
+响应体解释：
+|字段|是否必填|字段解释|
+|-|-|-|
+|name|是|名称|
+|description|否|描述|
+|line|是|换行规则|
+|datetime|是|时间戳|
+|category|是|来源分类|
+|advance|是|高级配置|
+|extractions|否|字段提取规则|
+|updateTime|是|更新时间|
+|createTime|是|创建时间|
+|preset|否||
+|app|否||
+|scope|否||
+
+
+## 2.5 删除数据来源
+请求路径：`/api/v1/sourcetype/<name>`
+
+请求方法：`DELETE`
+
+请求体字段解释：
+|字段|是否必填|字段解释|
+|-|-|-|
+|name|是|来源名称，20字符长度|
+
+响应体实例：
+
+```
+{}
+```

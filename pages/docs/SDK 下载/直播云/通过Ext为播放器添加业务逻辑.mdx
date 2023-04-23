@@ -1,0 +1,362 @@
+# 通过Ext为播放器添加业务逻辑
+
+当我们的业务逻辑需要获取播放器的某些信息或者要对播放器做某些操作时，我们不得不持有播放器的实例，但是当业务规模不断扩大，就会导致播放器实例还有播放器相关的一些监听得不到很好的管理，最终导致内存泄漏，管理混乱的问题，通过Ext来实现和播放器相关的逻辑，能很好的解决这个问题。
+
+
+
+## 播放环境PlayerEnvironment和逻辑服务Service
+
+播放环境即是一个媒体资源播放时的逻辑服务集合，逻辑服务Service是逻辑的最小单元，一种类型的视频对应一种播放环境，一种环境可以有多个逻辑服务Service，不同的播放环境可以复用同一种逻辑服务Service，这样就完美的做到的逻辑服务的复用。
+
+### 定义一个PlayerToastService
+
+所有的Service都是继承自`IPlayerService`接口
+
+该Service的作用是对于播放器抛上来的一些信息进行toast展示，PlayerToast是Ext框架的一部分，用来在视频区域展示toast，在后续文档中会详细介绍。
+
+```kotlin
+
+class PlayerToastService
+    : IPlayerService<LongLogicProvider, LongPlayableParams, LongVideoParams>, IPlayerToastService,
+    QIPlayerQualityListener, QIPlayerVideoDecodeListener,
+    QIPlayerCommandNotAllowListener, QIPlayerFormatListener, QIPlayerSEIDataListener, QIPlayerAuthenticationListener {
+
+    //mPlayerCore 为播放器的核心对象，一切的播放器核心的交互都依靠他
+    private lateinit var mPlayerCore: CommonPlayerCore<LongLogicProvider, LongPlayableParams, LongVideoParams>
+
+    //服务启动时回调
+    override fun onStart() {
+
+        //绑定清晰度监听
+        mPlayerCore.mPlayerContext.getPlayerControlHandler().addPlayerQualityListener(this)
+        //绑定解码方式监听  
+        mPlayerCore.mPlayerContext.getPlayerControlHandler().addPlayerVideoDecodeTypeListener(this)
+        //绑定操作不被允许监听  
+        mPlayerCore.mPlayerContext.getPlayerControlHandler().addPlayerCommandNotAllowListener(this)
+        //绑定格式不支持监听
+        mPlayerCore.mPlayerContext.getPlayerControlHandler().addPlayerFormatListener(this)
+        //绑定SEI回调监听   
+        mPlayerCore.mPlayerContext.getPlayerControlHandler().addPlayerSEIDataListener(this)
+        //绑定鉴权回调监听   
+        mPlayerCore.mPlayerContext.getPlayerControlHandler().addPlayerAuthenticationListener(this)
+    }
+
+    //服务结束时回调
+    override fun onStop() {
+       
+        //移除所有监听
+        mPlayerCore.mPlayerContext.getPlayerControlHandler().removePlayerQualityListener(this)
+        mPlayerCore.mPlayerContext.getPlayerControlHandler().removePlayerVideoDecodeTypeListener(this)
+        mPlayerCore.mPlayerContext.getPlayerControlHandler().removePlayerCommandNotAllowListener(this)
+        mPlayerCore.mPlayerContext.getPlayerControlHandler().removePlayerFormatListener(this)
+        mPlayerCore.mPlayerContext.getPlayerControlHandler().removePlayerSEIDataListener(this)
+        mPlayerCore.mPlayerContext.getPlayerControlHandler().removePlayerAuthenticationListener(this)
+    }
+
+    //Service启动前都会调用该方法，在此方法中保存playerCore
+    override fun bindPlayerCore(playerCore: CommonPlayerCore<LongLogicProvider, LongPlayableParams, LongVideoParams>) {
+        mPlayerCore = playerCore
+    }
+
+    override fun onQualitySwitchStart(
+        userType: String,
+        urlType: QURLType,
+        newQuality: Int,
+        oldQuality: Int
+    ) {
+        val toast = PlayerToast.Builder()
+            .toastItemType(PlayerToastConfig.TYPE_NORMAL)
+            .location(PlayerToastConfig.LOCAT_LEFT_SIDE)
+            .setExtraString(PlayerToastConfig.EXTRA_TITLE, "清晰度开始切换至$newQuality,请稍候...")
+            .duration(PlayerToastConfig.DURATION_3)
+            .build()
+        mPlayerCore.playerToastContainer?.showToast(toast)
+    }
+
+    override fun onQualitySwitchComplete(
+        userType: String,
+        urlType: QURLType,
+        newQuality: Int,
+        oldQuality: Int
+    ) {
+        val toast = PlayerToast.Builder()
+            .toastItemType(PlayerToastConfig.TYPE_NORMAL)
+            .location(PlayerToastConfig.LOCAT_LEFT_SIDE)
+            .setExtraString(PlayerToastConfig.EXTRA_TITLE, "清晰度已成功切换至【$newQuality】")
+            .duration(PlayerToastConfig.DURATION_3)
+            .build()
+        mPlayerCore.playerToastContainer?.showToast(toast)
+    }
+
+    override fun onQualitySwitchCanceled(
+        userType: String,
+        urlType: QURLType,
+        newQuality: Int,
+        oldQuality: Int
+    ) {
+        val toast = PlayerToast.Builder()
+            .toastItemType(PlayerToastConfig.TYPE_NORMAL)
+            .location(PlayerToastConfig.LOCAT_LEFT_SIDE)
+            .setExtraString(PlayerToastConfig.EXTRA_TITLE, "清晰度【$newQuality】切换取消")
+            .duration(PlayerToastConfig.DURATION_3)
+            .build()
+        mPlayerCore.playerToastContainer?.showToast(toast)
+    }
+
+    override fun onQualitySwitchFailed(
+        userType: String,
+        urlType: QURLType,
+        newQuality: Int,
+        oldQuality: Int
+    ) {
+        val toast = PlayerToast.Builder()
+            .toastItemType(PlayerToastConfig.TYPE_NORMAL)
+            .location(PlayerToastConfig.LOCAT_LEFT_SIDE)
+            .setExtraString(PlayerToastConfig.EXTRA_TITLE, "清晰度切换至【$newQuality】失败")
+            .duration(PlayerToastConfig.DURATION_3)
+            .build()
+        mPlayerCore.playerToastContainer?.showToast(toast)
+    }
+
+    override fun onQualitySwitchRetryLater(userType: String, urlType: QURLType, newQuality: Int) {
+        val toast = PlayerToast.Builder()
+            .toastItemType(PlayerToastConfig.TYPE_NORMAL)
+            .location(PlayerToastConfig.LOCAT_LEFT_SIDE)
+            .setExtraString(PlayerToastConfig.EXTRA_TITLE, "正在切换中请稍后再试")
+            .duration(PlayerToastConfig.DURATION_3)
+            .build()
+        mPlayerCore.playerToastContainer?.showToast(toast)
+    }
+
+    override fun onVideoDecodeByType(type: QPlayerDecodeType) {
+
+        val type = when(type) {
+            QPlayerDecodeType.NONE -> "无"
+            QPlayerDecodeType.FIRST_FRAME_ACCEL -> "混解"
+            QPlayerDecodeType.HARDWARE_BUFFER -> "buffer硬解"
+            QPlayerDecodeType.HARDWARE_SURFACE -> "surface硬解"
+            QPlayerDecodeType.SOFTWARE -> "软解"
+
+            else -> "无"
+        }
+        val toast = PlayerToast.Builder()
+            .toastItemType(PlayerToastConfig.TYPE_NORMAL)
+            .location(PlayerToastConfig.LOCAT_LEFT_SIDE)
+            .setExtraString(PlayerToastConfig.EXTRA_TITLE, "解码器类型：$type")
+            .duration(PlayerToastConfig.DURATION_3)
+            .build()
+        mPlayerCore.playerToastContainer?.showToast(toast)
+    }
+
+    override fun notSupportCodecFormat(codecId: Int) {
+        val toast = PlayerToast.Builder()
+            .toastItemType(PlayerToastConfig.TYPE_NORMAL)
+            .location(PlayerToastConfig.LOCAT_LEFT_SIDE)
+            .setExtraString(PlayerToastConfig.EXTRA_TITLE, "不支持的编码类型：$codecId")
+            .duration(PlayerToastConfig.DURATION_3)
+            .build()
+        mPlayerCore.playerToastContainer?.showToast(toast)
+    }
+
+    override fun onCommandNotAllow(commandName: String, state: QPlayerState) {
+        val toast = PlayerToast.Builder()
+            .toastItemType(PlayerToastConfig.TYPE_NORMAL)
+            .location(PlayerToastConfig.LOCAT_LEFT_SIDE)
+            .setExtraString(PlayerToastConfig.EXTRA_TITLE, "not allow $commandName 状态:$state")
+            .duration(PlayerToastConfig.DURATION_3)
+            .build()
+        mPlayerCore.playerToastContainer?.showToast(toast)
+    }
+
+    override fun onFormatNotSupport() {
+        val toast = PlayerToast.Builder()
+            .toastItemType(PlayerToastConfig.TYPE_NORMAL)
+            .location(PlayerToastConfig.LOCAT_LEFT_SIDE)
+            .setExtraString(PlayerToastConfig.EXTRA_TITLE, "流中有播放器不支持的像素格式或音频sample格式")
+            .duration(PlayerToastConfig.DURATION_3)
+            .build()
+        mPlayerCore.playerToastContainer?.showToast(toast)
+    }
+
+    override fun onSEIData(data: ByteArray) {
+        val toast = PlayerToast.Builder()
+            .toastItemType(PlayerToastConfig.TYPE_NORMAL)
+            .location(PlayerToastConfig.LOCAT_LEFT_SIDE)
+            .setExtraString(PlayerToastConfig.EXTRA_TITLE, "SEI DATA:${data.decodeToString()}")
+            .duration(PlayerToastConfig.DURATION_3)
+            .build()
+        Log.i("PlayerToastService", "SEI DATA:${data}")
+        mPlayerCore.playerToastContainer?.showToast(toast)
+    }
+
+    override fun on_authentication_failed(error_type: QAuthenticationErrorType) {
+        val toast = PlayerToast.Builder()
+            .toastItemType(PlayerToastConfig.TYPE_NORMAL)
+            .location(PlayerToastConfig.LOCAT_LEFT_SIDE)
+            .setExtraString(PlayerToastConfig.EXTRA_TITLE, "Qplayer2鉴权失败-${error_type}")
+            .duration(PlayerToastConfig.DURATION_3)
+            .build()
+        Log.e("PlayerToastService", "Qplayer2鉴权失败-${error_type}")
+
+        mPlayerCore.playerToastContainer?.showToast(toast)
+    }
+
+    override fun on_authentication_success() {
+        val toast = PlayerToast.Builder()
+            .toastItemType(PlayerToastConfig.TYPE_NORMAL)
+            .location(PlayerToastConfig.LOCAT_LEFT_SIDE)
+            .setExtraString(PlayerToastConfig.EXTRA_TITLE, "Qplayer2鉴权成功")
+            .duration(PlayerToastConfig.DURATION_3)
+            .build()
+        Log.e("PlayerToastService", "Qplayer2鉴权成功")
+        mPlayerCore.playerToastContainer?.showToast(toast)
+    }
+}
+```
+### 定义 ServiceOwner
+除了Service，还要实现一个`PlayerToastServiceOwner`,他是类似一个创建销毁的管理器，所有的ServiceOwner都可以按照以下模板实现，且都是继承自`IPlayerServiceOwner`
+```kotlin
+
+class PlayerToastServiceOwner :
+    IPlayerServiceOwner<LongLogicProvider, LongPlayableParams, LongVideoParams> {
+	//该serivce的名字，用户自行定义，用于和Enviroment绑定
+    override val name: String
+        get() = ServiceOwnerType.PLAYER_TOAST_SERVICE.type
+
+    private val mPlayerToastServiceClient: PlayerServiceManager.Client<PlayerToastService, LongLogicProvider, LongPlayableParams, LongVideoParams> =
+        PlayerServiceManager.Client()
+
+    override fun start(serviceManager: IPlayerServiceManager<LongLogicProvider, LongPlayableParams, LongVideoParams>) {
+        serviceManager.bindService(
+            PlayerServiceManager.ServiceDescriptor.obtain(
+                PlayerToastService::class.java
+            ), mPlayerToastServiceClient
+        )
+    }
+
+    override fun stop(serviceManager: IPlayerServiceManager<LongLogicProvider, LongPlayableParams, LongVideoParams>) {
+        serviceManager.unbindService(
+            PlayerServiceManager.ServiceDescriptor.obtain(
+                PlayerToastService::class.java
+            ), mPlayerToastServiceClient
+        )
+    }
+
+    override fun <T> service(): T {
+        return mPlayerToastServiceClient.service as T
+    }
+```
+
+### 定义Enviroment
+Service定义完后，可以定义我们的Enviroment，然后合我们的Serivice绑定，所有的Enviroment都是继承自`ICommonPlayerEnvironment`
+
+```kotlin
+class LongPlayerEnviroment :
+    ICommonPlayerEnvironment<LongLogicProvider, LongPlayableParams, LongVideoParams> {
+
+    private lateinit var mPlayerCore: CommonPlayerCore<LongLogicProvider, LongPlayableParams, LongVideoParams>
+
+    //环境的名称，用户自行定义，用户和LongPlayableParams进行绑定
+    override val name: String
+        get() = LongEnviromentType.LONG.type
+
+    //该环境所有的Service集合
+    override val serviceTypes: Set<String> =
+        setOf(
+            ServiceOwnerType.PLAYER_TOAST_SERVICE.type
+        )
+
+    //播放事件回调  ，此处绑定的是播放元素起播前的回调，在起播前动态设置起播的位置
+    private val mVideoPlayEventListener = object : ICommonPlayerVideoSwitcher.ICommonVideoPlayEventListener<LongPlayableParams, LongVideoParams> {
+        override fun onPlayableParamsWillChange(oldPlayableParams: LongPlayableParams?,
+                                                oldVideoParams: LongVideoParams?,
+                                                newPlayableParams: LongPlayableParams,
+                                                newVideoParams: LongVideoParams,
+                                                switchVideoParams: Bundle?) {
+
+            newPlayableParams.startPos = PlayerSettingRespostory.startPosition
+
+        }
+    }
+    
+    //环境启动
+    override fun start() {
+        //绑定播放事件回调       
+        mPlayerCore.mCommonPlayerVideoSwitcher.addVideoPlayEventListener(mVideoPlayEventListener)
+
+    }
+
+    //环境停止
+    override fun stop() {
+        //解除播放事件回调
+        mPlayerCore.mCommonPlayerVideoSwitcher.removeVideoPlayEventListener(mVideoPlayEventListener)
+    }
+
+    //用户自定义鉴权，返回true说明可以播放，返回false 则无法播放
+    override fun authentication(
+        playableParams: LongPlayableParams,
+        videoParams: LongVideoParams?
+    ): Boolean {
+        return true
+    }
+
+
+    //启动之前回调，保存playerCore
+    override fun bindPlayerCore(playerCore: CommonPlayerCore<LongLogicProvider, LongPlayableParams, LongVideoParams>) {
+        mPlayerCore = playerCore
+    }
+}
+```
+
+### 将Enviroment和LongPlayableParams绑定
+在`CommonPlayableParams`中有个参数是`environmentType`，将其设置为`LongPlayerEnviroment.name`，那么当该播放元素播放时，LongPlayerEnviroment内的所有Service就会启动
+
+### 将Enviroment配置进播放器
+同样通过config来进行配置
+```
+val config = CommonPlayerConfig.Builder<Any,
+                LongLogicProvider, LongPlayableParams, LongVideoParams>()
+           .addEnviroment(LongEnviromentType.LONG.type,
+                LongPlayerEnviroment())
+```
+至此 我们的业务逻辑添加完成。
+
+### 如何Service外部调用Service的方法
+我们现在的业务逻辑都是在Service中去实现，某些情况下，我们在其他地方需要修改Service的一些配置 我们该怎么做呢
+
+我们以demo中的`PlayerControlPanelContainerVisibleService`为例，这个Serice的作用是控制面板的展示隐藏时机，当用户5秒内不操作面板，则面板在5秒后隐藏，如果用户点击视频则展示面板，但是当用户在拖动进度条时，我们就要禁用这个自动隐藏的逻辑。所以需要一个开关控制是否自动隐藏逻辑生效，然后由进度条控件来动态设置这个开关。
+
+首先我们定一个接口，用来给到外部使用
+```kotlin
+interface IPlayerControlPanelContainerVisibleService {
+    fun setAutoHideEnable(enable: Boolean)
+}
+```
+并且在`PlayerControlPanelContainerVisibleService`去实现这个接口
+```kotlin
+override fun setAutoHideEnable(enable: Boolean) {
+        mIsAutoHideEnable = enable
+        if (!mIsAutoHideEnable) {
+            HandlerThreads.remove(HandlerThreads.THREAD_UI, mHideRunnable)
+        }
+    }
+```
+之后我们就能在进度条控件`CommonPlayerSeekWidget`中去调用这个接口了
+```kotlin
+ override fun onStartTrackingTouch(seekBar: SeekBar?) {
+        //获取对应的service
+        val service = mPlayerCore.getPlayerEnviromentServiceManager().getPlayerService<IPlayerControlPanelContainerVisibleService>(
+          ServiceOwnerType.PLAYER_CONTROL_PANEL_CONTATINER_VISIBLE_SERVICE.type
+        )
+        //调用接口 
+        service?.setAutoHideEnable(false)
+        mIsTrackingTouch = true
+    }
+```
+
+### 有多个Enviroment时，他们在切换时，Service的启动和停止是怎么调用的
+假设有2个Enviroment
+- AEnviroment：Service1， Service2， Service3， Service4 
+- BEnviroment：Service2， Service3， Service4， Service5
+
+那么当AEnviroment切换成BEnviroment时，Service1会回调stop方法，Service5会回调start方法，Service2， Service3， Service4 不会回调任何生命周期的方法

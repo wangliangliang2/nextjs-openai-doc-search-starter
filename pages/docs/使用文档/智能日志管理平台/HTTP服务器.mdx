@@ -1,0 +1,55 @@
+# 配置参数说明
+1. `http_sender_url`: 必填, post 请求发送的路径，路径支持 `https` 地址
+1. `http_sender_gzip`: 选填, 发送时启用 `gzip`, 默认开启
+1. `http_sender_protocol`: 选填, 发送的数据格式, 有 `json` 、 `csv`、`body_json`、`raw` 四种选择, 默认为 `json`
+1. `http_sender_csv_head`: 选填, 若值为 `true`, 则使用 `csv` 发送时第一行为每一列的列名称, 默认为 `true`
+1. `http_sender_csv_split`: 选填, 使用 `csv` 发送时, 不同列之前的分隔符, 默认为 `\t`
+1. `http_sender_escape_html`: 选填，默认为true，表示传输时对html里的<>等字符进行转义，若值为false，则传输中不进行转义
+1. `http_sender_template`: 选填，自定义数据模板，渲染自定义的数据模板，使用"{{key}}"作为占位符，key为需要发送的字段名，渲染后为该字段的值。目前仅支持json和body_json两种数据格式
+
+## `csv` 格式的数据样例
+
+`http_sender_csv_head` 为 true 时，
+
+```
+name timestamp value age
+jack 1529980502 hehe 21
+mark 1529980413 nini 19
+yell 1529980123 xsxs 30
+```
+
+`http_sender_csv_head` 为 false 时，
+
+```
+jack 1529980502 hehe 21
+mark 1529980413 nini 19
+yell 1529980123 xsxs 30
+```
+
+## `json` 格式的数据样例
+
+```
+{"name":"jack","timestamp":1529980502,"value":"hehe","age":21}
+{"name":"mark","timestamp":1529980413,"value":"nini","age":19}
+{"name":"yell","timestamp":1529980123,"value":"xsxs","age":30}
+```
+
+选择 `json` 格式后，http sender的 body 每行都是一个json，多行用换行符`\n`分隔，读取时请按行读取，对于单行按json格式解析。
+
+## `body_json` 格式的数据样例
+
+```
+[{"name":"jack","timestamp":1529980502,"value":"hehe","age":21},
+{"name":"mark","timestamp":1529980413,"value":"nini","age":19},
+{"name":"yell","timestamp":1529980123,"value":"xsxs","age":30}]
+```
+
+选择 `body_json`格式表示整个发送的body都是json格式
+
+
+## `raw` 格式数据说明
+
+`raw`格式必须在解析时选择 原始数据按行解析(`raw`)方式，然后我们会数据{"raw":"<your_raw_log>"} 部分中key为 raw 的数据拿出来，即 `<your_raw_log>` 取出来放到HTTP body中post出去。
+ 
+
+如果希望数据是json, 为了使得读取更高效，我们建议您选择 `json`而非 `body_json`,因为 `json`可以按行读，然后异步解析，而`body_json`不得不全部body读取完毕后再开始解析。

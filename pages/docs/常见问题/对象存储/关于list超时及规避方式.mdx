@@ -1,0 +1,27 @@
+一个空间存放了大量的文件，这个数量很大，用户 list 出一部分文件批量删除空间的大量文件，然后再次调用 list 接口整个空间的文件名，list 失败并报超时错误。  
+
+**问题截图（Java版本）：**
+
+![blob.png](https://oi2ix6x26.qnssl.com/attachments/download/801183/001577618de0aef5121b9e4463de8a1/?filename=blob.png)
+
+遇到这个问题时，请修改如下配置文件的超时时间，改到 200s；或者使用 [qshell](http://developer.qiniu.com/code/v6/tool/qshell.html) 工具，使用 [listbucket](https://github.com/qiniu/qshell/wiki/listbucket) 命令对空间文件名打印输出。
+
+![blob.png](https://oi2ix6x26.qnssl.com/attachments/download/801172/0015776180fdf67e8fae770f8799c3b/?filename=blob.png)
+
+如果依然显示超时，原因如下：
+
+在七牛的存储系统中，当用户调用 list 接口时，系统程序会先查看 marker 参数是否为空，如果为空，则起点位置设为整个空间的第一个文件，然后过滤整个空间的所有文件名并返回。
+
+每当用户删除了大量文件，这时用户调用 list 接口，系统还是先查看 marker 字段是否为空，如果为空，则开始过滤已经被标记删除文件的信息， **如果删除的文件很多，系统会过滤很长时间，list等待时间过长，导致list失败** 。
+
+**规避方式：** 
+
+调用 list 接口时，设置 marker 参数，指定 list 标记位置，如此系统不会过滤之前被删除的文件，而之间从标记位置遍历下去。
+
+
+**本文涉及接口：**
+
+- [资源列举(list)](/kodo/api/list)
+
+- [资源删除(delete)](/kodo/api/delete)
+

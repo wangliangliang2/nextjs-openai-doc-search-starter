@@ -1,0 +1,43 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `POST` /api/rio/v1/network/vpc/:id/vswitch
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id              | string | header | 是 | 地域 ID
+id                    | string | path | 是 | 专有网络 ID
+vswitch_name           | string | body | 是 | 交换机名称
+vswitch_cidr            | string | body | 是 | 交换机网段。交换机网段要求如下：交换机的网段的掩码长度范围为16~29位；交换机的网段必须从属于所在VPC的网段；交换机的网段不能与所在VPC中路由条目的目标网段相同，但可以是目标网段的子集。
+description            | string | body | 否 | 交换机描述
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+data	| VSwitchRes    | 创建交换机返回
+
+## VSwitchRes
+名称 | 类型 |  描述
+----- | ----- | -----
+vswitch_id	| string    | 交换机 ID
+
+## 请求示例
+```json
+{
+    "vswitch_name":"S-9XhIA",
+    "vswitch_cidr":"192.168.0.0/24"
+}
+```
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEhb-j5IKyMkW",
+    "data": {
+       "vswitch_id": "148475f9-13d7-4183-acc5-c0c56d9fa4f5"
+    }
+}
+```

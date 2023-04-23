@@ -1,0 +1,31 @@
+本文以Linux操作系统的客户端为例介绍如何通过VPN网关拨号接入VPC。
+![image.png](https://dn-odum9helk.qbox.me/Fo9jC2DkkzkhF5YBe3hYLqDeqfzD)
+# 开始之前
+在部署VPN网关前，确保您的环境满足以下条件：
+
+- 本地设备和VPC的私网IP地址段不能相同，否则无法通信。
+- 客户端必须能访问Internet。
+
+# 步骤一：创建VPN网关
+1. 登录[控制台](https://portal.qiniu.com/qvm/network/vpnGateway)。
+2. 在左侧导航栏，单击VPN网关 。
+3. 在VPN网关页面，单击创建VPN网关。
+4. 在购买页面，配置VPN网关，然后单击立即购买完成支付。
+注：选择VPN网关的地域时，确保VPC的地域和VPN网关的地域相同。
+
+# 步骤二：创建SSL服务端
+# 步骤三：创建并下载SSL客户端证书
+# 步骤四：客户端配置
+完成以下操作，配置Linux客户端。
+1. 执行以下命令安装OpenVPN客户端。
+``` 
+yum install -y openvpn
+```
+2. 将步骤三中下载的证书解压拷贝到/etc/openvpn/conf/目录。
+3. 执行以下命令启动Openvpn客户端软件。
+``` 
+openvpn --config /etc/openvpn/conf/config.ovpn --daemon
+```
+# 步骤五：连接测试
+在客户端ping已连接的VPC内的一台QVM实例，测试连通性。
+注：确保测试的ECS实例的安全组规则允许客户端远程连接。

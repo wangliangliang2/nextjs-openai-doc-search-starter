@@ -1,0 +1,299 @@
+# 取指定用户的最近会话列表
+## 基本信息
+```
+GET /message/unread
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+获取用户最近的会话列表。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "conversation_id": {  //会话ID 信息
+                "uid":1, //会话ID。若是用户会话，则是用户id；若是群会话，则是群ID。
+                "device_sn":123 //设备ID
+            },
+            "num":3      //未读计数
+        }
+    ]
+}
+```
+
+			  
+# 删除用户的指定会话
+## 基本信息
+```
+DELETE /message/conversation
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+删除用户指定的会话。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称         | 类型      | 必须  | 备注  |
+| ------------    | -------  | ---- | ------------ |
+| conversation_id | integer  |  是  |  会话ID |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+            
+# 取指定会话的消息
+## 基本信息
+```
+GET /message/conversation
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+
+### 接口描述
+取指定会话的历史消息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称         | 类型      | 必须  | 备注  |
+| ------------    | -------  | ---- | ------------ |
+| opposite_id     | integer  |  是  |  会话ID |
+| msg_id_start    | integer |  否 | 从哪条消息开始拉取：传0表示最新的一条消息 |
+| limit           | integer |  否 | 最多拉取多少条 |
+
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "is_last":false, //是否是最后一条消息: true - 表示后面没有消息了， false - 后面还有消息
+        "next_msg_id",   //继续拉取需要设置的消息ID, 将此消息ID设置到请求参数的msg_id_start即可继续拉取消息
+        "messages": [
+            {
+                "msg_id":12345678, //消息ID,
+                "ctype":"TEXT",    //消息内容类型: TEXT - 文本, IMAGE - 图片, AUDIO - 语音, VIDEO - 视频, FILE - 文件, LOCATION - 位置, COMMAND - 自定义， FORWARD 转发消息
+                "content":"",    //消息内容
+                "attachment":"", //消息附件: 消息类型为图片/语音/视频/文件时，此字段会包括文件地址
+                "config":"",     //SDK层使用的扩展字段
+                "timestamp":1658745473000, //消息发送时间戳（毫秒）
+                "status":"READ", //消息状态：UNREAD- 未读 ，DELIVERED - 已投递 ， READ - 已读
+                "from_xid":{ //消息发送者
+                    "uid": 123   //发送者userId
+                    "device_sn":123, //设备序号
+                },
+                "to_xid":{ //消息接受者
+                    "uid":456  //接受者用户ID，或者群ID
+                    "device_sn":123, //设备序号
+                }
+            }
+        ]
+    }
+}
+```
+
+
+# 发送已读回执
+## 基本信息
+```
+GET /message/ack
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+发送已读消息回执。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+| 参数名称         |  类型     | 必须  | 备注  |
+| ------------    | ---      | ---- | ------------ |
+| conversation_id | integer  |  是  |  会话ID |
+| device_sn       | integer  |  是  |  设备SN |
+| msg_id          | integer  |  是  |  消息ID |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+            
+# 发送消息
+## 基本信息
+```
+POST /message/send
+PUT  /message/send
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+发送消息
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "transaction_id	":12345, //请求ID，用于消息去重， 如果短时间内收到2个相同transaction_id的请求，第二次请求不会被执行。 如果不设置就不会被去重
+    "type":1,              //目标类型，1 - 普通用户，2 - 群组
+    "from_user_id":1,      //发送者的用户ID
+    "targets":[123,456],   //接受者的用户ID，或者群ID 列表。
+    "content_type":0,      //消息类型 TEXT = 0;IMAGE = 1;AUDIO = 2;VIDEO = 3;FILE = 4;LOCATION = 5;COMMAND = 6;FORWARD = 7;
+    "content":"<content>"，//消息内容
+    "ext":"<ext info>",    //扩展信息
+    "config":"<config info>", //SDK 使用的配置信息
+    "attachment":"<attachment>" //附件信息
+}
+```
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+            
+# 发送系统通知
+### 基本信息
+```
+POST /message/notify
+PUT  /message/notify
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+发送系统通知。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "transaction_id	":12345, //请求ID，用于消息去重， 如果短时间内收到2个相同transaction_id的请求，第二次请求不会被执行。 如果不设置就不会被去重
+    "type":1,              //目标类型，1 - 普通用户，2 - 群组
+    "from_user_id":1,      //发送者的用户ID
+    "targets":[123,456],   //接受者的用户ID，或者群ID 列表。
+    "content_type":0,      //消息类型 TEXT = 0;IMAGE = 1;AUDIO = 2;VIDEO = 3;FILE = 4;LOCATION = 5;COMMAND = 6;FORWARD = 7;
+    "content":"<content>"，//消息内容
+    "ext":"<ext info>",    //扩展信息
+    "config":"<config info>", //SDK 使用的配置信息
+    "attachment":"<attachment>" //附件信息
+}
+```
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+# 撤回消息
+### 基本信息
+```
+POST /message/recall
+PUT  /message/recall
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+撤回消息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "conversation_id":12345, //会话ID
+    "msg_id":1              //消息ID
+}
+```
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```

@@ -1,0 +1,236 @@
+# **简介**
+
+**imageMogr2** 提供一系列高级图片处理功能，本文介绍 **图片裁剪**，可与 **imageMogr2** 的其他参数一起使用，详细的计费说明请参见 [计费与定价](https://www.qiniu.com/prices/dora?source=dora)。
+
+
+
+## **限制说明**
+
+- 原图限制
+  - 原图格式支持： `psd`、`jpeg`、`png`、`gif`、`webp`、`tiff`、`bmp`、`avif`、`heif`（webp动图，仅支持持久化处理）
+- 输出限制
+  - 如果您有多张多帧 gif 图片需要处理，可在图片上传完成后异步进行预转，这样不必在初次访问时进行图片处理，访问速度更快。建议优先使用[持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop)
+- 同步处理
+  - 同步处理只支持 20MB 以内的图片，超过 20MB 的图片需要使用持久化处理
+  - 同步处理前的gif最大帧数为 200
+  - 同步处理前的图片`w`和`h`参数不能超过3万像素，总像素不能超过1.5亿像素
+  - 同步处理后的图片`w`和`h`参数不能超过9999像素，总像素不得超过24999999（2500w-1）像素
+- 持久化处理
+  - 持久化处理无大小限制
+  - 处理前的`gif`、`webp动图`，最大帧数为 500
+  - 持久化处理前的图片`w`和`h`参数不能超过3万像素，总像素不能超过1.5亿像素
+  - 持久化处理后的图片`w`和`h`参数不能超过14999像素，总像素不得超过59999999（6000w-1）像素
+
+
+
+# **参数说明**
+
+**注意**：接口规格不含任何空格与换行符。  
+
+```
+imageMogr2/crop
+```
+
+## 裁剪操作参数表 (cropsize)
+
+| 参数名称                      | 必填 | 说明                                                         |
+| ----------------------------- | ---- | ------------------------------------------------------------ |
+| `/crop/<Width>x`              |      | 指定目标图片宽度，高度不变。取值范围为0-10000。              |
+| `/crop/x<Height>`             |      | 指定目标图片高度，宽度不变。取值范围为0-10000。              |
+| `/crop/<Width>x<Height>`      |      | 同时指定目标图片宽高。取值范围为0-10000。                    |
+| `/ignore-error/<ignoreError>` |      | 取值为 1 时，则处理失败时返回原图；取值为 0 时，则处理失败时返回错误信息。默认值为 0。 |
+
+## 裁剪偏移参数表 (cropoffset)
+
+| 参数名称                      | 必填 | 说明                                                         |
+| ----------------------------- | ---- | ------------------------------------------------------------ |
+| `/crop/!{cropsize}a<dx>a<dy>` |      | 相对于偏移锚点，向右偏移dx个像素，同时向下偏移dy个像素。取值范围不限，小于原图宽高即可。 |
+| `/crop/!{cropsize}-<dx>a<dy>` |      | 相对于偏移锚点，从指定宽度中减去dx个像素，同时向下偏移dy个像素。取值范围不限，小于原图宽高即可。 |
+| `/crop/!{cropsize}a<dx>-<dy>` |      | 相对于偏移锚点，向右偏移dx个像素，同时从指定高度中减去dy个像素。取值范围不限，小于原图宽高即可。 |
+| `/crop/!{cropsize}-<dx>-<dy>` |      | 相对于偏移锚点，从指定宽度中减去dx个像素，同时从指定高度中减去dy个像素。取值范围不限，小于原图宽高即可。 |
+
+**示例**
+
+- /crop/!300x400a10a10 表示从源图坐标为 x:10,y:10 处截取 300x400 的子图片。
+- /crop/!300x400-10a10 表示从源图坐标为 x:0,y:10 处截取 290x400 的子图片。
+
+**注意**
+
+- 必须同时指定横轴偏移和纵轴偏移。  
+- `thumbnail` 和 `crop` 之间的操作可以[管道]()处理，即可以先对图进行缩略再裁剪，或者先裁剪再缩略。
+- `gravity` 会使其后的裁剪偏移 `cropoffset` 受到影响，建议放在 ` /crop ` 参数之前。
+- 计算偏移值会受到位置偏移指示符 ` /gravity/ ` 的影响。默认为相对于左上角 NorthWest 计算偏移值，参考 `重心参数表`。  
+
+## 重心参数表
+
+在图片高级处理现有的功能中只影响其后的[裁剪操作参数表](#imagemogr2-crop-size-spec)，即裁剪操作以 gravity 为原点开始偏移后，进行裁剪操作。
+
+```
+NorthWest     |     North      |     NorthEast
+              |                |    
+              |                |    
+--------------+----------------+--------------
+              |                |    
+West          |     Center     |          East 
+              |                |    
+--------------+----------------+--------------
+              |                |    
+              |                |    
+SouthWest     |     South      |     SouthEast
+```
+
+## 转义说明
+
+部分参数以 `!` 开头，表示参数将被转义。为便于阅读，我们采用特殊转义方法，如下所示：
+
+```
+p => % (percent)
+r => ^ (reverse)
+a => + (add)
+```
+
+即`!50x50r` 实际代表 50x50^ 这样一个字符串。而`!50x50`实际代表 50x50 这样一个字符串（该字符串并不需要转义）。<imageSizeAndOffsetGeometry> 中的 OffsetGeometry 部分可以省略，默认为 +0+0。即 /crop/50x50 等价于 /crop/!50x50a0a0，执行 -crop 50x50+0+0 语义。
+
+
+
+# **示例**
+
+**0.** 原图
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg)
+
+**1.** 生成 300x427 裁剪图
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/300x
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/300x)
+
+**2.** 生成 640x200 裁剪图
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/x200
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/x200)
+
+**3.** 生成 300x300 裁剪图
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/300x300
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/300x300)
+
+**4.** 生成 300x300 裁剪图，偏移距离 30x100
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/!300x300a30a100
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/!300x300a30a100)
+
+**5.** 生成 300x200 裁剪图，偏移距离 30x0
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/!300x300a30-100
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/!300x300a30-100)
+
+**6.** 生成 270x300 裁剪图，偏移距离 0x100
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/!300x300-30a100
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/!300x300-30a100)
+
+**7.** 生成 270x200 裁剪图，偏移距离 0x0
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/!300x300-30-100
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/crop/!300x300-30-100)
+
+**8.** 锚点在左上角 (NorthWest)，生成 300x300 裁剪图
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/NorthWest/crop/300x300
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/NorthWest/crop/300x300)
+
+**9.** 锚点在正上方 (North)，生成 300x300 裁剪图
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/North/crop/300x300
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/North/crop/300x300)
+
+**10.** 锚点在右上角 (NorthEast)，生成 300x300 裁剪图
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/NorthEast/crop/300x300
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/NorthEast/crop/300x300)
+
+**11.** 锚点在正左方 (West)，生成 300x300 裁剪图
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/West/crop/300x300
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/West/crop/300x300)
+
+**12.** 锚点在正中 (Center)，生成 300x300 裁剪图
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/Center/crop/300x300
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/Center/crop/300x300)
+
+**13.** 锚点在正右方 (East)，生成 300x300 裁剪图
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/East/crop/300x300
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/East/crop/300x300)
+
+**14.** 锚点在左下角 (SouthWest)，生成 300x300 裁剪图
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/SouthWest/crop/300x300
+
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/SouthWest/crop/300x300)
+
+**15.** 锚点在正下方 (South)，生成 300x300 裁剪图
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/South/crop/300x300
+
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/South/crop/300x300)
+
+**16.** 锚点在右下角 (SouthEast)，生成 300x300 裁剪图
+
+```
+https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/SouthEast/crop/300x300
+
+```
+
+![img](https://dn-odum9helk.qbox.me/resource/gogopher.jpg?imageMogr2/gravity/SouthEast/crop/300x300)
+
+# **操作方式**
+
+您可以通过 [同步处理](/dora/api/8266/synchronous-processing)、[持久化处理](/dora/api/1291/persistent-data-processing-pfop)、[图片样式设置](/dora/api/8264/the-picture-style)、[CDN中间源处理](https://developer.qiniu.com/fusion/4954/image-optimization) 等方式，对图片进行处理，详情介绍请参见[图片处理操作方式](/dora/api/8234/the-image-processing1)。
+

@@ -1,0 +1,87 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                背景音乐混音相关的回调状态，通过 <a href='11990/QNAudioMusicMixerListener#OnAudioMusicMixerStateChanged'>QNAudioMusicMixerListener.OnAudioMusicMixerStateChanged</a> 接口回调</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Properties</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#kStateIdle`)'>kStateIdle</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#kStateMixing`)'>kStateMixing</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#kStatePaused`)'>kStatePaused</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#kStateStopped`)'>kStateStopped</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#kStateCompleted`)'>kStateCompleted</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Properties</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="kStateIdle">kStateIdle</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">kStateIdle: QNMusicMixerState</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>混音控制器的初始状态</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="kStateMixing">kStateMixing</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">kStateMixing: QNMusicMixerState</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>混音操作进行中的状态</p>
+        <p>当成功执行 <a href='11989/QNAudioMusicMixer#Start[1/2]'>QNAudioMusicMixer.Start</a>、<a href='11989/QNAudioMusicMixer#Resume'>QNAudioMusicMixer.Resume</a> 或者 <a href='11989/QNAudioMusicMixer#SeekTo'>QNAudioMusicMixer.SeekTo</a> 后，会回调此状态</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="kStatePaused">kStatePaused</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">kStatePaused: QNMusicMixerState</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>混音操作暂停时的状态</p>
+        <p>当成功执行 <a href='11989/QNAudioMusicMixer#Pause'>QNAudioMusicMixer.Pause</a> 后，会回调此状态</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="kStateStopped">kStateStopped</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">kStateStopped: QNMusicMixerState</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>混音操作停止时的状态</p>
+        <p>当成功执行 <a href='11989/QNAudioMusicMixer#Stop'>QNAudioMusicMixer.Stop</a> 后，会回调此状态</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="kStateCompleted">kStateCompleted</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">kStateCompleted: QNMusicMixerState</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>混音操作完成时的状态</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>当且仅当指定循环次数混音完成后，会回调此状态</p>
+        </blockquote>
+    </section>
+</li>
+</ul>
+</section>
+</div>
+
+

@@ -1,0 +1,105 @@
+stats 命令对数据进行聚合统计，如平均数、计数与总和，支持使用 by 子句对数据指定一个或者多个分组字段，返回每个分组字段值的统计结果。
+
+**语法**
+
+```
+stats <StatsFunc(field)> [as field]……[by filed][, fieldn]
+```
+
+**参数说明**
+
+必填参数：
+
+`StatsFunc(field)`: 
+
+* 描述：指定函数名称、统计字段，支持通知指定多个函数。
+
+可选参数：
+
+`as field`：将统计结果放入指定的新字段中。
+
+`by filed`:指定分组字段名称。如果未指定分组字段，stats 命令只返回一行所有日志的聚合结果。
+
+	
+## stats 支持的统计函数
+
+表格列出了您可以在stats命令中使用的函数。
+
+|统计函数|描述|用法示例|
+|:-:|:-:|:-:|
+|avg(X)|统计字段平均值|stats avg(grade) by class|
+|count(X)|统计字段的出现频次，如果 X 不填则统计总日志数|stats count() ，stats count(userId)|
+|distinct(X)|统计字段的去重计数|stats distinct(userName) by login|
+|max(X)|统计字段的最大值|	stats max(grade) by class|
+|min(X)|统计字段的最小值|	stats min(grade) by class|
+|stdev(X)|计算字段的样本标准差|	stats stdev(grade) by class|
+|stdevp(X)|计算字段的总体标准差| stats stdevp(grade) by class|
+|sum(X)|统计字段和的累加值|stats sum(grade) by class|
+|earliest_time(X)|求字段发生的最早时间(按时间顺序最早出现的给定字段值的毫秒值)|stats earliest_time(\_time) by class |
+|latest_time(X)|求字段发生的最晚时间(按时间顺序最近一次出现的给定字段值的毫秒值)|stats latest_time(\_time) by class |
+|earliest(X)|计算按时间顺序最早出现的值(返回按时间顺序最早出现的字段的值)|stats earliest(\_time) by class |
+|latest(X)|计算按时间顺序最晚出现的值(按时间顺序最近一次看到的字段的值)|stats latest(\_time) by class |
+|rate(X)|求字段每秒变化率((latest(X)-earliest(X))/(latest_time(X)-earliest_time(X)))|stats rate(submit) by class |
+|values(X)|将字段X的值聚合成数组（不做去重，返回数组不保证顺序）| stats values(field) as field_values by class | 
+|percentile(X,Y)|求字段X在第Y个百分点上的值，即在字段X中达到前Y%所需的值 | stats percentile(_time,50) by host |
+|mode(X)|求字段X出现次数最多的值，若出现多个只返回其中一个 | stats mode(grade) by class
+
+
+**用法示例**
+
+统计每一类 sql 的平均耗时。
+
+```
+…… |  stats avg(queryTime) as time  by sql
+```
+
+|sql|time|
+|:-:|:-:|
+|sql1|0.5|
+|sql2|0.8|
+|sql3|0.3|
+
+统计日志中去重后主机数量。
+
+```
+……  |  dedup host| stats count(host) as cnt
+```
+
+|cnt|
+|:-:|
+|5|
+
+统计按照主机和状态码同时分组的日志计数。
+
+```
+……| stats count() by status, host
+```
+
+|host|status|count|
+|:-:|:-:|:-:|:-:|
+|host1|200|340|
+|host2|400|500|
+|host3|500|450|
+
+统计每台主机的cpu平均值，cpu最大值，cpu最小值。
+
+```
+……| stats avg(cpu) as avg,max(cpu) as max,min(cpu) as min by host
+```
+
+|host|avg|max|min|
+|:-:|:-:|:-:|:-:|
+|host1|0.5|0.8|0.5|
+|host2|0.8|0.87|0.6|
+|host3|0.3|0.6|0.3|
+
+统计每台主机的cpu的中位数
+
+```
+……| stats percentile(cpu,50) as per by host
+```
+|host|per|
+|:-:|:-:|
+|host1|0.5|
+|host2|0.6|
+|host3|0.4|

@@ -1,0 +1,65 @@
+>当前直播播放鉴权配置，需要提供如下信息，提交工单。
+- 直播空间名称  
+- 相应设置了防盗链的播放域名
+- 时间戳防盗链的 key
+
+基于时间戳防盗链的功能主要是：通过使用约定的加密字符串来对具有访问有效期的资源链接进行一些加密计算的到一个 sign 值，然后访问外链里面带上这个 `sign` 和`截止时间戳`去访问七牛直播节点，七牛直播节点会用同样的算法来计算访问链接是否合法，如果不合法则返回403 Forbidden，否则返回所要访问的资源。
+
+## 算法说明
+⭐️ 七牛直播云的时间戳防盗链分为两类：
+
+- 定制化时间戳防盗链：用户定制的时间戳防盗链。
+- portal 上标准的时间戳防盗链：指定过期时间戳播放鉴权。token的生成算法是md5, 有效时间从现在开始到 URL 中的时间戳(十六进制)为止。
+
+
+⭐️ 定制化时间戳防盗链
+
+用户定制，详细信息需要通过工单联系技术支持。
+
+⭐️ portal 上标准的时间戳防盗链
+
+## 签名参数
+| 参数   | 描述 |
+| ------ | :---- |
+| t      | 防盗链过期时间戳的十六进制字符串 |
+| sign    | 和七牛约定好的加密字符串，由 key 和过期时间戳共同生成|
+
+## 签名算法
+输入信息：设置时间戳防盗链时的密钥 key，防盗链的过期时间戳的十六进制字符串 t, 播放地址的 path
+
+签名sign生成过程: 获取到key，t 以及播放地址后，生成中间字符串 `S= key + path + t` , 然后 `sign=md5(s).to_lower()`，其中 `to_lower()` 表示生成的 md5 字符串用小写字母表示
+
+## 签名参数传递方式
+例如播放地址是：  
+`http://pili-live-hls.baozijian.cc/tron/baozijian.m3u8`
+
+最终形成的播放地址是：  
+`http://pili-live-hls.baozijian.cc/tron/baozijian.m3u8?sign=xxxx&t=xxxx`
+
+## 参考实例:
+需要获取一个当前时间5分钟后过期的防盗链签名 url.
+
+- 播放地址为: `http://pili-live-hls.baozijian.cc/tron/baozijian.m3u8`   
+- 已经开启了 portal上标准的时间戳防盗链, 设置了主密钥key为`123` 
+
+
+假设当前时间的时间戳为: 1513008000  
+过期时间是5分钟后, 所以过期时间戳为: 1513008000 + 5 * 60 = 1513008300  
+换算为16进制: 5a2eacac (一定要全小写)  
+即参数 `t=5a2eacac`
+
+中间字符串的生成规则是: `S= key + path + t`  
+key 是设置时输入的密钥, 这里是 key=123  
+path 是 URL 中的 path 部分, URL是`http://pili-live-hls.baozijian.cc/tron/baozijian.m3u8`, 则 `path=/tron/baozijian.m3u8`
+
+所以 `S=123/tron/baozijian.m3u85a2eacac`
+
+再用 md5算法 `sign = md5(S).to_lower()`  
+得到: `sign=020d379859237cb0947131d708e9c4d3`
+
+所以最终生成的5分钟后过期的播放地址是: 
+`http://pili-live-hls.baozijian.cc/tron/baozijian.m3u8?sign=020d379859237cb0947131d708e9c4d3&t=5a2eacac`
+
+
+
+

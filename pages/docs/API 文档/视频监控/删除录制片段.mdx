@@ -1,0 +1,47 @@
+# **描述**
+本接口用于删除录制视频文件
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：DELETE
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}/recordhistories`
+* 如果删除的是m3u8文件,
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|	流ID
+
+**请求 body参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|files|是|string数组|需要删除的文件列表(从[查询录制记录](https://developer.qiniu.com/qvs/api/6745/query-recordhistories)file 字段获取文件名)
+|saveCover|否|bool|是否保留视频封面,默认false, 即`不`保留
+|saveTs|否|bool|如果删除m3u8文件，是否保留对应的ts文件,默认false, 即`不`保留
+
+**注意**:
+一次最多可以删除1000条记录
+# **响应参数**
+200 OK
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request DELETE \
+  --url http://qvs.qiniuapi.com/v1/namespaces/3nm4x0u6poax8/streams/31011500991320000007/recordhistories \
+  --header 'authorization: QiniuStub j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{
+	"files":["record/2akrarrzns76w/t0/1587898457113-1587899058364-601408.m3u8","record/2akrarrzns76w/t0/1587899050326-1587899651641-601127.m3u8"]
+}'
+```
+**响应示例**
+
+```
+200 OK
+```

@@ -1,0 +1,73 @@
+当你无法通过[迁云工具](/qvm/manual/server-migration-qiniu)迁移内核版本较低，自带系统引导程序 GRUB 版本为 0.97 及其以下的 Linux 服务器，例如，CentOS 5 和 Debian 7。而且日志文件提示`Do Grub Failed`时，可能是因为没有安装 1.9 以上版本的系统引导程序 GRUB（GRand Unified Bootloader）。本文档即将介绍如何为你的源服务器安装系统引导程序 GRUB 1.99 版本。
+
+<br>
+
+<a id="step01"></a>
+### **操作步骤** 
+
+**1. **登录源服务器
+
+**2. **运行以下命令查看原 grub、grub-install 以及 grub-mkconfig 的路径：
+
+```
+which grub
+which grub-install
+which grub-mkconfig
+```
+
+**3. **使用`mv`命令为旧版本 grub、grub-install 以及 grub-mkconfig 改名以备份文件。你可以在使用迁云工具迁移服务器后，恢复原名以使用原配置。
+
+```
+mv /sbin/grub /sbin/grub-old
+mv /sbin/grub-install /sbin/grub-install-old 
+mv /sbin/grub-mkconfig /sbin/grub-mkconfig-old
+```
+
+**4. **运行`yum install -y bison gcc make`安装 GRUB 依赖的 bison、gcc 以及 make 工具。
+
+**5. **运行以下命令安装 flex。
+
+```
+test -d /root/tools || mkdir -p /root/tools
+cd /root/tools
+wget https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz
+tar xzf flex-2.6.4.tar.gz
+cd flex-2.6.4
+mkdir -p build
+cd build
+../configure
+make && make install
+ln -s /usr/local/bin/flex /usr/bin/flex
+```
+
+**6. **运行以下命令安装 GRUB 1.99 依赖。
+
+```
+test -d /root/tools || mkdir -p /root/tools
+cd /root/tools
+wget https://alpha.gnu.org/gnu/grub/grub-1.99~rc1.tar.gz
+tar xzf grub-1.99~rc1.tar.gz
+cd grub-1.99~rc1
+mkdir -p build
+cd build
+../configure
+make && make install
+ln -s /usr/local/sbin/grub-install /sbin/grub-install
+ln -s /usr/local/sbin/grub-mkconfig /sbin/grub-mkconfig
+```
+
+说明：若编译过程中出现了`-Werror`报错，你可以定位到编译对象的编译文件 makefile 中，去掉`-Werror`选项重新编译。
+
+**7. **运行`grub-install --version`检查 GRUB 版本是否更新为 1.99。
+
+成功更新系统引导程序 GRUB 1.99 版本后，你可以使用[迁云工具](/qvm/manual/server-migration-qiniu)迁移服务器至 QVM。
+
+迁云成功后，运行以下命令恢复使用旧版本 GRUB：
+
+```
+rm /sbin/grub-install
+rm /sbin/grub-mkconfig
+rm /boot/grub/grub.cfg
+mv /sbin/grub-old /sbin/grub
+mv /sbin/grub-install-old /sbin/grub-install
+```

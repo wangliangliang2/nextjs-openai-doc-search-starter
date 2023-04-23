@@ -1,0 +1,107 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `POST` /v1/vm/instance/:instance_id/renew
+
+
+## 请求参数 ([查看付费参数](https://developer.qiniu.com/qvm/8006/common-params))
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>instance_id</td>
+      <td>string</td>
+      <td>path</td>
+      <td>是</td>
+      <td>
+        <p>云主机实例ID </p>
+      </td>
+    </tr>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>实例所属地域 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>cost_charge_type</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        付费方式
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>cost_charge_mode</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        计费方式, PayByInstance
+      </td>
+    </tr>
+    <tr>
+      <td>cost_period_unit</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        计费单位
+      </td>
+    </tr>
+    <tr>
+      <td>cost_period</td>
+      <td>integer</td>
+      <td>body</td>
+      <td>是</td>
+      <td>计费周期</td>
+    </tr>
+    <tr>
+      <td>client_token</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。只支持ASCII字符，且不能超过64个字符。</td>
+    </tr>
+  </tbody>
+</table>
+
+### 请求示例
+```json
+{
+    "region_id": "cn-shenzhen",
+    "cost_charge_type": "PrePaid",
+    "cost_period":1,
+    "cost_period_unit":"Month",
+    "client_token": "473469C7-AA6F-4DC5-B3DB-A3DC0DE3C83E"
+}
+```
+
+# 返回值
+| 名称 | 类型 | 是否必须 | 描述 |
+| ----- | ----- | ----- | ----- |
+| success | boolean | 否 | 是否操作成功 |
+
+## 返回值示例
+```json
+{
+    "request_id":"c6cdf393-3522-476b-ab39-1e9d41a67768",
+    "data":{
+        "order": "1QW2F998-8642-2346-I2K3-0OKMNHY65TG4"
+    }
+}
+```

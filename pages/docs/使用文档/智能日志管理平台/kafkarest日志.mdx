@@ -1,0 +1,14 @@
+KafkaRest Log Parser 将 Kafka Rest 日志文件的每一行解析为一条结构化的日志。
+
+* KafkaRestLog 解析出的字段名是固定的，包括如下字段及标签，可以在 sender 中选择需要发送的字段和标签。
+  * `source_ip`: 源 IP
+  * `method`: 请求的方法，诸如 POST、GET、PUT、DELETE 等
+  * `topic`: 请求涉及的 kafka topic
+  * `code`: httpcode
+  * `resp_len`: 请求长度
+  * `duration`: 请求时长
+  * `log_time`: 日志产生的时间
+  * `error`: 表示是一条 error 日志，也只有 error 日志才解析出该字段
+  * `warn`: 表示是一条 warn 日志，也只有 warn 日志才解析出该字段
+* `disable_record_errdata` 默认为`false`，解析失败的数据会默认出现在"pandora_stash"字段，该选项可以禁止记录解析失败的数据。
+* `keep_raw_data` 默认为`false`，配置此选项之后会保留原始数据在`raw_data`字段下。

@@ -1,0 +1,36 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `PUT` /api/rio/v1/network/eip/:id
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id              | string | header | 是 | 地域 ID
+id                    | string | path | 是 | 弹性公网 ID 
+eip_name             | string | body | 否 | 弹性公网 名称
+bandwidth    | uint | body | 否 | 带宽 
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+
+
+## 请求示例
+```json
+{
+	eip_id: "3bcdfdb1-aea3-4c60-a920-6eb751666bb",
+	eip_name: "i-iB53",
+	bandwidth: 20
+}
+```
+
+## 返回值示例
+```json
+{
+	"request_id": "GS1NO9AE1SAHwvQW",
+	"data": null
+}
+```

@@ -1,0 +1,33 @@
+# **描述**
+本接口用于删除AI模版
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：DELETE
+* 接口路径：`/v1/aitemplates/{templateId}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|templateId|是|string|AI模版ID|
+
+# **响应参数**
+无
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request DELETE \
+  --url http://qvs.qiniuapi.com/v1/aitemplates/2akrars59hm2l \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "code": 200
+}
+```

@@ -1,0 +1,518 @@
+huxicong·发表于:2016-08-12 15:22·更新于:2016-11-21 18:14
+
+#### 创建流
+
+请求 hub.createStream(title, publishKey, publishSecurity);
+
+|参数	|说明
+|----|---|
+|title	(string)|流名，必须满足 namePattern, err := regexp.Compile("^[a-zA-Z0-9_-]{4,200}$格式|
+|publishKey(string)|	验证的key|
+|publishSecurity|	鉴权方式"dynamic" 或 "static" ,"dynamic" 为默认的|
+
+```
+POST /v1/streams HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:oJeCsKJUyv6KCLlnP4vyCheYKnk=
+Content-Length: 87
+
+{"hub":"1314xicong","title":"hello","publishKey":"huxicong","publishSecurity":"static"}
+```
+响应
+
+```
+{
+    "id": "z1.1314xicong.hello",
+    "createdAt": "2016-08-08T11:50:22.09+08:00",
+    "updatedAt": "2016-08-08T11:50:22.09+08:00",
+    "title": "hello",
+    "hub": "1314xicong",
+    "disabledTill": 0,
+    "disabled": false,
+    "publishKey": "huxicong",
+    "publishSecurity": "static",
+    "hosts": {
+        "publish": {
+            "rtmp": "pili-publish.pili.echohu.top"
+        },
+        "live": {
+            "hdl": "pili-live-hdl.pili.echohu.top",
+            "hls": "pili-live-hls.pili.echohu.top",
+            "http": "pili-live-hls.pili.echohu.top",
+            "rtmp": "pili-live-rtmp.pili.echohu.top",
+            "snapshot": "100008j.live1-snapshot.z1.pili.qiniucdn.com"
+        },
+        "playback": {
+            "hls": "100008j.playback1.z1.pili.qiniucdn.com",
+            "http": "100008j.playback1.z1.pili.qiniucdn.com"
+        },
+        "play": {
+            "http": "pili-live-hls.pili.echohu.top",
+            "rtmp": "pili-live-rtmp.pili.echohu.top"
+        }
+    }
+}
+```
+#### 获取流
+
+请求
+
+hub.getStream(streamId) 
+
+streamId(这是流的标示 z1.1314xicong.huxicongp   )
+
+```
+GET /v1/streams/z1.1314xicong.hello HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+User-Agent: pili-sdk-php/1.5.4 curl/7.47.1 PHP/7.0.8
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:yvLyCKiXvBdAWgGGDyLIZUvMCmY=
+```
+响应
+
+```
+{
+    "id": "z1.1314xicong.hello",
+    "createdAt": "2016-08-08T11:50:22.09+08:00",
+    "updatedAt": "2016-08-08T11:50:22.09+08:00",
+    "title": "hello",
+    "hub": "1314xicong",
+    "disabledTill": 0,
+    "disabled": false,
+    "publishKey": "huxicong",
+    "publishSecurity": "static",
+    "hosts": {
+        "publish": {
+            "rtmp": "pili-publish.pili.echohu.top"
+        },
+        "live": {
+            "hdl": "pili-live-hdl.pili.echohu.top",
+            "hls": "pili-live-hls.pili.echohu.top",
+            "http": "pili-live-hls.pili.echohu.top",
+            "rtmp": "pili-live-rtmp.pili.echohu.top",
+            "snapshot": "100008j.live1-snapshot.z1.pili.qiniucdn.com"
+        },
+        "playback": {
+            "hls": "100008j.playback1.z1.pili.qiniucdn.com",
+            "http": "100008j.playback1.z1.pili.qiniucdn.com"
+        },
+        "play": {
+            "http": "pili-live-hls.pili.echohu.top",
+            "rtmp": "pili-live-rtmp.pili.echohu.top"
+        }
+    }
+}
+
+```
+#### 列举流
+
+请求
+
+hub.listStreams(marker, limit, title_prefix, status);
+
+|参数	|说明|
+|---|----|
+|title_prefix|	(string)字符串，可选，限定只返回带以 prefix 为前缀的流名，不指定表示不限定前缀。|
+|limit	|(int)整数，可选，限定返回的流个数，不指定表示遵从系统限定的最大个数。|
+|marker 	|(int)字符串，可选，上一次查询返回的标记，用于提示服务端从上一次查到的位置继续查询，不指定表示从头查询。|
+
+```
+GET /v1/streams?hub=1314xicong&limit=2 HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+User-Agent: pili-sdk-php/1.5.4 curl/7.47.1 PHP/7.0.8
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:mTUdSB0pTLQka-rpfNf4jM36l28=
+```
+响应
+
+```
+{
+    "marker": "2",
+    "items": [
+        {
+            "id": "z1.1314xicong.hello",
+            "createdAt": "2016-08-08T11:50:22.09+08:00",
+            "updatedAt": "2016-08-08T11:50:22.09+08:00",
+            "title": "hello",
+            "hub": "1314xicong",
+            "disabledTill": 0,
+            "disabled": false,
+            "publishKey": "huxicong",
+            "publishSecurity": "static",
+            "hosts": {
+                "publish": {
+                    "rtmp": "pili-publish.pili.echohu.top"
+                },
+                "live": {
+                    "hdl": "pili-live-hdl.pili.echohu.top",
+                    "hls": "pili-live-hls.pili.echohu.top",
+                    "http": "pili-live-hls.pili.echohu.top",
+                    "rtmp": "pili-live-rtmp.pili.echohu.top",
+                    "snapshot": "100008j.live1-snapshot.z1.pili.qiniucdn.com"
+                },
+                "playback": {
+                    "hls": "100008j.playback1.z1.pili.qiniucdn.com",
+                    "http": "100008j.playback1.z1.pili.qiniucdn.com"
+                },
+                "play": {
+                    "http": "pili-live-hls.pili.echohu.top",
+                    "rtmp": "pili-live-rtmp.pili.echohu.top"
+                }
+            }
+        },
+        {
+            "id": "z1.1314xicong.57a801305e77b03d5202aa31",
+            "createdAt": "2016-08-08T11:49:04.224+08:00",
+            "updatedAt": "2016-08-08T11:49:04.224+08:00",
+            "title": "57a801305e77b03d5202aa31",
+            "hub": "1314xicong",
+            "disabledTill": 0,
+            "disabled": false,
+            "publishKey": "b321c6c6-9004-4cad-b29a-7d5dec42659b",
+            "publishSecurity": "static",
+            "hosts": {
+                "publish": {
+                    "rtmp": "pili-publish.pili.echohu.top"
+                },
+                "live": {
+                    "hdl": "pili-live-hdl.pili.echohu.top",
+                    "hls": "pili-live-hls.pili.echohu.top",
+                    "http": "pili-live-hls.pili.echohu.top",
+                    "rtmp": "pili
+123.059.063.003.00080-192.168.200.120.61037: -live-rtmp.pili.echohu.top",
+                    "snapshot": "100008j.live1-snapshot.z1.pili.qiniucdn.com"
+                },
+                "playback": {
+                    "hls": "100008j.playback1.z1.pili.qiniucdn.com",
+                    "http": "100008j.playback1.z1.pili.qiniucdn.com"
+                },
+                "play": {
+                    "http": "pili-live-hls.pili.echohu.top",
+                    "rtmp": "pili-live-rtmp.pili.echohu.top"
+                }
+            }
+        }
+    ],
+    "end": false
+}
+```
+#### 流的更新
+
+stream.updata()
+
+```
+POST /v1/streams/z1.1314xicong.hello HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+User-Agent: pili-sdk-php/1.5.4 curl/7.47.1 PHP/7.0.8
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:d9Ak7nhlZoc3AAudOGHd6QxRB7Q=
+Content-Length: 60
+
+{"publishKey":"new_secret_words","publishSecurity":"static"}
+```
+响应
+
+```
+{
+    "id": "z1.1314xicong.hello",
+    "createdAt": "2016-08-08T11:50:22.09+08:00",
+    "updatedAt": "2016-08-08T13:00:10.281105075+08:00",
+    "title": "hello",
+    "hub": "1314xicong",
+    "disabledTill": 0,
+    "disabled": false,
+    "publishKey": "new_secret_words",
+    "publishSecurity": "static",
+    "hosts": {
+        "publish": {
+            "rtmp": "pili-publish.pili.echohu.top"
+        },
+        "live": {
+            "hdl": "pili-live-hdl.pili.echohu.top",
+            "hls": "pili-live-hls.pili.echohu.top",
+            "http": "pili-live-hls.pili.echohu.top",
+            "rtmp": "pili-live-rtmp.pili.echohu.top",
+            "snapshot": "100008j.live1-snapshot.z1.pili.qiniucdn.com"
+        },
+        "playback": {
+            "hls": "100008j.playback1.z1.pili.qiniucdn.com",
+            "http": "100008j.playback1.zone1.pili.qiniucdn.com"
+        },
+        "play": {
+            "http": "pili-live-hls.pili.echohu.top",
+            "rtmp": "pili-live-rtmp.pili.echohu.top"
+        }
+    }
+}
+```
+#### 流的禁止与启用
+
+流的禁止
+
+disabledTill:(时间戳)在什么时间把它给禁止掉
+
+stream.disable(disabledTill);
+
+```
+POST /v1/streams/z1.1314xicong.huxicongp/available HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+User-Agent: pili-sdk-php/1.5.4 curl/7.47.1 PHP/7.0.8
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:m5mdD-RngQE9SwruF6Qc93qCSyw=
+
+{"available":"disabled","disabledTill":1470633009}
+HTTP/1.1 204 No Content
+```
+流的启用
+
+stream.enable()
+
+```
+POST /v1/streams/z1.1314xicong.huxicongp/available HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+User-Agent: pili-sdk-php/1.5.4 curl/7.47.1 PHP/7.0.8
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:PNk9q1aCLiWk_MqpZWTk5l_2Rr0=
+Content-Length: 23
+
+{"available":"enabled"}
+
+ HTTP/1.1 204 No Content
+```
+这两个请求以状态码来判断是否请求成功 200
+
+#### 流的状态获取
+
+stream.status()
+
+流的状态包括(connect 连接 和disconnect 未连接)
+
+```
+GET /v1/streams/z1.1314xicong.huxicongp/status HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+User-Agent: pili-sdk-php/1.5.4 curl/7.47.1 PHP/7.0.8
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:sZvsYZ4t_3zt_m6pNrZZEONW7po=
+```
+响应
+
+```
+HTTP/1.1 200 OK
+{
+    "reqId": "",
+    "hub": "1314xicong",
+    "stream": "huxicongp",
+    "startFrom": "0001-01-01T00:00:00Z",
+    "updatedAt": "0001-01-01T00:00:00Z",
+    "addr": "",
+    "status": "disconnected",
+    "bytesPerSecond": 0,
+    "framesPerSecond": {
+        "audio": 0,
+        "video": 0,
+        "data": 0
+    }
+}
+```
+#### 获取播放URL（flv RTMP hls） 推流URL
+
+urls = stream.httpFlvLiveUrls();//获取flv的播放地址
+
+urls = stream.hlsLiveUrls();//获取hls的播放地址
+
+urls = stream.rtmpLiveUrls();//获取RTMP的播放地址
+
+publishUrl = stream.rtmpPublishUrl();//获取推流地址
+
+```
+GET /v1/streams/z1.1314xicong.huxicongp HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+User-Agent: pili-sdk-php/1.5.4 curl/7.47.1 PHP/7.0.8
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:Knw_76FTr_FSz5-VHM5Xj4ERmhs=
+
+HTTP/1.1 200 OK
+
+```
+
+
+响应
+
+```
+{
+    "id": "z1.1314xicong.huxicongp",
+    "createdAt": "2016-07-12T18:06:29.009+08:00",
+    "updatedAt": "2016-07-12T18:06:29.009+08:00",
+    "title": "huxicongp",
+    "hub": "1314xicong",
+    "disabledTill": 0,
+    "disabled": false,
+    "publishKey": "b321c6c6-9004-4cad-b29a-7d5dec42659b",
+    "publishSecurity": "static",
+    "hosts": {
+        "publish": {
+            "rtmp": "pili-publish.pili.echohu.top"
+        },
+        "live": {
+            "hdl": "pili-live-hdl.pili.echohu.top",
+            "hls": "pili-live-hls.pili.echohu.top",
+            "http": "pili-live-hls.pili.echohu.top",
+            "rtmp": "pili-live-rtmp.pili.echohu.top",
+            "snapshot": "100008j.live1-snapshot.z1.pili.qiniucdn.com"
+        },
+        "playback": {
+            "hls": "100008j.playback1.z1.pili.qiniucdn.com",
+            "http": "100008j.playback1.z1.pili.qiniucdn.com"
+        },
+        "play": {
+            "http": "pili-live-hls.pili.echohu.top",
+            "rtmp": "pili-live-rtmp.pili.echohu.top"
+        }
+    }
+}
+返回信息
+
+string(97) "rtmp://pili-publish.pili.echohu.top/1314xicong/huxicongp?key=b321c6c6-9004-4cad-b29a-7d5dec42659b"
+array(1) {
+  ["ORIGIN"]=>
+  string(58) "rtmp://pili-live-rtmp.pili.echohu.top/1314xicong/huxicongp"
+}
+array(1) {
+  ["ORIGIN"]=>
+  string(61) "http://pili-live-hdl.pili.echohu.top/1314xicong/huxicongp.flv"
+}
+array(1) {
+  ["ORIGIN"]=>
+  string(62) "http://pili-live-hls.pili.echohu.top/1314xicong/huxicongp.m3u8"
+}
+```
+
+#### 获取推流历史记录 并 保存( 得有历史推流数据才可以获取得到 才能保存回放)
+
+获取流的历史推流记录
+
+stream.segments(start, end, limit);
+
+|参数|说明|
+|----|----|
+|start|	(时间戳)获取的开始时间段|
+|end	 |(时间戳)获取的结束时间段|
+|limit|	(int)限制最多得到的信息数|
+
+```
+GET /v1/streams/z1.1314xicong.mytest/segments HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+User-Agent: pili-sdk-php/1.5.4 curl/7.47.1 PHP/7.0.8
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:2eEI-1NL_xAVjuon-wfZ72pgiEc=
+
+HTTP/1.1 200 OK
+
+{"start":1462417984,"end":1462417993,"duration":9,"segments":[{"start":1462417984,"end":1462417993}]}
+```
+将流保存回放
+
+stream.saveAs(name, format, start, end, notifyUrl, pipeline);
+
+|参数	|说明|
+|---|---|
+|name	(string)|保存的文件名|
+|format|	保存的文件格式 null为m3u8 ( optional)|
+|start & end	|(时间戳或-1)指定保存的时间段 传 -1 这个时间段是上面的历史推流记录{"start":1462417984,"end":1462417993}|
+|notifyUrl	（string ）|合并成MP4文件时处理成功通过这个回调通知你的服务器url|
+|pipeline	|处理的队列 保存为mp4需要指定下队列 不然处理速度很慢|
+
+```
+192.168.200.120.61423-123.059.063.003.00080: POST /v1/streams/z1.1314xicong.huxicongp/saveas HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+User-Agent: pili-sdk-php/1.5.4 curl/7.47.1 PHP/7.0.8
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:mCB1hBdmSE8amWIO9Ww_pRX7dqc=
+
+{"name":"videoName.mp4","start":-1,"end":-1}
+HTTP/1.1 200 OK
+```
+响应
+
+```
+{
+"url":"http://pili-media.pili.echohu.top/recordings/z1.1314xicong.huxicongp/videoName.m3u8","duration":2569,
+"persistentId":""
+}
+```
+流的删除
+
+stream.delete()
+
+```
+DELETE /v1/streams/z1.1314xicong.huxicongp HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+User-Agent: pili-sdk-php/1.5.4 curl/7.47.1 PHP/7.0.8
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:iGQX6GfyDaiU6CetyCOhLZOdkmY=
+
+HTTP/1.1 204 No Content
+```
+直播截图（使用时必须在有直播的状态下才可以使用）
+
+stream.snapshot(name, format, time, notifyUrl, pipeline)
+
+|参数	|说明|
+|----|---|
+|name|	保存的文件名|
+|format|	保存的文件的格式 填 'jpg'，'png'
+|time |	截取的时间
+|notifyUrl|	截图成功通知回调的URL
+|pipeline|	队列
+
+```
+POST /v1/streams/z1.1314xicong.huxicongp/snapshot HTTP/1.1
+Host: pili.qiniuapi.com
+Accept: */*
+Accept-Encoding: deflate, gzip
+Content-Type: application/json
+User-Agent: pili-sdk-php/1.5.4 curl/7.47.1 PHP/7.0.8
+Authorization: Qiniu vI2xPIjOoh7udcRw4GdYNvf3o_gKsCx9wdZaC9u-:I8-k7BbBiqwdLyvIqimFUhpNmDM=
+Content-Length: 57
+
+{"name":"imageName.jpg","format":"jpg","time":1470641287}
+HTTP/1.1 200 OK
+```
+相应
+```
+{"targetUrl":"http://pili-static.pili.echohu.top/snapshots/z1.1314xicong.huxicongp/imageName.jpg"}
+```
+附录
+
+手机端的json推流方式只支持（static 和 dynamic）
+
+首先以上几种获取的流的json的方法都是支持调用的 （记得流必须是开启的 不是禁用的）
+
+Stream = hub.createStream(title, publishKey, publishSecurity) //重新创建一路流来推 
+
+Stream = hub.getStream(streamId) //获取已经存在的流 来推流 
+
+Stream.toJSONString() 将这个返回给客户端

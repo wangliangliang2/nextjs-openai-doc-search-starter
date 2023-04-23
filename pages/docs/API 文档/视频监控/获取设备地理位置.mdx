@@ -1,0 +1,50 @@
+# **描述**
+本接口用于获取设备地理位置信息。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/devides/{gbId}/location`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|gbId|是|string|设备国标ID
+
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|longitude|float|经度
+|latitude|float|维度
+|speed|float|速度(单位：km/h)
+|direction|float|方向(摄像头方向与正北方的顺时针夹角，取值范围0°~360°)
+|altitude|integer|海拔高度(单位：m)
+|updatedAt|integer|地理位置更新时间(单位：秒)
+
+
+
+
+# **示例**
+
+**请求示例**
+```
+curl --request GET \
+  --url 'http://qvs.qiniuapi.com/v1/namespaces/2akras5k6dkgl/devices/31011500991320000036/location' \
+  --header 'Authorization: QiniuStub uid=1810757928'
+```
+
+**响应示例**
+```json
+{
+    "longitude": 20.32,
+    "latitude": 32.11,
+    "speed": 0,
+    "direction": 3,
+    "altitude": 0,
+    "updatedAt": 1631765837
+}
+```

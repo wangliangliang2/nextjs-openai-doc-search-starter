@@ -1,0 +1,76 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>屏幕共享也属于音视频采集的范畴，但是由于不同设备屏幕分享功能的实现逻辑有一定区别，因此单独整理这篇文档来说明。</p>
+
+# 屏幕共享视频 Track
+<p>可以通过 <a href="/rtc/9070/WebQNRTC#createScreenVideoTrack">QNRTC.createScreenVideoTrack</a> 来创建屏幕共享视频 <a href="/rtc/9092/WebQNScreenVideoTrack">QNScreenVideoTrack</a>。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> mScreenVideoTrack = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createScreenVideoTrack</span>({
+<span></span>    <span class="hljs-attr">encoderConfig</span>: {
+<span></span>        <span class="hljs-attr">width</span>: <span class="hljs-number">1280</span>, <span class="hljs-comment">// 画面宽度</span>
+<span></span>        <span class="hljs-attr">height</span>: <span class="hljs-number">720</span>, <span class="hljs-comment">// 画面高度</span>
+<span></span>        <span class="hljs-attr">frameRate</span>: <span class="hljs-number">10</span>, <span class="hljs-comment">// 视频帧率</span>
+<span></span>        <span class="hljs-attr">bitrate</span>: <span class="hljs-number">1500</span> <span class="hljs-comment">// 码率 </span>
+<span></span>    },
+<span></span>    <span class="hljs-attr">screenVideoTag</span>: <span class="hljs-string">&quot;screenVideo&quot;</span>
+<span></span>});
+<span></span></code></pre>
+<p>可以看到，这里的配置项与创建摄像头视频 track 时很类似，但是也有一些屏幕共享独有的配置项，详细可以参考 <a href="/rtc/9056/WebQNScreenVideoTrackConfig">QNScreenVideoTrackConfig</a>。</p>
+<blockquote>
+<p>注意该方法是 SDK 针对不同设备抽象出来的共有的方法，目前在桌面版 Chrome(72)、Firefox(66)、Safari(13) 中均可支持。</p>
+</blockquote>
+
+# Chrome 插件采集
+<p>如果 Chrome 低于 72 版本，此时浏览器没有提供屏幕采集的接口，如果要在该版本的浏览器中实现屏幕分享，可以使用 Chrome 插件采集的方式。</p>
+<p>使用 Chrome 插件采集，需要首先安装我们的 Chrome 插件。安装方式有两种，下面来看具体操作。</p>
+<p>第一种，访问 <a href="https://chrome.google.com/webstore/detail/qnrtc-screen-capture/kelbkaklgngbpjmfopeiclhfmpgnkkpe?hl=zh-CN">Chrome 网上应用店</a> 直接安装。</p>
+<p>如果本地环境无法访问 Google，则可以采用下面的开发者模式安装。</p>
+<p>第二种，开发者模式安装。</p>
+<p>这个安装方法是目前唯一适用于各个情况下的安装方法。首先下载 <a href="http://sdk-release.qnsdk.com/QNRTCWebExtension-1.0.1.zip">插件 zip 包</a> ，下载完成后将该 zip 包解压到一个文件夹中。之后 Chrome 访问 <code>chrome://extensions/</code> 或者<code>右上角-更多工具-拓展程序</code>，打开拓展程序页面。</p>
+<p><img src="https://docs.qnsdk.com/chrome-extension.jpg" alt="chrome 扩展程序页面"></img></p>
+<p>如图所示打开开发者模式，点击 加载已解压的扩展程序，选择我们刚刚解压到的文件夹中的 CaptureExtension 文件夹完成安装。安装完成后，需要重新启动 Chrome。</p>
+<p>安装成功后，可以使用如下<a href="/rtc/9070/WebQNRTC#isChromeExtensionAvailable">方法</a>检测插件是否运行正常：</p>
+<pre><code class="language-typescript"><span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">isChromeExtensionAvailable</span>()
+<span></span>    .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">result</span>) =&gt;</span> {
+<span></span>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;is chrome extension available: &quot;</span>, result)
+<span></span>    })
+<span></span>    .<span class="hljs-title function_">catch</span>(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
+<span></span>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;error&quot;</span>, e)
+<span></span>    })
+<span></span></code></pre>
+<p>如果插件运行正常，下一步就是使用插件来创建屏幕分享 Track 了。使用的方法与正常一致，注意参数的区别。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { <span class="hljs-title class_">QNChromeExtensionSourceType</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;qnweb-rtc&quot;</span>;
+<span></span>
+<span></span><span class="hljs-keyword">const</span> mScreenVideoTrack = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createScreenVideoTrack</span>({
+<span></span>    <span class="hljs-attr">chromeExtensionSourceType</span>: <span class="hljs-title class_">QNChromeExtensionSourceType</span>.<span class="hljs-property">ALL</span>
+<span></span>});
+<span></span></code></pre>
+<p>这里的 chromeExtensionSourceType 实际上是指定数据源的意思，这里指定为 ALL 表示所有数据源。调用该接口后，Chrome 会弹窗列举出所有数据源供用户选择。</p>
+
+# 系统音频 track
+<p>如果想要采集的音频来源不是麦克风，而是系统音频，如浏览器某个标签页中正在播放的音频，这时可以在采集屏幕共享 track 的方法 <a href="/rtc/9070/WebQNRTC#createScreenVideoTrack">QNRTC.createScreenVideoTrack</a> 中指定 <a href="/9070/WebQNRTC#createScreenVideoTrack">withAudio</a> 参数来采集系统音频 track。该 track 对象类型为 <a href="/rtc/9089/WebQNLocalAudioTrack">QNLocalAudioTrack</a>。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> [mScreenVideoTrack, mScreenAudioTrack] = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createScreenVideoTrack</span>({
+<span></span>    <span class="hljs-attr">encoderConfig</span>: {
+<span></span>        <span class="hljs-attr">width</span>: <span class="hljs-number">1280</span>, <span class="hljs-comment">// 画面宽度</span>
+<span></span>        <span class="hljs-attr">height</span>: <span class="hljs-number">720</span>, <span class="hljs-comment">// 画面高度</span>
+<span></span>        <span class="hljs-attr">frameRate</span>: <span class="hljs-number">10</span>, <span class="hljs-comment">// 视频帧率</span>
+<span></span>        <span class="hljs-attr">bitrate</span>: <span class="hljs-number">1500</span> <span class="hljs-comment">// 码率 </span>
+<span></span>    },
+<span></span>    <span class="hljs-attr">screenVideoTag</span>: <span class="hljs-string">&quot;screenVideo&quot;</span>,
+<span></span>    <span class="hljs-attr">screenAudioTag</span>: <span class="hljs-string">&quot;screenAudio&quot;</span>
+<span></span>  },
+<span></span>  <span class="hljs-string">&quot;enable&quot;</span>
+<span></span>);
+<span></span></code></pre>
+<p>当调用该方法后，浏览器会弹出原生 UI，需要用户单独选择 <code>分享音频</code> 才能实际采集到系统声音。浏览器原生 UI 如下图所示：</p>
+<p><img src="https://docs.qnsdk.com/webrtc-share-system-audio.png" alt="屏幕分享分享音频截图"></img></p>
+<p>根据用户是否做了单独选择的操作，有不同的处理策略，详细可参考 <a href="/rtc/9070/WebQNRTC#createScreenVideoTrack">withAudio</a> 参数文档。</p>
+<p>需要注意几点：</p>
+<ul>
+<li>分别通过 <code>screenVideoTag</code> 和 <code>screenAudioTag</code> 来设置屏幕分享视频和系统音频的 tag</li>
+<li>通过第二个参数 <code>withAudio</code> 设置为 <code>enable</code> 来指定采集系统音频</li>
+<li>指定采集系统音频后，方法返回值变为拥有两个元素的数组，第一个元素为屏幕分享视频 track，第二个元素为系统音频 track</li>
+<li>目前仅 Chrome 支持采集系统声音</li>
+</ul>
+
+# 示例代码
+<p>屏幕分享场景示例代码可参考 <a href="https://github.com/pili-engineering/QNRTC-Web/tree/master/API-Examples-Web/screenSharing">API-Examples-Web/screenSharing</a></p></div></div>

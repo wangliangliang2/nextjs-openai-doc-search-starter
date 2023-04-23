@@ -1,0 +1,30 @@
+kernel监控主要用于监控内核中断次数、上下文切换次数、fork 的进程数等。(`目前仅支持Linux操作系统`)
+
+kernel监控配置界面如下:
+![](https://dn-odum9helk.qbox.me/Fm_SpH9fAZ5sTZr5mqTI97fmv8BN)
+![](https://dn-odum9helk.qbox.me/FlVBeetTitxlxP1MwnCV7BIDp5Nv)
+![](https://dn-odum9helk.qbox.me/Fn8JOnJNeygV3ykc9aU_lTtw5p6L)
+监控字段与指标的对应关系如下：
+1. `kernel_interrupts`:内核中断次数。
+2. `kernel_context_switches`:内核上下文切换次数。
+3. `kernel_processes_forked`:fork的进程数。
+4. `kernel_boot_time`:内核启动时间。
+5. `kernel_disk_pages_in`:磁盘换入数量。
+6. `kernel_disk_pages_out`:磁盘换出数量。
+7. `linux_sysctl_fs_aio_nr`:当前 aio 请求数。
+8. `linux_sysctl_fs_aio_max_nr`:最大允许的 aio 请求。
+9. `linux_sysctl_fs_dquot_nr`:分配的磁盘配额项及空余项。
+10. `linux_sysctl_fs_dquot_max`:缓存的磁盘配额的最大值。
+11. `linux_sysctl_fs_super_nr`:已分配的 super block 数。
+12. `linux_sysctl_fs_super_max`:系统能够分配的 super block 数。
+13. `linux_sysctl_fs_inode_nr`:分配的 inode 数。
+14. `linux_sysctl_fs_inode_free_nr`:空闲的 inode 数。
+15. `linux_sysctl_fs_inode_preshrink_nr`:inode 预缩减数。
+16. `linux_sysctl_fs_dentry_nr`:当前分配的 dentry 缓存数。
+17. `linux_sysctl_fs_dentry_unused_nr`:未使用的 dentry 缓存数。
+18. `linux_sysctl_fs_dentry_age_limit`:dentry 缓存被创建以来的时长。
+19. `linux_sysctl_fs_dentry_want_pages`:系统需要的页面数。
+20. `linux_sysctl_fs_file_nr`:已分配、使用的和最大的文件句柄数。
+21. `linux_sysctl_fs_file_max`:内核支持的最大file handle数量。
+
+其中kernel_vmstat相关字段不需要配置，只需要打开采集开关logkit-pro会自动采集相关的指标信息。

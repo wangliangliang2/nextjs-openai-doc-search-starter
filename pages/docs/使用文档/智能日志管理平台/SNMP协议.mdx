@@ -1,0 +1,558 @@
+### **基础配置信息**
+
+  * agents 列表(`snmp_agents`)：snmp 代理地址, 当有多个 agents 时, 地址使用 '`,`' 分割。
+  
+  * tebles 配置(`snmp_tables`)：程序将会使用 `Walk 请求`来获取字段数据, 需要填入一个符合 `json 数组`格式的字符串, 数组中的每一项有以下字段：
+      * `table_name`: 选填项，表格变量的名称，当该项为空时，会根据 `table_oid` 字段解析出来的内容填充
+      * `table_oid`: `必填项` 表格变量的 `对象标识符`
+      * `table_fields`: 选填项，除了从 `table_oid 中解析出来的字段外，还可以根据此配置项将简单变量放入其中
+
+  * fields 配置(`snmp_fields`)：程序将会使用 `Get 请求`来获取字段数据, 需要填入一个符合 `json数组` 格式的字符串, 数组中的每一项有以下字段：
+      * `field_name`: 选填项，字段名称, 当该项为空时，会根据 field_oid 字段解析出来的内容为空
+      * `field_oid`: `必填项` 字段的 对象标识符
+      * `field_oid_index_suffix`: 选填项，填写后会剥离 field_oid 的子标示符便于将其与其他字段匹配。
+
+#### **高级选项**
+
+  * 名称(`snmp_reader_name`)：默认 `system`, 对于简单变量(snmp_fields中的字段), 将把该字段放入收集的数据中, 所谓标识, 类似于 table_name。
+  
+  * 连接超时时间(`snmp_time_out`): 默认 `5s`, 超时时间。【如果snmp_tables数据项比较多，5s返回时间太短，建议调整为100s】
+ 
+  * 收集频率(`snmp_interval`): 默认 `30s`, 采集频率。
+
+  * 重试次数(`snmp_retries`):默认 `3`, 重试次数。
+
+  * 最大迭代次数(`snmp_max_repetitions`): 默认为 `50`, 变量检索次数的最大值, 用来指示 getBulk 命令, 尝试 snmp_max_repetitions 次 getNext 操作。
+
+  * 安全等级(`snmp_sec_level`)：默认为 `noAuthNoPriv1`, snmp 安全等级, 支持 "noAuthNoPriv", "authNoPriv", "authPriv" 三种。
+
+  * 认证协议(`snmp_auth_protocol`)：认证协议, 支持 `""`, `"md5"`, `"sha"` 三种。
+  
+  * 认证密码(`snmp_auth_password`)：为了不在配置中明文存储，我们在 `1.0.4` 版本及以后支持使用环境变量的方式填写该字段，填写方式为：`${YOUR_ENV}`，其中 `YOUR_ENV` 为环境变量，需要在机器上将该环境变量设置为原先要填写的值，`YOUR_ENV` 可以根据您的实际使用需求进行修改。
+
+  * 隐私协议(`snmp_priv_protocol`)：加密协议, 支持 `""`, `"des"`, `"aes"` 三种。
+
+
+!>注意: `snmp_fields` 和 `snmp_tables` 这两项配置需要填入符合 `json 数组`格式的字符串, 字符串内的双引号需要转义
+
+### **验证Agent到SNMP数据源网络通畅方案**
+
+（1）由于snmp是UDP的协议，故无法直接使用telnet来测试agent到设备的端口是否通，需要在logkit-pro所在的机器，安装nmap工具来探测对方snmp端口是否通畅。
+nmap -n -sU -p161 +设备ip 
+这样可以测试udp端口是否通，通的状态是state open并且需要确认这个open是否被拦截了，如果样式是open|filtered  则表示snmp是filtered拦截状态，表示网络不通被拦截了，需要找客户运维团队开通防火墙限制
+
+（2）测试网络通畅之后，可以使用snmpwalk做测试数据采集。
+ snmpwalk -v <版本号,一般是1、2c、3> 设备ip -c 客户给的community 1.3.6.1.2.1.1.5
+ 1.3.6.1.2.1.1.5 是通用的通过snmp抓取机器名的命令
+ 
+ 做好以上的测试之后，恭喜你，表示网络通畅并且可以采集到snmp数据了
+
+
+### **安装配置 SNMP Agent 教程**
+
+首先要区分清楚的概念是 logkit-pro agent 与 SNMP Agent 不是一个东西， SNMP Agent存在于各个机器(或网络设备)之上，接收SNMP请求，返回对应的监控内容。
+
+一般情况下，这两个 agent 不会运行在同一个机器（如某些网络设备logkit-pro无法直接安装在其之上，但是厂商默认支持SNMP协议，即该网络设备已经安装了SNMP Agent），因此这里的步骤做分开介绍。如果恰巧 logkit-pro 和 SNMP 的 agent 都运行在同一台机器上，则只需要合并两份步骤，略过重复的部分即可。
+
+#### **运行 logkit-pro agent 的机器**
+
+- 防火墙打开 TCP 3000 端口（根据 logkit-pro 实际监听端口决定）
+- 安装 SNMP 相关软件包
+
+```
+# Ubuntu 环境
+$ sudo apt update
+$ sudo apt install snmp
+$ sudo apt install snmp-mibs-downloader
+
+# CentOS 7 环境
+$ sudo yum install net-snmp-utils
+```
+
+- 修改 /etc/snmp/snmp.conf 以便加载所有支持的 MIB 库（注释掉所有行，CentOS 7 无需此步骤）
+
+```
+#mibs :
+```
+
+- 从安装的 `snmp-mibs-downloader` 样例文件中复制 Cisco 相关的 MIB 文件列表到指定位置（CentOS 7 无需此步骤）
+
+```
+$ sudo cp /usr/share/doc/snmp-mibs-downloader/examples/cisco* /etc/snmp-mibs-downloader/
+$ cd /etc/snmp-mibs-downloader && sudo gzip -d ciscolist.gz
+```
+
+- 修改 /etc/snmp-mibs-downloader/snmp-mibs-downloader.conf 为以下内容（CentOS 7 无需此步骤）
+
+```
+BASEDIR=/var/lib/mibs
+AUTOLOAD="rfc ianarfc iana cisco"
+```
+
+- 修改 /etc/snmp-mibs-downloader/cisco.conf 为以下内容（CentOS 7 无需此步骤）
+
+```
+HOST=ftp://ftp.cisco.com
+ARCHIVE=v2.tar.gz
+ARCHTYPE=tgz
+DIR=pub/mibs/v2/
+ARCHDIR=auto/mibs/v2
+CONF=ciscolist
+DEST=cisco
+```
+
+- 执行如下命令，根据之前复制的样例文件实际下载 Cisco 相关的 MIB 文件（CentOS 7 无需此步骤）
+
+```
+$ sudo download-mibs
+```
+
+- 配置 logkit（以及常用配置的 JSON）
+
+![](http://pandora-dl.qiniu.com/snmp_reader_sample_config.png)
+
+- 常用的 `tables配置` 可以参考该链接：http://pandora-dl.qiniu.com/snmp_reader_sample_table_fields.json
+- 提交配置后等待数秒（根据网络状况）即可创建成功
+
+#### **运行 SNMP Agent 的机器**
+
+> 指被收集的机器为了支持SNMP协议需要安装SNMP Agent，一般情况下被收集的目标已经支持SNMP协议收集就无需再安装
+
+- 防火墙打开 UDP 161 端口
+- 安装 SNMP 相关软件包
+
+```
+# Ubuntu 环境
+$ sudo apt update
+$ sudo apt install snmpd
+$ sudo apt install snmp-mibs-downloader
+
+# CentOS 7 环境
+$ sudo yum install net-snmp net-snmp-utils
+$ sudo yum install polkit
+```
+
+- 修改 /etc/snmp/snmpd.conf 以便外部访问
+
+```
+# Ubuntu 环境，注释行 2、5、6，添加行 4、7
+1. # Listen for connections from the local system only
+2. #agentAddress udp:127.0.0.1:161 
+3. # Listen for connections on all interfaces (both IPv4 *and* IPv6)
+4. agentAddress udp:161,udp6:[::1]:161
+...
+5. #view systemonly included .1.3.6.1.2.1.1
+6. #view systemonly included .1.3.6.1.2.1.25.1
+7. view systemonly included .1
+
+
+# CentOS 7 环境，注释行 1、2，添加行 3、4
+1. #view systemview included .1.3.6.1.2.1.1
+2. #view systemview included .1.3.6.1.2.1.25.1.1
+3. view systemview included .1
+4. agentAddress udp:161,udp6:[::1]:161
+```
+
+- 重启 snmpd 服务
+
+```
+# Ubuntu 环境
+$ sudo /etc/init.d/snmpd restart
+
+# CentOS 7 环境
+$ sudo systemctl restart snmpd
+```
+
+### **常用的 SNMP 字段节点**
+
+以下为常用的 SNMP 字段节点，可以放置在 `tebles 配置(snmp_tables)` 的 `table_fields` 中或 `fields 配置(snmp_fields)`。
+
+* 系统参数（1.3.6.1.2.1.1）
+
+|OID|描述|备注|请求方式|
+|--|--|--|--|
+|.1.3.6.1.2.1.1.1.0|获取系统基本信息|SysDesc|GET|
+|.1.3.6.1.2.1.1.3.0|监控时间|sysUptime|GET|
+|.1.3.6.1.2.1.1.4.0|系统联系人|sysContact|GET|
+|.1.3.6.1.2.1.1.5.0|获取机器名|SysName|GET|
+|.1.3.6.1.2.1.1.6.0|机器坐在位置|SysLocation|GET|
+|.1.3.6.1.2.1.1.7.0|机器提供的服务|SysService|GET|
+|.1.3.6.1.2.1.25.4.2.1.2|系统运行的进程列表|hrSWRunName|WALK|
+|.1.3.6.1.2.1.25.6.3.1.2|系统安装的软件列表|hrSWInstalledName|WALK|
+
+* 网络接口（1.3.6.1.2.1.2）
+
+|OID|描述|备注|请求方式|
+|--|--|--|--|
+|.1.3.6.1.2.1.2.1.0|网络接口的数目|IfNumber|GET|
+|.1.3.6.1.2.1.2.2.1.2|网络接口信息描述|IfDescr|WALK|
+|.1.3.6.1.2.1.2.2.1.3|网络接口类型|IfType|WALK|
+|.1.3.6.1.2.1.2.2.1.4|接口发送和接收的最大IP数据报[BYTE]|IfMTU|WALK|
+|.1.3.6.1.2.1.2.2.1.5|接口当前带宽[bps]|IfSpeed|WALK|
+|.1.3.6.1.2.1.2.2.1.6|接口的物理地址|IfPhysAddress|WALK|
+|.1.3.6.1.2.1.2.2.1.8|接口当前操作状态[up/down]|IfOperStatus|WALK|
+|.1.3.6.1.2.1.2.2.1.10|接口收到的字节数|IfInOctet|WALK|
+|.1.3.6.1.2.1.2.2.1.16|接口发送的字节数|IfOutOctet|WALK|
+|.1.3.6.1.2.1.2.2.1.11|接口收到的数据包个数|IfInUcastPkts|WALK|
+|.1.3.6.1.2.1.2.2.1.17|接口发送的数据包个数|IfOutUcastPkts|WALK|
+
+* CPU及负载
+
+|OID|描述|备注|请求方式|
+|--|--|--|--|
+|.1.3.6.1.4.1.2021.11.9.0|用户CPU百分比|ssCpuUser|GET|
+|.1.3.6.1.4.1.2021.11.10.0|系统CPU百分比|ssCpuSystem|GET|
+|.1.3.6.1.4.1.2021.11.11.0|空闲CPU百分比|ssCpuIdle|GET|
+|.1.3.6.1.4.1.2021.11.50.0|原始用户CPU使用时间|ssCpuRawUser|GET|
+|.1.3.6.1.4.1.2021.11.51.0|原始nice占用时间|ssCpuRawNice|GET|
+|.1.3.6.1.4.1.2021.11.52.0|原始系统CPU使用时间|ssCpuRawSystem.|GET|
+|.1.3.6.1.4.1.2021.11.53.0|原始CPU空闲时间|ssCpuRawIdle|GET|
+|.1.3.6.1.2.1.25.3.3.1.2|CPU的当前负载，N个核就有N个负载|hrProcessorLoad|WALK|
+|.1.3.6.1.4.1.2021.11.3.0|swap 换入|ssSwapIn|GET|
+|.1.3.6.1.4.1.2021.11.4.0|swap 换出|SsSwapOut|GET|
+|.1.3.6.1.4.1.2021.11.5.0||ssIOSent|GET|
+|.1.3.6.1.4.1.2021.11.6.0||ssIOReceive|GET|
+|.1.3.6.1.4.1.2021.11.7.0||ssSysInterrupts|GET|
+|.1.3.6.1.4.1.2021.11.8.0||ssSysContext|GET|
+|.1.3.6.1.4.1.2021.11.54.0||ssCpuRawWait|GET|
+|.1.3.6.1.4.1.2021.11.56.0||ssCpuRawInterrupt|GET|
+|.1.3.6.1.4.1.2021.11.57.0||ssIORawSent|GET|
+|.1.3.6.1.4.1.2021.11.58.0||ssIORawReceived|GET|
+|.1.3.6.1.4.1.2021.11.59.0||ssRawInterrupts|GET|
+|.1.3.6.1.4.1.2021.11.60.0||ssRawContexts|GET|
+|.1.3.6.1.4.1.2021.11.61.0||ssCpuRawSoftIRQ|GET|
+|.1.3.6.1.4.1.2021.11.62.0||ssRawSwapIn.|GET|
+|.1.3.6.1.4.1.2021.11.63.0||ssRawSwapOut|GET|
+|.1.3.6.1.4.1.2021.10.1.3.1||Load5|GET|
+|.1.3.6.1.4.1.2021.10.1.3.2||Load10|GET|
+|.1.3.6.1.4.1.2021.10.1.3.3||Load15|GET|
+
+* 内存及磁盘（1.3.6.1.2.1.25）
+
+|OID|描述|备注|请求方式|
+|--|--|--|--|
+|.1.3.6.1.2.1.25.2.2.0|获取内存大小|hrMemorySize|GET|
+|.1.3.6.1.2.1.25.2.3.1.1|存储设备编号|hrStorageIndex|WALK|
+|.1.3.6.1.2.1.25.2.3.1.2|存储设备类型|hrStorageType[OID]|WALK|
+|.1.3.6.1.2.1.25.2.3.1.3|存储设备描述|hrStorageDescr|WALK|
+|.1.3.6.1.2.1.25.2.3.1.4|簇的大小|hrStorageAllocationUnits|WALK|
+|.1.3.6.1.2.1.25.2.3.1.5|簇的的数目|hrStorageSize|WALK|
+|.1.3.6.1.2.1.25.2.3.1.6|使用多少，跟总容量相除就是占用率|hrStorageUsed|WALK|
+|.1.3.6.1.4.1.2021.4.3.0|Total Swap Size(虚拟内存)|memTotalSwap|GET|
+|.1.3.6.1.4.1.2021.4.4.0|Available Swap Space|memAvailSwap|GET|
+|.1.3.6.1.4.1.2021.4.5.0|Total RAM in machine|memTotalReal|GET|
+|.1.3.6.1.4.1.2021.4.6.0|Total RAM used|memAvailReal|GET|
+|.1.3.6.1.4.1.2021.4.11.0|Total RAM Free|memTotalFree|GET|
+|.1.3.6.1.4.1.2021.4.13.0|Total RAM Shared|memShared|GET|
+|.1.3.6.1.4.1.2021.4.14.0|Total RAM Buffered|memBuffer|GET|
+|.1.3.6.1.4.1.2021.4.15.0|Total Cached Memory|memCached|GET|
+|.1.3.6.1.4.1.2021.9.1.2|Path where the disk is mounted|dskPath|WALK|
+|.1.3.6.1.4.1.2021.9.1.3|Path of the device for the partition|dskDevice|WALK|
+|.1.3.6.1.4.1.2021.9.1.6|Total size of the disk/partion (kBytes)|dskTotal|WALK|
+|.1.3.6.1.4.1.2021.9.1.7|Available space on the disk|dskAvail|WALK|
+|.1.3.6.1.4.1.2021.9.1.8|Used space on the disk|dskUsed|WALK|
+|.1.3.6.1.4.1.2021.9.1.9|Percentage of space used on disk|dskPercent|WALK|
+|.1.3.6.1.4.1.2021.9.1.10|Percentage of inodes used on disk|dskPercentNode|WALK|
+
+* System Group
+
+|名称|OID|
+|--|--|
+|sysDescr|1.3.6.1.2.1.1.1|
+|sysObjectID|1.3.6.1.2.1.1.2|
+|sysUpTime|1.3.6.1.2.1.1.3|
+|sysContact|1.3.6.1.2.1.1.4|
+|sysName|1.3.6.1.2.1.1.5|
+|sysLocation|1.3.6.1.2.1.1.6|
+|sysServices|1.3.6.1.2.1.1.7|
+
+* Process Group
+
+|名称|OID|
+|--|--|
+|hrSWRunTable|1.3.6.1.2.1.25.4.2|
+|hrSWRunEntry|1.3.6.1.2.1.25.4.2.1|
+|hrSWRunIndex|1.3.6.1.2.1.25.4.2.1.1|
+|hrSWRunName|1.3.6.1.2.1.25.4.2.1.2|
+|hrSWRunID|1.3.6.1.2.1.25.4.2.1.3|
+|hrSWRunPath|1.3.6.1.2.1.25.4.2.1.4|
+|hrSWRunParameters|1.3.6.1.2.1.25.4.2.1.5|
+|hrSWRunType|1.3.6.1.2.1.25.4.2.1.6|
+|hrSWRunStatus|1.3.6.1.2.1.25.4.2.1.7|
+
+* System Group
+
+|名称|OID|
+|--|--|
+|systemStats|1.3.6.1.4.1.2021.11|
+|ssIndex|1.3.6.1.4.1.2021.11.1|
+|ssErrorName|1.3.6.1.4.1.2021.11.2|
+|ssSwapIn|1.3.6.1.4.1.2021.11.3|
+|ssSwapOut|1.3.6.1.4.1.2021.11.4|
+|ssIOSent|1.3.6.1.4.1.2021.11.5|
+|ssIOReceive|1.3.6.1.4.1.2021.11.6|
+|ssSysInterrupts|1.3.6.1.4.1.2021.11.7|
+|ssSysContext|1.3.6.1.4.1.2021.11.8|
+|ssCpuUser|1.3.6.1.4.1.2021.11.9|
+|ssCpuSystem|1.3.6.1.4.1.2021.11.10|
+|ssCpuIdle|1.3.6.1.4.1.2021.11.11|
+|ssCpuRawUser|1.3.6.1.4.1.2021.11.50|
+|ssCpuRawNice|1.3.6.1.4.1.2021.11.51|
+|ssCpuRawSystem|1.3.6.1.4.1.2021.11.52|
+|ssCpuRawIdle|1.3.6.1.4.1.2021.11.53|
+|ssCpuRawWait|1.3.6.1.4.1.2021.11.54|
+|ssCpuRawKernel|1.3.6.1.4.1.2021.11.55|
+|ssCpuRawInterrupt|1.3.6.1.4.1.2021.11.56|
+|ssIORawSent|1.3.6.1.4.1.2021.11.57|
+|ssIORawReceived|1.3.6.1.4.1.2021.11.58|
+|ssRawInterrupts|1.3.6.1.4.1.2021.11.59|
+|ssRawContexts|1.3.6.1.4.1.2021.11.60|
+|ssCpuRawSoftIRQ|1.3.6.1.4.1.2021.11.61|
+|ssRawSwapIn|1.3.6.1.4.1.2021.11.62|
+|ssRawSwapOut|1.3.6.1.4.1.2021.11.63|
+
+* Storage Group
+
+|名称|OID|
+|--|--|
+|hrStorageTable|1.3.6.1.2.1.25.2.3|
+|hrStorageEntry|1.3.6.1.2.1.25.2.3.1|
+|hrStorageIndex|1.3.6.1.2.1.25.2.3.1.1| 
+|hrStorageType|1.3.6.1.2.1.25.2.3.1.2|
+|hrStorageDescr|1.3.6.1.2.1.25.2.3.1.3|
+|hrStorageAllocationUnits|1.3.6.1.2.1.25.2.3.1.4|
+|hrStorageSize|1.3.6.1.2.1.25.2.3.1.5|
+|hrStorageUsed|1.3.6.1.2.1.25.2.3.1.6|
+|hrStorageAllocationFailures|1.3.6.1.2.1.25.2.3.1.7|
+
+* Disk Group
+
+|名称|OID|
+|--|--|
+|dskTable|1.3.6.1.4.1.2021.9|
+|dskEntry|1.3.6.1.4.1.2021.9.1|
+|dskIndex|1.3.6.1.4.1.2021.9.1.1|
+|dskPath|1.3.6.1.4.1.2021.9.1.2|
+|dskDevice|1.3.6.1.4.1.2021.9.1.3|
+|dskMinimum|1.3.6.1.4.1.2021.9.1.4|
+|dskMinPercent|1.3.6.1.4.1.2021.9.1.5|
+|dskTotal|1.3.6.1.4.1.2021.9.1.6|
+|dskAvail|1.3.6.1.4.1.2021.9.1.7|
+|dskUsed|1.3.6.1.4.1.2021.9.1.8|
+|dskPercent|1.3.6.1.4.1.2021.9.1.9|
+|dskPercentNode|1.3.6.1.4.1.2021.9.1.10|
+|dskErrorFlag|1.3.6.1.4.1.2021.9.1.100|
+|dskErrorMsg|1.3.6.1.4.1.2021.9.1.101|
+
+* Diskio Group
+
+|名称|OID|
+|--|--|
+|diskIOIndex|1.3.6.1.4.1.2021.13.15.1.1.1|
+|diskIODevice|1.3.6.1.4.1.2021.13.15.1.1.2|
+|diskIONRead|1.3.6.1.4.1.2021.13.15.1.1.3|
+|diskIONWritten|1.3.6.1.4.1.2021.13.15.1.1.4|
+|diskIOReads|1.3.6.1.4.1.2021.13.15.1.1.5|
+|diskIOWrites|1.3.6.1.4.1.2021.13.15.1.1.6|
+|diskIOLA1|1.3.6.1.4.1.2021.13.15.1.1.9|
+|diskIOLA5|1.3.6.1.4.1.2021.13.15.1.1.10|
+|diskIOLA15|1.3.6.1.4.1.2021.13.15.1.1.11|
+|diskIONReadX|1.3.6.1.4.1.2021.13.15.1.1.12|
+|diskIONWrittenX|1.3.6.1.4.1.2021.13.15.1.1.13|
+
+* Mem Group 
+
+|名称|OID|
+|--|--|
+|memIndex|1.3.6.1.4.1.2021.4.1|
+|memErrorName|1.3.6.1.4.1.2021.4.2|
+|memTotalSwap|1.3.6.1.4.1.2021.4.3|
+|memAvailSwap|1.3.6.1.4.1.2021.4.4|
+|memTotalReal|1.3.6.1.4.1.2021.4.5|
+|memAvailReal|1.3.6.1.4.1.2021.4.6|
+|memTotalSwapTXT|1.3.6.1.4.1.2021.4.7|
+|memAvailSwapTXT|1.3.6.1.4.1.2021.4.8|
+|memTotalRealTXT|1.3.6.1.4.1.2021.4.9|
+|memAvailRealTXT|1.3.6.1.4.1.2021.4.10|
+|memTotalFree|1.3.6.1.4.1.2021.4.11|
+|memMinimumSwap|1.3.6.1.4.1.2021.4.12|
+|memShared|1.3.6.1.4.1.2021.4.13|
+|memBuffer|1.3.6.1.4.1.2021.4.14|
+|memCached|1.3.6.1.4.1.2021.4.15|
+|memUsedSwapTXT|1.3.6.1.4.1.2021.4.16|
+|memUsedRealTXT|1.3.6.1.4.1.2021.4.17|
+|memSwapError|1.3.6.1.4.1.2021.4.100|
+|memSwapErrorMsg|1.3.6.1.4.1.2021.4.101|
+
+
+* Interfaces Group
+
+|名称|OID|
+|--|--|
+|ifNumber|1.3.6.1.2.1.2.1|
+|ifTable|1.3.6.1.2.1.2.2|
+|ifEntry|1.3.6.1.2.1.2.2.1|
+|ifIndex|1.3.6.1.2.1.2.2.1.1|
+|ifDescr|1.3.6.1.2.1.2.2.1.2|
+|ifType|1.3.6.1.2.1.2.2.1.3|
+|ifMtu|1.3.6.1.2.1.2.2.1.4|
+|ifSpeed|1.3.6.1.2.1.2.2.1.5|
+|ifPhysAddress|1.3.6.1.2.1.2.2.1.6|
+|ifAdminStatus|1.3.6.1.2.1.2.2.1.7|
+|ifOperStatus|1.3.6.1.2.1.2.2.1.8|
+|ifLastChange|1.3.6.1.2.1.2.2.1.9|
+|ifInOctets|1.3.6.1.2.1.2.2.1.10|
+|ifInUcastPkts|1.3.6.1.2.1.2.2.1.11|
+|ifInNUcastPkts|1.3.6.1.2.1.2.2.1.12|
+|ifInDiscards|1.3.6.1.2.1.2.2.1.13|
+|ifInErrors|1.3.6.1.2.1.2.2.1.14|
+|ifInUnknownProtos|1.3.6.1.2.1.2.2.1.15|
+|ifOutOctets|1.3.6.1.2.1.2.2.1.16|
+|ifOutUcastPkts|1.3.6.1.2.1.2.2.1.17|
+|ifOutNUcastPkts|1.3.6.1.2.1.2.2.1.18|
+|ifOutDiscards|1.3.6.1.2.1.2.2.1.19|
+|ifOutErrors|1.3.6.1.2.1.2.2.1.20|
+|ifOutQLen|1.3.6.1.2.1.2.2.1.21|
+|ifSpecific|1.3.6.1.2.1.2.2.1.22|
+
+* IP Group
+
+|名称|OID|
+|--|--|
+|ipForwarding|1.3.6.1.2.1.4.1|
+|ipDefaultTTL|1.3.6.1.2.1.4.2|
+|ipInReceives|1.3.6.1.2.1.4.3|
+|ipInHdrErrors|1.3.6.1.2.1.4.4|
+|ipInAddrErrors|1.3.6.1.2.1.4.5|
+|ipForwDatagrams|1.3.6.1.2.1.4.6|
+|ipInUnknownProtos|1.3.6.1.2.1.4.7|
+|ipInDiscards|1.3.6.1.2.1.4.8|
+|ipInDelivers|1.3.6.1.2.1.4.9|
+|ipOutRequests|1.3.6.1.2.1.4.10|
+|ipOutDiscards|1.3.6.1.2.1.4.11|
+|ipOutNoRoutes|1.3.6.1.2.1.4.12|
+|ipReasmTimeout|1.3.6.1.2.1.4.13|
+|ipReasmReqds|1.3.6.1.2.1.4.14|
+|ipReasmOKs|1.3.6.1.2.1.4.15|
+|ipReasmFails|1.3.6.1.2.1.4.16|
+|ipFragsOKs|1.3.6.1.2.1.4.17|
+|ipFragsFails|1.3.6.1.2.1.4.18|
+|ipFragCreates|1.3.6.1.2.1.4.19|
+|ipAddrTable|1.3.6.1.2.1.4.20|
+|ipAddrEntry|1.3.6.1.2.1.4.20.1|
+|ipAdEntAddr|1.3.6.1.2.1.4.20.1.1|
+|ipAdEntIfIndex|1.3.6.1.2.1.4.20.1.2|
+|ipAdEntNetMask|1.3.6.1.2.1.4.20.1.3|
+|ipAdEntBcastAddr|1.3.6.1.2.1.4.20.1.4|
+|ipAdEntReasmMaxSize|1.3.6.1.2.1.4.20.1.5|
+
+* ICMP Group
+
+|名称|OID|
+|--|--|
+|icmpInMsgs|1.3.6.1.2.1.5.1|
+|icmpInErrors|1.3.6.1.2.1.5.2|
+|icmpInDestUnreachs|1.3.6.1.2.1.5.3|
+|icmpInTimeExcds|1.3.6.1.2.1.5.4|
+|icmpInParmProbs|1.3.6.1.2.1.5.5|
+|icmpInSrcQuenchs|1.3.6.1.2.1.5.6|
+|icmpInRedirects|1.3.6.1.2.1.5.7|
+|icmpInEchos|1.3.6.1.2.1.5.8|
+|icmpInEchoReps|1.3.6.1.2.1.5.9|
+|icmpInTimestamps|1.3.6.1.2.1.5.10|
+|icmpInTimestampReps|1.3.6.1.2.1.5.11|
+|icmpInAddrMasks|1.3.6.1.2.1.5.12|
+|icmpInAddrMaskReps|1.3.6.1.2.1.5.13|
+|icmpOutMsgs|1.3.6.1.2.1.5.14|
+|icmpOutErrors|1.3.6.1.2.1.5.15|
+|icmpOutDestUnreachs|1.3.6.1.2.1.5.16|
+|icmpOutTimeExcds|1.3.6.1.2.1.5.17|
+|icmpOutParmProbs|1.3.6.1.2.1.5.18|
+|icmpOutSrcQuenchs|1.3.6.1.2.1.5.19|
+|icmpOutRedirects|1.3.6.1.2.1.5.20|
+|icmpOutEchos|1.3.6.1.2.1.5.21|
+|icmpOutEchoReps|1.3.6.1.2.1.5.22|
+|icmpOutTimestamps|1.3.6.1.2.1.5.23|
+|icmpOutTimestampReps|1.3.6.1.2.1.5.24|
+|icmpOutAddrMasks|1.3.6.1.2.1.5.25|
+|icmpOutAddrMaskReps|1.3.6.1.2.1.5.26|
+
+* TCP Group
+
+|名称|OID|
+|--|--|
+|tcpRtoAlgorithm|1.3.6.1.2.1.6.1|
+|tcpRtoMin|1.3.6.1.2.1.6.2|
+|tcpRtoMax|1.3.6.1.2.1.6.3|
+|tcpMaxConn|1.3.6.1.2.1.6.4|
+|tcpActiveOpens|1.3.6.1.2.1.6.5|
+|tcpPassiveOpens|1.3.6.1.2.1.6.6|
+|tcpAttemptFails|1.3.6.1.2.1.6.7|
+|tcpEstabResets|1.3.6.1.2.1.6.8|
+|tcpCurrEstab|1.3.6.1.2.1.6.9|
+|tcpInSegs|1.3.6.1.2.1.6.10|
+|tcpOutSegs|1.3.6.1.2.1.6.11|
+|tcpRetransSegs|1.3.6.1.2.1.6.12|
+|tcpConnTable|1.3.6.1.2.1.6.13|
+|tcpConnEntry|1.3.6.1.2.1.6.13.1|
+|tcpConnState|1.3.6.1.2.1.6.13.1.1|
+|tcpConnLocalAddress|1.3.6.1.2.1.6.13.1.2|
+|tcpConnLocalPort|1.3.6.1.2.1.6.13.1.3|
+|tcpConnRemAddress|1.3.6.1.2.1.6.13.1.4|
+|tcpConnRemPort|1.3.6.1.2.1.6.13.1.5|
+|tcpInErrs|1.3.6.1.2.1.6.14|
+|tcpOutRsts|1.3.6.1.2.1.6.15|
+
+* UDP Group
+
+|名称|OID|
+|--|--|
+|udpInDatagrams|1.3.6.1.2.1.7.1|
+|udpNoPorts|1.3.6.1.2.1.7.2|
+|udpInErrors|1.3.6.1.2.1.7.3|
+|udpOutDatagrams|1.3.6.1.2.1.7.4|
+|udpTable|1.3.6.1.2.1.7.5|
+|udpEntry|1.3.6.1.2.1.7.5.1|
+|udpLocalAddress|1.3.6.1.2.1.7.5.1.1|
+|udpLocalPort|1.3.6.1.2.1.7.5.1.2|
+
+* SNMP Group
+
+|名称|OID|
+|--|--|
+|snmpInPkts|1.3.6.1.2.1.11.1|
+|snmpOutPkts|1.3.6.1.2.1.11.2|
+|snmpInBadVersions|1.3.6.1.2.1.11.3|
+|snmpInBadCommunityNames|1.3.6.1.2.1.11.4|
+|snmpInBadCommunityUses|1.3.6.1.2.1.11.5|
+|snmpInASNParseErrs|1.3.6.1.2.1.11.6|
+|snmpInTooBigs|1.3.6.1.2.1.11.8|
+|snmpInNoSuchNames|1.3.6.1.2.1.11.9|
+|snmpInBadValues|1.3.6.1.2.1.11.10|
+|snmpInReadOnlys|1.3.6.1.2.1.11.11|
+|snmpInGenErrs|1.3.6.1.2.1.11.12|
+|snmpInTotalReqVars|1.3.6.1.2.1.11.13|
+|snmpInTotalSetVars|1.3.6.1.2.1.11.14|
+|snmpInGetRequests|1.3.6.1.2.1.11.15|
+|snmpInGetNexts|1.3.6.1.2.1.11.16|
+|snmpInSetRequests|1.3.6.1.2.1.11.17|
+|snmpInGetResponses|1.3.6.1.2.1.11.18|
+|snmpInTraps|1.3.6.1.2.1.11.19|
+|snmpOutTooBigs|1.3.6.1.2.1.11.20|
+|snmpOutNoSuchNames|1.3.6.1.2.1.11.21|
+|snmpOutBadValues|1.3.6.1.2.1.11.22|
+|snmpOutGenErrs|1.3.6.1.2.1.11.24|
+|snmpOutGetRequests|1.3.6.1.2.1.11.25|
+|snmpOutGetNexts|1.3.6.1.2.1.11.26|
+|snmpOutSetRequests|1.3.6.1.2.1.11.27|
+|snmpOutGetResponses|1.3.6.1.2.1.11.28|
+|snmpOutTraps|1.3.6.1.2.1.11.29|
+|snmpEnableAuthenTraps|1.3.6.1.2.1.11.30|
+
+其他 OID 的查询请参考:
+
+[http://www.oid-info.com/index.htm](http://www.oid-info.com/index.htm)
+
+[http://cric.grenoble.cnrs.fr/Administrateurs/Outils/MIBS/?oid=1](http://cric.grenoble.cnrs.fr/Administrateurs/Outils/MIBS/?oid=1)
+
+[http://www.alvestrand.no/objectid/top.html](http://www.alvestrand.no/objectid/top.html)

@@ -1,0 +1,553 @@
+<a id="access-domain"></a>
+# 访问域名
+```
+Host: fusion.qiniuapi.com
+```
+
+<a id="traffic-bandwidth-authenticated"></a>
+# 认证授权
+
+```
+Authorization: QBox <access_token>
+```
+access_token 详细描述请查阅[这里](/kodo/manual/access-token)。
+
+<a id="batch-bandwidth"></a>
+# 批量查询 全站加速 计费带宽
+
+<a id="bandwidth-interface-address"></a>
+## 接口地址
+```
+/v2/dcdn/bandwidth
+```
+
+<a id="bandwidth-instruction"></a>
+### 说明
+* 返回的数据包含开始日期和结束日期
+* 带宽的单位为 bps
+* data 只包含有流量的域名
+
+<a id="bandwidth-request-syntax"></a>
+## 请求语法
+
+```
+POST /v2/dcdn/bandwidth
+Content-Type: application/json
+
+{
+    "startDate": <StartDate>,
+    "endDate": <EndDate>,
+    "granularity": <Granularity>,
+    "domains": <Domains>
+}
+```
+
+<a id="bandwidth-request-body"></a>
+## 请求内容
+
+| 参数          | 类型     | 必要性  | 说明                     |
+| ----------- | ------ | ---- | ---------------------- |
+| StartDate   | string | 必须   | 开始日期，例如：2016-07-01     |
+| EndDate     | string | 必须   | 结束日期，例如：2016-07-03     |
+| Granularity | string | 必须   | 粒度，取值：5min ／ hour ／day |
+| Domains     | string | 必须   | 域名列表，以 ；分割             |
+| Type        | string | 非必须  | 指定带宽数据类型, `""`或`"bandwidth"`查询全站加速带宽数据，`"dynbandwidth"`查询因动态加速产生的带宽数据, 未启用动态加速功能可忽略该参数|
+<a id="bandwidth-response-status"></a>
+## 响应状态码
+
+|HTTP状态码|含义|说明|
+| :-------| :--------| :--------|
+|200 | success | 成功 |
+|400031|invalid params |请求参数非法。 e.g. `"Type"`参数指定了除`""`(空)/`"bandwidth"`/`"dynbandwidth"`以外的值|
+|400032|invalid host|请求中存在无效的域名，请确保域名格式正确 |
+|400080  | invalid start time |开始时间格式错误 |
+|400081 |invalid end time | 截止时间格式错误 |
+|400082 |invalid time range |时间范围错误，请确保开始时间早于结束时间，且时间范围不超过 31 天|
+|500000|internal error|服务端内部错误，请联系技术支持|
+
+<a id="bandwidth-response-body"></a>
+## 响应内容
+
+```
+200 OK HTTP/1.1 
+
+{
+  "code": <Code>,
+  "error": <Error>,
+  "time": <Time>,
+  "data": {
+    ...
+    <Domain_i>: {
+      "china": <Domain_i_China>,
+      "oversea": <Domain_i_Oversea>,
+    },
+    ...
+  }
+}
+```
+
+| 参数               | 类型       | 说明                                       |
+| :--------------- | :------- | :--------------------------------------- |
+| Code             | int      | HTTP 状态码，整型，见[响应状态码](#bandwidth-response-status) |
+| Error            | string   | 自定义错误码描述，字符串                             |
+| Time             | []string | 时间点数组                                    |
+| data             | map      | 带宽数据                                     |
+| Domain_i         | string   | 域名                                       |
+| Domain_i_China   | []int    | Domain_i 国内带宽数据，与 Time 一一对应              |
+| Domain_i_Oversea | []int    | Domain_i 海外带宽数据，与 Time 一一对应              |
+
+<a id="bandwidth-sample"></a>
+## 示例
+
+```
+200 OK HTTP/1.1 
+
+{
+  "code": 200,
+  "error": "",
+  "time": ["2016-07-01 00:00:00","2016-07-01 00:05:00", ...],
+  "data": {
+    "a.com": {
+      "china": [8888, 9999, 10000, ...],
+      "oversea": [3333, 4444, 5000, ...],
+    },
+    "b.com": {
+      "china": [8888, 9999, 10000, ...],
+      "oversea": [3333, 4444, 5000, ...],
+    }
+  }
+}
+```
+<a id="batch-flux"></a>
+# 批量查询 全站加速 计费流量
+
+<a id="flux-interface-address"></a>
+## 接口地址
+```
+/v2/dcdn/flux
+```
+
+<a id="flux-instruction"></a>
+### 说明
+* 返回的数据包含开始日期和结束日期
+* 流量的单位为 byte
+* data 只包含有流量的域名
+
+<a id="flux-request-syntax"></a>
+## 请求语法
+
+```
+POST /v2/dcdn/flux
+Content-Type: application/json
+
+{
+    "startDate": <StartDate>,
+    "endDate": <EndDate>,
+    "granularity": <Granularity>,
+    "domains": <Domains>
+}
+```
+
+<a id="flux-request-body"></a>
+## 请求内容
+
+| 参数          | 类型     | 必要性  | 说明                     |
+| ----------- | ------ | ---- | ---------------------- |
+| StartDate   | string | 必须   | 开始日期，例如：2016-07-01     |
+| EndDate     | string | 必须   | 结束日期，例如：2016-07-03     |
+| Granularity | string | 必须   | 粒度，取值：5min ／ hour ／day |
+| Domains     | string | 必须   | 域名列表，以 ；分割             |
+| Type        | string | 非必须 | `""`或`"flux"`查询全站加速流量数据，`"dynflux"`查询因动态加速产生的流量数据, 未启用动态加速功能可忽略该参数|
+<a id="flux-response-status"></a>
+## 响应状态码
+
+| HTTP状态码 | 含义                 | 说明                                 |
+| :------ | :----------------- | :--------------------------------- |
+| 200     | success            | 成功                                 |
+| 400031  | invalid params     | 请求参数非法。 e.g. `"Type"`参数指定了除`""`(空)/`"bandwidth"`/`"dynbandwidth"`以外的值 |
+| 400032  | invalid host       | 请求中存在无效的域名，请确保域名格式正确               |
+| 400080  | invalid start time | 开始时间格式错误                           |
+| 400081  | invalid end time   | 截止时间格式错误                           |
+| 400082  | invalid time range | 时间范围错误，请确保开始时间早于结束时间，且时间范围不超过 30 天 |
+| 500000  | internal error     | 服务端内部错误，请联系技术支持                    |
+
+<a id="flux-response-body"></a>
+## 响应内容
+
+```
+200 OK HTTP/1.1 
+
+{
+  "code": <Code>,
+  "error": <Error>,
+  "time": <Time>,
+  "data": {
+    ...
+    <Domain_i>: {
+      "china": <Domain_i_China>,
+      "oversea": <Domain_i_Oversea>,
+    },
+    ...
+  }
+}
+```
+
+| 参数               | 类型       | 说明                                       |
+| :--------------- | :------- | :--------------------------------------- |
+| Code             | int      | HTTP 状态码，整型，见[响应状态码](#flux-response-status) |
+| Error            | string   | 自定义错误码描述，字符串                             |
+| Time             | []string | 时间点数组                                    |
+| data             | map      | 流量数据                                     |
+| Domain_i         | string   | 域名                                       |
+| Domain_i_China   | []int    | Domain_i 国内流量数据，与 Time 一一对应              |
+| Domain_i_Oversea | []int    | Domain_i 海外流量数据，与 Time 一一对应              |
+
+<a id="flux-sample"></a>
+## 示例
+
+```
+200 OK HTTP/1.1 
+
+{
+  "code": 200,
+  "error": "",
+  "time": ["2016-07-01 00:00:00","2016-07-01 00:05:00", ...],
+  "data": {
+    "a.com": {
+      "china": [8888, 9999, 10000, ...],
+      "oversea": [3333, 4444, 5000, ...],
+    },
+    "b.com": {
+      "china": [8888, 9999, 10000, ...],
+      "oversea": [3333, 4444, 5000, ...],
+    }
+  }
+}
+```
+
+
+# 批量查询动态加速之动态请求数
+
+<a id="flux-interface-address"></a>
+## 接口地址
+```
+/v2/dcdn/dynreqcount
+```
+
+<a id="flux-instruction"></a>
+### 说明
+* 返回的数据包含开始日期和结束日期
+* 动态请求数单位为 次
+* data 只包含有流量的域名(依据动态加速请求日志)
+
+<a id="flux-request-syntax"></a>
+## 请求语法
+
+```
+POST /v2/dcdn/dynreqcount
+Content-Type: application/json
+
+{
+    "startDate": <StartDate>,
+    "endDate": <EndDate>,
+    "granularity": <Granularity>,
+    "domains": <Domains>
+}
+```
+
+<a id="flux-request-body"></a>
+## 请求内容
+
+| 参数          | 类型     | 必要性  | 说明                     |
+| ----------- | ------ | ---- | ---------------------- |
+| StartDate   | string | 必须   | 开始日期，例如：2016-07-01     |
+| EndDate     | string | 必须   | 结束日期，例如：2016-07-03     |
+| Granularity | string | 必须   | 粒度，取值：5min ／ hour ／day |
+| Domains     | string | 必须   | 域名列表，以 ；分割             |
+| Type        | string | 非必须 | 数据类型, `""`或`"dynreqcount"`查询因动态加速产生的动态请求数, 其他值视为非法参数|
+<a id="flux-response-status"></a>
+## 响应状态码
+
+| HTTP状态码 | 含义                 | 说明                                 |
+| :------ | :----------------- | :--------------------------------- |
+| 200     | success            | 成功                                 |
+| 400031  | invalid params     | 请求内容参数`"Type"`非法. e.g `"Type"`参数指定了除`""`(空)/`"dynreqcount"`之外的值 |
+| 400032  | invalid host       | 请求中存在无效的域名，请确保域名格式正确               |
+| 400080  | invalid start time | 开始时间格式错误                           |
+| 400081  | invalid end time   | 截止时间格式错误                           |
+| 400082  | invalid time range | 时间范围错误，请确保开始时间早于结束时间，且时间范围不超过 30 天 |
+| 500000  | internal error     | 服务端内部错误，请联系技术支持                    |
+
+<a id="flux-response-body"></a>
+## 响应内容
+
+```
+200 OK HTTP/1.1 
+
+{
+  "code": <Code>,
+  "error": <Error>,
+  "time": <Time>,
+  "data": {
+    ...
+    <Domain_i>: {
+      "china": <Domain_i_China>,
+      "oversea": <Domain_i_Oversea>,
+    },
+    ...
+  }
+}
+```
+
+| 参数               | 类型       | 说明                                       |
+| :--------------- | :------- | :--------------------------------------- |
+| Code             | int      | HTTP 状态码，整型，见[响应状态码](#flux-response-status) |
+| Error            | string   | 自定义错误码描述，字符串                             |
+| Time             | []string | 时间点数组                                    |
+| data             | map      | 流量数据                                     |
+| Domain_i         | string   | 域名                                       |
+| Domain_i_China   | []int    | Domain_i 国内流量数据，与 Time 一一对应              |
+| Domain_i_Oversea | []int    | Domain_i 海外流量数据，与 Time 一一对应              |
+
+<a id="flux-sample"></a>
+## 示例
+
+```
+200 OK HTTP/1.1 
+
+{
+  "code": 200,
+  "error": "",
+  "time": ["2019-01-01 00:00:00","2019-01-01 00:05:00", ...],
+  "data": {
+    "a.com": {
+      "china": [8888, 9999, 10000, ...],
+      "oversea": [3333, 4444, 5000, ...],
+    },
+    "b.com": {
+      "china": [8888, 9999, 10000, ...],
+      "oversea": [3333, 4444, 5000, ...],
+    }
+  }
+}
+```
+<a id="batch-monitoring-bandwidth"></a>
+# 批量查询 全站加速 监控带宽
+
+<a id="monitoring-bandwidth-interface-address"></a>
+## 接口地址
+```
+/v2/tune/monitoring/bandwidth
+```
+
+<a id="monitoring-bandwidth-instruction"></a>
+### 说明
+* 返回的数据包含开始日期和结束日期
+* 带宽的单位为 bps
+* data 只包含有流量的域名
+* 监控接口侧重于全站加速服务实时统计带宽数据的实效性，不保证数据与账单完全一致
+* 支持查询3个月之内的带宽数据，/v2/dcdn/bandwidth接口无此限制
+
+
+
+<a id="monitoring-bandwidth-request-syntax"></a>
+## 请求语法
+
+```
+POST /v2/tune/monitoring/bandwidth
+Content-Type: application/json
+
+{
+    "startDate": <StartDate>,
+    "endDate": <EndDate>,
+    "granularity": <Granularity>,
+    "domains": <Domains>
+}
+```
+
+<a id="monitoring-bandwidth-request-body"></a>
+## 请求内容
+
+| 参数          | 类型     | 必要性  | 说明                     |
+| ----------- | ------ | ---- | ---------------------- |
+| StartDate   | string | 必须   | 开始日期，例如：2016-07-01     |
+| EndDate     | string | 必须   | 结束日期，例如：2016-07-03     |
+| Granularity | string | 必须   | 粒度，取值：5min ／ hour ／day |
+| Domains     | string | 必须   | 域名列表，以 ；分割             |
+| Type        | string | 非必须  | 指定带宽数据类型, `""`或`"bandwidth"`查询全站加速带宽数据，`"dynbandwidth"`查询因动态加速产生的带宽数据, 未启用动态加速功能可忽略该参数|
+<a id="monitoring-bandwidth-response-status"></a>
+## 响应状态码
+
+|HTTP状态码|含义|说明|
+| :-------| :--------| :--------|
+|200 | success | 成功 |
+|400031|invalid params |请求参数非法。 e.g. `"Type"`参数指定了除`""`(空)/`"bandwidth"`/`"dynbandwidth"`以外的值|
+|400032|invalid host|请求中存在无效的域名，请确保域名格式正确 |
+|400080  | invalid start time |开始时间格式错误 |
+|400081 |invalid end time | 截止时间格式错误 |
+|400082 |invalid time range |时间范围错误，请确保开始时间早于结束时间，且时间范围不超过 31 天|
+|500000|internal error|服务端内部错误，请联系技术支持|
+
+<a id="monitoring-bandwidth-response-body"></a>
+## 响应内容
+
+```
+200 OK HTTP/1.1 
+
+{
+  "code": <Code>,
+  "error": <Error>,
+  "time": <Time>,
+  "data": {
+    ...
+    <Domain_i>: {
+      "china": <Domain_i_China>,
+      "oversea": <Domain_i_Oversea>,
+    },
+    ...
+  }
+}
+```
+
+| 参数               | 类型       | 说明                                       |
+| :--------------- | :------- | :--------------------------------------- |
+| Code             | int      | HTTP 状态码，整型，见[响应状态码](#bandwidth-response-status) |
+| Error            | string   | 自定义错误码描述，字符串                             |
+| Time             | []string | 时间点数组                                    |
+| data             | map      | 带宽数据                                     |
+| Domain_i         | string   | 域名                                       |
+| Domain_i_China   | []int    | Domain_i 国内带宽数据，与 Time 一一对应              |
+| Domain_i_Oversea | []int    | Domain_i 海外带宽数据，与 Time 一一对应              |
+
+<a id="monitoring-bandwidth-sample"></a>
+## 示例
+
+```
+200 OK HTTP/1.1 
+
+{
+  "code": 200,
+  "error": "",
+  "time": ["2016-07-01 00:00:00","2016-07-01 00:05:00", ...],
+  "data": {
+    "a.com": {
+      "china": [8888, 9999, 10000, ...],
+      "oversea": [3333, 4444, 5000, ...],
+    },
+    "b.com": {
+      "china": [8888, 9999, 10000, ...],
+      "oversea": [3333, 4444, 5000, ...],
+    }
+  }
+}
+```
+
+<a id="monitoring-batch-flux"></a>
+# 批量查询 全站加速 监控流量
+
+<a id="fmonitoring-lux-interface-address"></a>
+## 接口地址
+```
+/v2/tune/monitoring/flow
+```
+
+<a id="monitoring-flux-instruction"></a>
+### 说明
+* 返回的数据包含开始日期和结束日期
+* 流量的单位为 byte
+* data 只包含有流量的域名
+* 监控接口侧重于全站加速服务实时统计流量数据的实效性，不保证数据与账单完全一致
+* 支持查询3个月之内的流量数据，/v2/dcdn/flux接口无此限制
+
+<a id="monitoring-flux-request-syntax"></a>
+## 请求语法
+
+```
+POST /v2/tune/monitoring/flow
+Content-Type: application/json
+
+{
+    "startDate": <StartDate>,
+    "endDate": <EndDate>,
+    "granularity": <Granularity>,
+    "domains": <Domains>
+}
+```
+
+<a id="monitoring-flux-request-body"></a>
+## 请求内容
+
+| 参数          | 类型     | 必要性  | 说明                     |
+| ----------- | ------ | ---- | ---------------------- |
+| StartDate   | string | 必须   | 开始日期，例如：2016-07-01     |
+| EndDate     | string | 必须   | 结束日期，例如：2016-07-03     |
+| Granularity | string | 必须   | 粒度，取值：5min ／ hour ／day |
+| Domains     | string | 必须   | 域名列表，以 ；分割             |
+| Type        | string | 非必须 | `""`或`"flux"`查询全站加速流量数据，`"dynflux"`查询因动态加速产生的流量数据, 未启用动态加速功能可忽略该参数|
+<a id="monitoring-flux-response-status"></a>
+## 响应状态码
+
+| HTTP状态码 | 含义                 | 说明                                 |
+| :------ | :----------------- | :--------------------------------- |
+| 200     | success            | 成功                                 |
+| 400031  | invalid params     | 请求参数非法。 e.g. `"Type"`参数指定了除`""`(空)/`"bandwidth"`/`"dynbandwidth"`以外的值 |
+| 400032  | invalid host       | 请求中存在无效的域名，请确保域名格式正确               |
+| 400080  | invalid start time | 开始时间格式错误                           |
+| 400081  | invalid end time   | 截止时间格式错误                           |
+| 400082  | invalid time range | 时间范围错误，请确保开始时间早于结束时间，且时间范围不超过 30 天 |
+| 500000  | internal error     | 服务端内部错误，请联系技术支持                    |
+
+<a id="monitoring-flux-response-body"></a>
+## 响应内容
+
+```
+200 OK HTTP/1.1 
+
+{
+  "code": <Code>,
+  "error": <Error>,
+  "time": <Time>,
+  "data": {
+    ...
+    <Domain_i>: {
+      "china": <Domain_i_China>,
+      "oversea": <Domain_i_Oversea>,
+    },
+    ...
+  }
+}
+```
+
+| 参数               | 类型       | 说明                                       |
+| :--------------- | :------- | :--------------------------------------- |
+| Code             | int      | HTTP 状态码，整型，见[响应状态码](#monitoring-flux-response-status) |
+| Error            | string   | 自定义错误码描述，字符串                             |
+| Time             | []string | 时间点数组                                    |
+| data             | map      | 流量数据                                     |
+| Domain_i         | string   | 域名                                       |
+| Domain_i_China   | []int    | Domain_i 国内流量数据，与 Time 一一对应              |
+| Domain_i_Oversea | []int    | Domain_i 海外流量数据，与 Time 一一对应              |
+
+<a id="monitoring-flux-sample"></a>
+## 示例
+
+```
+200 OK HTTP/1.1 
+
+{
+  "code": 200,
+  "error": "",
+  "time": ["2016-07-01 00:00:00","2016-07-01 00:05:00", ...],
+  "data": {
+    "a.com": {
+      "china": [8888, 9999, 10000, ...],
+      "oversea": [3333, 4444, 5000, ...],
+    },
+    "b.com": {
+      "china": [8888, 9999, 10000, ...],
+      "oversea": [3333, 4444, 5000, ...],
+    }
+  }
+}
+```
+

@@ -1,0 +1,31 @@
+lookup命令可以将外部资源(表格、KV存储、脚本)的某些字段与当前搜索结果的某些字段匹配(类似inner join），显示当前搜索结果中与lookup资源匹配的行，并添加有意义的值，比如给搜索结果中的local_user字段添加对应的local_age。 
+
+**语法**
+```
+lookup "[app:]<lookup_name>" <csv_field> as <log_field>, ...  output <field> [as <newField>],...    
+```
+
+**参数说明**
+* `app:`：可选，目标应用(查找表文件或查找规则所属应用)。
+* `lookup_name`：必选字段，查找表文件或查找规则名称，在设置>查找管理页面中预先定义。
+* `<csv_field> [as <log_field>]`：使用搜索数据中的字段`log_field`值匹配查找表中字段`csv_field`值，如果两个字段名称相同，则不需要填写log_field。
+* `output <field> [as <newField>]`：选择查找表中的字段`field`作为输出字段，并且可以将字段名重命名为`newField`。
+
+**示例**
+
+前提：
+* 已定义查找表文件`lookupTable.csv`或查找规则`lookupTable`，目标应用为Search
+* lookupTable中包含user,age,states字段
+* 搜索数据：sourcetype="lookup"中包含user,local_user,age字段
+
+```
+sourcetype="lookup"|lookup "Search:lookupTable" user as local_user output age as local_age
+```
+
+若搜索数据中某一行t的`local_user`字段值等于查找表`lookupTable`中某一行l的user字段值，我们返回搜索数据中匹配行，并在搜索数据里新增一个local_age字段，将查找表`lookupTable`z中行l的age字段的值添加到搜索数据的local_age字段中。 
+
+```
+sourcetype="lookup"|lookup "Search:lookupTable" user output states，age
+```
+
+若搜索数据中某一行t的user字段值等于查找表`lookupTable`中某一行l的user字段值，我们返回搜索数据中匹配行，并在搜索数据里新增一个states字段，将查找表`lookupTable`行l的states的值加到搜索数据行t的states字段中， 并将lookupTable行l的age字段覆盖搜索数据行t的age字段（因为thisTable 已经有age字段)。

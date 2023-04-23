@@ -1,0 +1,137 @@
+# **获取 runner 列表**
+```
+GET /v1/api/runners?tag=<tagvalue>&id=<idvalue>&name=<runnerName>&agents=<true|false>&sort=<sortKey>&order=<order>&page=<pageNum>&size=<pageSize>&search=<search>
+```
+
+## **返回值**
+
+- 如果没有错误，返回：
+```
+{
+    "runners": [
+        {
+            "name": "<runner_name1>",
+            "agent_id": "<agent_id>",
+            "config": "<runner_config>",
+            "state": "<runner_state>",
+            "status": "<runner_status>",
+            "config_timestamp": <config_timestamp>
+        },
+        {
+            "name": "<runner_name2>",
+            "agent_id": "<agent_id>",
+            "state": "<runner_state>",
+            "config": "<runner_config>",
+            "status": "<runner_status>",
+            "config_timestamp": <config_timestamp>,
+        },
+        ...
+    ],
+    "agents": {
+        "<agent_id>"":{
+            "hostname": "<hostname>",
+            "ip": "<ip>",
+            ...
+        }
+    }
+    "totalSize":<totalSize>
+}
+```
+- 如果有错误则返回相应错误
+
+## **参数说明**
+
+- 参数 `tag` 和 `id` 是指 `agent` 的属性, `name` 是 `runner` 的属性，他们都可以作为 `runner` 的过滤条件
+- 参数`sort`、`order`会根据sort的值进行升序/降序排序，`order`的值可以是ascend/descend，`sort`默认为name，`order`默认为ascend
+- 参数`search`会对hostnam进行搜索，将包含`search`值的结果搜索出来
+- 获取的 runner name list 为各个符合条件的 agent 上的 runner name 的并集
+- 返回的数据中没有 `tag` 信息，因为后端不太好加，如果前端需要且前端无法自己解决的话，再协商
+- `state` 有 `running` 和 `stopped` 两种情况，分别代表 `运行中` 和 `已停止` 两种状态
+
+# **启动 runners**
+
+```
+POST /v1/api/runners/start
+[
+    {
+        "config_name": "config1",
+        "agent_id": "agent_id1"
+    },
+    {
+        "config_name": "config1",
+        "agent_id": "agent_id2"
+    }
+    ...
+]
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误
+
+# **停止 runners**
+
+```
+POST /v1/api/runners/stop
+[
+    {
+        "config_name": "config1",
+        "agent_id": "agent_id1"
+    },
+    {
+        "config_name": "config1",
+        "agent_id": "agent_id2"
+    }
+    ...
+]
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误
+
+# **重置 runners**
+
+```
+POST /v1/api/runners/reset
+[
+    {
+        "config_name": "config1",
+        "agent_id": "agent_id1"
+    },
+    {
+        "config_name": "config1",
+        "agent_id": "agent_id2"
+    }
+    ...
+]
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误
+
+# **删除 runners**
+
+```
+POST /v1/api/runners/delete
+[
+    {
+        "config_name": "config1",
+        "agent_id": "agent_id1"
+    },
+    {
+        "config_name": "config1",
+        "agent_id": "agent_id2"
+    }
+    ...
+]
+```
+
+## **返回值**
+
+- 如果没有错误，返回空
+- 如果有错误则返回相应错误

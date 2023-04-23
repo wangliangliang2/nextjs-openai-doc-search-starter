@@ -1,0 +1,42 @@
+# 操作场景
+本文介绍如何在Mac os系统的本地电脑中通过远程桌面登录 Windows 实例。
+
+# 适用本地操作系统
+Mac os
+
+
+# 使用限制
+- 实例必须处于运行中状态。如果实例未运行，请启动实例。
+- 实例已经设置登录密码。如果未设置密码或密码丢失，请重置密码。
+- 实例已经绑定弹性IP，能够访问公网。且该实例已开通云服务器实例的3389号端口
+
+
+# 操作步骤
+
+1. 下载
+2. 启动
+3. 填写信息
+4. 登陆成功
+ 
+# **1.下载**
+
+首先需要下载并安装Microsoft Remote Desktop Connection for Mac。下载链接为：[HockeyApp](https://rink.hockeyapp.net/apps/5e0c144289a51fca2d3bfa39ce7f2b06/?spm=a2c4g.11186623.2.30.577f6d9bM8NJBM)。
+
+# **2.启动**
+
+
+
+# **3.填写信息**
+单击Add desktop，并在弹出的Add Desktop对话框中，设置PC Name并选择以后连接的方式（User Account），并单击Save。
+
+参数解析：
+- PC name： 输入实例IP
+- User Name：输入Administrator。Windows实例的默认用户名是Administrator。
+- Password：输入实例登录密码。
+- Friendly name(非必填)：自定义备注名
+
+# **4.登陆成功**
+填写好信息保存后，点击界面上的实例。
+
+
+在弹出对话框中，单击Continue，然后最终登陆成功。

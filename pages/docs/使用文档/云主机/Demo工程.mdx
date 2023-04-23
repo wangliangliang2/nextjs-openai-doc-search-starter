@@ -1,0 +1,74 @@
+针对初次接触消息队列 RocketMQ 的工程师，本文以 Java 为例，提供操作示例帮助您从零开始搭建消息队列 RocketMQ 测试工程。Demo 工程包含普通消息、顺序消息、事务消息和定时（延时）消息的测试代码，以及相关 Spring 的配置。
+# 前提条件
+
+1. 安装 IDE。
+您可以使用 IntelliJ IDEA 或者 Eclipse，本文以 IntelliJ IDEA 为例。
+在 https://www.jetbrains.com/idea/ 下载 IntelliJ IDEA Ultimate 版本，并参考 IntelliJ IDEA 说明进行安装。
+2. 下载 Demo 工程。
+在 https://github.com/AliwareMQ/mq-demo 下载 Demo 工程到本地，然后解压即可看到本地新增了 mq-demo-master 文件夹。
+3. 下载安装 JDK。
+
+# 配置 Demo 工程
+
+## 步骤一：将 Demo 工程文件导入 IntelliJ IDEA
+
+1. 在 IntelliJ IDEA 界面，选择 Import Project，选择 mq-demo-master 文件夹。
+![](https://dn-odum9helk.qbox.me/FjwImlwr9u_uxe40d0Gf7R9zMheM)
+2. 选择 Import 类型为 Maven。
+![](https://dn-odum9helk.qbox.me/FnwjGPJMIbOeLLTRz_kIBoqnfrSZ)
+3. 默认单击 Next，直到导入完成。Demo 工程需要加载依赖的 JAR 包，因此导入过程需要等待 2-3 分钟。
+
+## 步骤二：创建资源
+
+您需要先到控制台创建所需资源，包括消息队列 RocketMQ 的实例、Topic、Group ID (GID)，以及鉴权需要的 AccessKey（AK）。
+
+## 步骤三：配置 Demo
+
+您需将在步骤二中创建好的资源信息配置到 2 个文件：MqConfig 类和 common.xml。
+1. 按以下说明配置 MqConfig 类。
+ - public static final String TOPIC = “刚才创建的 Topic”;
+ - public static final String GROUP_ID = “刚才创建的 Group ID”;
+ - public static final String ACCESS_KEY = “您的阿里云账号的 AccessKeyId”;
+ - public static final String SECRET_KEY = “您的阿里云账号的 AccessKeySecret”;
+ - public static final String NAMESRV_ADDR = “您的消息队列 RocketMQ 实例的 TCP 接入点，可在控制台的实例管理的获取接入点信息区域获取 TCP 协议接入点“;
+**说明：**
+ - 创建 AccessKey（包括 AccessKeyId 和 AccessKeySecret）的具体步骤，请参见创建 AccessKey。
+ - 如果 RAM 子账号拥有该 Topic 的权限以及自己的 AccessKey，那么也可以使用 RAM 子账号的 AccessKey。
+2. 配置 common.xml。
+```
+ <props>
+ <prop key="AccessKey">XXX</prop> <!-- 使用前请修改这些资源信息 -->
+ <prop key="SecretKey">XXX</prop>
+ <prop key="GROUP_ID">XXX</prop>
+ <prop key="Topic">XXX</prop>
+ <prop key="NAMESRV_ADDR">XXX</prop>
+</props>
+```
+
+# 以 Main 方式运行 Demo
+
+## 步骤一：发送消息
+
+- 发送普通消息：
+ - 以纯 Java 方式发送普通消息：运行 SimpleMQProducer 类。
+ - 以 Spring 方式发送普通消息：运行 ProducerClient 类。
+- 发送事务消息：运行 SimpleTransactionProducer 类。
+LocalTransactionCheckerImpl 类为本地事务 check 接口类，用于校验事务。详情请参见收发事务消息。
+- 发送顺序消息：运行 SimpleOrderProducer 类。
+此方式下，消息发布和消费都按顺序进行。详情请参见收发顺序消息。
+- 发送定时（延时）消息：运行 MQTimerProducer 类发送消息。延时 3 秒后投递。
+您也可以指定一个精确的投递时间，最长定时时间为 40 天。详情请参见收发定时消息。
+## 结果验证
+登录消息队列 RocketMQ 控制台，在左侧导航栏选择消息查询 > 按 Topic 查询，选择 Topic 名称进行查询。可以看见消息已经发送至 Topic。
+
+## 步骤二：接收消息
+
+- 接收普通消息：
+ - 以纯 Java 方式接收普通消息：运行 SimpleMQConsumer 类。
+ - 以 Spring 方式接收普通消息：运行 ConsumerClient 类。
+- 接收事务消息：运行 SimpleMQConsumer 类。
+- 接收顺序消息：运行 SimpleOrderConsumer 类。
+- 接收定时（延时）消息：运行 SimpleMQConsumer 类。
+可以看到消息被接收打印的日志。因为有初始化，所以需等待几秒，在生产环境中不会经常初始化。
+## 结果验证
+从消息队列 RocketMQ 控制台进入 Group 管理 > 消费者状态，可以看到启动的消费端已经在线，并且订阅关系一致。

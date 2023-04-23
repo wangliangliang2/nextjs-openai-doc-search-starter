@@ -1,0 +1,212 @@
+# 接口描述
+
+查询直播流历史码率、历史帧率、播放人数、播放带宽、域名级别人数带宽等信息。
+
+# 请求参数
+
+```
+GET /v2/hubs/<Hub>/streams/<EncodedStreamKey>/stats?start=<Start>&end=<End>
+Host: pili.qiniuapi.com
+Authorization: <QiniuToken>
+```
+
+`<QiniuToken>`: 管理凭证，用于鉴权。其值为符合[管理凭证](/pili/api/2772/http-requests-authentication)的字符串
+
+| 参数             | 类型 | 必填 | 描述                     |
+| ------------------ | ------ | -------- | -------------------------- |
+| hub                | string | 是   | 直播空间名            |
+| encodedStreamTitle | string | 是   | 经过[base64编码](/kodo/manual/appendix)的直播流名   |
+| start | int64 | 否      | 查询的起始时间 (该接口只能获取一天的统计数据， end-start不能超过24小时)，Unix时间戳，默认当前时间前1小时 |
+| end   | int64 | 否      | 查询的结束时间 (该接口只能获取一天的统计数据， end-start不能超过24小时)，Unix时间戳，默认为当前时间 |
+
+# 返回数据
+
+<html>
+ <head></head>
+ <body>
+  <table> 
+   <thead class="ant-table-thead"> 
+    <tr> 
+     <th key="name">参数</th>
+     <th key="type">类型</th>
+     <th key="desc">描述</th>
+    </tr> 
+   </thead>
+   <tbody classname="ant-table-tbody">
+    <tr key="0-0">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> items</span></td>
+     <td key="1"><span>object []</span></td>
+     <td key="2"><span style="white-space: pre-wrap">流统计信息列表</span></td>
+    </tr>
+    <tr key="0-0-0">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> hub</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">流所属的直播空间名</span></td>
+    </tr>
+    <tr key="0-0-1">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> time</span></td>
+     <td key="1"><span>integer</span></td>
+     <td key="2"><span style="white-space: pre-wrap">统计时间， 时间戳，单位秒</span></td>
+    </tr>
+    <tr key="0-0-2">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> stream</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">流名</span></td>
+    </tr>
+    <tr key="0-0-3">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> stats</span></td>
+     <td key="1"><span>object</span></td>
+     <td key="2"><span style="white-space: pre-wrap">流具体的统计信息</span></td>
+    </tr>
+    <tr key="0-0-3-0">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> bps</span></td>
+     <td key="1"><span>integer</span></td>
+     <td key="2"><span style="white-space: pre-wrap">推流码率</span></td>
+    </tr>
+    <tr key="0-0-3-1">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> videoFps</span></td>
+     <td key="1"><span>integer</span></td>
+     <td key="2"><span style="white-space: pre-wrap">推流视频帧率</span></td>
+    </tr>
+    <tr key="0-0-3-2">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> audioFps</span></td>
+     <td key="1"><span>integer</span></td>
+     <td key="2"><span style="white-space: pre-wrap">推流音频帧率</span></td>
+    </tr>
+    <tr key="0-0-3-3">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> width</span></td>
+     <td key="1"><span>integer</span></td>
+     <td key="2"><span style="white-space: pre-wrap">SPS 宽度</span></td>
+    </tr>
+    <tr key="0-0-3-4">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> height</span></td>
+     <td key="1"><span>integer</span></td>
+     <td key="2"><span style="white-space: pre-wrap">SPS 高度</span></td>
+    </tr>
+    <tr key="0-0-3-5">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> videoCodec</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">metadata视频编码规格</span></td>
+    </tr>
+    <tr key="0-0-3-6">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> videoProfile</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">metadata视频编码配置</span></td>
+    </tr>
+    <tr key="0-0-3-7">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> videoFrameRate</span></td>
+     <td key="1"><span>integer</span></td>
+     <td key="2"><span style="white-space: pre-wrap">SPS视频帧率</span></td>
+    </tr>
+    <tr key="0-0-3-8">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> audioCodec</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">metadata音频编码规格</span></td>
+    </tr>
+    <tr key="0-0-3-9">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> audioChannel</span></td>
+     <td key="1"><span>integer</span></td>
+     <td key="2"><span style="white-space: pre-wrap">metadata音频频道数</span></td>
+    </tr>
+    <tr key="0-0-3-10">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> audioSampleRate</span></td>
+     <td key="1"><span>integer</span></td>
+     <td key="2"><span style="white-space: pre-wrap">metadata音频采样率</span></td>
+    </tr>
+    <tr key="0-0-3-11">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> playCount</span></td>
+     <td key="1"><span>integer</span></td>
+     <td key="2"><span style="white-space: pre-wrap">播放人数</span></td>
+    </tr>
+    <tr key="0-0-3-12">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> bandwidth</span></td>
+     <td key="1"><span>integer</span></td>
+     <td key="2"><span style="white-space: pre-wrap">播放带宽</span></td>
+    </tr>
+    <tr key="0-0-3-13">
+     <td key="0"><span style="padding-left: 40px"><span style="color: #8c8a8a">├─</span> detailStats</span></td>
+     <td key="1"><span>object []</span></td>
+     <td key="2"><span style="white-space: pre-wrap">域名详细统计列表</span></td>
+    </tr>
+    <tr key="0-0-3-13-0">
+     <td key="0"><span style="padding-left: 60px"><span style="color: #8c8a8a">├─</span> domain</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">域名</span></td>
+    </tr>
+    <tr key="0-0-3-13-1">
+     <td key="0"><span style="padding-left: 60px"><span style="color: #8c8a8a">├─</span> type</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">域名类型</span></td>
+    </tr>
+    <tr key="0-0-3-13-2">
+     <td key="0"><span style="padding-left: 60px"><span style="color: #8c8a8a">├─</span> playCount</span></td>
+     <td key="1"><span>integer</span></td>
+     <td key="2"><span style="white-space: pre-wrap">播放人数</span></td>
+    </tr>
+    <tr key="0-0-3-13-3">
+     <td key="0"><span style="padding-left: 60px"><span style="color: #8c8a8a">├─</span> bandwidth</span></td>
+     <td key="1"><span>integer</span></td>
+     <td key="2"><span style="white-space: pre-wrap">播放带宽</span></td>
+    </tr> 
+   </tbody> 
+  </table>
+ </body>
+</html>
+
+
+# 示例
+
+请求体:
+```
+GET /v2/hubs/xrtest/streams/MTEy/stats?start=1676268540&end=1676268570 HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/x-www-form-urlencoded 
+```
+
+返回体:
+
+```
+200 {
+	"items": [
+		{
+			"hub": "Hub",
+			"time": <Time>,
+			"stream": "Stream",
+			"stats": {
+				"bps": <Bps>, // 推流码率
+				"videoFps": <VideoFps>, // 推流视频帧率
+				"audioFps": <AudioFps>, // 推流音频帧率
+				"width": <Width> , // SPS宽度
+				"height": <Height> , // SPS高度
+				"videoCodec": <VideoCodec>, // metadata视频编码规格
+				"videoProfile": <VideoProfile>, // metadata视频编码配置
+				"videoFrameRate": <VideoFrameRate>, // SPS视频帧率
+				"videoBitRate": <VideoBitRate> , // 视频码率, 单位bps
+				"audioCodec": <AudioCodec> , // metadata音频编码规格
+				"audioChannel": <AudioChannel>, // metadata音频频道数
+				"audioSampleRate": <AudioSampleRate>, // metadata音频采样率
+				"audioBitRate": <audioBitRate> , // 音频码率, 单位bps
+				"playCount": <PlayCount> , // 播放人数
+				"bandwidth": <Bandwidth> , // 播放带宽
+				"detailStats": [
+					{
+						"domain": "Domain",
+						"type": "Type",
+						"playCount": "PlayCount", // 域名播放人数
+						"bandwidth": "Bandwidth" // 域名播放带宽
+					},
+				...	
+				]
+			}
+
+		},
+	...
+	]
+}
+
+// 未找到流信息返回
+200 {
+	"items": []
+}
+```

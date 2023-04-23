@@ -1,0 +1,35 @@
+应用通过服务器的端口对外提供服务，通过了解典型应用的默认端口，您可以更准确地添加或修改安全组规则。
+
+本章节介绍了QVM实例的常用端口及其应用场景。
+
+添加安全组规则时，您必须指定**通信端口或端口范围**，然后安全组根据允许或拒绝策略决定是否转发数据到QVM实例。
+
+# 常用端口
+| 端口 | 服务 | 说明 |
+|-|-|-|
+| 21 | FTP | FTP服务所开放的端口，用于上传、下载文件。 |
+| 22 | SSH | SSH端口，用于通过命令行模式或远程连接软件（例如PuTTY、Xshell、SecureCRT等）连接Linux实例。|
+| 23 | Telnet | Telnet端口，用于Telnet远程登录QVM实例。 |
+| 25 | SMTP | SMTP服务所开放的端口，用于发送邮件。<br>基于安全考虑，QVM实例25端口默认受限，如需解封，请提交工单。 |
+| 53 | DNS | 用于域名解析服务器（Domain Name Server，简称DNS）协议。<br>如果在安全组出方向实行白名单方式，需要放行53端口（UDP协议）才能实现域名解析。 |
+| 80 | HTTP | 用于HTTP服务提供访问功能，例如，IIS、Apache、Nginx等服务。 |
+| 110 | POP3 | 用于POP3协议，POP3是电子邮件收发的协议。 |
+| 143 | IMAP | 用于IMAP（Internet Message Access Protocol）协议，IMAP是用于电子邮件的接收的协议。 |
+| 443 | HTTPS | 用于HTTPS服务提供访问功能。HTTPS是一种能提供加密和通过安全端口传输的一种协议。 |
+| 1433 | SQL Server | SQL Server的TCP端口，用于供SQL Server对外提供服务。 |
+| 1434 | SQL Server | SQL Server的UDP端口，用于返回SQL Server使用了哪个TCP/IP端口。 |
+| 1521 | Oracle | Oracle通信端口，QVM实例上部署了Oracle SQL需要放行的端口。 |
+| 3306 | MySQL | MySQL数据库对外提供服务的端口。 |
+| 3389 | Windows Server Remote Desktop Services | Windows Server Remote Desktop Services（远程桌面服务）端口，可以通过这个端口使用软件连接Windows实例。 |
+| 8080 | 代理端口 | 同80端口一样，8080端口常用于WWW代理服务，实现网页浏览。如果您使用了8080端口，访问网站或使用代理服务器时，需要在IP地址后面加上:8080。安装Apache Tomcat服务后，默认服务端口为8080。 |
+| 137、138、139 | NetBIOS协议 | 137、138为UDP端口，通过网上邻居传输文件时使用的端口。<br>139通过这个端口进入的连接试图获得NetBIOS/SMB服务。NetBIOS协议常被用于Windows文件、打印机共享和Samba。 |
+
+
+# 常用端口的应用场景示例
+| 应用场景 | 网络类型 | 方向 | 策略 | 协议 | 端口范围 | 对象类型 | 授权对象 | 优先级 |
+|-|-|-|-|-|-|-|-|-|
+| SSH远程连接Linux实例 | 专有网络VPC | 入方向 | 允许 | 自定义TCP | SSH (22) | 地址段访问 | 0.0.0.0/0 | 1 |
+| RDP远程连接Windows实例 | 专有网络VPC | 入方向 | 允许 | 自定义TCP | RDP (3389) | 地址段访问 | 0.0.0.0/0 | 1 |
+| 公网Ping QVM实例 | 专有网络VPC | 入方向 | 允许 | 全部ICMP | -1/-1 | 地址段访问或安全组访问 | 根据授权类型填写 | 1 |
+| QVM实例作Web服务器 | 专有网络VPC | 入方向 | 允许 | 自定义TCP | HTTP (80) | 地址段访问 | 0.0.0.0/0 | 1 |
+| 使用FTP上传或下载文件 | 专有网络VPC | 入方向 | 允许 | 自定义 TCP | 20/21 | 地址段访问 | 指定IP段 | 1 |

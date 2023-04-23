@@ -1,0 +1,54 @@
+# 创建模板 (POST Template)
+
+## 请求定义
+
+```
+POST /v1/template HTTP/1.1
+Host: sms.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+```
+
+### 请求头
+
+> 请参考 [请求认证](/sms/api/5842/sms-api-authentication)
+
+
+### 请求数据
+
+```json
+{
+    "name": string,
+    "template": string,
+    "type": string,
+    "description": string,
+    "signature_id": string,
+    "is_oversea": bool
+}
+```
+
+参数名称 | 类型 | 必填 | 说明
+--------|------|------|------
+name | string | 是 | 模板名称
+template | string |是 | 模板内容 可设置自定义变量，发送短信时候使用，参考:${code}
+type | string | 是 | 模板类型，取值范围为: `notification` (通知类短信), `verification` (验证码短信), `marketing` (营销类短信), `voice`(语音类短信)
+description | string | 是 | 申请理由简述
+signature_id| string | 是 | 已经审核通过的签名
+is_oversea | bool | 否 | 是否是 国际/港澳台 模版
+
+### 模板示例
+类型 | 示例
+-----|-----
+验证码短信 | 1. 您的验证码是 ${code} （5分钟内有效）
+通知短信 | 1. 库存告急通知，商品：${title}，库存不足，当前库存数：${quantity}<br />2. 主机告警，${ip} 当前磁盘剩余 ${ratio}，已使用 ${usage} GB，共计 ${total} GB
+营销短信 | 1. 没赶上618？七牛云年中大促，狂欢到月底！存储秒杀低至0.001元/G，云主机0元抢，另有多款产品5折起，每日限量购，手慢无！https://dwz.cn/VjNhsExH<br />2. 汽油会员最高优惠1元，会员日汽油最高优惠1.2元！每周四周日会员日享更多优惠，详情请到站咨询!
+
+## 响应定义
+
+### 该接口正确处理请求时返回如下 JSON 数据
+
+```json
+{
+		"template_id": string
+}
+```

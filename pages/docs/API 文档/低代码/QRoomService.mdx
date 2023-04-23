@@ -1,0 +1,262 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>interface com.qlive.roomservice.QRoomService</p>
+                <p>房间服务</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#addRoomServiceListener`)'>addRoomServiceListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#removeRoomServiceListener`)'>removeRoomServiceListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getRoomInfo`)'>getRoomInfo</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getRoomInfo`)'>getRoomInfo</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#updateExtension`)'>updateExtension</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getOnlineUser`)'>getOnlineUser</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getOnlineUser`)'>getOnlineUser</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#searchUserByUserId`)'>searchUserByUserId</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#searchUserByIMUid`)'>searchUserByIMUid</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="addRoomServiceListener">addRoomServiceListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void addRoomServiceListener(QRoomServiceListener listener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>添加监听</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            listener: <a href='https://developer.qiniu.com/lowcode/api/12099/QRoomServiceListener'>QRoomServiceListener</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="removeRoomServiceListener">removeRoomServiceListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void removeRoomServiceListener(QRoomServiceListener listener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>移除监听</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            listener: <a href='https://developer.qiniu.com/lowcode/api/12099/QRoomServiceListener'>QRoomServiceListener</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getRoomInfo">getRoomInfo</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public QLiveRoomInfo getRoomInfo();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取当前房间</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span><a href='https://developer.qiniu.com/lowcode/api/12061/QLiveRoomInfo'>QLiveRoomInfo</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getRoomInfo">getRoomInfo</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void getRoomInfo(QLiveCallBack&lt;QLiveRoomInfo&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>刷新房间信息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="updateExtension">updateExtension</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void updateExtension(QExtension extension, QLiveCallBack&lt;Void&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>跟新直播扩展信息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            extension: <a href='https://developer.qiniu.com/lowcode/api/12059/QExtension'>QExtension</a>
+        </div>
+                <p>扩展字段</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>操作回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getOnlineUser">getOnlineUser</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void getOnlineUser(int pageNum, int pageSize, QLiveCallBack&lt;List&lt;QLiveUser&gt;&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当前房间在线用户</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            pageNum: int
+        </div>
+                <p>页号 1开始</p>
+    </li>
+    <li>
+        <div>
+            pageSize: int
+        </div>
+                <p>每页大小</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>操作回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getOnlineUser">getOnlineUser</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void getOnlineUser(int pageNum, int pageSize, String roomId, QLiveCallBack&lt;List&lt;QLiveUser&gt;&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>某个房间在线用户</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            pageNum: int
+        </div>
+                <p>页号 1开始</p>
+    </li>
+    <li>
+        <div>
+            pageSize: int
+        </div>
+                <p>每页大小</p>
+    </li>
+    <li>
+        <div>
+            callBack: String
+        </div>
+                <p>操作回调</p>
+    </li>
+    <li>
+        <div>
+            roomId: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>房间ID</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="searchUserByUserId">searchUserByUserId</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void searchUserByUserId(String uid, QLiveCallBack&lt;QLiveUser&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>使用用户ID搜索房间用户</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            uid: String
+        </div>
+                <p>用户ID</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>操作回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="searchUserByIMUid">searchUserByIMUid</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void searchUserByIMUid(String imUid, QLiveCallBack&lt;QLiveUser&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>使用用户im uid 搜索用户</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            imUid: String
+        </div>
+                <p>用户im 用户ID</p>
+    </li>
+    <li>
+        <div>
+            callBack: <a href='https://developer.qiniu.com/lowcode/api/12052/QLiveCallBack'>QLiveCallBack</a>
+        </div>
+                <p>操作回调</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

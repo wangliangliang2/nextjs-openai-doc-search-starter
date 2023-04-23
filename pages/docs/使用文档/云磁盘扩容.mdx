@@ -1,0 +1,20 @@
+在磁盘使用过程中如果已经申请的容量不够实际使用可以对磁盘的容量进行扩容。
+
+1. 扩容前先将磁盘从虚拟机上卸载；
+
+- 点击左侧导航栏，进入 **磁盘管理** 界面。选中某个磁盘，点击上方 **操作**，选择 **调整容量**：  
+
+	![](https://dn-odum9helk.qbox.me/Fp5p-FDq7FX6HZAuA30OL2ElsyrS)
+
+- 点击 **调整容量** 后，将看到如下弹窗，可进行容量的调整：
+
+	![](https://dn-odum9helk.qbox.me/FrKWtux8jgjZ6kthJqTJGYMjqdZu)
+
+- 在控制台完成磁盘扩容后，用户需要登录到主机上进行磁盘扩容操作，具体操作步骤，请参见
+	- [Linux 磁盘扩容](/evm/manual/4038/linux-disk-capacity)
+	- [Windows 磁盘扩容](/evm/manual/4039/windows-disk-capacity)
+
+
+**【注意事项】**
+
+1. 磁盘扩容有一定失败的风险，所以为了用户的数据安全；建议在扩容数据盘之前手动为这个云硬盘做磁盘快照

@@ -1,0 +1,92 @@
+# 请求路径
+> `GET` /v1/ess/group/:id/configuration
+
+# 请求参数
+
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region_id | string | query | 是 | 地域 ID |
+| id | string | path | 是 | 伸缩组 ID |
+| scaling_configuration_id | string | query | 否 | 伸缩配置的ID，如果有多个用逗号','分隔 |
+| scaling_configuration_name | string | query | 否 | 伸缩配置的名称，如果有多个用逗号','分隔 |
+| page | int | query | 否 | 页码 |
+| size | int | query | 否 | 分页大小 |
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| data | []ScalingConfiguration | 是 | 伸缩组配置 |
+| request_id | string | 是 | 请求记录 ID |
+| page | int | 是 | 页码 |
+| size | int | 是 | 分页大小 |
+| total | int | 是 | 查询到的总数 |
+
+
+### ScalingConfiguration 伸缩组配置详情
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| scaling_configuration_id | string | 是 | 伸缩配置 ID |
+| scaling_group_id | string | 是 | 伸缩配置所属的伸缩组 ID |
+| scaling_configuration_name | string | 是 | 伸缩配置的显示名称 |
+| image_id | string | 是 | 镜像ID |
+| instance_type | int | 是 | 实例规格 |
+| security_group_id | int | 是 | 安全组 ID |
+| internet_charge_type | int | 是 | 网络计费类型 |
+| internet_max_bandwidth_in | string | 是 | 公网入带宽最大值，单位为Mbps |
+| internet_max_bandwidth_out | string | 是 | 公网出带宽最大值，单位为Mbps |
+| system_disk_category | []string | 是 | 系统盘的磁盘种类。cloud_efficiency：高效云盘, cloud_ssd：SSD云盘, cloud_essd：ESSD云盘 |
+| system_disk_size | int | 是 | 系统盘大小 |
+| instance_name | int | 是 | 实例名称 |
+| key_pair_name | int | 是 | 登录ECS实例时使用的密钥对的名称 |
+| load_balancer_weight | int | 是 | ECS实例作为后端服务器时的权重，取值范围：1~100。 |
+| lifecycle_state | int | 是 | 伸缩配置在伸缩组中生效状态 |
+| creation_time | []string | 是 | 伸缩配置的创建时间 |
+| data_disks | DataDisks | 否 | 数据盘信息的集合 |
+
+### DataDisks 数据盘集合
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| data_disk | []DataDiskInfo | 是 | 数据盘信息列表 |
+
+### DataDiskInfo 数据盘信息
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| size | int | 否 | 数据盘大小, 单位 GB |
+| category | string | 否 | 数据盘种类 |
+| snapshot_id | string | 否 | 创建数据盘使用的快照 ID |
+| device | string | 否 | 数据盘挂载点 |
+
+# 示例
+### 正常返回示例
+```json
+{
+    "data": [
+        {
+            "scaling_configuration_id": "asc-uf6889r7umrb3vpzaa53",
+            "scaling_configuration_name": "esc-LRGYF",
+            "scaling_group_id": "asg-uf61cm05cpiu8v7e2zuf",
+            "image_id": "m-uf6fkb6pplh9yo2df5dx",
+            "instance_type": "ecs.xn4.small",
+            "security_group_id": "sg-uf6j6oimxd1gl41ofehz",
+            "internet_charge_type": "PayByTraffic",
+            "internet_max_bandwidth_in": 1,
+            "internet_max_bandwidth_out": 0,
+            "system_disk_category": "cloud_efficiency",
+            "system_disk_size": 40,
+            "instance_name": "esci-FpKHn",
+            "key_pair_name": "alex-mac",
+            "load_balancer_weight": 50,
+            "data_disks": {
+                "data_disk": []
+            },
+            "lifecycle_state": "Active",
+            "creation_time": "2020-03-16T11:43Z"
+        }
+    ],
+    "total_count": 1,
+    "page_number": 1,
+    "page_size": 10,
+    "request_id": "ioRxAspgRVA-ucIW"
+}
+```

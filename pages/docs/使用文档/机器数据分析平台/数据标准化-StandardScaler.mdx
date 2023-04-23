@@ -1,0 +1,12 @@
+数据标准化通过去除均值和方差缩放：即计算每个字段的(X-X_mean)/std，进而使所有数据聚集在0附近，方差为1。
+
+**语法：**
+
+```
+..| fit StandardScaler with_mean=<bool> with_std=<bool> <feature_field_1> <feature_field_2> [into model_name]...  
+```
+
+**参数说明：**
+
+- with_mean参数，用来指定是否在缩放之前中心化数据。默认为True。不适用于原始数据特别稀疏的场景。
+- with_std参数，用来指定将原始数据根据标准差缩放。默认为True。

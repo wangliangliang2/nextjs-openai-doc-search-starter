@@ -1,0 +1,53 @@
+# 接口描述
+
+修改目标直播空间的推流鉴权方式和密钥
+
+# 请求参数
+
+```
+POST /v2/hubs/<hub>/security
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+
+{
+    "publishSecurity":"<publishSecurity>",
+    "publishKey":"<publishKey>"
+}
+```
+
+|      参数          |      类型          |  必填   |                  描述                      |
+| -------------------- | -------------------- | ----------- | ------------------------------------------ |
+|       Hub           |    string           | 是    |  直播空间名                                        |
+|PublishSecurity      |    string           | 是    | 鉴权方式，可选推流鉴权类型为: expiry: 限时鉴权、expiry_sk: 限时鉴权SK|
+|PublishKey           |    string           | 是    |      密钥                                     |
+
+# 返回数据
+
+空
+
+# 示例
+
+请求体:
+
+```
+POST /v2/hubs/testhub/security HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+
+{
+    "publishSecurity":"expiry",
+    "publishKey":"12345678"
+}
+```
+
+返回体:
+
+```
+200 OK
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

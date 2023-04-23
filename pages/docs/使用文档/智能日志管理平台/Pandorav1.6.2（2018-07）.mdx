@@ -1,0 +1,25 @@
+**新功能：**
+
+* 报表支持[表格图表类型](/insight/manual/4866/the-data-table)。
+
+![](https://pandora-kibana.qiniu.com/report/table_example.png)
+
+* 支持对智能日志管理平台的[资源审计](/insight/manual/4634/monitor&audit#2)。
+  - 审计信息包括资源类型、操作类型、来源 IP、操作时间、操作用户、reqID、使用 API 等。资源类型包括工作流、实时仓库、流式计算、批量计算、离线导出、离线数据源、日志仓库、仪表盘、报警。
+
+![](https://pandora-kibana.qiniu.com/logdb/audit.png)
+
+* 上传文件支持[选择已有规则解析](/insight/manual/4812/sever-regex-parser#2)，并可预览解析结果。
+
+![](https://pandora-kibana.qiniu.com/logdb/existed_rule.png)
+
+**功能优化**
+
+* 上传文件优化：支持字段名和仓库名冲突判断
+  - 用固定分隔符和 json 解析数据时，判断字段名称是否和当前选择的仓库字段冲突，防止更新仓库报错。
+
+* 优化[上下文查询功能](/insight/manual/4870/context-query)体验
+  - 支持对上下文搜索结果进行筛选，并对筛选字段高亮显示
+
+![](https://pandora-kibana.qiniu.com/context_filter.png)
+

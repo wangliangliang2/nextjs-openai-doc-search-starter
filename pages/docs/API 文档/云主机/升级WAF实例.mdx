@@ -1,0 +1,57 @@
+# 请求路径
+>`POST` /v1/security/waf/:region/update
+
+# 请求参数 ([查看付费参数](https://developer.qiniu.com/qvm/8006/common-params))
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region | string | path | 是 | 区域信息, 只能填cn，国内区域|
+| X-Qiniu-Regionid | string | header | 是 | 地域 ID, 只能填cn-hangzhou，大陆通用地域|
+| instance_id | int | body | 是 | WAF实例ID |
+| package_code | string | body | 是 | 版本类型，取值: version_3（内地高级版）, version_4（内地企业版）, version_4（内地旗舰版） |
+| ext_domain_package | int | body | 是 | 域名扩展包个数 |
+| exclusive_ip_package | int | body | 是 | 域名独享资源包个数, 范围: 0-100, 粒度为1 |
+| ext_bandwidth | int | body | 是 | 带宽扩展包大小，单位: Mbps |
+| app_sdk | bool | body | 否 | APP防护是否开启，默认false, 下同 |
+| anti_bot | bool | body | 否 | Bot管理是否开启 |
+| waf_gslb | bool | body | 否 | 智能负载均衡是否开启 |
+| professional_service | bool | body | 否 | 专家服务是否开启 |
+| big_screen | string | body | 是 | 0: 未开启， 1: 单屏服务, all: 多屏服务 |
+| waf_log | bool | body | 否 | 是否开启日志服务 |
+| log_storage | int | body | 否 | 日志存储大小, 单位: TB |
+| log_time | int | body | 否 | 日志存储时间, 单位: 天 |
+| client_token | string | body | 否 | 接口请求幂等参数 |
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| data | OrderInfo | 是 | 订单详情 |
+
+### OrderInfo 订单信息
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| order | string | 是 | 订单号 |
+
+# 示例
+### 请求body示例
+```json
+{
+    "package_code": "version_3",
+    "exclusive_ip_package": 1,
+    "ext_bandwidth": 1,
+    "ext_domain_package": 0,
+    "app_sdk": false,
+    "anti_bot": false,
+    "waf_gslb": false,
+    "client_token": "0.33729492396085137"
+}
+```
+
+### 正常返回示例
+```json
+{
+    "data": {
+        "order": "1QW2F998-8642-2346-I2K3-0OKMNHY65TG4"
+    }
+}
+```

@@ -1,0 +1,87 @@
+filldown命令使用空值前的最后一个非空值替换空值。
+
+**语法**
+
+```
+filldown [field] [, fieldn]
+```
+
+**参数说明**
+
+可选参数：
+
+`field`：
+- 不填写：所有字段的空值都会被替换
+- 填写一个或多个字段：填写的字段的空值会被替换，如：
+  ```
+  filldown f1,f2
+  ```
+  字段f1和f2的空值会被替换
+- 使用通配符*来表示相同开头的字段，如：
+  ```
+  filldown f1,start*
+  ```
+  字段f1和所有以start为开头的字段都会被替换
+
+**用法示例**
+
+假设我们有以下数据：
+
+|name|number|score1|score2|age
+|:-:|:-:|:-:|:-:|:-:|
+|tom|1|90|71|15
+|jerry|2|-|99|-
+|harry|3|85|-|-
+
+若使用以下的spl我们分别会得到：
+```
+…… | filldown
+```
+
+|name|number|score1|score2|age
+|:-:|:-:|:-:|:-:|:-:|
+|tom|1|90|71|15
+|jerry|2|90|99|15
+|harry|3|85|99|15
+
+
+```
+……  |  filldown score1
+```
+
+|name|number|score1|score2|age
+|:-:|:-:|:-:|:-:|:-:|
+|tom|1|90|71|15
+|jerry|2|90|99|-
+|harry|3|85|-|-
+
+```
+……| filldown score1,age
+```
+
+|name|number|score1|score2|age
+|:-:|:-:|:-:|:-:|:-:|
+|tom|1|90|71|15
+|jerry|2|90|99|15
+|harry|3|85|-|15
+
+```
+……| filldown score*
+```
+
+|name|number|score1|score2|age
+|:-:|:-:|:-:|:-:|:-:|
+|tom|1|90|71|15
+|jerry|2|90|99|-
+|harry|3|85|99|-
+
+```
+……| filldown score*,age
+```
+
+|name|number|score1|score2|age
+|:-:|:-:|:-:|:-:|:-:|
+|tom|1|90|71|15
+|jerry|2|90|99|15
+|harry|3|85|99|15
+

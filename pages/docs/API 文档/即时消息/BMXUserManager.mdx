@@ -1,0 +1,923 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>class im.floo.floolib.BMXUserManager</p>
+                <p>用户管理器</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#signUpNewUser`)'>signUpNewUser</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#signInByName`)'>signInByName</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#signInById`)'>signInById</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#autoSignInByName`)'>autoSignInByName</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#autoSignInById`)'>autoSignInById</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#signOut`)'>signOut</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#signOut`)'>signOut</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#connectStatus`)'>connectStatus</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#signInStatus`)'>signInStatus</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#bindDevice`)'>bindDevice</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getDeviceList`)'>getDeviceList</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#deleteDevice`)'>deleteDevice</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getProfile`)'>getProfile</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setNickname`)'>setNickname</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#uploadAvatar`)'>uploadAvatar</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#downloadAvatar`)'>downloadAvatar</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPublicInfo`)'>setPublicInfo</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPrivateInfo`)'>setPrivateInfo</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setAddFriendAuthMode`)'>setAddFriendAuthMode</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setAuthQuestion`)'>setAuthQuestion</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setEnablePush`)'>setEnablePush</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setEnablePushDetaile`)'>setEnablePushDetaile</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPushNickname`)'>setPushNickname</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPushAlias`)'>setPushAlias</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setNotificationSound`)'>setNotificationSound</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setNotificationVibrate`)'>setNotificationVibrate</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setAutoDownloadAttachment`)'>setAutoDownloadAttachment</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setAutoAcceptGroupInvite`)'>setAutoAcceptGroupInvite</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#addUserListener`)'>addUserListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#removeUserListener`)'>removeUserListener</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#changeAppId`)'>changeAppId</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="signUpNewUser">signUpNewUser</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void signUpNewUser(final String username, final String password, final BMXDataCallBack&lt;BMXUserProfile&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>注册</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            password: String
+        </div>
+                <p>密码</p>
+    </li>
+    <li>
+        <div>
+            username: String
+        </div>
+                <p>用户名</p>
+    </li>
+    <li>
+        <div>
+            callBack: &lt;any&gt;
+        </div>
+                <p>BMXUserProfile</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="signInByName">signInByName</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void signInByName(final String name, final String password, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>用户名登陆</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            name: String
+        </div>
+                <p></p>
+    </li>
+    <li>
+        <div>
+            password: String
+        </div>
+                <p></p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="signInById">signInById</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void signInById(final long id, final String password, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>id 登陆</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            id: long
+        </div>
+                <p></p>
+    </li>
+    <li>
+        <div>
+            password: String
+        </div>
+                <p></p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="autoSignInByName">autoSignInByName</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void autoSignInByName(final String name, final String password, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>自动登陆 根据用户名</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            name: String
+        </div>
+                <p></p>
+    </li>
+    <li>
+        <div>
+            password: String
+        </div>
+                <p></p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="autoSignInById">autoSignInById</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void autoSignInById(final long uid, final String password, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>自动登陆 根据id</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            uid: long
+        </div>
+                <p></p>
+    </li>
+    <li>
+        <div>
+            password: String
+        </div>
+                <p></p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="signOut">signOut</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void signOut(final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>退出登录</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="signOut">signOut</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void signOut(final long userId, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>退出登录</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            callBack: long
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="connectStatus">connectStatus</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXConnectStatus connectStatus();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取当前和服务器的连接状态</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span><a href='/IM/api/8202/bmxconnectstatus'>BMXConnectStatus</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="signInStatus">signInStatus</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXSignInStatus signInStatus();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取当前的登录状态</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span><a href='/IM/api/8286/bmxsigninstatus'>BMXSignInStatus</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="bindDevice">bindDevice</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void bindDevice(final String token, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>绑定设备推送token</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            token: String
+        </div>
+                <p>device token</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getDeviceList">getDeviceList</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void getDeviceList(final BMXDataCallBack&lt;BMXDeviceList&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取登录的设备列表</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            callBack: &lt;any&gt;
+        </div>
+                <p>BMXErrorCode 登录的设备列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="deleteDevice">deleteDevice</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void deleteDevice(final int device_sn, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>删除设备</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            callBack: int
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getProfile">getProfile</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void getProfile(final boolean forceRefresh, final BMXDataCallBack&lt;BMXUserProfile&gt; callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取用户详情</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            forceRefresh: boolean
+        </div>
+                <p>强制从服务器拉取最新结果</p>
+    </li>
+    <li>
+        <div>
+            callBack: &lt;any&gt;
+        </div>
+                <p>BMXErrorCode,用户详情</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setNickname">setNickname</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setNickname(final String nickname, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置昵称</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            nickname: String
+        </div>
+                <p>昵称</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="uploadAvatar">uploadAvatar</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void uploadAvatar(final String avatarPath, final FileProgressListener listener, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>上传头像</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            avatarPath: String
+        </div>
+                <p>头像本地文件路径</p>
+    </li>
+    <li>
+        <div>
+            listener: FileProgressListener
+        </div>
+                <p>上传进度监听器</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="downloadAvatar">downloadAvatar</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void downloadAvatar(final BMXUserProfile profile, final FileProgressListener listener, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>下载头像</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            profile: <a href='/IM/api/8304/bmxuserprofile'>BMXUserProfile</a>
+        </div>
+                <p>用户详情</p>
+    </li>
+    <li>
+        <div>
+            listener: FileProgressListener
+        </div>
+                <p>下载进度监听器</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPublicInfo">setPublicInfo</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setPublicInfo(final String publicInfo, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置公开扩展信息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            publicInfo: String
+        </div>
+                <p>用户公开信息</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPrivateInfo">setPrivateInfo</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setPrivateInfo(final String privateInfo, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置私有扩展信息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            privateInfo: String
+        </div>
+                <p>用户私有信息（只对自己可见）</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setAddFriendAuthMode">setAddFriendAuthMode</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setAddFriendAuthMode(final BMXUserProfile.AddFriendAuthMode mode, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置加好友验证方式</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            mode: AddFriendAuthMode
+        </div>
+                <p>添加好友时的验证方式</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setAuthQuestion">setAuthQuestion</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setAuthQuestion(final BMXUserProfile.AuthQuestion authQuestion, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置加好友验证问题</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            authQuestion: AuthQuestion
+        </div>
+                <p>验证问题</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setEnablePush">setEnablePush</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setEnablePush(final boolean enable, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置是否允许推送</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            enable: boolean
+        </div>
+                <p>是否允许推送，true推送，false不推送</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setEnablePushDetaile">setEnablePushDetaile</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setEnablePushDetaile(final boolean enable, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置是否推送详情</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            enable: boolean
+        </div>
+                <p>是否推送详情，true推送，false不推送</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPushNickname">setPushNickname</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setPushNickname(final String nickname, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置推送昵称</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            nickname: String
+        </div>
+                <p>推送昵称</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPushAlias">setPushAlias</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setPushAlias(final String alias, final String bmxPushToken, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置推送别名</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            alias: String
+        </div>
+                <p>别名</p>
+    </li>
+    <li>
+        <div>
+            bmxPushToken: String
+        </div>
+                <p>推送token</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setNotificationSound">setNotificationSound</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setNotificationSound(final boolean enable, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置收到新消息是否声音提醒</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            enable: boolean
+        </div>
+                <p>收到新消息是否声音提醒，true提醒，false不提醒</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setNotificationVibrate">setNotificationVibrate</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setNotificationVibrate(final boolean enable, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置收到新消息是否震动</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            enable: boolean
+        </div>
+                <p>收到新消息是否震动，true震动，false不震动</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setAutoDownloadAttachment">setAutoDownloadAttachment</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setAutoDownloadAttachment(final boolean enable, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置是否自动缩略图和语音附件</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            enable: boolean
+        </div>
+                <p>是否自动缩略图和语音附件，true自动下载，false不会自动下载</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setAutoAcceptGroupInvite">setAutoAcceptGroupInvite</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setAutoAcceptGroupInvite(final boolean enable, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置是否自动同意入群邀请</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            enable: boolean
+        </div>
+                <p>是否自动同意入群邀请，true同意，false不同意</p>
+    </li>
+    <li>
+        <div>
+            callBack: BMXCallBack
+        </div>
+                <p>BMXErrorCode</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="addUserListener">addUserListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void addUserListener(BMXUserServiceListener listener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>添加用户状态监听者</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            listener: <a href='/IM/api/8293/bmxuserservicelistener'>BMXUserServiceListener</a>
+        </div>
+                <p>用户状态监听者</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="removeUserListener">removeUserListener</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void removeUserListener(BMXUserServiceListener listener);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>移除用户状态监听者</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            listener: <a href='/IM/api/8293/bmxuserservicelistener'>BMXUserServiceListener</a>
+        </div>
+                <p>用户状态监听者</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="changeAppId">changeAppId</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void changeAppId(final String appId, final BMXCallBack callBack);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>切换appId</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            appId: String
+        </div>
+                <p>appId</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+
+

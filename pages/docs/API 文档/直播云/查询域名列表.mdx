@@ -1,0 +1,96 @@
+# 接口描述
+
+返回目标直播空间下的所有直播域名，以列表形式返回
+
+# 请求参数
+
+```
+GET /v2/hubs/<hub>/domains
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/x-www-form-urlencoded 
+```
+
+|      参数          |      类型          |  必填   |                  描述                      |
+| -------------------- | -------------------- | ----------- | ------------------------------------------ |
+|       Hub           |    string           | 是    |        直播空间名                              |
+
+# 返回数据
+
+|      参数         |      类型          |                  描述                      |
+| -------------------- | -------------------- | ------------------------------------------ |
+|   Domains           |[]object              |   域名列表                                  |
+|├─ Type             |    string           |   域名类型，包括：<br>publishRtmp：推流域名<br>liveRtmp：RTMP播放域名<br>liveHls：HLS播放域名<br>liveHdl：FLV播放域名    |
+|├─ Domain           |    string           |      域名                                      |
+|├─ Cname             |    string           |         CNAME                                |
+|├─CertEnable         |      bool           |        是否配置 SSL 证书                      |
+|├─ CertName           |    string          |       证书名称                            |
+
+
+# 示例
+
+请求体:
+
+```
+GET /v2/hubs/testhub/domains HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/x-www-form-urlencoded 
+```
+
+返回体:
+
+```
+200 OK
+
+{
+    "domains": [
+        {
+            "type": "publishRtmp",
+            "domain": "pili-publish.testhub.cloudvdn.com",
+            "cname": "pili-publish.testhub.cloudvdn.com.publish.z0.pili.pilidns.com",
+            "certEnable": false,
+            "certName": ""
+        },
+        {
+            "type": "liveRtmp",
+            "domain": "pili-live-rtmp.testhub.cloudvdn.com",
+            "cname": "pili-live-rtmp.testhub.cloudvdn.com.live-rtmp.z0.pili.pilidns.com",
+            "certEnable": false,
+            "certName": ""
+        },
+        {
+            "type": "liveHls",
+            "domain": "pili-live-hls.testhub.cloudvdn.com",
+            "cname": "pili-live-hls.testhub.cloudvdn.com.live-hls.z0.pili.pilidns.com",
+            "certEnable": false,
+            "certName": ""
+        },
+        {
+            "type": "publishRtmp",
+            "domain": "pili-publish.test3.qbox.net",
+            "cname": "pili-publish.test3.qbox.net.publish.z0.pili.pilidns.com",
+            "certEnable": false,
+            "certName": ""
+        },
+        {
+            "type": "liveRtmp",
+            "domain": "pili-live-hw-rtmp.testhub.cloudvdn.com",
+            "cname": "pili-live-hw-rtmp.testhub.cloudvdn.com.live-rtmp.z0.pili.pilidns.com",
+            "certEnable": false,
+            "certName": ""
+        },
+        {
+            "type": "liveRtmp",
+            "domain": "pili-live-b-rtmp.testhub.cloudvdn.com",
+            "cname": "pili-live-b-rtmp.testhub.cloudvdn.com.live-rtmp.z0.pili.pilidns.com",
+            "certEnable": false,
+            "certName": ""
+        }
+    ]
+}
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

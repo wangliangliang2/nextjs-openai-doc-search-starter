@@ -1,0 +1,93 @@
+`<chart>`元素定义图表，可写入类型属性：
+
+* `type`:用于定义图表的类型，支持：
+
+|图表分类|图表类型|说明|
+|:--:|:--:|:--:|
+|二维图表|折线图<br>柱状图<br>面积图<br>散点图<br>气泡图|type="line"<br>type="bar"<br>type="area"<br>type="scatter"<br>type="bubble"|
+|一维图表|分组饼图<br>指标饼图<br>分组环图<br>指标环图<br>分组玫瑰图<br>指标玫瑰图<br>嵌套饼图<br>数字单值图<br>仪表单值图<br>占比图<br>中国地图<br>世界地图<br>城市气泡图<br>中国迁徙图<br>世界迁徙图<br>雷达图<br>多重雷达图<br>旭日图|type="pie-bucket"<br>type="pie-metric"<br>type="pie-ring-bucket"<br>type="pie-ring-metric"<br>type="pie-rose-bucket"<br>type="pie-rose-metric"<br>type="pie-nest"<br>type="single-value"<br>type="single-gauge"<br>type="single-percent"<br>type="map-china"<br>type="map-world"<br>type="city-bubble"<br>type="migration-china"<br>type="migration-world"<br>type="radar-bucket"<br>type="radar-metric"<br>type="sunburst"|
+|其他|网格数据表<br>树状数据表<br>环形关系图<br>弧形关系图<br>时间轴<br>二级桑基图<br>多级桑基图|type="grid-table"<br>type="tree-table"<br>type=“relationCircular”<br>type=“relationHorizontal”<br>type="timeline"<br>type=“sankey-compatible”<br>type=“sankeyStrict”|
+
+* 二维图表公共子元素
+
+|子元素|说明|
+|:--:|:--:|:--:|
+|`<title>`|表示图表的标题， 详解参见`<title>`元素|
+|`<search>`|表示图表的搜索条件， 详解参见`<search>`元素|
+|`<hide-header>`|表示是否隐藏图表的 header，详解参见`<hide-header>`元素|
+|`<option>`|option 元素可为图表提供一些通用属性， 不同图表支持的 option 属性不同， 详情参见具体图表的`<option>`元素。|
+|`<legend>`|图表的图例配置， 详解参见二维图表`<legend>`元素|
+|`<groups>`|表示图表中折线颜色的分组字段配置，详见`<groups>`元素|
+|`<x-axis>`|表示图表的主轴的一些配置， 详解参见`<x-axis>`元素|
+|`<y-axis>`|表示图表的 y 轴的一些配置， 详解参见`<y-axis>`元素|
+|`<y2-axis>`|线图面积图里可以有 2 个 y 轴，分别表示不同的指标配置， 详解参见`<y2-axis>`元素|
+
+
+* 一维图表子公共元素
+
+|子元素|说明|
+|:--:|:--:|
+|`<option>`|option元素可为图表提供一些通用属性， 不同图表支持的 option 属性不同， 详情参见具体图表的`<option>`元素。|
+|`<title>`|表示图表的标题， 详解参见`<title>`元素|
+|`<hide-header>`|表示是否隐藏图表的 header|
+|`<search>`|表示图表的搜索条件， 详解参见`<search>`元素|
+
+* 一维图表每种图表类型特有的子元素
+
+1.分组饼图、指标饼图、分组玫瑰图、指标玫瑰图、中国地图、世界地图
+
+|子元素|说明|
+|:--:|:--:|:--:|
+|`<legend>`|图表的图例配置， 详解参见一维图表`<legend>`元素|
+
+2.分组环图、指标环图
+
+|子元素|说明|
+|:--:|:--:|:--:|
+|`<data-font>`|标题的数值字体,详见`<data-font>`元素|
+|`<title-font>`|标题字体,详见`<title-font>`元素|
+
+3.数字单值图
+
+|子元素|说明|
+|:--:|:--:|:--:|
+|`<data-font>`|标题的数值字体,详见`<data-font>`元素|
+|`<color-splitter	>`|阈值分段情况,可配置多个,详见`<color-splitter>`元素|
+|`<prefix>`|可给数值填充前缀|
+|`<suffix>`|可给数值填充后缀|
+
+4.仪表单值图、占比图
+
+|子元素|说明|
+|:--:|:--:|:--:|
+|`<data-font>`|标题的数值字体,详见`<data-font>`元素|
+|`<title-font>`|标题字体,详见`<title-font>`元素|
+|`<color-splitter	>`|阈值分段情况,可配置多个,详见`<color-splitter>`元素|
+
+5.雷达图
+
+|子元素|说明|
+|:--:|:--:|:--:|
+|`<legend>`|图表的图例配置， 详解参见一维图表`<legend>`元素|
+|`<indicator>`|指示器配置详情,可配置多个 ,详见`<indicator>`元素|
+
+* 其他图表类型公共子元素
+
+|元素签|说明|
+|:--:|:--:|
+|`<option>`|option 元素可为图表提供一些通用属性， 不同图表支持的 option 属性不同， 详情参见具体图表的`<option>`元素。|
+|`<title>`|表示图表的标题， 详解参见`<title>`元素|
+|`<hide-header>`|表示是否隐藏图表的 header|
+|`<search>`|表示图表的搜索条件， 详解参见`<search>`元素|
+
+* 其他图表每种图表类型特有的子元素
+
+1.网格表、数据表
+
+|子元素|说明|
+|:--:|:--:|
+|`<column>`|为数据表设置每一列的显示字段以及具体的列的样式，详解参见`<column>`元素|
+|`<row>`|根据行数据进行筛选，并设置筛选匹配的颜色，详解参见`<row>`元素|
+
+
+

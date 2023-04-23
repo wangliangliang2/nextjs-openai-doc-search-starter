@@ -1,0 +1,36 @@
+# 请求路径
+> `POST` /v1/ess/group
+
+# 请求参数
+
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region_id | string | body | 是 | 地域 ID |
+| scaling_group_name | string | body | 是 | 伸缩组名称 |
+| min_size | int | body | 是 | 伸缩组内ECS实例台数的最小值。 |
+| max_size | int | body | 是 | 伸缩组内ECS实例台数的最大值。|
+| default_cooldown | int | body | 否 | 伸缩组默认的冷却时间。冷却时间内，该伸缩组不执行其它的伸缩活动。 |
+| removal_policies | []string | body | 否 | ECS实例移出伸缩组的策略的集合。取值范围：OldestInstance (取最早创建的 ECS 实例), NewestInstance (取最新创建的实例), OldestScalingConfiguration (取最早伸缩配置创建的 ECS 实例)。 |
+| v_switch_ids | []string | body | 是 | 伸缩组关联虚拟交换机的ID集合。 |
+| health_check_type | string | body | 是 | 伸缩组的健康检查方式。取值范围：NONE (不做健康检查), ECS (对伸缩组内的ECS实例做健康检查)。 |
+| load_balancer_ids | string | body | 否 | 负载均衡实例 ID。取值可以由多台负载均衡实例 ID 组成一个 JSON 数组，格式为 ["lb-idx", "lb-idy", … "lb-idz"]，最多支持 5 个 ID，ID 之间用半角逗号（,）隔开。如果在伸缩组中指定了SLB实例，伸缩组会自动将加入伸缩组的ECS实例添加到指定的SLB实例当中。指定的SLB实例必须开启健康检查，否则创建失败。加入SLB的ECS实例的权重默认为50。 |
+| d_b_instance_ids | string | body | 否 | RDS 实例 ID。取值可以由多台 RDS 实例 ID 组成一个 JSON 数组，格式为 ["rm-idx", "rm-idy", … "rm-idz"]，最多支持 8 个 ID，ID 之间用半角逗号（,）隔开。 如果在伸缩组中指定了RDS实例，伸缩组会自动将加入伸缩组的ECS实例的内网IP添加到指定的RDS实例的访问白名单当中。|
+| multi_a_z_policy | string | body | 否 | 多可用区伸缩组 ECS 实例扩缩容策略。取值范围： PRIORITY：根据您定义的虚拟交换机（VSwitchIds.N）扩缩容。当优先级较高的虚拟交换机所在可用区无法创建 ECS 实例时，自动使用下一优先级的虚拟交换机创建 ECS 实例。 COST_OPTIMIZED：按 vCPU 单价从低到高进行尝试创建。当伸缩配置设置了抢占式计费方式的多实例规格时，优先创建对应抢占式计费实例。当抢占式计费实例由于库存等原因无法创建时，自动尝试以按量付费的方式创建。 注意 COST_OPTIMIZED 仅在伸缩配置设置了多实例规格或者选用了抢占式实例的情况下生效。 BALANCE：在伸缩组指定的多可用区之间均匀分配 ECS 实例。如果由于库存不足等原因可用区之间变得不平衡，您可以通过 API RebalanceInstance 平衡资源。 默认值：PRIORITY。 |
+| scaling_policy | string | body | 否 | 指定伸缩组的回收模式，可选值： recycle：伸缩组的回收模式为停机回收模式 release：伸缩组的回收模式为释放模式 关于被移出实例的动作，请参阅 RemoveInstances。 |
+
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| request_id | string | 是 | 请求记录 ID |
+
+
+
+# 示例
+### 正常返回示例
+```json
+{
+    "request_id": "504ce405-58d1-40b1-9674-40d7d3875d65"
+}
+```

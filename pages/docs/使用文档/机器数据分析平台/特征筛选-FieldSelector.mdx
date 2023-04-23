@@ -1,0 +1,20 @@
+特征筛选利用统计学方法，基于各特征和目标变量的相关性，计算各特征的重要性分数，分数越大的变量越重要。默认采用计算方差分析中的F值的方法。
+
+
+
+语法：
+
+```
+..｜fit FieldSeletor score_func=<str> <target_field> from <feature_field_1> <feature_field_2> [into model_name]...
+```
+
+
+
+参数说明：
+
+- score_func参数，用来指定计算特征得分的方法。score_func默认为f_classif。
+  - score_func=chi2，采用卡方检验的标准来计算，卡方值作为变量得分。如采用此种标准，不允许输入带有负值。
+  - score_func=f_classif，采用方差分析来计算得分，F值作为变量得分，适用于分类任务。
+  - score_func=mutual_info_classif，采用互信息标准来计算得分，适用于分类任务。
+  - score_func=f_regreesion，采用回归分析来计算得分，变量的F值作为变量得分，适用于回归任务。
+  - score_func=mutual_info_regression，采用互信息标准来计算得分，适用于回归任务。

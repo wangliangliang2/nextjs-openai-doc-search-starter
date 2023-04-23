@@ -1,0 +1,590 @@
+JavaScript SDK 适用于 IE9+、Chrome、Firefox、Safari 等浏览器，基于七牛云 API 构建。开发者使用本 SDK 可以方便的从浏览器端上传文件至七牛云。
+
+本 SDK 为客户端 SDK，没有包含 token 生成实现，为了安全，token 建议您通过网络从服务端获取，具体生成代码可以参考七牛服务端官方 SDKs。
+
+- [JavaScript SDK 下载地址](https://github.com/qiniu/js-sdk/releases)
+- [JavaScript SDK 源码地址](https://github.com/qiniu/js-sdk/tree/1.x)
+- [JavaScript SDK 在线示例](http://jssdk.demo.qiniu.io/)
+
+### 功能简介
+
+* 上传
+ * html5 模式大于 4 M 时可分块上传，小于 4 M 时直传
+ * Flash、html4 模式直接上传
+ * 继承了 Plupload 的功能，可筛选文件上传、拖曳上传等
+
+### 服务端准备
+
+本 SDK 依赖服务端颁发的上传凭证，可以通过以下二种方式实现：
+
+- 利用七牛服务端 SDK 构建后端服务
+- 利用七牛底层 API 构建服务，详见七牛[上传策略](/kodo/manual/put-policy)和[上传凭证](/kodo/manual/upload-token)
+
+后端服务应提供一个 URL 地址，供 SDK 初始化使用，前端通过 Ajax 请求该地址后获得 upToken。
+Ajax 请求成功后，服务端应返回如下格式的 json：
+
+```
+{
+"uptoken": "0MLvWPnyya1WtPnXFy9KLyGHyFPNdZceomL..."
+}
+```
+
+**引入 qiniu.js**
+
+获取 SDK 源码：
+```
+git clone git@github.com:qiniupd/qiniu-js-sdk.git
+git checkout 1.x
+```
+qiniu.min.js 位于 dist 目录内
+
+### 初始化
+
+要接入七牛云存储，您需要拥有一对有效的 Access Key 和 Secret Key 进行签名认证。可以通过如下步骤获得：
+
+1. [开通七牛开发者帐号](https://portal.qiniu.com/signup)
+2. 登录七牛开发者平台，查看[Access Key 和 Secret Key](https://portal.qiniu.com/user/key)
+
+<a id="install"></a>
+# 安装
+
+- 通过 Github 上的 qiniu/js-sdk 仓库获取，下载最新的[1.x 版本](https://github.com/qiniu/js-sdk/releases)并解压或直接克隆仓库，JS-SDK 在 dist 目录中：
+
+    ```
+    git clone https://github.com/qiniu/js-sdk.git
+    git checkout 1.x
+    ```
+
+# 上传
+
+- 在页面中引入 qiniu.min.js
+
+- 初始化 uploader (**请确保在执行初始化时，页面已经引入 plupload**)：
+
+    ```JavaScript
+    var uploader = Qiniu.uploader({
+        runtimes: 'html5,flash,html4',      // 上传模式，依次退化
+        browse_button: 'pickfiles',         // 上传选择的点选按钮，必需
+        // 在初始化时，uptoken，uptoken_url，uptoken_func三个参数中必须有一个被设置
+        // 切如果提供了多个，其优先级为uptoken > uptoken_url > uptoken_func
+        // 其中uptoken是直接提供上传凭证，uptoken_url是提供了获取上传凭证的地址，如果需要定制获取uptoken的过程则可以设置uptoken_func
+        // uptoken : '<Your upload token>', // uptoken是上传凭证，由其他程序生成
+        // uptoken_url: '/uptoken',         // Ajax请求uptoken的Url，强烈建议设置（服务端提供）
+        // uptoken_func: function(){    // 在需要获取uptoken时，该方法会被调用
+        //    // do something
+        //    return uptoken;
+        // },
+        get_new_uptoken: false,             // 设置上传文件的时候是否每次都重新获取新的uptoken
+        // downtoken_url: '/downtoken',
+        // Ajax请求downToken的Url，私有空间时使用，JS-SDK将向该地址POST文件的key和domain，服务端返回的JSON必须包含url字段，url值为该文件的下载地址
+        // unique_names: true,              // 默认false，key为文件名。若开启该选项，JS-SDK会为每个文件自动生成key（文件名）
+        // save_key: true,                  // 默认false。若在服务端生成uptoken的上传策略中指定了sava_key，则开启，SDK在前端将不对key进行任何处理
+        domain: '<Your bucket domain>',     // bucket域名，下载资源时用到，必需
+        container: 'container',             // 上传区域DOM ID，默认是browser_button的父元素
+        max_file_size: '100mb',             // 最大文件体积限制
+        flash_swf_url: 'path/of/plupload/Moxie.swf',  //引入flash，相对路径
+        max_retries: 3,                     // 上传失败最大重试次数
+        dragdrop: true,                     // 开启可拖曳上传
+        drop_element: 'container',          // 拖曳上传区域元素的ID，拖曳文件或文件夹后可触发上传
+        chunk_size: '4mb',                  // 分块上传时，每块的体积
+        auto_start: true,                   // 选择文件后自动上传，若关闭需要自己绑定事件触发上传
+        //x_vars : {
+        //    查看自定义变量
+        //    'time' : function(up,file) {
+        //        var time = (new Date()).getTime();
+                  // do something with 'time'
+        //        return time;
+        //    },
+        //    'size' : function(up,file) {
+        //        var size = file.size;
+                  // do something with 'size'
+        //        return size;
+        //    }
+        //},
+        init: {
+            'FilesAdded': function(up, files) {
+                plupload.each(files, function(file) {
+                    // 文件添加进队列后，处理相关的事情
+                });
+            },
+            'BeforeUpload': function(up, file) {
+                   // 每个文件上传前，处理相关的事情
+            },
+            'UploadProgress': function(up, file) {
+                   // 每个文件上传时，处理相关的事情
+            },
+            'FileUploaded': function(up, file, info) {
+                   // 每个文件上传成功后，处理相关的事情
+                   // 其中info.response是文件上传成功后，服务端返回的json，形式如：
+                   // {
+                   //    "hash": "Fh8xVqod2MQ1mocfI4S4KpRL6D98",
+                   //    "key": "gogopher.jpg"
+                   //  }
+                   // 查看简单反馈
+                   // var domain = up.getOption('domain');
+                   // var res = parseJSON(info.response);
+                   // var sourceLink = domain +"/"+ res.key; 获取上传成功后的文件的Url
+            },
+            'Error': function(up, err, errTip) {
+                   //上传出错时，处理相关的事情
+            },
+            'UploadComplete': function() {
+                   //队列文件处理完毕后，处理相关的事情
+            },
+            'Key': function(up, file) {
+                // 若想在前端对每个文件的key进行个性化处理，可以配置该函数
+                // 该配置必须要在unique_names: false，save_key: false时才生效
+
+                var key = "";
+                // do something with key here
+                return key
+            }
+        }
+    });
+
+    // domain为七牛空间对应的域名，选择某个空间后，可通过 空间设置->基本设置->域名设置 查看获取
+
+    // uploader为一个plupload对象，继承了所有plupload的方法
+    ```
+    - [自定义变量](/kodo/manual/vars#xvar)
+    - [简单反馈](/kodo/manual/response-body)
+    - [plupload](http://plupload.com/docs)
+
+- 如果一个页面中有多个上传实例，可以按如下操作：
+    
+    ```JavaScript
+    var option1 = {
+        key : val ,
+        ……
+    };
+    var uploader = Qiniu.uploader(option1);
+
+    var Qiniu2 = new QiniuJsSDK();
+    var option2 = {
+        key : val ,
+        ……
+    };
+    var uploader2 = Qiniu2.uploader(option2);
+
+    ```
+
+<a id="fop"></a>
+
+#  运行示例
+
+直接运行本 SDK 示例网站的服务
+
+*  安装[Nodejs](http://nodejs.org/download/)
+
+*  获取源代码：
+
+    ```
+    git clone git@github.com:qiniu/js-sdk.git
+    git checkout 1.x
+    ```
+
+*  进入项目根目录，执行 make install，安装七牛 Node.js SDK、Express
+
+*  进入 demo 目录，按照目录下的 config.example 示例，创建 config.js 文件，其中 Access Key 和 Secret Key 按如下方式获取：
+
+   1. [开通七牛开发者帐号](https://portal.qiniu.com/signup)
+   2. 登录七牛开发者自助平台，查看[Access Key 和 Secret Key](https://portal.qiniu.com/user/key)。
+
+```javascript
+    
+    module.exports = {
+        'ACCESS_KEY': '<Your Access Key>',
+        'SECRET_KEY': '<Your Secret Key>',
+        'Bucket_Name': '<Your Bucket Name>',
+        'Port': 19110,
+        'Uptoken_Url': '<Your Uptoken_Url>',
+        'Domain': '<Your Bucket Domain>'
+    }
+```
+* 进入项目根目录，执行 make dev 访问 `http://127.0.0.1:19110/` 或 `http://localhost:19110/`。
+
+
+**说明**
+
+* 本 SDK 依赖 uptoken，可以直接设置 upload，通过提供 Ajax 请求地址 uptoken_url 或者通过提供一个能够返回 uptoken 的函数 uptoken_func 实现。
+
+* 如果您想了解更多七牛的上传策略，建议您仔细阅读[上传策略](/kodo/manual/put-policy)。另外，七牛的上传策略是在后端服务指定的，本 SDK 的 setOption API 只是设置 Plupload 的初始化参数，和上传策略无关。
+
+* 如果您想了解更多七牛的图片处理，建议您仔细阅读七牛官方文档[图片处理](/dora/manual/3683)。
+
+
+* 本 SDK 示例生成 upToken 时，指定的 Bucket Name 为公开空间，所以可以公开访问上传成功后的资源。若您生成 upToken 时，指定的 Bucket Name 为私有空间，那您还需要在服务端进行额外的处理才能访问您上传的资源，具体请参阅[下载凭证](/kodo/manual/download-token)。本 SDK 数据处理功能不适用于私有空间。
+
+<a id="api-reference"></a>
+# API 参考
+
+- [存储 API 参考](/kodo/api/1731/api-overview)
+- [官方数据处理 API 参考](/dora)
+
+<a id="faq"></a>
+# 常见问题
+
+七牛提供基于 plupload 插件封装上传的[demo](http://jssdk.demo.qiniu.io/)，如果不需要 plupload 插件请参阅[https://github.com/iwillwen/qiniu.js/tree/develop](https://github.com/iwillwen/qiniu.js/tree/develop)，这里主要针对基于 plupload 插件的方式讲解遇到的一些问题，通过参阅 plupload 文档资料，可以对七牛的 demo 进行修改，以满足自己的业务需求，plupload 插件的使用文档请参阅[http://www.cnblogs.com/2050/p/3913184.html](http://www.cnblogs.com/2050/p/3913184.html)。
+
+**1. 关于上传文件命名问题**
+
+在 main.js 里面，unique_names 是 plupload 插件下面的一个参数，当值为 true 时会为每个上传的文件生成一个唯一的文件名，这个是 plupload 插件自动生成的，如果设置成 false，七牛会以上传的原始名进行命名。
+
+- 上传的 scope 为 bucket 的形式，unique_names 参数设置为 false ，上传后文件的 key 是本地的文件名 abc.txt。
+- 上传的 scope 为 bucket 的形式，unique_names 参数设置为 true ，plupload 插件会忽略本地文件名，而且这个命名也是没有规律的，上传后文件的 key 是 plupload 插件生成的，如： Yc7DZRS1m73o.txt。
+- 上传的 scope 为 bucket:key 的形式，上传文件本地的名字需要和 scope 中的 key 是一致的，不然会报错`key doesn‘t match with scope`。<br>**注意：**这种形式不能设置 unique_names 为 true，因为即使上传文件本地名字为 abc.txt，但是 plupload 会给这个文件赋值另外一个文件名。
+- 上传的 scope 为 bucket，但是 token 中有设定 saveKey，这种形式 save_key 应该设置为 true ，并且上传的本地文件名需要和这个 savekey 文件名一致。
+- 通过 JS 前端设置上传的 key，在 main.js 文件里面设置如下：
+
+```
+'Key': function(up, file) {
+    var key = "";
+    // do something with key
+    return key
+}
+```
+
+这个默认是注释的，若想在前端对每个文件的 key 进行个性化处理，可以配置该函数，
+该配置必须要在 unique_names: false，save_key: false 时才生效，
+取消注释后，其优先级要高于：qiniu.js 文件中 getFileKey。
+
+**2. 设置自定义预览样式**
+
+```javascript
+// 该设置在ui.js文件里，默认为
+var imageView ='?imageView2/1/w/100/h/100'
+// 可修改成
+var imageView ='样式符+样式名'
+```
+
+**3. 关于设置取消上传问题**
+
+[http://stackoverflow.com/questions/11014384/cancel-file-upload-listener](http://stackoverflow.com/questions/11014384/cancel-file-upload-listener)
+
+（文件 plupload.dev.js 1950行 removeFile : function(file) 方法）
+
+**4. 限制上传文件的类型**
+
+这里分为两种方法：
+
+1.通过在 token 中设定 mimeLimit 字段限定上传文件的类型，示例：
+
+- image/*：表示只允许上传图片类型
+- image/jpeg;image/png：表示只允许上传 jpg 和 png 类型的图片
+- !application/json;text/plain：表示禁止上传 json 文本和纯文本（注意最前面的感叹号）
+
+2. FilesAdded 判断
+
+```
+   'FilesAdded': function(up, files) {
+        $('table').show();
+        $('#success').hide();
+        //文件限制
+        plupload.each(files, function(file) {
+            console.log('filetype: ' + file.type);
+            if(file.type=='image/jpeg'||file.type=='image/jpg'||file.type=='image/png'||file.type=='image/gif' || file.type=='video/x-matroska' || file.type=='video/mp4'){
+                console.log('type:' + file.type);
+                isUpload =true;
+               // file.album_name=album_name;
+                var progress = new FileProgress(file, 'fsUploadProgress');
+                progress.setStatus("等待...");
+                progress.bindUploadCancel(up);
+            }else {
+                isUpload = false;
+                up.removeFile(file);
+                console.log('上传类型只能是.jpg,.png,.gif,.mkv');
+                return false;
+            }});
+    },
+```
+```
+
+**5. 设置每次只能选择一个文件**
+
+通过 plupload 插件中的 multi_selection 参数控制，如下：
+
+```javascript
+// 设置一次只能选择一个文件
+multi_selection: false,
+```
+
+**6. 设置取消上传，暂停上传**
+
+在 index.html 中加入两个控制按钮：
+
+```
+<a class="btn btn-default btn-lg " id="up_load"  href="#" >
+     <span>确认上传</span>
+</a>
+<a class="btn btn-default btn-lg " id="stop_load"  href="#" >
+     <span>暂停上传</span>
+</a>
+```
+
+然后在 main.js 文件里面绑定这两个按钮，添加代码如下：
+
+```
+$('#up_load').on('click', function(){
+   uploader.start();
+});
+$('#stop_load').on('click', function(){
+   uploader.stop();
+});
+```
+
+**7. 取消分片上传**
+
+将 main.js 里面的 chunk_size: '4mb' 参数设置为 chunk_size: '0mb'，注意分片上传默认分片大小是 4M，如果设置一个别的分片大小则会上传失败。
+
+**8. 取消自动上传**
+
+将 main.js 里面的 auto_start 参数设置为 auto_start: false
+
+**9. 关于请求 token 出现跨域**
+
+因为都是建议用户从后端 SDK 获取 token，然后在 main.js 里设置参数 uptoken_url:'获取uptoken的url'，这里就有可能出现跨域的现象，此时在服务端添加 response.setHeader("Access-Control-Allow-Origin","*"); 相应头字段即可。
+
+推荐一个关于[CORS](http://enable-cors.org/)的网站
+
+**10. Android 自带的 Webview 对JS SDK不支持**
+
+在 Android 自带的 Webview 里面引用 JS SDK 的[demo](http://jssdk.demo.qiniu.io/)：
+
+```
+public class MainActivity extends Activity {
+    private WebView webview;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        webview = (WebView) findViewById(R.id.wv);
+        webview.getSettings().setJavaScriptEnabled(true);
+        webview.setWebViewClient(new WebViewClient(){
+            public boolean shouldOverrideUrlLoading(WebView view, String url){
+                view.loadUrl(url); 
+                return true;
+            }
+        });
+        webview.loadUrl("http://demos.qiniu.com/demo/simpleuploader/");
+    }
+
+}
+```
+
+但是点击选择文件按钮没有反应，这个是 Webview 对 JS 不是很支持造成的，解决方法可以引入这个 Webview ，jar包地址如下: 
+[https://o8qpi53g2.qnssl.com/Android-AdvancedWebView.jar](https://o8qpi53g2.qnssl.com/Android-AdvancedWebView.jar)，使用方法请参考：
+
+```
+private AdvancedWebView mWebView;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        mWebView = (AdvancedWebView) findViewById(R.id.webview);
+        mWebView.setListener(this, this);
+        mWebView.loadUrl("http://jssdk.demo.qiniu.io/");
+    }
+```
+**11. 关于多个按钮选择文件的 Demo**
+
+很多用户都在问 JSSDK 多文件选择的 Demo，其实只需要在 main.js 文件里多 new 几个 Uploader 对象，然后在主页上写好对应的上传按钮就可以了。
+
+main.js 里面多 new 几个 uploader 对象：
+
+```
+$(function() {
+    var uploader = Qiniu.uploader({
+        runtimes: 'html5,flash,html4',
+        browse_button: 'pickfiles',
+        container: 'container',
+        drop_element: 'container',
+        max_file_size: '100mb',
+        flash_swf_url: 'js/plupload/Moxie.swf',
+        dragdrop: true,
+        chunk_size: '4mb',
+        uptoken:'um6IEH7mtwnwkGpjImD08JdxlvViuELhI4mFfoeL:79ApUIePTtKIdVGDHJ9D9BfBnhE=:eyJzY29wZSI6ImphdmFkZW1vIiwiZGVhZGxpbmUiOjE0NTk4ODMyMzV9Cg==',
+        // uptoken_url: $('#uptoken_url').val(),  //当然建议这种通过url的方式获取token
+        domain: $('#domain').val(),
+        auto_start: false,
+        init: {
+            'FilesAdded': function(up, files) {
+                $('table').show();
+                $('#success').hide();
+                plupload.each(files, function(file) {
+                    var progress = new FileProgress(file, 'fsUploadProgress');
+                    progress.setStatus("等待...");
+                });
+            },
+            'BeforeUpload': function(up, file) {
+                var progress = new FileProgress(file, 'fsUploadProgress');
+                var chunk_size = plupload.parseSize(this.getOption('chunk_size'));
+                if (up.runtime === 'html5' && chunk_size) {
+                    progress.setChunkProgess(chunk_size);
+                }
+            },
+            'UploadProgress': function(up, file) {
+                var progress = new FileProgress(file, 'fsUploadProgress');
+                var chunk_size = plupload.parseSize(this.getOption('chunk_size'));
+
+                progress.setProgress(file.percent + "%", file.speed, chunk_size);
+            },
+            'UploadComplete': function() {
+                $('#success').show();
+            },
+            'FileUploaded': function(up, file, info) {
+                var progress = new FileProgress(file, 'fsUploadProgress');
+                progress.setComplete(up, info);
+            },
+            'Error': function(up, err, errTip) {
+                $('table').show();
+                var progress = new FileProgress(err.file, 'fsUploadProgress');
+                progress.setError();
+                progress.setStatus(errTip);
+            }
+        }
+    });
+
+    uploader.bind('FileUploaded', function() {
+        console.log('hello man,a file is uploaded');
+    });
+
+    $('#up_load').on('click', function(){
+        uploader.start();
+    });
+    $('#stop_load').on('click', function(){
+        uploader.stop();
+    });
+
+    var Q2 = new QiniuJsSDK();
+    var uploader2 = Q2.uploader({
+        runtimes: 'html5,flash,html4',
+        browse_button: 'pickfiles2',
+        container: 'container2',
+        drop_element: 'container2',
+        max_file_size: '100mb',
+        flash_swf_url: 'js/plupload/Moxie.swf',
+        dragdrop: true,
+        chunk_size: '4mb',
+        uptoken:'um6IEH7mtwnwkGpjImD08JdxlvViuELhI4mFfoeL:79ApUIePTtKIdVGDHJ9D9BfBnhE=:eyJzY29wZSI6ImphdmFkZW1vIiwiZGVhZGxpbmUiOjE0NTk4ODMyMzV9Cg==',
+        // uptoken_url: $('#uptoken_url').val(),  //当然建议这种通过url的方式获取token
+        domain: $('#domain').val(),
+        auto_start: false,
+        init: {
+            'FilesAdded': function(up, files) {
+                $('table').show();
+                $('#success').hide();
+                plupload.each(files, function(file) {
+                    var progress = new FileProgress(file, 'fsUploadProgress');
+                    progress.setStatus("等待...");
+                });
+            },
+            'BeforeUpload': function(up, file) {
+                var progress = new FileProgress(file, 'fsUploadProgress');
+                var chunk_size = plupload.parseSize(this.getOption('chunk_size'));
+                if (up.runtime === 'html5' && chunk_size) {
+                    progress.setChunkProgess(chunk_size);
+                }
+            },
+            'UploadProgress': function(up, file) {
+                var progress = new FileProgress(file, 'fsUploadProgress');
+                var chunk_size = plupload.parseSize(this.getOption('chunk_size'));
+
+                progress.setProgress(file.percent + "%", file.speed, chunk_size);
+            },
+            'UploadComplete': function() {
+                $('#success').show();
+            },
+            'FileUploaded': function(up, file, info) {
+                var progress = new FileProgress(file, 'fsUploadProgress');
+                progress.setComplete(up, info);
+            },
+            'Error': function(up, err, errTip) {
+                $('table').show();
+                var progress = new FileProgress(err.file, 'fsUploadProgress');
+                progress.setError();
+                progress.setStatus(errTip);
+            }
+        }
+    });
+
+    uploader2.bind('FileUploaded', function() {
+        console.log('hello man 2,a file is uploaded');
+    });
+    $('#up_load2').on('click', function(){
+        uploader2.start();
+    });
+    $('#stop_load2').on('click', function(){
+        uploader2.stop();
+    });
+```
+
+相应的 index.html 文件加入相关按钮：
+
+```
+<div id="container">
+        <a class="btn btn-default btn-lg " id="pickfiles" style="width:160px" href="#" >
+            <i class="glyphicon glyphicon-plus"></i>
+            <span>选择文件</span>
+        </a>
+
+        <a class="btn btn-default btn-lg " id="up_load" style="width:160px" href="#" >
+            <span>确认上传</span>
+        </a>  
+
+        <a class="btn btn-default btn-lg " id="stop_load" style="width:160px" href="#" >
+            <span>暂停上传</span>
+        </a> 
+    </div>
+
+<div id="container2">
+        <a class="btn btn-default btn-lg " id="pickfiles2" style="width:160px" href="#" >
+            <i class="glyphicon glyphicon-plus"></i>
+            <span>选择文件</span>
+        </a>
+
+        <a class="btn btn-default btn-lg " id="up_load2" style="width:160px" href="#" >
+            <span>确认上传</span>
+        </a>  
+
+        <a class="btn btn-default btn-lg " id="stop_load2" style="width:160px" href="#" >
+            <span>暂停上传</span>
+        </a> 
+    </div>
+</div>
+```
+
+<a id="related-resources"></a>
+# 相关资源
+
+如果您有任何关于我们文档或产品的建议和想法，欢迎您通过以下方式与我们互动讨论：
+
+* [技术论坛](http://segmentfault.com/qiniu) - 在这里您可以和其他开发者愉快的讨论如何更好的使用七牛云服务
+* [提交工单](http://support.qiniu.com/) - 如果您的问题不适合在论坛讨论或希望及时解决，您也可以提交一个工单，我们的技术支持人员会第一时间回复您
+* [博客](http://blog.qiniu.com) - 这里会持续更新发布市场活动和技术分享文章
+* [微博](http://weibo.com/qiniutek)
+* [常见问题](http://support.qiniu.com/)
+
+<a id="contribute-code"></a>
+# 贡献代码
+
+1. Fork
+
+2. 创建您的特性分支 git checkout -b my-new-feature
+
+3. 提交您的改动 git commit -am 'Added some feature'
+
+4. 将您的修改记录提交到远程 git 仓库 git push origin my-new-feature
+
+5. 然后到 github 网站的该 git 远程仓库的 my-new-feature 分支下发起 Pull Request
+
+<a id="license"></a>
+# 许可证
+
+Copyright (c) 2014 qiniu.com
+
+基于 MIT 协议发布:
+
+* [www.opensource.org/licenses/MIT](http://www.opensource.org/licenses/MIT)
+ 
+

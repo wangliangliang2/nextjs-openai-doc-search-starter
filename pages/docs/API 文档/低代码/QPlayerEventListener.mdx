@@ -1,0 +1,148 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>interface com.qlive.avparam.QPlayerEventListener</p>
+                <p>拉流事件回调</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onPrepared`)'>onPrepared</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onInfo`)'>onInfo</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onBufferingUpdate`)'>onBufferingUpdate</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onVideoSizeChanged`)'>onVideoSizeChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onError`)'>onError</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onPrepared">onPrepared</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+default void onPrepared(int preparedTime);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>拉流器准备中</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            preparedTime: int
+        </div>
+                <p>准备耗时</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onInfo">onInfo</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+default void onInfo(int what, int extra);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>拉流器信息回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            what: int
+        </div>
+                <p>事件 参考七牛霹雳播放器</p>
+    </li>
+    <li>
+        <div>
+            extra: int
+        </div>
+                <p>数据</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onBufferingUpdate">onBufferingUpdate</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+default void onBufferingUpdate(int percent);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>拉流缓冲跟新</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            percent: int
+        </div>
+                <p>缓冲比分比</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onVideoSizeChanged">onVideoSizeChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+default void onVideoSizeChanged(int width, int height);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>/视频尺寸变化回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            width: int
+        </div>
+                <p>变化后的宽</p>
+    </li>
+    <li>
+        <div>
+            height: int
+        </div>
+                <p>变化后高</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onError">onError</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+default boolean onError(int errorCode);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>播放出错回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            errorCode: int
+        </div>
+                <p>错误码 参考七牛霹雳播放器</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

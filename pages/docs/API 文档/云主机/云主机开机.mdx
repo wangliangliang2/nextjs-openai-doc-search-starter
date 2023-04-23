@@ -1,0 +1,20 @@
+云主机开机
+
+# 请求路径
+> `POST` /v1/vm/instance/:instance_id/start
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+instance_id | string | path  | 是 | 云主机实例ID 
+region_id   | string | body  | 是 | 实例所属的地域 ID
+init_local_disk | boolean | body | 否 | 适用于实例规格族 d1、i1 或者 i2 等包含本地盘的实例。<br />当d1、i1或者i2的本地盘出现故障时，可通过此参数指定启动实例时，是否将实例恢复到最初的健康状态。<br />取值范围：<ul><li>`true`：将实例恢复到最初的健康状态，实例原有本地盘中的数据将会丢失。</li><li>`false`（默认）：不做任何处理，维持现状。</li></ul>
+
+
+# 返回值
+开机成功 http 状态码为200
+
+名称 | 类型 | 描述
+----- | ----- | -----
+request_id | string | 请求 ID

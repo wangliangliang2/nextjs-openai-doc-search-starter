@@ -1,0 +1,97 @@
+案例四：基于CPI数据的中国大陆各省份的聚类分析
+
+# 背景介绍
+
+## 数据来源
+
+消费者物价指数（英文原词为Consumer Price Index，简称CPI，又名居民消费价格指数）是一个反映居民家庭一般所购买的消费品和服务项目价格水平变动情况的宏观经济指标。因为它的变动率在一定程度上反映了通货膨胀或紧缩的程度，所以CPI指数已经成为进行经济分析和决策、价格总水平监测和调控及国民经济核算的重要指标。从1978年改革开放开始，中国由国家统计局测量和公布中国大陆地区31个省、市、自治区的CPI指数。
+
+该数据集就是从中国国家统计局网站上下载并整合的从1999年到2008年期间，中国大陆地区各个省份的CPI数据。基于这些数据，可以进行很多不同种类的数据分析。这里，我们利用它进行的是聚类分析，即想看看中国大陆地区的众多省份可以分为几个类别，每个类型里分别包含哪些省份。
+
+数据集下载链接如下：
+
+<http://pw7x36qrk.bkt.clouddn.com/china_cpi.csv>
+
+## 字段含义
+
+| **特征变量名称** | **特征变量含义**           |
+|------------------|--------------------------- |
+| province         | 中国大陆地区31个省份的名称   |
+| year1999         | 1999年各省的CPI指数         |
+| ……               | ……                         |
+| year2008         | 2008年各省的CPI指数         |
+
+# 数据预处理
+
+## 数据质量检查
+
+已完成，此处不考虑。
+
+## 数据清洗
+
+已完成，此处不考虑。
+
+## 特征选择
+
+由于该数据集中的字段除了“province”之外都有计算和分析意义，因此我们将从“year1999”到“year2008”的所有字段全部投入使用。此外，由于所选字段全部都是CPI数据，变化范围相似，所以不对其进行任何的标准化处理。
+
+# 建模
+
+## 算法选择
+
+因为建模的目的是聚类，即所有的省份可以分为几类？每个类别中分别有哪些省份？所以我们可以选择使用**聚类模型**来拟合数据。在没有明确倾向性的情况下，我们将采用准确率较好和训练速度较快的一种通用性算法，即**K均值（K-Means）**。
+
+## 数据导入
+
+由于聚类分析属于无监督型的机器学习，一般不需要划分训练集和测试集，所以我们直接将china_cpi.csv导入平台，并保存为同名的数据集。
+
+## 训练模型
+
+在机器学习APP内，我们使用fit算子训练聚类模型,
+首次构建聚类模型时，可以试探性地将类别数设定为3，并将所得到地模型保存到模型库。同时，会产出该模型在训练集上的聚类分析结果：
+
+```
+| from dataset: china_cpi
+| fit KMeans n_clusters=3 from year1999 year2000 year2001 year2002 year2003
+year2004 year2005 year2006 year2007 year2008 into chinacpiKMeans
+```
+
+![](https://dn-odum9helk.qbox.me/Frg3d5Tn_YFNdTgnYl4Uj2335TIa)
+
+
+# 预测结果
+
+## 模型效果评估（轮廓系数）
+
+我们可以通过score算子计算聚类结果的轮廓系数，即Silhouette
+Score值来评估模型的训练效果。轮廓系数的值在[-1,1]之间波动，其值越大，表明聚类的效果越好。经过几轮探索性地建模，将参数n_clusters的值从2、3、4等逐步改变到10，发现当类别数为3时，轮廓系数的值最大（\~0.206），说明此时聚类模型的效果最好。请注意，由于K均值算法的随机性特点，即使参数n_clusters的值保持不变，轮廓系数的计算结果也很可能会有所不同。
+
+```
+| from dataset: china_cpi
+| fit KMeans n_clusters=3 from year1999 year2000 year2001 year2002 year2003
+year2004 year2005 year2006 year2007 year2008 into chinacpiKMeans
+| score silhouette_score predicted_clusters against year1999 year2000 year2001
+year2002 year2003 year2004 year2005 year2006 year2007 year2008
+```
+
+![](https://dn-odum9helk.qbox.me/FhWVQ7iFvD1ufSkAgH3GeFvOYQAR)
+
+## 模型简单应用
+
+根据最佳聚类模型的计算结果，可以发现，基于1999年到2008年期间的CPI数据，可以将中国大陆地区所有的31个省份分为三大类。其中，
+
+第一类中有5个省份，分别是：甘肃、贵州、宁夏、青海、新疆；
+
+第二类中有11个省份，分别是：北京、福建、广东、海南、湖南、江西、内蒙古、山西、上海、西藏、浙江；
+
+第三类中有15个省份，分别是：安徽、广西、河北、河南、黑龙江、湖北、吉林、江苏、辽宁、山东、陕西、四川、天津、云南、重庆。
+
+```
+| from dataset: china_cpi
+| fit KMeans n_clusters=3 from year1999 year2000 year2001 year2002 year2003
+year2004 year2005 year2006 year2007 year2008 into chinacpiKMeans
+| sort by predicted_clusters asc
+| fields province predicted_clusters
+```
+
+![](https://dn-odum9helk.qbox.me/FrG1I8giH5GvYs96YUcE5-uyvggJ)

@@ -1,0 +1,52 @@
+ WMI reader支持通过wmi接口获取本地或者远程windows机器的系统信息。（`使用此功能的agent节点必须部署在windows系统的服务器上，但可通过此节点收集其他windows服务器的信息，其他windows服务器无须部署agent`）`使用wmi首次获取数据时，可能需要3～5分钟才能收集到数据，同时页面上尝试读取数据可能会由于超时，而导致尝试读取数据失败`
+ 
+ # 具体的配置信息如下：
+ 
+ ![](https://dn-odum9helk.qbox.me/FqBB02Rrtk1RTZE2nXxAuj63p0Gt)
+ 
+ *  `是否远程连接wmi(isremote)`：默认为`false`，连接本地，当为`true`时，可以远程连接windows服务器。
+ *  `连接wmi的地址(address)`:此选项只在连接远程windows服务器的时候需要填写。
+ *  `命名空间(namespace)`:默认为`root/cimv2`，通过wmi获取windows系统信息时连接的命名空间。
+ *  `实例名(instance)`:默认查询的实例为`Win32_NTLogEvent`,目前支持的查询实例有`Win32_NTLogEvent`,`Win32_Process`。前者用于获取windows相关的审计日志，后者用于获取windows上当前的进程信息。
+ *  `用户名(user)`:当选择远程连接wmi时，必填，远程连接wmi时，登录windows的用户名。
+ *  `密码(passowrd)`:当选择远程连接wmi时，必填，远程连接wmi时，登录windows的密码。
+
+
+# 命名空间对应在windows机器上的查看方式
+
+打开windows的`运行`界面，输入`cmd`，进入命令行界面之后输入`PowerShell.exe`进入PS命令界面后，输入`Get-WMIObject -namespace "root" -class "__Namespace" | Select Name | ForEach-object {"root\"+$_.name}`，即可得到当前windows机器上的命名空间信息。
+
+具体界面如下：
+![](https://dn-odum9helk.qbox.me/FnTrjMTYP11mpbAa9CJ0Snb8odQC)
+
+# 确定需要收集的系统信息所在namespace和instance
+
+windows提供了相应的图形界面来通过wmi查看系统信息。首先，打开windows的`运行`界面，输入`wbemtest`。可以看到如下界面：
+
+![](https://dn-odum9helk.qbox.me/FuYj4bdfJv_vkk7vHvks9TVhgIYB)
+
+点击右上角的`连接`按钮
+
+![](https://dn-odum9helk.qbox.me/FlxVq3vY-exx4M3s_kOGD_hz8aci)
+
+输入相应的命名空间和用户名密码。命名空间的查询可参见上文。`用户名和密码只在远程连接wmi时需要填写，若连接本地则无须填写`。输入无误之后点击`连接`按钮。会进入如下界面。
+
+![](https://dn-odum9helk.qbox.me/Fk_B0tDhDgtXRWQ-z_QA9zsONkGo)
+
+点击`查询`，在查询页面中输入相应的查询语句，点击`应用`，即可查询出相应的信息。这里我们查询的windows的进程信息。
+
+![](https://dn-odum9helk.qbox.me/FtC7h9SO1roayZQc__7752vFTw02)
+
+查询结果如下：
+
+![](https://dn-odum9helk.qbox.me/Fgitg9wQ0mHVLAchyfgIwoyUpLSF)
+
+双击单条记录还可以查看每条记录的详细信息。
+
+![](https://dn-odum9helk.qbox.me/FtABFD5JY4o8-nss2GUW4Q7C-rCT)
+
+至此，通过`wbemtest`可以由需要收集的日志信息得到该日志所在的`namespace`和`instance`，(查询语句中的表名即为instance)即可通过logkit-pro的wmi reader来收集。
+
+**注：上文中通过wmi查询系统信息的语句为WQL，具体语法可参见  https://docs.microsoft.com/en-us/windows/desktop/wmisdk/wql-sql-for-wmi**
+
+ 

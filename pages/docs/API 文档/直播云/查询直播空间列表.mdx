@@ -1,0 +1,51 @@
+# 接口描述
+
+查询您所有的直播空间，结果以列表形式返回
+
+# 请求参数
+
+```
+GET /v2/hubs
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>  
+Content-Type: application/x-www-form-urlencoded 
+```
+
+# 返回数据
+
+|      参数          |      类型          |                    描述                      |
+| -------------------- | -------------------- | ------------------------------------------ |
+|     Items           |[]object          |        直播空间列表                            |
+|├─ Name           |    string             |            直播空间名             |
+
+# 示例
+
+请求体:
+
+```
+GET /v2/hubs HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>  
+Content-Type: application/x-www-form-urlencoded 
+```
+
+返回体:
+
+```
+200 OK
+
+{
+    "items": [
+        {
+            "name": "testhub"
+        },
+        {
+            "name": "testhub2"
+        }
+    ]
+}
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

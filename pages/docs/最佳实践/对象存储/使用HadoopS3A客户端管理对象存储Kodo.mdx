@@ -1,0 +1,151 @@
+Hadoop 支持通过 Hadoop-AWS 插件来集成 AWS，Kodo 对象存储也兼容 AWS S3。因此用户只需要使用 Hadoop-AWS 插件，并对 Hadoop 进行一定的配置，即可将 Kodo 对接到 Hadoop，使用 Hadoop S3A 来管理 Kodo 对象存储。
+- Hadoop S3A 为 Hadoop 官方提供的、在 Hadoop 系统中使用 S3 的工具包，通过 S3A 可以像操作 HDFS 一样操作 S3 存储
+- 目前七牛云存储 Kodo 可以支持大部分常用的 S3A 的功能
+- 关于 S3A 的更多介绍参见 [Hadoop-AWS module: Integration with Amazon Web Services](https://hadoop.apache.org/docs/current/hadoop-aws/tools/hadoop-aws/index.html)
+<br>
+
+<a id="install"></a>
+# **部署说明**
+本文仅以单机部署方式作为示例参考。
+**操作系统:** Linux 5.4.0-128-generic #144~18.04.1-Ubuntu
+**Hadoop 版本：** v3.3.4
+**参考：** [Hadoop-AWS](https://hadoop.apache.org/docs/current/hadoop-aws/tools/hadoop-aws/index.html)
+
+
+## **1、下载 Hadoop 软件包**
+示例中 Hadoop 版本为 v3.3.4，下载链接为：
+`https://dlcdn.apache.org/hadoop/common/hadoop-3.3.4/hadoop-3.3.4.tar.gz`
+如果希望下载其他版本，可点击[下载链接](https://dlcdn.apache.org/hadoop/common)并在其中挑选指定版本，最终在指定版本中选择 `hadoop-*.tar.gz` 文件进行下载即可。
+下载完成后，将上述文件进行解压，拷贝至用户目录下并重命名为 `hadoop`
+
+```
+# 在用户目录根目录下载 Hadoop
+cd ~
+curl https://dlcdn.apache.org/hadoop/common/hadoop-3.3.4/hadoop-3.3.4.tar.gz
+ 
+# 下载完成后
+# 解压
+tar -zxvf ./hadoop-3.3.4.tar.gz
+ 
+# 解压后文件夹名为：hadoop-3.3.4
+# 将 hadoop-3.3.4 重命名为 hadoop
+mv hadoop-3.3.4 hadoop
+```
+
+
+<br>
+
+
+## **2 文件配置**
+**2.1 环境配置**
+在 Hadoop 的软件包中默认已经包含了 S3A 相关的插件，我们无需再下载，只需要将其列入加载的模块序列中即可。
+`hadoop-env.sh` 中的 `HADOOP_OPTIONAL_TOOLS` 参数用于指定要加载的可选模块，默认是不配置。
+具体操作如下:
+```
+# 进入 hadoop 路径
+cd ./hadoop
+
+# 修改 hadoop 的配置文件：hadoop-env.sh
+vim etc/hadoop/hadoop-env.sh
+ 
+# 找到 HADOOP_OPTIONAL_TOOLS
+# 默认为：# export HADOOP_OPTIONAL_TOOLS="hadoop-kafka,hadoop-openstack,hadoop-aliyun,hadoop-azure,hadoop-azure-datalake,hadoop-aws"
+# 此配置默认是被注释掉的，参数中已经包含了 hadoop-aws，此处直接将注释打开（删除前面的 #）。
+```
+
+**2.2 配置 core-site.xml**
+在此配置中声明 S3A 相关的配置信息
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>fs.s3a.access.key</name>
+        <value>[ak]</value>
+    </property>
+    <property>
+        <name>fs.s3a.secret.key</name>
+        <value>[sk]</value>
+    </property>
+    <property>
+        <name>fs.s3a.connection.ssl.enabled</name>
+        <value>false</value>
+    </property>
+    <property>
+        <name>fs.s3a.path.style.access</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>fs.s3a.endpoint</name>
+        <value>http://[endpoint]</value>
+    </property>
+    <property>
+        <name>fs.s3a.impl</name>
+        <value>org.apache.hadoop.fs.s3a.S3AFileSystem</value>
+    </property>
+    <property>
+        <name>fs.AbstractFileSystem.s3a.impl</name>
+        <value>org.apache.hadoop.fs.s3a.S3A</value>
+    </property>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>s3a://[default-bucket]/</value>
+    </property>
+</configuration>
+```
+**注：**
+- ` ak ` / ` sk ` / ` endpoint ` / ` default-bucket ` 需要配置为相应的实际值，ak / sk 为七牛的账户秘钥（AccessKey 和 SecretKey）, endpoint 为 s3 url，default-bucket 为七牛存储的 bucket。
+- 上面配置中配置了 `fs.defaultFS` ，后续的命令我们可以不用加 s3a://[bucket] 信息。
+
+
+
+**2.3 Hadoop 的启动与停止**
+```
+# 启动 hadoop
+./sbin/start-all.sh
+ 
+# 启动后可以通过 jps 查看 Hadoop 相关节点信息
+jps
+ 
+# 停止 hadoop
+./sbin/stop-all.sh
+```
+
+**2.4 操作七牛 bucket**
+Hadoop 启动后就可以通过 fs 来操作七牛的 bucket 了。
+```
+# 上传一个文件
+./bin/hdfs dfs -put a.txt /tmp/a.txt
+ 
+# 列举 / 下的文件列表
+./bin/hdfs dfs -ls /
+```
+
+
+<br>
+
+<a id="command"></a>
+
+# **命令说明**
+**Kodo 已支持的 Hadoop FS 命令**
+|命令|说明|
+|-|-|
+|mkdir	|在存储系统创建新目录|
+|put/copyFromLocal	|上传本地文件到存储系统
+|cat	|输出存储系统单个或多个文件内容到控制台
+|tail	|输出存储系统指定文件尾部 1k 字节内容到控制台
+|head	|输出存储系统指定文件头部 1k 字节内容到控制台
+|ls	|列出存储系统指定路径下所有文件
+|lsr	|类似 ls -R
+|get/copyToLocal	|拉取存储系统文件到本地
+|getmerge	|拉取存储系统文件到本地并合并成一个文件
+|du/dus	|展示目录或者文件大小
+|cp	|拷贝存储系统路径下文件到另一个路径（可跨存储系统拷贝 hdfs=>kodo 或 kodo=>hdfs）
+|mv	|移动存储系统路径文件到另一个路径（不支持跨存储系统移动）
+rm/rmr	|删除存储系统中的指定目录或文件
+text	|以文本输出存储系统压缩文件
+touchz	|创建一个存储系统空文件
+count	|统计存储系统路径下的目录数、文件数和总字节数
+
+
+

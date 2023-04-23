@@ -1,0 +1,44 @@
+# **描述**
+本接口用于本地录像回放的控制，比如快进,快退,慢放,拖动播放,暂停。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}/playback/control`
+* 流ID处于`推流状态`时, `才能`使用本接口,[如何触发本地录像推流?](https://developer.qiniu.com/qvs/6907/start-device)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|流ID, 流ID可以从`查询本地录像列表`接口获取
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|command|是|string|对历史流进行控制，包括“play”播放、“pause”暂停、“scale”倍速，暂停后需要“play”继续播放
+|range|否|string|当command为“play”时指定跳转的时间，单位是s，时间大小是指距离历史流开始播放后的多长时间，默认为“now”，例如：“100”，“200”等，跳转后会以1倍速继续播放
+|scale|否|float|当command为“scale”时指定播放倍速，支持x0.5、x1、x2、x4、x8
+
+# **响应参数**
+200
+
+# **示例**
+
+**请求示例**
+```
+curl --location --request POST 'http://localhost:7275/v1/namespaces/2akras1vdttwy/streams/31011500991320000006_history_1628730000_1628740800/playback/control' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "command":"pause"
+}'
+```
+
+**响应示例**
+```
+{
+  "code": 200
+}
+```

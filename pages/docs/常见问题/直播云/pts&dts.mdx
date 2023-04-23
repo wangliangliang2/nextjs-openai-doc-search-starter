@@ -1,0 +1,17 @@
+## Q：七牛的技术同学，我请教个问题。现在在线上随便找一个流，发现每个流开始后都会收到一些 pts dts 都为 0 的 video 包，然后才会收到 pts dts 正常的音视频包 请问这个是你们服务器的行为吗？这个是干啥用的呢？
+这个是因为把缓冲的视频帧下发给播放端，但是为了降低延迟，把一部分数据的时间戳都统一了，目的是实现快速播放的效果，减少延时
+
+<br/>
+ 
+## Q：相当于 pts dts=0 的这些 video 是 gop cache 的数据吧？
+是 gop cache 中的一部分 比如说 cache 可能缓存了 5 秒的数据，为了控制延迟在 2 秒，就会把前 3 秒的都统一成一个时间戳
+
+<br/>
+
+## Q：怎么打印 pts, dts？
+`ffprobe -select_streams v -show_packets -of xml rtmp://pili-live-rtmp.live-rwx.qiniuts.com/snow/rain`
+
+<br/>
+
+## Q：pts, dts是什么意思？
+请参考：http://dranger.com/ffmpeg/tutorial05.html

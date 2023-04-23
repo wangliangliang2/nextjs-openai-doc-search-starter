@@ -1,0 +1,28 @@
+# 数据源类型
+Pandora可以实时采集管理任意类型的机器数据，例如数据库数据、Web 服务器日志、应用程序日志、Windows 事件日志、消息队列、归档⽂件、指标数据等。可以采集的数据源类型如下：
+- 文件及目录：很多数据存储在本地服务器的文件目录中，您可以在需要采集数据的机器上部署采集客户端监控对应的文件和目录，并将数据转发至Pandora平台。具体参阅[文件目录采集](https://developer.qiniu.io/express/10245/files-and-directories)
+- 执行脚本：Pandora提供脚本方式采集远程API接口数据。具体参阅[脚本采集](https://developer.qiniu.com/express/10247/the-script-to-collect)
+- Windows数据：您可以在要采集数据的机器上部署Windows采集客户端，进行Windows数据采集并转发至Pandora平台，采集数据包括Windows 事件日志、Windows 管理规范 (WMI) 数据、性能监控数据等。具体参阅[Windows数据采集](https://developer.qiniu.io/express/10246/the-windows-event-log-collection)
+- 网络监听数据：
+  - 您可以通过任何网络端口采集数据，如采集通过syslog传输或通过 TCP/UDP 传输的任何应用程序的远程数据。具体参阅[TCP/UDP上传](https://developer.qiniu.io/express/6025/monitoring_upload)
+  - 您可以，具体参阅[FTP上传](https://developer.qiniu.io/express/6025/monitoring_upload)
+  - 您可以使用HTTP收集器通过 HTTP 或 HTTPS 协议监听获取数据。具体参阅[HTTP上传](https://developer.qiniu.io/express/6025/monitoring_upload)
+  - Pandora也可以监听远程设备产生的SNMP数据。具体参阅[SNMP上传](https://developer.qiniu.io/express/6025/monitoring_upload)
+- 自定义数据源：您可以通过Pandora服务开发框架中的自定义采集插件功能来扩展Pandora服务端采集能力。具体参阅[自定义采集服务](http://)
+
+针对上述不同来源的数据，Pandora主要提供客户端转发及服务端采集两种采集方式：
+- 客户端采集：Pandora提供轻型、高性能的采集客户端logkit-lite实现强大的分布式数据采集能力，实时从服务器采集数据并转发至Pandora进行解析和分析，支持物理机、虚拟机、容器等计算架构跨平台一键部署。平台提供中心化集群管理，可以轻松帮您监管上万采集客户端及采集任务。具体参阅[机器管理](https://developer.qiniu.io/express/10260/agent-management)
+- 服务端采集：直接通过Pandora服务端采集节点进行网络传输采集，无需安装采集客户端，包括HTTP、TCP/UDP、FTP上传等。平台支持用户以插件形式自定义开发服务端数据源采集配置及流程，并封装成采集应用，以便灵活扩展服务端数据采集能力。
+
+采集框架如下图：
+![image.png](https://dn-odum9helk.qbox.me/FtnZZdR4YF0nRBe3XxcIYgV7wCiM)
+
+## 如何选择采集方式？
+1、开始配置采集任务前，您可以按以下流程梳理需要采集的数据源：
+- 需要采集哪些数据？
+- 是否有对应的数据采集应用？
+- 数据存放在本地还是远程服务器上？
+- 是否需要使用客户端来采集远程数据？
+
+2、确定采集方式后，创建采集任务采集对应数据，为数据指定[来源类型](https://developer.qiniu.io/express/6655/sourcetypes)以确保Pandora可以正确索引数据（包括事件换行方式及时间戳字段），指定数据存储的[仓库](https://ts.qiniu.io/articles/view/repo)，及配置数据处理规则。
+3、在您配置采集任务完成数据采集后，Pandora将解析并存储指定数据到指定仓库。您可以打开“搜索和仪表盘”应用进行数据搜索分析。

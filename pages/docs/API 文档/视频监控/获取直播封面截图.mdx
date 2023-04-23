@@ -1,0 +1,40 @@
+# **描述**
+本接口用于查询流封面
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}/cover`
+* 前提:流或者流附属的空间绑定了`截图模板`, 并且截图模板的`截图方式`包含`覆盖式截图`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|空间为`gb28181`:设备类型为摄像头,流ID就是`设备国标ID`;设备类型是NVR(平台类型),流ID为`设备国标ID_通道国标ID`<br/>空间类型为`rtmp`或者`主动拉流`:流ID就是`流名称`
+
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|url|string|封面下载地址
+
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarrzns76w/streams/t0/cover \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "url": "http://prlghu509.test.bkt.clouddn.com/snapshot/jpg/2akrarrzns76w/t0.jpg?e=1588124787&token=Ves3WTXC8XnEHT0I_vacEQQz-9jrJZxNExcmarzQ:bH8s5m5N5Ugp2wo6ACRUVeIK280"
+}
+```

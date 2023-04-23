@@ -1,0 +1,106 @@
+选型不仅仅选择一款实例规格，而是了解实例规格的关键特点，在库存不足、产品下线等场景中，您可以有多种备选实例规格，充分利用七牛云实例弹性灵活的特点。
+
+# **实例规格族**
+启动一台实例前，您需要结合性能、价格、工作负载等因素，做出性价比与稳定性最优的决策。根据业务场景和 vCPU 、内存、网络性能、存储吞吐等配置划分，七牛云 QVM 提供了多种实例规格族，一种实例规格族又包括多个实例规格。实例规格族名称格式为 **ecs.<规格族>**，实例规格名称为**ecs.<规格族>.<nx>large**。
+
+- **ecs**：云服务器的产品代号。
+- **<规格族>**：由小写字母加数字组成。
+	- 小写字母为某个单词的缩写，并标志着规格族的性能领域。部分小写字母的含义如下所示。
+		- c：一般表示计算型（computational）
+		- g：一般表示通用型（general）
+		- r：一般表示内存型（ram）
+		- ne：一般表示网络增强型（network enhanced）
+	- 数字一般区别同类型规格族间的发布时间。更大的数字代表新一代规格族，拥有更高的性价比，价格低性能好。
+-  <strong>&lt;nx&gt;large</strong>:：表示实例规格拥有的 vCPU 核数，n 越大，vCPU 核数越高。
+
+
+> **示例：**ecs.g6.2xlarge表示通用型 g6 规格族中的一个实例规格，拥有 8 个 vCPU 核。相比于 g5、g4、sn2ne 规格族，g6 为新一代通用型实例规格族。
+
+	
+# **选择实例**
+	
+# **1、确定地域和可用区**
+![](https://dn-odum9helk.qbox.me/FvpUI3ihOOrQ_kdwI2ikRH3LAcW3)
+
+选择云服务产品地域和可用区时，可以参考以下原则。
+- **近用户原则**
+  根据终端用户选择，云服务器越靠近访问用户，越能获得较小的访问时延和较高的访问速度。
+
+- **内网通信同地域原则**
+  如果您需要购买若干个云服务器且需要服务器间通过内网通信，需要在购买时保证云服务器都在同一地域内。
+
+> 说明：地域 = 城市，可用区 = 城市内的机房
+
+# **2、确定实例配置**
+实例是由 CPU 、内存、操作系统、块存储组成的能够为您的业务提供计算服务的最小单位，不同的实例规格可以提供的计算能力不同。
+QVM 实例规格定义了实例的基本属性：CPU 和内存（包括 CPU 型号、主频等）。
+
+# **根据使用场景推荐配置**
+<br/>
+下图列举了云服务器 QVM 部分通用计算实例规格族及其对应的业务场景。
+
+![](https://dn-odum9helk.qbox.me/00131b8b8ea7f2ceb170bcbf06e81a7056558.png)
+
+<br/>
+下图列举了云服务器 QVM 部分异构计算实例规格族及其对应的业务场景。
+
+![](https://dn-odum9helk.qbox.me/00132f7a9e882c35a222e82abb5f01b093720.png)
+
+
+
+# **根据典型应用推荐配置**
+![](https://dn-odum9helk.qbox.me/FhmlPXTV92-_3QTvzJj1z-9uQydI)
+
+
+# **自建服务配置推荐**
+为满足不同客户不同应用场景的需求，七牛主机云服务 QVM 提供了以下应用场景下的实例类型选择建议：
+<table><thead><tr><th width="8%">应用类型</th><th width="12%">常用应用</th><th width="55%">选型原则</th><th>推荐实例规格族</th></tr></thead><tbody><tr><td>负载均衡</td><td>Nginx</td><td><li>应用特点：需要支持高频率的新建连接操作。<li> CPU 计算能力：要求较高。<li>内存：要求不高。</td><td>c6、hfc6 系列</td></tr><tr><td>RPC产品</td><td><li>SOFA<li>Dubbo</td><td>应用特点：网络链接密集型；进程运行时需要消耗较高的内存。</td><td>g6 系列</td></tr><tr><td>缓存</td><td><li>Redis<li>Memcache<li>Solo</td><td> <li> CPU 计算能力：要求不高。<li>内存：要求较高。</td><td><li>实例规格族：r6、re6 系列<li>块存储：SSD 云盘或 ESSD 云盘</td></tr><tr><td>配置中心</td><td>ZooKeeper</td><td>在应用启动协商时会有大量 I/O 读写操作。<li> CPU 计算能力：要求不高。<li>内存：要求不高。</td><td><li>实例规格族：c6 系列<li>块存储：SSD 云盘或 ESSD 云盘</td></tr><tr><td>消息队列</td><td><li>Kafka<li>RabbitMQ</td><td>从消息完整性方面考虑，存储优先选用云盘。<li> CPU 计算能力：要求不高。<li>内存和 vCPU 配比通常为1:1。<li>存储：要求不高。</td><td><li>实例规格族： c6  系列<li>块存储：SSD 云盘或 ESSD 云盘</td></tr><tr><td>大表存储</td><td>HBase</td><td><li>一般可以选择 d 系列。<li>如果业务存在超高 IOPS（Input/Output Operations Per Second）需求，可以选择 i 系列。</td><td><li>d1、d1ne、d2s 系列<li>i2 系列</td></tr><tr><td rowspan="2">数据库</td><td><li>MySQL<li>NoSQL</td><td><li>对于存储有弹性扩展的需求，可以选择 QVM和 ESSD 。<li>对于 I/O 敏感型业务的需求，优先选择 i 系列。</td><td><li>实例规格：c6、g6、r6系列<li>块存储： ESSD 云盘<li>i2系列</td></tr><tr><td>SQLServer</td><td><li>由于 Windows 的 I/O 单通道特性，对 I/O 读写能力要求较高，优先选择 ESSD。<li> QVM的逻辑和物理扇区设置为4K。</td><td><li>实例规格族：c6、g6、r6系列<li>块存储： ESSD 云盘</td></tr><tr><td>文本搜索</td><td>Elasticsearch</td><td><li>选用内存与 vCPU 配比较大的 QVM 规格。<li>日常需要将数据库数据导出成 ES 文件，对 I/O 读写有要求。</td><td><li>实例规格：g6系列<li>块存储： ESSD 云盘<li>d1、d1ne、d2s 系列</td></tr><tr><td>实时计算</td><td><li>Flink<li>Blink</td><td>基于存储量可以选择 QVM通用规格和云盘，也可以选择d系列。</td><td>d1、d1ne、d2s 系列</td></tr><tr><td>离线计算</td><td><li>Hadoop<li>HDFS<li>CDH</td><td>优先选择 d 系列。</td><td>d1、d1ne、d2s  系列</td></tr></tbody></table>
+
+
+# **通用场景、游戏服、视频直播场景推荐**
+在该类场景中，性能需求表现为 CPU 计算密集型，您需要相对均衡的处理器与内存资源配比，通常选用CPU与内存配比 1:2、系统盘选用高效云盘、数据盘选用 SSD 云盘或者 ESSD 云盘。如果业务需要更强的网络性能，如视频弹幕等，您可以选用同系列中更高规格的实例规格，提高网络收发包能力（PPS）。
+
+<table><thead><tr><th>场景分类</th><th>场景细分</th><th>推荐规格族</th><th>性能需求</th><th>处理器与内存比</th></tr></thead><tbody><tr><td rowspan="3">通用应用</td><td>均衡性能应用，后台应用</td><td>g 系列，如g6</td><td>中主频，计算密集型</td><td>1:4</td></tr><tr><td>高网络收发包应用</td><td>g 系列，如g6</td><td>高网络 PPS，计算密集型</td><td>1:4</td></tr><tr><td>高性能计算</td><td>c 系列，如 c6  </td><td>高主频，计算密集型</td><td>1:2</td></tr><tr><td rowspan="2">游戏应用</td><td>高性能端游</td><td>c 系列，如 c6 </td><td>高主频</td><td>1:2</td></tr><tr><td>手游、页游</td><td>g 系列，如g6</td><td>中主频</td><td>1:4</td></tr><tr><td rowspan="2">视频直播</td><td>视频转发</td><td>g 系列，如g6</td><td>中主频，计算密集型</td><td>1:4</td></tr><tr><td>直播弹幕</td><td>g 系列，如g6</td><td>高网络 PPS，计算密集型</td><td>1:4</td></tr></tbody></table>
+
+
+# **大数据场景推荐**
+在 **Hadoop、Spark、Kafka** 等大数据场景中，由于涉及不同的节点，性能需求表现较为复杂，您需要均衡各个节点的性能表现，包括计算、存储吞吐、网络性能等。
+- **管理节点**：当作通用场景处理，请参见**通用场景、游戏服、视频直播场景推荐**章节。
+- **计算节点**：当作通用场景处理，请参见**通用场景、游戏服、视频直播场景推荐**章节。根据集群规模的不同，需要选择的实例规格不同。例如 100 个节点以下可以选用 ecs.g6.4xlage，100 个节点以上可以选用 ecs.g6.8xlage。
+- **数据节点**：需要高存储吞吐、高网络吞吐、均衡的处理器与内存配比，推荐您使用大数据型 d 系列规格族。例如 MapReduce/Hive 可选择ecs.d1ne.6xlarge，Spark/Mlib可选择ecs.d1ne.8xlarge。
+
+![](https://dn-odum9helk.qbox.me/Fpk5kCiP7F5JPXxDaQtHZPq7nvj4)
+
+
+
+# **数据库、缓存、搜索场景推荐**
+在该类场景中，实例规格的处理器与内存配比一般要求高于1:4，部分软件对存储 I/O 读写能力及时延性能较为敏感，建议您选用单位内存性价比较高的规格族。
+
+<table><thead><tr><th>场景分类</th><th>场景细分</th><th>推荐规格族</th><th>处理器与内存比</th><th>数据盘</th></tr></thead><tbody><tr><td rowspan="3">关系型数据库</td><td>高性能，依赖应用层高可用</td><td>i 系列</td><td>1:4</td><td>本地 SSD 存储、高效云盘、SSD 云盘</td></tr><tr><td>中小型数据库</td><td>g 系列，或其他内存占比为1:4的规格族</td><td>1:4</td><td>高效云盘、SSD 云盘</td></tr><tr><td>高性能数据库</td><td>r 系列</td><td>1:8</td><td>高效云盘、SSD 云盘</td></tr><tr><td rowspan="2">分布式缓存</td><td>中内存消耗场景</td><td>g 系列，或其他内存占比为1:4的规格族</td><td>1:4</td><td>高效云盘、SSD 云盘</td></tr><tr><td>高内存消耗场景</td><td>r 系列</td><td>1:8</td><td>高效云盘、SSD 云盘</td></tr><tr><td rowspan="3">NoSQL数据库</td><td>高性能，应用层高可用</td><td>i  系列</td><td>1:4</td><td>本地 SSD 存储、高效云盘、SSD 云盘</td></tr><tr><td>中小型数据库</td><td>g 系列，或其他内存占比为1:4的规格族</td><td>1:4</td><td>高效云盘、SSD 云盘</td></tr><tr><td>高性能数据库</td><td>r 系列</td><td>1:8</td><td>高效云盘、SSD 云盘</td></tr><tr><td rowspan="2">ElasticSearch</td><td>小集群，靠云盘保证数据高可用</td><td>g 系列，或其他内存占比为1:4的规格族</td><td>1:4</td><td>高效云盘、SSD 云盘</td></tr><tr><td>大集群，高可用</td><td>d 系列</td><td>1:4</td><td>本地 SSD 存储、高效云盘、SSD 云盘</td></tr></tbody></table>
+
+以数据库为例，在传统方式中，业务系统直接对接 OLTP 数据库，数据冗余大多通过 RAID 磁盘阵列实现。选择七牛云 QVM，您的轻载、重载数据库都能实现灵活部署。
+- 轻载数据库：采用企业级实例规格搭配云盘使用，性价比更高。
+- 重载数据库：需要高存储 IOPS 和低读写延时，推荐您使用本地 SSD 型 i 系列实例规格族（搭配了高 I/O 型本地 NVMeSSD 本地盘），满足大型重载数据库要求。
+![](https://dn-odum9helk.qbox.me/FlMzXTpeHSkanU2Qs3MQ6Y0JaD6q)
+
+# **深度学习、图像处理场景推荐**
+在该类场景中，应用需要高性能的GPU加速器，在GPU和CPU配比方面有如下建议。
+
+深度学习训练：GPU与CPU比例推荐为1:8到1:12之间。
+通用深度学习：GPU与CPU比例推荐为1:4到1:48之间。
+图像识别推理：GPU与CPU比例推荐为1:4到1:12之间。
+语音识别与合成推理：GPU与CPU比例推荐为1:16到1:48之间。
+常见场景的GPU选型推荐如下图所示。
+
+![](https://dn-odum9helk.qbox.me/00133ff540f76c89c55c30b090dde924d49f8.jpg)
+
+
+# **验证与调整**
+当您完成选型并开始使用 QVM 实例后，建议您根据一段时间的性能监控信息，验证所选实例规格是否合适。
+
+假设您选择了 ecs.xlarge，通过监控发现实例 CPU 使用率一直较低，建议您登录实例检查内存占用率是否较高，如果内存占用较高，您可以调整为处理器与内存资源配比更合适的规格族。
+- QVM 自带监控服务
+- 查看云盘监控信息
+- 主机监控概览
+
+

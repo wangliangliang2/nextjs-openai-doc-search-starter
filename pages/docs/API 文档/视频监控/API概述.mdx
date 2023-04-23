@@ -1,0 +1,109 @@
+本文档介绍了视频监控服务的各类API，您可以分别查看各API的具体信息。
+
+# **空间管理相关**
+
+|API|说明|
+|---|---|
+|[创建空间](https://developer.qiniu.com/qvs/api/6726/create-namespace)|用于创建新的业务空间
+|[删除空间](https://developer.qiniu.com/qvs/api/6727/delete-namespace)|用于删除业务空间
+|[更新空间](https://developer.qiniu.com/qvs/api/6728/update-namespace)|用户更新空间的配置信息操作
+|[查询空间信息](https://developer.qiniu.com/qvs/api/6729/query-namespace)|用户查询业务空间的详细信息
+|[获取空间列表](https://developer.qiniu.com/qvs/api/6730/list-namespace)|用户获取空间列表
+|[禁用空间](https://developer.qiniu.com/qvs/api/6759/disable-the-space)|禁用空间操作
+|[启用空间](https://developer.qiniu.com/qvs/api/6760/enable-the-space)|启用空间操作
+|[消息通知](https://developer.qiniu.com/qvs/10240/the-message-callback)|直播流状态的实时变化、设备状态的实时变化，视频录制/截图成功的事件通知
+
+# **域名管理相关**
+
+|API|说明|
+|---|---|
+|[创建域名](https://developer.qiniu.com/qvs/6903/create-domain)|用于在某空间下创建新的域名
+|[删除域名](https://developer.qiniu.com/qvs/6904/delete-domain)|用于删除空间下的域名
+|[更新域名](https://developer.qiniu.com/qvs/7317/update-domain)|更新域名,例如开启或关闭时间戳防盗链,添加或删除https证书等
+|[查询域名](https://developer.qiniu.com/qvs/6917/domain-information)|查询域名信息
+|[获取域名列表](https://developer.qiniu.com/qvs/6905/domain-name-list)|获取某个空间下的域名列表
+|[获取https证书列表](https://developer.qiniu.com/qvs/6891/to-obtain-a-list-certificate)|获取https ssl证书列表
+|[配置域名戳防盗链](https://developer.qiniu.com/qvs/10481/the-domain-name-configuration)|修改域名下的防盗链信息
+
+
+# **流管理相关**
+|API|说明|
+|---|---|
+|[创建流](https://developer.qiniu.com/qvs/api/6734/create-flow)|用于创建视频流
+|[删除流](https://developer.qiniu.com/qvs/api/6735/delete-flow)|用于删除已添加的视频流
+|[更新流](https://developer.qiniu.com/qvs/api/6758/update-the-flow)|用于更新流的配置新
+|[查询流信息](https://developer.qiniu.com/qvs/api/6736/query-information-flow)|用于查询流的详细信息
+|[获取流列表](https://developer.qiniu.com/qvs/api/6737/query-list-flow)|用于获取流列表信息
+|[获取流地址](https://developer.qiniu.com/qvs/api/6740/obtain-flow-address)|用于获取推拉流地址信息
+|[启用流](https://developer.qiniu.com/qvs/api/6739/enable-the-flow)|启用流操作
+|[禁用流](https://developer.qiniu.com/qvs/api/6738/disable-the-flow)|禁用流操作
+|[查询流实时信息](https://developer.qiniu.com/qvs/api/6741/real-time-information-query-flow)|用于查询实时流的帧率、码率
+|[查询推流记录](https://developer.qiniu.com/qvs/api/6742/query-flow-records)|用于查询流的推流记录
+
+# **设备管理相关**
+|API|说明|
+|---|---|
+|[创建设备](https://developer.qiniu.com/qvs/api/6896/create-device)|用于创建设备
+|[批量创建设备](https://developer.qiniu.com/qvs/10086/batch-create-device)|用于批量创建设备
+|[获取批次列表](https://developer.qiniu.com/qvs/10170/get-batch-list)|用于查询批量创建设备的批次记录
+|[获取批次设备信息](https://developer.qiniu.com/qvs/10160/export-batch-equipment)|用于查询批次下所有设备的信息
+|[删除批次](https://developer.qiniu.com/qvs/10171/batch-remove-devices)|用于删除批次下所有的设备
+|[删除设备](https://developer.qiniu.com/qvs/api/6898/Delete-device)|用于删除设备
+|[更新设备](https://developer.qiniu.com/qvs/api/6899/update-the-device)|用于更新设备配置信息
+|[查询设备信息](https://developer.qiniu.com/qvs/api/6901/Query-device-information)|用于查询设备信息
+|[获取设备列表](https://developer.qiniu.com/qvs/api/6902/Query-device-list)|用于获取设备列表信息
+|[获取通道列表](https://developer.qiniu.com/qvs/api/6906/query-channel-list)|用于查询通道列表信息
+|[删除通道](https://developer.qiniu.com/qvs/7120/delete-the-channel)|用于删除网络录像机的指定通道
+|[启动设备拉流](https://developer.qiniu.com/qvs/api/6907/start-device)|用于启动国标设备拉流
+|[停止设备拉流](https://developer.qiniu.com/qvs/api/6908/stop-device)|用于结束国标设备拉流
+|[语音对讲](https://developer.qiniu.com/qvs/8158/voice-call)|用于对设备发起语音对讲
+|[获取设备地理位置](https://developer.qiniu.com/qvs/10243/get-to-location)用于获取设备地理位置信息
+
+# **模板管理相关**
+|API|说明|
+|---|---|
+|[创建模板](https://developer.qiniu.com/qvs/api/6721/create-template)|用于创建录制、截图等模板
+|[删除模板](https://developer.qiniu.com/qvs/api/6722/delete-template)|用户删除指定的模板
+|[更新模板](https://developer.qiniu.com/qvs/api/6723/modify-the-template)|用于更新录制、截图等模板的配置信息
+|[查询模板信息](https://developer.qiniu.com/qvs/api/6724/template-informationhttp://)|用于查询指定模板的配置信息
+|[获取模板列表](https://developer.qiniu.com/qvs/api/6725/list-template)|用于获取模板列表信息
+
+# **录制管理相关**
+|API|说明|
+|---|---|
+|[启动按需录制](https://developer.qiniu.com/qvs/api/6743/start-record-stream)|本接口用于对指定流启动按需录制
+|[停止按需录制](https://developer.qiniu.com/qvs/api/6744/stop-record-stream)|本接口用于对指定流停止按需录制
+|[查询录制记录](https://developer.qiniu.io/qvs/api/6745/query-recordhistories)|用于查询视频流的录制的记录
+|[删除录制片段](https://developer.qiniu.io/qvs/6746/delete-recorded-fragments)|用于删除通过qvs录制模板生成的视频文件
+|[录制视频片段合并](https://developer.qiniu.com/qvs/api/7140/record-video-clips)|该接口用于将多个录制文件合并成一个大的视频文件
+|[录制回放](https://developer.qiniu.com/qvs/api/6747/recording-playback)|本接口用于查询指定时间段的录像记录进行录像回放
+|[按需截图](https://developer.qiniu.com/qvs/api/6748/start-snapshot)|本接口用于对指定流立即截图一次，适用于按需截图场景
+|[删除截图](https://developer.qiniu.io/qvs/7109/deleted-screenshots)|用于删除通过qvs截图模板生成的截图文件
+|[获取截图列表](https://developer.qiniu.com/qvs/api/6749/list-stream-snapshots)|用于查询视频流截图的记录
+|[获取直播封面截图](https://developer.qiniu.com/qvs/api/6814/the-cover-for-screenshots)|用于查询视频流的封面
+# **本地录像管理相关**
+|API|说明|
+|---|---|
+|[本地录像回放控制](https://developer.qiniu.com/qvs/8405/local-video-playback-control)|用于本地录像回放的控制，如快进、快退、慢放、拖动播放、暂停等操作
+|[本地录像下载](https://developer.qiniu.com/qvs/10172/local-video-download)|用于下载存储在NVR或者IPC的SD卡中的录像文件|
+|[查询本地录像列表](https://developer.qiniu.com/qvs/api/7112/query-local-video-list)|用于查询设备本地录像列表
+|[本地录像上传云端存储](https://developer.qiniu.com/qvs/7765/uploaded-to-the-cloud)|用于将本地录像文件上传到云端并进行录制存储的操作
+|[终止本地录像上传云端存储](https://developer.qiniu.com/qvs/7766/stop-uploaded-to-the-cloud)|用于终止本地录制文件上传云端录制的操作
+# **PTZ相关**
+|API|说明|
+|---|---|
+|[云台控制](https://developer.qiniu.com/qvs/api/7290/ptz-control)|用于对摄像头进行 转动镜头，如水平、垂直、缩放等操作
+|[变焦控制](https://developer.qiniu.com/qvs/api/7292/zoom-control)|用于摄像头的变焦控制
+|[光圈控制](https://developer.qiniu.com/qvs/api/7291/aperture-control)|用于摄像头的光圈控制
+|[预置位控制](https://developer.qiniu.com/qvs/api/7293/set-the-preset-position)|用于预置位的管理
+|[获取预置位列表](https://developer.qiniu.com/qvs/api/7295/get-prepared-list)|用于摄像头端获取预置位列表信息
+# **国标报警相关接口**
+|API|说明|
+|---|---|
+|[获取国标报警事件列表](https://developer.qiniu.com/qvs/7775/gb-alarm-events-list)|用于获取设备国标报警事件列表
+# **数据统计相关**
+|API|说明|
+|---|---|
+|[查询流量数据](https://developer.qiniu.com/qvs/api/6855/query-the-network-traffic-data)|本接口用于查询用户或者空间下的流量数据|
+|[查询带宽数据](https://developer.qiniu.com/qvs/api/6856/query-data-bandwidth)|本接口用于查询用户或者空间下的带宽数据|
+|[查询国标接入设备数](https://developer.qiniu.com/qvs/8748/gb-devicecount)|本接口用于查询用户或者空间下接入的国标设备数量|

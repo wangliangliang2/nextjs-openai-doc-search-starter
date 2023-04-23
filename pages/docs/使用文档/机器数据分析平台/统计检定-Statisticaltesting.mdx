@@ -1,0 +1,32 @@
+**使用场景及限制：**
+
+- 统计检定方法用来检验假设是否成立，计算结果返回检定结果值和 p 值。
+- 支持 1-1，1-n，n-n 的比较。
+- 数据必须为 int 或者 float，不支持 str。
+- 有一些函数支持两组字段，有一些函数只支持一组字段。
+- 在一组字段的情况下，支持使用模糊搜索（\*)。
+
+**通用语法：**
+
+```
+ ..| score <scoring-method-name> [options] a_field_1 a_field_2 ... a_field_n [against b_field_1 b_field_2 ... b_field_m]
+
+```
+
+目前支持以下统计检定算法：
+
+- [方差分析 - ANOVA](/express/manual/11102/variance-analysis-one-way-anova)
+- [时间序列平稳性检验 - ADF](/express/manual/11103/time-series-stationarity-test-adf)
+- [能量距离 - Energy distance](/express/manual/11104/energy-energy-short-distance)
+- [单样本 KS 检验 - one-sampele KS test](/express/manual/11105/single-sample-ks-test-one-sample-ks-test)
+- [双样本 KS 检验 - two-sample KS test](/express/manual/11106/double-sample-ks-test-two-sample-ks-test)
+- [KPSS 检验 - KPSS](/express/manual/11107/kpss-test-kpss)
+- [曼-惠特尼 U 检验 - Mannwhitneyu](/express/manual/11108/the-mann-whitney-u-test-mannwhitneyu)
+- [正态性检验 - Normal Test](/express/manual/11109/normality-tests-normal-test)
+- [单因素方差分析 - One-way ANOVA](/express/manual/11110/single-factor-analysis-of-variance-one-way-anova)
+- [单样本 T 检验 - One-sample T-test](/express/manual/11111/single-sample-t-test-one-sample-t-test)
+- [独立样本 T 检验 - Independent T-test](/express/manual/11112/independent-sample-t-test-independent-t-test)
+- [配对样本 T 检验 - Paired T-test](/express/manual/11113/paired-sample-t-test-paired-t-test)
+- [Wasserstein 距离 - Wasserstein distance](/express/manual/11114/out-distance-out-short)
+- [Wilcoxon 检验 - Wilcoxon](/express/manual/11115/wilcoxon-test-wilcoxon)
+

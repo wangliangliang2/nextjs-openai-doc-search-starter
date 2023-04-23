@@ -1,0 +1,10 @@
+上传过程中，在使用[魔法变量](/kodo/manual/1235/vars#1)的情况下验证 [callback token](/kodo/manual/1653/callback) ，此时签名的内容应该以魔法变量被替换前为准还是以魔法变量被替换后为准？
+
+七牛的上传服务器 callback 客户的 app 服务器时会带有一个 `hmac_sha1` 签名，签名是针对最终请求来做的。
+
+所以对于上面的问题，七牛的上传服务器先替换魔法变量的值，再对 callback 请求做签名。
+
+可以参考：
+
+- [上传策略](https://developer.qiniu.com/kodo/manual/1206/put-policy)
+

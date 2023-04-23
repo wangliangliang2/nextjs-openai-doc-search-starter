@@ -1,0 +1,19 @@
+除了对风险情况的防范，Kodo 也支持了应对、追溯风险情况的能力，帮助用户及时有效地发现、关注到重要事件。[事件通知](/kodo/development_guidelines/8610/dev-event-notification)和空间日志就是 Kodo 提供的较为典型且实用的跟踪、追溯手段。
+
+其中，事件通知功能，能够对用户所关心的存储资源操作及时进行消息通知。例如：
+- 有新数据从图片内容分享平台、音视频平台上传到七牛云存储
+- 资源发生了更新
+- 重要文件被删除
+- 数据同步已经完成
+
+当您创建事件通知规则后，若请求者对您的 Kodo 资源进行操作并触发了事件通知规则，则请求者对 Kodo 进行的相关操作将会被发送到您配置的 HTTP(s) 服务端地址上。您可以针对事件通知返回的消息进行收集分析，如重点信息特别关注、数据统计分析等。如下图为事件通知设置界面，更多设置详情请参考[设置事件通知](/kodo/development_guidelines/8541/set-the-event-notification)。
+
+![image.png](https://dn-odum9helk.qbox.me/Frs_CupOqCDvvocVafj5nJHjidMf)
+
+此外，[空间日志](/kodo/development_guidelines/8614/space-access-log)功能，提供自动保存访问空间日志的功能，能够对用户所关心的存储空间的访问信息进行定时记录。例如：
+- 远端访问 IP 地址
+- 收到的访问请求时间、请求内容
+- 请求返回的状态码
+
+当您设置空间日志功能后，您的空间被访问情况将被定时记录，您可以根据日志记录内容有效分析空间访问情况、及时发现异常访问源。如下图为空间日志设置界面，更多设置详情请参考[设置空间日志](/kodo/development_guidelines/8546/set-the-space-log)。
+![image.png](https://dn-odum9helk.qbox.me/FsS-O79CPLjZbvknH7WSphA46C1X)

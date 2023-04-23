@@ -1,0 +1,59 @@
+# **介绍**
+为七牛云的图片文件提供图片处理服务，例如：
+
+- 对图片进行缩略操作
+- 图片缩放、裁剪、旋转
+- 获取图片格式、大小、色彩模型信息
+- 提供数码相机照片的可交换图像文件格式
+- 图片添加图片、文字、图文混合水印、盲水印等
+- 计算图片的平均色调
+- 图片高级压缩，支持 avif/heif 高压缩比格式
+
+
+
+
+## **限制说明**
+
+- 每个服务接口的使用限制各有不同，请在接口文档中查看。
+
+<a id="image-interface"></a>
+# **服务详情**
+
+| 图片处理                                                     | 参数                     | 简介                                                         |
+| ------------------------------------------------------------ | ------------------------ | ------------------------------------------------------------ |
+| [图片瘦身](/dora/api/1271/image-thin-body-imageslim)                                                 | imageslim                | 将存储在七牛的JPEG、PNG格式的图片实时压缩而尽可能不影响画质。 |
+| [图片基本处理](/dora/api/1279/basic-processing-images-imageview2) | imageView2               | 可对图片进行缩略操作，生成各种缩略图。imageView2 接口可支持处理的原图片格式有 psd、jpeg、png、gif、webp、tiff、bmp。 |
+| [图片高级处理- 缩放](/dora/api/8255/the-zoom) | thumbnail                | 将图片缩放至指定大小。                                       |
+| [图片高级处理- 裁剪](/dora/api/8256/tailoring) | crop                     | 普通裁剪、缩放裁剪                                           |
+| [图片高级处理- 旋转](/dora/api/8257/rotating) | auto-orient <br />rotate | 自适应旋转、普通旋转。                                       |
+| [图片高级处理- 格式转换](/dora/api/8258/format-conversion) | format<br /> colors      | 格式转换、GIF 颜色控制。                                     |
+| [图片高级处理- 渐进显示](/dora/api/8260/progressive-shows) | interlace                | 将图片调整为渐进显示。                                       |
+| [图片高级处理- 背景色填充](/dora/api/8351/the-background-color-fill) | background            | 对图片填充背景颜色                                           |
+| [图片高级处理- 质量变换](/dora/api/8259/the-quality-of-transformation) | q                        | 对图片质量进行调节                                           |
+| [图片高级处理- 高斯模糊](/dora/api/8261/gaussian-blur) | blur                     | 对图片进行模糊处理                                           |
+| [图片高级处理- 锐化](/dora/api/8262/sharpen) | sharpen                  | 对图片进行锐化处理                                           |
+| [图片高级处理- 去除元信息](/dora/api/8263/remove-the-meta-information) | strip                    | 可去除图片元信息，包括 exif 信息                             |
+| [图片高级压缩- AVIF ](/dora/api/12111/avif-compression)     | format                   | imageView2 和 imageMogr2 支持图片高级压缩功能，可以更加高效地将图片转化为 AVIF 高压缩比格式。 |
+| [图片高级压缩- HEIF ](/dora/api/12112/heif-compression)     | format                   | imageView2 和 imageMogr2 支持图片高级压缩功能，可以更加高效地将图片转化为 HEIF 高压缩比格式。 |
+| [图片基本信息](/dora/api/pictures-basic-information-imageinfo) | imageInfo                | 可以获取图片格式、大小、色彩模型信息。                       |
+| [图片水印处理](/dora/api/image-watermarking-processing-watermark) | watermark                | 提供四种水印接口：图片水印、文字水印，文字平铺水印、混合水印。 |
+| [图片盲水印处理](/dora/api/5915/blind-watermarking-processing) | watermark                | 为原图添加不可见水印，不影响原图质量。                       |
+| [图片EXIF信息](/dora/api/photo-exif-information-exif)        | exif                     | 获取数码相机照片的可交换图像文件格式。                       |
+| [图片圆角处理](/dora/api/4083/image-rounded-corner)          | roundPic                 | 将图片生成圆角图片，并且可以指定图片的圆角大小。             |
+| [图片主色调](/dora/api/image-average-hue-imageave)           | imageAve                 | 用于计算一幅图片的平均色调。                                 |
+| [动图合成](/dora/manual/5448/animate)                        | animate                  | 用于将数张图片合成 GIF。                                     |
+| [图片全景拼接服务](/dora/api/6670/panoramic-view-image-splicing-stitch) | stitch                   | 可以帮助您将多张图像拼接起来，拼成一幅大的图像来创建全景图像。 |
+
+# **操作方式**
+
+您可以通过 [同步处理](/dora/api/8266/synchronous-processing)、[持久化处理](/dora/api/1291/persistent-data-processing-pfop)、[图片样式设置](/dora/api/8264/the-picture-style)、[CDN中间源处理](https://developer.qiniu.com/fusion/4954/image-optimization) 等方式，对图片进行处理，详情介绍请参见[图片处理操作方式](/dora/api/8234/the-image-processing1)。
+
+
+
+# **计费说明**
+
+- 部分图片处理按图片原文件的大小计算数据的处理量进行计量，按量付费，每月提供20TB免费额度。
+- 部分数据处理按调用次数收费。
+- 详细的计费说明请参见 [计费与定价](https://www.qiniu.com/prices/dora?source=dora)。
+
+

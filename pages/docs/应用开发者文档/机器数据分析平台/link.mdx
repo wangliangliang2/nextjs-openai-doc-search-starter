@@ -1,0 +1,79 @@
+`<link>` 用于链接到目标网站，如另一个仪表盘、报表、搜索或外部网站
+
+### 父元素 {docsify-ignore-all}
+
+* `<change>`
+* `<condition>`
+
+### 属性
+
+|属性|说明|默认值|
+|:--:|:--:|:--:|
+|`tab`|是否在新的标签页打开|无|
+
+### 子元素
+
+|子元素|说明|
+|:--:|:--:|
+|`<search>`|链接到搜索页面。当用户指定SPL时，下钻到指定的SPL搜索|
+|`<dashboard>`|链接到仪表盘|
+|`<report>`|链接到报表|
+|`<url>`|链接到自定义URL|
+
+### 示例
+
+* 链接到搜索
+```xml
+<dashboard>
+  <input type="text" token="x">
+    <label>链接到搜索</label>
+    <change>
+      <link>
+        <search>some query</search>
+      </link>
+    </change>
+  </input>
+</dashboard>
+```
+
+* 链接到仪表盘
+```xml
+<dashboard>
+  <input type="text" token="x">
+    <label>链接到仪表盘</label>
+    <change>
+      <link>
+        <dashboard>dashboardID</dashboard>
+      </link>
+    </change>
+  </input>
+</dashboard>
+```
+
+* 链接到报表
+```xml
+<dashboard>
+  <input type="text" token="x">
+    <label>链接到报表</label>
+    <change>
+      <link>
+        <report>reportID</report>
+      </link>
+    </change>
+  </input>
+</dashboard>
+```
+
+* 链接到外部网站
+```xml
+<dashboard>
+  <input type="text" token="x">
+    <label>链接到外部网站</label>
+    <change>
+      <link tab="true">
+        <url>https://developer.qiniu.com/</url>
+      </link>
+    </change>
+  </input>
+</dashboard>
+```

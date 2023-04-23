@@ -1,0 +1,96 @@
+# 综述
+
+**权限管理系统（Identity & Access Management，IAM）** 为用户提供了管理账号下资源访问控制的能力。
+
+在系统中，根用户通过创建和分配虚拟账号（IAM User）来将自己对资源的访问权限共享给其他用户，通过配置策略（Policy）并应用到用户（User）/ 用户组（User Group）实现对资源访问的管理。
+
+# 主要概念
+
+## 根用户（Root User）
+
+根用户是在七牛开发者管理平台（portal.qiniu.com）注册的用户，拥有 UID，是七牛云服务各产品都能识别的用户。
+
+## IAM 用户
+
+IAM 用户是由根用户创建的虚拟账户，IAM 用户的身份根据被赋予的权限以其对应的根用户的身份来操作资源。
+
+## 用户组（User Group）
+
+用户组用于组织拥有相同权限的用户，降低权限管理的维护难度。
+
+## 权限（Permission）
+
+权限决定了被授权的用户是否拥有对某个（些）资源执行某个操作的权力。
+
+> 权限 = 效果(Effect) + 动作(Action) + 资源(Resource)
+
+所有虚拟账号在未被授权时没有对任何资源执行任何操作的权利。
+
+### 效果（Effect）
+
+效果决定了一条权限所描述内容的是肯定（Allow）语义还是否定（Deny）语义。
+
+例如：
+
+- Effect = Allow: 显式授予用户某个权限
+- Effect = Deny: 显式拒绝用户某个权限
+
+### 动作（Action）
+
+动作描述了对特定资源的一个操作。
+
+例如：
+
+- Action = ListDomains: 列举域名列表
+- Action = CreateDomain: 创建一个新的域名
+- Action = *: 所有操作
+
+### 资源（Resource）
+
+资源是用户在七牛使用的具体云服务产品。
+
+资源由七牛资源名称（Qiniu Resource Names, QRN）表示，格式为：
+
+> qrn:product:zone:uid:resource
+
+各部分含义是：
+
+- qrn: 统一标识前缀
+- product: 七牛产品
+- zone: 七牛可用区
+- uid: 七牛用户 uid
+- resource: 具体资源定义，由各产品线规定（AWS ARN的参考）
+
+例如:
+
+- Resource = qrn:fusion::123456789:domain/iamtest.cn: 用户 123456789 在 fusion 上配置的对应唯一 id 为 iamtest.cn 的域名
+- Resource = qrn:kodo:nb:123456789:my_bucket/path/to/example.jpg: 用户 123456789 在 kodo 上名为 my_bucket 的空间下的文件 path/to/example.jpg
+- Resource = *: 所有资源
+- 实际请求中，为了简化，一般会省略 zone 和 uid，资源 QRN 定义一般为 qrn:product:::resource（如 qrn:fusion:::domain/iamtest.cn），表示用户在产品 fusion 上配置的域名 iamtest.cn
+
+
+### 策略（Policy）
+
+策略是定义权限的载体，通过策略可以声明一个或多个权限，并应用到用户/用户组上。
+
+权限不能以孤立于策略之外的形式存在。
+
+以下是一个策略的示例：
+``` 
+
+{
+    "data": {
+        "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+                "cdn/CreateDomain",
+                "cdn/UpdateDomain"
+            ],
+            "Resource": [
+                "qrn:fusion:::domain/www.qiniu.com",
+                "qrn:fusion:::domain/www.qiniu.io"
+            ]
+        }]
+    }
+}
+```

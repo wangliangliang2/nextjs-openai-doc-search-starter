@@ -1,0 +1,17 @@
+**新功能**
+
+* eval 命令新增支持 random() 函数；
+
+**性能优化**
+
+* 搜索[极速模式](/express/manual/6807/search_modes)下不执行字段发现。
+
+* 搜索[智能模式](/express/manual/6807/search_modes)下，如果您运行搜索统计命令，系统执行字段精简，只返回内置字段或您完成搜索需要的字段信息。
+
+**Bug 修复**
+
+* chart 命令对 count（） 聚合时，将 null 值转换为 0 值；
+
+* convert 命令的 ctime() 函数将13位时间戳转换成指定timeformat失败；
+
+* 数据接收时上传文件包含空行导致空指针异常。

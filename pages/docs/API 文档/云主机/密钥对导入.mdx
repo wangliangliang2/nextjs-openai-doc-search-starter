@@ -1,0 +1,16 @@
+# 请求路径
+> `POST` /v1/vm/keypair
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+region_id       | string | body | 是 | 地域 ID。
+key_pair_name   | string | body | 是 | 密钥对名称
+public_key_body | string | body | 是 | 为空时代表创建，否则是导入
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID

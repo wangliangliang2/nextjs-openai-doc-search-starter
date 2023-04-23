@@ -1,0 +1,68 @@
+## 列举文件时delimiter参数问题
+
+#### 参数描述：
+
+调用listFiles方法列举指定空间的指定文件&nbsp;
+
+//参数一：bucket 空间名;
+//参数二：prefix 文件名前缀
+//参数三：marker 上一次获取文件列表时返回的marker&nbsp;
+//参数四：limit 每次迭代的长度限制，最大1000，推荐值100&nbsp;
+//参数五：delimiter 以指定参数为分隔符的所有公共前缀（模拟列出目录效果）。缺省值为空字符串
+
+以 python 为例：
+
+```
+# -*- coding: utf-8 -*-
+# flake8: noqa
+from qiniu import Auth
+from qiniu import BucketManager
+import json
+
+access_key = '...'
+secret_key = '...'
+
+q = Auth(access_key, secret_key)
+bucket = BucketManager(q)
+
+bucket_name = '...'
+#前缀
+prefix = None  
+#列举条目
+limit = 10    
+#列举'/'为分隔的所有前缀
+delimiter = '/'
+#标识
+marker ='eyJjIjowLCJrIjoibGludXjlhoXmoLgvbGludXgtMy4xMC4xMDQudGFyLnh6In0='
+ret, eof, info = bucket.list(bucket_name, prefix, marker, limit, delimiter)
+print(info)
+assert len(info.text_body) is not None
+
+```
+#### 输出结果：
+
+【注】：输出结果包括不含delimiter中指定参数的key，以及delemiter指定参数为分隔符的公共前缀
+
+#### 例：
+```
+"{
+    "marker": "eyJjIjowLCJrIjoicHl0aG9uL3RpbWVzaWduLnB5In0=",
+    "items": [
+        {
+            "mimeType": "image/jpeg",
+            "fsize": 66441,
+            "hash": "Fme36Zks7NJVopii5OPfZ2PwHE8o",
+            "key": "mtr.jpg",
+            "putTime": 14563802730506377
+        }
+    ],
+    "commonPrefixes": [
+        "o1-vkxcxP1-28U_lCDR4OFOYDdc=/",
+        "php/",
+        "pili/",
+        "python/"
+    ]
+}
+```
+
+

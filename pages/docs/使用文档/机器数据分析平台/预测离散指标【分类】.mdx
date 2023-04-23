@@ -1,0 +1,32 @@
+**使用场景**
+
+离散数据指的是可以被分成n类的数据，而且一般情况下不同类之间的距离是无法衡量的。比如城市，品种，性别，编号等等。当需要预测单个离散指标的时候，我们常用分类预测（Classification）的方法。
+
+**通用语法**
+
+```
+|fit <algo_name> [options] <target_field> from <feature_field_1> <feature_field_2> [into model_name]... 
+```
+
+**通用参数说明：**
++ <algo_name> 必填，用来指定训练模型采用的算法名称。
++ [options]可选，为算法的内置参数，根据提供的算法变化。
++ <target_field> 必填，且只能是一个字段，用来指定建模使用的目标字段，给定的target_field值必须存在于数据集中。target_field的数据必须为离散数据。
++ <feature_field> 必填，可以是一个或者多个字段，用来指定建模使用的特征字段，给定的feature_field值必须存在于数据集中。
++ [into model_name]可选，用来将fit训练出来的模型保存成model_name以便下次调用。
++ 数据集必须不为空。
+
+
+以下算法可以用来预测离散型指标：
+
+- [逻辑回归 - Logistic Regression](/express/manual/11036/logistic-regression-logistic-regression)
+- [决策树 - Decision Tree Classifier](/express/manual/11037/the-decision-tree-decision-tree-classifier)
+- [随机森林 - Random Forest Classifier](/express/manual/11038/random-forests-the-random-forest-classifier)
+- [Gradient Boosting分类器 - GBDT Classifier](/express/manual/11039/gradient-boosting-classifier-gbdt-classifier)
+- [XGBoost分类器 - XGBoost Classifier](/express/manual/11040/xgboost-classifier-xgboost-classifier)
+- [伯努利朴素贝叶斯分类器 - BernoulliNB](/express/manual/11045/bernoulli-bernoullinb-naive-bayesian-classifier)
+- [高斯朴素贝叶斯分类器 - GaussianNB](/express/manual/11046/gaussiannb-gaussian-naive-bayes-classifier)
+- [多层感知机分类器 - MLPClassifier](/express/manual/11041/multilayer-perceptron-classifier-mlpclassifier)
+- [随机梯度下降分类器 - SGDClassifier](/express/manual/11042/stochastic-gradient-descent-sgdclassifier-classifier)
+- [支持向量机 - SVM](/express/manual/11043/support-vector-machine-svm-svm)
+- [多项分布朴素贝叶斯模型 - MultinomialNB](/express/manual/11044/multinomial-distribution-multinomialnb-naive-bayes-model)

@@ -1,0 +1,33 @@
+cpu监控主要用于监控 cpu 的实时状态，包括用量，中断时间占比等。适用于对CPU使用紧张设备的监控。
+
+cpu监控配置界面如下：
+![](https://dn-odum9helk.qbox.me/FqwrG6uDPXbX6ly97Z_9HVHUTsp-)
+监控字段与指标的对应关系如下：
+
+CPU总量相关字段：
+1. `cpu_time_user`:用户进程用时。
+2. `cpu_time_system`:系统内核用时。
+3. `cpu_time_idle`:空闲CPU用时。
+4. `cpu_time_nice`:优先级调度用时。
+5. `cpu_time_iowait`:iowait用时。
+6. `cpu_time_irq`:中断用时。
+7. `cpu_time_softirq`:软中断用时。
+8. `cpu_time_steal`:Steal用时。
+9. `cpu_time_guest`:Guest用时。
+10. `cpu_time_guest_nice`:GuestNice用时。
+11. `cpu_time_cpu`:CPU序号名称。
+
+CPU用量相关指标：
+1. `cpu_usage_user`:用户用量百分比(0~100)。
+2. `cpu_usage_system`:系统用量百分比(0~100)。
+3. `cpu_usage_idle`:空闲百分比(0~100)。
+4. `cpu_usage_nice`:优先级调度程序用量百分比(0~100)。
+5. `cpu_usage_iowait`:IOwait时间占比(0~100)。
+6. `cpu_usage_irq`:中断时间占比(0~100)。
+7. `cpu_usage_softirq`:软中断时间占比(0~100)。
+8. `cpu_usage_steal`:虚拟CPU的竞争等待时间占比(0~100)。
+9. `cpu_usage_guest`:虚拟进程的CPU用时占比(0~100)。
+10. `cpu_usage_guest_nice`:虚拟进程CPU调度用时占比(0~100)。
+11. `cpu_usage_cpu`:CPU序号名称。
+
+下方高级选项中的三个选项可以自定义选择开启或关闭相关CPU指标的信息收集。

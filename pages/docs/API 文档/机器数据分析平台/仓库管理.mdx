@@ -1,0 +1,259 @@
+# 1. 接口清单
+
+仓库管理是 Pandora 2.0 对于仓库进行创建、删除、更新和查询的管理接口。以下是搜索接口的清单：
+
+1. 创建仓库：`POST /api/v1/repos/<RepoName>`
+2. 更新仓库：`PUT /api/v1/repos/<RepoName>`
+3. 删除仓库：`DELETE /api/v1/repos/<RepoName>`
+4. 查询单个仓库详细信息：`GET /api/v1/repos/<RepoName>`
+5. 查询仓库列表：`GET /api/v1/repos?sort=<SortColumn>&order=<asc|desc>&pageNo=<PageNo>&pageSize=<PageSize>&prefix=<prefix>`
+
+> 注意：搜索接口的请求格式是json格式，所以请求Header中必须添加 'Content-Type: application/json' 
+
+# 2. 接口描述
+
+## 2.1 创建仓库
+
+请求路径：`/api/v1/repos/<RepoName>`
+
+请求方法：`POST`
+
+请求体示例：
+
+``` json
+{
+    "description":"",       // 可选参数，默认空串，可更新
+    "retention":864000000,  // 未开启分层存储时必填，单位为秒
+    "repoReplicas":1,       // 仓库副本数，数据存储额外副本数量，0代表没有副本
+    "writeReplicas":1,      // 写时副本数，写入数据时候附加几个副本，0代表没有副本，rollover 之后才会产生副本
+    "writeShards":1,        // 写时并发度，写入时候有几个并发分片
+    "writeRefreshIntervalInSeconds":1, // 刷新间隔，从数据写入成功到查询的可见时间，默认为1秒
+    "lifecyclePolicyEnable":false,     // 是否开启冷热温分层存储，默认为false
+    "lifecyclePolicy":{                // 冷热温分层存储策略，当 lifecyclePolicyEnable 为 true时候需要设置
+        "repoName":"<RepoName>",       // 策略生效的仓库名，必须和创建Repo名字保持一致
+        "phases":{
+            "hot":{
+                "phaseName":"hot",
+                "maxAge":864000000     // hot phase所能允许容纳的索引最大年龄；索引年龄一旦超过该数值，就会进去下一个phase
+            },
+            "warm":{
+                "phaseName":"warm",
+                "maxAge":864000000     // warm phase所能允许容纳的索引最大年龄；索引年龄一旦超过该数值，就会进去下一个phase
+            },
+            "cold":{
+                "phaseName":"cold",    // cold phase所能允许容纳的索引最大年龄；索引年龄一旦超过该数值，就会进去下一个phase, 也即delete phase
+                "maxAge":864000000
+            }
+        }
+    },
+    "rollover":{ // 仓库级切索引相关配置
+        "shardMaxDocs":"10k",   // 当平均每个shard的docs数量达到1万时，切索引; 设置为"0"时，表示使用全局设置
+        "shardMaxSize":"10gb",  // 当平均每个shard大小达到10gb时，切索引；设置成"0b"时，表示使用全局设置
+        "indexMaxAge":"1h"      // 每1h切一次索引；设置为"0s"时，表示使用全局设置
+    }
+}
+```
+
+请求体字段解释：
+
+| 字段名        | 是否必填 | 字段解释                                                     | 默认值                              |
+| ------------- | -------- | ------------------------------------------------------------ | ----------------------------------- |
+| `description `       | 否      | 仓库描述 | 空                                  |
+| `retention`   | 否       | 未开启分层存储时为**必填**，反之时可选。        | 无                      |
+| `repoReplicas`     | 否       | 仓库副本数，数据存储额外副本数量，0代表没有副本 |   1                         |
+| `writeReplicas`     | 否       | 写时副本数，写入数据时候附加几个副本，0代表写入时没有副本，rollover 之后才会产生副本                                              |  1 |
+| `writeShards` | 否      | 写时并发度，写入时候有几个并发分片                                     | 1                                |
+| `writeRefreshIntervalInSeconds`        | 否       | 刷新间隔，从数据写入成功到查询的可见时间   |     1秒              |
+| `lifecyclePolicyEnable`        | 否       | 是否开启数据分层存储   |     false              |
+| `lifecyclePolicy.repoName`       | 否      | 开启数据分层存储后**必填**，必须为当前操作仓库名称 | 空                                  |
+| `lifecyclePolicy.phases.hot.phaseName`   | 否       | 开启数据分层存储后**必填**，值为hot        | 无                      |
+| `lifecyclePolicy.phases.hot.maxAge`   | 否       | 开启数据分层存储后**必填**，热状态所能允许容纳的索引最大年龄；索引年龄一旦超过该数值，就会进入温分区        | 无                      |
+| `lifecyclePolicy.phases.warm.phaseName`   | 否       | 开启数据分层存储后**必填**，值为warm        | 无                      |
+| `lifecyclePolicy.phases.warm.maxAge`   | 否       | 开启数据分层存储后**必填**，温状态所能允许容纳的索引最大年龄；索引年龄一旦超过该数值，就会进入冷分区          | 无                      |
+| `lifecyclePolicy.phases.cold.phaseName`   | 否       | 开启数据分层存储后**必填**，值为cold        | 无                      |
+| `lifecyclePolicy.phases.cold.maxAge`   | 否       | 开启数据分层存储后**必填**，冷状态所能允许容纳的索引最大年龄；索引年龄一旦超过该数值，就会进入删除状态          | 无                      |
+| `rolloever.shardMaxDocs`     | 否       | 仓库级切索引相关配置，当平均每个shard的docs数量达到多少时，生成新索引; 设置为"0"时，表示使用全局设置   |             0               |
+| `rollover.shardMaxSize`     | 否       | 仓库级切索引相关配置，当平均每个shard大小达到10gb时，切索引；设置成"0b"时，表示使用全局设置       |    0  |
+| `rolloever.indexMaxAge ` | 否      | 仓库级切索引相关配置，每1h切一次索引；设置为"0s"时，表示使用全局设置                                    | 0     |
+
+
+
+
+
+响应体示例：
+
+``` json
+{}
+```
+
+响应为200的时候即为创建仓库成功
+
+
+## 2.2 更新仓库
+
+请求路径：`/api/v1/repos/<RepoName>`
+
+请求方法：`PUT`
+
+接口具体的调用方式和创建仓库一样。此处参见 2.1 创建仓库 小节。
+
+
+## 2.3 删除仓库
+
+
+请求路径：`/api/v1/repos/<RepoName>`
+
+请求方法：`DELETE`
+
+响应体示例：
+
+``` json
+{}
+```
+
+响应为200的时候即为创建仓库成功
+
+
+## 2.4 查询单个仓库详细信息
+
+请求路径：`/api/v1/repos/<RepoName>`
+
+请求方法：`GET`
+
+响应体示例：
+
+``` json
+{
+    "name":"<RepoName>",
+    "description":"",
+    "version":"1597891339139",     # 仓库的版本信息，用以区分历史上被创建出的各个同名的仓库
+    "retention":10368000000,       # 存储时限
+    "lifecyclePolicyEnable":true,  # 是否开启冷热温分层存储
+    "lifecyclePolicy":{            # 冷热温分层存储策略
+        "repoName":"<RepoName>",
+        "phases":{
+            "hot":{
+                "maxAge":6134400000,
+                "phaseName":"hot"
+            },
+            "warm":{
+                "maxAge":7776000000,
+                "phaseName":"warm"
+            },
+            "cold":{
+                "maxAge":10368000000,
+                "phaseName":"cold"
+            },
+            "delete":{
+                "maxAge":0,
+                "phaseName":"delete"
+            }
+        }
+    },
+    "repoReplicas":0,           # 仓库副本数
+    "rollover": {
+        "shardMaxSize":"0b",   # 0b表示该参数未设置，默认使用全局设置  
+        "shardMaxDocs":"0",    # 0表示该参数未设置，默认使用全局设置 
+        "indexMaxAge":"0s",    # 0s表示该参数未设置，默认使用全局设置 
+    }
+    "createTime":1597891339139,
+    "updateTime":1603337942030,
+    "docTotal":61315008,                   # 该仓库的总doc数
+    "bytes":"14.3gb",                      # 该仓库的总大小
+    "writeShards":12,                    # 写时并发度
+    "writeReplicas":0,                   # 写索引的副本个数，如果为0，则打点速度会有很大提高
+    "writeRefreshIntervalInSeconds":10,  # 写索引的刷新间隔
+    "isConsistent":false  
+}
+```
+
+
+返回体字段解释，大部分和创建、更新仓库请求时的字段含义一致，以下只对多出来的字段进行解释：
+
+| 字段名        | 是否必填 | 字段解释                                                     | 
+| ------------- | -------- | ------------------------------------------------------------ |
+| `version `       | 否      | 仓库内部版本号，用来记录每次更新仓库的变化 | 
+| `createTime`   | 否       | 仓库创建时间        | 
+| `updateTime`     | 否       | 最近一次更新仓库配置信息的时间 |  
+| `docTotal`     | 否       | 该仓库的总doc数                                              |  
+| `bytes` | 否      | 写时并发度，写入时候有几个并发分片                                     | 
+| `isConsistent` | 否      | 当前仓库配置是否已经完全生效，如果为false代表配置更新尚未完全生效，需要等待一段时间                          
+ | 
+
+
+## 2.4 查询仓库列表信息
+
+请求路径：`/api/v1/repos?sort=<SortColumn>&order=<asc|desc>&pageNo=<PageNo>&pageSize=<PageSize>&prefix=<prefix>`
+
+请求方法：`GET`
+
+
+请求体字段解释：
+
+| 字段名        | 是否必填 | 字段解释                                                     | 默认值                              |
+| ------------- | -------- | ------------------------------------------------------------ | ----------------------------------- |
+| `sort `       | 否      | 排序字段 | updateTime                                  |
+| `order`   | 否       |  排序顺序        | desc                      |
+| `pageNo`     | 否       | 分页信息，第几页 |   1                         |
+| `pageSize`     | 否       | 分页信息，每页数据量                           |  10 |
+| `prefix` | 否      |  仓库查询关键词             | 无                                |
+
+响应体示例：
+
+```json
+{
+    "total": 1,
+    "repos": [
+        {
+            "name": "<RepoName>",
+            "description": "",
+            "version": "1597891339139",     # 仓库的版本信息，用以区分历史上被创建出的各个同名的仓库
+            "retention": 10368000000,       # 存储时限
+            "lifecyclePolicyEnable": true,  # 是否开启冷热温分层存储
+            "lifecyclePolicy": {            # 冷热温分层存储策略
+                "repoName": "<RepoName>",
+                "phases": {
+                    "hot": {
+                        "maxAge": 6134400000,
+                        "phaseName": "hot"
+                    },
+                    "warm": {
+                        "maxAge": 7776000000,
+                        "phaseName": "warm"
+                    },
+                    "cold": {
+                        "maxAge": 10368000000,
+                        "phaseName": "cold"
+                    },
+                    "delete": {
+                        "maxAge": 0,
+                        "phaseName": "delete"
+                    }
+                }
+            },
+            "repoReplicas": 0,           # 仓库副本数
+            "rollover": {
+                "shardMaxSize": "0b",   # 0b表示该参数未设置，默认使用全局设置  
+                "shardMaxDocs": "0",    # 0表示该参数未设置，默认使用全局设置 
+                "indexMaxAge": "0s",    # 0s表示该参数未设置，默认使用全局设置
+            }
+            "createTime": 1597891339139,
+            "updateTime": 1603337942030,
+            "docTotal": 61315008,                   # 该仓库的总doc数
+            "bytes": "14.3gb",                      # 该仓库的总大小
+            "writeShards": 12,                    # 写时并发度
+            "writeReplicas": 0,                   # 写索引的副本个数，如果为0，则打点速度会有很大提高
+            "writeRefreshIntervalInSeconds": 10,  # 写索引的刷新间隔
+            "isConsistent": false
+        }
+    ]
+}
+```
+
+响应体解释：
+
+| 字段名        | 是否必填 | 字段解释                                                     | 
+| ------------- | -------- | ------------------------------------------------------------ |
+| `total `       | 否      | 总的仓库数量 | 
+| `repos`   | 否       | 数组存放所有仓库的信息，具体字段参见查询单个仓库信息       | 
+

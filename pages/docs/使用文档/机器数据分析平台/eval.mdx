@@ -1,0 +1,180 @@
+eval 命令计算表达式并将结果加入搜索结果中。
+
+**语法：**
+```
+eval <field>=<expression>["," <field>=<expression>]...
+```
+	
+**参数说明**
+
+`field`:计算表达式⽣成的计算值要写入的⽬标字段名称。如果字段名称已经存在于您的数据，该字段的值将被计算表达式结果覆盖。
+
+`expression`：eval表达式，它可能是计算表达式、字符串处理函数等，详见下文“eval 命令支持的函数”。
+
+您可在⼀个搜索中使⽤逗号将多个 eval 表达式链接起来。Pandora 2.0 从前⾄后处理多个 eval 表达式，并允许您在后续表达式中引⽤之前已计算过的字段。
+
+**eval 和 stats 的区别：**
+
+stats 命令基于字段信息统计。eval 命令使⽤现有字段和任意表达式新建字段（或覆盖现有字段）。
+
+## eval 命令支持的函数
+
+### 数学函数
+
+|函数|描述|示例|
+|:--:|:--:|:--:|
+|pi()|计算圆周率|eval pi=pi()|
+|random()|随机函数，返回一个\[0.0,1.1)左闭右开区间的的double类型随机值|eval random=random()或者eval random=random() * n (n为整数)|
+|abs(X)|计算绝对值|eval v=abs(a-1)|
+|ceil(X),ceiling(X)|向上取整|eval v=ceil(a)|
+|floor(X)|向下取整|eval v=floor(a)|
+|exp(X)|计算e的X次方|eval v=exp(a)|
+|ln(X)|计算以e为底X的对数|eval v=ln(a)|
+|sqrt(X)|计算X的开平方|eval v=sqrt(a)|
+|pow(X,Y)|计算X的Y次方|eval v=pow(a, 2)|
+|round(X)|将X四舍五入到整数|eval v=round(a)|
+|round(X,N)|为X保留N位小数|eval v=round(a, 4)|
+|log(X)|计算以10位底，X的对数|eval v=log(a)|
+|log(X,Y)|计算以Y为底数，X的对数|eval v=log(a, 2)|
+|hypot(X,Y)|计算以X,Y为直角边的直角三角形的斜边长度|eval v=hypot(3, 4)|
+|acos(X)|计算反余弦函数，返回值在[0,pi]的弧(radians)区间内|eval v=acos(a)|
+|asin(X)|计算反正弦函数，返回值在[-pi/2, pi/2]的弧区间内|eval v=asin(a)|
+|atan(X)|计算反正切函数，返回值在[-pi/2, pi/2]的弧区间内|eval v=atan(a)|
+|acosh(X)|计算反双曲余弦函数，返回值单位为弧|eval v=acosh(a)|
+|asinh(X)|计算反双曲正弦函数，返回值单位为弧|eval v=asinh(a)|
+|atanh(X)|计算反双曲正切函数，返回值单位为弧|eval v=atanh(a)|
+|sin(X)|计算正弦函数|eval v=sin(a)|
+|cos(X)|计算余弦函数|eval v=cos(a)|
+|tan(X)|计算正切函数|eval v=tan(a)|
+|sinh(X)|计算双曲正弦函数|eval v=sinh(a)|
+|cosh(X)|计算双曲余弦函数|eval v=cosh(a)
+|tanh(X)|计算双曲正切函数|eval v=tanh(a)|
+|max(X,Y,...)|计算字段列表最大值|eval m=max(a,b,c)|
+|min(X,Y,...)|计算字段列表最小值|eval m=min(a,b,c)|
+
+
+### 时间函数
+
+|函数|描述|示例|
+|:--:|:--:|:--:|
+|year(X, ZoneOffset)|取给定时间的年份<br>第1个参数为Unix epoch timestamp [13位，毫秒级时间戳]；同时该函数具备一定的时间日期解析功能，对于"2019-08-01T07:30:45.123+0800"的日期时间格式（ISO 8601），可以直接解析，也可作为第1个参数。<br>第2个参数（可选）为表示时区的整数，e.g. 8表示东八区，-7表示西七区。|eval v=year(_time)<br>eval v=year("2019-08-01")<br>eval v=year("2019-08-01T07:30:45")<br>eval v=year("2019-08-01T07:30:45.123")<br>eval v=year("2019-08-01T07:30:45.123456789")<br>eval v=year("2019-08-01T07:30:45.123456789+0800")<br>eval v=year(_time, 7)|
+|month(X, ZoneOffset)|取给定时间的月份<br>参数同 year 函数|eval v=month(_time)<br>eval v=month("2019-08-01")<br>eval v=month("2019-08-01T07:30:45")<br>eval v=month("2019-08-01T07:30:45.123")<br>eval v=month(_time, 7)|
+|day(X, ZoneOffset)|取给定时间在当前月份的第几天<br>参数同year函数|eval v=day(_time)|
+|week(X, ZoneOffset)|取给定时间的在当前年的第几周<br>参数规格同year函数|eval v=week(_time)|
+|hour(X, ZoneOffset)|取给定时间的小时<br>参数同year函数|eval v=hour(_time)|
+|minute(X, ZoneOffset)|取给定时间的分钟<br>参数同year函数|eval v=minute(_time)|
+|second(X, ZoneOffset)|取给定时间的秒数<br>参数同year函数|eval v=second(_time)|
+|isWeekday(X, ZoneOffset)|判断当天是否是工作日，返回bool结果<br>参数同year函数|eval v=isWeekday(_time)|
+|isWeekend(X, ZoneOffset)|判断当前是否是周末<br>参数同year函数|eval v=isWeekend(_time)|
+|datediff(X, Y, TimeUnit)|计算时间差，接受2个或3个参数<br>参数1和参数2既可以是13位的毫秒级时间戳也可以是形如"2019-08-01"的ISO 8601日期时间格式的字符串<br>参数3（可选），用于指定函数计算结果的时间单位。可选值有（注：使用双引号而非单引号）："s", "m", "h", "d". 若没有指定该参数，则返回值是毫秒级的时间差。|eval v=datediff(time1, time2)<br>eval v=datediff(1563429270000, 1563342870000)<br>eval v =datediff("2019-09-02", "2019-09-01")<br>eval v=datediff(1563429270000, 1563342870000, "d")|
+|nextWeekday(X, Y, ZoneOffset)|返回下个工作日的时间，接受1~3个参数<br>参数1既可以是13位的毫秒级时间戳也可以是形如"2019-08-01"的ISO 8601日期时间格式的字符串<br>参数2（可选），表示从参数1的日期算起，第Y个工作日<br>参数3（可选），表示时区的整数，e.g. 8表示东八区，-7表示西七区。|eval t=nextWeekday(_time)<br>eval t=nextWeekday(now())<br>eval t=nextWeekday("2019-08-01")<br>eval t=nextWeekday("2019-08-01", 4)<br>eval t=nextWeekday("2019-08-01", 4, 7)|
+|relativeTime(X, Y)|返回相对时间（毫秒级时间戳）<br>接受2个参数<br>参数1：时间基准。既可以是13位的毫秒级时间戳也可以是形如"2019-08-01"的ISO 8601日期时间格式的字符串。<br>参数2：相对时间指示符。e.g. "-2d@d+3h"表示两天前，时间对齐到天，最后再向前偏移2小时。相对时间指示符可参考：[相对时间语法快速入门](/express/manual/6021/search)|eval t=relativeTime(now(), "-3d@d")|
+|now|返回当前的毫秒精度时间戳|eval n=now()|
+
+ ### 转换函数
+ 
+|函数|描述|示例|
+|:--:|:--:|:--:|
+|printf("format",arguments)|采用c风格的方式格式化字符串|eval s=printf("%04.4f, %5s", field1, field2)|
+|toNumber(X,BASE)|将字符串按照指定进制，转换成10进制数字，如eval("1000", 2)，对应结果为8<br>第1个参数应为含有数值的字符串，e.g. "1000", "3.1415"。如果第1个参数是个double字符串，那么返回该double数值<br>第2个参数（可选），为表示进位制基数的数值。toNumber函数将以该进制解析第1个参数中的整数，将其转换成易读的十进制形式。若给参数未被传递，则默认为10|eval n=toNumber("1000")<br>eval n=toNumber("3.1415")<br>eval n=toNumber("1000", 2)|
+|toString(X)|将数值或 Bool 值转化成字符串|eval s=toString(a)<br>eval s=toString(host=="upload")|
+|toReadableTime(X, TIMEFORMAT, ZoneOffset)|将Unix epoch时间戳转换成可读的形式<br>第1个参数是Unix epoch 时间戳（支持秒级[10位]、毫秒级[13位]、微秒级[16位]、纳秒级[19位]的时间戳）<br>第2个参数（可选），TIMEFORMAT 为时间格式字符串，用来指定转换后所期望的时间格式，若没有该参数，则默认按照形如"2019-08-06T17:56:55+08:00"的格式（ISO 8601）显示<br>第3个参数（可选），用于补充该时间戳的时区信息，应传入表示时区的整数，e.g. 8表示东八区，-7表示西七区。由于时间戳本身不包含时区信息，因此理论上需要补充时区信息之后才能转换成可读形式。若无该参数，则默认为东八区。|eval t=toReadableTime(_time)<br>eval t=toReadableTime(_time, "yyyy-MM-dd HH:mm:ss")<br>eval t=toReadableTime(_time, "yyyy-MM-dd HH:mm:ss", 7)|
+|toTimestamp(X, TIMEFORMAT, ZoneOffset)|和toReadableTime作用相反，将时间字符串按照TIMEFORMAT解析为毫秒精度时间戳。参数形式也与toReadableTime相对称<br>X,Y,Z,日期时间字符串,支持多个时间字符串<br>第2个参数，指定日期时间字符串的解析格式<br>第3个参数（可选），指定时区，e.g. 8表示东八区，-7表示西七区。默认为东八区。若日期时间字符串中已有时区信息，并且解析格式要求解析时区，与此同时，如若指定了第3个参数，那么仍以日期时间字符串中的时区为准<br>当解析出的结果中缺少年份信息时，则自动补上默认时区或第3个参数指定时区的当前年份，再转换成Unix epoch时间戳<br>当缺少日期信息时，则自动补上默认时区或第3个参数指定时区的日期，再转换成时间戳<br>若缺少时分秒信息，则自动补上00:00:00，再转换成时间戳。|eval t=toTimestamp("2019-03-10", "yyyy-MM-dd")<br>eval t=toTimestamp("Jul 01 2019 08:30:50.123 ", "MMM dd yyyy HH:mm:ss.SSS", 7)<br>eval time1=toTimestamp(date1, "yyyy-MM-dd"), time2=toTimestamp(date2, "yyyy-MM-dd"), duration=datediff(time2, time1, "d")| 
+|uuid(field1,field2,...)|为字段生成32位的通用唯一标识符，用于唯一标识一个实体。将参数字段名排序后，取参数字段名名和其对应的值作为uuid的种子，参数字段顺序不同时得到的值相同；当参数为空时，返回不带种子的值|eval id=uuid(a,b,c)|
+
+### 条件函数
+
+|函数|描述|示例|
+|:--:|:--:|:--:|
+|if(X, V1, V2)|如果X为true，则返回V1， 如果为false则返回V2。|eval err=if(status==200, "OK", "Error")|
+|case(X1, Y1, X2, Y2 ..., Default)|分支条件函数，如果X1为true，则返回Y1，如果X1为false，则判断X2是否为true，如果为true，则返回Y2，以此类推，如果所有分支都不满足，则返回Default|eval description=case(status==200, "OK", status==404, "Not Found", "Error")|
+|contains(X, STRING)|判断字符串X是否包含字符串STRING|eval contains=contains(_raw, "aaa")|
+|match(X, Pattern)|判断字符串X是否匹配正则表达式Pattern|eval is_IP=match(f0, "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")<br>eval is_png=match(f6, "png")|
+|like(X, Like)|判断字符串X是否匹配Like模式，类似于SQL中的like子句|eval is_png=like(f6, "%png")|
+|in(X, Y1 ...)|判断X值在(Y1, Y2...)集合中|eval v=in(a, "2", "4", "5")<br>eval error=if(in(status, "404", "500", "503"), "true", "false")|
+|isNull(X)|判断字段是否为空|eval existed=isNull(f100)|
+|isNotNull(X)|判断字段是否不为空|eval existed=isNotNull(f100)|
+|isnum(X)|判断字段是否是整数|eval result=isnum(param)|
+|isbool(X)|判断字段是否是布尔数|eval result=isbool(param)|
+|isstr(X)|判断字段是否是字符串|eval result=isstr(param)|
+|nullif(X,Y)|判断字段X和Y是否相等，相等返回null，不相等返回X|eval result=nullif(param1, parma2)|
+|typeof(X)|返回X的类型|eval type=typeof(x)|
+
+
+### 字符串处理函数
+
+|函数|描述|示例|
+|:--:|:--:|:--:|
+|len(X)|返回字符串长度|eval l=len(_raw)|
+|lower(X)|将字符串转为小写|eval l=lower(_raw)|
+|upper(X)|将字符串转为大写|eval l=upper(_raw)|
+|trim(X)|将字符串前后的空白去除|eval s=trim(_raw)|
+|urldecode(X)|URL解码|eval decodedURL=urldecode("https%3A%2F%2Fwww.google.com.hk%2F")<br>eval s=urldecode(_raw)|
+|substr(X, from, length)|计算字符串的子串<br>第2个参数，from从1计起，指定子串的起始位置。可以是负数，e.g. -4表示倒数第4个字符。若from==0，其效果等同于from==1<br>第3个参数（可选），length是子串长度。若未填写该参数，则默认一直截取到末尾。|eval s=substr(_raw, 1, len(_raw)-1)<br>eval s=substr(_raw, -4)<br>eval s=substr(_raw, 1)|
+|replace(X, origin, targe)|将X字段中的原始文本替换成目标文本。参数2和参数3可以使用正则表达式|eval s=replace(_raw, "xx", "yy")<br>eval r=replace("08/01/2019", "(\d{1,2})/(\d{1,2})/", "$2/$1/")|
+|concat(X, Y, .....)|将多个字符串连接到一起，至少接收两个参数|eval c=concat("my host is: ", host)<br>eval c=concat(host, 123)|
+|contains(X, Y)|计算字符串的X是否包含另一个字符串Y|eval a=contains(_raw, "keyword")|
+|split(X, splitter)|按照splitter定义的分割符分割 X，返回字符串数组|eval arr=split(_raw, "splitter")|
+|ltrim(X, splitter)|如果X是以splitter开头，则返回X去掉splitter之后的部分|eval result=ltrim("starthaha", "start")|
+|rtrim(X, splitter)|如果X是以spltter结尾， 则返回X去掉splitter之前的部分|eval result=rtrim("hahaend", "end")|
+
+### 加密函数
+
+|函数|描述|示例|
+|:--:|:--:|:--:|
+|md5(X)|计算文本md5值|eval value=md5("Phoenix")|
+|sha1(X)|计算文本sha1值|eval value=sha1("Phoenix")|
+|sha256(X)|计算文本sha256值|eval value=sha256("Phoenix")|
+|sha512(X)|计算文本sha512值|eval value=sha512("Phoenix")|
+
+### 数组函数
+|函数|描述|示例|
+|:--:|:--:|:--:|
+|arr_append(X,...)|在数组字段后面附加元素<br>(无论数组和非数组都可以append)|eval new_array=arr_append(array,"a","b")<br>eval new_array=arr_append("a","b","c")|
+|arr_len(ARRAY)|求数组长度<br>(非数组返回1；数组返回长度)|eval value=arr_len(array)|
+|arr_dedup(ARRAY)|对数组进行元素去重<br>(非数组返回原数据；数组返回去重结果,保留原始顺序)|eval new_array=arr_dedup(array)|
+|arr_find(ARRAY,"REGEX")|查找match正则表达式的序号<br>(非数组返回匹配成功的下标0，匹配失败返回null；数组匹配成功返回下标，匹配失败返回null)|eval new_array=arr_find(array,"REGEX")|
+|arr_subseq(ARRAY,STARTINDEX,ENDINDEX)|对数组求子数组<br>(非数组返回原数据；数组返回截取的值(左闭右闭)(右边超出范围返回全部数组，左边大于size返回null))|eval new_array=arr_subseq(array,0,2)|
+|arr_join(ARRAY,STR)|将ARRAY中所有元素拼接在一起(只有一个参数时，使用空格链接）<br>(非数组返回原数据；数组返回join结果)|eval new_array=arr_join(array)<br>eval new_array=arr_join(array,"or")|
+|arr_index(ARRAY, index)|取出ARRAY 中 index 位置的数据<br>(非数组返回原数据；数组返回下标所对应的值(超出范围返回null);index可以为表达式，范围为\[-len,len))|eval new_array=arr_index(array,0)<br>eval new_array=arr_index(array,-1)|
+|arr_sort(ARRAY, "ASC/DESC")|对ARRAY做字母序排序(允许arr_sort 只传一个参数，第二个参数不填默认为 ASC(不区分大小写))<br>(非数组返回原数据；数组返回排序结果；不存在返回null)|eval new_array=arr_sort(array)<br>eval new_array=arr_sort(array,"desc")|
+|arr_filter(X)|X为布尔表达式，对X中出现的唯一数组ARRAY中的元素根据X进行过滤(允许X为比较表达式和部分条件函数，contains,match,like,in,isNull...)<br>(不存在数组则根据第一个出现的字段值进行过滤)|eval new_array=arr_filter(array < 5)<br>eval new_array=arr_filter(match(array,"name_"))|
+|arr_zip(ARRAY_X,ARRAY_Y,"Z")|对ARRAY_X和ARRAY_Y中的元素做对应拼接，连接符为Z，即ARRAY_X中第一个元素与ARRAY_Y中第一个元素相接，ARRAY_X中第二个元素与ARRAY_Y中第二个元素相接。(允许arr_zip 只传两个参数，第三个参数不填默认为逗号",")<br>(均不为数组，返回连接后的单个元素)|eval new_array=arr_zip(array1,array2,".")<br>eval new_array=arr_zip(array1,array2)|
+|mvindex(ARRAY,start,end)|取数组元素的子集，其中end可省，此时返回start所在下标的值<br>(start和end都可正可负，-1返回最后位置的元素)|eval new_array=mvindex(array,0,4)<br>eval new_array=mvindex(array,-5，-1)<br>eval new_array=mvindex(array,-1)
+
+## eval 命令支持的运算符
+
+|类型|书写规范|描述|示例|
+|:--:|:--:|:--:|:--:|
+|逻辑运算表达式|AND，OR，NOT|多个表达式的逻辑预算，返回布尔值|eval v=(a>1 AND b<2)|
+|四则运算|+ - * / ()|基础四则运算|eval v=(a+3)*b|
+|比较运算|< <= = > >=|比较字段或值之间的关系，返回布尔值|eval v=(a>=b)|
+|取模运算|%|获取除法运算的余数|eval r =a/b|
+
+
+**用法示例**
+
+
+1.根据分数<60为不及格，分数<90为良好，分数>90为优秀的标准统计出每个成绩对应的级别，并计算每个成绩级别的平均值、最大值、最小值。
+
+```
+……|eval level=case(grade<60, "failed", grade>60 AND grade<=90, "good", grade>90, "excellent") 
+| stats avg(grade),min(grade),max(grade) by level
+```
+
+返回结果如下：
+
+|level|avg(grade)|min(grade)|max(grade)|
+|:--:|:--:|:--:|:--:|
+|failed|45|45|45|
+|good|78|70|86|
+|excellent|92.5|90|95|
+
+2.将HTTP状态码转换成可读的字符串。
+
+```
+……| eval description = case(status == 404, "Not found", status == 500, "Internal Server Error", status == 200, "OK")
+```
+
+
+更多示例请阅读“eval 命令支持的函数中的示例”。

@@ -1,0 +1,5224 @@
+<a id="1"></a>
+
+# 1. 概述
+
+PLDroidShortVideo 是七牛推出的一款适用于 Android 平台的短视频 SDK，提供了包括美颜、滤镜、水印、断点录制、分段回删、视频编辑、混音特效、本地/云端存储在内的多种功能，支持高度定制以及二次开发。
+
+<a id="1.1"></a>
+
+## 1.1 下载地址
+[Android Demo 以及 SDK 下载地址](https://github.com/pili-engineering/PLDroidShortVideo)
+
+<a id="2"></a>
+
+# 2. 功能列表
+短视频 SDK 主要区分精简版、基础版、进阶版、专业版 4 个版本，不同版本的功能[请参考](https://developer.qiniu.com/pili/sdk/3731/short-video)
+
+<a id="3"></a>
+
+# 3. 阅读对象
+
+本文档为技术文档，需要阅读者：
+
+- 具有基本的 Android 开发能力
+- 准备接入七牛云短视频
+
+<a id="4"></a>
+
+# 4. 总体设计
+
+<a id="4.1"></a>
+
+## 4.1 基本规则
+
+为了方便理解和使用，对于 SDK 的接口设计，我们遵循了如下的原则：
+
+- 每一个接口类，均以 `PL` 开头
+- 所有的参数配置类，均以 `PLXXXSetting` 命名
+- 所有的回调接口类，均以 `PLXXXListener` 命名
+
+<a id="4.2"></a>
+
+## 4.2 核心接口
+
+核心的接口类说明如下：
+
+| 接口类名                   | 功能         | 备注              |
+| :--------------------- | ---------- | --------------- |
+| PLShortVideoRecorder   | 负责视频的拍摄    | 音视频采集、美颜、编码、封包等 |
+| PLScreenRecorder       | 负责屏幕的录制    | 屏幕视频的采集、音频采集／导入 |
+| PLShortVideoEditor     | 负责视频内容的编辑  | 添加滤镜、水印、文字特效等   |
+| PLShortVideoTrimmer    | 负责视频的剪辑    | 关键帧获取、视频剪辑等     |
+| PLShortVideoTranscoder | 负责视频的转码    | 视频转码，获取视频信息等    |
+| PLShortVideoUploader   | 负责视频的上传    | 视频文件的上传         |
+| PLShortVideoComposer   | 负责图像／视频的合成 | 生成 GIF，视频拼接等    |
+| PLShortAudioRecorder   | 负责纯音频的拍摄   | 纯音频采集、编码、封包等    |
+| PLTransitionMaker      | 负责过场字幕的制作  | 文字动画、图片动画生成 mp4  |
+| PLShortVideoMixer      | 负责双视频拼图的制作  | 两个视频按照设定的样式合成一个视频 |
+| PLShortVideoEnv        | 负责日志等级配置以及包名鉴权信息的查询等  | 配置日志打印等级以及查询包名鉴权信息 |
+
+<a id="4.3"></a>
+
+## 4.3 视频拍摄接口类
+
+拍摄功能相关的类说明如下：
+
+| 接口名                         | 功能        | 备注           |
+| --------------------------- | --------- | ------------ |
+| PLShortVideoRecorder        | 视频拍摄的核心接口 | 核心接口         |
+| PLCameraSetting             | 配置摄像头参数   | 预览分辨率，前后摄像头等 |
+| PLMicrophoneSetting         | 配置麦克风参数   | 通道，采样率等      |
+| PLVideoEncodeSetting        | 配置视频编码参数  | 编码尺寸，码率，帧率等  |
+| PLAudioEncodeSetting        | 配置音频编码参数  | 码率，通道，采样率等   |
+| PLFaceBeautySetting         | 配置美颜参数    | 美白度，磨皮度，红润度等 |
+| PLRecordSetting             | 配置拍摄参数    | 缓存目录，拍摄时长等   |
+| PLWatermarkSetting          | 配置水印参数    | 水印的位置、透明度等   |
+| PLBuiltinFilter             | 内置滤镜对象    | 滤镜名称，缩略图等    |
+| PLCameraPreviewListener     | 摄像头预览数据回调 | 回调摄像头预览的数据   |
+| PLCameraParamSelectListener | 摄像头参数选择回调 | 选择摄像头的参数     |
+| PLVideoFilterListener       | 外部滤镜接口    | 提供外部对视频数据做滤镜 |
+| PLAudioFrameListener        | 麦克风数据回调   | 回调麦克风采集的数据   |
+| PLRecordStateListener       | 拍摄状态回调    | 回调拍摄状态       |
+| PLFocusListener             | 摄像头对焦状态回调 | 回调手动/自动对焦事件  |
+| PLCaptureFrameListener      | 截帧回调      | 回调预览当前一帧     |
+| PLVideoSaveListener         | 分段合成回调    | 回调分段合成的状态    |
+| PLViewRecorder              | 针对一个 View 录制  | FPS 依赖于屏幕刷新率  |
+| PLExternalMediaRecorder     | 外部音视频数据导入  | 1.15.0版本采用软编码  |
+| PLShortVideoMixRecorder     | 视频合拍的核心接口  | 与样本视频按照设定的样式进行合拍  |
+
+<a id="4.4"></a>
+
+## 4.4 屏幕录制接口类
+
+屏幕录制功能相关的类说明如下：
+
+| 接口名                         | 功能        | 备注            |
+| --------------------------- | --------- | ------------- |
+| PLScreenRecorder            | 屏幕录制的核心接口 | 核心接口          |
+| PLScreenRecorderSetting     | 配置屏幕录制参数  | 文件名称、位置，屏幕尺寸等 |
+| PLScreenRecordStateListener | 屏幕录制状态回调  | 回调屏幕录制状态      |
+| PLMicrophoneSetting         | 配置麦克风参数   | 通道，采样率等       |
+| PLVideoEncodeSetting        | 配置视频编码参数  | 编码尺寸，码率，帧率等   |
+| PLAudioEncodeSetting        | 配置音频编码参数  | 码率，通道，采样率等    |
+
+<a id="4.5"></a>
+
+## 4.5 视频编辑接口类
+
+### 4.5.1 视频内容编辑接口类
+
+视频编辑功能相关的类说明如下：
+
+| 接口名                   | 功能        | 备注           |
+| --------------------- | --------- | ------------ |
+| PLShortVideoEditor    | 视频编辑的核心接口 | 核心接口         |
+| PLVideoEditSetting    | 配置视频编辑参数  | 源文件、目标文件地址等  |
+| PLWatermarkSetting    | 配置水印参数    | 水印的位置、透明度等   |
+| PLDisplayMode         | 配置视频的显示模式 | 全屏，适应屏幕等     |
+| PLVideoFilterListener | 外部滤镜接口    | 提供外部对视频数据做滤镜 |
+| PLVideoSaveListener   | 编辑保存状态回调  | 回调保存编辑的状态    |
+| PLVideoPlayerListener | 预览视频的播放状态回调  | 是否播放完成等    |
+
+### 4.5.2 视频文件处理接口类
+| 接口名                    | 功能        | 备注        |
+| ---------------------- | --------- | --------- |
+| PLShortVideoTrimmer    | 视频剪辑的核心接口 | 核心接口      |
+| PLShortVideoTranscoder | 视频转码的核心接口 | 核心接口      |
+| PLShortVideoComposer   | 视频合成的核心接口 | 核心接口      |
+| PLVideoSaveListener    | 视频保存状态回调   | 回调保存视频的状态 |
+| PLImageComposer        | 图片合成核心接口   | 核心接口 |
+
+
+<a id="4.6"></a>
+
+## 4.6 视频上传接口类
+
+视频上传功能相关的类说明如下：
+
+| 接口名                      | 功能        | 备注        |
+| ------------------------ | --------- | --------- |
+| PLShortVideoUploader     | 视频上传的核心接口 | 核心接口      |
+| PLUploadSetting          | 配置上传参数    | 超时时间，块大小等 |
+| PLUploadProgressListener | 上传进度回调    | 回调上传进度    |
+| PLUploadResultListener   | 上传结果回调    | 回调上传结果    |
+
+<a id="5"></a>
+
+# 5. 开发准备
+
+<a id="5.1"></a>
+
+## 5.1 开发环境
+
+* Android Studio 开发工具，官方 [下载地址](http://developer.android.com/intl/zh-cn/sdk/index.html)
+* Android 官方开发 SDK，官方 [下载地址](https://developer.android.com/intl/zh-cn/sdk/index.html#Other)
+
+<a id="5.2"></a>
+
+## 5.2 设备以及系统要求
+
+- 系统要求：Android 4.3 (API 18) 及其以上
+
+<a id="5.3"></a>
+
+## 5.3 下载和导入 SDK
+
+SDK 主要包含 demo 代码、sdk jar 包，以及 sdk 依赖的动态库文件，说明如下：
+
+| 文件名称                           | 功能      | 大小    | 备注          |
+| ------------------------------ | ------- | ----- | ----------- |
+| pldroid-shortvideo-x.y.z.jar   | SDK 库   | 552KB | 必须依赖        |
+| libpldroid\_shortvideo_core.so | 短视频核心库  | 690KB | 必须依赖        |
+| libpldroid_beauty.so           | 美颜模块    | 598KB | 不使用内置美颜可以去掉 |
+| libpldroid_amix.so             | 混音模块    | 229KB | 不使用混音功能可以去掉 |
+| libpldroid_encoder.so          | 软编拍摄模块 | 1.5MB | 不使用软编拍摄功能可以去掉 |
+| libpldroid_crash.so            | 崩溃分析模块 | 82KB  | 不使用崩溃分析功能可以去掉 |
+| libQMedia.so | 图片转场拼接模块 | 9.1MB | 不使用图片转场拼接可以去掉 |
+| filters                        | 内置滤镜缩略图 | 12.5MB     | 可以根据需求删减    |
+
+<a id="5.4"></a>
+
+## 5.4 修改 build.gradle
+
+双击打开您的工程目录下的 `build.gradle`，（代码中的`x.y.z`为具体的版本号）确保已经添加了如下依赖，如下所示：
+
+```java
+dependencies {
+    compile files('libs/pldroid-shortvideo-x.y.z.jar')
+    compile 'com.qiniu:qiniu-android-sdk:8.4.3'
+}
+```
+
+<a id="5.5"></a>
+
+## 5.5 添加相关权限
+
+在 app/src/main 目录中的 AndroidManifest.xml 中增加如下 `uses-permission` 声明：
+
+```java
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+```
+
+<a id="6"></a>
+
+# 6. 快速开始
+从 v3.1.0 版本开始，需要在 Application 中初始化 sdk：
+
+```java
+PLShortVideoEnv.init(getApplicationContext());
+```
+
+<a id="6.1"></a>
+
+## 6.1 视频拍摄
+
+### 6.1.1 创建录制对象
+
+```java
+PLShortVideoRecorder mShortVideoRecorder = new PLShortVideoRecorder();
+mShortVideoRecorder.setRecordStateListener(this);
+```
+
+### 6.1.2 配置采集参数
+
+`PLShortVideo` 提供了丰富的自定义录制选项，可以通过创建以下对象进行配置：
+
+```java
+// 摄像头采集选项
+PLCameraSetting cameraSetting = new PLCameraSetting();
+cameraSetting.setCameraId(PLCameraSetting.CAMERA_FACING_ID.CAMERA_FACING_FRONT);
+cameraSetting.setCameraPreviewSizeRatio(PLCameraSetting.CAMERA_PREVIEW_SIZE_RATIO.RATIO_4_3);
+cameraSetting.setCameraPreviewSizeLevel(PLCameraSetting.CAMERA_PREVIEW_SIZE_LEVEL.PREVIEW_SIZE_LEVEL_480P);
+
+// 麦克风采集选项
+PLMicrophoneSetting microphoneSetting = new PLMicrophoneSetting();
+
+// 视频编码选项
+PLVideoEncodeSetting videoEncodeSetting = new PLVideoEncodeSetting();
+videoEncodeSetting.setEncodingSizeLevel(PLVideoEncodeSetting.VIDEO_ENCODING_SIZE_LEVEL.VIDEO_ENCODING_SIZE_LEVEL_480P_1); // 480x480
+videoEncodeSetting.setEncodingBitrate(1000*1024); // 1000kbps
+videoEncodeSetting.setEncodingFps(25);
+videoEncodeSetting.setHWCodecEnabled(true); // true:硬编 false:软编
+
+// 音频编码选项
+PLAudioEncodeSetting audioEncodeSetting = new PLAudioEncodeSetting();
+audioEncodeSetting.setHWCodecEnabled(true); // true:硬编 false:软编
+
+// 美颜选项
+PLFaceBeautySetting faceBeautySetting = new PLFaceBeautySetting(1.0f, 0.5f, 0.5f);
+
+// 录制选项
+PLRecordSetting recordSetting = new PLRecordSetting();
+recordSetting.setMaxRecordDuration(10*1000); // 10s
+recordSetting.setVideoCacheDir("/sdcard");
+recordSetting.setVideoFilepath("/sdcard/record.mp4");
+
+// 设置录制速度 (默认为 1.0)
+PLShortVideoRecorder.setRecordSpeed(1.0);
+```
+
+### 6.1.3 创建预览窗口
+
+拍摄视频需要的预览窗口为 `GLSurfaceView` 或者其派生的类对象，可以配置在 XML 文件中，也可以动态创建。
+
+### 6.1.4 配置录制参数
+
+通过 `prepare` 把拍摄所选择的参数配置到 SDK 中：
+
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    mShortVideoRecorder.prepare(glSurfaceView, cameraSetting, microphoneSetting,
+            videoEncodeSetting, audioEncodeSetting, faceBeautySetting, recordSetting);     
+}
+```
+
+### 6.1.5 生命周期
+
+请在 `Activity` 的各个生命周期的回调中，分别调用 `PLShortVideoRecorder` 对应的方法：
+
+```java
+@Override
+protected void onResume() {
+    super.onResume();
+    mShortVideoRecorder.resume();
+}
+
+@Override
+protected void onPause() {
+    super.onPause();
+    mShortVideoRecorder.pause();
+}
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    mShortVideoRecorder.destroy();
+}
+```
+
+### 6.1.6 断点拍摄和保存
+
+基本的配置完成以后，就可以开始断点拍摄了。
+
+```java
+// 开始一段视频
+PLShortVideoRecorder.beginSection();
+// 结束一段视频
+PLShortVideoRecorder.endSection();
+// 回删上一段视频
+PLShortVideoRecorder.deleteLastSection();
+// 回删所有录制的视频
+PLShortVideoRecorder.deleteAllSections();
+// 合成和保存所有的视频片段
+PLShortVideoRecorder.concatSections();
+```
+
+### 6.1.7 添加背景音乐
+
+可以通过如下接口添加背景音乐：
+
+```java
+// 设置 sdCard 上的音乐文件
+PLShortVideoRecorder.setMusicFile(String filePath);
+// 设置 Assets 下的音乐文件
+PLShortVideoRecorder.setMusicAsset(AssetFileDescriptor afd);
+// 设置音乐文件的播放起始位置
+PLShortVideoRecorder.setMusicPosition(int position);
+// 获取音乐文件当前的播放位置
+PLShortVideoRecorder.getMusicPosition();
+// 设置是否循环背景音乐
+PLShortVideoRecorder.setMusicLoop(boolean musicLoop);
+```
+需要注意的是，当添加完背景音乐之后，SDK 会自动把麦克风采集给关闭，从而默认使用背景音乐作为最终视频的音频。如果需要麦克风继续采集，那么只需通过设置 PLShortVideoRecorder.mute(false) 即可。
+
+### 6.1.8 添加水印
+
+`PLShortVideoRecorder` 支持在录制过程中添加水印，**水印的位置是相对于预览分辨率的**，可以通过 `PLWatermarkSetting` 设置水印参数：
+
+```java
+PLWatermarkSetting mWatermarkSetting = new PLWatermarkSetting();
+mWatermarkSetting.setResourceId(R.drawable.qiniu_logo);
+mWatermarkSetting.setPosition(0.01f, 0.75f);
+mWatermarkSetting.setAlpha(128);
+PLShortVideoRecorder.setWatermark(mWatermarkSetting);
+```
+
+### 6.1.9 保存草稿
+
+可以将某次拍摄的所有片段与设置项保存为草稿并持久化保存，之后可以恢复：
+
+```java
+// 保存草稿
+PLShortVideoRecorder.saveToDraftBox("My Draft Title");
+
+// 恢复草稿
+PLDraft draft = PLDraftBox.getInstance(this).getDraftByTag("My Draft Title");
+PLShortVideoRecorder.recoverFromDraft(draft);
+```
+
+<a id="6.2"></a>
+
+## 6.2 屏幕录制
+
+### 6.2.1 创建录制对象
+
+```java
+PLScreenRecorder mScreenRecorder = new PLScreenRecorder(this);
+mScreenRecorder.setRecordStateListener(this);
+```
+
+### 6.2.2 配置采集参数
+
+`PLShortVideo` 提供了丰富的自定义录制选项，可以通过创建以下对象进行配置：
+
+```java
+// 屏幕采集选项
+public static final String SCREEN_RECORD_FILE_PATH = VIDEO_STORAGE_DIR + "/screen_record.mp4";
+DisplayMetrics metrics = getResources().getDisplayMetrics();
+int width = metrics.widthPixels;
+int height = metrics.heightPixels;
+int dpi = metrics.densityDpi;
+mScreenRecorder = new PLScreenRecorder();
+PLScreenRecorderSetting screenSetting = new PLScreenRecorderSetting();
+screenSetting.setRecordFile(SCREEN_RECORD_FILE_PATH)
+                .setInputAudioEnabled(false)
+                .setSize(width, height)
+                .setDpi(dpi);
+
+// 音频（麦克风／外部导入）参数信息
+PLMicrophoneSetting microphoneSetting = new PLMicrophoneSetting();
+```
+
+### 6.2.3 配置录制参数
+
+通过 `prepare` 把屏幕录制所选择的参数配置到 SDK 中：
+
+```java
+mScreenRecorder.prepare(screenSetting, microphoneSetting);
+```
+
+### 6.2.4 申请屏幕录制权限
+
+屏幕录制需要得到用户授权，通过下面接口申请用户权限：
+
+```java
+mScreenRecorder.requestScreenRecord();
+```
+
+调用该接口后，系统会自动弹出申请权限对话框，用户的操作结果会通过 onActivityResult 系统回调接口返回：
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == PLScreenRecorder.REQUEST_CODE) {
+        if (data == null) {
+            String tip = "录屏申请启动失败！";
+            mScreenRecorder.stop();
+            mScreenRecorder = null;
+            return;
+        }
+        
+        mScreenRecorder.onActivityResult(requestCode, resultCode, data);
+    }
+}
+```
+
+### 6.2.5 开始录制
+
+用户授权后且录制状态为 Ready 后可通过 start() 方法开始屏幕录制：
+
+```java
+public void onReady() {
+    mScreenRecorder.start();
+}
+```
+
+### 6.2.6 结束录制
+
+通过下面接口结束屏幕录制：
+
+```java
+mScreenRecorder.stop();
+```
+
+### 6.2.7 Android 10 适配
+
+请在 AndroidManifest.xml 中添加此项 Service
+
+```xml
+<service
+    android:name="com.qiniu.pili.droid.streaming.screen.ScreenRecordService"
+    android:enabled="true"
+    android:foregroundServiceType="mediaProjection" />
+```
+并声明前台服务的权限
+
+```xml
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+```
+
+<a id="6.3"></a>
+
+## 6.3 视频内容编辑
+
+### 6.3.1 配置编辑参数
+
+通过 `PLVideoEditSetting` 可以配置视频编辑的必要参数：
+
+```java
+PLVideoEditSetting setting = new PLVideoEditSetting();
+// 视频源文件路径
+setting.setSourceFilepath(videopath);
+// 编辑后保存的目标文件路径
+setting.setDestFilepath(outputpath);
+// 编辑保存后，是否保留源文件
+setting.setKeepOriginFile(true);
+```
+
+### 6.3.2 创建编辑对象
+
+```java
+// glSurfaceView 用于渲染视频编辑后的效果
+mShortVideoEditor = new PLShortVideoEditor(glSurfaceView, setting);
+```
+
+### 6.3.3 添加滤镜
+
+#### 添加内置滤镜
+
+- 获取内置的视频滤镜列表
+
+```java
+mShortVideoEditor.getBuiltinFilterList();
+```
+
+- 选择一个滤镜
+
+```java
+mShortVideoEditor.setBuildinFilter(String filterName);
+```
+
+#### 添加外置滤镜
+
+```java
+mShortVideoEditor.setExternalFilter(String filterFilePath);
+```
+
+### 6.3.4 添加实时水印
+
+`PLShortVideoEditor` 支持在视频上添加并动态更新水印，通过 `PLWatermarkSetting` 设置水印参数：
+
+```java
+PLWatermarkSetting mWatermarkSetting = new PLWatermarkSetting();
+mWatermarkSetting.setResourceId(R.drawable.qiniu_logo);
+mWatermarkSetting.setPosition(0.01f, 0.75f);
+mWatermarkSetting.setAlpha(128);
+mShortVideoEditor.setWatermark(mWatermarkSetting);
+```
+通过 `updatePreviewWatermark` 方法更新预览视频的水印:
+
+```java
+PLWatermarkSetting mPreviewWatermarkSetting = new PLWatermarkSetting();
+mPreviewWatermarkSetting.setResourceId(R.drawable.qiniu_logo);
+//更新了预览视频的水印位置
+mPreviewWatermarkSetting.setPosition(0.5f, 1f);
+mPreviewWatermarkSetting.setAlpha(128);
+mShortVideoEditor.updatePreviewWatermark(mPreviewWatermarkSetting);
+```
+通过 `updateSaveWatermark` 方法更新保存视频的水印:
+
+```java
+PLWatermarkSetting mSaveWatermarkSetting = new PLWatermarkSetting();
+mSaveWatermarkSetting.setResourceId(R.drawable.qiniu_logo);
+//更新了保存的视频的水印位置
+mSaveWatermarkSetting.setPosition(0.5f, 1f);
+mSaveWatermarkSetting.setAlpha(128);
+mShortVideoEditor.updateSaveWatermark(mSaveWatermarkSetting);
+```
+
+### 6.3.5 预览效果
+
+```java
+// 开始播放
+mShortVideoEditor.startPlayback();
+// 恢复播放
+mShortVideoEditor.resumePlayback();
+// 暂停播放
+mShortVideoEditor.pausePlayback();
+// 结束播放
+mShortVideoEditor.stopPlayback();
+// 跳到 msec 处播放
+mShortVideoEditor.seekTo(int msec);
+// 获取当前播放时间
+mShortVideoEditor.getCurrentPosition();
+```
+
+### 6.3.6 音频混合
+注意：** 以下方法只是针对单个混音文件处理，请勿与“多重音频混合”的相关方法混合使用 **
+
+```java
+// 设置混音文件（本地音频文件）
+mShortVideoEditor.setAudioMixFile(String filePath);
+// 设置混音文件（assets 下的音频文件）
+mShortVideoEditor.setAudioMixAsset(AssetFileDescriptor afd);
+// 设置原音(前景)和混音文件(背景)的音量 [0-1.0f]
+mShortVideoEditor.setAudioMixVolume(float fgVolume, float bgVolume);
+// 设置混音的起始和结束位置
+mShortVideoEditor.setAudioMixFileRange(long beginTime, long endTime);
+// 设置混音是否循环
+mShortVideoEditor.setAudioMixLooping(false);
+```
+
+### 6.3.7 保存视频
+
+编辑后的视频效果，调用如下接口最终可以保存到本地：
+
+```java
+// 设置视频的速度（默认速度为 1.0）
+mShortVideoEditor.setSpeed(1.0);
+// 设置需要保存的视频时间段为 0 到 6000 毫秒（默认为整个视频）
+mShortVideoEditor.setVideoRange(0, 6000)
+// 监听保存状态和结果
+mShortVideoEditor.setVideoSaveListener(this);
+// 执行保存操作
+mShortVideoEditor.save();
+```
+
+### 6.3.8 添加文字特效
+
+```java
+// 创建文字特效控件
+PLTextView textView = new PLTextView(this);
+// 设置文字内容，字体大小，字体颜色，透明度等一系列属性
+textView.setText("点击输入文字");
+textView.setTextSize(40);
+textView.setTextColor(Color.RED);
+textView.setAlpha(0.8f);
+// 添加文字特效
+mShortVideoEditor.addTextView(textView);
+// 设置文字特效的显示时间段为 0 到 3000 毫秒
+mShortVideoEditor.setViewTimeline(textView, 0, 3000);
+// 删除文字特效
+mShortVideoEditor.removeTextView(textView);
+```
+
+### 6.3.9 添加MV特效
+
+```java
+// 添加MV特效
+// 注：mvFilePath 为MV视频文件路径，maskFilePath 为蒙版文件路径
+mShortVideoEditor.setMVEffect(mvFilePath, maskFilePath);
+```
+
+MV 特效素材制作要求：
+
+基本要求：
+
+- 分辨率可用 480x480, 480x854，544x960等，决定合成视频的分辨率
+- 帧率建议使用 30帧/秒
+- 特效视频格式 .mp4。考虑跨平台以及视频体积，不建议使用 .mov
+- 特效视频的时长（单位：秒）决定合成视频的时长（单位：秒）
+
+对于部分区域为透明的 MV 特效视频，素材制作要求：
+
+- 配备1个黑白和1个彩色视频
+- 黑白视频中视频帧只有纯黑、纯白2种颜色。每一帧中纯黑像素点对应彩色视频的透明区域，纯白像素点对应彩色视频的非透明区域，视频格式为.mp4
+- 彩色视频，即视频特效期望的效果，透明区域用纯黑色表示，其它非透明区域可以使用包括纯黑色在内的任意颜色，视频格式为 .mp4
+- 黑白视频与彩色视频的帧率、分辨率必须相同
+- 黑白视频只带视频数据，无音频数据
+- 彩色视频在带有视频数据外，音频数据可有可无
+- 不建议使用 .mov 视频格式。缺点在于不利于跨平台编解码和播放处理，视频体积大
+
+### 6.3.10 添加静态贴图
+
+```java
+PLImageView imageView = new PLImageView(this);
+Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+imageView.setImageBitmap(bitmap);
+// 添加贴图
+mShortVideoEditor.addImageView(imageView);
+// 设置贴图的显示时间段为 0 到 3000 毫秒
+mShortVideoEditor.setViewTimeline(imageView, 0, 3000);
+// 删除贴图
+mShortVideoEditor.removeImageView(imageView);
+```
+
+### 6.3.11 添加涂鸦
+
+```java
+PLPaintView paintView = new PLPaintView(this, width, height);
+//设置画笔颜色
+paintView.setPaintColor(color);
+//设置画笔尺寸
+paintView.setPaintSize(size);
+//撤销上一步操作
+paintView.undo();
+//清除所绘制的涂鸦
+paintView.clear();
+//设置画笔是否可绘制
+paintView.setPaintEnable(false);
+//添加涂鸦
+mShortVideoEditor.addPaintView(paintView);
+//设置涂鸦的显示时间段为 0 到 3000 毫秒
+mShortVideoEditor.setViewTimeline(paintView, 0, 3000);
+//删除涂鸦
+mShortVideoEditor.removePaintView(paintView);
+```
+
+### 6.3.12 多重音频混合
+
+注意：** “多重音频混合”与“音频混合”为互斥功能，不支持同时使用！ **
+
+```java
+//设置主音频文件
+PLMixAudioFile mainMixAudioFile = new PLMixAudioFile(mMp4path);
+mShortVideoEditor.addMixAudioFile(mainMixAudioFile);
+//添加第一个混音音频文件
+PLMixAudioFile audioFile1 = new PLMixAudioFile(audioPath1);
+audioFile1.setOffsetInVideo(firstMixingOffsetMs * 1000);//视频中开始混音的起始位置
+audioFile1.setDurationInVideo(firstMixingDurationMs * 1000);//视频中混音时长
+audioFile1.setVolume(0.5);//混音音量
+mShortVideoEditor.addMixAudioFile(audioFile1);
+//添加第二个混音音频文件
+PLMixAudioFile audioFile2 = new PLMixAudioFile(audioPath2);
+audioFile2.setOffsetInVideo(secondMixingOffsetMs * 1000);//视频中开始混音的起始位置
+audioFile2.setDurationInVideo(secondMixingDurationMs * 1000);//视频中混音时长
+audioFile2.setVolume(0.8);//混音音量
+mShortVideoEditor.addMixAudioFile(audioFile2);
+//删除第二个混音音频文件
+mShortVideoEditor.removeMixAudioFile(audioFile2);
+```
+
+<a id="6.4"></a>
+
+## 6.4 视频剪辑
+
+### 6.4.1 创建剪辑对象
+
+```java
+mShortVideoTrimmer = new PLShortVideoTrimmer(getApplicationContext(), videoPath, outputpath);
+```
+
+### 6.4.2 视频帧
+
+获取视频帧并展示给用户，帮助其选取剪辑范围。
+
+```java
+
+// true 限定为关键帧，false 为所有视频帧
+boolean keyFrame = false;
+
+// 获取视频帧总数
+mShortVideoTrimmer.getVideoFrameCount(keyFrame);
+
+// 通过索引获取视频帧
+mShortVideoTrimmer.getVideoFrameByIndex(index, keyFrame);
+
+// 通过时间戳获取视频帧
+mShortVideoTrimmer.getVideoFrameByTime(timestampInMs, keyFrame);
+```
+
+### 6.4.3 指定范围剪辑
+
+```java
+// beginMs 和 endMs 可参考 从 getKeyFrame() 返回的 PLVideoFrame 中的时间戳
+mShortVideoTrimmer.trim(beginMs, endMs, saveListener);
+```
+
+### 6.4.4 设置快速剪辑模式
+
+```java
+// beginMs 和 endMs 可参考 从 getKeyFrame() 返回的 PLVideoFrame 中的时间戳
+mShortVideoTrimmer.trim(beginMs, endMs, TRIM_MODE.FAST, saveListener);
+```
+
+<a id="6.5"></a>
+
+## 6.5 视频转码
+
+### 6.5.1 创建转码对象
+
+```java
+mShortVideoTranscoder = new PLShortVideoTranscoder(getApplicationContext(), videoPath, outputpath);
+```
+
+### 6.5.2 获取源视频信息
+
+获取源视频转码相关信息，并展示给用户，让用户更好地了解源视频的状况。
+
+```java
+// 获取源视频宽度
+mShortVideoTranscoder.getSrcWidth();
+// 获取源视频高度
+mShortVideoTranscoder.getSrcHeight();
+// 获取源视频码率
+mShortVideoTranscoder.getSrcBitrate();
+```
+
+### 6.5.3 转码
+
+```java
+mShortVideoTranscoder.transcode(dstWidth, dstHeight, dstBitrate, saveListener);
+```
+
+### 6.5.4 时光倒流
+
+可使转码后的视频倒置
+
+```java
+mShortVideoTranscoder.transcode(dstWidth, dstHeight, dstBitrate, true, saveListener);
+```
+
+### 6.5.5 视频旋转
+
+可使转码后的视频在源视频的基础上旋转某些角度, 角度可为 0, (-)90, (-)180, (-)270
+
+```java
+mShortVideoTranscoder.transcode(dstWidth, dstHeight, dstBitrate, rotateBy, isReverse, saveListener);
+```
+
+### 6.5.6 降帧率转码
+
+通过设置输出视频的帧率上限，可使得输出视频的帧率不超过设定值，实现降帧率转码
+
+```java
+mShortVideoTranscoder.setMaxFrameRate(maxFrameRate);
+```
+
+### 6.5.7 区域裁剪转码
+
+通过设置指定区域的坐标位置，针对指定的区域进行裁剪转码
+
+```java
+mShortVideoTranscoder.setClipArea(originPtrX, originPtrY, width, height)；
+```
+
+<a id="6.6"></a>
+
+## 6.6 视频合成
+
+### 6.6.1 创建合成对象
+
+```java
+mShortVideoComposer = new PLShortVideoComposer(context);
+```
+
+### 6.6.2 生成 GIF 文件
+
+```java
+ArrayList<Bitmap> bitmaps = new ArraryList<Bitmap>();
+bitmaps.add(bitmap1);
+bitmaps.add(bitmap2);
+bitmaps.add(bitmap3);
+int frameDelayMs = 500; //GIF 中每帧的持续时间
+boolean isLoop = true; //GIF 是否循环播放
+mShortVideoComposer.composeToGIF(bitmaps, frameDelayMs, isLoop, saveListener);
+```
+
+### 6.6.3 多视频拼接
+
+```java
+// 场景一：顺序拼接每段视频
+
+// 添加视频文件
+List<String> videoList = new ArrayList<>();
+videoList.add(videopath1);
+videoList.add(videopath2);
+// 编码配置，用于设置拼接后的视频文件的编码参数
+// 注：多个视频拼接后，带角度的视频，最终会旋转为正向（0 度）
+PLVideoEncodeSetting setting = new PLVideoEncodeSetting(this);
+setting.setEncodingSizeLevel(VIDEO_ENCODING_SIZE_LEVEL.VIDEO_ENCODING_SIZE_LEVEL_480P_1);
+setting.setEncodingBitrate(1000 * 1000);
+// 开始合成视频
+mShortVideoComposer.composeVideos(videoList, "/sdcard/composed.mp4", setting, saveListener);
+// 取消视频合成
+mShortVideoComposer.cancelComposeVideos();
+```
+
+```java
+// 场景二：顺序选取每段视频的一个时间段进行拼接
+
+List<PLVideoRange> videoList = new ArrayList<>();
+PLVideoRange videoRange1 = new PLVideoRange(videopath1);
+// 选取第一段视频的 3 到 5 秒进行拼接
+videoRange1.setStartTime(3000);
+videoRange1.setEndTime(5000);
+videoList.add(videoRange1);
+
+PLVideoRange videoRange2 = new PLVideoRange(videopath2);
+// 选取第二段视频的 6 到 9 秒进行拼接
+videoRange2.setStartTime(6000);
+videoRange2.setEndTime(9000);
+videoList.add(videoRange2);
+
+// 编码配置，用于设置拼接后的视频文件的编码参数
+// 注：多个视频拼接后，带角度的视频，最终会旋转为正向（0 度）
+PLVideoEncodeSetting setting = new PLVideoEncodeSetting(this);
+setting.setEncodingSizeLevel(VIDEO_ENCODING_SIZE_LEVEL.VIDEO_ENCODING_SIZE_LEVEL_480P_1);
+setting.setEncodingBitrate(1000 * 1000);
+// 开始合成视频
+mShortVideoComposer.composeVideoRanges(videoList, "/sdcard/composed.mp4", setting, saveListener);
+// 取消视频合成
+mShortVideoComposer.cancelComposeVideos();
+```
+
+### 6.6.4 图片合成 mp4
+
+```java
+// 配置每张图片在视频中的显示时间和转场效果时间
+PLComposeItem item1 = new PLComposeItem(imagePath);
+item1.setDurationMs(durationTime);
+item1.setTransitionTimeMs(transTime);
+// 添加每张图片等合成信息
+List<PLComposeItem> itemList = new ArrayList<>();
+itemList.add(item1);
+itemList.add(item2);
+// 编码配置，用于设置合成后的视频文件的编码参数
+PLVideoEncodeSetting setting = new PLVideoEncodeSetting(this);
+setting.setEncodingSizeLevel(VIDEO_ENCODING_SIZE_LEVEL.VIDEO_ENCODING_SIZE_LEVEL_480P_1);  setting.setEncodingBitrate(1000 * 1000);
+// 开始合成
+mShortVideoComposer.composeImages(itemList, "/sdcard/music.mp3", true, "/sdcard/image_composed.mp4", setting, saveListener);
+```
+
+### 6.6.5 从视频导出 GIF 动图
+
+```java
+// 从视频导出 GIF 动图。依次传入输入视频路径、开始时间、结束时间、总输出帧数、输出宽度、输出高度、是否循环标志、输出文件路径、监听器对象；
+ mShortVideoComposer.extractVideoToGIF("/sdcard/input.mp4", startTimeMs, endTimeMs, totalFrameCount, outputWidth, outputHeight, true, "/sdcard/output.gif", saveListener);
+```
+
+### 6.6.6 图片，视频，GIF 混合拼接
+```java
+// 配置图片拼接信息
+PLComposeItem imageItem = new PLComposeItem(imagePath);
+imageItem.setItemType(PLComposeItem.ItemType.IMAGE);
+imageItem.setDurationMs(5000); // 设置图片总时长为 5000 ms
+imageItem.setTransitionTimeMs(1000); //设置过度动画为 1000 ms
+
+// 配置 GIF 拼接信息
+PLComposeItem gifItem = new PLComposeItem(gifPath);
+gifItem.setItemType(PLComposeItem.ItemType.GIF);
+gifItem.setDurationMs(5000); // 设置 GIF 总时长为 5000 ms
+gifItem.setTransitionTimeMs(1000); //设置 GIF 过度动画为 1000 ms
+
+// 配置视频拼接信息，视频拼接不需要 setDurationMs ，其总时长即为视频时长
+PLComposeItem videoItem = new PLComposeItem(videoPath);
+videoItem.setItemType(PLComposeItem.ItemType.VIDEO);
+videoItem.setTransitionTimeMs(1000); //设置过度动画为 1000 ms
+
+List<PLComposeItem> itemList = new ArrayList<>();
+itemList.add(imageItem);
+itemList.add(gifItem);
+itemList.add(videoItem);
+
+// 编码配置，用于设置拼接后的视频文件的编码参数
+PLVideoEncodeSetting setting = new PLVideoEncodeSetting(this);
+setting.setEncodingSizeLevel(VIDEO_ENCODING_SIZE_LEVEL.VIDEO_ENCODING_SIZE_LEVEL_480P_1);
+setting.setEncodingBitrate(1000 * 1000);
+setting.setEncodingFps(25);
+
+// 开始拼接
+mShortVideoComposer.composeItems(itemList, "/sdcard/image_composed.mp4", setting, "/sdcard/music.mp3", 1, 1, mVideoSaveListener)
+```
+
+<a id="6.7"></a>
+
+## 6.7 视频上传
+
+### 6.7.1  配置上传参数
+
+`PLUploadSetting` 提供了上传可配置的参数，一般情况下可以直接使用默认设置，不用额外配置。
+
+```java
+PLUploadSetting uploadSetting = new PLUploadSetting();
+uploadSetting.setChunkSize(chunkSize)           // 分片上传时，每片的大小，默认 2M
+             .setPutThreshhold(putthreshhold)   // 启用分片上传阀值，默认 4M
+             .setConnectTimeout(connectTimeout) // 链接超时，默认10秒
+             .setResponseTimeout(responseTimeout) // 服务器响应超时，默认60秒
+             .setZone(plUploadZone)  // 设置区域，指定不同区域的上传域名、备用域名、备用IP
+             .setHttpsEnabled(true)    // 是否启用 https 上传，默认不启用
+             .setParams(params);   // 配置上传自定义变量
+```
+
+### 6.7.2 创建上传对象
+
+首先创建 `PLShortVideoUploader` 对象，传入上下文 context 即可，同时配置相关监听器，如：
+
+```java
+mShortVideoUploader = new PLShortVideoUploader(getApplicationContext(), uploadSetting);
+mShortVideoUploader.setUploadProgressListener(this);
+mShortVideoUploader.setUploadResultListener(this);
+```
+
+### 6.7.3 上传视频
+
+```java
+/**
+ * 上传   默认返回文件的哈希值作为 key
+ * @filepath 即将上传的文件的路径
+ * @token 上传的凭证，客户端在上传前，需要先从服务端获取上传凭证
+ */
+PLShortVideoUploader.startUpload(String filepath, String token);
+/**
+ * 上传
+ * @filepath 即将上传的文件的路径
+ * @key 指定上传后的 key 值
+ * @token 上传的凭证，客户端在上传前，需要先从服务端获取上传凭证
+ */
+PLShortVideoUploader.startUpload(String filePath, String key, String token)
+/**
+ * 取消上传
+ */
+PLShortVideoUploader.cancelUpload();
+```
+
+注：上传凭证的详细定义，可以参考 [这里](https://developer.qiniu.com/kodo/manual/1208/upload-token)
+<a id="6.8"></a>
+
+## 6.8 纯音频录制
+
+### 6.8.1 创建录制对象
+
+```java
+PLShortAudioRecorder mShortAudioRecorder = new PLShortAudioRecorder();
+mShortAudioRecorder.setRecordStateListener(this);
+```
+
+### 6.8.2 配置采集参数
+
+```java
+// 麦克风采集选项
+PLMicrophoneSetting microphoneSetting = new PLMicrophoneSetting();
+
+// 音频编码选项
+PLAudioEncodeSetting audioEncodeSetting = new PLAudioEncodeSetting();
+
+// 录制选项
+PLRecordSetting recordSetting = new PLRecordSetting();
+recordSetting.setMaxRecordDuration(10*1000); // 10s
+recordSetting.setVideoCacheDir("/sdcard");
+recordSetting.setVideoFilepath("/sdcard/audio_record.m4a");
+```
+
+### 6.8.3 配置录制参数
+
+通过 `prepare` 把录制所选择的参数配置到 SDK 中：
+
+```Java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+  mShortAudioRecorder.prepare(this, microphoneSetting,
+                audioEncodeSetting, recordSetting);
+}
+```
+
+### 6.8.4 生命周期
+
+请在 `Activity` 的各个生命周期的回调中，分别调用 `PLShortAudioRecorder` 对应的方法：
+
+```java
+@Override
+protected void onResume() {
+    super.onResume();
+    mShortAudioRecorder.resume();
+}
+
+@Override
+protected void onPause() {
+    super.onPause();
+    mShortAudioRecorder.pause();
+}
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    mShortAudioRecorder.destroy();
+}
+```
+
+### 6.8.5 断点拍摄和保存
+
+基本的配置完成以后，就可以开始断点拍摄了。
+
+```java
+// 开始一段音频
+PLShortAudioRecorder.beginSection();
+// 结束一段音频
+PLShortAudioRecorder.endSection();
+// 回删上一段音频
+PLShortAudioRecorder.deleteLastSection();
+// 回删所有录制的音频
+PLShortAudioRecorder.deleteAllSections();
+// 合成和保存所有的音频片段
+PLShortAudioRecorder.concatSections();
+```
+
+<a id="7"></a>
+## 6.9 制作过场字幕
+
+### 6.9.1 创建过场字幕制作对象
+```java
+// 编码配置，用于设置生成的视频文件的编码参数
+PLVideoEncodeSetting setting = new PLVideoEncodeSetting(this);
+setting.setEncodingSizeLevel(VIDEO_ENCODING_SIZE_LEVEL.VIDEO_ENCODING_SIZE_LEVEL_720P_3);
+setting.setEncodingBitrate(1000 * 1000);
+// 构造函数所需参数为 ViewGroup 和 PLVideoEncodeSetting 对象
+mTransitionMaker = new PLTransitionMaker(mViewGroup, setting);
+```
+### 6.9.2 添加文字
+```java
+// 创建文字控件
+PLTextView title = new PLTextView(mContext);
+// 设置文字内容，颜色，大小等一系列属性
+title.setText("标题");
+title.setPadding(0, 0, 0, 0);
+title.setTextColor(Color.parseColor("#FFCC99"));
+title.setTextSize(14);
+// 添加创建的文字
+mTransitionMaker.addText(title);
+```
+### 6.9.3 添加图片
+```java
+// 创建图片控件
+PLImageView imageView = new PLImageView(mContext);
+// 设置图片内容
+imageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.pink_line));
+// 添加创建的图片
+mTransitionMaker.addText(imageView);
+```
+### 6.9.4 在控件上添加透明度动画
+```java
+// 创建透明度动画，延迟时间为 0, 持续时间为 3000 毫秒，透明度变化从 0 到 1
+PLFadeTransition fadeTransition = new PLFadeTransition(0, 3000, 0, 1);
+// 把创建的透明度动画添加到相应的控件上
+mTransitionMaker.addTransition(title, fadeTransition);
+```
+### 6.9.5 在控件上添加位移动画
+```java
+// 创建位移动画，延迟时间为 0，持续时间为 3000 毫秒，位移变化从 (0,0) 到 (100,100)
+PLPositionTransition positionTransition = new PLPositionTransition(0, 3000, 0, 0, 100, 100);
+// 把创建的位移动画添加到相应的控件上
+mTransitionMaker.addTransition(title, positionTransition);
+```
+### 6.9.6 播放过场动画
+
+播放已添加的过场动画
+
+```java
+mTransitionMaker.play()
+```
+### 6.9.7 保存成 mp4
+```java
+mTransitionMaker.save(dstFilePath, saveListener);
+```
+### 6.9.8 销毁 PLTransitionMaker 对象
+
+使用完之后，一定要调用该方法销毁资源
+
+```java
+mTransitionMaker.destroy();
+```
+
+## 6.10 外部音视频数据导入
+
+### 6.10.1 创建外部音视频录制实例
+```java
+PLExternalMediaRecorder externalMediaRecorder = new PLExternalMediaRecorder(this);
+```
+
+### 6.10.2 获取相关参数对象并配置录制实例
+在导入音频和视频数据之前，需要知道导入的音视频数据的格式。如果导入的视频源为本地 mp4，可根据 PLMediaFile 获取各个参数（详细见 8.5 节）。**一定要确保在 prepare 方法中传入的 PLVideoEncodeSetting 和 PLAudioEncodeSetting 的参数配置和导入的音视频格式一致。**
+
+```java
+// 创建视频编码配置
+PLVideoEncodeSetting videoEncodeSetting = new PLVideoEncodeSetting(this);
+// 设置视频编码尺寸（编码尺寸需要和导入视频的宽高一致）
+videoEncodeSetting.setPreferredEncodingSize(videoWidth, videoHeight);
+// 设置视频编码帧率（编码帧率需要和导入视频的帧率一致）
+videoEncodeSetting.setEncodingFps(videoFrameRate);
+// 设置视频关键帧间隔（I 帧间隔最好和导入视频的间隔一致）
+videoEncodeSetting.setIFrameInterval(interval);
+// 设置视频编码码率（编码码率最好大于或等于导入视频的码率）
+videoEncodeSetting.setEncodingBitrate(videoBitrate);
+
+// 设置音频编码配置
+PLAudioEncodeSetting audioEncodeSetting = new PLAudioEncodeSetting();
+// 设置音频编码采样率（采样率需要和导入的音频采样率一致）
+audioEncodeSetting.setSampleRate(sampleRate);
+// 设置音频声道数（声道数需要和导入的音频声道数一致）
+audioEncodeSetting.setChannels(channels);
+// 设置音频编码码率（编码码率最好大于或等于导入音频的码率）
+audioEncodeSetting.setBitrate(audioBitrate)
+
+PLRecordSetting recordSetting = new PLRecordSetting();
+// 设置生成视频的保存路径
+recordSetting.setVideoFilepath(OUTPUT_VIDEO_PATH);
+// 设置视频的最大时长（单位：ms）
+recordSetting.setMaxRecordDuration(duration);
+
+externalMediaRecorder.prepare(videoEncodeSetting, audioEncodeSetting, recordSetting);
+```
+
+### 6.10.3 启动外部音视频录制实例
+```java
+externalMediaRecorder.start();
+```
+
+### 6.10.3 循环导入音视频原始数据
+其中视频数据支持 I420 格式，音频数据支持 PCM 16 采样位数。**其他数据格式（例如视频宽，高，帧率，音频采样率，声道数等）需要和 prepare 方法传入的配置一致。**
+
+```java
+// 导入视频数据
+externalMediaRecorder.inputVideoFrame(data, width, height, rotation, timestampNs)；
+// 导入音频数据
+externalMediaRecorder.inputAudioFrame(data, size, timestampNs)；
+```
+
+### 6.10.4 停止编码，生成mp4输出文件
+```java
+externalMediaRecorder.stop();
+```
+
+## 6.11 视频合拍
+
+### 6.11.1 创建视频合拍对象
+```java
+PLShortVideoMixRecorder shortVideoMixRecorder = new PLShortVideoMixRecorder(this);
+shortVideoMixRecorder.setRecordStateListener(this);
+```
+
+### 6.11.2 配置采集与合拍参数
+其中，采集参数的配置同视频拍摄的配置方式一致，可参看 6.1.2 内容。以下仅展示合拍参数的配置：
+
+```java
+//样本视频宽高比为 9:16
+float sampleRatio = 9 / 16;
+//固定宽度
+int sampleRectWidth = VIDEO_MIX_ENCODE_WIDTH / 2;
+//高度根据长宽比来计算，防止拉伸
+int sampleRectHeight = (int) (sampleRectWidth / sampleRatio);
+//顶部坐标
+int sampleRectTop = (VIDEO_MIX_ENCODE_HEIGHT - sampleRectHeight) / 2;
+//底部坐标
+int sampleRectBottom = sampleRectTop + sampleRectHeight;
+//样本视频在最后画面的矩形区域
+Rect sampleVideoRect = new Rect(VIDEO_MIX_ENCODE_WIDTH / 2, sampleRectTop, VIDEO_MIX_ENCODE_WIDTH, sampleRectBottom);
+
+//录制视频宽高比为 9:16
+float cameraRatio = 9 / 16;
+//固定宽度
+int cameraRectWidth = VIDEO_MIX_ENCODE_WIDTH / 2;
+//高度根据长宽比来计算，防止拉伸
+int cameraRectHeight = (int) (cameraRectWidth * cameraRatio);
+//顶部坐标
+int cameraRectTop = (VIDEO_MIX_ENCODE_HEIGHT - cameraRectHeight) / 2;
+//底部坐标
+int cameraRectBottom = cameraRectTop + cameraRectHeight;
+//摄像机录制的视频在最后画面的矩形区域
+Rect cameraVideoRect = new Rect(0, cameraRectTop, VIDEO_MIX_ENCODE_WIDTH / 2, cameraRectBottom);
+
+//设置样本视频路径
+String sampleVideoPath = "/sdcard/sample.mp4"
+//设置摄像机录制的片段最后拼接的缓存视频的路径，它用于和样本视频最后进行合成
+String cameraRecodCachePath = "/sdcard/ShortVideo/mix_camera_cache.mp4"
+
+//创建合拍配置
+PLVideoMixSetting mixSetting = new PLVideoMixSetting(cameraVideoRect, sampleVideoRect, sampleVideoPath, cameraRecodCachePath);
+//如果需要指定合拍层级或者样本视频的显示模式，也可以用以下方式来创建合拍配置：
+PLVideoMixSetting mixSetting = new PLVideoMixSetting(cameraVideoRect, sampleVideoRect, sampleVideoPath, sampleDisplayMode, cameraAboveSample, cameraRecodCachePath);
+```
+
+### 6.11.3 创建预览窗口
+拍摄视频和样本视频需要的预览窗口都为 `GLSurfaceView` 或者其派生的类对象，可以配置在 XML 文件中，也可以动态创建。
+
+### 6.11.4 配置录制参数
+通过 `prepare` 把各个参数配置到 SDK 中：
+
+```java
+//mCameraPreview 为拍摄预览窗口（GLSurfaceView），mSamplePreview 为样本预览窗口（GLSurfaceView）
+mMixRecorder.prepare(mCameraPreview, mSamplePreview, mixSetting, mCameraSetting, mMicrophoneSetting, mVideoEncodeSetting, mAudioEncodeSetting, mFaceBeautySetting, mRecordSetting);
+```
+### 6.11.5 音频配置
+当同时开启麦克风采集和样本音频时（PLShortVideoMixRecorder 的 muteMicrophone 和 muteSampleVideo 方法都设置为 false ），SDK 提供两种模式的混音：扬声器模式 (SPEAKERPHONE\_MODE) 和 耳机模式（EARPHONE\_MODE），用户可以通过 PLShortVideoMixRecorder.setAudioMixMode(PLAudioMixMode audioMixMode) 方法来设定。  
+扬声器模式 (SPEAKERPHONE\_MODE) 是把人声和正在播放的样本音频一起通过麦克风采集进来作为最终的音频。  
+耳机模式（EARPHONE\_MODE）是把样本音频解码之后和麦克风采集的音频进行混音。由于麦克风在采集人声的时候，也会把正在播放的样本音频给一起采集进来，所以在这种模式下，推荐用户使用耳机进行录制。由于有混音的操作，所以用户可以设置麦克风采集的声音和样本音频的声量大小。
+
+```java
+//场景一：把样本的音频作为最终的音频
+
+//设置麦克风采集静音
+mMixRecorder.muteMicrophone(true);
+//设置样本视频不静音
+mMixRecorder.muteSampleVideo(false);
+```
+
+```java
+//场景二：把麦克风采集的人声作为最终的音频
+
+//设置麦克风采集静音
+mMixRecorder.muteMicrophone(false);
+//设置样本视频不静音
+mMixRecorder.muteSampleVideo(true);
+```
+
+```java
+//场景三：扬声器模式，把人声和样本音频同时采集进来作为最终的音频
+
+//当麦克风采集和样本视频都不静音时，默认为 SPEAKERPHONE_MODE ，无需单独设置
+//设置麦克风采集不静音
+mMixRecorder.muteMicrophone(false);
+//设置样本视频不静音
+mMixRecorder.muteSampleVideo(false);
+```
+
+```java
+//场景四：耳机模式，通过耳机，只采集到人声，然后和样本音频进行混音作为最终的音频
+
+//设置麦克风采集不静音
+mMixRecorder.muteMicrophone(false);
+//设置样本视频不静音
+mMixRecorder.muteSampleVideo(false);
+//设置为耳机模式
+mMixRecorder.setAudioMixMode(PLAudioMixMode.EARPHONE_MODE);
+//耳机模式下可以设置麦克风采集音量和样本音量
+mMixRecorder.setAudioMixVolume(1.0f,1.0f);
+```
+
+### 6.11.6 生命周期
+PLShortVideoMixRecorder 的生命周期和视频拍摄 PLShortVideoRecorder 的生命周期保持一致，可参看 6.1.5 内容。
+
+### 6.11.7 断点拍摄和保存
+基本的配置完成以后，就可以开始拍摄了。
+
+```java
+// 开始一段视频
+PLShortVideoMixRecorder.beginSection();
+// 结束一段视频
+PLShortVideoMixRecorder.endSection();
+// 回删上一段视频
+PLShortVideoMixRecorder.deleteLastSection();
+// 回删所有录制的视频
+PLShortVideoMixRecorder.deleteAllSections();
+// 生成合拍视频并保存
+PLShortVideoMixRecorder.save();
+```
+
+## 6.12 双视频拼图
+
+### 6.12.1 功能介绍
+双视频拼图是指把两个视频按照设定的展示方式合成为一个视频的功能，可以指定两个视频显示模式，矩形区域，开始播放的时间，上下层级等配置。  
+需要注意的是，提供更好的兼容性和开放性，Android SDK 目前只支持合成操作，而不支持预览，我们把预览的实现放在 demo 层，用的是七牛自研的 [PLDroidPlayer] (https://github.com/pili-engineering/PLDroidPlayer)。用户也可以用其他播放器来实现预览操作，只要保证预览的效果和最后合成的视频效果完全一致即可。  
+另外，虽然此功能在接口上支持超过两个视频的合成，但由于 Android 系统不同机器的能力不同，建议不要同时拼接过多视频。
+
+### 6.12.2 创建视频拼图对象
+```java
+// 创建视频拼图对象，指定最后生成的视频路径和视频时长
+PLShortVideoMixer shortVideoMixer = new PLShortVideoMixer(this, VIDEO_MIX_PATH, MAX_DURATION_MS);
+// 创建视频编码配置
+PLVideoEncodeSetting videoEncodeSetting = new PLVideoEncodeSetting(this);
+videoEncodeSetting.setEncodingSizeLevel(PLVideoEncodeSetting.VIDEO_ENCODING_SIZE_LEVEL.VIDEO_ENCODING_SIZE_LEVEL_480P_1);
+videoEncodeSetting.setEncodingBitrate(2000 * 1000);
+videoEncodeSetting.setHWCodecEnabled(true);
+videoEncodeSetting.setConstFrameRateEnabled(true);
+// 指定编码参数配置
+shortVideoMixer.setVideoEncodeSetting(videoEncodeSetting);
+```
+
+### 6.12.3 创建拼图配置对象
+```java
+// 第一个拼图配置
+videoMixItem1 = new PLVideoMixItem();
+// 设置视频路径
+videoMixItem1.setVideoPath(path);
+// 设置视频的矩形区域 (需要和预览时一致)
+videoMixItem1.setVideoRect(new Rect(0, 240, 480, 480));
+// 设置视频的显示模式
+videoMixItem1.setDisplayMode(PLDisplayMode.FIT);
+// 设置该视频的开始播放时间
+videoMixItem1.setStartTimeMs(0);
+// 设置该视频的声音大小
+videoMixItem1.setVolume(volume);
+
+// 第二个拼图配置
+videoMixItem2 = new PLVideoMixItem();
+// 设置视频路径
+videoMixItem2.setVideoPath(path);
+// 设置视频的矩形区域 (需要和预览时一致)
+videoMixItem2.setVideoRect(new Rect(0, 240, 480, 480));
+// 设置视频的显示模式
+videoMixItem2.setDisplayMode(PLDisplayMode.FIT);
+// 设置该视频的开始播放时间
+videoMixItem2.setStartTimeMs(0);
+// 设置该视频的声音大小
+videoMixItem2.setVolume(volume);
+```
+
+### 6.12.4 开始合成视频
+```java
+// 把创建的 PLVideoMixItem 放入 List
+List<PLVideoMixItem> items = new LinkedList<>();
+items.add(videoMixItem1);
+items.add(videoMixItem2);
+// 开始合成
+shortVideoMixer.mix(items, saveListener)
+```
+
+### 6.12.5 取消合成
+```java
+shortVideoMixer.cancel();
+```
+
+## 6.13 图片合成转场预览
+
+### 6.13.1 创建合成对象
+
+```java
+// 创建图片合成对象
+PLImageComposer mImageComposer = new PLImageComposer(getContext());
+```
+
+### 6.13.2 添加图片
+
+```java
+PLComposeItem item = new PLComposeItem(path);
+// 设置显示时长
+item.setDurationMs(3000);   
+// 设置转场时长
+item.setTransitionTimeMs(1000);
+// 设置转场类型
+item.setTransitionType(PLTransitionType.CIRCLE_CROP);  
+// 添加图片 
+mImageComposer.addItem(item); 
+// 移除图片
+// mImageComposer.removeItem(item);
+```
+
+### 6.13.2 预览
+
+```java
+// 设置预览 SurfaceTexture
+mImageComposer.setPreviewTexture(surfaceTexture);
+// 设置预览 Surface
+// mImageComposer.setPreviewSurface(surface);
+// 设置预览尺寸
+mImageComposer.setPreviewSize(width, height);
+// 设置监听
+mImageComposer.setPreviewListener(new PLImageComposer.PLPreviewListener());
+// 开始停止,预览
+mImageComposer.startPreview();
+mImageComposer.resumePreview();
+mImageComposer.pausePreview();
+mImageComposer.stopPreview();
+// 设置 loop
+mImageComposer.setPreviewLoop(true);
+// seek 到 2 秒
+mImageComposer.seekPreview(2_000);
+```
+
+### 6.13.3 保存视频
+
+```java
+// 保存视频
+PLVideoEncodeSetting setting = new PLVideoEncodeSetting();
+String outputPath = "..../test_image_composition.mp4";
+// 保存视频
+mImageComposer.save(outputPath, setting, new PLVideoSaveListener());
+// 停止保存
+mImageComposer.cancelSave();
+// 释放
+mImageComposer.release();
+```
+
+# 7 SDK 接口设计
+
+<a id="7.1"></a>
+
+## 7.1 核心类
+
+短视频核心类有 9 个，分别是 `PLShortVideoRecorder` 、 `PLScreenRecorder` 、`PLShortVideoEditor` 、 `PLShortVideoTrimmer` 、 `PLShortVideoTranscoder` 、 `PLShortVideoUploader` 、 `PLShortVideoComposer` 、 `PLShortAudioRecorder`、 `PLTransitionMaker`，分别完成音视频的录制、编辑、剪辑、转码、合成与上传工作。
+
+### 7.1.1 PLShortVideoRecorder
+
+`PLShortVideoRecorder` 包含了录制短视频所需要的接口，方法列表如下：
+
+```java
+/**
+ * 构造 PLShortVideoRecorder 对象
+ */
+public PLShortVideoRecorder();
+
+/**
+ * 使 PLShortVideoRecorder 暂停工作，通常在 Activity#onPause 中调用
+ */
+public pause();
+
+/**
+ * 使 PLShortVideoRecorder 恢复工作，通常在 Activity#onResume 中调用
+ */
+public resume();
+
+/**
+ * 销毁 PLShortVideoRecorder 对象，通常在 Activity#onDestroy 中调用
+ * 将删除已录制的片段
+ */
+public destory();
+
+/**
+ * 销毁 PLShortVideoRecorder 对象，通常在 Activity#onDestroy 中调用
+ * @param clearSections 是否删除已录制的片段
+ */
+public destory(boolean clearSections);
+
+/**
+ * Prepare the recorder
+ *
+ * @param glSurfaceView      预览的 GLSurfaceView
+ * @param cameraSetting      PLCameraSetting 对象
+ * @param microphoneSetting  PLMicrophoneSetting 对象
+ * @param videoEncodeSetting PLVideoEncodeSetting 对象
+ * @param audioEncodeSetting PLAudioEncodeSetting 对象
+ * @param faceBeautySetting  PLFaceBeautySetting 对象
+ * @param recordSetting      PLRecordSetting 对象
+ */
+public void prepare(GLSurfaceView glSurfaceView,
+                    PLCameraSetting cameraSetting,
+                    PLMicrophoneSetting microphoneSetting,
+                    PLVideoEncodeSetting videoEncodeSetting,
+                    PLAudioEncodeSetting audioEncodeSetting,
+                    PLFaceBeautySetting faceBeautySetting,
+                    PLRecordSetting recordSetting);
+
+/**
+ * 手动对焦，在 prepare 里设置好的 GLSurfaceView 上指定对焦块大小以及相应的中央坐标
+ * @param 对焦块的宽度
+ * @param 对焦块的高度
+ * @param 对焦块的中央X坐标
+ * @param 对焦块的中央Y坐标
+ */
+public void manualFocus(int focusBlockWidth, int focusBlockHeight, int focusBlockCenterX, int focusBlockCenterY);
+
+/**
+ * 注册相机对焦监听器
+ * @param 对焦监听器
+ */
+public void setFocusListener(PLFocusListener focusListener);
+
+/**
+ * 开始录制片段，需要收到 `onReady` 回调之后执行
+ */
+public boolean beginSection();
+
+/**
+ * 开始录制片段，需要收到 `onReady` 回调之后执行
+ * @param 指定片段文件名
+ */
+public boolean beginSection(String sectionFileName);
+
+/**
+ * 停止录制当前片段
+ */
+public boolean endSection();
+
+/**
+ * 删除上一个录制的片段
+ */
+public boolean deleteLastSection();
+
+/**
+ * 删除所有录制的片段
+ */
+public boolean deleteAllSections();
+
+/**
+ * 合并录制的片段，SDK 将会在缓存目录中临时创建对应文件
+ * @param   用于接收合并回调的 listener
+ */
+public void concatSections(PLVideoSaveListener listener);
+
+/**
+ * 取消进行中的片段合并，会清理已生成的文件
+ */
+public void cancelConcat();
+
+/**
+ * 切换到下一个摄像头
+ */
+public void switchCamera();
+
+/**
+ * 切换到指定摄像头
+ */
+public void switchCamera(PLCameraSetting.CAMERA_FACING_ID facingId);
+
+/**
+ * 设置闪光灯开关
+ */
+public void setFlashEnabled(boolean enabled);
+
+/**
+ * 更新美颜设置
+ * @param 美颜设置对象
+ */
+public final void updateFaceBeautySetting(PLFaceBeautySetting setting);
+
+/**
+ * 注册相机预览监听器
+ * @param 监听器对象
+ */
+public final void setCameraPreviewListener(PLCameraPreviewListener listener);
+
+/**
+ * 注册相机参数选定监听器
+ * @param 监听器对象
+ */
+public final void setCameraParamSelectListener(PLCameraParamSelectListener listener);
+
+/**
+ * 注册自定义美颜、滤镜效果的监听器
+ * @param 监听器对象
+ */
+public final void setVideoFilterListener(PLVideoFilterListener listener);
+
+/**
+ * 注册自定义美颜、滤镜效果的监听器
+ * @param 监听器对象
+ * @param 指定监听器中返回的纹理类型为 OES
+ */
+public final void setVideoFilterListener(PLVideoFilterListener listener, boolean callbackOES);
+
+/**
+ * 设置纹理在以下 2 个地方的旋转角度
+ * 1. 预览
+ * 2. 最终拼接的视频
+ * 注意：不会对从 PLVideoFilterListener 返回的纹理有影响
+ * @param 旋转角度
+ */
+public void setTextureRotation(int rotation);
+
+/**
+ * 注册音频帧监听器
+ * @param 监听器对象
+ */
+public final void setAudioFrameListener(PLAudioFrameListener listener);
+
+/**
+ * 注册录制状态监听器
+ * @param 监听器对象
+ */
+public final void setRecordStateListener(PLRecordStateListener listener);
+
+/**
+ * 获取 SDK 自带的滤镜列表
+ * @return PLBuiltinFilter 数组
+ */
+public PLBuiltinFilter[] getBuiltinFilterList();
+
+/**
+ * 应用 SDK 自带的滤镜
+ * @param 滤镜名，从 getBuiltinFilter 获取
+ */
+public void setBuiltinFilter(String filterName);
+
+/**
+ * 应用 SD 卡中的滤镜
+ * @param 滤镜名，滤镜资源的绝对路径
+ */
+public void setExternalFilter(String filterFilePath);
+
+/**
+ * 截取当前预览一帧，并应用滤镜效果
+ * @param 监听器对象
+  */
+public void captureFrame(PLCaptureFrameListener captureFrameListener);
+
+/**
+ * 截取当前预览一帧
+ * @param 监听器对象
+ * @param 是否应用滤镜效果
+  */
+public void captureFrame(PLCaptureFrameListener captureFrameListener, boolean hasFilter);
+
+/**
+ * 获取当前摄像头的最大曝光补偿值
+ * @return 最大曝光补偿值
+ */
+public int getMaxExposureCompensation();
+
+/**
+ * 获取当前摄像头的最小曝光补偿值
+ * @return 最小曝光补偿值
+ */
+public int getMinExposureCompensation();
+
+/**
+ * 设置曝光补偿值，这个操作将会关闭自动曝光
+ */
+public void setExposureCompensation(int exposureCompensation);
+
+/**
+ * 设置是否开启自动曝光补偿，默认自动开启
+ */
+public void setAutoExposure(boolean enable);
+
+/**
+ * 判断当前是否已开启自动曝光补偿
+ */
+public boolean isAutoExposureEnable();
+
+/**
+ * 设置倍数拍摄，只支持 2 的倍数，或 1/2 的倍数
+ * 例如：2x, 4x, 1/2x, 1/4x
+ * 注意调用过一次 beginSection 后，该方法设置无效
+ * @param 倍数值
+ */
+public void setRecordSpeed(double recordSpeed);
+
+/**
+ * 设置预览画面的缩放值
+ * 调用此方法前，请先调用 getZooms 方法获取有效值
+ * @param 缩放值
+ */
+public void setZoom(float zoom);
+
+/**
+ * 获取有效的缩放值列表
+ * 已由小至大排序
+ * @return 如果该分辨率不支持缩放，则返回 null
+ */
+public List<Float> getZooms();
+
+/**
+ * 设置存储下的音乐文件
+ *
+ * @param 文件路径
+ */
+public void setMusicFile(String filePath);
+
+/**
+ * 设置 Assets 下的音乐文件
+ *
+ * @param AssetFileDescriptor
+ */
+public void setMusicAsset(AssetFileDescriptor afd);
+
+/**
+ * 设置音乐文件播放的起始位置
+ *
+ * @param 起始位置
+ */
+public void setMusicPosition(int position);
+
+/**
+ * 设置背景音乐循环
+ *
+ * @param musicLoop 是否循环
+ */
+public void setMusicLoop(boolean musicLoop);
+
+/**
+ * 获取音乐文件当前的播放位置
+ *
+ * @return 当前播放位置
+ */
+public int getMusicPosition();
+
+/**
+ * 设置预览时是否镜像
+ * @param isMirror 是否镜像
+ */
+public void setMirrorForPreview(boolean isMirror);
+
+/**
+ * 设置编码时是否镜像
+ * @param isMirror 是否镜像
+ */
+public void setMirrorForEncode(boolean isMirror);
+
+/**
+ * 将当前录制的片段与设置项存入草稿箱
+ * @param 草稿标签，不同草稿需要有不同的标签，否则保存时会覆盖相同标签的草稿
+ */
+public boolean saveToDraftBox(String tag);
+
+/**
+ * 恢复草稿
+ * @param glSurfaceView 预览的 view
+ * @param draft 草稿对象
+ */
+public boolean recoverFromDraft(GLSurfaceView glSurfaceView, PLDraft draft);
+
+/**
+ * 设置白平衡模式
+ *
+ * @param whiteBalanceMode 白平衡模式
+ */
+public boolean setWhiteBalanceMode(String whiteBalanceMode) {
+    return mShortVideoCore.setWhiteBalanceMode(whiteBalanceMode);
+}
+
+/**
+ * 获取当前白平衡模式
+ *
+ * @return 白平衡模式
+ */
+public String getWhiteBalanceMode() {
+    return mShortVideoCore.getWhiteBalanceMode();
+}
+
+/**
+ * 获取支持的白平衡模式列表
+ *
+ * @return 白平衡模式列表
+ */
+public List<String> getSupportedWhiteBalanceMode() {
+    return mShortVideoCore.getSupportedWhiteBalanceMode();
+}
+```
+
+### 7.1.2 PLScreenRecorder
+
+`PLScreenRecorder` 包含了屏幕录制所需要的接口，方法列表如下：
+
+```java
+/**
+ * 构造 PLScreenRecorder 对象
+ */
+public PLScreenRecorder(Activity activity)
+
+/**
+ * 配置屏幕录制参数
+ *
+ * @param screenSetting       PLScreenRecorderSetting 对象
+ * @param microphoneSetting   PLMicrophoneSetting 对象
+ */
+public boolean prepare(PLScreenRecorderSetting screenSetting,
+                       PLMicrophoneSetting microphoneSetting);
+
+/**
+ * 1、申请屏幕录制权限
+ */
+public void requestScreenRecord();
+
+/**
+ * 2、获取用户授权信息
+ */
+public boolean onActivityResult(int requestCode, int resultCode, Intent data);
+
+/**
+ * 3、开始屏幕录制
+ */
+public void start();
+
+/**
+ * 4、结束屏幕录制
+ */
+public void stop();
+
+/**
+ * 注册录制状态监听器
+ * @param 监听器对象
+ */
+public void setRecordStateListener(PLScreenRecordStateListener stateListener);
+
+/**
+ * 注册音频帧监听器
+ * @param 监听器对象
+ */
+public void setAudioFrameListener(PLAudioFrameListener listener);
+
+/**
+ * 外部导入音频数据接口
+ * @param buffer        音频 PCM 数据
+ * @param tsInNanoTime  时间戳
+ */
+public void inputAudioFrame(byte[] buffer, long tsInNanoTime);
+
+/**
+ * 是否正在进行录制
+ */
+public boolean isRecording();
+```
+
+### 7.1.3 PLShortVideoEditor
+
+`PLShortVideoEditor` 包含了编辑短视频内容所需要的接口，方法列表如下：
+
+```java
+/**
+ * 构造 PLShortVideoEditor 对象
+ * @GLSurfaceView 用于预览视频的 View
+ * @setting 编辑配置
+ */
+public PLShortVideoEditor(GLSurfaceView view, PLVideoEditSetting setting);
+
+/**
+ * 构造 PLShortVideoEditor 对象, 需通过 setVideoEditSetting 设置编辑配置
+ * @GLSurfaceView 用于预览视频的 View
+ */
+public PLShortVideoEditor(GLSurfaceView view);
+
+/**
+ * 播放视频
+ */
+public void startPlayback();
+
+/**
+ * 播放视频，并添加自定义滤镜效果
+ */
+public void startPlayback(PLVideoFilterListener listener);
+
+/**
+ * 播放视频，并添加自定义滤镜效果，指定监听器中返回的纹理类型为 OES
+ */
+public void startPlayback(PLVideoFilterListener listener, boolean callbackOES);
+
+/**
+ * 恢复播放
+ */
+public void resumePlayback();
+
+/**
+ * 暂停播放
+ */
+public void pausePlayback();
+
+/**
+ * 停止播放
+ */
+public void stopPlayback();
+
+/**
+ * 跳到 msec 处播放
+ */
+public void seekTo(int msec);
+
+/**
+ * 获取当前播放的时间
+ */
+public int getCurrentPosition();
+
+/**
+ * 获取 SDK 自带的滤镜列表
+ * @return PLBuiltinFilter 数组
+ */
+public PLBuiltinFilter[] getBuiltinFilterList();
+
+/**
+ * 应用 SDK 自带的滤镜
+ * @param 滤镜名，从 getBuiltinFilter 获取
+ */
+public void setBuiltinFilter(String filterName);
+
+/**
+ * 应用 SD 卡中的滤镜
+ * @param 滤镜名，滤镜资源的绝对路径
+ */
+public void setExternalFilter(String filterFilePath);
+
+/**
+ * 注册保存视频的监听器
+ * @param 监听器对象
+ */
+public void setVideoSaveListener(PLVideoSaveListener listener);
+
+/**
+ * 注册预览视频播放状态的监听器
+ * @param 监听器对象
+ */
+public void setVideoPlayerListener(PLVideoPlayerListener listener);
+
+/**
+ * 应用水印设置
+ * @param 水印设置变量
+ */
+public void setWatermark(PLWatermarkSetting setting);
+
+/**
+ * 更新预览视频的水印设置变量
+ * @param 水印设置变量
+ */
+public void updatePreviewWatermark(PLWatermarkSetting watermarkSetting);
+
+/**
+ * 更新保存视频的水印设置变量
+ * @param 水印设置变量
+ */
+public void updateSaveWatermark(PLWatermarkSetting watermarkSetting);
+
+/**
+ * 添加 GIF 水印、贴纸
+ * 注意：添加完 GIF 水印之后需要开启预览至少播放一帧才会生效
+ * @param 水印设置变量
+ */
+public void addGifWatermark(PLGifWatermarkSetting watermarkSetting)
+
+/**
+ * 移除 GIF 水印、贴纸
+ * @param 水印设置变量
+ */
+public void removeGifWatermark(PLGifWatermarkSetting watermarkSetting)
+
+/**
+ * 更新 GIF 水印、贴纸的配置
+ * @param 水印设置变量
+ */
+public void updateGifWatermark(PLGifWatermarkSetting watermarkSetting)
+
+/**
+ * 设置视频的旋转角度
+ * 注意：该旋转角度的设置，仅支持 2D 纹理，在播放以及保存时指定纹理类型为 OES 纹理的场景下，该接口不生效
+ * 
+ * @param 旋转角度。仅支持 0、90、180、270
+ */
+public void setRotation(int rotation)
+
+/**
+ * 保存视频
+ */
+public void save();
+
+/**
+ * 保存视频，并添加自定义滤镜效果
+ */
+public void save(PLVideoFilterListener listener);
+
+/**
+ * 保存视频，并添加自定义滤镜效果，指定监听器中返回的纹理类型为 OES
+ */
+public void save(PLVideoFilterListener listener, boolean callbackOES);
+
+/**
+ * 取消进行中的视频保存，会清理已生成的文件
+ */
+public void cancelSave();
+
+/**
+ * 设置混音文件（本地音频文件）
+ * @param file 混音文件
+ */
+public void setAudioMixFile(String file);
+
+/**
+ * 设置混音文件（assets 下的音频文件）
+ * @param afd 混音文件
+ */
+public void setAudioMixAsset(AssetFileDescriptor afd);
+
+/**
+ * 设置混音起始和结束时间位置，单位为 Ms
+ *
+ * @param startTime 起始时间
+ * @param endTime 结束时间
+ */
+public void setAudioMixFileRange(long startTime, long endTime);
+
+/**
+ * 设置原音（前景）和混音（背景）音量
+ *
+ * @param fgVolume 原音音量
+ * @param bgVolume 混音音量
+ */
+public void setAudioMixVolume(float fgVolume, float bgVolume);
+
+/**
+ * 设置是否循环混音文件
+ * @param isLooping 是否循环
+ */
+public void setAudioMixLooping(boolean isLooping);
+
+/**
+ * 原音消除
+ * @param isMute 是否消除原音
+ */
+public void muteOriginAudio(boolean isMute);
+
+/**
+ * 增加文字特效
+ *
+ * @param textView 文字特效控件
+ */
+public void addTextView(PLTextView textView);
+
+/**
+ * 删除文字特效
+ *
+ * @param textView 文字特效控件
+ */
+public void removeTextView(PLTextView textView);
+
+/**
+ * 添加 MV 特效
+ *
+ * @param MV视频文件路径
+ * @param 蒙版文件路径
+ */
+public void setMVEffect(String mvFilePath, String maskFilePath);
+
+/**
+ * 设置变速，只支持 2 的倍数，或 1/2 的倍数
+ * 例如：2x, 4x, 1/2x, 1/4x
+ * @param 倍数值
+ */
+public void setSpeed(double speed);
+
+/**
+ * 分段设置速度，无法和 setSpeed 同用，即如果调用了该方法，则 setSpeed 方法无效
+ * 注：分段变速会导致最后生成的视频的 FPS 不一致，对于恒定速度的场景，请优先选用 setSpeed 进行变速
+ * @param speedTimeRanges 视频各个时间段的速度设定
+ */
+public void setSpeedTimeRanges(List<PLSpeedTimeRange> speedTimeRanges);
+
+/**
+ * 添加涂鸦
+ *
+ * @param paintView 涂鸦控件
+ */
+public void addPaintView(PLPaintView paintView);
+
+/**
+ * 删除涂鸦
+ *
+ * @param paintView 涂鸦控件
+ */
+public void removePaintView(PLPaintView paintView);
+
+/**
+ * 添加贴图
+ *
+ * @param imageView 贴图控件
+ */
+public void addImageView(PLImageView imageView);
+
+/**
+ * 删除贴图
+ *
+ * @param imageView 贴图控件
+ */
+public void removeImageView(PLImageView imageView);
+
+/**
+ * 添加自定义视图
+ *
+ * @param view 自定义控件
+ */
+public void addView(View view);
+
+/**
+ * 删除自定义视图
+ *
+ * @param view 自定义控件
+ */
+public void removeView(View view);
+
+/**
+ * 指定特效的时间范围（文字特效，贴图和涂鸦），单位为 Ms
+ *
+ * @param view        特效控件（PLTextView, PLImageView 或者 PLPaintView）
+ * @param beginMs     起始时间戳
+ * @param durationMs  特效持续时间
+ */
+ public void setViewTimeline(View view, long beginMs, long durationMs);
+
+/**
+ * 指定视频编码设置
+ *
+ * @param videoEncodeSetting 视频编码设置
+ */
+public void setVideoEncodeSetting(PLVideoEncodeSetting videoEncodeSetting);
+
+/**
+ * 设置是否循环播放
+ *
+ * @param 是否循环播放
+ */
+public void setPlaybackLoop(boolean loop);
+
+/**
+ * 指定视频的时间范围
+ *
+ * @param beginMs 起始时间戳
+ * @param endMs   结束时间戳
+ */
+ public void setVideoRange(long beginMs, long endMs);
+
+/**
+ * 设置当前视频的编辑配置
+ *
+ * @param videoEditSetting 视频编辑配置
+ */
+ public void setVideoEditSetting(PLVideoEditSetting videoEditSetting)
+
+/**
+ * 设置播放视频的显示模式
+ *
+ * @param 显示模式，可为 FIT、FULL、KEEP
+ */
+public void setDisplayMode(PLDisplayMode displayMode);
+```
+
+### 7.1.4 PLShortVideoTrimmer
+
+`PLShortVideoTrimmer` 包含了视频剪辑相关的接口
+
+```java
+/**
+ * 构造 PLShortVideoTrimmer 对象
+ * @param context 上下文对象
+ * @param srcFilePath 源视频文件路径
+ * @param dstFilePath 目标视频文件路径
+ */
+public PLShortVideoTrimmer(Context context, String srcFilePath, String dstFilePath);
+
+/**
+ * 剪辑源视频中的 [beginMs-endMs] 部分
+ * @param beginMs 起始时间戳
+ * @param endMs 结束时间戳
+ * @param saveListener 剪辑结果监听器
+ * @note beginMs 和 endMs 可参考 从 getKeyFrame() 返回的 PLVideoFrame 中的时间戳
+ */
+public void trim(long beginMs, long endMs, PLVideoSaveListener saveListener);
+
+/**
+ * 剪辑源视频中的 [beginMs-endMs] 部分
+ * @param beginMs 起始时间戳
+ * @param endMs 结束时间戳
+ * @param mode 剪辑模式，可设置为快速模式（TRIM_MODE.FAST）和精准模式 (TRIM_MODE.ACCURATE), 默认为精准模式
+ * @param saveListener 剪辑结果监听器
+ * @note beginMs 和 endMs 可参考 从 getKeyFrame() 返回的 PLVideoFrame 中的时间戳
+ */
+public void trim(long beginMs, long endMs, TRIM_MODE mode, PLVideoSaveListener saveListener);
+
+/**
+ * 取消进行中的视频剪辑，会清理已生成的文件
+ */
+public void cancelTrim();
+
+/**
+ * 设置剪辑后视频的速度，仅在精确模式 (TRIM_MODE.ACCURATE) 下有效，支持 2 的倍数，或 1/2 的倍数
+ * 例如：2x, 4x, 1/2x, 1/4x
+ * @param speed 倍数值
+ */
+public void setSpeed(double speed);
+
+/**
+ * 获取源视频时长，单位为 Ms
+ * @return 源视频时长
+ * @deprecated 该方法已被 PLMediaFile 的 getDurationMs() 所取代
+ */
+@Deprecated
+public long getSrcDurationMs();
+
+/**
+ * 获取源视频的视频帧总数
+ * @param keyFrame 是否限定返回关键帧总数
+ * @return 源视频视频帧总数
+ * @deprecated 该方法已被 PLMediaFile 的 getVideoFrameCount(boolean keyFrame) 所取代
+ */
+@Deprecated
+public int getVideoFrameCount(boolean keyFrame);
+
+/**
+ * 获取源视频指定时间戳的视频帧
+ * @param timeMs 指定的时间戳
+ * @param keyFrame 是否限定返回关键帧
+ * @return 指定时间戳的视频帧
+ * @deprecated 该方法已被 PLMediaFile 的 getVideoFrameByTime(long timeMs, boolean keyFrame) 所取代
+ */
+@Deprecated
+public PLVideoFrame getVideoFrameByTime(long timeMs, boolean keyFrame);
+
+/**
+ * 获取源视频指定索引的视频帧
+ * @param index 指定的索引
+ * @param keyFrame 是否限定返回关键帧
+ * @return 指定索引的视频帧
+ * @deprecated 该方法已被 PLMediaFile 的 getVideoFrameByIndex(int index, boolean keyFrame) 所取代
+ */
+@Deprecated
+public PLVideoFrame getVideoFrameByIndex(int index, boolean keyFrame);
+
+/**
+ * 获取源视频指定时间戳的视频帧，并缩放裁剪到指定宽高。
+ * @param timeMs 指定的时间戳
+ * @param keyFrame 是否限定返回关键帧
+ * @param outputWidth 输出宽度
+ * @param outputHeight 输出宽度
+ * @return 指定时间戳的视频帧
+ * @deprecated 该方法已被 PLMediaFile 的 getVideoFrameByTime(long timeMs, boolean keyFrame, int outputWidth, int outputHeight) 所取代
+ */
+@Deprecated
+public PLVideoFrame getVideoFrameByTime(long timeMs, boolean keyFrame, int outputWidth, int outputHeight);
+
+/**
+ * 获取源视频指定索引的视频帧，并缩放裁剪到指定宽高。
+ * @param index 指定的索引
+ * @param keyFrame 是否限定返回关键帧
+ * @param outputWidth 输出宽度
+ * @param outputHeight 输出宽度
+ * @return 指定索引的视频帧
+ * @deprecated 该方法已被 PLMediaFile 的 getVideoFrameByIndex(int index, boolean keyFrame, int outputWidth, int outputHeight) 所取代
+ */
+@Deprecated
+public PLVideoFrame getVideoFrameByIndex(int index, boolean keyFrame, int outputWidth, int outputHeight);
+
+/**
+ * 在使用完毕后，请调用该方法销毁资源
+ */
+public void destroy();
+```
+
+### 7.1.5 PLShortVideoTranscoder
+
+`PLShortVideoTranscoder` 包含了视频转码相关的接口，转码后的视频文件都将不带旋转信息
+
+```java
+/**
+ * 构造 PLShortVideoTranscoder 对象
+ * @param context 上下文
+ * @param srcFilePath 源视频文件路径
+ * @param dstFilePath 目标视频文件路径
+ */
+public PLShortVideoTranscoder(Context context, String srcFilePath, String dstFilePath)
+
+/**
+ * 转码到指定的宽度，高度，码率
+ * @param dstWidth 目标宽度
+ * @param dstHeight 目标高度
+ * @param dstBitrate 目标码率
+ * @param saveListener 转码结果监听器
+ * @return 是否开始成功
+ */
+public boolean transcode(int dstWidth, int dstHeight, int dstBitrate, PLVideoSaveListener saveListener)
+
+/**
+ * 转码到指定的宽度，高度，码率
+ * @param dstWidth 目标宽度
+ * @param dstHeight 目标高度
+ * @param dstBitrate 目标码率
+ * @param reverse 是否进行时光倒流（视频倒置）
+ * @param saveListener 转码结果监听器
+ * @return 是否开始成功
+ */
+public boolean transcode(int dstWidth, int dstHeight, int dstBitrate, boolean reverse, PLVideoSaveListener saveListener)
+
+/**
+ * 转码到指定的宽度，高度，码率
+ * @param dstWidth 目标宽度
+ * @param dstHeight 目标高度
+ * @param dstBitrate 目标码率
+ * @param rotateBy 在源视频的基础上旋转某些角度, 可设置为 0, (-)90, (-)180, (-)270
+ * @param reverse 是否进行时光倒流（视频倒置）
+ * @param saveListener 转码结果监听器
+ * @return 是否开始成功
+ */
+public boolean transcode(int dstWidth, int dstHeight, int dstBitrate, int rotateBy, boolean reverse, PLVideoSaveListener saveListener)
+
+/**
+ * 指定转码输出文件的帧率上限
+ *
+ * @param maxFrameRate 指定的帧率上限值
+ */
+public void setMaxFrameRate(int maxFrameRate)
+
+/**
+ * 指定裁剪区域的位置和面积
+ * NOTE: 如存在旋转，则应依据旋转后的图像决定裁剪位置和面积
+ *
+ * @param x 裁剪区域左上角横坐标
+ * @param y 裁剪区域左上角纵坐标
+ * @param width 裁剪区域宽度
+ * @param height 裁剪区域高度
+ */
+public void setClipArea(int x, int y, int width, int height)
+
+/**
+ * 取消进行中的视频转码，会清理已生成的文件
+ */
+public void cancelTranscode()
+
+/**
+ * 设置转码水印
+ *
+ * @param watermarkSetting 水印设置
+ */
+public void setWatermark(PLWatermarkSetting watermarkSetting)
+
+/**
+ * 设置转码目标文件的 ProfileMode
+ * 
+ * @param profileMode 目标文件的 ProfileMode
+ */
+public void setProfileMode(PLVideoEncodeSetting.ProfileMode profileMode)
+
+/**
+ * 设置转码使用的码率模式
+ *
+ * @param bitrateMode 码率模式
+ */
+public void setBitrateMode(PLVideoEncodeSetting.BitrateMode bitrateMode)
+
+/**
+ * 设置混音文件
+ * 
+ * @param mixAudioFile 混音文件路径
+ * @param startMs 视频中开始混音的时间
+ * @param endMs 视频中结束混音的时间
+ * @param looping 是否循环混音
+ */
+public void setMixAudioFile(String mixAudioFile, long startMs, long endMs, boolean looping)
+
+/**
+ * 设置时间范围
+ *
+ * @param beginMs 开始的时间点
+ * @param endMs 结束的时间点
+ */
+public void setTimeRange(long beginMs, long endMs)
+
+/**
+ * 设置画面填充模式
+ * @param 画面填充模式
+ */
+public void setDisplayMode(PLDisplayMode displayMode)
+
+/**
+ * 设置是否使用硬件编码器，默认为使用，关闭后则使用软件编码器
+ * @param 是否使用硬件编码器
+ */
+public void setHWEncodeEnable(boolean enable)
+
+/**
+ * 获取源视频时长，单位为 Ms
+ * @return 源视频时长
+ * @deprecated 该方法已被 PLMediaFile 的 getDurationMs() 所取代
+ */
+@Deprecated
+public long getSrcDurationMs();
+
+/**
+ * 获取源视频宽度
+ * @return 源视频宽度
+ * @deprecated 该方法已被 PLMediaFile 的 getVideoWidth() 所取代
+ */
+@Deprecated
+public int getSrcWidth();
+
+/**
+ * 获取源视频高度
+ * @return 源视频高度
+ * @deprecated 该方法已被 PLMediaFile 的 getVideoHeight() 所取代
+ */
+@Deprecated
+public int getSrcHeight();
+
+/**
+ * 获取源视频码率
+ * @return 源视频码率
+ * @deprecated 该方法已被 PLMediaFile 的 getVideoBitrate() 所取代
+ */
+@Deprecated
+public int getSrcBitrate();
+```
+
+### 7.1.6 PLShortVideoUploader
+
+`PLShortVideoUploader` 包含了视频上传的接口，方法列表如下：
+
+```java
+/**
+ * 构造 PLShortVideoUploader 对象
+ * @param context Android 上下文对象
+ * @param uploadSetting 上传配置
+ */
+public PLShortVideoUploader(Context context, PLUploadSetting uploadSetting)
+
+/**
+ * 开始上传 默认返回文件的哈希值作为 key
+ * @filePath 上传的文件路径
+ * @token 上传的鉴权信息
+ */
+public void startUpload(String filePath, String token)
+
+/**
+ * 上传
+ * @filepath 即将上传的文件的路径
+ * @key 指定上传后的 key 值
+ * @token 上传的凭证，客户端在上传前，需要先从服务端获取上传凭证
+ */
+ public void startUpload(String filePath, String key, String token)
+
+/**
+ * 取消上传
+ */
+public void cancelUpload()
+
+/**
+ * 注册上传结果的监听器
+ * @param 监听器对象
+ */
+public void setUploadResultListener(PLUploadResultListener listener)
+
+/**
+ * 注册上传进度的监听器
+ * @param 监听器对象
+ */
+public void setUploadProgressListener(PLUploadProgressListener listener)
+```
+
+### 7.1.7 PLShortVideoComposer
+
+`PLShortVideoComposer` 包含了视频组合的接口，方法列表如下：
+
+```java
+/**
+ * 将一系列图像转换为 gif
+ * @param frames 图像的 bitmap 数据列表
+ * @param delayTimeMs gif 里每张图显示的时间
+ * @param isLoop gif 是否循环播放
+ * @param outputPath 保存路径
+ * @param listener 监听器对象
+ */
+public void composeToGIF(List<Bitmap> frames, int delayTimeMs, boolean isLoop, String outputPath, PLVideoSaveListener listener);
+
+ /**
+  * 从视频导出 gif 动图
+  *
+  * @param inputPath     输入视频文件;
+  * @param startTimeMs   起始时间;
+  * @param endTimeMs     截止时间;
+  * @param pictureCount  总帧数;
+  * @param width         输出图像宽度
+  * @param height        输出图像高度；
+  * @param isLoop        是否循环；
+  * @param outputPath    输出 gif 文件;
+  * @param listener      监听器对象
+  */
+public void extractVideoToGIF(final String inputPath, final long startTimeMs, final long endTimeMs, final int pictureCount, final int width, final int height, final boolean isLoop, final String outputPath, final PLVideoSaveListener listener);
+
+/**
+ * 取消进行中的 gif 合成任务
+ */
+public void cancelComposeToGIF();
+
+/**
+ * 顺序拼接多个 mp4 视频文件
+ *
+ * @param srcVideos    源视频文件列表
+ * @param dstVideoPath 输出的视频文件路径
+ * @param setting      输出的视频文件编码参数
+ * @param listener     监听器对象
+ * @return 是否开始成功
+ */
+public boolean composeVideos(List<String> srcVideos, String dstVideoPath, PLVideoEncodeSetting setting, PLVideoSaveListener listener);
+
+/**
+ * 顺序拼接多个 mp4 视频文件，并指定内容的缩放模式
+ *
+ * @param srcVideos    源视频文件列表
+ * @param dstVideoPath 输出的视频文件路径
+ * @param displayMode  内容缩放模式
+ * @param setting      输出的视频文件编码参数
+ * @param listener     监听器对象
+ * @return 是否开始成功
+ */
+public boolean composeVideos(List<String> srcVideos, String dstVideoPath, PLDisplayMode displayMode, PLVideoEncodeSetting setting, PLVideoSaveListener listener)
+
+/**
+ * 顺序拼接多个 mp4 视频文件，并且指定每段视频文件的范围
+ *
+ * @param videoRanges  源视频文件范围配置列表
+ * @param dstVideoPath 输出的视频文件路径
+ * @param setting      输出的视频文件编码参数
+ * @param listener     监听器对象
+ * @return 是否开始成功
+ */
+public boolean composeVideoRanges(List<PLVideoRange> videoRanges, String dstVideoPath, PLVideoEncodeSetting setting, PLVideoSaveListener listener);
+
+/**
+ * 顺序拼接多个 mp4 视频文件，并且指定每段视频文件的范围和内容缩放模式
+ *
+ * @param videoRanges  源视频文件范围配置列表
+ * @param dstVideoPath 输出的视频文件路径
+ * @param displayMode  内容缩放模式
+ * @param setting      输出的视频文件编码参数
+ * @param listener     监听器对象
+ * @return 是否开始成功
+ */
+public boolean composeVideoRanges(List<PLVideoRange> videoRanges, String dstVideoPath, PLDisplayMode displayMode, PLVideoEncodeSetting setting, PLVideoSaveListener listener)
+
+/**
+ * 取消进行中的视频拼接
+ */
+public void cancelComposeVideos();
+
+/**
+* 合成多张图片为 mp4 视频文件
+*
+* @param items        图片的配置列表
+* @param dstVideoPath 输出的视频文件路径
+* @param setting      输出的视频文件编码参数
+* @param listener     监听器对象
+* @return 是否开始成功
+*/
+public boolean composeImages(List<PLComposeItem> items, String dstVideoPath, PLVideoEncodeSetting setting, PLVideoSaveListener listener);
+
+/**
+* 把多张图片和一个音频文件合成为一个 mp4 视频文件
+*
+* @param items        图片的配置列表
+* @param srcAudioPath 输入的音频文件路径
+* @param isAudioLoop  是否循环背景音乐
+* @param dstVideoPath 输出的视频文件路径
+* @param setting      输出的视频文件编码参数
+* @param listener     监听器对象
+* @return 是否开始成功
+*/
+public boolean composeImages(List<PLComposeItem> items, String srcAudioPath, boolean isAudioLoop, String dstVideoPath, PLVideoEncodeSetting setting, PLVideoSaveListener listener);
+
+/**
+* 把多张图片和一个音频文件合成为一个 mp4 视频文件，并指定图片展示模式
+*
+* @param items        图片的配置列表
+* @param srcAudioPath 输入的音频文件路径
+* @param isAudioLoop  是否循环背景音乐
+* @param dstVideoPath 输出的视频文件路径
+* @param displayMode  图片的展示模式，可为 FIT、FULL、KEEP
+* @param setting      输出的视频文件编码参数
+* @param listener     监听器对象
+* @return 是否开始成功
+*/
+public boolean composeImages(List<PLComposeItem> items, String srcAudioPath, boolean isAudioLoop, String dstVideoPath, PLDisplayMode displayMode, PLVideoEncodeSetting setting, PLVideoSaveListener listener);
+
+/**
+* 取消进行中的图片合成
+*/
+public void cancelComposeImages();
+
+/**
+ * 把多个图片，视频或 GIF 合成为一个 mp4 视频文件
+ *
+ * @param items         拼接的配置列表
+ * @param destVideoPath 输出的视频文件路径
+ * @param setting       输出的视频文件编码参数
+ * @param listener      监听器对象
+ * @return 是否开始成功
+ */
+public boolean composeItems(List<PLComposeItem> items, String destVideoPath, PLVideoEncodeSetting setting, PLVideoSaveListener listener);
+
+/**
+ * 把多个图片，视频或 GIF 和一个音频文件合成为一个 mp4 视频文件
+ *
+ * @param items         拼接的配置列表
+ * @param destVideoPath 输出的视频文件路径
+ * @param setting       输出的视频文件编码参数
+ * @param mixFilePath   输入的音频文件路径 (需要混音的文件)
+ * @param fgVolume      原音音量
+ * @param bgVolume      混音音量
+ * @param listener      监听器对象
+ * @return 是否开始成功
+ */
+public boolean composeItems(List<PLComposeItem> items, String destVideoPath, PLVideoEncodeSetting setting, String mixFilePath, float fgVolume, float bgVolume, PLVideoSaveListener listener)；
+
+/**
+ * 把多个图片，视频或 GIF 和一个音频文件合成为一个 mp4 视频文件，并指定内容的缩放模式
+ *
+ * @param items         拼接的配置列表
+ * @param destVideoPath 输出的视频文件路径
+ * @param setting       输出的视频文件编码参数
+ * @param mixFilePath   输入的音频文件路径 (需要混音的文件)
+ * @param fgVolume      原音音量
+ * @param bgVolume      混音音量
+ * @param displayMode   内容的缩放模式
+ * @param listener      监听器对象
+ * @return 是否开始成功
+ */
+public boolean composeItems(List<PLComposeItem> items, String destVideoPath, PLVideoEncodeSetting setting, String mixFilePath, float fgVolume, float bgVolume, PLDisplayMode displayMode, PLVideoSaveListener listener)
+
+/**
+ * 取消进行中的合成.
+ */
+public void cancelComposeItems();
+```
+
+### 7.1.8 PLShortAudioRecorder
+
+`PLShortAudioRecorder` 包含了录制纯音频所需要的接口，方法列表如下：
+
+```java
+/**
+ * 构造 PLShortAudioRecorder 对象
+ */
+public PLShortAudioRecorder();
+
+/**
+ * 使 PLShortAudioRecorder 暂停工作，通常在 Activity#onPause 中调用
+ */
+public pause();
+
+/**
+ * 使 PLShortAudioRecorder 恢复工作，通常在 Activity#onResume 中调用
+ */
+public resume();
+
+/**
+ * 销毁 PLShortAudioRecorder 对象，通常在 Activity#onDestroy 中调用
+ * 将删除已录制的片段
+ */
+public destory();
+
+/**
+ * 销毁 PLShortAudioRecorder 对象，通常在 Activity#onDestroy 中调用
+ * @param clearSections 是否删除已录制的片段
+ */
+public destory(boolean clearSections);
+
+/**
+ * Prepare the recorder
+ *
+ * @param context            Context 对象
+ * @param microphoneSetting  PLMicrophoneSetting 对象
+ * @param audioEncodeSetting PLAudioEncodeSetting 对象
+ * @param recordSetting      PLRecordSetting 对象
+ */
+public void prepare(Context context,
+                    PLMicrophoneSetting microphoneSetting,
+                    PLAudioEncodeSetting audioEncodeSetting,
+                    PLRecordSetting recordSetting);
+
+/**
+ * 开始录制音频片段，需要收到 `onReady` 回调之后执行
+ */
+public boolean beginSection();
+
+/**
+ * 开始录制音频片段，需要收到 `onReady` 回调之后执行
+ * @param 指定片段文件名
+ */
+public boolean beginSection(String sectionFileName);
+
+/**
+ * 停止录制当前音频片段
+ */
+public boolean endSection();
+
+/**
+ * 删除上一个录制的音频片段
+ */
+public boolean deleteLastSection();
+
+/**
+ * 删除所有录制的音频片段
+ */
+public boolean deleteAllSections();
+
+/**
+ * 合并录制的音频片段，SDK 将会在缓存目录中临时创建对应文件
+ * @param   用于接收合并回调的 listener
+ */
+public void concatSections(PLVideoSaveListener listener);
+
+/**
+ * 取消进行中的音频片段合并，会清理已生成的文件
+ */
+public void cancelConcat();
+
+/**
+ * 注册音频帧监听器
+ * @param 监听器对象
+ */
+public final void setAudioFrameListener(PLAudioFrameListener listener);
+
+/**
+ * 注册录制状态监听器
+ * @param 监听器对象
+ */
+public final void setRecordStateListener(PLRecordStateListener listener);
+
+/**
+ * 将当前录制的片段与设置项存入草稿箱
+ * @param 草稿标签，不同草稿需要有不同的标签，否则保存时会覆盖相同标签的草稿
+ */
+public boolean saveToDraftBox(String tag) {
+    return mShortAudioRecorderCore.saveToDraftBox(tag);
+}
+
+/**
+ * 从草稿恢复
+ * @param context context 对象
+ * @param draft 草稿对象
+ */
+public boolean recoverFromDraft(Context context, PLDraft draft);
+```
+### 7.1.9 PLTransitionMaker
+
+`PLTransitionMaker` 包含了制作过场字幕所需要的接口，方法列表如下：
+
+```java
+/**
+ * 构造 PLTransitionMaker 对象
+ * @param viewGroup ViewGroup 对象
+ * @param setting   PLVideoEncodeSetting 对象
+ */
+public PLTransitionMaker(ViewGroup viewGroup, PLVideoEncodeSetting setting);
+
+/**
+ * 设置过场字幕的背景颜色
+ * @param color 背景颜色
+ */
+public setBackgroundColor(int color);
+
+/**
+ * 设置过场字幕的持续时间
+ * @param durationMs 持续时间
+ */
+public void setDuration(int durationMs);
+
+/**
+ * 添加文字控件
+ * @param textView 文字控件
+ */
+public void addText(PLTextView textView);
+
+/**
+ * 添加图片控件
+ * @param imageView 图片控件
+ */
+public addImage(PLImageView imageView);
+
+/**
+ * 在文字控件上添加一个过场动画
+ * @param textView   文字控件
+ * @param transition 所添加的过场动画
+ */
+public void addTransition(PLTextView textView, PLTransition transition);
+
+/**
+ * 在图片控件上添加一个过场动画
+ * @param imageView  图片控件
+ * @param transition 所添加的过场动画
+ */
+public void addTransition(PLImageView imageView, PLTransition transition);
+
+/**
+ * 播放过场动画
+ */
+public void play();
+
+/**
+ * 停止播放动画
+ */
+public void stop();
+
+/**
+ * 保存过场字幕为 mp4
+ * @param dstFilePath  目标视频文件路径
+ * @param saveListener 保存结果监听器
+ */
+public void save(String dstFilePath, PLVideoSaveListener saveListener);
+
+/**
+ * 取消保存
+ */
+public void cancelSave()
+
+/**
+ * 删除所有已添加的控件和过场动画
+ */
+public void removeAllResource();
+
+/**
+ * 在使用完毕后，请调用该方法销毁资源
+ */
+public void destroy();
+
+```
+### 7.1.10 PLViewRecorder
+
+`PLViewRecorder` 包含了 View 录制所需要的接口，方法列表如下：
+
+```java
+/**
+ * 构造 PLViewRecorder 对象
+ */
+public PLViewRecorder();
+
+/**
+ * 使 PLViewRecorder 暂停工作，通常在 Activity#onPause 中调用
+ */
+public pause();
+
+/**
+ * 使 PLViewRecorder 恢复工作，通常在 Activity#onResume 中调用
+ */
+public resume();
+
+/**
+ * 销毁 PLViewRecorder 对象，通常在 Activity#onDestroy 中调用
+ * 将删除已录制的片段
+ */
+public destory();
+
+/**
+ * 销毁 PLViewRecorder 对象，通常在 Activity#onDestroy 中调用
+ * @param clearSections 是否删除已录制的片段
+ */
+public destory(boolean clearSections);
+
+/**
+ * Prepare the recorder
+ *
+ * @param view               需要录制的 View
+ * @param microphoneSetting  PLMicrophoneSetting 对象
+ * @param videoEncodeSetting PLVideoEncodeSetting 对象
+ * @param audioEncodeSetting PLAudioEncodeSetting 对象
+ * @param recordSetting      PLRecordSetting 对象
+ */
+public void prepare(View view,
+                    PLMicrophoneSetting microphoneSetting,
+                    PLVideoEncodeSetting videoEncodeSetting,
+                    PLAudioEncodeSetting audioEncodeSetting,
+                    PLRecordSetting recordSetting);
+
+/**
+ * 开始录制片段，需要收到 `onReady` 回调之后执行
+ */
+public boolean beginSection();
+
+/**
+ * 开始录制片段，需要收到 `onReady` 回调之后执行
+ * @param 指定片段文件名
+ */
+public boolean beginSection(String sectionFileName);
+
+/**
+ * 停止录制当前片段
+ */
+public boolean endSection();
+
+/**
+ * 删除上一个录制的片段
+ */
+public boolean deleteLastSection();
+
+/**
+ * 删除所有录制的片段
+ */
+public boolean deleteAllSections();
+
+/**
+ * 合并录制的片段，SDK 将会在缓存目录中临时创建对应文件
+ * @param   用于接收合并回调的 listener
+ */
+public void concatSections(PLVideoSaveListener listener);
+
+/**
+ * 取消进行中的片段合并，会清理已生成的文件
+ */
+public void cancelConcat();
+
+/**
+ * 注册音频帧监听器
+ * @param 监听器对象
+ */
+public final void setAudioFrameListener(PLAudioFrameListener listener);
+
+/**
+ * 注册录制状态监听器
+ * @param 监听器对象
+ */
+public final void setRecordStateListener(PLRecordStateListener listener);
+
+/**
+ * 设置倍数拍摄，只支持 2 的倍数，或 1/2 的倍数
+ * 例如：2x, 4x, 1/2x, 1/4x
+ * 注意调用过一次 beginSection 后，该方法设置无效
+ * @param 倍数值
+ */
+public void setRecordSpeed(double recordSpeed);
+
+/**
+ * 设置存储下的音乐文件
+ *
+ * @param 文件路径
+ */
+public void setMusicFile(String filePath);
+
+/**
+ * 设置 Assets 下的音乐文件
+ *
+ * @param AssetFileDescriptor
+ */
+public void setMusicAsset(AssetFileDescriptor afd);
+
+/**
+ * 设置音乐文件播放的起始位置
+ *
+ * @param 起始位置
+ */
+ public void setMusicPosition(int position);
+
+/**
+ * 获取音乐文件当前的播放位置
+ *
+ * @return 当前播放位置
+ */
+public int getMusicPosition();
+
+/**
+ * 是否消除麦克风采集的声音
+ *
+ * @param 是否消除声音
+ */
+public void mute(boolean isMute);
+
+```
+
+### 7.1.11 PLExternalMediaRecorder
+`PLExternalMediaRecorder` 包含了外部音视频导入所需要的接口，方法列表如下：
+```java
+/**
+ * 构造 PLExternalMediaRecorder 对象
+ */
+public PLExternalMediaRecorder(Context context);
+
+/**
+ * 初始化 PLExternalMediaRecorder 对象
+ *
+ * @param videoEncodeSetting 视频编码参数
+ * @param audioEncodeSetting 音频编码参数
+ * @param recordSetting      录制参数
+ * @return status code: true - success; false - failed;
+ */
+public boolean prepare(PLVideoEncodeSetting videoEncodeSetting,
+                       PLAudioEncodeSetting audioEncodeSetting,
+                       PLRecordSetting recordSetting);
+
+/**
+ * 开始录制
+ */
+public void start();
+
+/**
+ * 停止录制
+ */
+public void stop();
+
+/**
+ * 设置录制状态监听器
+ *
+ * @param stateListener
+ */
+public void setRecordStateListener(PLExternalRecordStateListener stateListener);
+
+/**
+ * 输入一帧音频数据进行编码
+ *
+ * @param data
+ * @param size
+ * @param timestampNs
+ */
+public void inputAudioFrame(byte[] data, int size, long timestampNs);
+
+/**
+ * 输入一帧视频数据进行编码
+ *
+ * @param data
+ * @param width
+ * @param height
+ * @param rotation
+ * @param timestampNs
+ */
+public void inputVideoFrame(byte[] data, int width, int height, int rotation, long timestampNs);
+
+/**
+ * 判断是否正在录制过程中
+ * @return
+ */
+public boolean isRecording();
+```
+### 7.1.12 PLShortVideoMixRecorder
+
+`PLShortVideoMixRecorder` 包含了视频合拍所需要的接口，方法列表如下：
+
+```java
+/**
+ * 构造 PLShortVideoMixRecorder 对象
+ * 
+ * @param context 上下文对象
+ */
+public PLShortVideoMixRecorder(Context context);
+
+/**
+ * 配置 PLShortVideoMixRecorder 的各个参数
+ *
+ * @param cameraSurfaceView  摄像机预览的 GLSurfaceView
+ * @param sampleSurfaceView  样本视频预览的 GLSurfaceView
+ * @param videoMixSetting    PLVideoMixSetting 对象
+ * @param cameraSetting      PLCameraSetting 对象
+ * @param microphoneSetting  PLMicrophoneSetting 对象
+ * @param videoEncodeSetting PLVideoEncodeSetting 对象
+ * @param audioEncodeSetting PLAudioEncodeSetting 对象
+ * @param faceBeautySetting  PLFaceBeautySetting 对象
+ * @param recordSetting      PLRecordSetting 对象
+ */
+public void prepare(GLSurfaceView cameraSurfaceView,
+                    GLSurfaceView sampleSurfaceView,
+                    PLVideoMixSetting videoMixSetting,
+                    PLCameraSetting cameraSetting,
+                    PLMicrophoneSetting microphoneSetting,
+                    PLVideoEncodeSetting videoEncodeSetting,
+                    PLAudioEncodeSetting audioEncodeSetting,
+                    PLFaceBeautySetting faceBeautySetting,
+                    PLRecordSetting recordSetting);
+
+/**
+ * 使 PLShortVideoMixRecorder 暂停工作，通常在 Activity#onPause 中调用
+ */
+public pause();
+
+/**
+ * 使 PLShortVideoMixRecorder 恢复工作，通常在 Activity#onResume 中调用
+ */
+public resume();
+
+/**
+ * 销毁 PLShortVideoMixRecorder 对象，通常在 Activity#onDestroy 中调用
+ * 将删除已录制的片段
+ */
+public destory();
+
+/**
+ * 销毁 PLShortVideoMixRecorder 对象，通常在 Activity#onDestroy 中调用
+ * @param clearSections 是否删除已录制的片段
+ */
+public destory(boolean clearSections);
+
+/**
+ * 开始录制片段，需要收到 `onReady` 回调之后执行
+ */
+public boolean beginSection();
+
+/**
+ * 开始录制片段，需要收到 `onReady` 回调之后执行
+ * @param 指定片段文件名
+ */
+public boolean beginSection(String sectionFileName);
+
+/**
+ * 停止录制当前片段
+ */
+public boolean endSection();
+
+/**
+ * 删除上一个录制的片段
+ */
+public boolean deleteLastSection();
+
+/**
+ * 删除所有录制的片段
+ */
+public boolean deleteAllSections();
+
+/**
+ * 生成合拍视频并保存
+ * @param   用于接收保存回调的 listener
+ */
+public void save(PLVideoSaveListener listener);
+
+/**
+ * 取消合拍视频的保存工作
+ */
+public void cancel();
+
+/**
+ * 设置麦克风采集的音频是否静音
+ *
+ * @param muteMicrophone 麦克风采集的音频是否静音
+ */
+public void muteMicrophone(boolean muteMicrophone);
+
+/**
+ * 设置样本视频是否静音
+ *
+ * @param muteSampleVideo 样本视频是否静音
+ */
+public void muteSampleVideo(boolean muteSampleVideo);
+
+/**
+ * 获取麦克风音频和样本音频的混合模式，仅在麦克风和样本都不静音的情况下有效
+ *
+ * @return 麦克风音频和样本音频的混合模式 (可为 SPEAKERPHONE_MODE 或 EARPHONE_MODE)
+ */
+public PLAudioMixMode getAudioMixMode();
+
+/**
+ * 设置麦克风音频和样本音频的混合模式，仅在麦克风和样本都不静音的情况下有效
+ *
+ * @param 麦克风音频和样本音频的混合模式 (可为 SPEAKERPHONE_MODE 或 EARPHONE_MODE)
+ */
+public void setAudioMixMode(PLAudioMixMode audioMixMode);
+
+/**
+ * 设置麦克风和样本视频的音量，仅在选择了 EARPHONE_MODE 模式下有效
+ *
+ * @param microphoneVolume 麦克风音量
+ * @param sampleVolume     样本音量
+ */
+public void setAudioMixVolume(float microphoneVolume, float sampleVolume);
+
+/**
+ * 注册音频帧监听器
+ * @param 监听器对象
+ */
+public final void setAudioFrameListener(PLAudioFrameListener listener);
+
+/**
+ * 注册录制状态监听器
+ * @param 监听器对象
+ */
+public final void setRecordStateListener(PLRecordStateListener listener);
+
+/**
+ * 手动对焦，在 prepare 里设置好的 GLSurfaceView 上指定对焦块大小以及相应的中央坐标
+ * @param 对焦块的宽度
+ * @param 对焦块的高度
+ * @param 对焦块的中央X坐标
+ * @param 对焦块的中央Y坐标
+ */
+public void manualFocus(int focusBlockWidth, int focusBlockHeight, int focusBlockCenterX, int focusBlockCenterY);
+
+/**
+ * 注册相机对焦监听器
+ * @param 对焦监听器
+ */
+public void setFocusListener(PLFocusListener focusListener);
+
+/**
+ * 切换到下一个摄像头
+ */
+public void switchCamera();
+
+/**
+ * 切换到指定摄像头
+ */
+public void switchCamera(PLCameraSetting.CAMERA_FACING_ID facingId);
+
+/**
+ * 设置闪光灯开关
+ */
+public void setFlashEnabled(boolean enabled);
+
+/**
+ * 更新美颜设置
+ * @param 美颜设置对象
+ */
+public final void updateFaceBeautySetting(PLFaceBeautySetting setting);
+
+/**
+ * 注册相机预览监听器
+ * @param 监听器对象
+ */
+public final void setCameraPreviewListener(PLCameraPreviewListener listener);
+
+/**
+ * 注册相机参数选定监听器
+ * @param 监听器对象
+ */
+public final void setCameraParamSelectListener(PLCameraParamSelectListener listener);
+
+/**
+ * 注册自定义美颜、滤镜效果的监听器
+ * @param 监听器对象
+ */
+public final void setVideoFilterListener(PLVideoFilterListener listener);
+
+/**
+ * 注册自定义美颜、滤镜效果的监听器
+ * @param 监听器对象
+ * @param 指定监听器中返回的纹理类型为 OES
+ */
+public final void setVideoFilterListener(PLVideoFilterListener listener, boolean callbackOES);
+
+/**
+ * 获取当前摄像头的最大曝光补偿值
+ * @return 最大曝光补偿值
+ */
+public int getMaxExposureCompensation();
+
+/**
+ * 获取当前摄像头的最小曝光补偿值
+ * @return 最小曝光补偿值
+ */
+public int getMinExposureCompensation();
+
+/**
+ * 设置曝光补偿值
+ */
+public void setExposureCompensation(int exposureCompensation);
+
+/**
+ * 设置预览画面的缩放值
+ * 调用此方法前，请先调用 getZooms 方法获取有效值
+ * @param 缩放值
+ */
+public void setZoom(float zoom);
+
+/**
+ * 获取有效的缩放值列表
+ * 已由小至大排序
+ * @return 如果该分辨率不支持缩放，则返回 null
+ */
+public List<Float> getZooms();
+
+```
+
+### 7.1.13 PLShortVideoMixer
+
+`PLShortVideoMixer` 包含了双视频拼图所需要的接口，方法列表如下：
+
+```java
+/**
+ * PLShortVideoMixer 的构造方法
+ * @param context       Context对象
+ * @param dstFilePath   最后生成视频的路径
+ * @param maxDurationMs 最后生成视频的时长
+ */
+PLShortVideoMixer(Context context, String dstFilePath, long maxDurationMs);
+
+/**
+ * 设置生成视频的编码配置
+ *
+ * @param videoEncodeSetting 编码配置
+ */
+public void setVideoEncodeSetting(PLVideoEncodeSetting videoEncodeSetting);
+
+/**
+ * 开始视频拼图
+ *
+ * @param items        拼图的配置列表
+ * @param saveListener 结果回调函数
+ */
+public void mix(List<PLVideoMixItem> items, PLVideoSaveListener saveListener);
+
+/**
+ * 取消视频拼图
+ */
+public void cancel();
+```
+
+### 7.1.14 PLShortVideoEnv
+
+`PLShortVideoEnv` 包含了对日志输出等级的配置以及对包名鉴权信息的查询等功能，方法列表如下：
+
+```java
+/**
+ * 设置日志等级
+ *
+ * @param level 日志等级，分别为 Log.VERBOSE、Log.DEBUG、Log.INFO、Log.WARN、Log.ERROR
+ */
+public static void setLogLevel(int level)
+
+/**
+ * 查询包名鉴权信息
+ *
+ * @param context 上下文
+ * @param callback 包名鉴权信息的回调
+ */
+public static void checkAuthentication(Context context, PLAuthenticationResultCallback callback)
+```
+
+其中，`PLAuthenticationResultCallback` 为鉴权信息的结果回调，详细定义如下：
+
+```java
+public interface PLAuthenticationResultCallback {
+    /**
+     * 未知鉴权（网络无连接等场景下会回调该结果）
+     */
+    int UnCheck = -1;
+
+    /**
+     * 未鉴权
+     */
+    int UnAuthorized = 0;
+
+    /**
+     * 已鉴权
+     */
+    int Authorized = 1;
+
+    /**
+     * 回调鉴权信息的结果
+     *
+     * @param result 根据包名鉴权的结果
+     */
+    void onAuthorizationResult(int result);
+}
+```
+
+<a id="7.2"></a>
+
+## 7.2 参数配置
+
+### 7.2.1 PLCameraSetting
+
+`PLCameraSetting` 类用于配置摄像头采集的相关参数，包含以下方法：
+
+```java
+/**
+ * 设置采集摄像头
+ * @param 默认设置为手机的后置摄像头
+ */
+public PLCameraSetting setCameraId(PLCameraSetting.CAMERA_FACING_ID cameraId);
+
+/**
+ * 设置采集画面的分辨率
+ * @param 可以选择从 120P 到 1200P 之间的多种分辨率。默认设置为 480P
+ */
+public PLCameraSetting setCameraPreviewSizeLevel(PLCameraSetting.CAMERA_PREVIEW_SIZE_LEVEL level); 
+
+/**
+ * 设置采集画面的长宽比
+ * @param 可以选择 4:3 或 16:9。默认设置为 16:9
+ */
+public PLCameraSetting setCameraPreviewSizeRatio(PLCameraSetting.CAMERA_PREVIEW_SIZE_RATIO ratio);
+```
+
+### 7.2.2 PLScreenRecorderSetting
+
+`PLScreenRecorderSetting` 类用于配置屏幕采集的相关参数，包含以下方法：
+
+```java
+/**
+ * 设置屏幕录制尺寸
+ */
+public PLScreenRecorderSetting setSize(int width, int height);
+
+/**
+ * 设置 DPI
+ */
+public PLScreenRecorderSetting setDpi(int dpi);
+
+/**
+ * 设置屏幕录制 FPS
+ */
+public PLScreenRecorderSetting setFps(int fps)
+
+/**
+ * 设置屏幕录制文件保存位置
+ * @param recordFile
+ */
+public PLScreenRecorderSetting setRecordFile(String recordFile);
+
+/**
+ * 设置是否由外部导入音频
+ * @param inputAudioEnabled 
+ */
+public PLScreenRecorderSetting setInputAudioEnabled(boolean inputAudioEnabled);
+
+/**
+ * 设置编码码率
+ * @param 码率，单位为 bps，默认为 4000 * 1024
+ */
+public PLScreenRecorderSetting setEncodingBitrate(int bitrate);
+```
+
+### 7.2.3 PLMicrophoneSetting
+
+`PLMicrophoneSetting` 类用于配置麦克风采集的相关参数，包含以下方法：
+
+```java
+/**
+ * 设置音频采集源
+ * @param 默认为系统的 MediaRecorder.AudioSource.MIC，可时情况进行修改
+ */
+public PLMicrophoneSetting setAudioSource(int source);
+
+/**
+ * 设置音频格式
+ * @param 默认为系统的 AudioFormat.ENCODING_PCM_16BIT，其他格式可能不兼容部分设备，请视情况使用
+ */
+public PLMicrophoneSetting setAudioFormat(int format);
+
+/**
+ * 设置音频声道
+ * @param 默认为系统的 AudioFormat.CHANNEL_IN_MONO，其他格式如 AudioFormat.CHANNEL_IN_STEREO 可能不兼容部分设备，请视情况使用
+ */
+public PLMicrophoneSetting setChannelConfig(int channelConfig);
+
+/**
+ * 设置音频采样率
+ * @param 采样率, 默认为 44100，其他设置可能不兼容部分设备，请视情况使用
+ */
+public PLMicrophoneSetting setSampleRate(int rate);
+
+/**
+ * 开启音频 PTS 优化，有助于降低音画不同步概率，略微消耗计算资源
+ * @param 是否开启。默认开启
+ */
+public PLMicrophoneSetting setAudioPtsOptimizeEnabled(boolean enable);
+
+/**
+ * 设置是否开启蓝牙 SCO，如果使用蓝牙耳机采集音频
+ * @param 是否开启。默认关闭
+ */
+public PLMicrophoneSetting setBluetoothSCOEnabled(boolean enable);
+
+/**
+ * 设置是否开启降噪功能
+ * @param 是否开启。默认关闭
+ * @return 是否设置成功
+ */
+public boolean setNSEnabled(boolean enabled);
+
+/**
+ * 设置是否开启回声消除功能
+ * @param 是否开启。默认关闭
+ * @return 是否设置成功
+ */
+public boolean setAECEnabled(boolean enabled);
+
+/**
+ * 判断手机是否支持双声道麦克风采集
+ * @return 是否支持
+ */
+public static boolean isSupportChannelInStereo()
+```
+
+### 7.2.4 PLVideoEncodeSetting
+
+`PLVideoEncodeSetting` 类用于配制视频编码的相关参数，包含以下方法：
+
+```java
+/**
+ * 设置编码码率
+ * @param 码率，单位为 bps，默认为 1000 * 1000
+ */
+public PLVideoEncodeSetting setEncodingBitrate(int bitrate);
+
+/**
+ * 设置码率模式
+ * QUALITY_PRIORITY ：表示编码器会根据图像的复杂度来动态调整输出码率，最后的视频码率会在一定的范围波动
+ * BITRATE_PRIORITY ：表示编码器会尽量把输出码率控制为设定值
+ * CONSTANT_QUALITY_PRIORITY ：表示编码器完全不控制码率，尽最大可能保证图像质量
+ * @param 可选择 QUALITY_PRIORITY , BITRATE_PRIORITY 或 CONSTANT_QUALITY_PRIORITY
+ * @param 默认设置为 `QUALITY_PRIORITY`
+ */
+public PLVideoEncodeSetting setEncodingBitrateMode(PLVideoEncodeSetting.BitrateMode mode);
+
+/**
+ * 设置 profile 模式（软编码 or 硬编码系统 API 16+）
+ * 质量：HIGH > MAIN > BASELINE
+ * 性能与兼容性：BASELINE > MAIN > HIGH
+ * @param 可选择 HIGH、MAIN、BASELINE
+ * @param 默认设置为 `BASELINE`
+ */
+public PLVideoEncodeSetting setProfileMode(PLVideoEncodeSetting.ProfileMode mode);
+
+/**
+ * 设置编码 fps
+ * @param fps 值，默认设置为 30
+ */
+public PLVideoEncodeSetting setEncodingFps(int fps);
+
+/**
+ * 设置编码视频的分辨率
+ * @param 可以选择从 240P 到 1200P 之间的多种分辨率，默认设置为 480 * 480
+ */
+public PLVideoEncodeSetting setEncodingSizeLevel(PLVideoEncodeSetting.VIDEO_ENCODING_SIZE_LEVEL level);
+
+/**
+ * 如果 SDK 内置的分辨率列表不能满足需求，可以通过此方法自定义编码视频的分辨率
+ * @param width 宽度
+ * @param height 高度
+ */
+public PLVideoEncodeSetting setPreferedEncodingSize(int width, int height);
+
+/**
+ * 设置编码视频关键帧的间隔
+ * @param 单位为帧数，默认设置为 30 帧
+ */
+public PLVideoEncodeSetting setIFrameInterval(int interval);
+
+/**
+ * 设置 H.264 编码方式
+ * @param 是否开启 H.264 硬编 - true:硬编 false:软编
+ */
+public PLVideoEncodeSetting setHWCodecEnabled(boolean enabled)
+
+/**
+ * 设置视频旋转角度（通过 Metadata 实现，目前仅在视频录制时有效）
+ * @param 旋转角度 90 的倍数（可为负数）
+ */
+public PLVideoEncodeSetting setRotationInMetadata(int rotationInMetadata)
+
+/**
+ * 设置视频宽高拉伸模式
+ * 
+ * @param displayMode 视频宽高拉伸模式
+ */
+public PLVideoEncodeSetting setDisplayMode(PLDisplayMode displayMode)
+```
+
+### 7.2.5 PLAudioEncodeSetting
+
+`PLAudioEncodeSetting` 类用于配制音频编码的相关参数，包含以下方法：
+
+```java
+/**
+ * 设置编码码率
+ * @param 码率，单位为 bps，默认为 44100
+ */
+public PLAudioEncodeSetting setBitrate(int bitrate);
+
+/**
+ * 设置音频声道数量
+ * @param 声道数量，目前只支持 1 (默认) 和 2，分别对应 PLMicrophoneSetting 声道设置的 AudioFormat.CHANNEL_IN_MONO 与 AudioFormat.CHANNEL_IN_STEREO
+ */
+public PLAudioEncodeSetting setChannels(int channels);
+
+/**
+ * 设置音频采样率
+ * @param 采样率, 默认为 44100，需要与采集时的设置保持一致
+ */
+public PLAudioEncodeSetting setSampleRate(int sampleRate);
+
+/**
+ * 设置 AAC 编码方式
+ * @param 是否开启 AAC 硬编 - true:硬编 false:软编
+ */
+public PLAudioEncodeSetting setHWCodecEnabled(boolean enabled)
+```
+
+### 7.2.6 PLFaceBeautySetting
+
+`PLFaceBeautySetting` 类用于配制美颜相关参数，包含以下方法：
+
+```java
+ /**
+  * 构造 PLFaceBeautySetting 对象
+  * @param beauty 美颜程度，0-1 递增
+  * @param whiten 美白程度，0-1 递增
+  * @param redden 红润程度，0-1 递增
+  */
+public PLAudioEncodeSetting(float beauty, float whiten, float redden);
+
+/**
+ * 设置是否开启美颜
+ * @param 是否开启。默认开启
+ */
+public void setEnable(boolean enable);
+
+/**
+ * 设置美颜程度
+ * @param 0-1 递增
+ */
+public void setBeautyLevel(float level);
+
+/**
+ * 设置美白程度
+ * @param 0-1 递增
+ */
+public void setWhiten(float level);
+
+/**
+ * 设置红润程度
+ * @param 0-1 递增
+ */
+public void setRedden(float level);
+```
+
+### 7.2.7 PLRecordSetting
+
+`PLRecordSetting` 类用于配制录制相关参数，包含以下方法：
+
+```java
+/**
+ * 设置最大录制长度
+ * @param 最大录制长度，单位 ms，默认 10*1000
+ */
+public PLRecordSetting setMaxRecordDuration(int duration);
+
+/**
+ * 设置视频缓存目录
+ * @param 缓存目录
+ */
+public PLRecordSetting setVideoCacheDir(File dir);
+public PLRecordSetting setVideoCacheDir(String dir);
+
+/**
+ * 设置录制的视频文件全路径，默认从缓冲目录随机生成
+ * @param 视频文件全路径
+ */
+public PLRecordSetting setVideoFilepath(String filepath);
+
+/**
+ * 设置录制时 Camera preview 在 GLSurfaceView 和编码中的显示模式
+ * @param 显示模式，可为 FIT、FULL、KEEP
+ */
+public PLRecordSetting setDisplayMode(PLDisplayMode displayMode);
+```
+
+### 7.2.8 PLVideoEditSetting
+
+`PLVideoEditSetting` 对象用于配置视频编辑的相关参数，方法如下：
+
+```java
+/**
+ * 设置编辑保存后是否保留原始文件
+ *
+ * @param 是否保留原始文件
+ */
+public PLVideoEditSetting setKeepOriginFile(boolean keepOriginFile);
+
+/**
+ * 设置需要编辑的视频文件地址
+ *
+ * @param 原视频文件地址
+ */
+public PLVideoEditSetting setSourceFilepath(String filepath);
+
+/**
+ * 设置 `save` 保存视频地址
+ *
+ * @param 保存视频地址
+ */
+public PLVideoEditSetting setDestFilepath(String filepath);
+
+/**
+ * 设置动态贴纸是否开启预览
+ *
+ * @param 开启或关闭
+ */
+public PLVideoEditSetting setGifPreviewEnabled(boolean enabled);
+```
+
+### 7.2.9 PLWatermarkSetting
+
+`PLWatermarkSetting` 对象用于配制视频水印的相关参数，方法如下：
+
+```java
+/**
+ * 设置水印素材 Bitmap
+ * @param bitmap
+ */
+public void setBitmap(int bitmap);
+
+/**
+ * 设置水印素材 ID, 如果已设置 Bitmap, 此设置将失效
+ * @param resource id
+ */
+public void setResourceId(int resourceId);
+
+/**
+ * 设置水印位置
+ * @param x 水印左上角在视频 x 轴上的位置，0-1
+ * @param y 水印左上角在视频 y 轴上的位置，0-1
+ */
+public void setPosition(float x, float y);
+
+/**
+ * 设置水印大小
+ * @param width 水印宽度在视频 x 轴上的占比，0-1
+ * @param height 水印高度在视频 y 轴上的占比，0-1
+ */
+public void setSize(float width, float height);
+
+/**
+ * 设置水印旋转角度
+ * @param rotation 水印的旋转角度
+ */
+public void setRotation(int rotation)
+
+/**
+ * 设置水印透明度
+ * @param alpha 0-255
+ */
+public void setAlpha(int alpha);
+
+/**
+ * 设置水印层级是否为最上层
+ * @param zOrder 水印是否在最上层，此设置只对保存有效，预览不受其约束
+ */
+public void setZOrderOnTop(boolean onTop)
+```
+
+### 7.2.10 PLUploadSetting
+
+`PLUploadSetting` 对象用于配置上传相关的参数，方法如下：
+
+```java
+/**
+ * 设置分片上传时，每片的大小，默认 2M
+ *
+ * @param chunkSize
+ */
+public PLUploadSetting setChunkSize(int chunkSize)
+
+/**
+ * 设置启用分片上传阈值，默认 4M
+ *
+ * @param putThreshhold
+ */
+public PLUploadSetting setPutThreshhold(int putThreshhold)
+
+/**
+ * 设置链接超时时间，默认10秒
+ *
+ * @param connectTimeout
+ */
+public PLUploadSetting setConnectTimeout(int connectTimeout)
+
+/**
+ * 设置服务器相应超时时间，默认60秒
+ *
+ * @param responseTimeout
+ */
+public PLUploadSetting setResponseTimeout(int responseTimeout)
+
+/**
+ * 设置区域，指定不同区域的上传域名、备用域名、备用IP
+ *
+ * @param zone 上传区域，如果传入 null，则 SDK 内部会自动判断选择合适的区域
+ */
+public PLUploadSetting setZone(PLUploadZone zone)
+
+/**
+ * 是否启用 https 上传，默认不启用
+ *
+ * @param enabled
+ */
+public PLUploadSetting setHttpsEnabled(boolean enabled)
+
+/**
+ * 配置上传自定义变量
+ *
+ * @param params
+ */
+public PLUploadSetting setParams(Map<String, String> params)
+```
+### 7.2.11 PLVideoMixSetting
+
+`PLVideoMixSetting` 对象用于配置合拍相关的参数，其构造方法如下：
+
+```java
+/**
+ * 创建合拍配置对象
+ *
+ * @param cameraVideoRect         摄像头拍摄视频的位置区域
+ * @param sampleVideoRect         样本视频的位置区域
+ * @param sampleVideoPath         样本视频的路径
+ * @param cameraRecodingCachePath 摄像机录制的片段最后拼接的缓存视频的路径，它用于和样本视频最后进行合成
+ */
+public PLVideoMixSetting(Rect cameraVideoRect, Rect sampleVideoRect, String sampleVideoPath, String cameraRecodingCachePath)
+
+/**
+ * 创建合拍配置对象（可指定样本视频的显示模式）
+ *
+ * @param cameraVideoRect         摄像头拍摄视频的位置区域
+ * @param sampleVideoRect         样本视频的位置区域
+ * @param sampleVideoPath         样本视频的路径
+ * @param sampleDisplayMode       样本视频的显示模式
+ * @param cameraRecodingCachePath 摄像机录制的片段最后拼接的缓存视频的路径，它用于和样本视频最后进行合成
+ */
+public PLVideoMixSetting(Rect cameraVideoRect, Rect sampleVideoRect, String sampleVideoPath, PLDisplayMode sampleDisplayMode, String cameraRecodingCachePath);
+
+/**
+ * 创建合拍配置对象（可指定样本视频的显示模式和上下层级）
+ *
+ * @param cameraVideoRect         摄像头拍摄视频的位置区域
+ * @param sampleVideoRect         样本视频的位置区域
+ * @param sampleVideoPath         样本视频的路径
+ * @param sampleDisplayMode       样本视频的显示模式
+ * @param cameraAboveSample       录制视频是否出于样本视频上方
+ * @param cameraRecodingCachePath 摄像机录制的片段最后拼接的缓存视频的路径，它用于和样本视频最后进行合成
+ */
+public PLVideoMixSetting(Rect cameraVideoRect, Rect sampleVideoRect, String sampleVideoPath, PLDisplayMode sampleDisplayMode, boolean cameraAboveSample, String cameraRecodingCachePath);
+```
+
+### 7.2.12 PLGifWatermarkSetting
+
+`PLGifWatermarkSetting` 对象用于配置 GIF 水印相关的参数，方法如下：
+
+```java
+/**
+ * 设置水印素材的路径
+ * @param filePath 文件路径
+ */
+public void setFilePath(String filePath);
+
+/**
+ * 设置水印位置
+ * @param x 水印左上角在视频 x 轴上的位置，0-1
+ * @param y 水印左上角在视频 y 轴上的位置，0-1
+ */
+public void setPosition(float x, float y);
+
+/**
+ * 设置水印大小
+ * @param width 水印宽度在视频 x 轴上的占比，0-1
+ * @param height 水印高度在视频 y 轴上的占比，0-1
+ */
+public void setSize(float width, float height);
+
+/**
+ * 设置水印透明度
+ * @param alpha, 0-255
+ */
+public void setAlpha(int alpha);
+
+/**
+ * 设置水印角度（顺时针旋转）
+ * @param rotation 旋转角度
+ */
+public void setRotation(int rotation)
+
+/**
+ * 设置水印显示的开始时间以及持续时间
+ * @param startTimeMs 开始时间，单位：ms
+ * @param durationMs 水印显示时长，单位：ms
+ */
+public void setDisplayPeriod(long startTimeMs, long durationMs);
+```
+
+### 7.2.13 PLVideoMixItem
+
+`PLVideoMixItem ` 对象用于配置视频拼图的相关参数，方法如下：
+
+```java
+/**
+ * 设置拼图视频路径
+ *
+ * @param videoPath 拼图的视频路径
+ */
+PLVideoMixItem setVideoPath(String videoPath);
+
+/**
+ * 设置拼图视频的矩形区域
+ *
+ * @param videoRect 矩形区域
+ */
+PLVideoMixItem setVideoRect(Rect videoRect);
+
+/**
+ * 设置拼图视频是否循环
+ *
+ * @param looping 是否循环
+ */
+PLVideoMixItem setLooping(boolean looping);
+
+/**
+ * 设置该视频的开始播放时间
+ *
+ * @param startTimeMs 开始播放时间
+ */
+PLVideoMixItem setStartTimeMs(int startTimeMs);
+
+/**
+ * 设置该视频的显示模式
+ *
+ * @param mode 显示模式，可为 FIT、FULL、KEEP
+ */
+PLVideoMixItem setDisplayMode(PLDisplayMode mode);
+
+/**
+ * 设置该视频的音量大小
+ *
+ * @param volume 音量
+ */
+PLVideoMixItem setVolume(float volume);
+```
+<a id="7.3"></a>
+
+## 7.3 监听器
+
+### 7.3.1 PLCameraPreviewListener
+
+该接口用于回调相机预览相关的事件，方法如下：
+
+```java
+/**
+ * 当预览画面有视频帧待渲染时触发
+ * @param data 视频帧数据
+ * @param width 视频帧宽度
+ * @param height 视频帧高度
+ * @param rotation 视频角度，顺时针 0/90/180/270 度
+ * @param fmt 视频格式，在 PLFourCC 类中定义
+ * @param timestamp 该帧的时间戳，单位为 ns
+ */
+boolean onPreviewFrame(byte[] data, int width, int height, int rotation, int fmt, long timestampNs);
+```
+
+### 7.3.2 PLAudioFrameListener
+
+该接口用于回调音频录制相关的事件，方法如下：
+
+```java
+/**
+ * 录制失败时触发
+ * @param 错误码，在 PLErrorCode 中定义
+ */
+void onAudioRecordFailed(int errorCode);
+
+/**
+ * 当有待处理的音频帧时触发
+ * @param data PCM 数据
+ * @param timestampUs 音频帧时间戳，单位为 ns
+ */
+void onAudioFrameAvailable(byte[] data, long timestampNs);
+```
+
+### 7.3.3 PLCameraParamSelectListener
+
+该接口用于回调相机参数相关的事件，方法如下：
+
+```java
+/**
+ * 当预览尺寸确定时触发
+ * @param 此设备支持的尺寸列表
+ * @return 选择的尺寸
+ */
+Camera.Size onPreviewSizeSelected(List<Camera.Size> list);
+
+/**
+ * 当采集视频的 fps 确定时触发
+ * @param 此设备支持的 fps 列表
+ * @return 选择的 fps
+ */
+int[] onPreviewFpsSelected(List<int[]> list);
+
+/**
+ * 当摄像头预览对焦模式确定时触发
+ *
+ * @param 当前摄像头支持的对焦模式列表
+ * @return 选择的对焦模式
+ */
+String onFocusModeSelected(List<String> list);
+```
+
+### 7.3.4 PLRecordStateListener
+
+该接口用于回调录制相关的事件，接口如下：
+
+```java
+/**
+ * 当准备完毕可以进行录制时触发
+ */
+void onReady();
+
+/**
+ * 当录制的片段过短时触发
+ */
+void onDurationTooShort();
+
+/**
+ * 录制开始
+ */
+void onRecordStarted();
+
+/**
+ * 录制结束
+ */
+void onRecordStopped();
+
+/**
+ * 实时返回录制视频时长
+ */
+void onSectionRecording(long sectionDurationMs, long videoDurationMs, int sectionCount);
+    
+/**
+ * 当有新片段录制完成时触发
+ * @param incDuration   增加的时长
+ * @param totalDuration 总时长
+ * @param sectionCount  当前的片段总数
+ */
+void onSectionIncreased(long incDuration, long totalDuration, int sectionCount);
+
+/**
+ * 当有片段被删除时触发
+ * @param decDuration   减少的时长
+ * @param totalDuration 总时长
+ * @param sectionCount  当前的片段总数
+ */
+void onSectionDecreased(long decDuration, long totalDuration, int sectionCount);
+
+/**
+ * 当录制全部完成时触发
+ */
+void onRecordCompleted();
+```
+
+### 7.3.5 PLScreenRecordStateListener
+
+该接口用于回调屏幕录制相关的事件，接口如下：
+
+```java
+/**
+ * 当准备完毕可以进行屏幕录制时触发
+ */
+void onReady();
+
+/**
+ * 当有异常发生时触发
+ */
+void onError(int code);
+
+/**
+ * 屏幕录制开始
+ */
+void onRecordStarted();
+
+/**
+ * 屏幕录制结束
+ */
+void onRecordStopped();
+```
+
+### 7.3.6 PLVideoFilterListener
+
+该接口用于外部对接第三方美颜或者滤镜，接口如下：
+
+```java
+/**
+ * 当有新的 surface 创建时触发
+ **/
+void onSurfaceCreated();
+
+/**
+ * 当 surface 发生改变时触发
+ * @param width 宽度
+ * @param height 高度
+ *
+ **/
+void onSurfaceChanged(int width, int height);
+
+/**
+ * 当 Surface 销毁时触发
+ **/
+void onSurfaceDestroy();
+
+/**
+ * 绘制帧时触发
+ * @param texId 待渲染的 SurfaceTexture 对象的 texture ID
+ * @param texWidth 绘制的 surface 宽度
+ * @param texHeight 绘制的 surface 高度
+ * @param timeStampNs 该帧的时间戳，单位 Ns
+ * @param transformMatrix 一般为单位矩阵，除非返回的纹理类型为 OES
+ * @return 新创建的制定给 SurfaceTexuture 对象的 texture ID，类型必须为 GL_TEXTURE_2D
+ **/
+int onDrawFrame(int texId, int texWidth, int texHeight, long timeStampNs, float[] transformMatrix);
+```
+
+### 7.3.7 PLVideoSaveListener
+
+该接口用于回调视频保存相关的事件，接口如下：
+
+```java
+/**
+ * 保存成功时触发
+ * @param 编辑后的视频文件
+ */
+void onSaveVideoSuccess(File editedFile);
+
+/**
+ * 保存失败时触发
+ * @param 错误码，在 PLErrorCode 中定义
+ */
+void onSaveVideoFailed(int errorCode);
+
+/**
+ * 保存取消时触发
+ */
+void onSaveVideoCanceled();
+
+/**
+ * 保存进度更新时触发
+ * @param 进度百分比
+ */
+void onProgressUpdate(float percentage);
+```
+
+### 7.3.8 PLUploadResultListener
+
+该接口用于回调视频上传的结果信息，接口如下：
+
+```java
+/**
+ * 上传成功时触发
+ * @param response 上传成功信息
+ */
+void onUploadVideoSuccess(JSONObject response);
+
+/**
+ * 上传失败时触发
+ * @param statusCode 返回值
+ * @param error 错误信息
+ */
+void onUploadVideoFailed(int statusCode, String error);
+```
+
+### 7.3.9 PLUploadProgressListener
+
+该接口用于监听上传进度，接口如下：
+
+```java
+/**
+ * 上传进度改变时触发
+ * @param fileName 文件名
+ * @param percent 上传进度
+ */
+void onUploadProgress(String fileName, double percent);
+```
+
+### 7.3.10 PLFocusListener
+
+该接口用于监听录制时对焦的事件，接口如下：
+
+```java
+/**
+ * 启动手动对焦是否成功
+ * @param 启动手动对焦结果
+ */
+void onManualFocusStart(boolean result);
+
+/**
+ * 手动对焦是否成功
+ * @param 手动对焦结果
+ */
+void onManualFocusStop(boolean result);
+
+/**
+ * 当前手动对焦被取消，因另一个手动对焦事件被触发了
+ */
+void onManualFocusCancel();
+
+/**
+ * 连续自动对焦启动事件
+ * 只有在 PLCameraParamSelectListener#onFocusModeSelected(List) 中选择了
+ * FOCUS_MODE_CONTINUOUS_VIDEO 或 FOCUS_MODE_CONTINUOUS_PICTURE 的对焦方式才会被触发
+ */
+void onAutoFocusStart();
+
+/**
+ * 连续自动对焦停止事件
+ * 只有在 PLCameraParamSelectListener#onFocusModeSelected(List) 中选择了
+ * FOCUS_MODE_CONTINUOUS_VIDEO 或 FOCUS_MODE_CONTINUOUS_PICTURE 的对焦方式才会被触发
+ */
+void onAutoFocusStop();
+```
+
+### 7.3.11 PLCaptureFrameListener
+
+```java
+/**
+ * 当预览帧被截取后回调
+ * @param capturedFrame 截取到的帧
+ */
+public void onFrameCaptured(PLVideoFrame capturedFrame);
+```
+### 7.3.12 PLVideoPlayerListener
+
+```java
+/**
+ * 当预览视频播放完成后回调
+ */
+void onCompletion();
+```
+
+### 7.3.13 PLExternalRecordStateListener
+
+该接口用于外部音视频数据导入相关的事件，接口如下：
+
+```java
+/**
+ * 当准备完毕可以进行外部音视频数据导入录制时触发
+ */
+void onReady();
+
+/**
+ * 当有异常发生时触发
+ */
+void onError(int code);
+
+/**
+ * 外部音视频数据导入录制开始
+ */
+void onRecordStarted();
+
+/**
+ * 外部音视频数据导入录制结束
+ */
+void onRecordStopped();
+```
+
+### 7.3.14 PLImageComposer
+
+`PLImageComposer` 包含了图片合成视频所需要的接口，方法列表如下：
+
+```java
+    /**
+     * 添加一张图片
+     */
+    public void addItem(PLComposeItem item);
+
+    /**
+     * 删除图片
+     */
+    public void removeItem(PLComposeItem item);
+
+    /**
+     * 获取合成总时长 毫秒
+     */
+    public long getDurationMs();
+
+    /**
+     * 释放对象
+     */
+    public void release();
+
+    /**
+     * 保存合成视频
+     */
+    public void save(String outputPath, PLVideoEncodeSetting setting, PLVideoSaveListener listener);
+
+    /**
+     * 取消合成
+     */
+    public void cancelSave();
+
+    /**
+     * 设置预览监听
+     */
+    public void setPreviewListener(PLPreviewListener listener);
+
+    /**
+     * 设置预览 SurfaceTexture
+     */
+    public void setPreviewTexture(SurfaceTexture surfaceTexture);
+
+    /**
+     * 设置预览 Surface
+     */
+    public void setPreviewSurface(Surface surface, boolean autoRelease);
+
+    /**
+     * 设置预览宽高
+     */
+    public void setPreviewSize(int width, int height);
+
+    /**
+     * 循环播放
+     */
+    public void setPreviewLoop(boolean loop);
+
+    /**
+     * 开始预览
+     */
+    public void startPreview();
+
+    /**
+     * 恢复预览
+     */
+    public void resumePreview();
+
+    /**
+     * 暂停预览
+     */
+    public void pausePreview();
+
+    /**
+     * 停止预览
+     */
+    public void stopPreview();
+
+    /**
+     * seek 预览到对应毫秒
+     */
+    public void seekPreview(long timeMs);
+
+    /**
+     * 预览监听
+     */
+    public interface PLPreviewListener {
+        /**
+         * 进度更新
+         */
+        void onProgress(float progress);
+
+        /**
+         * 预览播放完成
+         */
+        void onCompleted();
+    }
+```
+
+<a id="8"></a>
+
+# 8. 自定义对象
+
+<a id="8.1"></a>
+
+## 8.1 PLFourCC
+
+用于定义视频格式，包含如下内容：
+
+- `FOURCC_I420`: I420
+- `FOURCC_NV21`: NV21
+- `FOURCC_NV12`: NV12
+- `FOURCC_ABGR`: ABGR
+- `FOURCC_UNKNOWN`: 未知格式
+
+<a id="8.2"></a>
+
+## 8.2 PLErrorCode
+
+自定义错误码，包含如下内容：
+
+| 错误码                               | 错误值  | 说明                  |
+| --------------------------------- | ---- | ------------------- |
+| ERROR_IO_EXCEPTION                | 0    | IO 错误               |
+| ERROR_WRONG_STATUS                | 1    | 状态错误                |
+| ERROR_EMPTY_SECTIONS              | 2    | 无片段                 |
+| ERROR_MUXER_STOP_FAILED           | 3    | MUXER 停止失败            |
+| ERROR_SETUP_CAMERA_FAILED         | 4    | 设置摄像头失败             |
+| ERROR_SETUP_MICROPHONE_FAILED     | 5    | 设置麦克风失败             |
+| ERROR_SETUP_VIDEO_ENCODER_FAILED  | 6    | 设置视频编码器失败           |
+| ERROR_SETUP_AUDIO_ENCODER_FAILED  | 7    | 设置音频编码器失败           |
+| ERROR_UNAUTHORIZED                | 8    | 鉴权失败                |
+| ERROR_UNSUPPORTED_ANDROID_VERSION | 9    | 录屏不支持该设备的安卓版本       |
+| ERROR_INVALID_ARG                 | 10   | 传入了错误的参数信息          |
+| ERROR_DIFFERENT_AUDIO_PARAMS      | 11   | 音频参数不一致     |
+| ERROR_MISSING_DYNAMIC_LIBRARY     | 12   | 缺少动态库文件             |
+| ERROR_NO_VIDEO_TRACK              | 13   | 未发现视频信息             |
+| ERROR_SRC_DST_SAME_FILE_PATH      | 14   | 源文件路径和目标文件路径相同      |
+| ERROR_LOW_MEMORY                  | 15   | 内存不足                |
+| ERROR_MULTI_CODEC_WRONG           | 16   | 该设备不支持多例 MediaCodec     |
+| ERROR_SETUP_VIDEO_DECODER_FAILED  | 17   | 设置视频解码器失败           |
+| ERROR_MUXER_START_FAILED          | 18   | MUXER 启动失败            |
+| ERROR_VIDEO_ENCODER_EXCEPTIONAL_STOP   | 19   | 视频编码失败            |
+| ERROR_VIDEO_DECODE_FAILED          | 20   | 视频解码失败            |
+
+<a id="8.3"></a>
+
+## 8.3 PLBuiltinFilter
+
+SDK 内置的滤镜对象，包含以下方法：
+
+- `public String getName()`：获取滤镜名
+- `public String getAssetFilePath()`：获取滤镜的资源文件路径
+
+<a id="8.4"></a>
+
+## 8.4 PLVideoFrame
+
+描述视频帧的类，会在 `PLShortVideoRecorder.captureFrame()` 和 `PLShortVideoTrimmer.getKeyFrame()` 中返回。
+
+```java
+/**
+ * 获取帧数据
+ */
+public byte[] getData();
+/**
+ * 获取帧数据格式
+ */
+public DATA_FORMAT getDataFormat();
+/**
+ * 是否关键帧
+ */
+public boolean isKeyFrame();
+/**
+ * 获取帧宽度
+ */
+public int getWidth();
+/**
+ * 获取帧高度
+ */
+public int getHeight();
+/**
+ * 获取正常显示时应当旋转的角度
+ */
+public int getRotation();
+/**
+ * 将帧数据转换为 Bitmap
+ */
+public Bitmap toBitmap();
+/**
+ * 获取帧时间戳
+ */
+public long getTimestampMs();
+```
+
+内部类 `DATA_FORMAT` 描述帧数据格式
+
+```java
+public enum DATA_FORMAT {
+    ARGB_8888,
+    RGB_565
+}
+```
+
+<a id="8.5"></a>
+
+## 8.5 PLMediaFile
+
+视频文件信息类，用于获取视频文件的基本音视频参数信息
+
+```java
+/**
+ * 构造函数
+ * @param filepath 视频文件路径
+ */
+public PLMediaFile(String filepath);
+
+/**
+ * 销毁申请的资源
+ */
+public void release();
+
+/**
+ * 文件中是否存在视频轨
+ */
+public boolean hasVideo();
+
+/**
+ * 文件中是否存在音频轨
+ */
+public boolean hasAudio();
+
+/**
+ * 获取文件路径
+ */
+public String getFilepath();
+
+/**
+ * 获取视频时长
+ */
+public long getDurationMs();
+
+/**
+ * 获取视频的宽
+ */
+public int getVideoWidth();
+
+/**
+ * 获取视频的高
+ */
+public int getVideoHeight();
+
+/**
+ * 获取视频的帧率
+ */
+public int getVideoFrameRate();
+
+/**
+ * 获取视频的码率
+ */
+public int getVideoBitrate();
+
+/**
+ * 获取视频的关键帧间隔
+ */
+public int getVideoIFrameInterval();
+
+/**
+ * 获取视频的角度
+ */
+public int getVideoRotation();
+
+/**
+ * 获取音频的通道数
+ */
+public int getAudioChannels();
+
+/**
+ * 获取音频的采样率
+ */
+public int getAudioSampleRate();
+
+/**
+ * 判断视频是否为 H265 编码格式
+ */
+public boolean isH265Encode();
+
+/**
+ * 获取源视频的视频帧总数
+ * @param keyFrame 是否限定返回关键帧总数
+ * @return 源视频视频帧总数
+ */
+public int getVideoFrameCount(boolean keyFrame);
+
+/**
+ * 获取源视频指定时间戳的视频帧
+ * @param timeMs 指定的时间戳
+ * @param keyFrame 是否限定返回关键帧
+ * @return 指定时间戳的视频帧
+ */
+public PLVideoFrame getVideoFrameByTime(long timeMs, boolean keyFrame);
+
+/**
+ * 获取源视频指定时间戳的视频帧，并缩放裁剪到指定宽高。
+ * @param timeMs 指定的时间戳
+ * @param keyFrame 是否限定返回关键帧
+ * @param outputWidth 输出宽度
+ * @param outputHeight 输出高度
+ * @return 指定时间戳的视频帧
+ */
+public PLVideoFrame getVideoFrameByTime(long timeMs, boolean keyFrame, int outputWidth, int outputHeight);
+
+/**
+ * 获取源视频指定索引的视频帧
+ * @param index 指定的索引
+ * @param keyFrame 是否限定返回关键帧
+ * @return 指定索引的视频帧
+ */
+public PLVideoFrame getVideoFrameByIndex(int index, boolean keyFrame);
+
+/**
+ * 获取源视频指定索引的视频帧，并缩放裁剪到指定宽高。
+ * @param index 指定的索引
+ * @param keyFrame 是否限定返回关键帧
+ * @param outputWidth 输出宽度
+ * @param outputHeight 输出宽度
+ * @return 指定索引的视频帧
+ */
+public PLVideoFrame getVideoFrameByIndex(int index, boolean keyFrame, int outputWidth, int outputHeight);
+```
+
+## 8.6 PLComposeItem
+
+用于图片合成 mp4 时，定义每张图片的路径，持续时间和转场特效时间
+
+```java
+/**
+ * 构造函数
+ * @param filePath 图片文件路径
+ */
+public PLComposeItem(String filePath);
+
+/**
+ * 设置拼接类型（可分别为：图片，GIF 和视频类型）
+ * @param itemType 拼接类型
+ */
+public void setItemType(ItemType itemType);
+
+/**
+ * 获取拼接类型
+ */
+public ItemType getItemType();
+
+/**
+ * 获取文件路径
+ */
+public String getFilePath();
+
+/**
+ * 获取持续时间
+ */
+public long getDurationMs();
+
+/**
+ * 获取转场特效时间
+ */
+public long getTransitionTimeMs();
+
+/**
+ * 设置文件路径
+ *
+ * @param filePath 文件路径
+ */
+public PLComposeItem setFilePath(String filePath);
+
+/**
+ * 设置持续时间
+ *
+ * @param durationMs 持续时间
+ */
+public PLComposeItem setDurationMs(long durationMs);
+
+/**
+ * 设置转场特效时间
+ *
+ * @param transitionTimeMs 转场特效时间
+ */
+public PLComposeItem setTransitionTimeMs(long transitionTimeMs);
+
+/**
+  * 获取转场特效，注意PLTransitionType 仅在使用 PLImageComposer 合成时才生效
+  *
+  * @return 转场特效
+  */
+public PLTransitionType getTransitionType();
+
+/**
+  * 设置转场特效，注意PLTransitionType 仅在使用 PLImageComposer 合成时才生效
+  *
+  * @param transitionType 转场特效
+  */
+public void setTransitionType(PLTransitionType transitionType);
+```
+
+## 8.7 PLDraft
+
+保存的草稿，包含所有录制的片段，以及各种设置项
+
+```java
+    /**
+     * 获取草稿标签
+     */
+    public String getTag();
+    
+    /**
+     * 获取草稿中的片段数
+     */
+    public int getSectionCount();
+    
+    /**
+     * 获取片段的开始时间，单位为 ms；如果片段不存在，则返回 -1
+     * @param index 草稿列表的 index
+     */
+    public long getSectionStartTime(int index);
+
+    /**
+     * Get 获取片段的长度，单位为 ms；若片段不存在，则返回 -1
+     * @param index 草稿列表的 index
+     */
+    public long getSectionDuration(int index);
+
+    /**
+     * 获取片段的绝对路径；若片段不存在，则返回 null
+     * @param index 草稿列表的 index
+     */
+    public String getSectionFilePath(int index);
+
+    /**
+     * 获取保存的 PLCameraSetting
+     */
+    public PLCameraSetting getCameraSetting();
+
+    /**
+     * 获取保存的 PLMicrophoneSetting 
+     */
+    public PLMicrophoneSetting getMicrophoneSetting();
+
+    /**
+     * 获取保存的 PLVideoEncodingSetting
+     */
+    public PLVideoEncodeSetting getVideoEncodeSetting();
+
+    /**
+     * 获取保存的 PLAudioEncodingSetting
+     */
+    public PLAudioEncodeSetting getAudioEncodeSetting();
+
+    /**
+     * 获取保存的 PLFaceBeautySetting
+     */
+    public PLFaceBeautySetting getFaceBeautySetting();
+
+    /**
+     * 获取保存的 PLRecordSetting
+     */
+    public PLRecordSetting getRecordSetting();
+```
+
+## 8.8 PLDraftBox
+
+单例对象，存储所有保存的草稿
+
+```java
+/**
+ * 获取草稿箱
+ * @param context context
+ */
+public static PLDraftBox getInstance(Context context);
+
+/**
+ * 通过标签获取草稿，若不存在对应的草稿则返回 null
+ * @param 草稿标签
+ */
+public PLDraft getDraftByTag(String tag);
+
+/**
+ * 获取所有草稿，若无草稿则返回一个空的 ArrayList
+ */
+public List<PLDraft> getAllDrafts();
+
+/**
+ * 通过标签删除草稿
+ * @param tag 草稿标签
+ * @param deleteSectionFiles 是否删除草稿中的分段视频文件
+ */
+public void removeDraftByTag(String tag, boolean deleteSectionFiles);
+
+/**
+ * 删除所有草稿
+ * @param deleteSectionFiles 是否删除草稿中的分段视频文件
+ */
+public void removeAllDrafts(boolean deleteSectionFiles);
+```
+## 8.9 PLFadeTransition
+
+制作过场字幕所用到的透明度动画对象
+
+```java
+/**
+ * 构造函数
+ * @param startTimeMs 动画开始时间
+ * @param durationMs  动画持续时间
+ * @param fromAlpha   起始透明度 (范围为：0-1)
+ * @param toAlpha     结束透明度 (范围为：0-1)
+ */
+public PLFadeTransition(long startTimeMs, long durationMs, float fromAlpha, float toAlpha);
+```
+## 8.10 PLPositionTransition
+
+制作过场字幕所用到的位移动画对象
+
+```java
+/**
+ * 构造函数
+ * @param startTimeMs 动画开始时间
+ * @param durationMs  动画持续时间
+ * @param fromX       起始位置的 X 坐标
+ * @param fromY       起始位置的 Y 坐标
+ * @param toX         终止位置的 X 坐标
+ * @param toY         终止位置的 Y 坐标
+ */
+public PLPositionTransition(long startTimeMs, long durationMs, int fromX, int fromY, int toX, int toY);
+```
+
+## 8.11 PLUploadZone
+
+设置上传区域，用来指定不同区域的上传域名、备用域名、备用IP。如果传入 null，则 SDK 内部会自动判断选择合适的区域。具体区域配置如下：
+
+| 区域        | 说明                  |
+| ---------- | ------------------- |
+| ZONE0      | 华东机房             |
+| ZONE1      | 华北机房             |
+| ZONE2      | 华南机房             |
+| ZONENA0    | 北美机房             |
+| ZONEAS0    | 新加坡机房           |
+
+## 8.12 PLDisplayMode
+
+设置画面展示模式
+
+```java
+public enum  PLDisplayMode {
+    // 全屏模式，拉伸最短边，裁剪最长边
+    FULL, 
+    // 适应模式，按照最长边来等比压缩，空的地方用黑色填充
+    FIT, 
+    // 固定模型，固定宽高不拉伸，超出画面就裁剪，不足则以黑色填充
+    KEEP
+}
+```
+
+
+
+<a id="9"></a>
+
+# 9 历史记录
+* 3.4.0
+   - 发布 pldroid-shortvideo-3.4.0.jar
+   - 更新上传库依赖版本到 v8.4.3
+   - PLMediaFile 增加方法支持判断视频编码格式是否为 H.265
+   - PLDisplayMode 增加 KEEP 模式
+   - 视频录制支持无麦克风权限
+   - 优化混音切换逻辑
+   - 编辑模块水印设置支持层级设置
+   - 优化软编码的内存使用情况
+   - 视频录制的同时支持旋转摄像头
+   - 支持单个 GIF 转视频操作
+   - 转码、编辑、图片转视频模块支持软编码
+   - 水印增加角度设置
+   - PLMicrophoneSetting 增加判断手机是否支持双声道的方法
+   - 优化编码处理方式
+   - 优化预览视图，使其即时相应外部视图宽高变化
+   - 优化抽帧操作的耗时
+   - 优化 SDK 所需权限，极大限度降低所需的权限
+   - 支持自动曝光
+   - 修复极慢速录制预览可能卡顿的问题
+   - 修复个别机型转码时码率达不到预期的问题
+   - 修复转码后的视频在存储到云端后使用在线播放时出现大量 206 请求的问题
+   - 修复录屏偶现无视频帧的问题
+   - 修复编辑模块在一帧添加大量 GIF 时出现部分 GIF 丢失的问题
+   - 修复偶现的 ANR 问题
+   - 修复在部分三星手机转码进度卡住的问题
+   - 修复在部分机型上图片转视频出现色差的问题
+   - 修复转码部分视频进度会卡住的问题
+   - 修复部分机型切换摄像头时出现画面缩放的一帧的问题
+   - 修复编码因异常停止后此后不能再启动的问题
+   - 修复转码默认的画面拉伸模式的问题
+   - 修复连续转码后续修改参数无效的问题
+   - 修复偶现的 OpenGL 环境创建崩溃的问题
+   - 修复频繁进行添加删除 GIF 操作导致结果异常的问题
+   - 修复部分机型录制帧率不达预期的问题
+   - 修复部分机型使用软编出现卡住的问题
+   - 修复部分机型后置转前置出现的预览异常问题
+   - 修复软编码视频可能出现的进度卡住问题
+* 3.3.0
+   - 发布 pldroid-shortvideo-3.3.0.jar
+   - 更新上传库依赖版本到 v8.3.2
+   - 转码支持时间段裁剪
+   - 重构了草稿箱功能
+   - 修复软编时可能出现的空指针异常
+   - 修复个别机型合拍录制中出现的回删异常问题
+   - 修复预览与编辑之间产生的色差问题
+   - 修复个别机型二次录屏时会失败的问题
+   - 修复编辑个别视频出现闪退的问题
+   - 修复编辑界面预览混音时长与实际不符的问题
+   - 修复转码时的视频裁剪不生效的问题
+   - 修复 GIF 图位置偏移的问题
+* 3.2.2
+   - 发布 pldroid-shortvideo-3.2.2.jar
+   - 新增 libQMedia.so
+   - 移除 armeabi
+   - 视频录制支持白平衡手动设置
+   - 视频录制支持背景音乐选择是否循环
+   - 修复 Android 10 及以上版本无法进行屏幕录制的问题
+   - 修复视频拼图以及区域剪裁失效的问题
+   - 修复个别机型转码崩溃问题
+   - 修复某些机型上软编出现的崩溃问题
+* 3.2.1
+   - 发布 pldroid-shortvideo-3.2.1.jar
+   - 视频编码导出新增内容填充模式设置
+   - 转码场景新增码率模式的配置
+   - 修复慢速录制场景下预览卡住的问题
+   - 修复个别机型转码某些资源无画面的问题
+   - 修复个别机型合成个别视频异常的问题
+   - 修复某些机型上软编出现的 OOM 问题
+   - 修复了个别场景下的崩溃问题
+   - 修复合拍 deleteAllSection 后素材进度异常的问题
+* 3.2.0
+   - 发布 pldroid-shortvideo-3.2.0.jar
+   - 更新 libpldroid_shortvideo_core.so
+   - 图片合成新增预览及多个转场功能
+   - 新增屏幕录制帧率设置
+   - 视频拼接功能支持缩放模式设置
+   - 修复快速剪辑后的视频文件信息异常的问题
+   - 修复在某些机型上会偶现混音卡住的问题
+   - 修复转码偶现的空指针异常的问题
+   - 修复某些机型极慢速录制时偶现的花屏问题
+* 3.1.1
+   - 发布 pldroid-shortvideo-3.1.1.jar
+   - 更新 libpldroid_shortvideo_core.so
+   - 更新 libpldroid_amix.so
+   - 升级 FFmpeg 版本，修复版本漏洞问题
+* 3.1.0
+   - 发布 pldroid-shortvideo-3.1.0.jar
+   - 发布 libpldroid_crash.so
+   - 更新 libpldroid_amix.so
+   - 新增转码场景下不带 UI 添加水印的功能
+   - 新增转码场景下不带 UI 添加混音文件的功能
+   - 新增编辑时文字特效、图片特效、GIF特效辅助控件（demo 中）
+   - 修复偶现的类型转换异常的问题
+   - 修复个别视频在 Android Q 上拼图卡住的问题
+   - 修复偶现的空指针问题
+* 3.0.1
+  - 发布 pldroid-shortvideo-3.0.1.jar
+  - 提高机型兼容性
+* 3.0.0
+  - 发布 pldroid-shortvideo-3.0.0.jar
+  - 修复个别华为机型编辑保存异常的问题
+  - 修复图片合成添加个别音频卡住的问题
+* 2.2.1
+  - 发布 pldroid-shortvideo-2.2.1.jar
+  - 新增包名鉴权信息查询接口
+  - 修复视频编辑模块增加循环背景音乐时崩溃的问题
+  - 修复图片、GIF 拼接过程中内存泄漏的问题
+  - 修复动态贴纸改变参数后无法删除的问题
+* 2.2.0
+  - 发布 pldroid-shortvideo-2.2.0.jar
+  - 新增双视频拼图功能
+  - 新增合拍录制时，设置录制视频和样本视频的层级
+  - 新增合拍录制时，设置样本视频的显示模式
+  - 新增视频编辑时，GIF 动图的预览开关
+  - 修复切换摄像头后, PLCameraSetting.getCameraId() 接口返回错误的问题
+  - 修复视频编辑时, PLShortVideoEditor.setAudioMixAsset(AssetFileDescriptor afd) 接口无效的问题
+  - 修复视频编辑时, 在未添加水印、滤镜的场景下旋转视频会失效的问题
+  - 修复无音频的视频在转码时没有进度回调的问题
+  - 降低了视频剪辑，转码，编辑保存等操作的时耗
+* 2.1.0
+  - 发布 pldroid-shortvideo-2.1.0.jar
+  - 更新 libpldroid_amix.so
+  - 新增编辑时视频旋转功能
+  - 新增编辑时增加动态贴纸 & 动态水印功能
+  - 新增合拍录制时，麦克风和样本音频同时录制功能
+  - 新增拍摄时镜像功能
+  - 新增视频拼接功能支持时间段选取功能
+  - 修复某些手机在视频编辑页面放置一段时间后会闪烁的问题
+  - 修复某些三摄像头手机打开摄像头异常的问题
+  - 修复视频拼接时，第一段视频的音频可能会缺失一部分的问题
+  - 修复编辑时 MV 文件和视频文件帧率不一致时造成的画面不同步的问题
+  - 修复多重混音时某些音频文件混合之后出现声音异常的问题
+* 2.0.0
+  - 发布 pldroid-shortvideo-2.0.0.jar
+  - 更新 libpldroid\_shortvideo_core.so
+  - 修复某些手机剪辑和转码过程中进度可能会卡在 99% 的问题
+  - 修复使用合拍功能时，删除第一次合拍片段再重新拍摄时，生成的视频没有变化的问题
+  - 修复录制时当背景音乐总时长小于录制时长，设置起始播放位置只有在第一次循环中生效的问题
+  - 修复快速剪辑某些视频会丢帧的问题
+  - 修复合拍功能某些手机可能会卡死的问题
+  - 修复转码时候，最后音频码率最后总为 44100 的问题
+  - 修复编辑时候，不同尺寸视频切换视频源后，画面可能被拉伸压缩的问题
+  - 修复视频编辑有概率出现 crash 的问题
+* 1.16.2
+  - 发布 pldroid-shortvideo-1.16.2.jar
+  - 新增视频合拍功能
+  - 编辑时支持预览变速（Android 6.0 以上）
+  - 修复剪辑某些视频时可能会失败的问题
+  - 修复删除多重混音时预览的音效仍然存在的问题
+  - 修复在一些机型上视频剪辑可能出现的崩溃问题
+* 1.16.1
+  - 发布 pldroid-shortvideo-1.16.1.jar
+  - 更新 libpldroid_amix.so
+  - 新增多重音频混合的功能
+  - 编辑时支持精准seek（限8.0+系统）
+  - 修复视频拼接时设置帧率不生效的问题
+* 1.16.0
+  - 发布 pldroid-shortvideo-1.16.0.jar
+  - 新增编辑时分段变速的功能
+  - 新增从视频导出 GIF 动图功能
+  - 新增图片，视频，GIF 混合拼接的功能
+* 1.15.0
+  - 发布 pldroid-shortvideo-1.15.0.jar
+  - 新增更新动态水印接口
+  - 新增设置水印 Bitmap 接口
+  - 新增外部音视频数据导入接口
+  - 修复部分机型录制/编辑后保存失败的问题
+  - 修复视频拼接有几率产生崩溃的问题
+* 1.14.0
+  - 发布 pldroid-shortvideo-1.14.0.jar
+  - 新增短视频拍摄时实时返回输出视频时长接口
+  - 变速录制时添加背景音乐，背景音乐不变速
+* 1.13.0
+  - 发布 pldroid-shortvideo-1.13.0.jar
+  - 新增短视频的降帧率转码功能
+  - 新增短视频的区域裁剪转码功能
+* 1.12.0
+  - 发布 pldroid-shortvideo-1.12.0.jar
+  - 新增短视频的分段变速录制功能(硬件编码)
+  - 修复从草稿箱导入后回删视频片段导致崩溃的问题
+* 1.11.0
+  - 发布 pldroid-shortvideo-1.11.0.jar
+  - 更新 libpldroid_encoder.so
+  - 新增录制时切换到指定摄像头接口
+  - 新增录制时指定旋转角度接口（通过 Metadata 实现）
+  - 新增录制时设置降噪接口
+  - 新增录制时设置回声消除接口
+  - 新增指定视频编码 profile 接口（软编码 or 硬编码系统 API 16+）
+  - 新增码率控制类型 CONSTANT_QUALITY_PRIORITY
+  - 新增保存编辑时指定视频编码设置
+  - 新增保存编辑时指定视频时间范围
+  - 新增视频编辑时指定特效的时间范围 (文字特效，贴图 or 涂鸦)
+  - 新增指定水印大小接口
+  - 新增指定剪辑后视频的速度
+  - 新增截取视频帧时指定是否带有滤镜效果的接口
+  - 新增 View 录制功能
+  - 上传区域新增新加坡机房
+  - SDK 内部将编码分辨率对齐到 16 倍数，以解决少部分机器硬编码非 16 倍数分辨率出现花屏问题
+  - 修复打开摄像头可能引起崩溃问题
+  - 修复部分视频剪辑之后音画不同步的问题
+  - 修复部分视频转码之后清晰度下降的问题
+  - 修复视频编辑设置慢速，导出视频有概率发生崩溃的问题
+  - 修复保存时进度更新不均匀的问题
+  - 修复视频编辑添加背景音乐，音量调节可能会无效的问题
+  - 修复视频编辑添加背景音乐，背景音乐无法不循环播放的问题
+  - 修复视频编辑仅仅设置变速操作会无效的问题
+  - 修复生成的 GIF 图片只能循环有限次数的问题
+* 1.10.0
+  - 发布 pldroid-shortvideo-1.10.0.jar
+  - 更新 libpldroid_beauty.so
+  - 新增制作过场字幕功能
+  - 新增视频分段功能
+  - PLShortAudioRecorder 和 PLShortVideoRecorder 中新增 deleteAllSections() 接口，用于删除所有录制的片段
+  - 支持导入 H.265 的 mp4 进行编辑处理
+  - 修复录制不调用 PLShortVideoRecorder.setRecordSpeed 导致回调的时间错误
+  - 修复上传类不设置回调进度监听会发生崩溃的问题
+* 1.9.0
+  - 发布 pldroid-shortvideo-1.9.0.jar
+  - 新增涂鸦功能
+  - 新增静态贴图功能
+  - 新增抖音特效功能
+  - 新增图片合成 mp4 图片展示模式接口
+  - 新增编解码器不支持部分音视频格式时的错误码回调
+  - 修复设置高倍数拍摄后反复拍摄和回删发生错误的问题
+  - 修复双声道录制开始后，无法停止的问题
+  - 修复软编暂停拍摄后，偶现没有发生回调的问题
+  - 修复视频拼接中，无音轨视频放在第一个会导致无声的问题
+  - 修复部分机型（华为 P8）对某些视频时光倒流会卡在 100% 的问题
+  - 修复 setAudioMixAsset(AssetFileDescriptor afd) 接口，传入带 . 符号的路径会导致部分机型崩溃的问题
+  - 修复软编倍速拍摄，设置慢速或者极慢，录制视频有异常的问题
+  - 修复 RR-OS 系统上录制画面会倒转的问题
+* 1.8.0
+  - 发布 pldroid-shortvideo-1.8.0.jar
+  - 发布 libpldroid_encoder.so
+  - 新增视频拍摄软编的支持
+  - 新增编辑时变速功能
+  - 新增编辑时配音功能
+  - 新增图片拼接 mp4 添加背景音乐接口
+  - 新增对不同音频采样率视频拼接的支持
+  - 新增录制时添加水印的功能，其中，**水印的位置是相对于预览分辨率的**
+  - 新增草稿功能
+  - 修复编辑时纯视频（无音频轨）无法混音问题
+  - 修复部分机型编辑、转码、时光倒流保存时崩溃问题
+* 1.7.0
+  - 发布 pldroid-shortvideo-1.7.0.jar
+  - 更新 libpldroid\_shortvideo_core.so
+  - 更新 libpldroid_amix.so
+  - 新增 AR 拍摄功能
+  - 新增纯音频拍摄功能
+  - 新增时光倒流功能
+  - 新增视频剪辑中的快速剪辑模式
+  - 新增视频编辑时暂停播放/恢复播放的接口
+  - 新增从 SD 卡获取滤镜资源的接口
+  - 新增上传自定义变量的配置接口
+  - 新增录制时添加背景音乐的接口
+  - 新增视频转码中的视频旋转的接口
+  - 修复部分机型（荣耀6）转码后画面拉伸问题
+  - 修复视频录制时在 onReady 回调中开始录制产生的崩溃问题
+  - 修复部分机型（三星GALAXY A7）编辑视频时崩溃问题
+* 1.6.0
+  - 发布 pldroid-shortvideo-1.6.0.jar
+  - 更新 libpldroid\_shortvideo_core.so
+  - 更新 libpldroid_amix.so
+  - 发布 MV 特效视频资源文件
+  - 新增 MV 特效功能
+  - 新增文字特效功能
+  - 新增图片合成 MP4 功能
+* 1.5.1
+  - 发布 pldroid-shortvideo-1.5.1.jar
+  - 新增摄像头变焦功能
+  - 新增 https 上传和配置上传 key 的接口
+  - 录制的 mp4 文件 moov 信息从尾部改到头部
+  - 修复视频拼接 0 度视频出现画面拉伸的问题
+  - 修复部分机型移动混音位置导致画面抖动的问题
+* 1.5.0
+  - 发布 pldroid-shortvideo-1.5.0.jar
+  - 新增视频拼接功能
+  - 修复 demo 层播放器播放 90 度视频未旋转的问题
+* 1.4.0
+  - 发布 pldroid-shortvideo-1.4.0.jar
+  - 新增倍数拍摄功能
+  - 新增取消 GIF 合成接口
+  - demo 集成最新七牛高性能内核播放器
+  - 修复 PLShortVideoEditor 没有调用 startPlayback 会崩溃问题
+* 1.3.0
+  - 发布 pldroid-shortvideo-1.3.0.jar
+  - 新增横屏拍摄功能
+  - 新增制作 GIF 动图功能
+  - 新增指定回调 OES 类型纹理接口
+  - 新增录制时旋转纹理接口
+  - 修复切换摄像头，摄像头 ID 未更新问题
+  - 修复 onSurfaceCreated 回调带有 glError 问题
+  - 修复 onPreviewFrame 回调中的角度参数与实际数据不一致问题
+  - 修复少数机型录制时快速点击崩溃问题
+  - 修复未停止录制情况下，直接拼接失败问题
+* 1.2.1
+  - 发布 pldroid-shortvideo-1.2.1.jar
+  - 移除 libpldroid_decoder.so
+  - 更新 filters 滤镜缩略图
+  - 新增读取所有视频帧功能（不仅仅是关键帧）
+  - 新增通过时间戳读取视频帧的接口
+  - 修复剪辑、转码带 B 帧的视频会花屏问题
+  - 修复华为部分机型录制有绿边问题
+  - 修复导入纯视频文件无法剪辑的问题
+* 1.2.0
+  - 发布 pldroid-shortvideo-1.2.0.jar
+  - 新增录屏存 mp4 功能
+  - 新增合成、编辑、剪辑、转码的进度回调接口
+  - 新增合成、编辑、剪辑、转码的取消接口
+  - 修复 demo 层部分视频剪辑时间点计算错误问题
+* 1.1.1
+  - 发布 pldroid-shortvideo-1.1.1.jar
+  - 更新 libpldroid_beauty.so
+  - 更新 libpldroid\_shortvideo_core.so
+  - 更新 libpldroid_decoder.so
+  - 更新 libpldroid_amix.so
+  - 修复部分机型闪光灯兼容性问题
+  - 修复摄像头打开失败（权限或被占用）崩溃问题
+  - 修复极小部分机型保存编辑视频后水印背景黑色问题
+  - 修复低概率停止录制时 ANR 问题
+* 1.1.0
+  - 发布 pldroid-shortvideo-1.1.0.jar
+  - 发布 libpldroid\_shortvideo_core.so
+  - 发布 libpldroid_decoder.so
+  - 发布 libpldroid_amix.so
+  - 新增视频剪辑功能
+  - 新增视频转码功能
+  - 新增混音功能
+  - 新增消除原音功能
+  - 新增录制时截帧功能
+  - 新增录制时曝光调节功能
+* 1.0.1
+  - 发布 pldroid-shortvideo-1.0.1.jar
+  - 新增录制时添加内置滤镜功能
+  - 新增录制时手动对焦方法
+  - 新增录制时手动对焦和自动对焦的事件回调
+  - 内置七牛云存储文件上传模块
+* 1.0.0
+  - 发布 pldroid-shortvideo-1.0.0.jar
+  - 发布 libpldroid_beauty.so
+  - 视频采集
+  - 音频采集
+  - 视频 H.264 硬编码
+  - 音频 AAC 硬编码
+  - 实时美颜
+  - 实时滤镜
+  - 支持第三方美颜
+  - 支持第三方滤镜
+  - 自定义时长
+  - 自定义码率
+  - 自定义分辨率
+  - 支持 1:1 录制
+  - 断点拍摄
+  - 回删视频
+  - 视频水印
+  - 视频存为 .mp4 格式
+  - 支持 armv7, arm64, i386, x86_64 体系架构
+
+# 10 FAQ
+
+### 10.1 SDK 是否收费，哪里可以下载 ？
+
+本短视频 SDK 需授权方可使用，可通过 400-808-9176 转 2 号线联系七牛商务咨询，或者 [通过工单](https://support.qiniu.com/?ref=developer.qiniu.com) 联系七牛的技术支持。
+
+### 10.2 包体多大，是否支持功能裁剪 ？
+
+包体大小参考：5.3 章节，支持功能剪裁
+
+### 10.3 是否支持人脸特效、动态贴纸等 ？
+
+支持，该功能属于高级收费功能，需要联系商务获取 license
+
+### 10.4 是否支持视频播放 ？
+
+生成和上传的 mp4 文件，可以用系统的播放器播放，如果需要更高级的播放功能，推荐使用七牛的  [PLDroidPlayer](https://github.com/pili-engineering/PLDroidPlayer)  播放 SDK
+
+### 10.5 导出的视频是否只有 mp4 格式 ？
+
+是的
+
+### 10.6 AR 特效是否支持其他场景或者定制？
+
+支持，请通过 400-808-9176 转 2 号线联系七牛商务咨询，或者[通过工单](https://support.qiniu.com/?ref=developer.qiniu.com) 联系七牛的技术支持。
+
+### 10.7 如何获取视频封面图？
+
+可通过 PLMediaFile 类的 getVideoFrameByTime(long timeMs, boolean keyFrame) 方法指定时间戳来获取视频帧，或者通过 getVideoFrameByIndex(int index, boolean keyFrame) 方法指定索引值来获取视频帧。
+
+### 10.8 是否支持以及如何使用抖音特效？
+- 相关 appkey ，滤镜文件需要通过联系七牛商务来获取。
+- 需要添加特效相关的 so 文件，可在 demo 中 src/main/jniLibs/armeabi-v7a 目录下找到 (分别为：libtusdk-face.so , libtusdk-image.so , libtusdk-library.so )。 如需其它架构，请联系商务获取。
+- 需要添加特效相关的 jar 文件，可在 demo 中 libs 目录下找到 （分别为：TuSDKCore-2.9.0.jar , TuSDKFace-1.0.0.jar , TuSDKVideo-1.11.0.jar , universal-image-loader-1.9.4.jar ）。
+- 需要添加特效相关资源，可在 demo 中 src/main/assets 中找到 ( TuSDK.bundle )。该资源需要和 appkey 相匹配，请联系商务获取。
+- 具体使用方法请参看 demo 。

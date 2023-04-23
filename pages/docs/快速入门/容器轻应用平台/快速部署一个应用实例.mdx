@@ -1,0 +1,189 @@
+本文将向您介绍在使用容器轻应用平台（QAPP），如何快速部署一个应用实例，需要完成的准备工作，包括注册七牛账号、制作镜像、创建应用、部署实例。
+
+
+
+
+
+# **步骤一. 开通七牛云账号**
+
+您在使用QAPP完成一个应用的实例部署之前，需要完成的准备工作。
+
+- 开通一个[七牛账号](https://portal.qiniu.com/)
+
+如您已注册，可忽略此步骤。
+
+
+
+
+# **步骤二.制作上传镜像**
+
+您需要将制作应用镜像，以便发布版本时使用，镜像制作过程以及将镜像上传的操作流程如下：
+
+- 安装Docker
+- 制作镜像
+- 通过七牛提供的 [命令行工具 qappctl](/qapp/tools/12308/qappctl-command-line-tools) ，上传本地可运行的 docker image到应用镜像仓库
+
+### **使用示例**
+
+- dockerfile 文件内容如下：
+
+  ```
+  FROM ubuntu:20.04
+  RUN apt-get update
+  RUN apt install -y nginx
+  CMD /bin/bash
+  ```
+
+
+- 利用dockerfile生成镜像
+
+  ```
+  docker build -t < 镜像名（推荐使用应用名）>:<版本号> -f < dockerfile路径> 
+  ```
+
+
+- 检查镜像创建成功
+
+  ```
+  docker images | grep <镜像名>
+  ```
+
+- 上传镜像（QAPPctl 需要先 login）
+
+  ```
+  QAPPctl login -u <AccessKey> -p <SecretKey>(如果已经login可以跳过此步骤)
+  QAPPctl push <镜像名（推荐使用应用名）>:<版本号>
+  ```
+
+
+- 检查上传成功
+
+  ```
+  QAPPctl login -u <AccessKey> -p <SecretKey>(如果已经login可以跳过此步骤)
+  QAPPctl images | grep custom_image
+  ```
+
+
+
+# **步骤三.新建应用**
+
+一个应用代表一个服务。
+
+1. 登录 [容器轻应用平台](https://portal.qiniu.com/dora/qapp)。
+
+2. 在左侧导航栏，点击【新建应用】按钮，进入 **新建应用页面**。
+
+3. 点击 **保存**，创建一个应用。
+
+   ![img](https://dora-doc.qiniu.com/WX20221103-102600%402x.png)
+
+
+
+# **步骤四.发布版本**
+
+1. 在左侧导航栏单击某应用，在顶部菜单栏选择 **版本列表**。
+3. 点击【发布新版本】按钮，进入 **发布新版本页面**。
+4. 设置版本配置信息，包含可运行的docker镜像、服务运行的资源配置、高级设置（容器入口、存储、应用配置、健康检查、日志搜集、环境变量等），点击保存。![img](https://dora-doc.qiniu.com/WX20221103-103301%402x.png)
+
+  
+
+# **步骤五.部署实例**
+
+有两种方式，可以对应用版本进行部署实例操作：
+
+### **方式一**
+
+1. 在左侧导航栏单击某应用，在顶部菜单栏选择 **版本列表**。
+
+2. 选择需要部署实例的版本，点击 **操作->部署实例**
+
+   ![img](https://dora-doc.qiniu.com/WX20221103-103753%402x.png)
+
+   
+
+### **方式二**
+
+1. 在左侧导航栏单击某应用，在顶部菜单栏选择 **部署管理**。
+
+2. 点击【+部署实例】按钮，进入 **创建部署页面**。
+
+   ![img](https://dora-doc.qiniu.com/WX20221103-104542%402x.png)
+
+3. 在部署实例页面，选择 **区域**、填写 **配置实例**、选择对应的 **应用版本**。
+
+   ![img](https://dora-doc.qiniu.com/WX20221103-104219%402x.png)
+
+
+
+### **验证实例部署成功**
+
+完成实例部署后，可以在部署管理页面，查看实例数变为目标设定值，则表示应用实例部署成功。
+
+![img](https://dora-doc.qiniu.com/WX20221103-111707%402x.png)
+
+
+
+# **步骤六.应用访问**
+
+完成 **应用的创建和实例部署** 后，您的业务需要发起任务请求时，可以根据自身业务情况来配置符合当前应用的访问方式。
+
+支持以下两种应用访问入口：
+
+### **[Fop 请求入口](/qapp/development_guidelines/12335/fop-request-entry01)**
+
+1. 在左侧导航栏，点击【新建应用】按钮，进入 **新建应用页面**。
+
+2. 点击开启 **Fop请求入口** 开关按钮，则 Fop 请求入口创建成功
+
+3. 添加成功后，您可以对存储在kodo的资源，发起任务处理。
+
+   ![img](https://dora-doc.qiniu.com/WX20221103-110344%402x.png)
+
+
+
+### **[异步任务入口](/qapp/development_guidelines/12336/asynchronous-task-entry)**
+
+1. 在左侧导航栏单击某应用，在顶部菜单栏选择 **入口管理**。
+
+2. 点击【新建入口】按钮，弹出新建确认弹窗，点击 **确认**，则异步任务入口创建成功。
+
+   ![img](https://dora-doc.qiniu.com/WX20221103-110847%402x.png)
+
+3. 添加成功后，您可以对存储在公网资源发起任务处理，创建对应 HTTP 接口的异步调用。
+4. 您可能需要SDK工具来 **提交异步任务、查询异步任务**。七牛会将提交的任务持久化，然后转发给容器集群上对应端口。具体操作，请参见文档：
+   - [Go SDK 使用](/qapp/tools/12310/go-to-the-sdk-tools)
+
+
+
+# **更多信息**
+
+- 如何对您的应用版本进行 **环境变量、健康检查、日志搜集、持久化存储等** 高级配置。具体操作，请参见文档：
+
+  - [应用版本](https://developer.qiniu.com/dora/7934/guide-to-the-console-2#2)
+
+- 当您的应用配置发生变更时，只需设定配置并指定挂载路径，应用即可读取该配置文件，能避免额外的代码修改和镜像构建。具体操作，请参见文档：
+  - [应用配置](/qapp/development_guidelines/12323/application-configuration01)
+  
+- 您在QAPP平台部署完实例后，可以对实例进行滚动更新、手动扩缩容、自动扩缩容、流量控制、删除应用等生命周期管理操作。具体操作，请参见文档：
+  - [实例部署](/qapp/development_guidelines/12324/instance-deployment)
+  - [弹性伸缩](/qapp/development_guidelines/12327/automatic-enlarge-shrinks)
+  - [滚动更新发布策略](/qapp/development_guidelines/12329/scroll-to-update)
+  - [流量分配发布策略](/qapp/development_guidelines/12331/flow-distribution01)
+  - [流量控制](/qapp/development_guidelines/12332/flow-control)
+  
+- 您在QAPP平台完成实例部署后，还可以对应用进行日志管理、应用监控诊断（即监控、告警），聚焦应用运行状态，为应用运行提供保障。具体操作，请参见以下文档：
+
+  - [日志管理](/qapp/development_guidelines/12338/log-management)
+  - [系统监控](/qapp/development_guidelines/12339/system-monitoring)
+  
+  - [运维告警](/qapp/development_guidelines/12340/ops-alarm)
+  
+  
+
+
+
+
+
+
+
+

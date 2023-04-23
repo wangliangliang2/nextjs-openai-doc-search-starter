@@ -1,0 +1,76 @@
+Pandora 2.0 支持 SPL 高级搜索分析语法，它提供 100 多种命令，可以搜索、关联、分析、可视化任何日志数据。
+
+SPL 搜索分析语法以管道符的形式表达数据分析的过程，把数据分析拆分成步骤，每一步完成相应的数据分析，使用范式如下：
+
+`<SPL命令> | <SPL命令> | …`
+
+如：
+```
+apache.status<=400 | stats avg(request_time) by host
+```
+
+本文档主要为您介绍 spl 语法。
+
+**spl 语法**
+
+一条最简单的 spl 语句由命令、参数组成:
+```
+stats <stats_function(field)>[as field][by field_list]
+```
+
+其中，[ ] 括起的是可选参数。一条 spl 语句中，可选参数不是必须。
+如：
+```
+stats avg(request_time)
+```
+
+spl语句可能还有如下组合：
+*  输入参数组的命令
+
+ ```
+replace (<string> WITH <string>)... [IN <field-list>]
+# 示例
+replace "192.168.1.1" with "machine1" in host
+```
+
+* 命令和重复参数，省略号部分代表重复参数，表示重复 **field AS field** 参数。如：
+```
+rename（field AS field）…
+# 示例
+rename _ip AS IPAddress, _china AS china
+```
+
+**spl 支持的命令**
+
+|spl 命令|	描述|
+|:--:|:--:|
+|[append](/express/manual/6685/append)|	将子搜索的结果追加到当前搜索结果|
+|[bin](/express/manual/6017/bin)|	设置时间或数值的聚合粒度|
+|[convert](/express/manual/6385/convert)|将搜索结果中的字段值转换为数值|
+|[dedup](/express/manual/6237/dedup)	|删除指定字段的具有相同值的日志|
+|[eval](/express/manual/6015/eval)|	根据已有字段进行逻辑运算，将值代入已有字段或添加新字段|
+|[eventstats](/express/manual/6014/eventstats)	|添加统计信息到搜索结果中|
+|[export](/express/manual/6362/export)|导出搜索分析结果|
+|[fields](/express/manual/6238/fields)|	在搜索结果中保留或移除字段，默认保留字段|
+|[iplocation](/express/manual/6689/iplocation)|	从IP地址中提取位置信息|
+|[jsonpath](/express/manual/6243/jsonpath)|从json数据中通过路径参数提取相关信息|
+|[join](/express/manual/6018/join)	|通过字段值进行关联查询|
+|[limit](/express/manual/6020/limit)|	搜索结果中保留前 N 条结果|
+|[lookup](/express/manual/6140/lookup)	|关联外部表格对字段进行映射|
+|[movingavg](/express/manual/6549/movingavg)|在时序数据中滑动指定大小的窗口，并对窗口中的数据进行聚合统计|
+|[mvcombine](/express/manual/6496/mvcombine)|将一组除了指定字段（单值）以外其他字段值都相同的事件合并为一个事件|
+|[mvexpand](/express/manual/6495/mvexpand)|将具有多值字段的单条事件扩展为多条事件，多值字段中的每个值对应结果中一个新事件|
+|[replace](/express/manual/6550/replace)|用指定值替换字段中的值|
+|[rare](/express/manual/6241/rare)|计算数据中出现频率最低的值|
+|[rename](/express/manual/6239/rename/)	|重命名指定字段|
+|[rex](/express/manual/6016/rex)	|通过正则表达式命名的群组提取字段|
+|[search](/express/manual/6021/search)	|搜索命令，用于匹配日志|
+|[sort](/express/manual/6019/sort)	|按照指定的字段对搜索结果进⾏排序|
+|[stats](/express/manual/6013/stats)	|对日志搜索结果统计分析|
+|[timechart](/express/manual/6363/timechart)	|按照时序的方式聚合分析数据|
+|[transaction](/express/manual/6242/transaction)|通过多种约束条件将多个日志聚合成一条日志，形成完整的事务|
+|[top](/express/manual/6240/top)	|统计字段出现最多的值|
+|[where](/express/manual/6022/where)	|根据布尔表达式过滤搜索结果|
+|[xmlpath](/express/manual/6244/xmlpath)|从xml数据中通过路径参数提取相关信息|
+
+

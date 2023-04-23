@@ -1,0 +1,284 @@
+# QNIMChatServiceProtocol Protocol Reference
+
+Conforms to | NSObject
+---|---
+Declared in | QNIMChatServiceProtocol.h
+  
+### `- messageStatusChanged:error:`
+
+消息发送状态发生变化
+
+`- (void)messageStatusChanged:(QNIMMessageObject *) _message_ error:(QNIMError
+*) _error_`
+
+#### Discussion
+
+消息发送状态发生变化
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- messageAttachmentUploadProgressChanged:percent:`
+
+附件上传进度发送变化
+
+`- (void)messageAttachmentUploadProgressChanged:(QNIMMessageObject *) _message_
+percent:(int) _percent_`
+
+#### Discussion
+
+附件上传进度发送变化
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- messageRecallStatusDidChanged:error:`
+
+消息撤回状态发送变化
+
+`- (void)messageRecallStatusDidChanged:(QNIMMessageObject *) _message_
+error:(QNIMError *) _error_`
+
+#### Discussion
+
+消息撤回状态发送变化
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- receivedMessages:`
+
+收到消息
+
+`- (void)receivedMessages:(NSArray<QNIMMessageObject*> *) _messages_`
+
+#### Discussion
+
+收到消息
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- receivedCommandMessages:`
+
+收到命令消息
+
+`- (void)receivedCommandMessages:(NSArray<QNIMMessageObject*> *) _messages_`
+
+#### Discussion
+
+收到命令消息
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- receivedSystemMessages:`
+
+收到系统通知消息
+
+`- (void)receivedSystemMessages:(NSArray<QNIMMessageObject*> *) _messages_`
+
+#### Discussion
+
+收到系统通知消息
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- receivedReadAcks:`
+
+收到消息已读回执
+
+`- (void)receivedReadAcks:(NSArray<QNIMMessageObject*> *) _messages_`
+
+#### Discussion
+
+收到消息已读回执
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- receivedDeliverAcks:`
+
+收到消息已送达回执
+
+`- (void)receivedDeliverAcks:(NSArray<QNIMMessageObject*> *) _messages_`
+
+#### Discussion
+
+收到消息已送达回执
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- receivedRecallMessages:`
+
+收到撤回消息
+
+`- (void)receivedRecallMessages:(NSArray<QNIMMessageObject*> *) _messages_`
+
+#### Discussion
+
+收到撤回消息
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- receiveReadCancelsMessages:`
+
+收到消息已读取消（多设备其他设备同步消息已读状态变为未读）
+
+`- (void)receiveReadCancelsMessages:(NSArray<QNIMMessageObject*> *) _messages_`
+
+#### Discussion
+
+收到消息已读取消（多设备其他设备同步消息已读状态变为未读）
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- receiveReadAllMessages:`
+
+收到消息全部已读（多设备同步某消息之前消息全部设置为已读）
+
+`- (void)receiveReadAllMessages:(NSArray<QNIMMessageObject*> *) _messages_`
+
+#### Discussion
+
+收到消息全部已读（多设备同步某消息之前消息全部设置为已读）
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- receiveDeleteMessages:`
+
+收到删除消息 （多设备同步删除消息）
+
+`- (void)receiveDeleteMessages:(NSArray<QNIMMessageObject*> *) _messages_`
+
+#### Discussion
+
+收到删除消息 （多设备同步删除消息）
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- messageAttachmentStatusDidChanged:error:percent:`
+
+附件下载状态发生变化
+
+`- (void)messageAttachmentStatusDidChanged:(QNIMMessageObject *) _message_
+error:(QNIMError *) _error_ percent:(int) _percent_`
+
+#### Discussion
+
+附件下载状态发生变化
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- retrieveHistoryMessagesConversation:`
+
+拉取历史消息
+
+`- (void)retrieveHistoryMessagesConversation:(QNIMConversation *)
+_conversation_`
+
+#### Discussion
+
+拉取历史消息
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- loadAllConversationDidFinished`
+
+已经加载完未读会话列表
+
+`- (void)loadAllConversationDidFinished`
+
+#### Discussion
+
+已经加载完未读会话列表
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- conversationDidCreatedConversation:message:`
+
+本地创建新会话成功
+
+`- (void)conversationDidCreatedConversation:(QNIMConversation *) _conversation_
+message:(QNIMMessageObject *) _message_`
+
+#### Parameters
+
+conversation |新创建的本地会话
+---|---
+message |会话的最新消息，存在返回不存在返回为空
+  
+#### Discussion
+
+本地创建新会话成功
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- conversationDidDeletedConversationId:error:`
+
+删除会话
+
+`- (void)conversationDidDeletedConversationId:(NSInteger) _conversationId_
+error:(QNIMError *) _error_`
+
+#### Parameters
+
+conversationId |删除的本地会话id
+---|---
+error |状态错误码
+  
+#### Discussion
+
+删除会话
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+### `- conversationTotalCountChanged:`
+
+更新总未读数
+
+`- (void)conversationTotalCountChanged:(NSInteger) _unreadCount_`
+
+#### Parameters
+
+unreadCount |未读数
+---|---
+
+#### Discussion
+
+更新总未读数
+
+#### Declared In
+
+`QNIMChatServiceProtocol.h`
+
+
+

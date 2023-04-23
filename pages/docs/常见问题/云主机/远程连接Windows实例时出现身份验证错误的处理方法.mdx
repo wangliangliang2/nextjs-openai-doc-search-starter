@@ -1,0 +1,67 @@
+# 问题描述
+通过微软的RDP协议客户端，远程连接Windows实例时，系统提示“出现身份验证错误，要求的函数不受支持（The function requested is not supported）”错误。
+
+![](https://dn-odum9helk.qbox.me/Fohr3rxVS9sVAz4iXu_s89Gclo5h)
+
+# 问题原因
+微软官方2018年5月，更新了凭据安全支持提供程序协议（CredSSP）相关补丁和身份验证请求方式。当遇到如下一种情景时，就会出现该连接错误。
+
+- 情景一：客户端未更新该补丁，服务器端已更新该补丁且加密Oracle修正的策略为强制更新的客户端。
+- 情景二：客户端已更新该补丁且加密Oracle修正的策略为强制更新的客户端，服务器端未更新该补丁。
+- 情景三：客户端已更新该补丁且加密Oracle修正的策略为缓解，服务器端未更新该补丁。
+
+# 解决方案
+## 方法一 ：服务器端允许任意版本的远程桌面连接
+由于Windows Server系统版本较多，且各版本之间操作略有差异，此处分别以Windows Server 2008 R2、Windows Server 2012 R2和Windows Server 2016三个主流版本为例，步骤如下。
+</br>
+### Windows Server 2008 R2系统版本
+1. 通过 [VNC远程连接](https://developer.qiniu.io/qvm/manual/6864/use-the-management-terminal-vnc-connection-windows-instance) 登录Windows实例，打开 **开始** ，右键单击 计**算机**，选择** 属性**。
+![](https://dn-odum9helk.qbox.me/FqXDpegwqUTFk0VlEC4wT4v12_wG)
+3. 在系统控制面板中，单击** 远程设置**，在弹出的** 远程桌面 **选项中选择 允许运行任意版本远程桌面的计算机连接（较不安全） 并单击 **确定**。
+![](https://dn-odum9helk.qbox.me/Frsht5eBFmcMmoWzSewGdeSSxsTd)
+</br>
+### Windows Server 2012 R2系统版本
+1. 通过 [VNC远程连接](https://developer.qiniu.io/qvm/manual/6864/use-the-management-terminal-vnc-connection-windows-instance) 登录Windows实例，打开 **开始** ，右键单击 计**算机**，选择** 属性**。
+![](https://dn-odum9helk.qbox.me/FqnGEzQI3N9-CqALAP95kM4zE0oQ)
+1. 在系统控制面板中，单击 **远程设置**，在弹出的 **远程桌面** 选项中取消选择 **仅允许运行使用网络级别身份验证的远程桌面的计算机连接（建议）** 并单击 **确定**。
+![](https://dn-odum9helk.qbox.me/Fi0U8BNLT9uGrZmrS5scYDIZLfE9)
+</br>
+### Windows Server 2016系统版本
+1. 通过 [VNC远程连接](https://developer.qiniu.io/qvm/manual/6864/use-the-management-terminal-vnc-connection-windows-instance) 登录Windows实例，打开 **开始** ，右键单击 计**算机**，选择** 属性**。
+![](https://dn-odum9helk.qbox.me/FrEnHErgH_tOXfAvuLTvv7zAJVGp)
+1. 在系统控制面板中，单击 **远程设置**，在弹出的 **远程桌面** 选项中取消选择 **仅允许运行使用网络级别身份验证的远程桌面的计算机连接（建议）** 并单击 **确定**。
+![](https://dn-odum9helk.qbox.me/FpKSugWhirKaFB78CzOkIvtJVIy-)
+
+</br>
+## 方法二 ：Windows安全更新
+1. 通过 [VNC远程连接](https://developer.qiniu.io/qvm/manual/6864/use-the-management-terminal-vnc-connection-windows-instance) 登录Windows实例，搜索并打开 **Windows 更新** 页面，单击 **检查更新** 下载更新。
+![](https://dn-odum9helk.qbox.me/Fidn1ViQZSPmyzGRMFJRBqgZSQPl)
+1. 等待更新下载和安装。如果需要手动安装CredSSP对应安全更新包，请参考[微软官网地址](https://www.microsoft.com/zh-cn/windows/?spm=a2c4g.11186623.2.25.6a554c07N27Vca)进行选择对应版本的安全更新下载。
+2. 重启实例或重启本地计算机以完成安装更新。
+</br>
+## 方法三：修改注册表
+
+> 提示：此处以Windows Server 2016系统版本为例，其他Windows系统版本操作类似。
+
+### **手动修改**
+当客户端或服务器端完成CredSSP相关补丁的更新后，请选择以下一种方式修改其注册表。如果修改注册表不当，可能会出现严重问题，您需要自行承担修改注册表风险。修改注册表之前，建议您先通过创建快照备份数据，以免数据丢失。
+1. 登录Windows实例或者本地计算机，单击 **开始 > 运行**，输入**regedit**，单击 确定。
+2. 单击 **HKEY_LOCAL_MACHINE > SOFTWARE > Microsoft > Windows > CurrentVersion > Policies > System > CredSSP > Parameters**。
+![](https://dn-odum9helk.qbox.me/Fvd9BlARIEYemK5y0Kq6LGesR_SK)
+1. 如果 **CredSSP** 项或者 **Parameters** 项不存在，请新建 **CredSSP** 项或者 **Parameters** 项，在 **Parameters** 项下新建 **REG_DWORD** 类型的 **AllowEncryptionOracle** 值，并设置数据为2。
+![](https://dn-odum9helk.qbox.me/FhPK0E-lFo1XJOdjaZtkXtdrSpfd)
+4. 重启实例或重启本地计算机。
+
+### **脚本修改**
+1. 登录Windows实例或者本地计算机，以管理员身份运行Windows PowerShell，执行如下脚本。
+2. 重启实例或重启本地计算机。
+
+脚本：
+```
+New-Item -Path HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System -Name CredSSP -Force
+New-Item -Path HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System\CredSSP -Name Parameters -Force
+Get-Item -Path HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System\CredSSP\Parameters | New-ItemProperty -Name AllowEncryptionOracle -Value 2 -PropertyType DWORD -Force
+```
+
+
+> 注：若您优先使用本方法修改了注册表，随后又更新了客户端和ECS实例安全补丁，我们建议您将AllowEncryptionOracle的值设为0或者1以获得更高的安全性。

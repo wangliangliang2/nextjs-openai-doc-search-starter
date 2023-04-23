@@ -1,0 +1,58 @@
+本文适用基于 API URL 发起 HTTP/HTTPS 请求的用户。
+
+发起 API 请求的 URL 由不同参数拼凑而成，有固定的 请求结构。URL 中包含 公共参数、您的 签名 和某个 API 的具体参数。
+
+每篇 API 文档均给出了 URL 请求示例供您参考，但是为了方便显示，我们并没有编码这些 URL 示例，您需要在发起请求前自行编码。
+
+我们根据您的签名验证了请求后，会 返回结果 给您。接口调用成功会显示返回参数，调用失败则显示相应报错，您可以根据公共错误码和具体 API 错误码分析排查。
+
+# API 请求凭证
+>详见 [《管理凭证》](https://developer.qiniu.com/kodo/manual/1201/access-token)
+
+
+# API 请求域名
+
+>https://api-qvm.qiniu.com
+
+
+# API 请求示例
+```
+POST /v1/vm/instance HTTP/1.1
+Host: api-qvm.qiniu.com
+X-Qiniu-Regionid: cn-beijing
+Content-Type: application/json
+Authorization: Qiniu <AccessToken>
+
+{
+  ...
+}
+```
+
+# API 通用返回结果
+
+返回结果由 JSON 格式组成。
+
+为了便于查看和美观，API 文档返回示例均有换行和缩进等处理，实际返回结果无换行和缩进处理。
+
+## 正常返回示例
+接口调用成功后会返回接口返回参数和请求 ID，我们称这样的返回为正常返回。HTTP 状态码为 2xx。
+```json
+{
+    "request_id": "4C467B38-3910-447D-87BC-AC049166F216", /* 请求 ID */
+    "data": {} /* 返回结果数据 */
+}
+```
+
+
+## 异常返回示例
+接口调用出错后，会返回错误码、错误信息和请求 ID，我们称这样的返回为异常返回。HTTP 状态码为 4xx 或者 5xx。
+
+您可以根据接口的错误提示进行排查错误。当您无法排查错误时，可以 提交工单 联系我们，并在工单中注明 RequestId。
+
+```json
+{
+    "request_id": "540CFF28-407A-40B5-B6A5-74Bxxxxxxxxx", /* 请求 ID */
+    "code": 400, /* 错误码 */
+    "error_message": "invalid instance_type" /* 错误信息 */
+}
+```

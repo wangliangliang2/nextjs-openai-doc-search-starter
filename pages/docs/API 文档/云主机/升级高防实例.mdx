@@ -1,0 +1,41 @@
+# 请求路径
+>`PUT` /v1/security/bgpip/modify/:resource_id/bandwidth
+
+# 请求参数
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| resource_id | string | path | 是 | 高防实例ID|
+| X-Qiniu-Regionid | string | header | 是 | 地域 ID, 只能填shanghai, 大陆通用地域|
+| bandwidth | int | body | 是 | 保底带宽大小，单位：Mbps |
+| service_bandwidth | int | body | 是 | 业务带宽大小，单位：Mbps |
+| domain_count | int | body | 是 | 转发规则数量 |
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| data | OrderInfo | 是 | 订单详情 |
+
+### OrderInfo 订单信息
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| order | string | 是 | 订单号 |
+
+# 示例
+### 请求body示例
+```
+{
+    "bandwidth": 50000,
+    "service_bandwidth": 100,
+    "domain_count": 60
+}
+```
+
+### 正常返回示例
+```json
+{
+    "data": {
+        "order": "1QW2F998-8642-2346-I2K3-0OKMNHY65TG4"
+    }
+}
+```

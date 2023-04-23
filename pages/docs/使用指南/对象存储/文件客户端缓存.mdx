@@ -1,0 +1,25 @@
+使用空间属性 maxAge 实现对文件客户端缓存的控制, 达到配置 HTTP header 中 Cache-Control:max-age 的目的。
+<br>
+
+# **具体说明**
+- **Cache-Control 的概念**
+   - Cache-Control 通用消息头被用于在 http 请求和响应中通过指定指令来实现缓存机制, 是一种缓存控制的方法。 HTTP header 中，服务器可以通过对 Cache-Control 的设置来指定在文档过期之前将其缓存多长时间。
+   - 例如，七牛控制台可以通过配置 Cache-Control: max-age 的时间表示从服务器传来文档之时起，认为此文档处于新鲜状态的秒数。
+<br>
+- **maxAge 值和 CDN 缓存时间的区别**
+访问资源链接时，缓存通常分为浏览器缓存和 CDN 节点缓存。
+用户在浏览器中输入资源链接访问时，优先使用浏览器缓存，缓存失效或禁用本地缓存后，会向 CDN 节点请求资源，当 CDN 缓存时间超时后，会向源站发起资源请求。
+   - Cache-Control:max-age: 设置缓存存储的最大周期，超过这个时间缓存被认为过期(单位秒)，控制用户浏览器端的缓存。
+   - CDN 缓存：当 CDN 缓存超时后，节点认为缓存失效，会向源站重新请求资源。
+<br>
+- **查看 Cache-Control 的 maxAge 值**
+   - 以 chrome 控制台为例，打开开发者工具或检查，在 network 标签页下查看。
+   ![FmFP1Yf577R9H32p6lDhG-4-apiy.png](https://dn-odum9helk.qbox.me/FmFP1Yf577R9H32p6lDhG-4-apiy)
+<br>
+
+
+# **操作方式**
+Kodo 支持通过控制台设置文件客户端缓存 maxAge。
+|支持的操作方式|参考文档|
+|-|-|
+|控制台	|[设置文件客户端缓存](/kodo/development_guidelines/8535/settings-file-the-client-cache)|

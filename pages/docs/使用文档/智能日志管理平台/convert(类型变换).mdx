@@ -1,0 +1,22 @@
+除了通过可视化界面配置以外，logkit 还支持手动书写 dsl: 针对 dsl 指定的字段和类型做数据格式转换，dsl 中可以包含多个数据字段和类型。如将 field1 转为 long、field2 转为 string 则写为 "field1 long, field2 string"。
+可以在Parser后使用，针对dsl指定的字段和类型做数据格式转换。
+
+配置如下：
+
+```
+{
+		"type":"convert",
+		"dsl":"field1 string"
+}
+```
+
+### **DSL 语法**
+
+DSL 规则为<字段名称> <类型>,字段名称和类型用空格符隔开，不同字段用逗号隔开。若字段必填，可以转换的类型包括：
+
+* long 类型(int64): long,LONG,l,L
+* float 类型(float64): float,FLOAT,F,f
+* string 类型: string,STRING,S,s
+* bool 类型: bool,BOOL,B,b,boolean
+* array 类型: array,ARRAY,A,a；括号中跟具体array元素的类型，如a(l)，表示array里面都是long。同时，也可以省略小括号前的array类型申明，直接写(l)，表示 array 类型，里面的元素是long
+* map 类型: map,MAP,M,m；使用花括号表示具体类型，表达map里面的元素，如map{a l,b map{c b,x s}}, 表示map结构体里包含a字段，类型是long，b字段又是一个map，里面包含c字段，类型是bool，还包含x字段，类型是string。同时，也可以省略花括号前面的map类型，直接写{s l},表示map类型，里面的元素s为long类型。

@@ -1,0 +1,54 @@
+<a id="region"></a>
+
+
+# **什么是资源池、地域和可用区？**
+资源池包含了不同的地域和可用区。
+地域和可用区指的云主机QVM 所在数据中心的位置，您可以在特定的区域、可用区创建资源。
+
+
+**资源池：** 不同的资源池提供了不同的产品服务，七牛云有两大资源池，资源池一和资源池二的产品与服务**完全隔离，互不相通。**
+**地域：** 从地理位置和网络时延维度划分，**同一个资源池的同一地域内网互通。**
+**可用区：** 可用区是指在同一地域内，电力和网络互相独立的物理区域。**同一地域内的可用区与可用区之间内网互通**，可用区之间能做到故障容错。例如：当你的应用需要较高的容灾能力时，QVM 实例最好部署在同一地域的不同可用区内；当你的应用在实例之间需要较低的网络延迟时，QVM 实例最好部署在同一可用区内。
+
+
+> 注意：
+	> 1. 实例创建成功后不能更换资源池、地域和可用区。
+	> 2. 不同资源池资源完全隔离，如上海1和上海2是两个地域。
+
+# **资源池、地域、可用区关联图**
+资源池一和资源池二的产品与服务**完全隔离，互不相通。**，以上海、杭州为例，关联关系如下图：
+
+![](https://dn-odum9helk.qbox.me/FieTFORcqz5B4a0Ua_IcH9wffkJk?imageMogr2/auto-orient/thumbnail/500x/blur/1x0)
+
+
+# **资源池和服务**
+| 产品与服务 | 资源池一 | 资源池二 |
+|-|-|-|
+| 云主机 | &#10004; | &#10004; |
+| 云硬盘 | &#10004; | &#10004; |
+| 镜像服务 | &#10004; | &#10004; |
+| 弹性公网IP | &#10004; | &#10004; |
+| 负载均衡 | &#10004; | &#10006; |
+| 弹性伸缩 | &#10004; | &#10006; |
+| NAT网关 | &#10004; | &#10006; |
+| VPN网关 | &#10004; | &#10006; |
+| 共享带宽 | &#10004; | &#10006; |
+| 云企业网 | &#10004; | &#10006; |
+| IPv6网关 | &#10004; | &#10006; |
+| 云数据库 MySQL | &#10004; | &#10006; |
+| 云数据库 SQL Server | &#10004; | &#10006; |
+| 云数据库 PostgreSQL | &#10004; | &#10006; |
+| 云数据库 PolarDB | &#10004; | &#10006; |
+| 云数据库 Redis | &#10004; | &#10006; |
+| 云数据库 MongoDB | &#10004; | &#10006; |
+| Web应用防火墙 | &#10004; | &#10006; |
+| BGP 高防 IP | &#10004; | &#10006; |
+
+
+# **资源池一地域**
+<table><thead><tr><th>大区</th><th>地域</th><th>Region ID</th></tr></thead><tbody><tr><td rowspan="4">华北</td><td>青岛1</td><td>cn-qingdao</td></tr><tr><td>北京1</td><td>cn-beijing</td></tr><tr><td>张家口1</td><td>cn-zhangjiakou</td></tr><tr><td>呼和浩特1</td><td>cn-huhehaote</td></tr><tr><td rowspan="2">华东 </td><td>杭州1</td><td>cn-hangzhou</td></tr><tr><td>上海1</td><td>cn-shanghai</td></tr><tr><td>华南 </td><td>深圳1</td><td>cn-shenzhen</td></tr><tr><td>香港</td><td>香港1</td><td>cn-hongkong</td></tr><tr><td rowspan="4">亚太东南 </td><td>新加坡1</td><td>ap-southeast-1</td></tr><tr><td>悉尼1</td><td>ap-southeast-2</td></tr><tr><td>吉隆坡1</td><td>ap-southeast-3</td></tr><tr><td>雅加达1</td><td>ap-southeast-5</td></tr><tr><td rowspan="2">亚太南部</td><td>孟买1</td><td>ap-south-1</td></tr><tr><td>东京1</td><td>ap-northeast-1</td></tr><tr><td>中东东部</td><td>迪拜1</td><td>me-east-1</td></tr><tr><td>美国东部 </td><td>弗吉尼亚1</td><td>us-east-1</td></tr><tr><td>美国西部</td><td>硅谷1</td><td>us-west-1</td></tr><tr><td>欧洲中部</td><td>法兰克福1</td><td>eu-central-1</td></tr></tbody></table>
+
+
+# **资源池二地域**
+
+<table><thead><tr><th>大区</th><th>地域</th><th>Region ID</th></tr></thead><tbody><tr><td>华北</td><td>北京2</td><td>grand-cn-north-4</td></tr><tr><td>华东</td><td>上海2</td><td>grand-cn-east-3</td></tr><tr><td>华南</td><td>广州2</td><td>grand-cn-south-1</td></tr><tr><td>西南</td><td>贵阳2</td><td>grand-cn-southwest-2</td></tr></tbody></table>

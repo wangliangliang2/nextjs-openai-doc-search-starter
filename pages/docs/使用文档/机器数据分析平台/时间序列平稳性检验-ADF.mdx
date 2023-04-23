@@ -1,0 +1,27 @@
+用adfuller算子实现对单个字段的ADF检验。ADF检验也叫扩展的迪克富勒检验，主要作用是通过检测序列是否存在单位根：如果序列平稳，就不存在单位根；否则，就会存在单位根。这也是最常用检测序列平稳性的检验方法。
+
+**语法：**
+
+```
+...| score adfuller autolag=<aic(default)|bic|t-stat|none> regression=<c(default)|ct|ctt|nc> maxlag=<int> alpha=<float> <field>
+```
+
+**参数说明：**
+
+- autolag，用来指定自动检测延迟阶数的方式。
+  - autolag=AIC（默认值），使用 AIC（赤池信息量 ）做延迟阶数选择
+  - autolag=BIC，使用 BIC（贝叶斯信息量）做延迟阶数选择
+  - autolag=tstat，从最大延迟阶数 maxlag 开始，每次减少一个延迟，直到某一阶延迟的 t 统计量对 5%值来说是显著的。
+  - autolag=None，直接使用 maxlag
+- regression，用来指定回归中包含的常数和趋势阶数。
+  - regression=c（默认值），仅有常数均值
+  - regression=ct，有常数均值，有趋势
+  - regressionn=ctt，有常数均值有线性和二次趋势
+  - regressionn=nc，无常数均值，无趋势
+- maxlag，用来指定最大延迟阶数
+- alpha，用来指定显著性水平，即在零假设为真时拒绝零假设的概率，默认是 0.05。
+
+**使用场景：**
+
+- 只能对单个字段做检验。
+- ADF 检验的 H0 假设：序列中存在单位根，即序列不平稳；H1 假设：不存在单位根，即序列平稳。

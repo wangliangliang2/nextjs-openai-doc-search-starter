@@ -1,0 +1,29 @@
+# 请求路径
+> `POST` /v1/ess/group/:id/configuration
+
+# 请求参数
+
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region_id | string | body | 是 | 地域 ID |
+| id | string | path | 是 | 伸缩配置所属的伸缩组 ID |
+| scaling_configuration_name | string | body | 是 | 伸缩配置的显示名称 |
+| image_id | string | body | 是 | 镜像ID |
+| instance_type | int | body | 是 | 实例规格 |
+| security_group_id | int | body | 是 | 安全组 ID |
+| system_disk_category | []string | body | 是 | 系统盘的磁盘种类。cloud_efficiency：高效云盘, cloud_ssd：SSD云盘, cloud_essd：ESSD云盘 |
+| system_disk_size | int | body | 是 | 系统盘大小 |
+| system_disk_name | string | body | 是 | 系统盘名称 |
+| instance_name | string | body | 是 | 实例名称 |
+| key_pair_name | int | body |否 | 登录ECS实例时使用的密钥对的名称 |
+| load_balancer_weight | int | body | 是 | ECS实例作为后端服务器时的权重，取值范围：1~100。 |
+| data_disks | DataDisks | body | 否 | 数据盘信息的集合 |
+| password_inherit | bool | body | 否 | 是否使用镜像预设的密码。使用该参数时，您需要所用镜像已经预设了密码。 |
+
+# 示例
+### 正常返回示例
+```json
+{
+    "request_id": "ioRxAspgRVA-ucIW"
+}
+```

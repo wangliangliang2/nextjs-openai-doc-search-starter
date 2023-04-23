@@ -1,0 +1,195 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div>
+# 房间对象
+<p>在使用 SDK 的第一步，应当是创建一个 <a href="https://developer.qiniu.com/rtc/9090/WebQNRTCClient">QNRTCClient</a> 对象，之后所有关于房间的连接、发布订阅等操作，均通过该对象完成。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> mClient = <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createClient</span>();
+<span></span></code></pre>
+<p>这里要注意的点是，同一个页面，该方法仅允许执行一次。即 QNRTCClient 对象应当只创建一个，当作单例对象使用。</p>
+
+# 监听远端用户
+<p>不管是先加入房间，还是后加入房间，均通过监听事件获取远端用户信息。这样的逻辑就要求，一定要在加入房间之前，注册好事件监听，这样才可以在加入房间后，立刻收到房间内已有用户的信息。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> mClient = <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createClient</span>()
+<span></span>
+<span></span><span class="hljs-comment">// 监听远端用户加入房间</span>
+<span></span>mClient.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;user-joined&quot;</span>, <span class="hljs-function">(<span class="hljs-params">userID, userData</span>) =&gt;</span> {
+<span></span>  <span class="hljs-comment">// ...</span>
+<span></span>})
+<span></span>
+<span></span><span class="hljs-comment">// 监听远端用户发布 track</span>
+<span></span>mClient.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;user-published&quot;</span>, <span class="hljs-function">(<span class="hljs-params">userID, tracks</span>) =&gt;</span> {
+<span></span>  <span class="hljs-comment">// ...</span>
+<span></span>})
+<span></span>
+<span></span><span class="hljs-comment">// 注册好前面的事件监听后，再加入房间</span>
+<span></span>mClient.<span class="hljs-title function_">join</span>(<span class="hljs-string">&quot;your room token&quot;</span>)
+<span></span>  .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+<span></span>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;join room success&quot;</span>)
+<span></span>  })
+<span></span></code></pre>
+
+# 断网重连处理
+<p>监控房间连接状态的用法，可以参考文档 <a href="/rtc/9465/room-management-web">房间管理</a>。这里需要注意的点是，断网重连的处理。</p>
+<p>默认情况下，当发生网络异常等情况，SDK 会进入自动重连状态，此时房间连接状态会变为 RECONNECTING，表示重连中。之后就会两种可能：</p>
+<p>第一种，此后如果网络状态恢复正常，则 SDK 会完成自动重连，房间连接状态会变为 RECONNECTED，表示重连成功。重连成功后，SDK 会自动恢复原有的发布和订阅状态。也就是说，如果在重连之前有发布过 tracks 或者订阅过 tracks，重连成功后，SDK 会自动重新发布/订阅这些 tracks。</p>
+<p>第二种，如果 SDK 自动重连后，仍然无法正常连接网络，则 SDK 会自动退出房间，此时房间连接状态变为 DISCONNECTED，错误码为21003，表示断开连接。在断开连接状态时，<a href="/rtc/9090/WebQNRTCClient#connection-state-changed">connection-state-changed</a>中会带有第二个参数 <a href="/rtc/9071/WebQNConnectionDisconnectedInfo">QNConnectionDisconnectedInfo</a>，用来表示断开的原因。此时应当根据断开原因不同，做不同的逻辑处理。具体见如下代码。</p>
+<pre><code class="language-typescript">mClient.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;connection-state-changed&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">connectionState, info</span>) {
+<span></span>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;connection-state-changed&#x27;</span>, connectionState);
+<span></span>
+<span></span>  <span class="hljs-comment">// 当进入连接断开状态</span>
+<span></span>  <span class="hljs-keyword">if</span> (connectionState === <span class="hljs-title class_">QNConnectionState</span>.<span class="hljs-property">DISCONNECTED</span>) {
+<span></span>
+<span></span>    <span class="hljs-comment">// 监控断开原因</span>
+<span></span>    <span class="hljs-keyword">switch</span>(info.<span class="hljs-property">reason</span>) {
+<span></span>
+<span></span>      <span class="hljs-comment">// 当异常断开时</span>
+<span></span>      <span class="hljs-keyword">case</span> <span class="hljs-title class_">QNConnectionDisconnectedReason</span>.<span class="hljs-property">ERROR</span>:
+<span></span>        <span class="hljs-keyword">break</span>;
+<span></span>
+<span></span>      <span class="hljs-comment">// 当被踢出房间时</span>
+<span></span>      <span class="hljs-keyword">case</span> <span class="hljs-title class_">QNConnectionDisconnectedReason</span>.<span class="hljs-property">KICKED_OUT</span>:
+<span></span>        <span class="hljs-keyword">break</span>;
+<span></span>
+<span></span>      <span class="hljs-comment">// 当调用接口，主动离开房间时</span>
+<span></span>      <span class="hljs-keyword">case</span> <span class="hljs-title class_">QNConnectionDisconnectedReason</span>.<span class="hljs-property">LEAVE</span>:
+<span></span>        <span class="hljs-keyword">break</span>;
+<span></span>
+<span></span>    }
+<span></span>});
+<span></span></code></pre>
+<p>此时，最需要关注的是异常断开的情况。一般处理模式有两种：</p>
+<ul>
+<li>通知用户：展示 UI，通知用户网络异常，用户可选择调整网络后重试</li>
+<li>自动重连：可以在收到异常断开的通知后，主动调用重新加入房间的方法，主动再次重试</li>
+</ul>
+
+# 切换前后摄像头
+<p>手机浏览器中，一般会有切换前后摄像头的需求。web 中切换前后摄像头无法一步完成，需要按照如下逻辑。</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+<span></span>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;container&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span></span>  <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;switchCamera&quot;</span>&gt;</span>切换摄像头<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+<span></span>
+<span></span>  <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript">
+<span></span>    <span class="hljs-keyword">const</span> switchCameraBtn = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;switchCamera&quot;</span>)
+<span></span>    <span class="hljs-keyword">const</span> playContainer = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;container&quot;</span>)
+<span></span>
+<span></span>    <span class="hljs-keyword">let</span> facingMode = <span class="hljs-string">&quot;user&quot;</span>
+<span></span>    <span class="hljs-keyword">let</span> cameraTrack;
+<span></span>
+<span></span>    switchCameraBtn.<span class="hljs-property">onclick</span> = <span class="hljs-keyword">async</span> () =&gt; {
+<span></span>
+<span></span>      <span class="hljs-comment">// facingMode 参数用于指定采集前置摄像头还是后置摄像头</span>
+<span></span>      facingMode = facingMode === <span class="hljs-string">&quot;user&quot;</span> ? <span class="hljs-string">&quot;environment&quot;</span> : <span class="hljs-string">&quot;user&quot;</span>
+<span></span>
+<span></span>      <span class="hljs-comment">// 之前采集的 camera track 必须销毁</span>
+<span></span>      <span class="hljs-comment">// 注意，如果该 camera track 发布过，就也要先取消发布</span>
+<span></span>      <span class="hljs-keyword">if</span> (cameraTrack) {
+<span></span>        <span class="hljs-comment">// unpublish</span>
+<span></span>        <span class="hljs-comment">// ...</span>
+<span></span>
+<span></span>        cameraTrack.<span class="hljs-title function_">destroy</span>()
+<span></span>        cameraTrack = <span class="hljs-literal">undefined</span>;
+<span></span>      }
+<span></span>
+<span></span>      <span class="hljs-comment">// 重新采集指定的摄像头</span>
+<span></span>      cameraTrack = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createCameraVideoTrack</span>({ facingMode })
+<span></span>
+<span></span>      <span class="hljs-comment">// 再次播放</span>
+<span></span>      cameraTrack.<span class="hljs-title function_">play</span>(playContainer);
+<span></span>    }
+<span></span>  </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span></span>
+<span></span><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span></span></code></pre>
+
+# local track 断流处理
+<p>本地采集的 local track，某些情况下可能会发生断流，一般常见的有下面几种情况：</p>
+<ul>
+<li>摄像头被拔出</li>
+<li>麦克风被拔出</li>
+<li>用户主动停止了屏幕共享</li>
+<li>媒体设备故障</li>
+</ul>
+<p>当发生断流时，视频 track 会黑屏，音频 track 会没有声音。此时如果该 track 已发布，SDK 会自动取消发布该 track，并触发 QNLocalTrack 对象上的 <a href="/rtc/9085/WebQNLocalTrack#ended">ended</a> 事件，可以通过监听该事件，来处理这种情况。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> track = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createScreenVideoTrack</span>({ <span class="hljs-attr">screenVideoTag</span>: <span class="hljs-string">&quot;screen-share&quot;</span> })
+<span></span>
+<span></span>track.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;ended&quot;</span>, <span class="hljs-function">() =&gt;</span> {
+<span></span>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`track: <span class="hljs-subst">${track.tag}</span> ended!`</span>)
+<span></span>
+<span></span>  <span class="hljs-comment">// 后续逻辑</span>
+<span></span>  <span class="hljs-comment">// 1. 通知用户</span>
+<span></span>  <span class="hljs-comment">// 2. 自动重新采集</span>
+<span></span>  <span class="hljs-comment">// 3. 其他等...</span>
+<span></span>})
+<span></span></code></pre>
+<blockquote>
+<p>仅需关注 local track 的 ended 情况，remote track 的 ended 由远端用户自行处理，每个本地用户处理自己的 local track 即可。</p>
+</blockquote>
+
+# 自动播放失败处理
+<p>浏览器中为了安全和用户体验等方面考虑，对媒体数据的自动播放做了限制：在没有用户交互操作的情况下，不允许媒体播放。也就是说，在没有用户交互的情况下，如果直接调用 <a href="/rtc/9076/WebQNTrack#play">play</a> 方法播放 track，一定概率会被浏览器阻止，导致播放失败。</p>
+<p>针对这种情况，一般处理策略有两种。</p>
+<p>第一种，始终保证在用户交互之后，调用 play 方法播放。例如，在一个 button 的点击回调函数中调用。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> playBtn = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;playBtn&quot;</span>)
+<span></span><span class="hljs-keyword">const</span> playContainer = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;container&quot;</span>)
+<span></span>
+<span></span><span class="hljs-comment">// create track </span>
+<span></span><span class="hljs-comment">// ...</span>
+<span></span>
+<span></span>playBtn.<span class="hljs-property">onclick</span> = <span class="hljs-function">() =&gt;</span> {
+<span></span>  <span class="hljs-comment">// 这里，点击回调函数中调用</span>
+<span></span>  track.<span class="hljs-title function_">play</span>(playContainer)
+<span></span>}
+<span></span></code></pre>
+<p>第二种，可以选择在自动播放失败时，引导用户交互，在用户的交互中，再次播放。</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+<span></span>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;container&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span></span>  <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;resumeBtn&quot;</span> <span class="hljs-attr">disabled</span>&gt;</span>恢复播放<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+<span></span>
+<span></span>  <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript">
+<span></span>    <span class="hljs-keyword">const</span> resumeBtn = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;resumeBtn&quot;</span>)
+<span></span>    <span class="hljs-keyword">const</span> playContainer = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;container&quot;</span>);
+<span></span>
+<span></span>    <span class="hljs-comment">// 用来存储播放失败的 tracks</span>
+<span></span>    <span class="hljs-keyword">let</span> toBeResumedTracks = []
+<span></span>
+<span></span>    <span class="hljs-comment">// 引导用户点击的 button，点击后再次执行播放</span>
+<span></span>    resumeBtn.<span class="hljs-property">onclick</span> = <span class="hljs-function">() =&gt;</span> {
+<span></span>      <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> track <span class="hljs-keyword">of</span> toBeResumedTracks) {
+<span></span>        track.<span class="hljs-title function_">play</span>(playContainer)
+<span></span>      }
+<span></span>      <span class="hljs-comment">// 将数组清空</span>
+<span></span>      toBeResumedTracks = []
+<span></span>      <span class="hljs-comment">// 隐藏重新播放按钮</span>
+<span></span>      resumeBtn.<span class="hljs-property">disabled</span> = <span class="hljs-literal">true</span>
+<span></span>    }
+<span></span>
+<span></span>    <span class="hljs-keyword">const</span> mClient = <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createClient</span>()
+<span></span>
+<span></span>    mClient.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;user-published&quot;</span>, <span class="hljs-function">(<span class="hljs-params">userID, tracks</span>) =&gt;</span> {
+<span></span>      mClient.<span class="hljs-title function_">subscribe</span>(tracks)
+<span></span>        .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">{ videoTracks, audioTracks }</span>) =&gt;</span> {
+<span></span>          <span class="hljs-keyword">const</span> tracks = [...videoTracks, ...audioTracks]
+<span></span>
+<span></span>          <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> track <span class="hljs-keyword">of</span> tracks) {
+<span></span>            <span class="hljs-comment">// 播放 track</span>
+<span></span>            track.<span class="hljs-title function_">play</span>(playContainer).<span class="hljs-title function_">catch</span>(<span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+<span></span>              <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;play fail&quot;</span>, track)
+<span></span>
+<span></span>              <span class="hljs-comment">// 如果播放失败，push 到待恢复数组中</span>
+<span></span>              toBeResumedTracks.<span class="hljs-title function_">push</span>(track)
+<span></span>
+<span></span>              <span class="hljs-comment">// 显示按钮，引导用户点击</span>
+<span></span>              resumeBtn.<span class="hljs-property">disabled</span> = <span class="hljs-literal">false</span>
+<span></span>            })
+<span></span>          }
+<span></span>        })
+<span></span>    })
+<span></span>
+<span></span>    mClient.<span class="hljs-title function_">join</span>(<span class="hljs-string">&quot;your room token&quot;</span>)
+<span></span>      .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> {
+<span></span>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;join room success&quot;</span>)
+<span></span>      })
+<span></span>  </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span></span><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span></span></code></pre></div></div>

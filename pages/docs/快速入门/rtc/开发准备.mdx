@@ -1,0 +1,185 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div>
+
+# 开始之前
+
+<ol>
+<li>请先确认您已经对这个产品有了大概的了解，并且已经完成了<a href="/rtc/8802/pd-overview">七牛实时音视频云接入流程</a>。</li>
+<li>请先了解uniapp原生开发，阅读 <a href="https://uniapp.dcloud.io/">uniapp开发者文档</a> 。</li>
+</ol>
+
+# 引入 SDK
+<h3 id="插件市场安装"><a href="#%E6%8F%92%E4%BB%B6%E5%B8%82%E5%9C%BA%E5%AE%89%E8%A3%85" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>插件市场安装</h3>
+<blockquote>
+<p>需要在插件市场加载 <a href="https://ext.dcloud.net.cn/plugin?id=6859">JS 插件</a> 以及 <a href="https://ext.dcloud.net.cn/plugin?id=6857">Native 插件</a>。JS 插件主要负责处理加工原生返回的数据，便于使用者调用，Native 插件负责直接调用原生接口返回 JS 插件。</p>
+</blockquote>
+<h3 id="sdk-引用"><a href="#sdk-%E5%BC%95%E7%94%A8" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>SDK 引用</h3>
+<pre><code class="language-typescript"><span class="hljs-keyword">import</span> <span class="hljs-variable constant_">QNRTC</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@/js_sdk/QNRTC-UniPlugin-JS/QNRTC-UniPlugin-JS/RTCIndex.native.js&quot;</span>
+<span></span><span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">configRTC</span>()
+<span></span><span class="hljs-keyword">const</span> client = <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createClient</span>()
+<span></span>
+<span></span></code></pre>
+<h3 id="引入组件"><a href="#%E5%BC%95%E5%85%A5%E7%BB%84%E4%BB%B6" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>引入组件</h3>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">QNRTC-UniPlugin-SurfaceView</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;track-video&quot;</span> <span class="hljs-attr">v-for</span>=<span class="hljs-string">&quot;(item,index) in localTracks&quot;</span> <span class="hljs-attr">:key</span>=<span class="hljs-string">&quot;item.identifyID&quot;</span> <span class="hljs-attr">v-if</span>=<span class="hljs-string">&quot;item.kind === &#x27;video&#x27;&quot;</span> <span class="hljs-attr">:local</span>=<span class="hljs-string">&quot;0&quot;</span> <span class="hljs-attr">:identifyID</span>=<span class="hljs-string">&quot;item.identifyID&quot;</span> <span class="hljs-attr">fillMode</span>=<span class="hljs-string">&quot;QNVideoFillModePreserveAspectRatioAndFill&quot;</span> <span class="hljs-attr">:trackID</span>=<span class="hljs-string">&quot;item.trackID&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">QNRTC-UniPlugin-SurfaceView</span>&gt;</span>
+<span></span><span class="hljs-tag">&lt;<span class="hljs-name">QNRTC-UniPlugin-SurfaceView</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;track-video&quot;</span> <span class="hljs-attr">v-for</span>=<span class="hljs-string">&quot;(item,index) in remoteTracks&quot;</span> <span class="hljs-attr">:key</span>=<span class="hljs-string">&quot;item.identifyID&quot;</span> <span class="hljs-attr">v-if</span>=<span class="hljs-string">&quot;item.kind === &#x27;video&#x27;&quot;</span> <span class="hljs-attr">:local</span>=<span class="hljs-string">&quot;1&quot;</span> <span class="hljs-attr">:identifyID</span>=<span class="hljs-string">&quot;item.identifyID&quot;</span> <span class="hljs-attr">:userID</span>=<span class="hljs-string">&quot;item.userID&quot;</span> <span class="hljs-attr">fillMode</span>=<span class="hljs-string">&quot;QNVideoFillModePreserveAspectRatioAndFill&quot;</span> <span class="hljs-attr">:trackID</span>=<span class="hljs-string">&quot;item.trackID&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">QNRTC-UniPlugin-SurfaceView</span>&gt;</span>
+<span></span></code></pre>
+<ul>
+<li>local:  0 本地 track 视图，1 远端 track 视图</li>
+<li>identifyID: uniapp 中每个 track 的唯一标识符</li>
+<li>trackID: 服务器对于每个 track 的唯一标识符（track 未发布时该值为""）</li>
+<li>userID 发布该 track 的 用户 ID（local = 1 时需要该属性）</li>
+<li>fillMode 对应视图层的渲染模式（暂时只支持iOS）</li>
+</ul>
+<blockquote>
+<p><strong>注意</strong>： 除了<strong>云打包</strong>，sdk还支持 <strong>离线打包</strong>，用户可以在 <strong>Xcode</strong> 和 <strong>Android Studio</strong> 进行打包编译，这里建议使用 <strong>HBuilderX</strong> 进行更为方便的云打包。</p>
+</blockquote>
+<h3 id="离线打包"><a href="#%E7%A6%BB%E7%BA%BF%E6%89%93%E5%8C%85" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>离线打包</h3>
+<pre><code class="language-shell">git clone git@github.com:pili-engineering/QNRTC-Uniapp.git
+<span></span>cd QNRTC-Uniapp
+<span></span></code></pre>
+<h4 id="前端编译"><a href="#%E5%89%8D%E7%AB%AF%E7%BC%96%E8%AF%91" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>前端编译</h4>
+<ol>
+<li><code>npm run build</code></li>
+<li>将编译后的文件直接引入前端项目中使用即可</li>
+</ol>
+<h4 id="ios-编译"><a href="#ios-%E7%BC%96%E8%AF%91" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>iOS 编译</h4>
+<blockquote>
+<p><strong>iOS</strong> 编译同时可以参考 <strong>uniapp</strong> 官方文档的 <a href="https://nativesupport.dcloud.net.cn/NativePlugin/course/ios">编译原生插件</a> 与 <a href="https://nativesupport.dcloud.net.cn/AppDocs/README">离线打包</a>。</p>
+</blockquote>
+<ol>
+<li>将 iOS 文件工程放到 uni-app 离线 SDK 对应的目录中 (<strong>HBuilder-uniPluginDemo</strong>)</li>
+<li>引入 uni-app 离线 SDK
+<ul>
+<li>在 Xcode 中右键 <strong>HBuilder-uniPlugin</strong> 工程，并点击 <strong>Add Files to "HBuilder-uniPlugin"</strong>， 选中 <strong>QNRtcUniPlugin.xcodeproj</strong> 并添加</li>
+<li>在 Xcode 中点击 <strong>HBuilder-uniPlugin</strong> 工程，并点击 <strong>HBuilder</strong> Target，选中 <strong>Build Phases</strong></li>
+<li>在 <strong>Dependencies</strong> 中添加 <strong>QNRtcUniPlugin</strong></li>
+<li>在 <strong>Link Binary With Libraries</strong> 中添加 <strong>QNRtcUniPlugin.framework</strong></li>
+<li>在 <strong>Embed Frameworks</strong> 中添加 <strong>QNRTCKit.framework</strong> <strong>HappyDNS.framework</strong>  （需要通过 <strong>Add Other...</strong> 选择 <strong>ios/</strong> 目录中的 <strong>.framework</strong> 文件添加）</li>
+</ul>
+</li>
+<li>配置插件信息</li>
+</ol>
+<p>搜索 <strong>HBuilder-uniPlugin-Info.plist</strong> ，右键 <strong>open as source code</strong> ，然后找到 <strong>< key >dcloud_uniplugins< /key ></strong> ，添加如下代码：</p>
+<pre><code class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">dict</span>&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>hooksClass<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>plugins<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;<span class="hljs-name">array</span>&gt;</span>
+<span></span>        <span class="hljs-tag">&lt;<span class="hljs-name">dict</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>class<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>QNRtcEngine<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>name<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>QNRTC-UniPlugin-QNRtcEngine<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>type<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>module<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>        <span class="hljs-tag">&lt;/<span class="hljs-name">dict</span>&gt;</span>
+<span></span>        <span class="hljs-tag">&lt;<span class="hljs-name">dict</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>class<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>QNRtcClient<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>name<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>QNRTC-UniPlugin-QNRtcClient<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>type<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>module<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>        <span class="hljs-tag">&lt;/<span class="hljs-name">dict</span>&gt;</span>
+<span></span>        <span class="hljs-tag">&lt;<span class="hljs-name">dict</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>class<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>QNRtcTrack<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>name<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>QNRTC-UniPlugin-QNRtcTrack<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>type<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>module<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>        <span class="hljs-tag">&lt;/<span class="hljs-name">dict</span>&gt;</span>
+<span></span>        <span class="hljs-tag">&lt;<span class="hljs-name">dict</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>class<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>QNRtcAudio<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>name<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>QNRTC-UniPlugin-QNRtcAudio<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>type<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>module<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>        <span class="hljs-tag">&lt;/<span class="hljs-name">dict</span>&gt;</span>
+<span></span>        <span class="hljs-tag">&lt;<span class="hljs-name">dict</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>class<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>QNRtcSurfaceView<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>name<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>QNRTC-UniPlugin-SurfaceView<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>type<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+<span></span>            <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>component<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span>
+<span></span>        <span class="hljs-tag">&lt;/<span class="hljs-name">dict</span>&gt;</span>
+<span></span>    <span class="hljs-tag">&lt;/<span class="hljs-name">array</span>&gt;</span>
+<span></span><span class="hljs-tag">&lt;/<span class="hljs-name">dict</span>&gt;</span>
+<span></span></code></pre>
+<h4 id="android-编译"><a href="#android-%E7%BC%96%E8%AF%91" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>Android 编译</h4>
+<blockquote>
+<p><strong>Android</strong> 编译同时可以参考 <strong>uniapp</strong> 官方文档的 [编译原生插件]<a href="https://nativesupport.dcloud.net.cn/NativePlugin/course/android">https://nativesupport.dcloud.net.cn/NativePlugin/course/android</a>) 与 <a href="https://nativesupport.dcloud.net.cn/AppDocs/README">离线打包</a>。</p>
+</blockquote>
+<ol>
+<li>将 Android 文件夹中 <strong>uniplugin_qndroid_rtc</strong> 工程以 module 的形式导入到 uni-app 离线 SDK 对应的目录中 (UniPlugin-Hello-AS)，导入方式可参考<a href="https://developer.android.com/studio/projects/add-app-module?hl=zh-cn#ImportAModule">官方文档</a>。</li>
+<li>将 Android 文件夹中 <strong>QNRtcUniPlugin/android/libs</strong> 目录下的 jar 文件放到 uni-app 离线 SDK 对应的 <strong>app/libs/</strong> 目录中，不同架构的 so 文件放到 <strong>app/src/main/jniLibs/</strong> 目录中，如无 jniLibs 目录，需手动创建。集成后的目录结构如下：</li>
+</ol>
+<p><img src="https://docs.qnsdk.com/android_uniapp.png" alt="单路流直播"></img></p>
+<ol start="3">
+<li>在 settings.gradle 中添加</li>
+</ol>
+<pre><code><span class="hljs-keyword">include</span> <span class="hljs-string">&#x27;:uniplugin_qndroid_rtc&#x27;</span>
+<span></span></code></pre>
+<ol start="4">
+<li>在 app/build.gradle 中添加</li>
+</ol>
+<pre><code>implementation <span class="hljs-string">&#x27;com.qiniu:happy-dns:0.2.18&#x27;</span>
+<span></span>implementation <span class="hljs-string">&quot;com.google.code.gson:gson:2.8.8&quot;</span>
+<span></span>implementation <span class="hljs-title function_">project</span><span class="hljs-params">(<span class="hljs-string">&#x27;:uniplugin_qndroid_rtc&#x27;</span>)</span>
+<span></span></code></pre>
+<ol start="5">
+<li>配置插件信息</li>
+</ol>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+<span></span>    <span class="hljs-attr">&quot;nativePlugins&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+<span></span>        <span class="hljs-punctuation">{</span>
+<span></span>        <span class="hljs-attr">&quot;plugins&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+<span></span>            <span class="hljs-punctuation">{</span>
+<span></span>            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;module&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>            <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;QNRTC-UniPlugin-QNRtcEngine&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>            <span class="hljs-attr">&quot;class&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;uni.qiniu.droid.uniplugin_rtc.uni.module.QNRTCModule&quot;</span>
+<span></span>            <span class="hljs-punctuation">}</span>
+<span></span>        <span class="hljs-punctuation">]</span>
+<span></span>        <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+<span></span>        <span class="hljs-punctuation">{</span>
+<span></span>        <span class="hljs-attr">&quot;plugins&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+<span></span>            <span class="hljs-punctuation">{</span>
+<span></span>            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;module&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>            <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;QNRTC-UniPlugin-QNRtcClient&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>            <span class="hljs-attr">&quot;class&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;uni.qiniu.droid.uniplugin_rtc.uni.module.QNRTCClientModule&quot;</span>
+<span></span>            <span class="hljs-punctuation">}</span>
+<span></span>        <span class="hljs-punctuation">]</span>
+<span></span>        <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+<span></span>        <span class="hljs-punctuation">{</span>
+<span></span>        <span class="hljs-attr">&quot;plugins&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+<span></span>            <span class="hljs-punctuation">{</span>
+<span></span>            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;module&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>            <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;QNRTC-UniPlugin-QNRtcTrack&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>            <span class="hljs-attr">&quot;class&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;uni.qiniu.droid.uniplugin_rtc.uni.module.QNRTCTrackModule&quot;</span>
+<span></span>            <span class="hljs-punctuation">}</span>
+<span></span>        <span class="hljs-punctuation">]</span>
+<span></span>        <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+<span></span>        <span class="hljs-punctuation">{</span>
+<span></span>        <span class="hljs-attr">&quot;plugins&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+<span></span>            <span class="hljs-punctuation">{</span>
+<span></span>            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;component&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>            <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;QNRTC-UniPlugin-SurfaceView&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>            <span class="hljs-attr">&quot;class&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;uni.qiniu.droid.uniplugin_rtc.uni.component.QNRTCSurfaceView&quot;</span>
+<span></span>            <span class="hljs-punctuation">}</span>
+<span></span>        <span class="hljs-punctuation">]</span>
+<span></span>        <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+<span></span>        <span class="hljs-punctuation">{</span>
+<span></span>        <span class="hljs-attr">&quot;plugins&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+<span></span>            <span class="hljs-punctuation">{</span>
+<span></span>            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;component&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>            <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;QNRTC-UniPlugin-TextureView&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>            <span class="hljs-attr">&quot;class&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;uni.qiniu.droid.uniplugin_rtc.uni.component.QNRTCTextureView&quot;</span>
+<span></span>            <span class="hljs-punctuation">}</span>
+<span></span>        <span class="hljs-punctuation">]</span>
+<span></span>        <span class="hljs-punctuation">}</span>
+<span></span>    <span class="hljs-punctuation">]</span>
+<span></span><span class="hljs-punctuation">}</span>
+<span></span></code></pre></div></div>

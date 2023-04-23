@@ -1,0 +1,320 @@
+# QNIMGroupServiceProtocol Protocol Reference
+
+Conforms to | NSObject
+---|---
+Declared in | QNIMGroupServiceProtocol.h
+  
+### `- groupDidCreated:` required method
+
+多设备同步创建群组
+
+`- (void)groupDidCreated:(QNIMGroup *) _group_`
+
+#### Discussion
+
+多设备同步创建群组
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupLeft:reason:` required method
+
+退出了某群
+
+`- (void)groupLeft:(QNIMGroup *) _group_ reason:(NSString *) _reason_`
+
+#### Discussion
+
+退出了某群
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupDidRecieveInviter:groupId:message:` required method
+
+收到入群邀请
+
+`- (void)groupDidRecieveInviter:(NSInteger) _inviter_ groupId:(NSInteger)
+_groupId_ message:(NSString *) _message_`
+
+#### Discussion
+
+收到入群邀请
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupInvitationAccepted:inviteeId:` required method
+
+入群邀请被接受
+
+`- (void)groupInvitationAccepted:(QNIMGroup *) _group_ inviteeId:(NSInteger)
+_inviteeId_`
+
+#### Discussion
+
+入群邀请被接受
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupInvitationDeclined:inviteeId:reason:` required method
+
+入群申请被拒绝
+
+`- (void)groupInvitationDeclined:(QNIMGroup *) _group_ inviteeId:(NSInteger)
+_inviteeId_ reason:(NSString *) _reason_`
+
+#### Discussion
+
+入群申请被拒绝
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupDidRecieveApplied:applicantId:message:` required method
+
+收到入群申请
+
+`- (void)groupDidRecieveApplied:(QNIMGroup *) _group_ applicantId:(NSInteger)
+_applicantId_ message:(NSString *) _message_`
+
+#### Discussion
+
+收到入群申请
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupApplicationAccepted:approver:` required method
+
+入群申请被接受
+
+`- (void)groupApplicationAccepted:(QNIMGroup *) _group_ approver:(NSInteger)
+_approver_`
+
+#### Discussion
+
+入群申请被接受
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupApplicationDeclined:approver:reason:` required method
+
+入群申请被拒绝
+
+`- (void)groupApplicationDeclined:(QNIMGroup *) _group_ approver:(NSInteger)
+_approver_ reason:(NSString *) _reason_`
+
+#### Discussion
+
+入群申请被拒绝
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupMembersMutedGroup:members:duration:` required method
+
+群成员被禁言
+
+`- (void)groupMembersMutedGroup:(QNIMGroup *) _group_
+members:(NSArray<NSNumber*> *) _members_ duration:(NSInteger) _duration_`
+
+#### Discussion
+
+群成员被禁言
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupMembersUnMutedGroup:Unmuted:` required method
+
+群成员被解除禁言
+
+`- (void)groupMembersUnMutedGroup:(QNIMGroup *) _group_
+Unmuted:(NSArray<NSNumber*> *) _members_`
+
+#### Discussion
+
+群成员被解除禁言
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupMemberJoined:memberId:inviter:` required method
+
+加入新成员
+
+`- (void)groupMemberJoined:(QNIMGroup *) _group_ memberId:(NSInteger)
+_memberId_ inviter:(NSInteger) _inviter_`
+
+#### Discussion
+
+加入新成员
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupMemberLeft:memberId:reason:` required method
+
+群成员退出
+
+`- (void)groupMemberLeft:(QNIMGroup *) _group_ memberId:(NSInteger) _memberId_
+reason:(NSString *) _reason_`
+
+#### Discussion
+
+群成员退出
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupAdminsAddedGroup:members:` required method
+
+添加了新管理员
+
+`- (void)groupAdminsAddedGroup:(QNIMGroup *) _group_
+members:(NSArray<NSNumber*> *) _members_`
+
+#### Discussion
+
+添加了新管理员
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupAdminsRemovedFromGroup:members:reason:` required method
+
+移除了管理员
+
+`- (void)groupAdminsRemovedFromGroup:(QNIMGroup *) _group_
+members:(NSArray<NSNumber*> *) _members_ reason:(NSString *) _reason_`
+
+#### Discussion
+
+移除了管理员
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupOwnerAssigned:` required method
+
+成为群主
+
+`- (void)groupOwnerAssigned:(QNIMGroup *) _group_`
+
+#### Discussion
+
+成为群主
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupInfoDidUpdate:updateInfoType:` required method
+
+群组信息变更
+
+`- (void)groupInfoDidUpdate:(QNIMGroup *) _group_
+updateInfoType:(QNIMGroupUpdateInfoType) _type_`
+
+#### Discussion
+
+群组信息变更
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupMemberDidChangeNickName:memberId:nickName:` required method
+
+群成员更改群内昵称
+
+`- (void)groupMemberDidChangeNickName:(QNIMGroup *) _group_ memberId:(long
+long) _memberId_ nickName:(NSString *) _nickName_`
+
+#### Discussion
+
+群成员更改群内昵称
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupAnnouncementUpdate:announcement:` required method
+
+收到群公告
+
+`- (void)groupAnnouncementUpdate:(QNIMGroup *) _group_
+announcement:(QNIMGroupAnnounment *) _announcement_`
+
+#### Discussion
+
+收到群公告
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupSharedFileUploaded:sharedFile:` required method
+
+收到共享文件
+
+`- (void)groupSharedFileUploaded:(QNIMGroup *) _group_
+sharedFile:(QNIMGroupSharedFile *) _sharedFile_`
+
+#### Discussion
+
+收到共享文件
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupSharedFileDeleted:sharedFile:` required method
+
+删除了共享文件
+
+`- (void)groupSharedFileDeleted:(QNIMGroup *) _group_
+sharedFile:(QNIMGroupSharedFile *) _sharedFile_`
+
+#### Discussion
+
+删除了共享文件
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupShareFileDidUpdated:sharedFile:` required method
+
+共享文件更新文件名
+
+`- (void)groupShareFileDidUpdated:(QNIMGroup *) _group_
+sharedFile:(QNIMGroupSharedFile *) _sharedFile_`
+
+#### Discussion
+
+共享文件更新文件名
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+
+

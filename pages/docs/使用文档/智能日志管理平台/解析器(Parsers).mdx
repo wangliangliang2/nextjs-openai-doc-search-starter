@@ -1,0 +1,16 @@
+Parser 是在数据被logkit读取后，用户可以根据需要定制化的解析日志格式，抽取数据中的字段，转化为结构化数据的方式。
+
+目前logkit已经内置一部分数据解析方式，他们分别为：
+
+1. `csv`(按行通过分隔符解析): [csv parser](/insight/manual/4760/csv-parser)
+1. `json`(通过json反序列化解析): [json parser](/insight/manual/4757/json-parser)
+1. `grok`(通过配置grok pattern解析): [grok parser](/insight/manual/4759/grok-parser)
+1. `qiniulog`(七牛开源的golang日志库日志格式解析): [Qiniu Log Parser](/insight/manual/4762/qiniu-log-parser)
+1. `kafkarest`(Kafkarest日志解析): [KafkaRestLog Parser](/insight/manual/4763/kafkarest-parser)
+1. `raw`(直接按行读取返回): [Raw Parser](/insight/manual/4756/raw-parser)
+1. `syslog`(系统的syslog日志格式): [syslog parser](/insight/manual/4761/syslog-parser)
+1. `mysqllog`(mysql慢请求日志解析): [mysqllog parser](/insight/manual/4764/mysql-log-parser)
+1. `nginx`(按 nginx 日志解析): [nginx parser](/insight/manual/4758/nginx-parser)
+2. `thinkphp5`(解析 thinkphp5 格式日志): [thinkphp5 parser](/insight/manual/5060/thinkphp5-log)
+3. `logfmt`(解析带等号的键值对日志): [logfmt parser](/insight/manual/5059/logfmt-format-log)
+4. [Pandora实时仓库划词智能解析](/insight/manual/4812/sever-regex-parser): 在Pandora服务端通过上传示例日志文件，对日志划词创建规则创建仓库，logkit-pro直接将原始文本发送到创建了规则的仓库，在服务端智能解析。

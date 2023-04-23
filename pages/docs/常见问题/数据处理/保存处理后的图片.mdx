@@ -1,0 +1,144 @@
+## 保存处理后的图片生成url 然后使用get请求即可
+
+## 公有空间
+
+### java
+
+````
+public class imageSaveas {
+
+    public static void main(String args[]) throws Exception{
+        String ACCESS_KEY = "FMVCRs2-LvRNi4l7mEZE6ZDvPv-519D1ZCO";
+        String SECRET_KEY = "InOXBls8acFn002XsoXKFw1iFJZxcoOvAeY";
+
+        Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
+
+        //需要存储的空间名和文件名
+        String scope = "picture:test.jpg";
+
+        String urlbase64 = UrlSafeBase64.encodeToString(scope);
+
+        //空间domain, 比如 orf68lb7.bkt.clouddn.com
+        String domain = "orf68lb7.bkt.clouddn.com";
+
+        //需要处理的文件名
+        String key = "测试";
+
+        //处理操作
+        String cmd = "imageView2/2/w/200/h/200";
+
+        String encodedFileKey = URLEncoder.encode(key, "utf-8");
+
+        String DownloadUrl  = domain + "/" + encodedFileKey + "?" + cmd + "|saveas/" + urlbase64;
+        Mac mac = javax.crypto.Mac.getInstance("HmacSHA1");
+        mac.init(new SecretKeySpec(StringUtils.utf8Bytes(SECRET_KEY),"HmacSHA1"));
+        String sign = UrlSafeBase64.encodeToString(mac.doFinal(StringUtils.utf8Bytes(DownloadUrl)));
+
+        String URL = "http://"+DownloadUrl+"/sign/"+ACCESS_KEY+":"+sign;
+
+        System.out.println(auth.privateDownloadUrl(URL, 36000));
+    }
+}
+````
+<br/>
+<br/>
+
+### python
+````
+def __token( data):
+    data = b(data)
+    hashed = hmac.new(secret_key, data, sha1)
+    return urlsafe_base64_encode(hashed.digest())
+
+access_key = 'oPQDbCnHhXjZtGZk6ysNYDMrcs7a8Puy_e0mcaL_'
+secret_key = 'DzQHHAizEpsr3LqiIfjF8-p2cBi406nR44CYasBx'
+
+#需要处理的url
+url_op = "oa1azzrgm.bkt.clouddn.com/test.jpg?imageInfo"
+
+#处理后另存的空间文件名
+save_bucket = 'test'
+save_key = 'ttt.mp4'
+savekey = "saveas/"+ entry(save_bucket, save_key)
+url = '{0}%7C{1}'.format(url_op,savekey)
+
+#签名
+q = Auth(access_key, secret_key)
+sign_url = 'http://{0}/sign/{1}:{2}'.format(url, access_key, __token(url))
+print(sign_url)
+````
+<br/>
+<br/>
+
+## 私有空间
+
+### java
+```
+public class imageSaveasForPrivate {
+    public static void main(String args[]) throws Exception {
+        String ACCESS_KEY = "FMVCRs2-LO1ivRNi7mEZE6ZDvPv-519D12kZCO";
+        String SECRET_KEY = "InOXBls8alaPiRc02XsoXKFw1iFJZxcoOvAeY";
+
+        Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
+
+        //需要存储的空间名和文件名
+        String scope = "qiniu:test.jpg";
+
+        String urlbase64 = UrlSafeBase64.encodeToString(scope);
+
+        //空间domain, 比如 orf68lb7.bkt.clouddn.com
+        String domain = "oq2z5wvba.bkt.clouddn.com";
+
+        //需要处理的文件名
+        String key = "测试.png";
+
+        //处理操作
+        String cmd = "imageView2/2/w/200/h/200";
+
+        String encodedFileKey = URLEncoder.encode(key, "utf-8");
+
+        String signUrl  = domain + "/" + encodedFileKey + "?" + cmd + "|saveas/" + urlbase64;
+
+        Mac mac = Mac.getInstance("HmacSHA1");
+        mac.init(new SecretKeySpec(StringUtils.utf8Bytes(SECRET_KEY),"HmacSHA1"));
+        String sign = UrlSafeBase64.encodeToString(mac.doFinal(StringUtils.utf8Bytes(signUrl)));
+
+        String finalUrl = "http://" + signUrl + "/sign/" + ACCESS_KEY + ":" + sign;
+        
+        String url = auth.privateDownloadUrl(finalUrl, 36000);
+
+        System.out.println(url);
+    }
+    
+}
+```
+<br/>
+<br/>
+### python
+```
+def __token( data):
+    data = b(data)
+    hashed = hmac.new(secret_key, data, sha1)
+    return urlsafe_base64_encode(hashed.digest())
+
+access_key = 'oPQDbCnHhXjZtGZk6ysNYDMrcs7a8Puy_e0mcaL_'
+secret_key = 'DzQHHAizEpsr3LqiIfjF8-p2cBi406nR44CYasBx'
+
+#需要处理的url
+url_op = "oa1azzrgm.bkt.clouddn.com/test.jpg?imageInfo"
+
+#处理后另存的空间文件名
+save_bucket = 'test'
+save_key = 'ttt.mp4'
+savekey = "saveas/"+ entry(save_bucket, save_key)
+url = '{0}%7C{1}'.format(url_op,savekey)
+
+#签名
+q = Auth(access_key, secret_key)
+sign_url = 'http://{0}/sign/{1}:{2}'.format(url, access_key, __token(url))
+print(sign_url)
+
+#私有空间签名
+private_url = q.private_download_url(sign_url, expires=3600*24*4)
+print(private_url)
+```

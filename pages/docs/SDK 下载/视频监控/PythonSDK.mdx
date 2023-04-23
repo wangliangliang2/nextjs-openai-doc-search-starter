@@ -1,0 +1,2107 @@
+# **简介**
+
+此SDK主要帮助您快速接入七牛云的视频监控平台。
+
+主要有如下功能：
+
+- 空间管理
+- 流管理
+- 设备管理
+- 模板管理
+- 录制管理
+
+此 Python SDK 适用于 2.7 和 3.3及以上版本。
+
+- [Python SDK 下载地址](https://github.com/qiniu/python-sdk/releases)
+- [Python SDK 源码地址](https://github.com/qiniu/python-sdk)
+
+<a id="install"></a>
+# 安装
+
+- 直接安装: 
+
+```
+pip install qiniu
+或
+easy_install qiniu
+```
+
+- 源码安装：
+
+```
+#从Python SDK 下载地址下载源码
+tar xvzf python-sdk-$VERSION.tar.gz
+cd python-sdk-$VERSION
+python setup.py install
+```
+
+# **初始化鉴权**
+
+七牛 Java SDK 的所有的功能，都需要合法的授权。授权凭证的签算需要七牛账号下的一对有效的`Access Key`和`Secret Key`，这对密钥可以通过如下步骤获得：
+
+1. 点击[注册](https://portal.qiniu.com/signup)开通七牛开发者帐号
+2. 如果已有账号，直接登录七牛开发者后台，点击[这里🔗](https://portal.qiniu.com/user/key)查看 Access Key 和 Secret Key
+
+# **前置说明**
+1. QVS更新接口使用的是patch请求，SDK中未添加该方法，客户可以在python SDK  qiniu/http.py  文件中添加下面这个方法
+```python
+def _patch_with_qiniu_mac(url, data, auth):
+    qn_auth = qiniu.auth.QiniuMacRequestsAuth(
+        auth) if auth is not None else None
+    timeout = config.get_default('connection_timeout')
+    try:
+        r = requests.patch(
+            url,
+            json=data,
+            auth=qn_auth,
+            timeout=timeout,
+            headers=_headers)
+    except Exception as e:
+        return None, ResponseInfo(None, e)
+    return __return_wrapper(r)
+```
+2. 客户可在python-sdk/qiniu/services目录下创建qvs的子目录，后续的接口函数全部放置在python-sdk/qiniu/services/qvs即可。
+
+# **空间管理**
+
+## **[创建空间](https://developer.qiniu.com/qvs/6726/create-namespace)**
+### 示例
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def createNamespaces(access_key, secret_key, body):
+    """
+    创建空间
+    https://developer.qiniu.com/qvs/api/6726/create-namespace
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param body: 请求体
+        {
+            "name": 必填，空间名称(格式"^[a-zA-Z0-9_-]{1,100}$")
+            "desc"：非必填，空间描述
+            "accessType": 必填，接入类型(rtmp或者gb28181)
+            "rtmpUrlType": accessType为“rtmp”时 必填，推拉流地址计算方式，1:static, 2:dynamic
+            "domains": rtmpUrlType为1时必填，直播域名，列表格式
+            "callBack"：非必填，回调地址，可用于获取空间内设备/流状态更新时的信息
+            "recordTemplateId": 非必填，录制模版ID，需要录制功能时输入对应的模板ID，录制模板ID可以模板管理中获取
+            "snapshotTemplateId"：非必填，截图模版ID，需要截图功能时输入对应的模板ID，截图模板ID可以模板管理中获取
+            "recordTemplateApplyAll"：非必填，空间模版是否应用到全局
+            "snapshotTemplateApplyAll"：非必填，截图模版是否应用到全局
+        }
+
+    :return:
+        {
+
+        }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = "http://qvs.qiniuapi.com/v1/namespaces"
+
+    # 发起POST请求
+    ret, res = http._post_with_qiniu_mac(url, body, auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+    # 请求体
+    body = {
+        "name": "test00",
+        "accessType": "rtmp",
+        "rtmpUrlType": 2,
+        # "domains": ["tests6.com"],
+        # "recordTemplateId": "xxxxxxxxxxx"
+    }
+
+    headers, result = createNamespaces(access_key, secret_key, body)
+    print(f'{headers}\n{result}')
+```
+<br/>
+
+## **[查询空间](https://developer.qiniu.com/qvs/api/6729/query-namespace)**
+### 示例
+
+```python
+// 查询空间
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def listNamespacesInfo(access_key, secret_key, namespaceId):
+    """
+    查询空间信息
+    https://developer.qiniu.com/qvs/api/6729/query-namespace
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}"
+
+    # 发起POST请求
+    ret, res = http._get_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 需要查询的空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    headers, result = listNamespacesInfo(access_key, secret_key, namespaceId)
+    print(f'{headers}\n{result}')
+```
+<br/>
+
+## **[更新空间](https://developer.qiniu.com/qvs/api/6728/update-namespace)**
+### 示例
+```python
+
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def updateNamespaces(access_key, secret_key, namespaceId, body):
+    """
+    更新空间
+    https://developer.qiniu.com/qvs/api/6728/update-namespace
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param body: 请求体
+            {
+                "operations":[
+                    {"key":"recordTemplateApplyAll", // 要修改的参数：name 空间名称;desc 空间描述;callBack 回调地址;recordTemplateId 录制模版ID;snapshotTemplateId 截图模版ID; recordTemplateApplyAll 空间模版是否应用到全局; snapshotTemplateApplyAll 截图模版是否应用到全局
+                    "op":"replace", // op操作(目前支持replace和delete)
+                    "value":true}， // 要修改的参数对应的value(当op为delete的时候可以忽略)
+                    { },
+                    .....
+            ]
+            }
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}"
+
+    # 发起PATCH请求
+    ret, res = http._patch_with_qiniu_mac(url, body, auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 需要更新的空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 请求体
+    body = {
+        "operations": [
+            {"key": "name", "op": "replace", "value": ""xxxxxxxxxxx""}
+        ]
+    }
+
+    headers, result = updateNamespaces(access_key, secret_key, namespaceId, body)
+    print(f'{headers}\n{result}')
+```
+
+## **[获取空间列表](https://developer.qiniu.com/qvs/api/6730/list-namespace)**
+### 示例
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def listNamespaces(access_key, secret_key, offset=None, line=10, sortBy="desc:createdAt"):
+    """
+    获取空间列表
+    https://developer.qiniu.com/qvs/api/6730/list-namespace
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param offset: 在全部namespace中的偏移量，时间戳
+    :param line: 一次返回多少条
+    :param sortBy: asc 表示升序, desc 表示降序, 默认按创建时间降序排列(可参与排序的字段有createdAt, updatedAt).asc:updatedAt表示更新时间从小到大排序, desc:updatedAt表示更新时间从大到小排序
+
+    :return:
+        200 { }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+    if offset is None:
+        # 请求URL
+        url = f"http://qvs.qiniuapi.com/v1/namespaces?line={line}&sortBy={sortBy}"
+    else:
+        url = f"http://qvs.qiniuapi.com/v1/namespaces?offset={offset}&line={line}&sortBy={sortBy}"
+    # 发起POST请求
+    ret, res = http._get_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    headers, result = listNamespaces(access_key, secret_key)
+    print(f'{headers}\n{result}') 
+```
+
+## **[禁用空间](https://developer.qiniu.com/qvs/api/6759/disable-the-space)**
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def disableNamespaces(access_key, secret_key, namespaceId):
+    """
+    禁用空间
+    https://developer.qiniu.com/qvs/api/6759/disable-the-space
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/disabled"
+
+    # 发起POST请求
+    ret, res = http._post_with_qiniu_mac(url, None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 需要查询的空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    headers, result = disableNamespaces(access_key, secret_key, namespaceId)
+    print(f'{headers}\n{result}')
+
+```
+
+## **[启用空间](https://developer.qiniu.com/qvs/api/6760/enable-the-space)**
+### 示例
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def disableNamespaces(access_key, secret_key, namespaceId):
+    """
+    启用空间
+    https://developer.qiniu.com/qvs/api/6760/enable-the-space
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/enabled"
+
+    # 发起POST请求
+    ret, res = http._post_with_qiniu_mac(url, None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 需要查询的空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    headers, result = disableNamespaces(access_key, secret_key, namespaceId)
+    print(f'{headers}\n{result}')
+```
+
+
+## **[删除空间](https://developer.qiniu.com/qvs/api/6727/delete-namespace)**
+
+### 示例
+
+```python
+
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def deleteNamespaces(access_key, secret_key, namespaceId):
+    """
+    删除空间
+    https://developer.qiniu.com/qvs/api/6727/delete-namespace
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}"
+
+    # 发起POST请求
+    ret, res = http._delete_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 需要删除的空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    headers, result = deleteNamespaces(access_key, secret_key, namespaceId)
+    print(f'{headers}\n{result}')
+```
+
+# **流管理**
+
+
+## **[创建流](https://developer.qiniu.com/qvs/api/6734/create-flow)**
+本接口仅用于接入类型为RTMP的空间
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def createStreams(access_key, secret_key, namespaceId, body):
+    """
+    创建流
+    https://developer.qiniu.com/qvs/api/6734/create-flow
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param body： 请求体
+            {
+                "streamId":"device009", // 必填，流名称, 流名称在空间中唯一，可包含 字母、数字、中划线、下划线；1 ~ 100 个字符长；创建后将不可修改
+                "desc":"流说明信息", // 非必填，关于流的描述信息
+                "recordTemplateId":"d102sns2mwhd", // 非必填，录制模版ID，配置流维度的录制模板
+                "snapshotTemplateId":"截图模板ID" // 非必填，截图模版ID，配置流维度的截图模板
+            }
+
+    :return:
+           200 { }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/streams"
+
+    # 发起POST请求
+    ret, res = http._post_with_qiniu_mac(url, body, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 需要查询的空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 请求体
+    body = {
+        "streamId": "xxxxxxxxxxx",
+        "desc": "创建流测试",
+        # "recordTemplateId": "xxxxxxxxxxx"
+    }
+
+    headers, result = createStreams(access_key, secret_key, namespaceId, body)
+    print(f'{headers}\n{result}')
+```
+
+
+## **[查询流](https://developer.qiniu.com/qvs/api/6736/query-information-flow)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def streamsInfo(access_key, secret_key, namespaceId, streamId):
+    """
+    查询流信息
+    https://developer.qiniu.com/qvs/api/6736/query-information-flow
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param streamId: 流名ID
+
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/streams/{streamId}"
+
+    # 发起GET请求
+    ret, res = http._get_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 需要查询的空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 流名ID
+    streamId = "xxxxxxxxxxx"
+
+    headers, result = streamsInfo(access_key, secret_key, namespaceId, streamId)
+    print(f'{headers}\n{result}')
+```
+
+
+## **[更新流](https://developer.qiniu.com/qvs/api/6758/update-the-flow)**
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def updateStreams(access_key, secret_key, namespaceId, streamId, body):
+    """
+    更新流
+    https://developer.qiniu.com/qvs/api/6758/update-the-flow
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param streamId: 流名ID
+    :param body: 请求体
+                {
+                    "operations":[
+                        {"key":"desc", //  必填，要修改的参数：desc 流描述;recordTemplateId 录制模版ID;snapshotTemplateId 截图模版ID; disabled 流是否被禁用
+                        "op":"replace", // 必填，op操作(目前支持replace和delete)
+                        "value":true}， // 必填，要修改的参数对应的value(当op为delete的时候可以忽略)
+                        { },
+                        .....
+                ]
+                }
+
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/streams/{streamId}"
+
+    # 发起PATCH请求
+    ret, res = http._patch_with_qiniu_mac(url, body, auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 需要查询的空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 流名ID
+    streamId = "xxxxxxxxxxx"
+
+    # 请求体
+    body = {
+        "operations": [
+            {"key": "desc", "op": "replace", "value": "ceshi121212"}
+        ]
+    }
+
+    headers, result = updateStreams(access_key, secret_key, namespaceId, streamId, body)
+    print(f'{headers}\n{result}')
+```
+
+
+## **[获取流列表](https://developer.qiniu.com/qvs/api/6737/query-list-flow)**
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def listStreams(access_key, secret_key, namespaceid, offset=None, line=10, qtype=0, prefix=None,
+                sortBy="desc:createdAt"):
+    """
+    获取流列表
+    https://developer.qiniu.com/qvs/api/6737/query-list-flow
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceid: 空间名称ID
+    :param offset: 在全部namespace中的偏移量，时间戳
+    :param line: 一次返回多少条
+    :param qtype: 查询流类型， 0:全部,1:在线流,2:离线流
+    :param prefix: 流ID 前缀，可以流ID 前缀进行检索查询
+    :param sortBy: asc 表示升序, desc 表示降序, 默认按创建时间降序排列(可参与排序的字段有createdAt, updatedAt).asc:updatedAt表示更新时间从小到大排序, desc:updatedAt表示更新时间从大到小排序
+
+    :return:
+        200 { }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+    if offset is None and prefix is None:
+        # 请求URL
+        url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceid}/streams?line={line}&sortBy={sortBy}&qtype={qtype}"
+    else:
+        url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceid}/streams?offset={offset}&line={line}&qtype={qtype}&prefix={prefix}&sortBy={sortBy}"
+    # 发起GET请求
+    ret, res = http._get_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceid = "xxxxxxxxxxx"
+
+    headers, result = listStreams(access_key, secret_key, namespaceid, )
+    print(f'{headers}\n{result}')
+```
+
+## **[获取流地址](https://developer.qiniu.com/qvs/api/6740/obtain-flow-address)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def staticStreamDomain(access_key, secret_key, namespaceid, streamid, body):
+    """
+    静态模式流地址
+    https://developer.qiniu.com/qvs/api/6800/static-model
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceid: 空间名称ID
+    :param streamid: 流ID
+    :param body: 请求体
+            {
+                "domain": "qvs-live-hdl.qiniu.com", // 必填，域名
+                "domainType": "liveHdl", // 必填，域名类型,取值："publishRtmp":rtmp推流, "liveRtmp": rtmp播放, "liveHls": hls播放, "liveHdl": flv播放
+                "urlExpireSec": // 非必填，推流地址过期时间(单位为秒)
+            }
+    :return:
+        200 { }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceid}/streams/{streamid}/domain"
+
+    # 发起POST请求
+    ret, res = http._post_with_qiniu_mac(url, body, auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+def dynamicStreamDomain(access_key, secret_key, namespaceid, streamid, body):
+    """
+    动态模式流地址
+    https://developer.qiniu.com/qvs/api/6801/dynamic-model
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceid: 空间名称ID
+    :param streamid: 流ID
+    :param body: 请求体
+            {
+                "publishIp": "", // 非必填，推流端对外IP地址
+                "playIp": "", // 非必填，拉流端对外IP地址
+                "urlExpireSec": // 非必填，推流地址过期时间(单位为秒)
+            }
+    :return:
+        200 { }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceid}/streams/{streamid}/urls"
+
+    # 发起POST请求
+    ret, res = http._post_with_qiniu_mac(url, body, auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceid = "xxxxxxxxxxx"
+
+    #  流ID
+    streamid = "xxxxxxxxxxx"
+
+    """静态模式请求体"""
+    # # 请求体
+    # body = {
+    #     "domain": ""xxxxxxxxxxx"",
+    #     "domainType": "publishRtmp"
+    # }
+    #
+    # headers, result = staticStreamDomain(access_key, secret_key, namespaceid, streamid, body)
+    # print(f'{headers}\n{result}')
+
+    """动态模式请求体"""
+    # 请求体
+    body = {
+        "publishIp": ""xxxxxxxxxxx"",
+        "playIp": "publishRtmp"
+    }
+
+    headers, result = dynamicStreamDomain(access_key, secret_key, namespaceid, streamid, body)
+    print(f'{headers}\n{result}')
+```
+
+
+
+## **[查询推流历史记录](https://developer.qiniu.com/qvs/api/6742/query-flow-records)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json, time
+
+
+# 日期转时间戳
+def time2timestamp(datetime):
+    # 转为时间数组
+    timeArray = time.strptime(datetime, "%Y-%m-%d %H:%M:%S")
+    timeStamp = int(time.mktime(timeArray))
+    return timeStamp
+
+
+def listNamespaces(access_key, secret_key, namespaceId, streamId, startDate, endDate, offset=None, line=10):
+    """
+    获取推流记录
+    https://developer.qiniu.com/qvs/api/6742/query-flow-records
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param offset: 非必填，在全部namespace中的偏移量，时间戳
+    :param line: 非必填，一次返回多少条
+    :param start: 必填，推流开始时间(unix timestamp in second)
+    :param end: 必填，推流结束时间(unix timestamp in second)
+
+    :return:
+        200 { }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    start = time2timestamp(startDate)
+
+    end = time2timestamp(endDate)
+
+    if offset is None:
+        # 请求URL
+        url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/streams/{streamId}/pubhistories?start={start}&end={end}&line={line}"
+    else:
+        url = f"http://qvs.qiniuapi.com/v1/namespaces?start={start}&end={end}&line={line}&offset={offset}"
+    # 发起POST请求
+    ret, res = http._get_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 流ID
+    streamId = "xxxxxxxxxxx"
+
+    # 推流开始时间（Unix 时间戳）
+    startDate = "2020-06-08 00:00:00"
+
+    # 推流结束时间（Unix 时间戳）
+    endDate = "2020-06-09 00:00:00"
+
+    headers, result = listNamespaces(access_key, secret_key, namespaceId, streamId, startDate, endDate)
+    print(f'{headers}\n{result}')
+```
+
+## **[禁用流](https://developer.qiniu.com/qvs/api/6738/disable-the-flow)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def disableStreams(access_key, secret_key, namespaceId, streamId):
+    """
+    禁用流
+    https://developer.qiniu.com/qvs/api/6738/disable-the-flow
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param streamId: 流ID
+
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/streams/{streamId}/disabled"
+
+    # 发起POST请求
+    ret, res = http._post_with_qiniu_mac(url, None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 流ID
+    streamId = "xxxxxxxxxxx"
+
+    headers, result = disableStreams(access_key, secret_key, namespaceId, streamId)
+    print(f'{headers}\n{result}')
+```
+
+
+## **[启用流](https://developer.qiniu.com/qvs/api/6739/enable-the-flow)**
+
+
+
+### 示例
+
+```python
+// 启用流
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def enableStreams(access_key, secret_key, namespaceId, streamId):
+    """
+    启用流
+    https://developer.qiniu.com/qvs/api/6739/enable-the-flow
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param streamId: 流ID
+
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/streams/{streamId}/enabled"
+
+    # 发起POST请求
+    ret, res = http._post_with_qiniu_mac(url, None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 流ID
+    streamId = "xxxxxxxxxxx"
+
+    headers, result = enableStreams(access_key, secret_key, namespaceId, streamId)
+    print(f'{headers}\n{result}')
+```
+## **[删除流](https://developer.qiniu.com/qvs/api/6735/delete-flow)**
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def deleteStreams(access_key, secret_key, namespaceId, streamId):
+    """
+    删除流
+    https://developer.qiniu.com/qvs/api/6735/delete-flow
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param streamId: 流名ID
+
+    :return:
+           200 { }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/streams/{streamId}"
+
+    # 发起POST请求
+    ret, res = http._delete_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 需要查询的空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 流名ID
+    streamId = "xxxxxxxxxxx"
+
+    headers, result = deleteStreams(access_key, secret_key, namespaceId, streamId)
+    print(f'{headers}\n{result}')
+```
+
+## **[停用流](https://developer.qiniu.com/qvs/api/6849/stop-using-flow)**
+仅适用于`rtmp`类型的空间，用户主动断开推流。
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def stopStreams(access_key, secret_key, namespaceId, streamId):
+    """
+    停止推流
+    https://developer.qiniu.com/qvs/api/6849/stop-using-flow
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param streamId: 流ID
+
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/streams/{streamId}/stop"
+
+    # 发起POST请求
+    ret, res = http._post_with_qiniu_mac(url, None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 流ID
+    streamId = "xxxxxxxxxxx"
+
+    headers, result = stopStreams(access_key, secret_key, namespaceId, streamId)
+    print(f'{headers}\n{result}')
+
+```
+
+# **设备管理**
+
+## **[创建设备](https://developer.qiniu.com/qvs/api/6896/create-device)**
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http, urlsafe_base64_encode
+import json
+
+
+def createNamespaces(access_key, secret_key, namespaceId, body):
+    """
+    创建设备
+    https://developer.qiniu.com/qvs/api/6896/create-device
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param body: 请求体
+        {
+            "name": 非必填，设备名称（可包含 字母、数字、中划线、下划线；1 ~ 100 个字符长）
+            "gbId"：非必填，设备国标ID 要求全局唯一, 该字段为空时，会自动创建gbid
+            "username": 非必填，用户名, 4~40位，可包含大写字母、小写字母、数字、中划线。当该字段为空时,默认值就是设备国标ID
+            "password": 必填，密码, 4~40位，可包含大写字母、小写字母、数字、中划线
+            "pullIfRegister": 非必填，注册成功后启动拉流, 默认关闭
+            "desc"：非必填，关于设备的描述信息
+        }
+
+    :return:
+        {
+
+        }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/devices"
+
+    # 发起POST请求
+    ret, res = http._post_with_qiniu_mac(url, body, auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 请求体
+    body = {
+        "name": "device1",
+        "desc": "test gb28181",
+        "username": "username",
+        "password": "password"
+    }
+
+    headers, result = createNamespaces(access_key, secret_key, namespaceId, body)
+    print(f'{headers}\n{result}')
+
+```
+
+
+## **[删除设备](https://developer.qiniu.com/qvs/api/6898/Delete-device)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def deleteNamespaces(access_key, secret_key, namespaceId, gbId):
+    """
+    删除设备
+    https://developer.qiniu.com/qvs/api/6898/Delete-device
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param gbId: 设备国标Id
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/devices/{gbId}"
+
+    # 发起POST请求
+    ret, res = http._delete_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 设备国标Id
+    gbId = "xxxxxxxxxxx"
+
+    headers, result = deleteNamespaces(access_key, secret_key, namespaceId, gbId)
+    print(f'{headers}\n{result}')
+```
+
+## **[查询设备](https://developer.qiniu.com/qvs/api/6901/Query-device-information)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def listNamespacesInfo(access_key, secret_key, namespaceId, gbId):
+    """
+    查询设备信息
+	https://developer.qiniu.com/qvs/api/6901/Query-device-information
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param gbId: 设备国标Id
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/devices/{gbId}"
+
+    # 发起POST请求
+    ret, res = http._get_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 设备国标Id
+    gbId = "xxxxxxxxxxx"
+
+    headers, result = listNamespacesInfo(access_key, secret_key, namespaceId, gbId)
+    print(f'{headers}\n{result}')
+```
+
+## **更新设备[链接](https://developer.qiniu.com/qvs/api/6899/update-the-device)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def updateNamespaces(access_key, secret_key, namespaceId, gbId, body):
+    """
+    更新设备
+    https://developer.qiniu.com/qvs/api/6899/update-the-device
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param gbId: 设备国标Id
+    :param body: 请求体
+            {
+                "operations":[
+                    {"key":"desc", // 要修改的参数：name 设备名称;desc 设备描述;gbId 设备国标ID;username 用户名;password 密码; pullIfRegister 注册成功后启动拉流
+                    "op":"replace", // op操作(目前支持replace和delete)
+                    "value":gb patch test}， // 要修改的参数对应的value(当op为delete的时候可以忽略)
+                    { },
+                    .....
+            ]
+            }
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/devices/{gbId}"
+
+    # 发起PATCH请求
+    ret, res = http._patch_with_qiniu_mac(url, body, auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 设备国标Id
+    gbId = "xxxxxxxxxxx"
+
+    # 请求体
+    body = {
+        "operations": [
+            {"key": "desc",
+             "op": "replace",
+             "value": "gb patch test"}
+        ]
+    }
+
+    headers, result = updateNamespaces(access_key, secret_key, namespaceId, gbId, body)
+    print(f'{headers}\n{result}')
+```
+<br/>
+
+## **[获取设备列表](https://developer.qiniu.com/qvs/api/6902/Query-device-list)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def listNamespaces(access_key, secret_key, namespaceId, offset=0, line=10, prefix=None, state="notReg",
+                   qtype=0):
+    """
+    获取设备列表
+    https://developer.qiniu.com/qvs/api/6902/Query-device-list
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param offset: 在全部namespace中的偏移量，integer
+    :param line: 一次返回多少条
+    :param prefix: 可以通过gbid前缀进行检索查询
+    :param state: 按设备状态查询，offline: 离线, online: 在线, notReg: 未注册, locked: 锁定
+    :param qtype: 按设备类型查询，0:全部, 1:摄像头, 2:平台
+
+    :return:
+        200 { }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/devices?offset={offset}&line={line}&prefix={prefix}&state={state}&qtype={qtype}"
+    # 发起POST请求
+    ret, res = http._get_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    headers, result = listNamespaces(access_key, secret_key, namespaceId)
+    print(f'{headers}\n{result}')
+```
+
+
+## **[获取通道列表](https://developer.qiniu.com/qvs/api/6906/query-channel-list)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def listNamespaces(access_key, secret_key, namespaceId, gbId, prefix=None):
+    """
+    获取通道列表
+    https://developer.qiniu.com/qvs/api/6906/query-channel-list
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param gbId: 设备国标Id
+    :param prefix: 通道国标ID前缀
+
+    :return:
+        200 { }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/devices/{gbId}/channels?prefix={prefix}"
+    # 发起POST请求
+    ret, res = http._get_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 设备国标Id
+    gbId = "xxxxxxxxxxx"
+
+    headers, result = listNamespaces(access_key, secret_key, namespaceId, gbId)
+    print(f'{headers}\n{result}')
+```
+<br/>
+
+## **[启动设备拉流](https://developer.qiniu.com/qvs/api/6907/start-device)**
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def startDevice(access_key, secret_key, namespaceId, gbId):
+    """
+    启动设备拉流
+    https://developer.qiniu.com/qvs/api/6907/start-device
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param gbId: 设备国标Id
+
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/devices/{gbId}/start"
+
+    # 发起POST请求
+    ret, res = http._post_with_qiniu_mac(url, None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 设备国标Id
+    gbId = "xxxxxxxxxxx"
+
+    headers, result = startDevice(access_key, secret_key, namespaceId, gbId)
+    print(f'{headers}\n{result}')
+```
+
+## **[停止设备拉流](https://developer.qiniu.com/qvs/api/6908/stop-device)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def stopDevice(access_key, secret_key, namespaceId, gbId):
+    """
+    停止设备拉流
+    https://developer.qiniu.com/qvs/api/6908/stop-device
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 空间ID
+    :param gbId: 设备国标Id
+
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/devices/{gbId}/stop"
+
+    # 发起POST请求
+    ret, res = http._post_with_qiniu_mac(url, None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+   	# 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 设备国标Id
+    gbId = "xxxxxxxxxxx"
+
+    headers, result = stopDevice(access_key, secret_key, namespaceId, gbId)
+    print(f'{headers}\n{result}')
+
+```
+
+
+
+# **模板管理**
+
+## **[创建模板](https://developer.qiniu.com/qvs/api/6721/create-template)**
+	
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http, urlsafe_base64_encode
+import json
+
+
+def createTemplate(access_key, secret_key, body):
+    """
+    创建模板
+    https://developer.qiniu.com/qvs/api/6721/create-template
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param body: 请求体
+        {
+            "name": 必填，模版名称，格式为 1 ~ 100个字符，可包含小写字母、数字、中划线
+            "desc"：非必填，模板描述
+            "bucket": 必填，模版对应的对象存储的bucket
+            "deleteAfterDays": 必填，存储过期时间,默认永久不过期
+            "fileType": 必填，文件存储类型,取值：0（普通存储）,1（低频存储）
+            "recordFileFormat": 非必填，录制文件存储格式,取值：0（m3u8格式存储）
+            "templateType": 必填，模板类型,取值：0（录制模版）, 1（截图模版）
+            "recordType"：templateType为0时须指定，录制模式, 0（不录制）,1（实时录制）2 (按需录制)
+            "jpgOverwriteStatus": templateType为1时须指定，开启覆盖式截图(一般用于流封面)
+            "jpgSequenceStatus"：templateType为1时须指定，开启序列式截图
+            "jpgOnDemandStatus"：templateType为1时须指定，开启按需截图
+            "recordInterval"：非必填，录制文件时长 单位为秒,600~3600
+            "snapInterval": 非必填，截图间隔, 单位为秒, 10~600
+        }
+
+    :return:
+        {
+
+        }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = "http://qvs.qiniuapi.com/v1/templates"
+
+    # 发起POST请求
+    ret, res = http._post_with_qiniu_mac(url, body, auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 请求体
+    body = {
+        "name": "test0013",
+        "desc": "this is a test",
+        "delateAfterDays": 7,
+        "interval": 5,
+        "templateType": 1,
+        "bucket": "xxxxxxxxxxx",
+        "jpgOverwriteStatus": True,
+        "jpgSequenceStatus": True,
+        "jpgOnDemandStatus": True
+    }
+
+    headers, result = createTemplate(access_key, secret_key, body)
+    print(f'{headers}\n{result}')
+```
+<br/>
+
+## **[查询模板](https://developer.qiniu.com/qvs/api/6724/template-information)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def listNamespacesInfo(access_key, secret_key, templateId):
+    """
+    查询模板信息
+    https://developer.qiniu.com/qvs/api/6724/template-information
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param templateId: 模板ID
+
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/templates/{templateId}"
+
+    # 发起POST请求
+    ret, res = http._get_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 模板ID
+    templateId = "xxxxxxxxxxx"
+
+    headers, result = listNamespacesInfo(access_key, secret_key, templateId)
+    print(f'{headers}\n{result}')
+```
+
+
+## **[更新模板](https://developer.qiniu.com/qvs/api/6723/modify-the-template)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def updateTemplate(access_key, secret_key, templateId, body):
+    """
+    更新模板
+    https://developer.qiniu.com/qvs/api/6723/modify-the-template
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param templateId: 模板ID
+    :param body: 请求体
+            {
+                "operations":[
+                    {"key":"recordTemplateApplyAll", // 要修改的参数：name 模板名称;desc 模板描述;bucket 模版对应的对象存储的bucket;deleteAfterDays 存储过期时间,默认永久不过期;fileType 文件存储类型,取值：0（普通存储）,1（低频存储）; recordType 录制模式, 0（不录制）,1（实时录制）; jpgOverwriteStatus 开启覆盖式截图(一般用于流封面); recordInterval 录制文件时长 单位为秒, 600~3600; snapInterval 截图间隔, 单位为秒, 10~600; jpgSequenceStatus 开启序列式截图
+                    "op":"replace", // op操作(目前支持replace和delete)
+                    "value":true}， // 要修改的参数对应的value(当op为delete的时候可以忽略)
+                    { },
+                    .....
+            ]
+            }
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/templates/{templateId}"
+
+    # 发起PATCH请求
+    ret, res = http._patch_with_qiniu_mac(url, body, auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 模板ID
+    templateId = "xxxxxxxxxxx"
+
+    # 请求体
+    body = {
+        "operations": [
+            {"key": "deleteAfterDays", "op": "replace", "value": 0}
+        ]
+    }
+
+    headers, result = updateTemplate(access_key, secret_key, templateId, body)
+    print(f'{headers}\n{result}')
+```
+
+
+## **[获取模板列表](https://developer.qiniu.com/qvs/api/6725/list-template)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def listTemplates(access_key, secret_key, offset=None, templateType=None, match=None, line=10,
+                  sortBy="desc:createdAt"):
+    """
+    获取模板列表
+    https://developer.qiniu.com/qvs/api/6725/list-template
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param offset: 非必填，在全部namespace中的偏移量，时间戳
+    :param line: 非必填，一次返回多少条
+    :param sortBy: 非必填，asc 表示升序, desc 表示降序, 默认按创建时间降序排列(可参与排序的字段有createdAt, updatedAt).asc:updatedAt表示更新时间从小到大排序, desc:updatedAt表示更新时间从大到小排序
+    :param templateType: 非必填，模板类型，取值：0（录制模版）, 1（截图模版）
+    :param match: 非必填，模糊匹配查询(模版名称包含match串时返回)
+
+    :return:
+        200 { }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+    if offset is None and match is None and templateType is None:
+        # 请求URL
+        url = f"http://qvs.qiniuapi.com/v1/templates?line={line}&sortBy={sortBy}"
+    else:
+        url = f"http://qvs.qiniuapi.com/v1/templates?offset={offset}&line={line}&sortBy={sortBy}&templateType={templateType}&match={match}"
+    # 发起POST请求
+    ret, res = http._get_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    headers, result = listTemplates(access_key, secret_key)
+    print(f'{headers}\n{result}')
+```
+<br/>
+
+## **[删除模板](https://developer.qiniu.com/qvs/api/6722/delete-template)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json
+
+
+def deleteTemplate(access_key, secret_key, templateId):
+    """
+    删除模板
+    https://developer.qiniu.com/qvs/api/6722/delete-template
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param templateId: 模板ID
+
+    :return:
+            {
+                "code": 200
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/templates/{templateId}"
+
+    # 发起POST请求
+    ret, res = http._delete_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 模板ID
+    templateId = "xxxxxxxxxxx"
+
+    headers, result = deleteTemplate(access_key, secret_key, templateId)
+    print(f'{headers}\n{result}')
+```
+
+# **录制管理**
+
+## **[查询云端录制记录](https://developer.qiniu.com/qvs/api/6745/query-recordhistories)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json, time
+
+
+# 日期转时间戳
+def time2timestamp(datetime):
+    # 转为时间数组
+    timeArray = time.strptime(datetime, "%Y-%m-%d %H:%M:%S")
+    timeStamp = int(time.mktime(timeArray))
+    return timeStamp
+
+
+def recordHistories(access_key, secret_key, namespaceId, streamId, start, end, line=10, marker=None):
+    """
+    查询录制记录
+    https://developer.qiniu.com/qvs/api/6745/query-recordhistories
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param offset: 非必填，在全部namespace中的偏移量，时间戳
+    :param line: 非必填，一次返回多少条
+    :param sortBy: 非必填，asc 表示升序, desc 表示降序, 默认按创建时间降序排列(可参与排序的字段有createdAt, updatedAt).asc:updatedAt表示更新时间从小到大排序, desc:updatedAt表示更新时间从大到小排序
+    :param templateType: 非必填，模板类型，取值：0（录制模版）, 1（截图模版）
+    :param match: 非必填，模糊匹配查询(模版名称包含match串时返回)
+
+    :return:
+        200 { }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    start = time2timestamp(startDate)
+
+    end = time2timestamp(endDate)
+
+    if marker is None:
+        # 请求URL
+        url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/streams/{streamId}/recordhistories?start={start}&end={end}&line={line}"
+    else:
+        url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/streams/{streamId}/recordhistories?start={start}&end={end}&marker={marker}&line={line}"
+    # 发起POST请求
+    ret, res = http._get_with_qiniu_mac(url, params=None, auth=auth)
+    headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 流ID
+    streamId = "xxxxxxxxxxx"
+
+    # 推流开始时间（Unix 时间戳）
+    startDate = "2020-06-08 00:00:00"
+
+    # 推流结束时间（Unix 时间戳）
+    endDate = "2020-06-09 00:00:00"
+
+    headers, result = recordHistories(access_key, secret_key, namespaceId, streamId, startDate, endDate)
+    print(f'{headers}\n{result}')
+```
+<br/>
+
+## **[查询流封面](https://developer.qiniu.com/qvs/api/6814/the-cover-for-screenshots)**
+
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json, time
+
+
+# 日期转时间戳
+def time2timestamp(datetime):
+    # 转为时间数组
+    timeArray = time.strptime(datetime, "%Y-%m-%d %H:%M:%S")
+    timeStamp = int(time.mktime(timeArray))
+    return timeStamp
+
+
+def streamSnapshotss(access_key, secret_key, namespaceId, streamId):
+    """
+    获取直播封面截图
+    https://developer.qiniu.com/qvs/api/6814/the-cover-for-screenshots
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 必填项，空间ID
+    :param streamId: 必填项，流ID
+
+    :return:
+        200
+            {
+                "url": "http://prlghu509.test.bkt.clouddn.com/snapshot/jpg/2akrarrzns76w/t0.jpg?e=1588124787&token=Ves3WTXC8XnEHT0I_vacEQQz-9jrJZxNExcmarzQ:bH8s5m5N5Ugp2wo6ACRUVeIK280"
+            }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    # 请求URL
+    url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/streams/{streamId}/cover"
+
+    # 发起GET请求
+    ret, res = http._get_with_qiniu_mac(url, params=None, auth=auth)
+    result = json.loads(res.text_body)
+    if res.status_code == 401:
+        headers = {"code": res.status_code, "reqid": res.req_id, "error": result["error"]}
+    elif res.status_code != 401 and res.text_body:
+        headers = {"code": result["code"], "reqid": res.req_id, "xlog": result["error"]}
+    else:
+        headers = {"code": res.text_body, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 流ID
+    streamId = "xxxxxxxxxxx"
+
+    headers, result = streamSnapshotss(access_key, secret_key, namespaceId, streamId)
+    print(f'{headers}\n{result}')
+```
+
+
+## **[获取截图列表](https://developer.qiniu.com/qvs/api/6749/list-stream-snapshots)**
+
+
+### 示例
+
+```python
+# -*- coding: utf-8 -*-
+from qiniu import QiniuMacAuth, http
+import json, time
+
+
+# 日期转时间戳
+def time2timestamp(datetime):
+    # 转为时间数组
+    timeArray = time.strptime(datetime, "%Y-%m-%d %H:%M:%S")
+    timeStamp = int(time.mktime(timeArray))
+    return timeStamp
+
+
+def streamSnapshots(access_key, secret_key, namespaceId, streamId, startDate, endDate, type, line=30, marker=None):
+    """
+    获取截图列表
+    https://developer.qiniu.com/qvs/api/6749/list-stream-snapshots
+    :param access_key: 公钥
+    :param secret_key: 私钥
+    :param namespaceId: 必填项，空间ID
+    :param streamId: 必填项，流ID
+    :param type: 必填项，1:实时截图对应的图片列表
+    :param line: 非必填，限定返回截图的个数，只能输入1-100的整数，不指定默认返回30个
+    :param startDate:  必填项，查询开始时间(unix时间戳,单位为秒)
+    :param endDate: 必填项，查询结束时间(unix时间戳,单位为秒)
+    :param marker: 非必填，上一次查询返回的标记，用于提示服务端从上一次查到的位置继续查询，不指定表示从头查询
+
+    :return:
+        200 { }
+    """
+    auth = QiniuMacAuth(access_key, secret_key)
+
+    start = time2timestamp(startDate)
+
+    end = time2timestamp(endDate)
+
+    if marker is None:
+        # 请求URL
+        url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/streams/{streamId}/snapshots?type={type}&start={start}&end={end}&line={line}"
+    else:
+        url = f"http://qvs.qiniuapi.com/v1/namespaces/{namespaceId}/streams/{streamId}/snapshots?type={type}&start={end}&end={end}&line={line}&marker={marker}"
+    # 发起POST请求
+    ret, res = http._get_with_qiniu_mac(url, params=None, auth=auth)
+    if res.text_body:
+        result = json.loads(res.text_body)
+        headers = {"code": result["code"], "reqid": res.req_id, "xlog": result["error"]}
+    else:
+        headers = {"code": res.text_body, "reqid": res.req_id, "xlog": res.x_log, "text_body": res.text_body}
+
+    # 格式化响应体
+    Headers = json.dumps(headers, indent=4, ensure_ascii=False)
+    result = json.dumps(ret, indent=4, ensure_ascii=False)
+    return Headers, result
+
+if __name__ == '__main__':
+    # 七牛账号 AK、SK
+    access_key = '<access_key>'
+    secret_key = '<secret_key>'
+
+    # 空间ID
+    namespaceId = "xxxxxxxxxxx"
+
+    # 流ID
+    streamId = "xxxxxxxxxxx"
+
+    # 1:实时截图对应的图片列表
+    type = 1
+
+    # 推流开始时间（Unix 时间戳）
+    startDate = "2020-06-08 00:00:00"
+
+    # 推流结束时间（Unix 时间戳）
+    endDate = "2020-06-09 00:00:00"
+
+    headers, result = streamSnapshots(access_key, secret_key, namespaceId, streamId, startDate, endDate, type)
+    print(f'{headers}\n{result}')
+```

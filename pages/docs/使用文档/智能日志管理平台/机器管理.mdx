@@ -1,0 +1,31 @@
+通过机器管理方便的查看每台机器的 CPU 使用率、机器状态（在线/离线），点击机器名称可查看机器的参数信息以及 CPU、内存、负载、网络流量、磁盘等各项指标数据的时序监控图。同时，支持将同一业务下的机器添加到同一分组，在服务器概览对服务器集群进行监控。
+
+## **查看机器参数信息和性能指标**
+
+机器列表显示机器的基本信息，如 CPU 使用率、状态、所属机器组。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/machine_list.png)
+
+点击机器名称或通过操作查看机器详情，可查看机器的参数信息以及性能指标、资源的时序监控图。支持选择指标进行查看。
+
+![](https://pandora-kibana.qiniu.com/machine_monitor/machine_metrics2.png)
+
+## **机器组管理**
+
+通过机器列表的**操作-->添加分组**将机器添加到指定分组或者创建新的机器组。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/add_machine_to_group.png)
+
+进入`机器组管理` tab，点击**操作-->编辑**，可对机器组的机器进行编辑，添加机器(组)或删除已有机器（组）。
+
+![](https://pandora-kibana.qiniu.com/machine_monitor/nested_management.png)
+
+当机器组管理中出现嵌套机器组时，您可以点击界面右上角的预览按钮，查看机器组的树状结构。
+
+![](https://pandora-kibana.qiniu.com/machine_monitor/nested_management1.png)
+
+## **机器组监控**
+
+对于添加到机器组的机器，在服务器概览页面，选择指定的机器组，即可查看机器组的监控信息。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/service-monitor2.png)

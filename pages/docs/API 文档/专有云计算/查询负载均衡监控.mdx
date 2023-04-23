@@ -1,0 +1,101 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `GET` /api/rio/v1/network/loadbalancer_monitor/:id/
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id   | string | header| 是 | 地域 ID
+id              | string | path  | 是 | 负载均衡 ID
+listener_id     | string | query | 否 | 监听器 ID
+start_time      | string | query | 是 | 开始时间：时间戳，毫秒
+end_time        | string | query | 是 | 结束时间：时间戳，毫秒
+period          | string | query | 是 | 监控间隔：<ul><li>`300` : 5 分钟</li><li>`600` : 10 分钟</li><li>`900` : 15 分钟</li><li>`3600` : 1 小时</li><li>`86400` : 24 小时</li></ul> 
+method          | string | query | 是 | 数据处理方式：<ul><li>`max` : 最大值</li><li>`average` : 平均值</li></ul> 
+targets         | string | query | 是 | 监控维度：<ul><li>`CurrentConnection`：当前连接数，单位：个</li><li>`ByteGradientTX`：流出字节数，单位：KB/s</li><li>`ByteGradientRX`：流入字节数，单位：KB/s</li><li>`ConnectionGradient`：总连接数，单位：个/s</li><li>`RequestErrGradient`：请求错误数，单位：个/s</li></ul>
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+data | MonitorMap | 监控数据
+
+## MonitorMap 监控数据
+名称 | 类型 |  描述
+----- | ----- | -----
+CurrentConnection   | []MonitorData | 当前连接数，单位：个
+ByteGradientTX      | []MonitorData | 流出字节数，单位：KB/s
+ByteGradientRX      | []MonitorData | 流入字节数，单位：KB/s
+ConnectionGradient  | []MonitorData | 总连接数，单位：个/s
+RequestErrGradient  | []MonitorData | 请求错误数，单位：个/s
+
+### MonitorData 监控指标数据
+名称 | 类型 |  描述
+----- | ----- | -----
+timestamp | integer | 监控时间节点：时间戳，毫秒
+datapoint | float   | 监控数值
+
+## 请求值示例
+```json
+```
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEuR14vT7PMsW",
+    "data":{
+        "ByteGradientRX":[
+            {
+                "timestamp":1642419600000,
+                "datapoint":0
+            },
+            {
+                "timestamp":1642419900000,
+                "datapoint":0
+            }
+        ],
+        "ByteGradientTX":[
+            {
+                "timestamp":1642419600000,
+                "datapoint":0
+            },
+            {
+                "timestamp":1642419900000,
+                "datapoint":0
+            }
+        ],
+        "ConnectionGradient":[
+            {
+                "timestamp":1642419600000,
+                "datapoint":0
+            },
+            {
+                "timestamp":1642419900000,
+                "datapoint":0
+            }
+        ],
+        "CurrentConnection":[
+            {
+                "timestamp":1642419600000,
+                "datapoint":0
+            },
+            {
+                "timestamp":1642419900000,
+                "datapoint":0
+            }
+        ],
+        "RequestErrGradient":[
+            {
+                "timestamp":1642419600000,
+                "datapoint":0
+            },
+            {
+                "timestamp":1642419900000,
+                "datapoint":0
+            }
+        ]
+    }
+}
+```

@@ -1,0 +1,52 @@
+# **描述**
+本接口用于推流路数统计
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/stats/streamcount?nsId=<nsId>&start=<start>&end=<end>&tu=<Tu>`
+* Get请求，通过`非SDK`方式调用的客户，http头部Content-Type`要么置空`, `要么不要携带`,否则鉴权会失败; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|nsId|是|string|空间ID
+|start|是|integer|年月日模式(20191001)或者年月日时分秒模式(20201012204005)
+|end|是|integer|年月日模式(20191002)或者年月日时分秒模式(20201012204005)
+|tu|是|string|时间粒度 可以是 5min, hour, day
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|time|integer 数组|时间数组(unix timestamp)
+|count|integer 数组|流数量
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url 'http://qvs.qiniuapi.com/v1/stats/streamcount?tu=day&nsId=3nm4x0vyz7xlu&start=20210201&end=20210205' \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "time": [
+    1612108800,
+    1612195200,
+    1612281600,
+    1612368000
+  ],
+  "count": [
+    0,
+    0,
+    1,
+    0
+  ]
+}
+```

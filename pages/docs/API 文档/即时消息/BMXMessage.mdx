@@ -1,0 +1,1190 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>class im.floo.floolib.BMXMessage</p>
+                <p>消息</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getCPtr`)'>getCPtr</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#finalize`)'>finalize</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#delete`)'>delete</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#msgId`)'>msgId</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#clientMsgId`)'>clientMsgId</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#fromId`)'>fromId</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#toId`)'>toId</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#type`)'>type</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#conversationId`)'>conversationId</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#deliveryStatus`)'>deliveryStatus</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setDeliveryStatus`)'>setDeliveryStatus</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#serverTimestamp`)'>serverTimestamp</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setServerTimestamp`)'>setServerTimestamp</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#clientTimestamp`)'>clientTimestamp</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setClientTimestamp`)'>setClientTimestamp</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isPlayed`)'>isPlayed</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setIsPlayed`)'>setIsPlayed</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isPlayAcked`)'>isPlayAcked</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setIsPlayAcked`)'>setIsPlayAcked</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isReceiveMsg`)'>isReceiveMsg</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setIsReceiveMsg`)'>setIsReceiveMsg</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isRead`)'>isRead</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setIsRead`)'>setIsRead</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isReadAcked`)'>isReadAcked</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setIsReadAcked`)'>setIsReadAcked</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isDeliveryAcked`)'>isDeliveryAcked</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setIsDeliveryAcked`)'>setIsDeliveryAcked</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#content`)'>content</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setContent`)'>setContent</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#contentType`)'>contentType</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#attachment`)'>attachment</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#config`)'>config</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setConfig`)'>setConfig</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#extension`)'>extension</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setExtension`)'>setExtension</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#deliveryQos`)'>deliveryQos</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setDeliveryQos`)'>setDeliveryQos</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#senderName`)'>senderName</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setSenderName`)'>setSenderName</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#groupAckCount`)'>groupAckCount</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#groupAckUnreadCount`)'>groupAckUnreadCount</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#groupAckReadAll`)'>groupAckReadAll</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#groupPlayAckCount`)'>groupPlayAckCount</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setGroupPlayAckCount`)'>setGroupPlayAckCount</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#groupPlayAckUnreadCount`)'>groupPlayAckUnreadCount</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setGroupPlayAckUnreadCount`)'>setGroupPlayAckUnreadCount</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#groupPlayAckReadAll`)'>groupPlayAckReadAll</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPriority`)'>setPriority</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#priority`)'>priority</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPushMessageMode`)'>setPushMessageMode</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isPushMessage`)'>isPushMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createMessage`)'>createMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createMessage`)'>createMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createCommandMessage`)'>createCommandMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createMessage`)'>createMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createMessage`)'>createMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createCommandMessage`)'>createCommandMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createForwardMessage`)'>createForwardMessage</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getCPtr">getCPtr</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+protected static long getCPtr(BMXMessage obj);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="finalize">finalize</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+protected void finalize();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="delete">delete</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public synchronized void delete();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="msgId">msgId</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public long msgId();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息唯一ID</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="clientMsgId">clientMsgId</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public long clientMsgId();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息客户端ID,仅在消息发送端存在</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="fromId">fromId</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public long fromId();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息发送方ID</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="toId">toId</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public long toId();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息接收方ID</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="type">type</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXMessage.MessageType type();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息类型</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>MessageType</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="conversationId">conversationId</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public long conversationId();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息所属会话ID</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="deliveryStatus">deliveryStatus</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXMessage.DeliveryStatus deliveryStatus();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息投递状态</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>DeliveryStatus</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setDeliveryStatus">setDeliveryStatus</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setDeliveryStatus(BMXMessage.DeliveryStatus arg0);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置消息投递状态</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="serverTimestamp">serverTimestamp</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public long serverTimestamp();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息时间戳（服务端收到时的时间）</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setServerTimestamp">setServerTimestamp</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setServerTimestamp(long arg0);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置时间戳（服务端收到时的时间）</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="clientTimestamp">clientTimestamp</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public long clientTimestamp();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>本地时间戳（消息创建或者收到时的本地时间）</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setClientTimestamp">setClientTimestamp</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setClientTimestamp(long arg0);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置消息本地时间戳</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isPlayed">isPlayed</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public boolean isPlayed();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>语音或者视频消息是否播放过，仅对收到的音视频消息有效</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setIsPlayed">setIsPlayed</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setIsPlayed(boolean arg0);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isPlayAcked">isPlayAcked</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public boolean isPlayAcked();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>语音或者视频消息是否收到播放回执，仅对收到的音视频消息有效</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setIsPlayAcked">setIsPlayAcked</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setIsPlayAcked(boolean arg0);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isReceiveMsg">isReceiveMsg</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public boolean isReceiveMsg();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>是否接收的消息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setIsReceiveMsg">setIsReceiveMsg</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setIsReceiveMsg(boolean arg0);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isRead">isRead</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public boolean isRead();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息是否已读标志</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setIsRead">setIsRead</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setIsRead(boolean arg0);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isReadAcked">isReadAcked</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public boolean isReadAcked();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>对于发送方表示是否收到了已读回执，对于接收方表示是否发送了已读回执</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setIsReadAcked">setIsReadAcked</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setIsReadAcked(boolean arg0);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isDeliveryAcked">isDeliveryAcked</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public boolean isDeliveryAcked();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>对于发送方表示消息是否已投递到对方，对于接收方表示是否发送了消息已到达回执</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setIsDeliveryAcked">setIsDeliveryAcked</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setIsDeliveryAcked(boolean arg0);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="content">content</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String content();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息文本内容</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setContent">setContent</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setContent(String content);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息文本内容</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            content: String
+        </div>
+                <p>消息文本内容</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="contentType">contentType</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXMessage.ContentType contentType();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息内容类型，如果带附件就表示附件类型，不带附件就是文本类型</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>ContentType</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="attachment">attachment</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXMessageAttachment attachment();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息附件，BMXMessage拥有附件的所有权，负责释放</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span><a href='/IM/api/8244/bmxmessageattachment'>BMXMessageAttachment</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="config">config</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXMessageConfig config();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息的配置信息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span><a href='/IM/api/8248/bmxmessageconfig'>BMXMessageConfig</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setConfig">setConfig</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setConfig(BMXMessageConfig arg0);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置消息配置信息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="extension">extension</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String extension();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息扩展信息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setExtension">setExtension</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setExtension(String arg0);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置消息扩展信息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="deliveryQos">deliveryQos</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public BMXMessage.DeliveryQos deliveryQos();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息投递QOS</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>DeliveryQos</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setDeliveryQos">setDeliveryQos</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setDeliveryQos(BMXMessage.DeliveryQos qos);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置消息投递QOS</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            qos: DeliveryQos
+        </div>
+                <p>消息投递QOS</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="senderName">senderName</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public String senderName();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息发送者的显示名称</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>String</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setSenderName">setSenderName</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setSenderName(String senderName);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置消息的发送者显示名称</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            senderName: String
+        </div>
+                <p>消息文本内容</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="groupAckCount">groupAckCount</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public int groupAckCount();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>群消息已读AckCount数目</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>int</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="groupAckUnreadCount">groupAckUnreadCount</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public int groupAckUnreadCount();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>群消息未读AckCount数目</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>int</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="groupAckReadAll">groupAckReadAll</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public boolean groupAckReadAll();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>群消息是否全部已读</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="groupPlayAckCount">groupPlayAckCount</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public int groupPlayAckCount();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取群消息已播放计数</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>int</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setGroupPlayAckCount">setGroupPlayAckCount</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setGroupPlayAckCount(int count);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="groupPlayAckUnreadCount">groupPlayAckUnreadCount</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public int groupPlayAckUnreadCount();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取群消息已播放回执未读计数</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>int</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setGroupPlayAckUnreadCount">setGroupPlayAckUnreadCount</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setGroupPlayAckUnreadCount(int count);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="groupPlayAckReadAll">groupPlayAckReadAll</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public boolean groupPlayAckReadAll();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置所有群消息已播回执为已读</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPriority">setPriority</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setPriority(int priority);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置消息的扩散优先级，默认为0。0表示扩散，数字越小扩散的越多。
+ 取值范围0-10。普通人在聊天室发送的消息级别默认为5，可以丢弃。管理员默认为0不会丢弃。其它值可以根据业务自行设置。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            priority: int
+        </div>
+                <p>优先级</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="priority">priority</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public int priority();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>消息的扩散优先级</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>int</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPushMessageMode">setPushMessageMode</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void setPushMessageMode(boolean arg0);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置是否推送消息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isPushMessage">isPushMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public boolean isPushMessage();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>是否是推送消息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createMessage">createMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public static BMXMessage createMessage(long from, long to, BMXMessage.MessageType type, long conversationId, String content);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建发送文本消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            from: long
+        </div>
+                <p>消息发送者</p>
+    </li>
+    <li>
+        <div>
+            to: long
+        </div>
+                <p>消息接收者</p>
+    </li>
+    <li>
+        <div>
+            type: MessageType
+        </div>
+                <p>消息类型</p>
+    </li>
+    <li>
+        <div>
+            conversationId: long
+        </div>
+                <p>会话id</p>
+    </li>
+    <li>
+        <div>
+            content: String
+        </div>
+                <p>消息内容</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='/IM/api/8239/bmxmessage'>BMXMessage</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createMessage">createMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public static BMXMessage createMessage(long from, long to, BMXMessage.MessageType type, long conversationId, BMXMessageAttachment attachment);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建发送附件消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            from: long
+        </div>
+                <p>消息发送者</p>
+    </li>
+    <li>
+        <div>
+            to: long
+        </div>
+                <p>消息接收者</p>
+    </li>
+    <li>
+        <div>
+            type: MessageType
+        </div>
+                <p>消息类型</p>
+    </li>
+    <li>
+        <div>
+            conversationId: long
+        </div>
+                <p>会话id</p>
+    </li>
+    <li>
+        <div>
+            attachment: <a href='/IM/api/8244/bmxmessageattachment'>BMXMessageAttachment</a>
+        </div>
+                <p>附件</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='/IM/api/8239/bmxmessage'>BMXMessage</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createCommandMessage">createCommandMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public static BMXMessage createCommandMessage(long from, long to, BMXMessage.MessageType type, long conversationId, String content);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建发送命令消息(命令消息通过content字段或者extension字段存放命令信息)</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            from: long
+        </div>
+                <p>消息发送者</p>
+    </li>
+    <li>
+        <div>
+            to: long
+        </div>
+                <p>消息接收者</p>
+    </li>
+    <li>
+        <div>
+            type: MessageType
+        </div>
+                <p>消息类型</p>
+    </li>
+    <li>
+        <div>
+            conversationId: long
+        </div>
+                <p>会话id</p>
+    </li>
+    <li>
+        <div>
+            content: String
+        </div>
+                <p>消息内容</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='/IM/api/8239/bmxmessage'>BMXMessage</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createMessage">createMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public static BMXMessage createMessage(long msgId, long from, long to, BMXMessage.MessageType type, long conversationId, String content, long serverTimestamp);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建收到的消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msgId: long
+        </div>
+                <p>消息id</p>
+    </li>
+    <li>
+        <div>
+            from: long
+        </div>
+                <p>消息发送者</p>
+    </li>
+    <li>
+        <div>
+            to: long
+        </div>
+                <p>消息接收者</p>
+    </li>
+    <li>
+        <div>
+            type: MessageType
+        </div>
+                <p>消息类型</p>
+    </li>
+    <li>
+        <div>
+            conversationId: long
+        </div>
+                <p>会话id</p>
+    </li>
+    <li>
+        <div>
+            content: String
+        </div>
+                <p>消息内容</p>
+    </li>
+    <li>
+        <div>
+            serverTimestamp: long
+        </div>
+                <p>服务器时间戳</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='/IM/api/8239/bmxmessage'>BMXMessage</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createMessage">createMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public static BMXMessage createMessage(long msgId, long from, long to, BMXMessage.MessageType type, long conversationId, BMXMessageAttachment attachment, long serverTimestamp);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建收到的消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msgId: long
+        </div>
+                <p>消息id</p>
+    </li>
+    <li>
+        <div>
+            from: long
+        </div>
+                <p>消息发送者</p>
+    </li>
+    <li>
+        <div>
+            to: long
+        </div>
+                <p>消息接收者</p>
+    </li>
+    <li>
+        <div>
+            type: MessageType
+        </div>
+                <p>消息类型</p>
+    </li>
+    <li>
+        <div>
+            conversationId: long
+        </div>
+                <p>会话id</p>
+    </li>
+    <li>
+        <div>
+            attachment: <a href='/IM/api/8244/bmxmessageattachment'>BMXMessageAttachment</a>
+        </div>
+                <p>附件</p>
+    </li>
+    <li>
+        <div>
+            serverTimestamp: long
+        </div>
+                <p>服务器时间戳</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='/IM/api/8239/bmxmessage'>BMXMessage</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createCommandMessage">createCommandMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public static BMXMessage createCommandMessage(long msgId, long from, long to, BMXMessage.MessageType type, long conversationId, String content, long serverTimestamp);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建收到的命令消息(命令消息通过content字段或者extension字段存放命令信息)</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msgId: long
+        </div>
+                <p>消息id</p>
+    </li>
+    <li>
+        <div>
+            from: long
+        </div>
+                <p>消息发送者</p>
+    </li>
+    <li>
+        <div>
+            to: long
+        </div>
+                <p>消息接收者</p>
+    </li>
+    <li>
+        <div>
+            type: MessageType
+        </div>
+                <p>消息类型</p>
+    </li>
+    <li>
+        <div>
+            conversationId: long
+        </div>
+                <p>会话id</p>
+    </li>
+    <li>
+        <div>
+            content: String
+        </div>
+                <p>消息内容</p>
+    </li>
+    <li>
+        <div>
+            serverTimestamp: long
+        </div>
+                <p>服务器时间戳</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='/IM/api/8239/bmxmessage'>BMXMessage</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createForwardMessage">createForwardMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public static BMXMessage createForwardMessage(BMXMessage msg, long from, long to, BMXMessage.MessageType type, long conversationId);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建转发消息</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            msg: <a href='/IM/api/8239/bmxmessage'>BMXMessage</a>
+        </div>
+                <p>要转发的消息</p>
+    </li>
+    <li>
+        <div>
+            from: long
+        </div>
+                <p>消息发送者</p>
+    </li>
+    <li>
+        <div>
+            to: long
+        </div>
+                <p>消息接收者</p>
+    </li>
+    <li>
+        <div>
+            type: MessageType
+        </div>
+                <p>消息类型</p>
+    </li>
+    <li>
+        <div>
+            conversationId: long
+        </div>
+                <p>会话id</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='/IM/api/8239/bmxmessage'>BMXMessage</a></span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

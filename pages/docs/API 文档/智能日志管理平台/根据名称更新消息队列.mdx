@@ -1,0 +1,24 @@
+**请求语法**
+
+```
+PUT /v2/repos/<RepoName>
+Content-Type: application/json
+Authorization: Pandora <auth>
+
+{
+	"schema": [
+      {
+        "key": <Key>,
+        "valtype": <ValueType>,
+        "elemtype": <ElemType>,
+        "required": <Required>,
+        "schema": [
+            ...
+        ]
+      },
+      ...
+    ]
+}
+```
+
+**注意：** 更新字段信息时，如果需要保留已有的字段信息，也需要填写上去，这是一次全量更新。

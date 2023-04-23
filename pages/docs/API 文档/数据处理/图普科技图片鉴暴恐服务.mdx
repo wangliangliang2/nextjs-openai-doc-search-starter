@@ -1,0 +1,199 @@
+图片鉴暴恐服务 terror，为保存在七牛云的图片，根据以下特征识别暴恐和非暴恐的图片：
+
+- 暴恐标志：暴恐组织的符号或者旗帜，如星月旗，雪山狮子旗等。
+- 特定人物：人持枪支，特定穿着人物（迷彩服、蒙面）。
+
+由于暴恐图片的高危险度，服务商设定了严格的判断逻辑，被识别为暴恐的图片中会存在部分误判，如穿着迷彩的战士、蒙面人等均有可能被识别为暴恐。建议开发者在使用该服务时重点审核机器判断为暴恐的图片。
+
+本服务由广州图普网络科技有限公司（以下简称图普科技）提供。启用服务后，您存储在七牛云空间的文件将在您主动请求的情况下被提供给图普科技以供其计算使用。七牛不能保证鉴别结果的正确性，请您自行评估后选择是否启用。具体价格请您参考[服务价格和计费示例](#terror-price)，您使用本服务产生的费用由七牛代收。启用服务则表示您知晓并同意以上内容。
+
+**注意**：该功能目前仅支持华东的 bucket。
+<a id="terror-tutorial"></a>
+# 快速使用
+
+### 第一步
+获取您存在七牛 bucket 中的图片 url，例如：[http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg](http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg)。
+
+### 第二步
+在您的图片的 url 后面加上 **?terror**。例如：[http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg?terror](http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg?terror)。
+
+返回的结果（内容经过格式化方便阅读）:
+```
+{
+    reviewCount: 0,
+    fileList: [
+        {
+            rate: 0.9999024868011475,
+            label: 0,
+            name: "test.jpg",
+            review: false
+        }
+    ],
+    statistic: [
+        1,
+        0
+    ],
+    nonce: "0.33929876680485904",
+    timestamp: 1465783341,
+    code: 0,
+    message: "success"
+}
+```
+
+<a id="terror-open"></a>
+# 如何开启
+
+如果您的文件存储在七牛云，则需先开启本服务。点此进入[七牛开发者平台](https://portal.qiniu.com/dora/thirdparty/create/terror/quickstart)，点击右上角**开始使用**按钮。
+如果您的文件存储在其他地方，则直接调用本接口。
+
+
+
+<a id="terror-request-syntax"></a>
+# 请求语法
+
+```
+GET <ImageDownloadURI>?terror HTTP/1.1
+Host: <ImageDownloadHost>
+```
+
+**注意：**当您下载私有空间的资源时，`ImageDownloadURI`的生成方法请参考七牛的[下载凭证](/kodo/manual/download-token)。
+
+**示例：**
+资源为[http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg](http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg)，处理样式为 terror。
+
+```
+#构造下载URL
+DownloadUrl = 'http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg?terror'
+……
+#最后得到
+RealDownloadUrl = 'http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg?terror&e=×××&token=MY_ACCESS_KEY:×××'
+```
+
+<a id="terror-request-header"></a>
+# 请求头部
+
+头部名称         | 必填 | 说明
+:------------- | :--- | :------------------------------------------
+Host           | 是   | 下载服务器域名，必须是七牛三级域名或自定义二级域名，参考[七牛自定义域名绑定流程](https://support.qiniu.com/hc/kb/article/68977)。
+
+<a id="terror-response-syntax"></a>
+# 响应语法
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-store
+
+{
+    // ...terror data...
+}
+```
+
+<a id="terror-response-header"></a>
+# 响应头部
+
+头部名称       | 必填 | 说明
+:------------- | :--- | :------------------------------------------
+Content-Type   | 是   | MIME类型，固定为 application/json。
+Cache-Control  | 是   | 缓存控制，固定为 no-store，不缓存。
+
+<a id="terror-response-content"></a>
+# 响应内容
+
+- 如果请求成功，返回包含如下内容的JSON字符串（已格式化，便于阅读）：  
+
+```
+{
+    "reviewCount": <ReviewCount  int>,
+    "fileList": [
+        {
+            "rate": <Rate        float>,
+            "label": <Category   int>,
+            "name": "<FileName   string>",
+            "review": <Review    boolean>
+        }
+    ],
+    "statistic": [
+        <Statistics              int>,
+        ...
+    ],
+    "nonce": "<Nonce             string>",
+    "timestamp": "<Timestamp     string>"
+    "code": "<ResultCode         int>",
+    "message": "<ResultMessage   string>",
+}
+```
+
+字段名称        | 必填 | 说明                              
+:------------ | :--- | :--------------------------------------------------------------------
+rate        | 是   | 介于0-1间的浮点数，表示该图像被识别为某个分类的概率值，概率越高，机器越肯定。您可以根据您的需求确定需要人工复审的界限。
+label       | 是   | 介于0-1间的整数，表示该图像被机器判定为哪个分类，分别对应： `0`正常；`1`暴恐。
+review      | 是   | 是否需要人工复审图片（`true`需要；`false`不需要），鉴暴恐服务是否对结果确定（`true`不确定；`false`确定）。
+code        | 是   | 处理状态：`0`调用成功；`1`授权失败；`2`模型ID错误；`3`没有上传文件；`4`API版本号错误；`5`API版本已弃用；`6`secretId 错误；`7`任务Id错误，您的secretId不能调用该任务；`8`secretId状态异常；`9`尚未上传证书；`100`服务器错误；`101`未知错误。
+message     | 是   | 与`code`对应的状态描述信息。
+
+
+- 如果请求失败，请参考 **code** 和 **message** 字段说明。
+
+
+<a id="terror-samples"></a>
+# 示例
+
+在Web浏览器中输入以下图片地址：  
+
+```
+http://78re52.com1.z0.glb.clouddn.com/resource/gogopher.jpg?terror
+```
+
+返回结果（内容经过格式化以便阅读）：
+
+```
+{
+    reviewCount: 0,
+    fileList: [
+        {
+            rate: 0.9999456405639648,
+            label: 0,
+            name: "test.jpg",
+            review: false
+        }
+    ],
+    statistic: [
+        1,
+        0
+    ],
+    nonce: "0.9673573246691376",
+    timestamp: 1465885750,
+    code: 0,
+    message: "success"
+}
+```
+
+<a id="terror-price"></a>
+# 服务价格
+
+|                 | 确定部分      | 不确定部分       |
+:---------------- | :------------ | :------------ |
+|      范围（万次） | 单价（元/万次）| 单价（元/万次）  |
+| 0 - 300         |     25        |    6.25     |
+| 300 - 1500      |     23        |   5.75       |
+| 1500 - 3000     |     21        |    5.25      |
+| > 3000          |     18        |    4.5      |
+
+说明：
+
+ * 确定部分：准确度超过人工，当返回数据中review为false时，无需review。
+ * 不确定部分：当返回数据中review为true时，需要人工review。如果根据返回的参考值排序可以大大降低工作量。
+
+<a id="terror-pirce-example"></a>
+# 计费示例
+
+某公司2016年8月使用该服务，共发起500万次请求，其中结果确定的次数为480万次，结果不确定的次数为20万次，则当月使该服务产生的费用为：
+
+确定的结果产生费用： 25元/万次* 300万次 + 23元/万次 *(480万次 - 300万次) = 7500元 + 4140元 = 11640元
+
+不确定的结果产生费用：6.25元/万次 * 20万次 = 125元
+
+总计费用：11640元 + 125元 = 11765元
+
+[download-tokenHref]: http://developer.qiniu.com/docs/v6/api/reference/security/download-token.html  "下载凭证"

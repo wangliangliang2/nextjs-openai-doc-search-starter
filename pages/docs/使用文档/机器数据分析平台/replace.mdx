@@ -1,0 +1,42 @@
+replace 命令可用指定值替换字段中的值。
+
+**语法：**
+
+```
+replace (<wc-string> WITH <wc-string>)... IN <field-list>
+```
+
+**参数说明：**
+
+必填参数：
+
+* `wc-string`：指定一个字段值或多个字段值及其替换值。
+
+可选参数：
+
+* `field-list`：用逗号或空格分隔一个或多个字段名称列表，需用`IN <field-list>`子句指定被替换值的字段名称。
+
+
+**用法示例**
+
+1.替换指定字段中的一个值。
+
+```
+……  | replace "127.0.0.1" with "localhost" in host
+```
+
+在host字段中用localhost值替换127.0.0.1值。
+
+2.用指定字段值替换多个字段中的同一个值。
+
+```
+……  | replace "aug" with "August" in start_month，end_month
+```
+
+3.替换同一个字段中的多个值。
+
+```
+……  | replace "0" with "Critical", "1" with "Error" in msg_level
+```
+
+

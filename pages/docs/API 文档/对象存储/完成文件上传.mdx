@@ -1,0 +1,135 @@
+<a id="completeMultipartUpload-description"></a>
+# **描述** 
+在将所有数据 Part 都上传完成后，必须调用 completeMultipartUpload API 来完成整个文件的 Multipart Upload。用户需要提供有效数据的 Part 列表（ 包括 PartNumber 和调用 uploadPart API 服务端返回的 Etag ）。服务端收到用户提交的 Part 列表后，会逐一验证每个数据 Part 的有效性。当所有的数据 Part 验证通过后，会把这些数据 Part 组合成一个完整的 Object。
+
+<br>
+
+<a id="completeMultipartUpload-requests"></a>
+# **请求**
+<a id="completeMultipartUpload-requests-syntax"></a>
+
+### **请求语法**
+
+```
+POST /buckets/<BucketName>/objects/<EncodedObjectName>/uploads/<UploadId> HTTP/1.1
+Host: <UpHost>
+Content-Type: application/json
+Authorization: UpToken <UploadToken>
+
+{
+    "parts": [{ "etag": "<Etag>", "partNumber": <PartNumber> }, ...],
+    "fname": "<Fname>",
+    "mimeType": "<MimeType>",
+    "metadata": {"x-qn-meta-<MetaKey>": "<MetaValue>", ...},
+    "customVars": {"x:<CustomVarKey>": "<CustomVarValue>", ...}
+}
+```
+使用说明：
+* completeMultipartUpload 时会确认除最后一块以外所有块的大小是否都大于等于 1 MB ，并检查用户提交的 Part 列表中的每一个 PartNumber 和 Etag 。
+* 用户提交的 Part 列表中，Part 号码可以不连续，但必须是升序。
+* 服务端处理 completeMultipartUpload 请求成功后，该 UploadId 就会变成无效，再次请求与该 UploadId 相关操作都会失败。
+
+
+<br>
+
+<a id="completeMultipartUpload-request-parameters"></a>
+### **请求参数**
+
+| 参数名称 | 必填 | 说明 |
+| --- | --- | --- |
+| BucketName | 是 | 空间名称|
+| EncodedObjectName | 否 | 资源名，EncodedObjectName 需要经过 Base64 编码。具体可以参照：[URL 安全的 Base64 编码](/kodo/manual/1231/appendix#urlsafe-base64) |
+| UploadId | 是 | 在服务端申请的 MultipartUpload 任务 id |
+
+<br>
+
+<a id="completeMultipartUpload-request-headers"></a>
+### **请求头**
+|头部名称       | 必填 | 说明|
+|------------- | --- | --------------------------------|
+|Host           | 是   | 上传域名。<span id="Endpoint">七牛对象存储支持的区域和对应区域上传域名列表见 [存储区域列表](/kodo/1671/region-endpoint-fq)</span> |
+|Authorization  | 是   | 该参数应严格按照[上传凭证](/kodo/manual/1208/upload-token)格式进行填充，否则会返回 401 错误码。一个合法的 Authorization 值应类似于 Authorization: UpToken QNJi_bYJlmO5LeY08FfoNj9w_r...|
+|Content-Type | 是 | 固定为 `application/json` |
+
+<br>
+
+<a id="completeMultipartUpload-request-elements"></a>
+### **请求内容**
+|参数名称  |  类型 | 必填 | 说明  |
+|---------|------|-----|----------------------------|
+|parts    |Array| 是 |已经上传 Part 列表 （ 包括 PartNumber （ int ）和调用 uploadPart API 服务端返回的 Etag （ string ））|
+|fname|string|否|上传的原始文件名， 若未指定，则魔法变量中无法使用 fname，ext，suffix|
+|mimeType|string|否|若指定了则设置上传文件的 mimeType， 若未指定，则根据文件内容自动检测 mimeType |
+|metadata|-|否|用户自定义文件 metadata 信息的 key 和 value， 可以设置多个，MetaKey 和 MetaValue 都是 string，其中 <MetaKey> 可以由字母、数字、下划线、减号组成，且长度小于等于 50，单个文件 MetaKey 和 Metavalue 总和大小不能超过 1024 字节|
+|customVars|-|否|[用户自定义变量](/kodo/manual/1235/vars)，CustomVarKey 和 CustomVarValue 都是 string|
+
+
+<br>
+
+<a id="completeMultipartUpload-responses"></a>
+# **响应**
+<a id="completeMultipartUpload-request-headers"></a>
+### **响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](/kodo/api/3924/common-response-headers)。
+
+<br>
+
+<a id="completeMultipartUpload-response-elements"></a>
+### **响应内容**
+|名称  | 类型|说明|
+|--------|----------------|-----|
+|key|string|资源名称|
+|hash|string|目标资源的 hash 值，可用于 Etag 头部|
+
+<br>
+
+<a id="completeMultipartUpload-special-errors"></a>
+### **响应状态码**
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误响应](/kodo/api/3928/error-responses)。
+	
+<a id="completeMultipartUpload-special-upPolicy"></a>
+### **上传策略特殊说明**
+该操作的实现不支持上传策略中 " returnUrl " ，请查阅[上传策略](/kodo/manual/1206/put-policy)。
+
+<br>
+
+<a id="completeMultipartUpload-examples"></a>
+# **示例**
+<a id="completeMultipartUpload-request-examples"></a>
+
+### **请求示例**
+```
+POST /buckets/myBucket/objects/bXlPYmplY3Q=/uploads/myUploadId HTTP/1.1
+Host: up.qiniup.com
+Content-Type: application/json
+Authorization: UpToken <UploadToken>
+
+{
+	"parts": [
+		{
+			"partNumber": 1,
+			"etag": "FqvtxHpe3j-rEzkImMUWDsmvu27D"
+		}
+	],
+	"mimeType": ""
+}
+```
+
+<br>
+
+<a id="completeMultipartUpload-response-examples"></a>
+### **响应示例**
+```
+HTTP/1.1 200 OK
+Content-Length: 2
+Connection: keep-alive
+Content-Type: application/json
+Date: Wed, 18 Dec 2019 17:02:11 GMT
+Server: nginx
+X-Reqid: SFkAAAC8BDebTtsU
+
+{
+	"hash": "FqvtxHpe3j-rEzkImMUWDsmvu27D",
+	"key": "myObject"
+}
+```

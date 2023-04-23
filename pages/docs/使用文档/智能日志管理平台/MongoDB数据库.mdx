@@ -1,0 +1,9 @@
+将日志数据解析并进行聚合后发送到 MongoDB。
+
+* 数据库地址(`mongodb_host`): 
+    - 明文填写: Mongodb 的地址：`mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]`。
+    - 环境变量填写：为了不在配置中明文存储，我们在 `1.0.4` 版本及以后支持使用环境变量的方式填写该字段，填写方式为：`${YOUR_ENV}`，其中 `YOUR_ENV` 为环境变量，需要在机器上将该环境变量设置为原先要填写的值，`YOUR_ENV` 可以根据您的实际使用需求进行修改。
+
+* 聚合条件列(`mongodb_acc_updkey`): Mongodb 的聚合条件列，按逗号分隔各列名。如果需要在写入 mongodb 时候对列名进行重命名，配置时候只要在原列名后增加新名字即可，如 `time5Min time` 将 parse 结果中的time5Min，写入 mongodb 的 time 字段。
+
+* 聚合列(`mongodb_acc_acckey`): Mongodb 的聚合列，按照逗号分隔各列名。如果需要在写入 mongodb 时候对列名进行重命名，配置时候只要在原列名后增加新名字即可，用法同 `mongodb_acc_updkey`。

@@ -1,0 +1,83 @@
+# **简介**
+
+- 锐智转码接口可根据视频场景内容自适应进行转码，在不损失画质的情况下（肉眼无感知）以总体更低的码率进行转码，实现`视频转码的质量更高`和`输出视频体积更小`的兼得。对于简单场景的视频，锐智转码可以调整编码组合使得码率更低一些，用户就能够在相同码率下观看更高分辨率的视频，在`带宽节省`的同时`观看体验更佳`。对于复杂场景的视频，锐智转码在编码过程中可以更加高效地分配比特，在保持总体码率不变情况下改善编码视频的视觉质量。通过加入这种场景内容自适应技术，原有的分辨率和码率组合会更加精简，从而有效降低内容提供商的存储和分发开销。
+- 不同于基础音视频转码（avthumb），锐智转码无需用户指定输出视频的码率帧率等，而是由锐智转码依据源视频场景内容智能匹配最佳转码参数组合。
+
+# **接口规格**
+现在锐智转码功能已经和转码`avthumb`功能合并，可以转码的同时支持锐智转码（即视频瘦身）。
+
+```
+avthumb/<format>
+       /...
+       /avsmart/<0|1>
+       /smtMaxvbr/<maxvbr>
+       /smtQuality/<quality>
+  
+```
+
+| 参数名称                | 类别 | 必填 | 说明                                                         |
+| :---------------------- | ---- | :--- | :----------------------------------------------------------- |
+| `...`                   |      |      | 其他参数使用,请参考 [avthumb](/dora/api/audio-and-video-transcoding-avthumb) |
+| `/avsmart/<avsmart>`    | V    | N    | 0、是否启用锐智转码，设置为 1 时开启。<br> 1、支持使用H.264和H.265编码，默认使用H.264。<br> 2、`使用 avsmart 的计费和 avthumb 有区别`，[价格参考](https://www.qiniu.com/prices/dora?source=dora)。<br>3、默认使用锐智转码2.0，[锐智转码2.0](https://www.qiniu.com/products/avsmart) 是基于 锐智转码1.0 的升级版本，1.0和2.0 支持的[参数范围详情](https://developer.qiniu.com/dora/api/12158/1-0-and-2-0-perceptive-transcoding-parameter-scope-of-support)，建议使用锐智转码1.0的客户咨询客服进行升级。 |
+| `/smtMaxvbr/<maxvbr>`   | V    | N    | 开启 `avsmart`时生效。最大平均码率, 单位：比特每秒（bit/s），常用视频比特率：128k 1.25m 5m 等。小于 1k 会默认使用 1k。暂时对 H.265 无效。 |
+| `/smtQuality/<quality>` | V    | N    | 开启`avsmart`时生效。瘦身时的转码质量等级，值越大，画质越好。整数，取值范围[-7,9]。 |
+
+- `avsmart`转码的结果会保存在原文件的空间中，但是文件名按照默认规则生成，为了方便获取转码后资源链接，建议自定义处理结果资源的名称，请参考[处理结果另存 (saveas)](/dora/api/processing-results-save-saveas)。
+
+
+# **示例**
+- 以 `资源上传时自动触发` 形式，将mp4视频进行锐智转码（即视频瘦身），设置视频编码格式为x264，分辨率为480x260，并关闭视频增强：
+
+  ```
+    {
+        "scope":                "qiniu-ts-demo:thinking-in-go.mp4",
+        "deadline":             1390528576,
+        "persistentOps":        "avthumb/mp4/vcodec/libx264/s/480x360/avsmart/1",
+        "persistentNotifyUrl":  "http://fake.com/qiniu/notify"
+    }
+  ```
+
+
+
+- 以 `对已有资源手动触发` 形式，将mp4视频进行锐智转码（即视频瘦身），设置视频编码格式为x264，分辨率为480x260，并开启视频增强：
+
+  ```
+   POST /pfop/ HTTP/1.1
+    Host: api.qiniu.com  
+    Content-Type: application/x-www-form-urlencoded  
+    Authorization: QBox <AccessToken>  
+  
+    bucket=qiniu-ts-demo
+    &key=thinking-in-go.mp4
+    &fops=avthumb%2Fmp4%2Fvcodec%2Flibx264%2Fs%2F480x360%2Favsmart%2F1
+    &notifyURL=http%3A%2F%2Ffake.com%2Fqiniu%2Fnotify
+  ```
+
+       **注意**：要在`Authorization`头部的`<AccessToken>`前添加`QBox`和半角空格。
+
+
+
+## 接口响应
+锐智转码为异步处理，因此响应分为2步：
+1. 创建异步处理任务，如成功，返回异步处理任务 ID。示例：16864pauo1vc9nhp12;
+2. 返回异步处理结果；
+
+**异步处理返回码**:
+
+| 返回码 | 含义               |
+| :----- | :----------------- |
+| 0      | 成功。             |
+| 1      | 等待处理           |
+| 2      | 正在处理           |
+| 3      | 处理失败           |
+| 4      | 处理成功但通知失败 |
+
+**注意**：如果处理失败，可通过 [持久化处理状态查询](https://developer.qiniu.com/dora/1294/persistent-processing-status-query-prefop) 查看具体失败原因。
+
+# **操作方式**
+
+- **API方式**：可以通过 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 的方式来调用：
+  -  `资源上传时自动触发`：可以在上传时指定[persistentOps](/kodo/manual/put-policy#put-policy-persistent-ops-explanation)参数
+  - `对已有资源手动手动触发`：调用[pfop]()命令
+
+- **控制台方式**：您可以使用[智能多媒体平台](https://portal.qiniu.com/dora/media-gate)，可视化创建任务，使用详情请参考 [任务](https://developer.qiniu.com/dora/6488/task-01)。

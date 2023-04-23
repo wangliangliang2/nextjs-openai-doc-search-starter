@@ -1,0 +1,21 @@
+`<eval>` 用于设置或更新标记值，支持表达式计算
+
+### 父元素 {docsify-ignore-all}
+
+* `<change>`
+* `<condition>`
+
+### 示例
+
+```xml
+<dashboard>
+  <input type="text" token="x">
+    <label>下面输入框将会展示当前输入框的值在eval表达式中的计算结果</label>
+    <initial-value>abcd</initial-value>
+    <change>
+      <eval token="text1">$x$.toUpperCase()</eval>
+    </change>
+  </input>
+  <text>upper case of value: $text1$</text>
+</dashboard>
+```

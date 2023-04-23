@@ -1,0 +1,236 @@
+# **简介**
+[持久化数据处理(pfop)]() ，用于满足数据处理时间较长、计算量较大的场景。
+
+- 开发者可使用该功能对音视频进行 `异步转码` 或 `超大图片` 的处理，并将处理结果永久存储于空间中，从而大幅提升访问体验。
+- 持久化数据处理功能还提供即时的处理状态通知和查询功能，因此开发者在开始执行后还能随时获取处理进度信息。
+- 资源使用共享资源池,为所有客户提供按照高性价比的方式来处理数据。
+- `在特殊请求量集中情况下,会有积压,如果用户有资源保障需要`, 可以[联系我们](https://support.qiniu.com/tickets/new/?space=%E6%99%BA%E8%83%BD%E5%A4%9A%E5%AA%92%E4%BD%93), 付费购买保障力。
+
+
+
+[持久化数据处理(pfop)]() ，可以在以下两种场景触发，下面分别描述它们的详细用法。
+
+| 触发场景                               |
+| :------------------------------------- |
+| 对已存在空间中的资源，手动触发处理流程 |
+| 在资源上传时，自动触发处理流程         |
+
+
+# **上传时自动触发**
+
+开发者如果希望在上传文件过程中自动触发数据处理过程（即预转持久化），需要在构造[上传凭证](/kodo/manual/upload-token)时在[上传策略](/kodo/manual/put-policy)中设置 `persistentOps` 和` persistentNotifyUrl `两个字段。  
+
+| 字段                | 含义                                                         |
+| :------------------ | :----------------------------------------------------------- |
+| scope               | 指定上传的目标资源空间 Bucket 和资源键 Key（最大为 750 字节）。有三种格式：<br />●`<bucket>`，表示允许用户上传文件到指定的 bucket。在这种格式下文件只能  `新增`（分片上传需要指定insertOnly为1才是新增，否则也为覆盖上传），若已存在同名资源（且文件内容/etag不一致），上传会失败；若已存在资源的内容/etag一致，则上传会返回成功。<br />● `<bucket>:<key>`，表示只允许用户上传指定 key 的文件。在这种格式下文件默认允许 `修改`，若已存在同名资源则会被 `覆盖`。如果只希望上传指定 key 的文件，并且不允许修改，那么可以将下面的 insertOnly 属性值设为 1。<br />● `<bucket>:<keyPrefix>`，表示只允许用户上传指定以 keyPrefix 为前缀的文件，当且仅当 isPrefixalScope 字段为 1 时生效，isPrefixalScope 为 1 时无法覆盖上传。 |
+| persistentOps       | 资源上传成功后触发执行的处理命令列表。以` ; `分隔，可以指定多个数据处理命令，如：`avthumb/mp4|saveas/cWJ1Y2tldDpxa2V5;avthumb/flv|saveas/cWJ1Y2tldDpxa2V5Mg==`，是将上传的视频文件同时转码成`mp4格式`和`flv格式`后另存。<br />具体含义见，上传策略 [persistentOps详解](/kodo/manual/put-policy#put-policy-persistent-ops-explanation)。每一个数据处理命令都应遵循标准格式。 |
+| persistentNotifyUrl | 用户接收持久化处理结果通知的 URL。设置` persistentOps` 字段时，本字段必须同时设置。未来该设置项将改为可选，如未设置，则只能使用返回的 `persistentId` 主动查询处理进度。请参考[持久化处理结果通知](/dora/api/1294/persistent-processing-status-query-prefop)。 |
+| persistentPipeline  | 转码队列名。资源上传成功后，触发转码时指定独立的队列进行转码。为空则表示使用公用队列，处理速度比较慢。建议使用[专用队列](https://portal.qiniu.com/dora/media-gate/pipeline)。 |
+
+用户使用指定了 `persistentOps` 和 `persistentNotifyUrl `的上传凭证上传一个文件之后，服务端返回的响应内容中会包含此次异步处理的进程 ID即 `persistentId`，该 ID 可用于获取处理的进度和结果。
+
+针对用户上传策略的不同，返回的 persistentId 字段会出现在不同的位置：
+
+- 未设置 returnUrl 或 callbackUrl，响应内容中直接带有 persistentId 字段。
+- 设置了 returnUrl 但没有设置 returnBody，跳转过程附带的 upload_ret 参数解码后获得的结果中默认带有 persistentId 字段。
+- 设置了 callbackUrl，但没有设置 callbackBody，和之前一样，这种情况下上传会失败。
+- 设置了 returnUrl 或 callbackUrl，且根据需求自定义了相应的 returnBody 或 callbackBody，要 Body 中使用魔法变量 $(persistentId) 来得到。  
+
+
+
+## **示例**
+
+`persistentOps`与`persistentNotifyUrl`字段
+
+上传一个视频资源，并在成功后触发两个预转处理（转成 mp4 资源和对原资源进行 HLS 切片）：
+
+```
+{
+    "scope":                "qiniu-ts-demo",
+    "deadline":             1390528576,
+    "persistentOps":        "avthumb/mp4;avthumb/m3u8/noDomain/1/segtime/15/vb/440k",
+    "persistentNotifyUrl":  "http://fake.com/qiniu/notify"
+}
+```
+
+
+
+# **对已有资源手动触发**
+
+如果需要对已存在于空间中的资源进行持久化数据处理（即触发持久化），可按以下方式使用我们的异步处理接口。处理完成后会向用户指定的`notifyURL`发送处理结果，用户也可以根据`persistentId`来主动查询。
+
+
+
+## **请求报文**
+
+### 请求语法
+
+```
+POST /pfop/ HTTP/1.1
+Host: api.qiniu.com  
+Content-Type: application/x-www-form-urlencoded  
+Authorization: Qiniu <AccessToken>  
+
+<PfopRequestParams>
+```
+
+**注意**：要在 **Authorization** 头部的`<AccessToken>`前添加 **Qiniu** 和半角空格。
+
+### 头部信息
+
+| 头部名称      | 必填 | 说明                                                         |
+| ------------- | ---- | ------------------------------------------------------------ |
+| Host          | 是   | 固定为 `api.qiniu.com`                                       |
+| Content-Type  | 是   | 固定为 `application/x-www-form-urlencoded`                   |
+| Authorization | 是   | 该参数应严格按照[管理凭证](/kodo/manual/access-token)格式进行填充，否则会返回 401 错误码。<br>一个合法的 Authorization 值应类似于：`QBox QNJi_bYJlmO5LeY08FfoNj9w_r7...` |
+
+### 访问权限
+
+[管理凭证](/kodo/manual/access-token)方式。
+
+
+
+### 请求参数
+
+请求参数以表单形式组织，作为请求内容提交，格式如下：
+
+```
+bucket=<urlEncodedBucket>&key=<urlEncodedKey>&fops=<urlEncodedFops>&notifyURL=<urlEncodedPersistentNotifyUrl>&force=<Force>&pipeline=<Pipeline Name>
+```
+
+| 参数名称  | 必填 | 需要URL编码: | 说明                                                         |
+| --------- | ---- | ------------ | ------------------------------------------------------------ |
+| bucket    | 是   | 是           | 资源空间                                                     |
+| key       | 是   | 是           | 源资源名                                                     |
+| fops      | 是   | 是           | 数据处理命令列表，以` ; `分隔，可以指定多个数据处理命令。<br />如： `avthumb/mp4|saveas/cWJ1Y2tldDpxa2V5;avthumb/flv|saveas/cWJ1Y2tldDpxa2V5Mg==`，是将上传的视频文件同时转码成`mp4格式`和`flv格式`后另存。<br />可以使用管道`|`拼接`saveas/<encodedEntryURI>`，指示七牛服务器使用[EncodedEntryURI](https://developer.qiniu.com/kodo/api/1276/data-format)格式中指定的 Bucket 与 Key 来保存处理结果。如：`avthumb/flv|saveas/cWJ1Y2tldDpxa2V5`，是将上传的视频文件转码`flv`格式后存储为`qbucket:qkey`，其中`cWJ1Y2tldDpxa2V5`是`qbucket:qkey`的[URL安全的Base64编码](https://developer.qiniu.com/kodo/manual/1231/appendix#urlsafe-base64)结果。<br /> |
+| notifyURL |      | 是           | 处理结果通知接收 URL，七牛将会向你设置的 URL 发起 `Content-Type: application/json` 的 POST 请求。请参考[持久化处理结果通知](/dora/api/1294/persistent-processing-status-query-prefop)。 |
+| force     |      |              | 强制执行数据处理。<br>当服务端发现 **fops** 指定的数据处理结果已经存在，那就认为已经处理成功，避免重复处理浪费资源。<br />force设为 1，则可强制执行数据处理并覆盖原结果。 |
+| pipeline  |      |              | 为空则表示使用默认队列。建议指定[队列]()，转码时与其他队列分别使用独立的计算资源。 |
+
+
+
+## **响应报文**
+
+### 响应语法
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: <PfopResponseContentLength>
+
+<PfopResponseContent>
+```
+
+### 头部信息
+
+| 头部名称     | 必填 | 说明                                                         |
+| ------------ | ---- | ------------------------------------------------------------ |
+| Content-Type | 是   | 正常情况下该值将被设为 `application/json`，表示返回 JSON 格式的文本信息。 |
+
+### 响应内容
+
+- 如果请求成功，返回包含如下内容的 JSON 字符串（已格式化，便于阅读）：  
+
+```
+{
+    "persistentId": <persistentId string>
+}
+```
+
+| 字段名称     | 必填 | 说明                                                         |
+| ------------ | ---- | ------------------------------------------------------------ |
+| persistentId | 是   | 持久化处理会话标识，可用于查询处理进度，请参考[持久化处理状态查询]()。 |
+
+- 如果请求失败，返回包含如下内容的 JSON 字符串（已格式化，便于阅读）：  
+
+```
+{
+    "error":  "<ErrMsg    string>"
+}
+```
+
+
+
+### 响应状态码
+
+| HTTP状态码 | 含义                                                         |
+| ---------- | ------------------------------------------------------------ |
+| 200        | 触发持久化处理成功                                           |
+| 400        | 请求报文格式错误                                             |
+| 401        | 管理凭证无效                                                 |
+| 404        | 资源不存在                                                   |
+| 599        | 服务端操作失败<br>如遇此错误，请将完整错误信息（包括所有HTTP响应头部）[提交工单](https://support.qiniu.com/tickets/category) 给我们。 |
+
+## **示例**
+
+以Python Sdk为例，本例将空间名为`bucket_name`中的图片`key`缩略为长200宽200的图片，并且保存到`目标Bucket_Name`,且文件名为`自定义文件key`。
+
+**注意**:其他语言 Sdk 可在[官方 Sdks ]()下载，可以通过查看 Sdk 使用指南中`触发持久化`使用。
+
+```
+from qiniu import Auth, PersistentFop, build_op, op_save, urlsafe_base64_encode
+
+#对已经上传到七牛的图片发起异步缩略操作
+#access_key，secret_key在个人面板的密钥管理处获得，非个人账号密码
+access_key = '...'
+secret_key = '...'
+q = Auth(access_key, secret_key)
+
+#要缩略的文件所在的空间和文件名。
+bucket_name = '...'
+key = '...'
+
+#pipeline是使用的队列名称,不设置代表不使用私有队列，使用公有队列。
+pipeline = '...'
+
+#要进行缩略的操作。
+fops = 'imageMogr2/thumbnail/200x200!'
+
+#可以对缩略后的文件进行使用saveas参数自定义命名，当然也可以不指定文件会默认命名并保存在当前空间
+saveas_key = urlsafe_base64_encode('目标Bucket_Name:自定义文件key')
+fops = fops+'|saveas/'+saveas_key
+
+pfop = PersistentFop(q, bucket_name, pipeline)
+ops = []
+ops.append(fops)
+ret, info = pfop.execute(key, ops, 1)
+print(info)
+assert ret['persistentId'] is not None
+```
+
+
+
+## **故障排除**
+
+**301跳转问题**
+
+如果遇到类似如下 301 跳转现象，请检查 pfop 的 URL 最后是否少了一个斜杠符号 **/**，误写成 `http://api.qiniu.com/pfop`：  
+
+```
+W, [2014-04-05T00:14:07.748721 #686]  WARN -- : 301 Moved Permanently => Qiniu::HTTP.post('http://api.qiniu.com/pfop')
+```
+
+正确写法是 `http://api.qiniu.com/pfop/`。 
+
+
+
+# **状态通知和查询**
+
+处理过程的状态，可通过以下两种方式获取：
+
+- **状态通知**
+
+    上传时设定`persistentNotifyUrl`字段，则该URL会收到主动的通知。
+
+    服务端完成所有的数据处理后，会以`HTTP POST` 的方式将处理状态发送给用户指定的通知URL。
+
+- [状态查询](https://developer.qiniu.com/dora/1294/persistent-processing-status-query-prefop)
+
+    开发者可以使用上传时返回的 `persistentId` 来随时查询数据处理的状态。查询的接口为：  
+
+    ```
+    [GET] http://api.qiniu.com/status/get/prefop?id=<persistentId>  
+    ```
+
+    ​
+

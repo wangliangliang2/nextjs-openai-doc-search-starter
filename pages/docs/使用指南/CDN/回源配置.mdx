@@ -1,0 +1,42 @@
+您可以登录**七牛开发者平台**选择**CDN控制台**,可以在控制台中查看域名的回源配置信息及进行相关配置修改。 
+<br/>
+# 操作说明
+登录**七牛开发者平台**后，进入**CDN控制台**，选择【域名管理】，点击【配置】：
+
+![域名列表](https://dn-odum9helk.qbox.me/Fr29HEF4Y0J1NHYmOWW1SkjcyUFD)
+
+进入域名配置界面，点击【修改配置】进行回源配置的修改。
+![](https://dn-odum9helk.qbox.me/FpxnDf126nd-Vc5NYpvelfwrFZRX)
+### 基础配置 
+回源方式支持七牛云存储、源站域名、IP地址、高级设置四种模式。
+* 七牛云存储：选定七牛云存储对应的bucket作为CDN回源的源站。
+![七牛云存储](https://dn-odum9helk.qbox.me/Fv7vhNlE03zFd2tALfTwu2ZPVZ3J)
+
+* 源站域名：设置指定域名作为CDN回源的源站，源站的域名需要与加速域名不一致。
+![源站域名](https://dn-odum9helk.qbox.me/Fkjtfh4aeo7LjgJuDDlhPKvituZF)
+
+* IP地址：设置IP作为CDN回源的源站，支持配置多个IP；回源采用轮询方式，首次选择配置的第一个IP进行回源，当发现某一源站IP异常时，将跳过此IP并进入惩罚时间，屏蔽5秒。
+![IP地址](https://dn-odum9helk.qbox.me/FnXCmiRCuqeEWqg4E_sutaSCjmMV)
+
+* 高级配置：支持配置多个回源的主备线路，可以是域名或是IP，并支持权重配置。
+说明：
+（1）权重：请求概率=权重/权重总和，eg：有两个主线路A和B，A权重1 和 B权重3，那么四次请求，1次是A，3次是B。
+（2）回源地址不能与加速域名相同。
+![](https://dn-odum9helk.qbox.me/FkRL14AuFHuwZdSlpHzxqXAlWHQB)
+
+### 回源host
+回源host：是指 CDN 节点在回源过程中，在源站访问的站点域名。
+源站为七牛云存储，回源HOST无需填写，源站为域名、IP、以及高级回源模式，回源 HOST默认是加速域名，支持自定义配置。
+![](https://dn-odum9helk.qbox.me/Fvd_r_Ku70w6XJBw6dbT9mQnrIGH)
+
+### 回源协议
+回源协议：即请求回源的协议，默认为HTTP协议，当开启HTTPS配置时，支持选择回源协议HTTP、遵循请求协议、HTTPS三种方式。
+![](https://dn-odum9helk.qbox.me/FkF4jsG9jl6BnQRgG9jegUr9KDP4)
+
+### 去参数回源
+去参数回源：请求回源时去除URL「?」后的参数进行回源，支持去除所有参数和去除指定参数两种方式。
+![](https://dn-odum9helk.qbox.me/FuVZ5wszpfELBWrCOMYxQjUvioDH)
+
+### 回源验证 
+回源验证：保证源站的高可用，只有源站测试通过才能继续创建域名。
+![](https://dn-odum9helk.qbox.me/FgEsyT24W3KBU2d2tM0jpPJcW79R)

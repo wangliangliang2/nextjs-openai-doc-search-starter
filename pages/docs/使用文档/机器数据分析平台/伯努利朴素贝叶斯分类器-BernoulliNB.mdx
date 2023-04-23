@@ -1,0 +1,13 @@
+朴素贝叶斯模型在伯努利分布假设下的实现。适用于二分类场景。
+
+```
+..| fit BernoulliNB alpha=<float> binarize=<float> fit_prior=<True(default) | False> <target_field> from <feature_field_1> <feature_field_2>... 
+```
+
+**参数说明：**
+
+- alpha用来指定拉普拉斯平滑的系数，默认值为1.0。
+
+- binarize用来指定特征映射到二分变量的阈值，默认值为0.0。
+
+- fit_prior用来指定是否要学习一个先验分布，如果设为False，采用均匀分布作为先验分布。默认值为True。

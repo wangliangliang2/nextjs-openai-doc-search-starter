@@ -1,0 +1,53 @@
+# **描述**
+本接口用于查询推流历史记录
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}/pubhistories?start=<start>&end=<end>&offset=<offset>&line=<line>`
+*  Get请求，通过`非SDK`方式调用的客户，http头部Content-Type`要么置空`, `要么不要携带`; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|流ID
+|start|是|integer|推流开始时间(unix timestamp in second)
+|end|是|integer|推流结束时间(unix timestamp in second)
+|line|否|integer|一次返回多少条, 最大值1000条，当超过1000条时，需要结合offset 循环读取。
+|offset|否|integer|偏移量。当数据较多，需要循环读取时使用。例如有2001条数据，初始值offset = 0, 第N次请求时offset = (N -1) * line
+# **响应参数**
+|参数名称|类型|说明|
+|---|---|---|
+|items|推流历史记录数组|推流历史记录数组
+|items.start|integer|推流开始时间(unix timestamp in second)
+|items.end|integer|推流结束时间(unix timestamp in second)
+|items.type|string|推流记录类型，实时流/历史流
+|items.duration|integer|推流时长,单位为秒
+|total|integer|查询到历史记录总数
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/namespaces/d102sni9zryu/streams/device009/pubhistories?start=1586828400&end=1586828425 \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+ "items":[
+  {
+      "start": 1586828404,
+      "end": 1586828420,
+      "duration": 16,
+  }
+ ]
+ "total":1
+}
+```
+```

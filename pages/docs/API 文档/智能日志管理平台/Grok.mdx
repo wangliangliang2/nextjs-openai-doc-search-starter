@@ -1,0 +1,25 @@
+## **验证 log 和相应的 Grok pattern 是否匹配**
+
+```
+POST /v1/api/grok/check
+Content-Type: application/json
+{
+  "log":"110.220.330.550 - - [12/Oct/2017:14:16:50 +0800]",
+  "pattern":base64("%{NOTSPACE:client_ip} %{USER:ident} %{USER:auth} \[%{HTTPDATE:ts:date}\]")
+  "custom_pattern":""
+}
+```
+
+### **返回值**
+
+- 如果没有错误，返回解析后的匹配数据：
+
+```
+{"auth":"-","client_ip":"110.220.330.550","grokInternalCustomSemantic":"110.220.330.550 - - [12/Oct/2017:14:16:50 +0800]","ident":"-","ts":"12/Oct/2017:14:16:50 +0800"}
+```
+
+- 如果有错误则返回相应错误
+
+### **参数说明**
+
+- `pattern` 和 `custom_pattern` 前端传过来时都需要 base64 编码

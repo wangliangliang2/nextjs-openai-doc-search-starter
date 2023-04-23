@@ -1,0 +1,28 @@
+如果您的 logkit-pro agent 处于离线状态，请按照以下步骤进行排查：
+
+1. 登录您的服务器查看 logkit-pro 进程是否正常运行。
+
+* Windows 系统： 在任务管理器中查看相关进程是否正常运行，logkit-pro相关字样。
+* Linux 系统： 执行如top命令查看相关进程是否正常运行，logkit-pro相关字样。
+
+如果 logkit-pro 进程不存在，请尝试重新启动进程。（注意，使用自动安装的用户，只有Linux root状态下的自动安装才会开机自动启动，如果您中间有过关机，请尝试重新启动） 
+
+* Windows用户可执行`C:\logkit-pro\agent\start.bat`
+* Linux root用户执行 `service logkit-pro restart`
+* Linux 普通用户进入 `$HOME/logkit-pro/agent/` 执行  `nohup ./logkit-pro -f logkit.conf > logkit.log 2>&1 &`
+
+如果重新启动进程失败或无法正常运行，建议您重新[安装](https://developer.qiniu.com/insight/manual/4682/logkit-pro-install)。
+
+
+2. 若进程存在，确保与七牛的logkit-pro服务器网络连通，检查DNS服务器、防火墙等是否配置有误。
+
+`ping logkit-pro.qiniu.com`
+
+3. 其他情况，请查看logkit-pro的日志中是否有报出什么错误异常日志。
+
+Linux用户root权限： `/var/local/logkit-pro/agent/logkit.log`
+Linux用户非root权限： `$HOME/logkit-pro/agent/logkit.log` 在当前用户的主目录下。
+Windows用户： `C:\logkit-pro\agent\logkit.log`
+Mac用户： `$HOME/logkit-pro/agent/logkit.log` 在当前用户的主目录下。
+
+若显示鉴权不通过，请确认ak\sk正确填写，同时参考FAQ相关登录鉴权问题回答。

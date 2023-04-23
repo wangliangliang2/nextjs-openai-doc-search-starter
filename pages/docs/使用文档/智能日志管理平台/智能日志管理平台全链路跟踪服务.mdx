@@ -1,0 +1,29 @@
+
+智能日志管理平台全链路跟踪服务，仅在全链路追踪服务中作为链路数据发送源使用，
+
+使用实践请参考[全链路追踪-使用指南-接入tracing数据](/insight/manual/5119/access-data-tracing)
+
+### **基本选项**
+* 七牛公钥(access_key)；
+* 七牛私钥(secret_key)；
+`access_key`、`secret_key` 是七牛账户的公钥和私钥，通过七牛控制台——个人面板中的 `秘钥管理` 页面可以找到；
+
+
+### **高级选项**
+  * 日志分析域名(`pandora_logdb_host`): 默认为 `https://nb-insight.qiniuapi.com`，创建日志搜索仓库的服务地址。
+ 
+  * 实时仓库数据传输域名(`pandora_host`): 必填，服务地址，默认为 `https://nb-pipeline.qiniuapi.com`。
+
+  * 指定日志搜索仓库名称(`pandora_logdb_name`): 默认与实时仓库名称相同，可指定 `自动创建并导出到日志管理查询仓库(pandora_enable_logdb)` 功能创建的日志搜索仓库名称。
+
+  * 添加系统时间(`logkit_send_time`): 默认为 "true"，是否在发送时自动添加发送时间，时间格式为 `RFC3339Nano`。
+
+  * 创建的资源所在区域(`pandora_region`): 必填，Pandora 服务的地域。 
+
+  * 自动转换类型(`pandora_force_convert`): 默认启用。开启后会强制类型转换，如定义的 pandora schema 为 long，而实际的为 string，则会尝试将 string 解析为 long类型（int 64），若无法解析，则忽略该字段内容。使用这个功能可以解决一整条数据中有些字段生成的类型不确定导致写入 Pandora 失败的问题。
+ 
+  * 数字统一为 float(`number_use_float`): 默认开启，当填为 true 时，会将数据中所有的数字作为 float 类型。该功能适用于数字又有可能是整型又有可能是浮点型的场景，统一作为 float，可避免数据类型冲突。
+
+  * 忽略错误字段(`ignore_invalid_field`): 默认开启，会进行数据格式校验，并忽略不符合格式的字段数据，默认开启，关闭可以节省 CPU 开销。如 Pandora 的类型选择了 jsonstring，若字符串不是合法的 json 字符串，就会忽略改部分字段内容，其他字段正常上报。
+
+  * 服务端反转译换行/制表符(`pandora_unescape`): 默认开启，在 Pandora 服务端反转译`\\n`=>`\n`, `\\t`=>`\t`; 由于 Pandora 数据上传的编码方式会占用`\t`和`\n`这两个符号，所以在sdk中打点时会默认把`\t`转译为`\\t`，把`\n`转译为`\\n`，开启这个选项就是在服务端把这个反转译回来。开启该选项也会转译数据中原有的这些`\\t`和`\\n`符号

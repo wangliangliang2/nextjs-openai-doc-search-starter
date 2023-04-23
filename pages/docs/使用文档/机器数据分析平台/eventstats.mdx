@@ -1,0 +1,95 @@
+eventstats 命令对现有字段进行统计，并将结果另存为新字段添加到搜索结果中。
+
+**语法**
+
+eventstats <StatsFunc(field)> [as field]…… [by filed][, fieldn]
+
+**参数说明**
+
+必填参数：
+
+`StatsFunc(field)`: 
+
+* 描述：指定函数名称和统计字段， 函数请参阅[ stats 支持的统计函数](/express/manual/6013/stats)。
+
+可选参数：
+
+`by filed`:指定分组字段。
+
+`as field`：使用 as 子句将统计结果放入指定的新字段。
+
+**eventstats 和 stats 的区别**
+
+stats是对原始日志进行聚合统计，eventstats 命令是将统计结果作为字段附加到每个日志数据上。
+
+举例说明：
+
+原始数据如下：
+
+|user| subject| grade|
+|:-:|:-:|:-:|
+|a| math|100|
+|a|english| 80
+|b|math|80|
+|b|english|70|
+
+stats 语句：
+
+```
+stats sum(grade) by user
+```
+
+返回结果：
+
+|user|sum(grade)|
+|:-:|:-:|
+|a|180|
+|b|150|
+
+eventstats语句：
+```
+eventstats sum(grade) by user
+```
+
+返回结果：
+
+|user|subject|grade|sum(grade)|
+|:-:|:-:|:-:|:-:|
+|a|math|100|180|
+|a|english|80|180|
+|b|math|80|150|
+|b|english|70|150|
+
+**使用示例示例**
+
+统计出每个城市不同性别的平均年龄，呈现城市、性别、平均年龄统计表。
+
+```
+……|eventstats avg(age) by city，gender
+```
+
+|city|gender|avg(age)|
+|:-:|:-:|:-:|:-:|
+|beijing|male|28|
+|beijing|female|25|
+|shanghai|male|27|
+|shanghai|female|24|
+|wuhan|male|22|
+|wuhan|female|20|
+|chengdu|male|28|
+|chengdu|female|22|
+
+计算出数据库日志中查询时间的平均值和标准差。筛选出日志中查询时间超出平均查询时间+/- 2倍标准差的范围之外的数据。这个可以作为一个动态的筛选算法，找出数据中的异常指标。
+
+```
+……| eventstats stdev(queryTime) as stdev, avg(queryTime) as avg 
+| eval lowerbound = avg + stdev \* 2, upperbound = avg - std \* 2 
+| eval isOutlier=case(queryTime < lowerBound OR queryTime > upperBound, 1, 0)
+```
+
+统计一组事务的平均持续时间：
+
+```
+……| transaction host maxspan=30s maxpause=5s| eventstats avg( _duration_second) as avg
+```
+[点此](/express/manual/6242/transaction)了解transaction命令。

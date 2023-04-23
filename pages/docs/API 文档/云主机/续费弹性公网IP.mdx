@@ -1,0 +1,23 @@
+# 请求路径
+> `POST` /v1/vm/eip/:allocation_id/renew
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+allocation_id    | string  | path | 是 | 弹性公网 IP 的 ID
+region_id        | string  | body | 是 | 地域 ID
+client_token     | string  | body | 否 | 保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。
+cost_charge_type | string  | body | 是 | 付费方式
+cost_charge_mode | string  | body | 是 | 计费方式
+cost_period_unit | string  | body | 是 | 计费单位
+cost_period      | integer | body | 是 | 计费周期
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID
+data       | object{} | 续费 EIP 返回信息
+data.order | string | 订单号
+data.c_fee | float | 支付金额

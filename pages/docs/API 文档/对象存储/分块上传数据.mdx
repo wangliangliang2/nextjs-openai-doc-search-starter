@@ -1,0 +1,121 @@
+<a id="uploadPart-description"></a>
+# **描述** 
+
+初始化一个 Multipart Upload 任务之后，可以根据指定的 EncodedObjectName 和 UploadId 来分 Part 上传数据。
+
+<br>
+
+<a id="uploadPart-requests"></a>
+
+# **请求**
+<a id="uploadPart-requests-syntax"></a>
+
+### **请求语法**
+
+```
+PUT /buckets/<BucketName>/objects/<EncodedObjectName>/uploads/<UploadId>/<PartNumber> HTTP/1.1
+Host: <UpHost>
+Content-Type: application/octet-stream
+Content-MD5: <PartMd5>
+Content-Length: <Size>
+Authorization: UpToken <UploadToken>
+
+
+<PartContent>
+```
+使用说明：
+* 每一个上传的 Part 都有一个标识它的号码 PartNumber，范围是 1 - 10000，单个 Part大小范围 1 MB - 1 GB。Multipart Upload 要求除最后一个 Part 以外，其他的 Part 大小都要大于等于 1 MB。因不确定是否为最后一个 Part，uploadPart API 并不会立即校验上传 Part 的大小，当 completeMultipartUpload API 调用的时候才会校验。
+* 如果你用同一个 PartNumber 上传了新的数据，那么服务端已有的这个号码的 Part 数据将被覆盖。
+
+
+<br>
+
+<a id="uploadPart-request-parameters"></a>
+### **请求参数**
+
+| 参数名称 | 必填 | 说明 |
+| --- | --- | --- |
+| BucketName | 是 | 空间名称|
+| EncodedObjectName | 否 | 资源名，EncodedObjectName 需要经过 Base64 编码。具体可以参照：[URL 安全的 Base64 编码](/kodo/manual/1231/appendix#urlsafe-base64) |
+| UploadId | 是 | 在服务端申请的 Multipart Upload 任务 id |
+| PartNumber | 是 | 每一个上传的 Part 都有一个标识它的号码|
+
+<br>
+
+<a id="uploadPart-request-headers"></a>
+### **请求头**
+|头部名称       | 必填 | 说明|
+|------------- | --- | -------------------------------- | 
+|Host           | 是   | 上传域名。<span id="Endpoint">对象存储支持的区域和对应区域上传域名列表见 [存储区域列表](/kodo/1671/region-endpoint-fq) </span> |
+|Authorization  | 是   | 该参数应严格按照[上传凭证](/kodo/manual/1208/upload-token)格式进行填充，否则会返回 401 错误码。一个合法的 Authorization 值应类似于 Authorization: UpToken QNJi_bYJlmO5LeY08FfoNj9w_r... |
+|Content-Type | 是 | 固定为 `application/octet-stream` | 
+|Content-MD5 | 否 | 上传块内容的 md5 值，如果指定服务端会进行校验，不指定不校验 | 
+|Content-Length| 是|上传块大小，单位字节|
+
+<br>
+
+<a id="uploadPart-request-elements"></a>
+### **请求内容**
+该请求操作的请求体块的内容。
+
+<br>
+
+<a id="uploadPart-responses"></a>
+# **响应**
+
+<a id="uploadPart-request-headers"></a>
+### **响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](/kodo/api/3924/common-response-headers)。
+
+<br>
+
+<a id="uploadPart-response-elements"></a>
+### **响应内容**
+|名称  | 类型| 说明|
+|--------|----------------|-----|
+|etag| string| 上传块内容的 etag ，用来标识块，completeMultipartUpload API 调用的时候作为参数进行文件合成|
+|md5| string| 上传块内容的 md5|
+
+<br>
+
+<a id="uploadPart-special-errors"></a>
+### **响应状态码**
+|HTTP状态码 | 含义|
+|--------|----------------|
+|612|目标资源不存在，当请求的 UploadId 不存在或者已经 complete 过的，都会返回 { "error" : "no such uploadId" } |
+|406|服务端校验失败，服务端收到数据与用户指定校验值不一致，当指定 Content-MD5 与服务端收到数据不一致，返回 { "error" : "hash not match" } |
+|400|不符合要求的 PartNumber，会返回 { "error" : "partNum should be set from 1 to 10000" } |
+
+<br>
+
+<a id="uploadPart-examples"></a>
+# **示例**
+<a id="uploadPart-request-examples"></a>
+
+### **请求示例**
+```
+PUT /buckets/myBucket/objects/bXlPYmplY3Q=/uploads/myUploadID/1 HTTP/1.1
+Host: up.qiniup.com
+User-Agent: Go-http-client/1.1
+Content-Length: 200
+Authorization: UpToken j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:nP7NSSyGo4x3W_nJ8T9X1gJrgpk=
+```
+
+<br>
+
+<a id="uploadPart-response-examples"></a>
+### **响应示例**
+```
+HTTP/1.1 200 OK
+Content-Length: 2
+Connection: keep-alive
+Content-Type: application/json
+Date: Wed, 18 Dec 2019 17:02:11 GMT
+Server: nginx
+X-Reqid: SFkAAAC8BDebTtsU
+
+{
+	"etag": "FqvtxHpe3j-rEzkImMUWDsmvu27D",
+	"md5": "4f4acc5d8c71f5fbf04dace00b5360c8"
+}
+```

@@ -1,0 +1,41 @@
+对包含匹配正则表达式的键值对的数据进行处理(保留/移除)。
+* 要进行Transform变化的键(`key`): 支持多级嵌套，多级间用 *.* 符号连接，如 abc.xyz，表示 data["abc"]["xyz"]中的数据。
+* 保留/移除匹配的正则表达式(pattern)的数据(`mode`):  keep为保留，remove为移除。
+* 正则表达式(pattern)所匹配的数据做处理(`pattern`): 保留或移除匹配正则表达式的数据，为空且mode为remove则丢弃整条数据，否则保留
+
+### **示例**：
+
+例如， parser 解析后的数据为:
+
+```
+[
+	{
+		"field1": "aaaa",
+		"field2": "bbbb"
+	},
+	{
+    "field1": "ccc",
+    "field2": "ccccc"
+	},
+]
+
+```
+
+若 filter 配置为
+```
+{
+    "key": "field1",
+    "mode": "remove",
+    "pattern": ".*aa.*"
+}
+```
+
+经过 filter 变换后的数据将变为:
+```
+[
+	{
+    "field1": "ccc",
+    "field2": "ccccc"
+	}
+]
+```

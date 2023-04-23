@@ -1,0 +1,35 @@
+从 AWS CloudWatch 服务的接口中获取数据。
+
+### **基础配置信息**
+
+   * `区域(region)`：使用的 AWS 服务所在`区域(region)`，如 us-east-1, 打开 AWS cloudwatch 的控制台，您在访问的 url 中就能看到所用的 region, 如 https://console.aws.amazon.com/cloudwatch/home?region=us-east-1。
+   
+   * `命名空间(namespace)`：CloudWatch 服务的`命名空间(namespace)`，对应了 AWS 的服务，命名空间如 AWS/EC2,AWS/S3 等等，进入 `CloudWatch` 左侧栏的`指标(Metrics)`页面，就可以看到所有的命名空间，点击某一个，就能在 `url` 中看到命名空间(namespace)，如https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#metricsV2:graph=~();namespace=AWS/S3。
+   
+   * `AK(aws_access_key)`：授权方式之一，AWS 的 `access key`。为了不在配置中明文存储，我们在 `1.0.4` 版本及以后支持使用环境变量的方式填写该字段，填写方式为：`${YOUR_ENV}`，其中 `YOUR_ENV` 为环境变量，需要在机器上将该环境变量设置为原先要填写的值，`YOUR_ENV` 可以根据您的实际使用需求进行修改。
+   
+   * `SK(aws_secret_key)`: 授权方式之一， AWS 的 `secret key`。为了不在配置中明文存储，我们在 `1.0.4` 版本及以后支持使用环境变量的方式填写该字段，填写方式为：`${YOUR_ENV}`，其中 `YOUR_ENV` 为环境变量，需要在机器上将该环境变量设置为原先要填写的值，`YOUR_ENV` 可以根据您的实际使用需求进行修改。
+
+   * `鉴权 token(aws_token)`: 授权方式之一，对应 AK、SK 的`token`。为了不在配置中明文存储，我们在 `1.0.4` 版本及以后支持使用环境变量的方式填写该字段，填写方式为：`${YOUR_ENV}`，其中 `YOUR_ENV` 为环境变量，需要在机器上将该环境变量设置为原先要填写的值，`YOUR_ENV` 可以根据您的实际使用需求进行修改。
+   
+   * `共享 profile(aws_profile)`: 授权方式之一， AWS 的共享 `profile` 文件，填写路径。为了不在配置中明文存储，我们在 `1.0.4` 版本及以后支持使用环境变量的方式填写该字段，填写方式为：`${YOUR_ENV}`，其中 `YOUR_ENV` 为环境变量，需要在机器上将该环境变量设置为原先要填写的值，`YOUR_ENV` 可以根据您的实际使用需求进行修改。
+   
+   * `鉴权文件(shared_credential_file)`: 授权方式之一， 共享的鉴权文件路径
+   
+   * `收集间隔(interval)`: 填写 1m 表示 1 分钟，10m 表示 10 分钟，单位 m 表示分钟，`最小设置为 1 分钟`。
+   
+   * `metrics 名称(metrics)`: version 3 `必填项`, 指定收集的 Metrics 名称，可填写多个`，`逗号连接，`为空全部收集`。
+   
+   * `收集维度(dimensions)`: version 3 `必填项`,指定收集的 Metric 维度，可填写多个，key value 之间`空格`隔开，多个用`逗号`连接，`为空全部收集`。
+   
+### **高级选项**
+ 
+ * `授权角色(role_arn)`：授权方式之一，AWS 的 `Assuming a Role` 角色授权信息。
+ 
+ * `每秒最大请求数(ratelimit)`：version 3 `必填项`, 请求限速，`默认为每分钟 200`，填写 100 则设置为 100 请求每分钟。
+ 
+ * `收集延迟(delay)`：version 3 `必填项`, Cloudwatch 中延迟收集的时间，设置 5 分钟，则表示收集 5 分钟前的数据，该选项保证了如果Cloudwatch中的数据有延迟，也可以延迟收集。如果延迟了5分钟，那么现在收集5分钟以前的。
+ 
+ * `刷新 metrics 时间(cache_ttl)`：version 3 `必填项`, namespace 下的 Metric 刷新时间，刷新后自动感知新的Metric，`默认设置 1 小时刷新一次`。
+ 
+ * `聚合间隔(period)`：version 3 `必填项`, 从 Cloudwatch 中收集的数据聚合粒度，默认为 5m 表示 5 分钟，最小填写 1m 表示 1 分钟。

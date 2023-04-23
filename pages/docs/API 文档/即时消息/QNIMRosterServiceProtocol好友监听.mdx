@@ -1,0 +1,182 @@
+# QNIMRosterServiceProtocol Protocol Reference
+
+Conforms to | NSObject
+---|---
+Declared in | QNIMRosterServiceProtocol.h
+  
+### `- friendAddedSponsorId:recipientId:`
+
+添加好友
+
+`- (void)friendAddedSponsorId:(long long) _sponsorId_ recipientId:(long long)
+_recipientId_`
+
+#### Parameters
+
+sponsorId |发起方
+---|---
+recipientId |接受方
+  
+#### Discussion
+
+添加好友
+
+#### Declared In
+
+`QNIMRosterServiceProtocol.h`
+
+### `- friendRemovedSponsorId:recipientId:`
+
+    删除好友
+    
+
+  * 用户B删除与用户A的好友关系后，用户A会收到这个回调
+
+`- (void)friendRemovedSponsorId:(long long) _sponsorId_ recipientId:(long
+long) _recipientId_`
+
+#### Parameters
+
+sponsorId |发起方
+---|---
+recipientId |接受方
+  
+#### Discussion
+    
+    删除好友
+    
+
+  * 用户B删除与用户A的好友关系后，用户A会收到这个回调
+
+#### Declared In
+
+`QNIMRosterServiceProtocol.h`
+
+### `- friendDidRecivedAppliedSponsorId:recipientId:message:`
+
+  * 收到加好友申请
+  * 用户B申请加A为好友后，用户A会收到这个回调
+
+`- (void)friendDidRecivedAppliedSponsorId:(long long) _sponsorId_
+recipientId:(long long) _recipientId_ message:(NSString *) _message_`
+
+#### Parameters
+
+sponsorId |发起方
+---|---
+recipientId |接受方
+message |好友邀请信息
+  
+#### Discussion
+
+  * 收到加好友申请
+  * 用户B申请加A为好友后，用户A会收到这个回调
+
+#### Declared In
+
+`QNIMRosterServiceProtocol.h`
+
+### `- friendDidApplicationAcceptedFromSponsorId:recipientId:`
+
+  * 加好友申请被通过了
+  * 用户B同意用户A的加好友请求后，用户A会收到这个回调
+
+`- (void)friendDidApplicationAcceptedFromSponsorId:(long long) _sponsorId_
+recipientId:(long long) _recipientId_`
+
+#### Parameters
+
+sponsorId |发起方
+---|---
+recipientId |接受方
+  
+#### Discussion
+
+  * 加好友申请被通过了
+  * 用户B同意用户A的加好友请求后，用户A会收到这个回调
+
+#### Declared In
+
+`QNIMRosterServiceProtocol.h`
+
+### `- friendDidApplicationDeclinedFromSponsorId:recipientId:reson:`
+
+  * 加好友申请被拒绝了
+  * 用户B拒绝用户A的加好友请求后，用户A会收到这个回调
+
+`- (void)friendDidApplicationDeclinedFromSponsorId:(long long) _sponsorId_
+recipientId:(long long) _recipientId_ reson:(NSString *) _reason_`
+
+#### Parameters
+
+sponsorId |发起方
+---|---
+recipientId |接受方
+reason |拒绝理由
+  
+#### Discussion
+
+  * 加好友申请被拒绝了
+  * 用户B拒绝用户A的加好友请求后，用户A会收到这个回调
+
+#### Declared In
+
+`QNIMRosterServiceProtocol.h`
+
+### `- friendAddedtoBlockListSponsorId:recipientId:`
+
+  * 添加黑名单
+
+`- (void)friendAddedtoBlockListSponsorId:(long long) _sponsorId_
+recipientId:(long long) _recipientId_`
+
+#### Parameters
+
+sponsorId |发起方
+---|---
+recipientId |接受方
+  
+#### Discussion
+
+  * 添加黑名单
+
+#### Declared In
+
+`QNIMRosterServiceProtocol.h`
+
+### `- friendRemovedFromBlockListSponsorId:recipientId:`
+
+  * 删除黑名单
+
+`- (void)friendRemovedFromBlockListSponsorId:(long long) _sponsorId_
+recipientId:(long long) _recipientId_`
+
+#### Parameters
+
+sponsorId |发起方
+---|---
+recipientId |接受方
+  
+#### Discussion
+
+  * 删除黑名单
+
+#### Declared In
+
+`QNIMRosterServiceProtocol.h`
+
+### `- rosterInfoDidUpdate:`
+
+用户信息更新
+
+`- (void)rosterInfoDidUpdate:(QNIMRoster *) _roster_`
+
+#### Discussion
+
+用户信息更新
+
+#### Declared In
+
+`QNIMRosterServiceProtocol.h`
+
+

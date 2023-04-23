@@ -1,0 +1,65 @@
+
+
+在配置管理中，您可以通过填写回调地址的方式来接收短信的发送状态回调和上行短信内容回调。
+
+# **设置消息推送**
+![](https://dn-odum9helk.qbox.me/FtMRFqZgLowbqio34vLj1D00aBi5)
+
+1. 打开[云短信控制台 ](https://portal.qiniu.com/sms/settings)-> 配置管理
+2. 填写业务回调地址
+
+说明：
+1. 业务回调地址仅支持带 http、https 协议的 URL 格式。
+2. 回调方法都是HTTP POST，且返回 HTTP 状态码 200，如果返回不是 200，会在10分钟内自动重试。
+
+
+# **发送状态回调**
+
+短信发送给用户后，将会通过回调下列 URL 的方式，通知业务方用户发送短信的状态。
+
+**回调内容**
+```
+{
+    "items":[{
+        "mobile": <string>,
+        "message_id": <string>, // 
+        "status": <string>, // DELIVRD 送达， FAILED 发送失败
+        "delivrd_at": <timestamp>,
+        "error": <string>, 
+        "job_id": <string> 
+    }]
+}
+```
+
+**参数解析：**
+
+| 参数 | 说明 |  
+| --- | --- | 
+| mobile | 手机号码 |  
+| message_id |单条发送的时候返回的 message_id|  
+| status |  DELIVRD 送达， FAILED 发送失败 | 
+| delivrd_at | 到达时间 | 
+| error | 当 status 为 FAILED 的时候，会有这个字段 | 
+| job_id | 批量发送的时候返回的 job_id | 
+
+
+# **上行状态回调**
+用户回复短信，将会通过回调下列 URL 的方式，通知业务方用户回复了短信。
+
+```
+{
+    "items": [{
+        "mobile": "<string>",
+        "content": "<string>",
+        "time": <timestamp>
+    }]
+}
+```
+
+**参数解析：**
+
+| 参数 | 说明 |  
+| --- | --- | 
+| mobile | 手机号码 |  
+| content |回复的具体内容|  
+| time | 回复时间| 

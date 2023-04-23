@@ -1,0 +1,309 @@
+# **简介**
+
+七牛云存储提供四种水印接口：[图片水印](#pic-watermark)、[文字水印](#text-watermark)，[文字平铺水印](#text-Tile-watermark)、[混合水印](#multi-watermark)、[渐变色水印](#Gradient-watermark)。
+
+## **使用限制**
+
+- 原图格式支持： `psd`、`jpeg`、`png`、`gif`、`webp`、`tiff`、`bmp`、`avif`、`heif`
+  - 支持webp动图，只能使用持久化处理，适用于`watermark/1`、`watermark/2`、`watermark/3`接口
+  - gif 不支持加文字平铺水印
+- 输出限制
+  - 输出为gif，一般处理时间比较长，建议优先使用[持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop)
+- 同步处理 
+  - 只支持 20MB 以内的图片，超过 20MB 的图片需要使用持久化处理
+  - 处理前的`gif`最大帧数为 200
+  - 处理前的图片`w`和`h`参数不能超过3万像素，总像素不能超过1.5亿像素
+  - 处理后的图片`w`和`h`参数不能超过9999像素，总像素不得超过24999999（2500w-1）像素
+  - 处理后图片文件大小没有限制
+- 持久化处理
+  - 图片文件无大小限制
+  - 处理前的`gif`、`webp动图`，最大帧数为 500
+  - 处理前的图片`w`和`h`参数不能超过3万像素，总像素不能超过1.5亿像素
+  - 处理后的图片`w`和`h`参数不能超过14999像素，总像素不得超过59999999（6000w-1）像素
+  - 处理后图片文件大小没有限制
+    ​
+
+
+
+# **图片水印**
+
+## 接口规格
+
+**注意：** 接口规格不含任何空格与换行符。
+
+
+```
+watermark/1
+         /image/<encodedkodocheme>
+         /dissolve/<dissolve>
+         /gravity/<gravity>
+         /dx/<distanceX>
+         /dy/<distanceY>
+         /ws/<watermarkScale>
+         /wst/<watermarkScaleType>
+```
+
+<a id="pic-watermark-params"></a>
+
+| 参数名称                    | 必填 | 说明                                                         |
+| :-------------------------- | :--- | :----------------------------------------------------------- |
+| `/image/<encodedkodocheme>`  | 是   | 水印的源路径，目前支持 kodo 资源。kodo 资源可由 `kodo://<bucketname>/<key>` 表示（此时 bucketname 需要与输入源在同一区域），均需要经过`urlsafe_base64_encode`。<br>**注意**：更换图片水印时，建议更换图片的文件名。 |
+| `/dissolve/<dissolve>`      |      | 透明度，取值范围1-100，默认值为100（完全不透明）。           |
+| `/gravity/<gravity>`        |      | 水印位置，参考[水印锚点参数表](#watermark-anchor-spec)，默认值为`SouthEast`（右下角）。 |
+| `/dx/<distanceX>`           |      | 横轴边距，单位:像素(px)，默认值为10。                        |
+| `/dy/<distanceY>`           |      | 纵轴边距，单位:像素(px)，默认值为10。                        |
+| `/ws/<watermarkScale>`      |      | 水印图片自适应原图的比例，ws的取值范围为0-1。具体是指水印图片保持原比例，按照自适应原图的类型`wst`，比如默认是按照短边，则水印图片短边=原图短边＊ws。 |
+| `/wst/<watermarkScaleType>` |      | 水印图片自适应原图的类型，取值0、1、2、3分别表示为自适应原图的短边、长边、宽、高，默认值为0。 |
+例如：
+1.原图大小为250x250，水印图片大小为91x61，如果wst=0、ws=0.1，那么最终水印图片的大小为：37.2x25。
+2.原图大小为250x250，水印图片大小为91x61，如果wst=1、ws=0.1，那么最终水印图片的大小为：25x16.8。
+
+
+<a id="watermark-anchor-spec"></a>
+### 水印锚点参数表
+
+```
+NorthWest     |     North      |     NorthEast
+              |                |    
+              |                |    
+--------------+----------------+--------------
+              |                |    
+West          |     Center     |          East 
+              |                |    
+--------------+----------------+--------------
+              |                |    
+              |                |    
+SouthWest     |     South      |     SouthEast
+```
+
+<a id="pic-watermark-request"></a>
+
+
+## **使用示例**
+
+- 水印图片：
+
+    - `kodocheme = kodo://developer-documents-image/qiniuyun.png `
+    - `encodedkodocheme = a29kbzovL2RldmVsb3Blci1kb2N1bWVudHMtaW1hZ2UvcWluaXV5dW4ucG5n`
+
+- 水印透明度: 50% (`dissolve=50`)
+
+- 水印位置: 右下角 (`gravity=SouthEast`)
+
+- 横向边距: 20px
+
+- 纵向边距: 20px
+
+- 水印图片自适应短边比例：0.2
+
+    ```
+   https://dora-doc.qiniu.com/gogopher.jpg?watermark/1/image/a29kbzovL2RldmVsb3Blci1kb2N1bWVudHMtaW1hZ2UvcWluaXV5dW4ucG5n/dissolve/50/gravity/SouthEast/dx/20/dy/20/ws/0.2
+    ```
+
+![图片水印](https://dora-doc.qiniu.com/gogopher.jpg?watermark/1/image/a29kbzovL2RldmVsb3Blci1kb2N1bWVudHMtaW1hZ2UvcWluaXV5dW4ucG5n/dissolve/50/gravity/SouthEast/dx/20/dy/20/ws/0.2)
+
+<a id="text-watermark"></a>
+# **文字水印**
+
+## 接口规格
+
+**注意：** 接口规格不含任何空格与换行符。
+
+```
+watermark/2
+         /text/<encodedText>
+         /font/<encodedFontName>
+         /fontsize/<fontSize>
+         /fill/<encodedTextColor>
+         /dissolve/<dissolve>
+         /gravity/<gravity>
+         /dx/<distanceX>
+         /dy/<distanceY>
+```
+
+<a id="text-watermark-params"></a>
+
+| 参数名称                   | 必填 | 说明                                                         |
+| :------------------------- | :--- | :----------------------------------------------------------- |
+| `/text/<encodedText>`      | 是   | 水印文字内容（经过[URL安全的Base64编码](/kodo/manual/appendix#urlsafe-base64)） |
+| `/font/<encodedFontName>`  |      | 水印文字字体（经过URL安全的Base64编码），默认为`方正黑体`，详见支持[字体列表](/dora/kb/11230/image-text-watermarking-support-font-list)<br>**注意：** 中文水印必须指定中文字体。 |
+| `/fontstyle/<fontStyle>`     |      | 水印字体样式（经过URL安全的Base64编码），默认为系统自动选择字体样式，详见支持[字体列表](/dora/kb/11230/image-text-watermarking-support-font-list)。|
+| `/fontsize/<fontSize>`     |      | 水印文字大小，单位: 缇 ，等于1/20磅，默认值是240缇，参考DPI为72。 |
+| `/fill/<encodedTextColor>` |      | 水印文字颜色，RGB格式，可以是颜色名称（例如 red）或十六进制（例如 #FF0000），参考[RGB颜色编码表](http://www.rapidtables.com/web/color/RGB_Color.htm)，默认为黑色。经过URL安全的Base64编码。 |
+| `/dissolve/<dissolve>`     |      | 透明度，取值范围1-100，默认值100（完全不透明）。             |
+| `/gravity/<gravity>`       |      | 水印位置，参考水印位置参数表，默认值为`SouthEast`（右下角）。 |
+| `/dx/<distanceX>`          |      | 横轴边距，单位:像素(px)，默认值为10。                        |
+| `/dy/<distanceY>`          |      | 纵轴边距，单位:像素(px)，默认值为10。                        |
+
+## **使用示例**
+- 水印文本：七牛云
+
+- 水印文本字体：方正黑体
+
+- 水印文本字体大小：400
+
+- 水印文本颜色：gray
+
+  ```
+  https://dora-doc.qiniu.com/gogopher.jpg?watermark/2/text/5LiD54mb5LqR5a2Y5YKo/fontsize/400
+  ```
+
+![文字水印](https://dora-doc.qiniu.com/gogopher.jpg?watermark/2/text/5LiD54mb5LqR/fontsize/400)
+
+
+
+# **文字平铺水印**
+
+## 接口规格
+
+```
+watermark/4
+         /text/<encodedText>
+         /font/<encodedFontName>
+         /fontsize/<fontSize>
+         /fill/<encodedTextColor>
+         /dissolve/<dissolve>
+         /rotate/<rotate>
+         /uw/<unitW>
+         /uh/<unitH>
+         /resize/<resize>
+```
+<a id="pic-watermark-params"></a>
+
+| 参数名称                   | 必填 | 说明                                                         |
+| -------------------------- | ---- | ------------------------------------------------------------ |
+| `/text/<encodedText>`      | 是   | 水印文字内容（经过URL安全的Base64编码）                      |
+| `/font/<encodedFontName>`  |      | 水印文字字体（经过URL安全的Base64编码），默认为`方正黑体`，详见支持[字体列表](/dora/kb/11230/image-text-watermarking-support-font-list)<br>注意：中文水印必须指定中文字体。 |
+| `/fontsize/<fontSize>`     |      | 水印文字大小，单位: 缇，等于1/20磅，[1, 10000), 默认值是240缇，参考DPI为72。 |
+| `/fill/<encodedTextColor>` |      | 水印文字颜色，RGB格式，可以是颜色名称（比如red）或十六进制（比如#FF0000），参考RGB颜色编码表，缺省为黑色. （经过URL安全的Base64编码） |
+| `/dissolve/<dissolve>`     |      | 透明度，取值范围1-100，缺省值100（完全不透明）               |
+| ` /rotate/<rotate>`        |      | 水印文字旋转角度，[-180, 180]， 默认为0。                    |
+| `/uw/<unitW>`              |      | 水印文字填充单元宽度，默认值为100。                          |
+| `/uh/<unitH>`              |      | 水印文字填充单元高度，默认值为100。                          |
+| `/resize/<resize>`         |      | 水印文字填充单元缩放比例，[0.1，10]，默认为1（不缩放）。     |
+
+
+## **使用示例**
+
+- 水印文本：七牛云存储
+
+- 水印文本字体：方正黑体
+
+- 水印文本字体大小：400
+
+- 水印文本颜色：gray
+
+- 水印文本透明度：50% (dissolve=50)
+
+- 水印文字旋转角度: 30
+
+- 水印文字填充单元宽度：180
+
+- 水印文字填充单元高度：180
+
+- 水印文字填充单元缩放比例： 1
+
+  ```
+  https://dora-doc.qiniu.com/gogopher.jpg?watermark/4/text/5LiD54mb5LqR5a2Y5YKo/fontsize/400/fill/Z3JheQ==/dissolve/50/rotate/30/uw/180/uh/180/resize/1
+  ```
+
+
+![文字水印](https://dora-doc.qiniu.com/gogopher.jpg?watermark/4/text/5LiD54mb5LqR5a2Y5YKo/fontsize/400/fill/Z3JheQ==/dissolve/50/rotate/30/uw/180/uh/180/resize/1)
+
+
+<a id="multi-watermark"></a>
+
+# **混合水印**
+
+本接口用于同时在一个原图上打多个不同类型的水印。  
+
+<a id="multi-watermark-spec"></a>
+## 接口规格
+
+```
+watermark/3
+         /text/<textWaterMarkParams1>
+         /image/<imageWaterMarkParams1>
+         /image/<imageWaterMarkParams2>
+         /text/<textWaterMarkParams2>
+         ...
+```
+
+| 参数名称                        | 必填 | 说明                                       |
+| :------------------------------ | :--- | :----------------------------------------- |
+| `/image/<imageWaterMarkParams>` |      | 参考[图片水印参数](#pic-watermark-params)  |
+| `/text/<textWaterMarkParams>`   |      | 参考[文字水印参数](#text-watermark-params) |
+
+**注意：** 
+
+- 省略号表示可以附加多个规格参数。
+- 图片水印与文字水印的规格可以混写，按给定顺序处理。  
+
+
+
+## **使用示例**
+
+- 对原图加上多个混合水印，可以通过多个水印 Params 组合`/image/imageWaterMarkParams`，`/text/textWaterMarkParams` 来实现；示例共添加了6个不同图片和文字水印。
+
+  ```
+  https://dora-doc.qiniu.com/baidi.png?watermark/3
+  	/image/aHR0cHM6Ly9kb3JhLWRvYy5xaW5pdS5jb20veGlhb2ppLnBuZw==/gravity/North/dy/-10/dx/0
+  	/text/5ZCD6L-H54yr5bGx546L77yM5YW25LuW5qa06I6y55qG6Lev5Lq6/gravity/SouthWest/dx/10/dy/180/fontsize/500
+  	/text/5LuF6ZmQN-WkqSAgMjAxOS4wNC4wMS0yMDE5LjA0LjA3/gravity/SouthWest/dx/30/dy/130/fontsize/300
+  	/image/aHR0cHM6Ly9kb3JhLWRvYy5xaW5pdS5jb20vcXVhbi5wbmc=/gravity/SouthWest/dx/80/dy/30
+  /image/aHR0cHM6Ly9kb3JhLWRvYy5xaW5pdS5jb20v5LqM57u056CBLnBuZw==/gravity/SouthEast/dx/10/dy/30
+  	/text/5omr56CB6aKG5Y-W5LyY5oOg5Yi4/gravity/SouthEast/dx/50/dy/10/fontsize/300/fill/UmV
+  ```
+
+![混合水印](https://dora-doc.qiniu.com/baidi.png?watermark/3/image/aHR0cHM6Ly9kb3JhLWRvYy5xaW5pdS5jb20veGlhb2ppLnBuZw==/gravity/North/dy/-10/dx/0/text/5ZCD6L-H54yr5bGx546L77yM5YW25LuW5qa06I6y55qG6Lev5Lq6/gravity/SouthWest/dx/10/dy/180/fontsize/500/text/5LuF6ZmQN-WkqSAgMjAxOS4wNC4wMS0yMDE5LjA0LjA3/gravity/SouthWest/dx/30/dy/130/fontsize/300/image/aHR0cHM6Ly9kb3JhLWRvYy5xaW5pdS5jb20vcXVhbi5wbmc=/gravity/SouthWest/dx/80/dy/30/image/aHR0cHM6Ly9kb3JhLWRvYy5xaW5pdS5jb20v5LqM57u056CBLnBuZw==/gravity/SouthEast/dx/10/dy/30/text/5omr56CB6aKG5Y-W5LyY5oOg5Yi4/gravity/SouthEast/dx/50/dy/10/fontsize/300/fill/UmVk)
+
+<a id="Gradient-watermark"></a>
+# **渐变色水印**
+## 接口规格
+
+```
+watermark/7
+         /ori/<Orientation>
+         /startpos/<StartPosition>
+         /stoppos/<StopPosition>
+         /startclr/<StartColor>
+         /stopclr/<StopColor>
+
+```
+
+## 请求参数详解
+
+| 名称                            | 必填 | 说明                                                         |
+| ------------------------------- | ---- | ------------------------------------------------------------ |
+| `/ori/<orientation>`            | Y    | 渐变色方向，1 (自上而下) 2 (自右向左) 3 (自下而上) 4 (自左向右) |
+| `/startpos/<startPosition>`     | Y    | 渐变开始位置。单位像素（px）, 如 10                          |
+| `/stoppos/<stopPosition>`       | Y    | 渐变结束位置。单位像素（px）, 如 100                         |
+| `/startclr/<encodedStartColor>` | Y    | 开始位置颜色及透明度, 如 #FF0000FF（红色不透明) , 需要经过URL安全的Base64编码 |
+| `/stopclr/<encodedStopColor>`   | Y    | 结束位置颜色及透明度, 如 #FF000000（红色透明）, 需要经过URL安全的Base64编码 |
+
+## **使用示例**
+
+- 渐变色方向：1 (自上而下) 
+
+- 渐变开始位置：0 
+
+- 渐变结束位置：100 
+
+- 开始位置颜色及透明度：#FF0000FF（红色不透明） 
+
+- 结束位置颜色及透明度：#FF000000（红色透明）
+
+  ```
+  https://dora-doc.qiniu.com/gogopher.jpg?watermark/7/ori/1/startpos/0/stoppos/100/startclr/I0ZGMDAwMEZG/stopclr/I0ZGMDAwMDAw
+  ```
+
+![图片渐变水印](https://dora-doc.qiniu.com/gogopher.jpg?watermark/7/ori/1/startpos/0/stoppos/100/startclr/I0ZGMDAwMEZG/stopclr/I0ZGMDAwMDAw)
+
+
+
+# **操作方式**
+
+您可以通过 [同步处理](/dora/api/8266/synchronous-processing)、[持久化处理](/dora/api/1291/persistent-data-processing-pfop)、[图片样式设置](/dora/api/8264/the-picture-style)、[CDN中间源处理](https://developer.qiniu.com/fusion/4954/image-optimization) 等方式，对图片进行处理，详情介绍请参见[图片处理操作方式](/dora/api/8234/the-image-processing1)。
+
+
+

@@ -1,0 +1,29 @@
+`<operation-bar>` 定义仪表盘的操作栏。
+
+### 父元素
+
+* `<dashboard>`
+
+示例：
+
+```
+<operation-bar token="operationBarToken">
+  <!-- 定义dashboard显示的标题，此标签不存在或者值为空时，标题会显示为未命名 -->
+  <title>title</title>
+  <!-- 定义dashboard显示的描述，此标签不存在或者值为空时，描述会显示为未命名 -->
+  <description>description</description>
+
+  <!-- 操作栏中操作集合的初始值 -->
+  <initial-value>
+    <!-- 主题，可以使用operationBarToken.theme访问 -->
+    <theme>light</theme>
+    <!-- 刷新频率，可以使用operationBarToken.refreshInterval访问 -->
+    <refresh-interval>m5</refresh-interval>
+    <!-- 时间，可以使用operationBarToken.time访问 -->
+    <time>
+      <earliest>m5</earliest>
+      <latest>now</latest>
+    </time>
+  </initial-value>
+</operation-bar>
+```

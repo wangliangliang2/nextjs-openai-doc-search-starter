@@ -1,0 +1,27 @@
+# 通过Ext进行手势处理
+
+Ext手势处理提供了多种手势回调，通过对象`mPlayerCore.playerGestureLayer`来添加手势回调。
+
+- 单击事件
+`fun addOnSingleTapListener(
+  ​      listener: OnSingleTapListener,
+  ​      priority: Int = PriorityGestureProcessor.PRIORITY_NORMAL
+    )`
+- 单指双击
+`fun addOnDoubleTapListener(listener: OnDoubleTapListener, priority: Int = PriorityGestureProcessor.PRIORITY_NORMAL)`
+- 两指双击
+`fun addOnTwoFingerDoubleTapListener(listener: OnTwoFingerDoubleTapListener, priority: Int = PriorityGestureProcessor.PRIORITY_NORMAL)`
+- 缩放
+`fun setResizableGestureListener(listener: OnResizableGestureListener?)`
+- 水平滑动
+`fun setHorizontalScrollListener(listener: HorizontalScrollListener?)`
+- 右边竖直滑动
+`fun setVerticalScrollRightListener(listener: VerticalScrollRightListener?)`
+- 左边竖直滑动
+`fun setVerticalScrollLeftListener(listener: VerticalScrollLeftListener?)`
+- 长按
+`fun addOnLongPressListener(listener: OnLongPressListener, priority: Int = PriorityGestureProcessor.PRIORITY_NORMAL)`
+- 自定义
+`fun setOnTouchListener(listener: OnTouchListener?)`
+
+在播放器销毁前，记得调用`remove`方法移除添加的`listener`。

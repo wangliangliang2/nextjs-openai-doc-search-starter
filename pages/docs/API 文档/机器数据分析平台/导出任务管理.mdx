@@ -1,0 +1,178 @@
+# 1. 接口清单
+
+导出任务管理是 Pandora 2.0 对于导出任务进行创建、删除、更新和查询的管理接口。以下是搜索接口的清单：
+
+1. 创建导出任务：`POST /api/v1/export/task`
+2. 更新导出任务：`PUT /api/v1/export/task/<TaskId>`
+3. 删除导出任务：`DELETE /api/v1/export/task/<TaskId>`
+4. 批量启动、停止导出任务：`PUT /api/v1/export/tasks/status`
+5. 查询导出任务列表：`GET /api/v1/export/task/list?sort=<SortColumn>&order=<asc|desc>&pageNo=<PageNo>&pageSize=<PageSize>&prefix=<prefix>`
+5. 查询导出历史记录列表：`GET /api/v1/export/task/<TaskID>/history?sort=<SortColumn>&order=<asc|desc>&pageNo=<PageNo>&pageSize=<PageSize>&prefix=<prefix>`
+
+
+> 注意：搜索接口的请求格式是json格式，所以请求Header中必须添加 'Content-Type: application/json' 
+
+# 2. 接口描述
+
+## 2.1 创建导出任务
+
+请求路径：`POST /api/v1/export/task`
+
+请求方法：`POST`
+
+请求体示例：
+
+``` json
+{
+    "name": "<导出任务名字>",
+    "spl": "<SPL语句>",
+    "interval": {
+        "type": <"cronDate"|"crontab">,
+        "cronDate": {  // 如果type是cronDate，该字段非空
+            "frequency": "day",
+            "month": "1",
+            "date": "1",
+            "hour": "16",
+            "minute": "0"
+        },
+        "crontab": "*/5 * * * * ?" // 如果type 是 crontab，非空
+    }
+}
+
+```
+
+请求体字段解释：
+
+| 字段名        | 是否必填 | 字段解释                                                     | 默认值                              |
+| ------------- | -------- | ------------------------------------------------------------ | ----------------------------------- |
+| `name `       | 是      | 导出任务名字 | 空                                  |
+| `spl`   | 是       | 导出任务SPL语句        | 无                      |
+| `interval`     | 是       | 导出任务调度信息 |   无                         |
+| `interval.type`     | 是       | 调度方式，crontab或者cronDate                                           |  无 |
+| `interval.crontab` | 否      | 合法的crontab表达式，当interval.type 为 crontab 时候必填                                    | 无                               |
+| `interval.cronDate`        | 否       | 轮询周期配置，当interval.type 为 cronDate 时候必填  |     无             |
+| `interval.cronDate.frequency`        | 否       | 轮询周期类型，"minute"， "hour"， "day"， "weekly"， "month"， "quarter"， "year"   |     day              |
+| `interval.cronDate.date`       | 否      | 轮询周期的日期配置，代表每周或者每月的周期，在代表月份内日期时，32代表月度最后一天 | 1                                  |
+| `interval.cronDate.month`   | 否       | 轮询周期的月份配置，代表季度中某各月份，或者年度中某个月份        | 1                      |
+| `interval.cronDate.hour`   | 否       |  轮询周期的小时配置，24小时制        | 0                      |
+| `interval.cronDate.minute`   | 否       | 轮询周期的分钟配置       | 0                      |
+
+
+响应体示例：
+
+``` json
+{}
+```
+
+响应为200的时候即为创建仓库成功
+
+## 2.2 编辑导出任务
+
+
+请求路径：`PUT /api/v1/export/task/<任务ID>`
+
+请求方法：`PUT`
+
+请求体：和创建导出任务时候一致，参考 2.1 。
+
+返回值为200则更新成功
+
+
+
+## 2.3 删除导出任务
+
+
+请求路径：`DELETE /api/v1/export/task/<TaskId>`
+
+请求方法：`DELETE`
+
+请求体：空
+
+返回值为200则删除成功
+
+
+
+## 2.4 批量启动、停止导出任务
+
+
+请求路径：`PUT /api/v1/export/tasks/status`
+
+请求方法：`PUT`
+
+请求体示例：
+
+```json
+{
+    "tasks": ["任务id1", "任务id2"],
+    "status": <"running"|"stopped">,  // 目标状态 running 代表运行，stopped 代表停止
+}
+```
+
+返回200则证明启动或者停止成功。
+
+
+## 2.5 查询导出任务列表
+
+请求路径：`GET /api/v1/export/task/list?sort=<SortColumn>&order=<asc|desc>&pageNo=<PageNo>&pageSize=<PageSize>&prefix=<prefix>`
+
+请求方法：`GET`
+
+
+返回体示例：
+
+```json
+{
+	"total": 1,      // total,pageNo,pageSize 为分页信息
+	"pageNo": 1,
+	"pageSize": 10,
+	"tasks": [{
+		"id": "addf081a-91c1-4334-b1aa-8e304a09b713",                 // 任务ID
+		"name": "jucncheng",                                           // 任务名字
+		"description": null,
+		"operations": ["create", "edit", "list", "share", "delete"],    // 任务的对象权限
+		"spl": "*",
+		"owner": "pandora@qiniu.com",                                  // 任务创建者
+		"interval": {                                                   // 任务调度信息和创建的时候信息相同
+			"type": "cronDate",
+			"cronDate": {
+				"frequency": "year",
+				"month": 1,
+				"date": 1,
+				"hour": 16,
+				"minute": 1
+			}
+		},
+		"status": "running",                              // 任务状态 运行或者停止
+		"count": 0,                                       // 运行次数
+		"updateTime": 1616497386218,                      // 上次更新配置时间
+		"createTime": 1616497386218,                      // 创建任务时间
+		"lastRunTime": -1                                 // 上次运行任务时间，-1 代表没有运行
+	}]
+}
+```
+
+
+
+## 2.6 查询导出历史记录列表
+
+请求路径：`GET /api/v1/export/task/<TaskID>/history?sort=<SortColumn>&order=<asc|desc>&pageNo=<PageNo>&pageSize=<PageSize>&prefix=<prefix>`
+
+请求方法：`GET`
+
+返回体示例：
+
+```json
+{
+	"total": 1,                //  total, pageNo, pageSize 是分页信息
+	"pageNo": 1,
+	"pageSize": 10,
+	"histories": [{
+		"taskId": "41e2019f-bbad-401a-aa9a-2e3635c546b3",    // 任务ID
+		"count": 1,                                          // 运行批次
+		"time": 1612008480014,                               // 运行时间
+		"status": "success",                                 // 运行状态
+		"message": null,                                     // 运行日志
+		"tookMillis": 2773                                   // 运行耗时
+	}]
+}
+```

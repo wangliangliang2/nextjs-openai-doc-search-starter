@@ -1,0 +1,39 @@
+针对 `key` 指定的字段通过正则匹配获取标签和id。 
+
+* 要进行 Transform 变化的键(`key`): 必填项。指定要进行正则匹配的数据所在字段，支持多级嵌套，多级间用 *.* 符号连接，匹配结果放入`key_tag`和`key_id`中，若匹配多个，则第一个放入`key_tag`和`key_id`中，第二个放入`key_tag1`和`key_id2`中，以此类推。如`abc.xyz`，表示 `data["abc"]["xyz"]`中的数据，匹配单个时结果存入`data["abc"]["xyz_tag"]`和`data["abc"]["xyz_id"]`。
+
+* 正则匹配文件路径(`regex_match_path`): 必填项。指定正则匹配文件所在的路径，要求文件中每行中分隔符为空格(" ")分割等等，以tag id regex写入，例如: `DAY 2 (?:Mon(?:day)?|Tue(?:sday)?|Wed(?:nesday)?|Thu(?:rsday)?|Fri(?:day)?|Sat(?:urday)?|Sun(?:day)?)`。匹配时按文件顺序进行匹配。 
+
+* 启用线程数(`routine_number`): 可选项。默认为机器的核数。也可指定启用的线程数，小于等于`0`时为默认值。
+
+* 匹配多个规则，获得标记多个tag和id(`match_multiple`): 可选项。默认匹配一个，按顺序匹配到第一个符合规则的就结束。
+￼
+我们来看一个实际调用 regexmatch 转换器的例子，示例配置如下所示：
+
+![](https://dn-odum9helk.qbox.me/Foe_4Kvj15zr2yQKZbrsHRwB4Gtu)
+
+我们的样例日志已经包含了1个字段，如下所示
+
+```
+ "myKey": "03/Jul/2016:00:36:53 +0800"
+```
+
+正则匹配的文件如下：
+
+```
+HTTPDATE 0 (?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9])/(\b(?:[Jj]an(?:uary|uar)?|[Ff]eb(?:ruary|ruar)?|[Mm](?:a|ä)?r(?:ch|z)?|[Aa]pr(?:il)?|[Mm]a(?:y|i)?|[Jj]un(?:e|i)?|[Jj]ul(?:y)?|[Aa]ug(?:ust)?|[Ss]ep(?:tember)?|[Oo](?:c|k)?t(?:ober)?|[Nn]ov(?:ember)?|[Dd]e(?:c|z)(?:ember)?)\b)/((\d\d){1,2}):(([^0-9]?)(?:2[0123]|[01]?[0-9]):(?:[0-5][0-9])(?::(?:(?:[0-5]?[0-9]|60)(?:[:.,][0-9]+)?))([^0-9]?)) (?:[+-]?(?:[0-9]+))
+LOGLEVEL 1 ([Aa]lert|ALERT|[Tt]race|TRACE|[Dd]ebug|DEBUG|[Nn]otice|NOTICE|[Ii]nfo|INFO|[Ww]arn?(?:ing)?|WARN?(?:ING)?|[Ee]rr?(?:or)?|ERR?(?:OR)?|[Cc]rit?(?:ical)?|CRIT?(?:ICAL)?|[Ff]atal|FATAL|[Ss]evere|SEVERE|EMERG(?:ENCY)?|[Ee]merg(?:ency)?)
+DAY 2 (?:Mon(?:day)?|Tue(?:sday)?|Wed(?:nesday)?|Thu(?:rsday)?|Fri(?:day)?|Sat(?:urday)?|Sun(?:day)?)
+ALL 3 (\s\S)*
+```
+
+文件中每一行对应一个规则，每行中以 tag id regex 写入（分隔符为空格）。
+
+默认匹配多个规则为 false，所以匹配第一个符合的规则（此时tag为 HTTPDATE） 即返回结果。
+
+如果将默认匹配多个规则设置为 true，示例配置如下所示：
+
+![](https://dn-odum9helk.qbox.me/Fpu4niYuTmVYHUvtjiBkdIbGfegs)
+
+正则匹配文件不变，此时匹配文件中所有的行，匹配所有符合的规则（此时tag为 HTTPDATE 和 ALL）。
+

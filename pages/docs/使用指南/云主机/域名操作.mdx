@@ -1,0 +1,34 @@
+# 添加、编辑域名
+
+## 1. 添加域名
+![截屏2021-05-11 下午3.00.53.png](https://dn-odum9helk.qbox.me/FjMV4CG-cB7wJIjvzCaROKRu0CPM)
+<br>
+![添加域名.png](https://dn-odum9helk.qbox.me/FkbEEDs_vxqaasyGW5lP7TZe793h)
+
+### 域名要求
+- 支持使用精确域名（例如，www.qiniu.com）和泛域名（例如，\*.qiniu.com）格式。具体说明如下：
+使用泛域名后，WAF将自动匹配该泛域名对应的所有子域名（例如，\*.qiniu.com能够匹配www.qiniu.com、test.qiniu.com等）。
+- 如果同时存在泛域名和精确域名配置，则精确域名的转发规则和防护策略优先生效。
+- 暂不支持添加.edu域名。
+
+### 协议及端口说明
+- 协议支持 HTTP 和 HTTPS
+- 支持多个非标端口，可配置端口支持模糊搜索查询
+![截屏2021-05-11 下午3.17.35.png](https://dn-odum9helk.qbox.me/FgWo_k_iAyCZPkphCWZ7u3chRbzQ)
+
+## 2. 编辑域名
+和添加域名的操作基本一致，但无法修改当前域名。
+![截屏2021-05-11 下午3.21.05.png](https://dn-odum9helk.qbox.me/FjinOTL6Sxnv6BVeCJRF9PMlv78c)
+
+## 3. 删除域名
+删除域名将会导致所有关于该域名的防护配置失效，且防护配置无法备份还原。
+![截屏2021-05-11 下午3.21.05.png](https://dn-odum9helk.qbox.me/FlgHgWR9e4QbPmQN1s6CE78N1F-_)、
+
+## 4. 切换WAF开关
+可以通过切换WAF开关调节单个域名的防护状态，一旦域名的WAF状态处于关闭，则所有该域名的防护配置都无法生效。
+![截屏2021-05-11 下午3.21.05.png](https://dn-odum9helk.qbox.me/FlNMwKYTFhZyHe7AP1g0L8ZQXL7D)
+
+## 5. 上传证书
+对于开启HTTPS协议的域名，需要上传有效证书及私钥信息。
+![截屏2021-05-11 下午3.21.05.png](https://dn-odum9helk.qbox.me/FkofDBp6jWj0h1jty85UmzcKY8hT)
+![截屏2021-05-11 下午3.30.40.png](https://dn-odum9helk.qbox.me/Fl9924tEQzuJLZvOL99aZPE6FOtu)

@@ -1,0 +1,88 @@
+# http抓包
+
+借助一个叫 Charles 的工具，下载地址：https://www.charlesproxy.com/download/ , 监测 HTTP 请求。<br/>
+在 “设置”-“无线局域网络” 里可以直接设置代理。
+1. 下载 Charles，安装完成后打开软件
+通过菜单上的 “Proxy”-“Proxy Settings…”，进入代理设置界面
+“Port” 填默认的 “8888” 即可，勾选 “Enable transparent HTTP proxying”，点 “OK” 确认。
+2. 设置手机的代理，端口（Port）写 Charles 中的端口设置，即 “8888”，IP 填你 PC 的 IP 地址
+如何查看 PC 的 IP 地址？
+通过命令行工具输入 ipconfig 即可。
+3. 用手机发起任意 HTTP 请求，Charles 会弹出一个提示框，点 “Allow”，好了 HTTP 请求都出现在 Charles 里了
+全选所有请求，并选择右侧的 “Chart” 选项卡就能看到整个 HTTP 请求瀑布图了。
+
+# https抓包
+
+## 1、安装 Charles 的 Root 证书到系统。
+
+![](https://dn-odum9helk.qbox.me/FiO3bhE5tJcIYL_sbb2hb1WyhD8W?imageView2/2/w/600)
+![](https://dn-odum9helk.qbox.me/FgC1Cqg7psXejWdDJmS7aujt6LRI?imageView2/2/w/400)
+
+## 2、在 KeyChain 的工具中，查找这个证书，并选择 “Get Info”，然后设置信任证书：
+![](https://dn-odum9helk.qbox.me/FqrvVrO7MFi_yloTFB7X4664rz-E?imageView2/2/w/400)
+![](https://dn-odum9helk.qbox.me/Fr0KRm9XljX29bXoN3ChrpBQcBUA?imageView2/2/w/400) 
+<br/>
+给手机安装证书
+打开Charles，在Menu选择Help > SSL Proxying > Install Charles Root Certificate on a Mobile Device or Remote Browser，弹出提示框，如图： 
+<br/>
+如果是手机的话，需要安装一个证书到系统中，从这里下载：http://www.charlesproxy.com/getssl <br>
+如果是 Android，则从 “系统设置” 里面搜索 “证书”，会有类似界面弹出 
+<br/>
+![](https://dn-odum9helk.qbox.me/FoD_VnwoHpV_wDpyDCllXAHir7I9) 
+<br/>
+安装提示进行配置，需要注意的是192.168.0.101是演示的IP，你要改成你自己的IP地址。IP配置之后用手机浏览器打开http://charlesproxy.com/getssl 下载证书。如果是Android设备，选择设置->从储存设备安装。 
+<br/>
+然后，进去选择 “安装证书”，然后从系统里面找到下载的证书，安装即可。<br>
+如果是 iOS 的话，直接在手机上用 Safari 打开链接：http://www.charlesproxy.com/getssl 会自动跳转到安装界面，安装完成之后，可以在 “通用”->“描述文件与设备管理” 里面看到它。  
+<br/>
+![](https://dn-odum9helk.qbox.me/Fl0qK1LKI3ddGCeVUU_99le9pCsB?imageView2/2/w/300)
+![](https://dn-odum9helk.qbox.me/FtZi9vTVaUNzGCKHVDbwsHZ2AuKz?imageView2/2/w/300)
+
+## 3、设置 Charles 参数，从菜单 “Proxy”->“Proxy Settings” 里面设置代理端口信息：
+<br/>
+![](https://dn-odum9helk.qbox.me/FhaaeLQbglnxmQJcEQakDxgFWKXz?imageView2/2/w/800) 
+<br/>
+然后，从菜单 “Proxy”->“SSL Proxy Settings” 里面添加需要代理的 Host：
+<br/>
+![](https://dn-odum9helk.qbox.me/Fo0bDWSDZBbn3VsNvl6ECpa2vdff?imageView2/2/w/800) 
+<br/>
+从手机上设置代理到电脑，就可以看到 https 的请求了。 
+<br/>
+![](https://dn-odum9helk.qbox.me/Fu_RDVQZ6wsOyfSNCZkEppFqoMFP?imageView2/2/w/300)
+![](https://dn-odum9helk.qbox.me/FvzrO3YHxkkAmbMRgIFJNwp5TRwV?imageView2/2/w/500)
+
+# Window配置
+ Windows 系统下面的设置略有一些不同
+## 1、安装证书
+从菜单打开 "证书" 属性页：[Help]-[SSL Proxing]->[Install Charles Root Certificate] 
+<br/>
+![](https://dn-odum9helk.qbox.me/FroSOiqXRbKPV4pJJbl2T9aXWuwu?imageView2/2/w/300)
+![](https://dn-odum9helk.qbox.me/FhGOm5PfDuKbXHIS1lZ-ubAxgvo2?imageView2/2/w/300)  
+<br/>
+安装证书 
+<br/>
+![](https://dn-odum9helk.qbox.me/FsEvLymn-Pmdzqxy_i_CzvcmkEDu?imageView2/2/w/300)
+![](https://dn-odum9helk.qbox.me/FhSV23Q_eH-QmbHlVO54jw26C5Zu?imageView2/2/w/300) 
+<br/>
+设置证书存储 
+<br/>
+![](https://dn-odum9helk.qbox.me/FvnJiGeyykolC93jgBZnc8-UGPXT?imageView2/2/w/300)
+![](https://dn-odum9helk.qbox.me/Fvwr-T0ckk_Ng-455yTNBeSTNEIe?imageView2/2/w/300) 
+<br/>
+弹出提示，选择是 
+<br/>
+![](https://dn-odum9helk.qbox.me/FtVKITTkwQomILjGmAR4V8N5Bwvl?imageView2/2/w/600)
+
+## 2、添加 SSL Proxy Locations
+ 
+从菜单打开 SSL Proxy 设置：[Proxy]->[SSL Proxying Settings...] 
+<br/>
+![](https://dn-odum9helk.qbox.me/FsAOrMPOZOU3QHvwH5K6Mj_3kKU9?imageView2/2/w/600) 
+<br/>
+添加 "Locations"：
+<br/>
+![](https://dn-odum9helk.qbox.me/Fggbbsu-kuZoCIShCa_h2zkorm4D?imageView2/2/w/600) 
+<br/>
+或者在抓包列表（[Structure]）的链接上右键 [Enable SSL Proxying]，它会被自动添加到上图显示的 "Locations" 里面 
+<br/>
+![](https://dn-odum9helk.qbox.me/FgKd7E7aFNzfVufY8L-hfKzPISYz?imageView2/2/w/600)

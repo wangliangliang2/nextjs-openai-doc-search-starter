@@ -1,0 +1,42 @@
+# 编辑模板 (PUT Template)
+
+审核不通过的情况下才可以重新编辑模板，已经审核通过的模板无法重新编辑。
+
+## 请求定义
+
+```
+PUT /v1/template/:id HTTP/1.1
+Host: sms.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+```
+
+### 请求头
+
+> 请参考 [请求认证](/sms/api/5842/sms-api-authentication)
+
+### 请求数据
+
+该接口定义以下请求数据:
+
+```json
+{
+    "name": string,
+    "template": string,
+    "description": string,
+    "signature_id": string
+}
+```
+
+参数名称 | 类型 | 必填 | 说明
+--------|------|------|------
+name | string | 是 | 模板名称
+template | string |是 | 模板内容
+description | string | 是 | 申请理由简述
+signature_id| string | 是 | 已经审核通过的签名
+
+## 响应定义
+
+### 该接口正确处理请求时返回 HTTP 状态码
+
+- 服务器端正确处理请求时响应 HTTP 状态码 200

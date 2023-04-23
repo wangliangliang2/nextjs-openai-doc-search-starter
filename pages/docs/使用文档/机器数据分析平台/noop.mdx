@@ -1,0 +1,85 @@
+`noop` 指令用于对当前 query 的执行计划, 优化器等配置选项进行动态调整。
+
+## 语法
+
+```spl
+*|noop <kwarg-list>
+```
+
+`<kwarg-list>`:  `<key>=<value>` 键值对，多个键值对之间用空格分隔。
+
+> noop 算子目前只能放在 spl 查询语句的末尾处。
+> noop 中所有选项，均可在 pandora 配置文件中进行全局配置（需要增加 phoenix.matrix.前缀）, 可以先通过 noop 指令确认配置是否合适, 再调整配置文件进行全局配置。
+### 调度相关参数
+
+- `scheduler.nodes.require.<attr>="<value1>, <value2> ..."`：task 可调度节点 attribute 匹配条件, 多个值必须同时满足。支持通配符, 多个值之间用 "," 号隔开。
+
+- `scheduler.nodes.include.<attr>="<value1>, <value2> ..."`：task 可调度节点 attribute 匹配条件, 多个值有一个满足即可。支持通配符, 多个值之间用 "," 号隔开。
+
+- `scheduler.nodes.exclude.<attr>="<value1>, <value2> ..."`：task 可调度节点 attribute 匹配条件, 不能包含任一一个值。支持通配符, 多个值之间用 "," 号隔开。 
+
+- `scheduler.root_stage_prefer_local=<bool>`：root stage 是否倾向于调度到当前协调者节点执行，默认值为`true`。
+
+> 在 pandora 配置文件中, 可通过该配置为节点配置 attributes.
+>     node.attr.<name>："<value>"
+> 除此之外, 每个节点都有一些内置的 attributes, 可作为任务调度的匹配条件
+> - _name: 节点名称
+> - _ip: 节点的 ip 地址
+> - _host: 节点 hostname
+### 任务相关参数
+
+- `stage.parallel=<int>`：stage 分布式(节点间)并行度。stage 的真实并行度取 min(节点数量, stage.parallel)。参数值取决于配置文件，默认值为 `100`。
+
+- `task.parallel=<int>`：task 节点内的并行度。如果 task 在节点内可并行计算, 则根据该指定的并行度进行节点内的并行计算。参数值取决于配置文件，默认值为 `8`
+
+- `task.source_parallel=<int>`：需读取数据源的 task 节点内的并行度，默认为 min(cores, splits count)。参数值取决于配置文件，默认值为 `min(cores, splits count)`
+
+- `task.lazy`：是否惰性执行任务。`task.lazy=<bool>`，默认为 `true`。
+
+> - 惰性任务: 每个 Stage 的 Task 调度到 work node 后, 不立即执行, 而是延迟执行时机直到上游 Stage 对其进行数据访问时执行
+    - 对于 join: 直到右表构建完毕后, 左表的计算任务才开始执行
+    - 对于 append: 每个 child stage 按先后顺序, 直到前一个 stage 执行完毕 (具体来说是其中的一个 partition 执行完毕时), 下一个 stage 才开始执行
+> - 非惰性任务: 每个 Stage 的 Task 调度到 work node 后立即执行, 针对延迟敏感的场景, 需要消耗更多资源; 另外过度的并行也可能造成系统过载, 降低性能
+
+### exchange 相关参数
+
+- `exchange.sort_merge_enabled=<bool>`：全局排序时，是否开启 exchange 归并排序。参数值取决于配置文件，默认值为 `true`。
+
+- `exchange.aggregate_merge_prefer_distributed=<bool>`：聚合计算的 merge 阶段是否倾向于分布式并行执行。参数值取决于配置文件，默认值为 `false`，设置为 `true` 表示允许聚合计算的 merge 阶段分布式并行。
+
+- `exchange.local_repartition_enabled=<bool>`：是否允许节点内 repartition 并行。参数值取决于配置文件，默认值为 `true`。
+
+- `exchange.source_local_repartition_enabled=<bool>`：是否开启数据源数据节点内自动 repartition。参数值取决于配置文件，默认值为 `false`。
+
+- `exchange.consumer_buffer_capacity=<int>`：exchange 消费端 buffer 限制。参数值取决于配置文件，默认值为 `64`。
+
+- `exchange.remote_producer_buffer_capacity=<int>`：分布式 exchange 生产端 buffer 限制。参数值取决于配置文件，默认值为 `64`。
+
+- `exchange.local_producer_buffer_capacity=<int>`：节点内 exchange 生产端 buffer 限制。参数值取决于配置文件，默认值为 `64`。
+
+### 优化器相关配置
+
+- `optimizer.enforce_limit_enabled=<bool>`：是否开启 EnforceLimitRule 优化器。参数值取决于配置文件，默认值为 `true`。
+
+### Profiling相关配置
+
+- `exec.profile_enabled=<bool>`：是否开启算子的 profiling 功能，记录执行算子执行过程的耗时，行数，数据量等信息。参数值取决于配置文件，默认值为 `false`。
+
+## 示例
+
+限制数据源节点的计算并行度.
+
+```spl
+search2 repo="demo" 
+| stats count() by f1
+| noop task.source_parallel=1
+```
+
+所有子查询并行执行.
+
+```spl
+search2 repo="demo" 
+| join type="inner" f1 [ search2 repo="demo2" ]
+| join type="inner" f2 [ search2 repo="demo3" ]
+| noop task.lazy=false
+```

@@ -1,0 +1,35 @@
+referer防盗链是基于获取HTTP请求中的 referer header，根据 referer 跟踪来源，对来源进行识别和判断，您可以登录**七牛开发者平台**选择**CDN控制台**，进行referer 黑白名单的配置，从而限制访问来源，避免恶意用户盗刷。
+
+# 功能说明
+
+referer防盗链默认为关闭状态，开启后可以进行referer黑白名单的配置。
+
+* 白名单：请求的referer字段匹配白名单设置的内容，则 CDN 节点正常返回请求信息，若不匹配，CDN 节点拒绝返回该请求信息，返回状态码 403。
+
+* 黑名单：请求的referer不匹配黑名单内设置的内容，则 CDN 节点正常返回请求信息，若匹配，CDN 节点拒绝返回该请求信息，返回状态码 403。
+
+* 是否允许空referer：当选择允许空referer时，此时若请求referer字段为空或无referer字段 CDN 节点正常返回请求信息；若不允许，此时若请求referer字段为空或无referer字段 CDN 节点拒绝返回该请求信息，会直接返回状态码 403。
+
+
+
+# 操作说明
+1、登录**七牛开发者平台**后，进入**CDN控制台**，选择【域名管理】，点击【配置】。
+<img src="https://dn-odum9helk.qbox.me/Fr29HEF4Y0J1NHYmOWW1SkjcyUFD" width=600></img>
+
+2、进入域名配置界面，**访问控制**模块下的**referer防盗链**点击【修改配置】进行referer防盗链的配置。
+<img src="https://dn-odum9helk.qbox.me/FiykQD58v_0Ic9vns-POMjK6yNsZ" width=600></img>
+
+3、开启防盗链配置，选择黑白名单，输入访问的来源域名。
+<img src="https://dn-odum9helk.qbox.me/FlObMjmuf13uq3JbE4oPRHXZgGfe" width=600></img>
+
+**注意事项**
+
+（1） 域名之间请回车换行，无需填写 http://，https://；
+
+（2）支持域名前使用通配符 ：*.example.com 可用于指代所有 example.com 下的多级子域名，比如 a.example.com 等，但是不包括 example.com，如需要请额外填写一条 example.com；
+
+（3）防盗链个数设置不能超过100个；
+
+（4）黑白名单生效时间为 1 小时，在此期间不能修改其它配置；
+
+（5）不支持 IP，不支持端口号。

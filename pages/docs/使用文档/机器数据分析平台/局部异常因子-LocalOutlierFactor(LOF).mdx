@@ -1,0 +1,62 @@
+LOF算法通过计算给定数据点相对于其邻近点的局部密度偏差来反映一个样本的异常程度。如果该数据点所在位置的密度明显小于其周围样本所在位置的密度，这个点就有可能是异常点。*如果需要做离群点检测（Outlier Detection），在没有很明确的偏好算法的情况下，建议可以使用局部异常因子（LOF）来得出初步的异常检测模型。* 
+
+
+**语法：**
+```
+...|fit LocalOutlierFactor n_neighbors=<int> algorithm=<auto (default)| ball_tree | kd_tree | brute> metric=<str> contamination=<auto | float> novelty=<True | False> <feature_field_1> <feature_field_2> [into model_name]... 
+```
+
+**参数说明：**
+- n_neighbors用来指定K-neighbors里K（邻居）的数量。若不提供，默认为20。
+- algorithm用来指定用来计算最近邻居的算法
+	+ algorithm=ball_tree，使用BallTree
+	+ algorithm=kd_tree，使用KDTree
+	+ algorithm=brute，使用暴力算法
+	+ algorithm=auto（默认值），尝试用实际fit的数值决定最适合的算法
+- metric用来指定计算邻居间距离的方法，根据algorithm不同，适用的metric方法也有不同，可以匹配的metric可参考[Sci-kit Learn支持的距离衡量方法](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.DistanceMetric.html)。
+	+ algorithm=ball_tree的情况下，比较常用的metric有：
+		- cityblock，使用曼哈顿距离（～metric=l1, metric=manhattan)
+		- euclidean，使用欧式距离（～metric=l2）
+		- l2，使用欧式距离（～metric=euclidean）
+		- l1，使用曼哈顿距离（～metric=cityblock, metric=manhattan)
+		- manhattan，使用曼哈顿距离（～metric=l1, metric=cityblock)
+		- chebyshev, 使用切比雪夫距离
+		- cosine，使用余弦相似度
+		- mahalanobis，使用马氏距离
+		- minkowski（默认值），使用闵氏距离，*必须同时提供p参数*
+		- infinity，使用无限距离
+
+	+ algorithm=kd_Tree，比较常用的metric有：
+		- cityblock，使用曼哈顿距离（～metric=l1, metric=manhattan)
+		- euclidean，使用欧式距离（～metric=l2）
+		- l2，使用欧式距离（～metric=euclidean）
+		- l1，使用曼哈顿距离（～metric=cityblock, metric=manhattan)
+		- manhattan，使用曼哈顿距离（～metric=l1, metric=cityblock)
+		- chebyshev, 使用切比雪夫距离
+		- cosine，使用余弦相似度
+		- minkowski（默认值），使用闵氏距离，*必须同时提供p参数*
+		- infinity，使用无限距离
+
+	+ algorithm=brute的情况下，比较常用的metric有：
+		- cityblock，使用曼哈顿距离（～metric=l1, metric=manhattan)
+		- euclidean，使用欧式距离（～metric=l2）
+		- l2，使用欧式距离（～metric=euclidean）
+		- l1，使用曼哈顿距离（～metric=cityblock, metric=manhattan)
+		- manhattan，使用曼哈顿距离（～metric=l1, metric=cityblock)
+		- chebyshev, 使用切比雪夫距离
+		- cosine，使用余弦相似度
+		- mahalanobis，使用马氏距离
+		- minkowski（默认值），使用闵氏距离
+		- seuclidean，使用平方欧式距离
+
+- contaminaiton用来指定训练集中异常数据的比例
+	- contamination=auto（默认），自动设定异常值比例。
+	- contamination是一个float，必须要在[0,0.5]之间。在contamination=0的情况下，Novelty自动设为True，即主动更改成新颖性检测。
+- novelty用来指定是否用来做新颖性检测
+	- novelty=False（默认），不用于新颖性检测，*不支持模型保存*
+	- novelty=True，用于新颖性检测，*支持模型保存*。
+	- 建议在使用novelty=True的时候，把contamination值设为0或者不提供。但如果想要在假设训练集受污染的特殊情况下使用新颖性检测，也可同时使用contamination和novelty。
+- p用来指定metric=minkowski的情况下的p参数。若不提供，则默认为2。p必须为正整数。
+	- p=1，约等于使用曼哈顿距离（l1）
+	- p=2（默认值），约等于使用欧式距离（l2）
+	- p=其他正整数，即使用L-p的闵氏距离

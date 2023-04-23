@@ -1,0 +1,10 @@
+# 关于上传
+七牛目前只支持一个请求上传一个文件，所以一次上传多个文件的话，就等同于一次发送多个请求，七牛不支持。 
+
+# 七牛提供如下解决方案：  
+- 服务端，在上传的业务逻辑里加个循环  
+- 客户端，使用七牛提供的js sdk 实例：https://js-sdk-demo.qiniu.io/
+
+# 批量上传工具
+- [同步上传Windows客户端](https://developer.qiniu.com/kodo/tools/qsunsync)
+- [命令行工具](https://developer.qiniu.com/kodo/tools/qshell)

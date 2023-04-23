@@ -1,0 +1,24 @@
+使用`<event>`元素可以通过设置搜索条件、时间等渲染出日志搜索结果，但不允修改搜索条件等。
+
+### 子元素
+
+|元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<search>`|设置日志的搜索条件，详见[`<search>`](/express/extend/6574/search-label)元素|无|
+|`<document-type>`|设置日志搜索结果展示形式， 详解参见[`<document-type>`](/express/extend/6572/event-search)元素|document|
+|`<fields>`|设置选中的感兴趣字段，详解参见[`<fields>`](/express/extend/6572/event-search)元素|无|
+|`<hide-timeline>`|是否隐藏该页面里的 timeline 模块|false|
+|`<hide-schema-selector>`|是否隐藏该页面里的 感兴趣字段模块|false|
+
+示例
+
+```
+<event>
+  <search>
+    <query>sourcetype=*</query>
+    <earliest>-30m</earliest>
+  </search>
+  <document-type>json</document-type>
+  <fields>['_time', 'host']</fields>
+</event>
+```

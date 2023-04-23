@@ -1,0 +1,53 @@
+请求凭证是用于Linking服务的授权，通过授权客户端，使其具备访问服务的能力。访问 API 需要带一个合法的凭证。不带凭证或带非法凭证的请求将返回 HTTP 错误码 401，代表认证失败。
+
+## 凭证在header中
+每一个API请求均需在 HTTP 请求头部增加一个 Authorization 字段，其值为符合[管理凭证](https://developer.qiniu.com/kodo/manual/1201/access-token)的字符串，形式如下：
+```
+GET /v1/apps/<appid>/devices/<encodeDeviceName> HTTP/1.1
+Host: linking.qiniuapi.com
+Content-Type: application/x-www-form-urlencoded
+Authorization: <QiniuToken>
+```
+
+`<QiniuToken>`:管理凭证，用于鉴权。
+
+**生成管理凭证：**
+```
+// 构造待签名的 Data
+// 1. 添加 Path
+data = "<Method> <Path>"
+// 2. 添加 Query，前提: Query 存在且不为空
+if "<RawQuery>" != "" {
+        data += "?<RawQuery>"
+}
+// 3. 添加 Host
+data += "\nHost: <Host>"
+// 4. 添加 Content-Type，前提: Content-Type 存在且不为空
+if "<Content-Type>" != "" {
+        data += "\nContent-Type: <Content-Type>"
+}
+// 5. 添加回车
+data += "\n\n"
+// 6. 添加 Body，前提: Content-Length 存在且 Body 不为空，同时 Content-Type 存在且不为空或 "application/octet-stream"
+bodyOK := "<Content-Length>" != "" && "<Body>" != ""
+contentTypeOK := "<Content-Type>" != "" && "<Content-Type>" != "application/octet-stream"
+if bodyOK && contentTypeOK {
+        data += "<Body>"
+}
+// 计算 HMAC-SHA1 签名，并对签名结果做 URL 安全的 Base64 编码
+sign = hmac_sha1(data, "Your_Secret_Key")
+encodedSign = urlsafe_base64_encode(sign)  
+// 将 Qiniu 标识与 AccessKey、encodedSign 拼接得到管理凭证
+<QiniuToken> = "Qiniu " + "Your_Access_Key" + ":" + encodedSign
+```
+[URL 安全的 Base64 编码](https://developer.qiniu.com/kodo/manual/1231/appendix)
+
+**示例：**
+```
+GET /v1/apps/test/devices/dGVzdGRldmljZTE= HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=
+Content-Type: application/x-www-form-urlencoded
+```
+
+

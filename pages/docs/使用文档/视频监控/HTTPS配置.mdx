@@ -1,0 +1,21 @@
+HTTPS 是指超文本传输安全协议（Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure）是一种通过计算机网络进行安全通信的传输协议。HTTPS经由HTTP进行通信，但利用SSL/TLS来加密数据包。HTTPS开发的主要目的，是提供对网站服务器的身份认证，保护交换数据的隐私与完整性。配置 HTTPS 时，需要您提供域名对应的证书，实现全网数据加密传输功能。
+
+# **HTTPS配置**
+### **操作说明**
+**请注意，由于HTTPS功能需要您提供域名及对应的证书，实现全网数据加密传输功能，所以仅适用于空间模式为“静态地址”类型的空间。**
+1.登录[七牛开发者平台](https://sso.qiniu.com/?client_id=PIapUKqa3u6S24H868BelwrG0OFu8dS7AxVQ8oz8HznLXhgrl2BnjaO9cs9LzxK2&redirect_url=https:%2F%2Fportal.qiniu.com%2Fapi%2Fgaea%2Fsso%2Fsignin%3Fredirect%3D%252Fcreate)。
+2.选择**视频监控**产品，进入产品控制台，选择**空间管理**，进入空间管理页面。
+3.**空间管理**中，点击**配置**，进入空间配置页面。
+4.选择**域名管理**，进入域名管理页面，如无此模块，说明此空间为动态地址模式的空间不支持HTTPS功能，需要创建一个静态模式的空间并进行域名的解析配置后再进行以下步骤。[【新建空间及域名配置参考】](https://developer.qiniu.com/qvs/6784/namespace-management)
+5.域名列表中HLS拉流、FLV拉流、Webrtc拉流类型的域名点击**配置**可以对域名进行HTTPS相关配置。
+![](https://dn-odum9helk.qbox.me/Fp4bBGUUV1weXVSeSMndtMZ45PXH)
+6.选择HTTPS配置，点击**修改**开始进行配置。
+![](https://dn-odum9helk.qbox.me/FsCo0ZWdrZpFmopc9qcOfqTVDyq7)
+![](https://dn-odum9helk.qbox.me/Fr7S09c8qXmt-hehQAFaZFvbyiLA)
+7.初次配置该域名时,尚无可用的证书.需要先进入[证书管理页面](https://portal.qiniu.com/certificate/ssl),完成对应的证书配置后，重新回到上面截图中所在的界面,刷新后可选择对应的证书,点击**保存**完成HTTPS配置。
+**说明：**
+1.若无证书时, 用户可以点击【购买证书】,其中有[免费证书](https://developer.qiniu.com/fusion/kb/3725/how-to-apply-for-and-use-free-certificate)只匹配单域名,也有付费证书可匹配多域名,用户可根据自身场景选择; 同时用户也可以上传自有证书。
+2.配置完证书后，回到qvs的域名配置页面，如果找不到对应的证书，可以刷新一下页面，如还是找不到说明配置的证书与域名不匹配。
+（1）如空间中配置的域名为qvs-live-hls.qiniu.com,那么上传的证书只能是qvs-live-hls.qiniu.com标准域名的证书或者或者*.qiniu.com的证书。
+（2）如果上传的证书为泛域名证书，例如*.qiniu.com,那么该证书只能对abc.qiniu.com、123.qiniu.com类的域名匹配生效，对于123.adc.qiniu.com类的与无法匹配。
+![](https://dn-odum9helk.qbox.me/Fvpa1Njux4ErIZho-hBUgRYsR_fy)

@@ -1,0 +1,933 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>class im.floo.floolib.BMXGroupServiceListener</p>
+                <p>群组变化监听者</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">字段</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#swigCMemOwn`)'>swigCMemOwn</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getCPtr`)'>getCPtr</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#finalize`)'>finalize</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#delete`)'>delete</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#swigDirectorDisconnect`)'>swigDirectorDisconnect</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#swigReleaseOwnership`)'>swigReleaseOwnership</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#swigTakeOwnership`)'>swigTakeOwnership</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onGroupCreate`)'>onGroupCreate</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onGroupListUpdate`)'>onGroupListUpdate</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onGroupJoined`)'>onGroupJoined</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onGroupLeft`)'>onGroupLeft</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onInvitated`)'>onInvitated</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onInvitationAccepted`)'>onInvitationAccepted</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onInvitationDeclined`)'>onInvitationDeclined</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onApplied`)'>onApplied</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onApplicationAccepted`)'>onApplicationAccepted</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onApplicationDeclined`)'>onApplicationDeclined</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onMembersBanned`)'>onMembersBanned</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onMembersUnbanned`)'>onMembersUnbanned</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onMemberJoined`)'>onMemberJoined</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onMemberLeft`)'>onMemberLeft</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onAdminsAdded`)'>onAdminsAdded</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onAdminsRemoved`)'>onAdminsRemoved</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onOwnerAssigned`)'>onOwnerAssigned</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onGroupInfoUpdate`)'>onGroupInfoUpdate</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onMemberChangeNickName`)'>onMemberChangeNickName</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onAnnouncementUpdate`)'>onAnnouncementUpdate</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onSharedFileUploaded`)'>onSharedFileUploaded</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onSharedFileDeleted`)'>onSharedFileDeleted</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onSharedFileUpdated`)'>onSharedFileUpdated</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onBlockListAdded`)'>onBlockListAdded</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onBlockListRemoved`)'>onBlockListRemoved</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onGroupListUpdate`)'>onGroupListUpdate</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#registerGroupService`)'>registerGroupService</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">字段</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="swigCMemOwn">swigCMemOwn</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">protected transient boolean swigCMemOwn</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getCPtr">getCPtr</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+protected static long getCPtr(BMXGroupServiceListener obj);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>long</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="finalize">finalize</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+protected void finalize();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="delete">delete</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public synchronized void delete();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="swigDirectorDisconnect">swigDirectorDisconnect</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+protected void swigDirectorDisconnect();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="swigReleaseOwnership">swigReleaseOwnership</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void swigReleaseOwnership();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="swigTakeOwnership">swigTakeOwnership</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void swigTakeOwnership();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onGroupCreate">onGroupCreate</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onGroupCreate(BMXGroup group);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>多设备同步创建群组</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>新创建的群组</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onGroupListUpdate">onGroupListUpdate</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onGroupListUpdate(BMXGroupList list);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>群列表更新了</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            list: BMXGroupList
+        </div>
+                <p>更新的群组列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onGroupJoined">onGroupJoined</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onGroupJoined(BMXGroup group);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>加入了某群</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>加入的群组</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onGroupLeft">onGroupLeft</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onGroupLeft(BMXGroup group, String reason);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>退出了某群</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>退出的群组</p>
+    </li>
+    <li>
+        <div>
+            reason: String
+        </div>
+                <p>退出原因</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onInvitated">onInvitated</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onInvitated(long groupId, long inviter, String message);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到入群邀请</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            groupId: long
+        </div>
+                <p>邀请进入的群组id</p>
+    </li>
+    <li>
+        <div>
+            inviter: long
+        </div>
+                <p>邀请者id</p>
+    </li>
+    <li>
+        <div>
+            message: String
+        </div>
+                <p>邀请原因</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onInvitationAccepted">onInvitationAccepted</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onInvitationAccepted(BMXGroup group, long inviteeId);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>入群邀请被接受</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>邀请被同意的群组</p>
+    </li>
+    <li>
+        <div>
+            inviteeId: long
+        </div>
+                <p>被邀请者id</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onInvitationDeclined">onInvitationDeclined</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onInvitationDeclined(BMXGroup group, long inviteeId, String reason);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>入群申请被拒绝</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>邀请被拒绝的群组</p>
+    </li>
+    <li>
+        <div>
+            inviteeId: long
+        </div>
+                <p>被邀请者id</p>
+    </li>
+    <li>
+        <div>
+            reason: String
+        </div>
+                <p>拒绝原因</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onApplied">onApplied</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onApplied(BMXGroup group, long applicantId, String message);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到入群申请</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>收到入群申请的群组</p>
+    </li>
+    <li>
+        <div>
+            applicantId: long
+        </div>
+                <p>申请者id</p>
+    </li>
+    <li>
+        <div>
+            message: String
+        </div>
+                <p>申请原因</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onApplicationAccepted">onApplicationAccepted</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onApplicationAccepted(BMXGroup group, long approver);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>入群申请被接受</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>入群申请被接受的群组</p>
+    </li>
+    <li>
+        <div>
+            approver: long
+        </div>
+                <p>申请的批准者</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onApplicationDeclined">onApplicationDeclined</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onApplicationDeclined(BMXGroup group, long approver, String reason);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>入群申请被拒绝</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>入群申请被拒绝的群组</p>
+    </li>
+    <li>
+        <div>
+            approver: long
+        </div>
+                <p>申请的批准者</p>
+    </li>
+    <li>
+        <div>
+            reason: String
+        </div>
+                <p>拒绝的原因</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onMembersBanned">onMembersBanned</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onMembersBanned(BMXGroup group, ListOfLongLong members, long duration);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>群成员被禁言</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>群成员被禁言的群组</p>
+    </li>
+    <li>
+        <div>
+            members: ListOfLongLong
+        </div>
+                <p>被禁言的群成员id列表</p>
+    </li>
+    <li>
+        <div>
+            duration: long
+        </div>
+                <p>禁言时长</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onMembersUnbanned">onMembersUnbanned</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onMembersUnbanned(BMXGroup group, ListOfLongLong members);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>群成员被解除禁言</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>群成员被解除禁言的群组</p>
+    </li>
+    <li>
+        <div>
+            members: ListOfLongLong
+        </div>
+                <p>被解除禁言的群成员id列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onMemberJoined">onMemberJoined</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onMemberJoined(BMXGroup group, long memberId, long inviter);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>加入新成员</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>有成员加入的群组</p>
+    </li>
+    <li>
+        <div>
+            memberId: long
+        </div>
+                <p>加入成员的id</p>
+    </li>
+    <li>
+        <div>
+            inviter: long
+        </div>
+                <p>邀请者id</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onMemberLeft">onMemberLeft</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onMemberLeft(BMXGroup group, long memberId, String reason);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>群成员退出</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>有成员退出的群组</p>
+    </li>
+    <li>
+        <div>
+            memberId: long
+        </div>
+                <p>退出的群成员id</p>
+    </li>
+    <li>
+        <div>
+            reason: String
+        </div>
+                <p>退出的原因</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onAdminsAdded">onAdminsAdded</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onAdminsAdded(BMXGroup group, ListOfLongLong members);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>添加了新管理员</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>发生添加新管理员的群组</p>
+    </li>
+    <li>
+        <div>
+            members: ListOfLongLong
+        </div>
+                <p>被提升为管理员的成员列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onAdminsRemoved">onAdminsRemoved</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onAdminsRemoved(BMXGroup group, ListOfLongLong members, String reason);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>移除了管理员</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>发生移除管理员的群组</p>
+    </li>
+    <li>
+        <div>
+            members: ListOfLongLong
+        </div>
+                <p>被移除了管理员的成员列表</p>
+    </li>
+    <li>
+        <div>
+            reason: String
+        </div>
+                <p>被移除的原因</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onOwnerAssigned">onOwnerAssigned</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onOwnerAssigned(BMXGroup group);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>成为群主</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>被转让为群主的群组</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onGroupInfoUpdate">onGroupInfoUpdate</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onGroupInfoUpdate(BMXGroup group, BMXGroup.UpdateInfoType type);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>群组信息变更</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>群信息发生变更的群组</p>
+    </li>
+    <li>
+        <div>
+            type: UpdateInfoType
+        </div>
+                <p>发生变更的群信息类型</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onMemberChangeNickName">onMemberChangeNickName</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onMemberChangeNickName(BMXGroup group, long memberId, String nickName);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>群成员更改群内昵称</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>发生群成员变更群昵称的群组</p>
+    </li>
+    <li>
+        <div>
+            memberId: long
+        </div>
+                <p>变更群昵称的群成员id</p>
+    </li>
+    <li>
+        <div>
+            nickName: String
+        </div>
+                <p>变更后的群昵称</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onAnnouncementUpdate">onAnnouncementUpdate</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onAnnouncementUpdate(BMXGroup group, BMXGroup.Announcement announcement);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到群公告</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>发生群公告更新的群组</p>
+    </li>
+    <li>
+        <div>
+            announcement: Announcement
+        </div>
+                <p>变更后的最新的群更高</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onSharedFileUploaded">onSharedFileUploaded</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onSharedFileUploaded(BMXGroup group, BMXGroup.SharedFile sharedFile);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到共享文件</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>发生群共享文件上传的群组</p>
+    </li>
+    <li>
+        <div>
+            sharedFile: SharedFile
+        </div>
+                <p>新上传的群共享文件</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onSharedFileDeleted">onSharedFileDeleted</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onSharedFileDeleted(BMXGroup group, BMXGroup.SharedFile sharedFile);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>删除了共享文件</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>发生群共享文件删除的群组</p>
+    </li>
+    <li>
+        <div>
+            sharedFile: SharedFile
+        </div>
+                <p>被删除的群共享文件</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onSharedFileUpdated">onSharedFileUpdated</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onSharedFileUpdated(BMXGroup group, BMXGroup.SharedFile sharedFile);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>共享文件更新文件名</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>发生群共享文件更新的群组</p>
+    </li>
+    <li>
+        <div>
+            sharedFile: SharedFile
+        </div>
+                <p>更新的群共享文件</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onBlockListAdded">onBlockListAdded</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onBlockListAdded(BMXGroup group, ListOfLongLong members);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>添加黑名单</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>添加黑名单的群组</p>
+    </li>
+    <li>
+        <div>
+            members: ListOfLongLong
+        </div>
+                <p>添加的黑名单成员列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onBlockListRemoved">onBlockListRemoved</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onBlockListRemoved(BMXGroup group, ListOfLongLong members);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>删除黑名单</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            group: <a href='/IM/api/8211/bmxgroup'>BMXGroup</a>
+        </div>
+                <p>删除黑名单的群组</p>
+    </li>
+    <li>
+        <div>
+            members: ListOfLongLong
+        </div>
+                <p>删除的黑名单成员列表</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onGroupListUpdate">onGroupListUpdate</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void onGroupListUpdate();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>客户端从服务器拉取到新群组时触发，用于用户群组列表更新，从SDK调用本地获取群组即可取得全部成员信息</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="registerGroupService">registerGroupService</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+public void registerGroupService(BMXGroupService service);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p></p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

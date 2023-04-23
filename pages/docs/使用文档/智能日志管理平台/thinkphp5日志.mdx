@@ -1,0 +1,72 @@
+thinkphp5 的日志格式类似如下：
+
+```
+---------------------------------------------------------------
+[ 2018-08-27T17:51:04+08:00 ] 43.242.154.126 POST /api/Map/near_list
+[ info ] api.com.cn/api/Map/near_list [运行时间：0.046040s][吞吐率：21.72req/s] [内存消耗：4,541.15kb] [文件加载：78]
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000038s ]
+[ info ] [ CACHE ] INIT File
+[ info ] [ BEHAVIOR ] Run Closure @app_init [ RunTime:0.000890s ]
+[ info ] [ LANG ] /thinkphp/lang/zh-cn.php
+[ info ] [ ROUTE ] array (
+  'type' => 'module',
+  'module' =>
+  array (
+    0 => 'api',
+    1 => 'Map',
+    2 => 'near_list',
+  ),
+)
+[ info ] [ HEADER ] array (
+  'content-type' => 'application/x-www-form-urlencoded',
+  'content-length' => '117',
+  'host' => 'api.com.cn',
+  'connection' => 'Keep-Alive',
+  'accept-encoding' => 'gzip',
+  'user-agent' => 'okhttp/3.10.0',
+)
+[ info ] [ PARAM ] array (
+  'latitude' => '40.97101535373264',
+  'longitude' => '80.37032253689236',
+  'token' => 'a9-9888-09598982d48c',
+  'user_id' => '977',
+  'orgin' => '0',
+)
+[ info ] [ LANG ] /www/public/../application/api/lang/zh-cn.php
+[ info ] [ BEHAVIOR ] Run app\common\behavior\Common @module_init [ RunTime:0.000220s ]
+[ info ] [ TOKEN ] INIT Mysql
+[ info ] [ DB ] INIT mysql
+[ info ] [ RUN ] app\api\controller\Map->near_list[ /www/dldone/application/api/controller/Map.php ]
+[ info ] [ LOG ] INIT File
+[ sql ] [ DB ] CONNECT:[ UseTime:0.000359s ] mysql:host=localhost;dbname=dldone;charset=utf8mb4
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user_token` [ RunTime:0.000906s ]
+[ sql ] [ SQL ] SELECT * FROM `user_token` WHERE  `token` = 'a7585f3e4b89e27c6779a578e3a87' LIMIT 1 [ RunTime:0.000313s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `user` [ RunTime:0.000946s ]
+[ sql ] [ SQL ] SELECT * FROM `user` WHERE  `id` = 977 LIMIT 1 [ RunTime:0.000402s ]
+[ sql ] [ SQL ] SELECT id as user_id,`nickname` FROM `user` WHERE  `longitude` > '0'  AND `latitude` > '0' ORDER BY `longitude` DESC [ RunTime:0.001056s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `dld_user_lnglats_record` [ RunTime:0.000638s ]
+[ sql ] [ SQL ] SELECT `longitude`,`latitude` FROM `dld_user_lnglats_record` WHERE  `user_id` = 606 ORDER BY `id` DESC LIMIT 2 [ RunTime:0.000205s ]
+[ sql ] [ SQL ] SELECT `longitude`,`latitude` FROM `dld_user_lnglats_record` WHERE  `user_id` = 1729 ORDER BY `id` DESC LIMIT 2 [ RunTime:0.000193s ]
+[ sql ] [ SQL ] SELECT `longitude`,`latitude` FROM `dld_user_lnglats_record` WHERE  `user_id` = 1914 ORDER BY `id` DESC LIMIT 2 [ RunTime:0.000202s ]
+[ sql ] [ SQL ] SHOW COLUMNS FROM `dod_shop_check_through` [ RunTime:0.000684s ]
+[ sql ] [ SQL ] SELECT s.id as shop_id,`s`.`name`,`s`.`phone`,t.name as service_time,`s`.`lng`,`s`.`lat` FROM `dod_shop_check_through` `s` INNER JOIN `dod_shop_service_type` `t` ON `s`.`service_time`=`t`.`id` [ RunTime:0.001941s ]
+```
+
+可以看到，其日志格式较为复杂，信息量较大，若能充分解析，非常便于分析。为此，我们为使用 thinkphp5 的用户内置了解析器，可以直接解析 thinkphp5 的日志。
+
+# Reader中配置多行的行首
+
+注意到，由于 thinkphp5 的日志是多行构成的，不能简单通过换行符来作为一个数据点，所以在配置解析前，要在 reader 中配置多行匹配的行首。
+
+在这个例子中，行首是 `---------------------------------------------------------------`，直接填这个即可，非常简单。
+您也可以将带有日期和IP的那一行作为行首，可以写这个正则表达式: `\[\s\d+-\d+-\w+:\d+:\d+\+\d+:\d+\s.*`, 如图所示：
+
+![](https://dn-odum9helk.qbox.me/Fl7e9bGBtTZU3C9Zb42SipaJkwfs)
+
+然后您再再解析部分选择 thinkphp5 解析即可。
+
+# 可配选项
+
+* 禁止记录解析失败数据(`disable_record_errdata`)：默认为 false，解析失败的数据会默认出现在`pandora_stash`字段，该选项可以禁止记录解析失败的数据。
+
+* 保留原始数据（`keep_raw_data`):默认为`false`，配置此选项之后会保留原始数据在`raw_data`字段下。 

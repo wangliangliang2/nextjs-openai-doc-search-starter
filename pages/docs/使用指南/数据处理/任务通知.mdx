@@ -1,0 +1,246 @@
+支持对任务处理后的结果，及时进行消息通知。任务通知是异步进行的，不影响正常的操作。支持以回调方式将消息推送到指定URL。
+
+- 任务执行成功
+- 任务执行失败
+​
+# **消息格式**
+
+通过工作流创建的任务，任务处理完成后的回调通知内容，消息体是JSON格式。
+
+> **注意：**
+>
+> - 此处为V3版本的回调内容，可查看 [老版V2回调内容](https://developer.qiniu.com/dora/manual/6504/receive-notifications) 。
+> - V2 和 V3 版本的区别，以及如何升级回调版本，详情查看 [回调升级](https://developer.qiniu.com/dora/7514/the-callback-to-upgrade) 。
+
+
+
+
+下面介绍详细的字段名称、类型、描述。
+
+- **基本属性**
+
+  是一个JSON对象。定义：{`当前任务的基本属性`}，字段如下。
+
+  | 字段名称   | 说明                                                 |
+  | ---------- | ---------------------------------------------------- |
+  | version    | 版本号，新版本统一都为“v3”                           |
+  | id         | 任务ID                                               |
+  | reqid      | 云处理请求的请求id，主要用于七牛技术人员的问题排查。 |
+  | pipeline   | 默认使用队列为：default.sys                          |
+  | created_at | 任务创建的时间戳，单位为毫秒                         |
+
+- **任务处理对象**
+
+  是一个JSON对象。定义：{`input`}，字段如下。
+
+  | 字段名称 | 说明                                                 |
+  | -------- | ---------------------------------------------------- |
+  | bucket   | 输入文件，当前仅支持kodo文件，待处理文件所在存储空间 |
+  | key      | 待处理文件名                                         |
+  | hash     | 云处理结果保存在服务端的唯一`hash`标识               |
+
+- **任务结果**
+
+  是一个JSON对象。定义：{`任务处理结果`}，字段如下。
+
+  | 字段名称 | 说明                                                         |
+  | -------- | ------------------------------------------------------------ |
+  | code     | 返回码， 0成功、1等待处理、2处理中、3失败、5已取消(删除pipeline时，并且有任务还在等待中) |
+  | desc     | 返回信息描述，例如： success                                 |
+
+- **工作流节点处理详情**。
+
+  是一个JSON对象组，所有工作流节点处理的详情。定义：{`ops`}，字段如下。
+
+
+```
+  "ops": [
+        {
+            "id": "<opid>", // 具体执行的操作，fop与cond只会有一个非空，fop为计算节点、cond为条件判断节点
+            "fop": {                    // 表示具体的音视频计算节点信息
+                "cmd": "xxx",           // 计算的命令
+                "input_from": "<opid>", // 计算的输入文件，"__origin__"表示来源于触发的主输入文件，其它表示来源于某个节点的处理结果
+                "result": {             // 处理结果
+                    "code": 0,          // 0成功、3处理失败、6跳过、7无效
+                    "desc": "...",      // 处理结果描述
+                    "has_output": true, // 表示是否存在输出文件，如果是中间临时节点为false
+                    "kodo_file": {      // 具体输出文件信息
+                        "bucket": "aaa",
+                        "key": "abc.mp4",
+                        "hash": "..."
+                    }
+                }
+            },
+            "depends": ["<opid>",...] // 依赖的前置处理节点
+        },
+        {
+            "id": "<opid>",
+            "cond": {                              // 条件节点信息
+                "expression": "xxx",               // 条件表达式，当前为“go template expression”
+                "result": {                        // 条件表达式的执行结果
+                    "code": 0,                     // 0成功、1等待处理、2处理中、3处理失败、5任务被取消、6跳过、7无效
+                    "desc": "...",                 // 处理结果描述
+                    "output": "<opid>,<opid>,..."  // 输出信息，为允许执行的后置节点名称列表
+                }
+            },
+            "depends": ["<opid>",...] // 依赖的前置处理节点
+        },
+        ...
+    ],
+}
+```
+​
+# **示例**
+
+如果请求成功，返回包含如下内容的JSON字符串（已格式化，便于阅读）：
+
+```
+{
+    "version": "v3",
+    "id": "z0.01z001c7n9d3q0nylt000001jm0001d4",
+    "reqid": "zVcAAFE4Z742sE4W",
+    "pipeline": "2002.default.sys",
+    "input": {
+        "kodo_file": {
+            "bucket": "dora-async-test",
+            "key": "upload.mp4"
+        }
+    },
+    "code": 0,
+    "desc": "successfully completed",
+    "ops": [
+        {
+            "id": "A",
+            "fop": {
+                "cmd": "avinfo",
+                "input_from": "__origin__",
+                "result": {
+                    "code": 0,
+                    "desc": "successfully completed",
+                    "has_output": false
+                }
+            }
+        },
+        {
+            "id": "B",
+            "cond": {
+                "expression": "C",
+                "result": {
+                    "code": 0,
+                    "desc": "successfully completed",
+                    "output": "C"
+                }
+            },
+            "depends": [
+                "A"
+            ]
+        },
+        {
+            "id": "C",
+            "fop": {
+                "cmd": "avthumb/mp4",
+                "input_from": "__origin__",
+                "result": {
+                    "code": 3,
+                    "desc": "failed to parse result",
+                    "has_output": false
+                }
+            },
+            "depends": [
+                "B"
+            ]
+        },
+        {
+            "id": "D",
+            "fop": {
+                "cmd": "saveas/ZG9yYS1hc3luYy10ZXN0OnVwbG9hZF9vdXRwdXQubXA0/jsonQuery/eyJidWNrZXQiOiJ7ey5idWNrZXR9fSIsImtleV90ZW1wbGF0ZSI6Int7LmZuYW1lfX1fb3V0cHV0e3suZXh0fX0ifQ==",
+                "input_from": "C",
+                "result": {
+                    "code": 0,
+                    "desc": "successfully completed",
+                    "has_output": true,
+                    "kodo_file": {
+                        "bucket": "dora-async-test",
+                        "key": "upload_output.mp4",
+                        "hash": "FuBWVXNCdqNQxgrtSkERZqLDz5Yp"
+                    }
+                }
+            },
+            "depends": [
+                "C"
+            ]
+        },
+        {
+            "id": "E",
+            "fop": {
+                "cmd": "avthumb/mp4",
+                "input_from": "__origin__",
+                "result": {
+                    "code": 6,
+                    "desc": "skipped",
+                    "has_output": false
+                }
+            },
+            "depends": [
+                "B"
+            ]
+        },
+        {
+            "id": "F",
+            "fop": {
+                "cmd": "saveas/YWJjZDp1cGxvYWRfb3V0XzIubXA0/jsonQuery/eyJidWNrZXQiOiJhYmNkIiwia2V5X3RlbXBsYXRlIjoie3suZm5hbWV9fV9vdXRfMnt7LmV4dH19In0=",
+                "input_from": "E",
+                "result": {
+                    "code": 6,
+                    "desc": "skipped",
+                    "has_output": false
+                }
+            },
+            "depends": [
+                "E"
+            ]
+        }
+    ],
+    "created_at": 1607415851017
+}
+```
+**备注：**
+
+任务的输出文件信息，V2和V3版本存在差异。
+
+兼容通过pfop/老版回调 V2方式发起的 `多张截图(vsample)` 任务处理，产生的多输出情况，新版回调 V3 产生的任务不适用。
+
+- 老版回调V2，如下：
+
+```
+"kodo_files": [ // 具体输出文件信息
+                        {
+                            "bucket": "aaa",
+                            "key": "abc.png"
+                        },
+                        ...
+```
+
+- 新版回调V3，如下：
+
+```
+"kodo_file": {      // 具体输出文件信息
+                        "bucket": "aaa",
+                        "key": "abc.mp4",
+                        "hash": "..."
+                    },
+```
+
+​
+# **常见问题**
+
+**Q1：回调超时，重试几次？重试间隔多久？**
+
+A：重试次数：13；重试间隔依次为：1s 2s 4s 8s 16s 32s …. 最大不超过3600s；重试条件： 回调超时或者客户回调服务器返回 5xx。
+
+**Q2：没有收到回调该如何排查？**
+
+A：首先需要在 【控制台 -> 工作流】，进入工作流详情页面，查看是否填写了回调地址。
+
+​  如果填写了回调地址，还是没有收到回调，则排查回调地址接收服务是否有问题。或者 [提交工单](https://support.qiniu.com/tickets/category) 给我们。
+

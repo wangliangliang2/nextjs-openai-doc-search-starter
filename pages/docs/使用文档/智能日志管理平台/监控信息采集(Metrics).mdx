@@ -1,0 +1,33 @@
+监控(Metrics)的主要用于采集agent所在机器上的各类监控指标，目前支持的监控指标分别为：
+
+1. [System Metric](/insight/manual/4896/the-system-monitoring):监控 load1、load5、load15、用户数、cpu核数以及系统启动时间等。
+1. [Processes Metric](/insight/manual/4897/the-processes-to-monitor): 监控处于各种状态的进程数量, 比如运行中/暂停/可中断/空闲的进程数量等。
+1. [Netstat Metric](/insight/manual/4898/netstat-monitoring): 监控处于各种状态的网络连接数, 比如Syn send/Syn Recv 等状态的网络连接数。
+1. [Net Metric](/insight/manual/4899/net-monitor): 监控网络设备的状态，比如收发包的数量、收发包的字节数等。
+1. [Mem Metric](/insight/manual/4900/the-memory-monitoring): 监控内存的实时状态。
+1. [Swap Metric](/insight/manual/4901/swap-monitoring): 监控 swap 分区的状态，比如换入换出、使用率、空闲大小等。
+1. [Cpu Metric](/insight/manual/4902/cpu-monitoring): 监控 cpu 的实时状态，包括用量，中断时间占比等。
+1. [Kernel Metric](/insight/manual/4909/the-kernel-monitoring): 监控内核中断次数、上下文切换次数、fork 的进程数等。
+1. [Disk Metric](/insight/manual/4903/disk-monitoring): 监控磁盘的使用情况, 包括磁盘用量、inode使用情况等。
+1. [Diskio Metric](/insight/manual/4904/diskio-monitoring): 监控磁盘读写状态, 包括读写次数、总用时等。
+1. [Http Metric](/insight/manual/4905/http-monitoring): 监控某个或者某些http请求。
+1. [Procstat Metric](/insight/manual/4906/procstat-monitoring): 监控某个或者某些进程的信息，包括cpu,内存,磁盘io,资源限制等。
+1. [Ipmi Metric](/insight/manual/4908/ipmi-monitoring):监控各类支持ipmi接口的硬件指标。
+2. [Prometheus 节点监控](/insight/manual/4961/prometheus-monitoring): 适配各类Prometheus的node exporter
+3. [VMware Vsphere](/insight/manual/5434/vsphere-metric): 用于监控vsphere内虚拟机和宿主机的各项指标。
+4. [memcached](/insight/manual/5394/memcached): 用于监控 memcached 实例统计信息，包括运行时间、请求量、连接数等。
+5. [Elasticsearch](/insight/manual/5393/elasticsearch): 用于监控elasticsearch集群的文件索引，操作系统，Java虚拟机，文件系统等信息。
+6. [安全信息采集](/insight/manual/5139/the-host-information-collection): 用于监控机器本身的一些信息，比如网络信息，端口信息，进程信息，登录信息，暴力破解信息。
+
+
+## 对于连接到公有云服务器的agent，我们提供了一键开启机器监控的功能
+
+![](https://dn-odum9helk.qbox.me/Fla0eyGcygDcfWTl9EBApUiBo2pM)
+
+如图所示，点击 <开启机器监控> 默认agent便会收集机器的CPU、内存等基本信息。您可以在机器列表中点击机器名称进行查看。
+
+![](https://dn-odum9helk.qbox.me/FjIFmbGO_t-IIEY8GbMZsRLcZhWt)
+
+通过该页面，您可以方便的查看机器的整体情况以及变化趋势：
+
+![](https://dn-odum9helk.qbox.me/FjwXPfMG85tSDdAJoitizmXXn7By)

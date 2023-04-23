@@ -1,0 +1,38 @@
+**请求语法**
+
+```
+GET /v5/repos
+Authorization: Pandora <auth>
+```
+
+**响应报文**
+
+```
+200 OK
+Content-Type: application/json
+{
+  repos: [
+    {
+      "name": <RepoName>,
+      "region": <RegionName>,
+      "retention": <Retention>
+      "createTime": <CreateTime>,
+      "updateTime": <UpdateTime>
+    },
+    ...
+  ]
+}
+```
+
+**响应内容**
+
+|参数|类型|必填|说明|
+|:---|:---|:---|:---|
+|name|string|-|日志仓库名称|
+|region|string|-|所属区域|
+|retention|string|-|存储时限|
+|createTime|string|-|创建时间|
+|updateTime|string|-|更新时间|
+
+
+**创建和更新的分词器生效时间同更新repo后**

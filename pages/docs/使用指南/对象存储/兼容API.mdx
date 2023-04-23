@@ -1,0 +1,56 @@
+下方列出了已经实现兼容的接口，并在表格中详细列出了未兼容的字段。
+<a id="service-operation"></a>
+# **Service API** 
+
+| AWS S3 接口   | 请求兼容描述 | 响应兼容描述 |
+| -----|----------------|------------------|
+| GET Service | 兼容 | 兼容 |
+
+
+<a id="bucket-operation"></a>
+# **Bucket API** 
+
+| AWS S3 接口   | 请求兼容描述 | 响应兼容描述 |
+| -----|----------------|------------------|
+| DELETE Bucket | 兼容 | 兼容 |
+| DELETE Bucket tagging | 兼容 | 兼容 |
+| GET Bucket | 未支持请求参数encoding-type | 未支持响应参数Encoding-Type |
+| GET Bucket Version 2 | 未支持请求参数encoding-type | 兼容 |
+| GET Bucket tagging | 兼容 | 兼容 |
+| HEAD Bucket | 兼容 | 兼容 |
+| PUT Bucket | 兼容 | 兼容 |
+| PUT Bucket tagging | 兼容 | 兼容 |
+| GET Bucket location | 兼容 | 兼容 |
+| PUT Bucket acl | 兼容 | 兼容 |
+| GET Bucket acl | 兼容 | 兼容 |
+| PUT Bucket cors | 兼容 | 兼容 |
+| GET Bucket cors | 兼容 | 兼容 |
+| DELETE Bucket cors | 兼容 | 兼容 |
+
+特别的，为了便于排障，跨域请求的响应 Access-Control-Expose-Headers 中，必定会包含 `x-amz-request-id`（即使用户没有配置）。
+
+Bucket Policy相关参见 [使用 Bucket Policy 授权](/kodo/manual/6317/BucketPolicy)
+
+
+
+<a id="object-operation"></a>
+# **Object API** 
+
+| AWS S3 接口   | 请求兼容描述 | 响应兼容描述 |
+| -----|----------------|------------------|
+| DELETE Multiple Object | 未支持请求头x-amz-mfa | 兼容 |
+| DELETE Object | 未支持请求头x-amz-mfa | 兼容 |
+| GET Object | 未支持请求头x-amz-server-side-encryption-\* | 未支持响应头 x-amz-replication-status, x-amz-server-side-encryption-\*,  x-amz-tagging-count, x-amz-object-lock-\* |
+| HEAD Object | 未支持请求头x-amz-server-side-encryption-\*	 | 未支持响应头x-amz-missing-meta, x-amz-replication-status, x-amz-server-side-encryption-\*, x-amz-object-lock-\*|
+| POST Object | 未支持表单字段AWSAccessKeyId, policy, tagging, x-amz-security-token, x-amz-server-side-encryption-* <br>x-amz-storage-class取值 STANDARD、LINE、GLACIER、DEEP_ARCHIVE，默认STANDARD| 未支持响应头x-amz-expiration, x-amz-server-side-encryption-* |
+| PUT Object | 未支持请求头x-amz-tagging, x-amz-object-lock-\*, x-amz-server-side-encryption-\* <br>x-amz-storage-class取值 STANDARD、LINE、GLACIER、DEEP_ARCHIVE，默认STANDARD| 未支持响应头x-amz-expiration, x-amz-server-side-encryption-\* |
+| PUT Object - Copy | 未支持请求头 x-amz-tagging-directive, x-amz-server-side-encryption-\*, x-amz-copy-source-server-side-encryption-\* <br>x-amz-storage-class取值 STANDARD、LINE、GLACIER、DEEP_ARCHIVE，默认STANDARD| 未支持响应头x-amz-expiration, x-amz-server-side-encryption-\* |
+| Abort Multipart Upload | 兼容 | 兼容 |
+| Complete Multipart Upload | 兼容 | 未支持响应头x-amz-expiration, x-amz-server-side-encryption-\*, x-amz-version-id |
+| Initiate Multipart Upload | 未支持请求头 x-amz-tagging, x-amz-server-side-encryption-\* <br>x-amz-storage-class取值 STANDARD、LINE、GLACIER、DEEP_ARCHIVE，默认STANDARD| 未支持响应头x-amz-abort-date, x-amz-abort-rule-id, x-amz-server-side-encryption-\* |
+| List Parts | 未支持请求参数encoding-type	| 未支持响应参数x-amz-abort-date, x-amz-abort-rule-id,Encoding-Type, LastModified |
+| Upload Part | 未支持请求头x-amz-server-side-encryption-\* | 未支持响应头x-amz-server-side-encryption-\* |
+| Upload Part - copy | 未支持请求头x-amz-server-side-encryption-\* | 未支持响应头x-amz-copy-source-version-id,x-amz-server-side-encryption-\* |
+| Restore Object | 未支持请求参数 versionId, Description, OutputLocation, SelectParameters, Tier, Type<br> Days 解冻天数限 1～7<br> 深度归档存储类型支持 GlacierJobParameters.Tier=Standard | 未支持响应头 x-amz-restore-output-path |
+| PUT Object acl | 兼容 | 兼容 |
+| GET Object acl | 兼容 | 兼容 |

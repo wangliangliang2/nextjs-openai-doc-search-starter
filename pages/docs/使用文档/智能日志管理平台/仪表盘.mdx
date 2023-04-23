@@ -1,0 +1,139 @@
+配置好报表之后，可以将常用的报表保存到仪表盘，方便统一对图表进行管理以及实时监控数据。
+
+**操作步骤：**
+
+1.在搜索栏输入搜索条件，点击右侧的查询按钮；
+
+2.在`可视化` tab 下配置好报表；
+
+3.点击`添加到仪表盘`将图表添加到已有或新建仪表盘；
+
+4.通过`仪表盘列表`进入对应仪表盘页面对数据进行监控。
+
+# **创建仪表盘**
+
+企业的运营团队、开发团队、营销团队有不同的指标查看需求，用户可根据不同的需求定制仪表盘，在团队内部共享。
+
+进入仪表盘列表页，点击右上角的新增仪表盘按钮，输入仪表盘名称与描述创建一个新的仪表盘。
+
+![](https://pandora-kibana.qiniu.com/dashboard/create_dashboard.png)
+
+您也可以通过复制按钮直接复制仪表盘。
+
+![](https://pandora-kibana.qiniu.com/dashboard/copy.png)
+
+点击仪表盘名称或者编辑按钮可进入仪表盘编辑页面。
+
+![](https://pandora-kibana.qiniu.com/dashboard/empty.png)
+
+# **添加图表到仪表盘**
+
+您可以选择创建图表加入当前仪表盘，或者从已有仪表盘导入图表到当前仪表盘，免去配置图表工作。
+
+**创建图表**
+
+点击`创建图表`或者页面右侧的添加图表 icon，进入图表配置页面。
+
+![](https://pandora-kibana.qiniu.com/dashboard/add.png)
+
+注意，在当前仪表盘创建图表，我们支持前往数据立方或日志搜索页面配置图表。
+
+![](https://pandora-kibana.qiniu.com/dashboards/datasource.png)
+
+配置好以后点击`添加到仪表盘`，将图表添加到当前仪表盘，也可以添加到新建仪表盘。
+
+![](https://pandora-kibana.qiniu.com/dashboard/add_to_dashboard.png)
+
+**从已有仪表盘导入图表**
+
+点击`从其他仪表盘导入`或者页面右侧的的导入图表 icon，滑出已有仪表盘列表。
+
+![](https://pandora-kibana.qiniu.com/dashboard/import.png)
+
+![](https://pandora-kibana.qiniu.com/dashboard/import2.png)
+
+点击任意图表名称即可将图表添加到当前仪表盘。
+
+`注意：`添加图表、导入图表、删除图表、修改图表或仪表盘名称均需要在页面右侧点击保存按钮保存操作。
+
+![](https://pandora-kibana.qiniu.com/dashboard/save1.png)
+
+# **编辑仪表盘**
+
+仪表盘的名称、描述可编辑，通过鼠标滑入即可看到编辑按钮。
+
+![](https://pandora-kibana.qiniu.com/dashboard/edit11.png)
+
+# **编辑仪表盘里的图表**
+
+1. 图表名称可编辑
+
+通过鼠标滑入即可看到编辑按钮。
+
+![](https://pandora-kibana.qiniu.com/dashboard/edit12.png)
+
+2. 图表内容可编辑，点击图表右上角的设置按钮，可选删除图表或编辑图表。
+
+![](https://pandora-kibana.qiniu.com/dashboard/edit13.png)
+
+点击编辑图表按钮，进入图表配置状态。
+
+![](https://pandora-kibana.qiniu.com/dashboard/edit3.png)
+
+点击`保存图表修改`：在原有图表上进行改动。
+
+点击`添加到仪表盘`：原来的图表依然保留，另外将当前改动的图表添加到仪表盘。
+
+3.单个图表时间可自定义。
+
+支持对仪表盘的所有图表统一设置时间，也可对单个图表自定义时间。
+
+![](https://pandora-kibana.qiniu.com/dashboard/edit_time2.png)
+
+![](https://pandora-kibana.qiniu.com/dashboard/edit_time1.png)
+
+除了直接自定义以外，也支持通过设置相对目前时间的时间偏移量控制单个图表的显示时间范围。
+
+# **仪表盘数据下钻**
+
+![](https://pandora-kibana.qiniu.com/report/drill.png)
+
+仪表盘支持数据下钻。仪表盘数据下钻分为以下两种：
+
+* 点击`查看日志`：下钻进入日志详情页面查看图表中数据点的对应日志。
+
+* 点击`数据钻取`：您可以选择字段对数据进行钻取，您可以连续选择不同字段对您的数据进行钻取分析。
+
+您也可以直接在报表配置页面对数据进行钻取，并将图表保存至仪表盘。
+
+# **仪表盘报告**
+
+您可以将指定时间范围的仪表盘数据，发送定时或实时邮件到您的邮箱。
+
+![](https://pandora-kibana.qiniu.com/dashboard_report.png)
+
+* `立即发送报告`：将指定时间范围内的仪表盘数据立即发送报告到收件人邮箱。
+
+* `设置定时任务`：将指定时间范围内的仪表盘数据按照所选频率定时发送报告到收件人邮箱，支持的频率包括：`每日、每周、每月、每季度、每年`，选择频率之后，您也可以自定义具体的发送时间。如：选择每周发送一次周报，您可以指定发送时间为每周五的 16:00 发送。
+
+# **其他操作**
+
+仪表盘页面包含以下几个组件：
+
+**刷新**
+
+选择刷新频率，当前仪表盘的所有图表将按照此频率自动刷新。
+
+![](https://pandora-kibana.qiniu.com/dashboard/refresh1.png)
+
+**仪表盘风格**
+
+自定义仪表盘显示风格，目前支持黑、白两种背景色。
+
+![](https://pandora-kibana.qiniu.com/style_.png)
+
+**全屏显示**
+
+支持仪表盘内容全屏显示。
+
+![](https://pandora-kibana.qiniu.com/full_screen.png)

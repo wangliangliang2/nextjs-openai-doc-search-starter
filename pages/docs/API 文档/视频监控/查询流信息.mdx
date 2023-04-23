@@ -1,0 +1,67 @@
+# **描述**
+本接口用于查询流信息。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|空间为`gb28181`:设备类型为摄像头,流ID就是`设备国标ID`;设备类型是NVR(平台类型),流ID为`设备国标ID_通道国标ID`<br/>空间类型为`rtmp`或者`主动拉流`:流ID就是`流名称`
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|streamId|string|流ID
+|desc|string|描述
+|nsId|string|所属空间ID
+|nsName|string|所属空间名称
+|recordTemplateId|string|录制模版ID，默认从空间继承
+|snapshotTemplateId|string|截图模版ID，默认从空间继承
+|aiTemplateId|string|AI模版ID，默认从空间继承
+|disabled|boolean|流是否被禁用
+|lastPushedAt|integer|最后一次推流时间，0:表示流从创建开始尚未进行过推流操作
+|pullType|string|主动拉流模式的空间下，流的接入类型。rtsp/rtmp/http-flv/hls/other 拉流
+|pullAddr|string|主动拉流模式的空间下，拉流地址
+|pullVideoModel|integer|0:直播 1:点播
+|rtspModel|integer|rtsp传输协议。 0:udp 1:tcp
+|status|bool|流是否在线
+|userCount|integer|在线观看人数(只有在流在线的时候才会出现)
+|clientIp|string|推流端IP(只有在流在线的时候才会出现)
+|audioFrameRate|integer|直播流的实时音频帧率(只有在流在线的时候才会出现)
+|bitRate|integer|直播流的实时码率(只有在流在线的时候才会出现)
+|videoFrameRate|integer|直播流的实时视频帧率(只有在流在线的时候才会出现)
+|createdAt|integer|流创建时间
+|updatedAt|integer|流更新时间
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/namespaces/d102sni9zryu/streams/device009 \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "streamId": "device009",
+  "nsId": "d102sni9zryu",
+  "nsName": "test009",
+  "recordTemplateId": "d102sns2mwhd",
+  "snapshotTemplateId": "",
+  "aiTemplateId": "",
+  "createdAt": 1586832470,
+  "updatedAt": 1586832470,
+  "status": false,
+  "disabled": false,
+  "lastPushedAt": 0
+}
+```

@@ -1,0 +1,50 @@
+# 接口描述
+
+设置目标直播空间下的直播流是否使用直播封面，以及修改封面更新时间间隔
+
+# 请求参数
+
+```
+POST /v2/hubs/<hub>/snapshot
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+
+{
+    "snapshotInterval":<snapshotInterval>
+}
+```
+
+|      参数          |      类型          |  必填   |                  描述                      |
+| -------------------- | -------------------- | ----------- | ------------------------------------------ |
+|       Hub           |    string           | 是    |      直播空间名                                      |
+|SnapshotInterval     |       int           | 是    |       间隔时间，单位：秒，设置为-1时为不开启封面       |
+
+# 返回数据
+
+空
+
+# 示例
+
+请求体:
+
+```
+POST /v2/hubs/testhub/snapshot HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+
+{
+    "snapshotInterval":30
+}
+```
+
+返回体:
+
+```
+200 OK
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

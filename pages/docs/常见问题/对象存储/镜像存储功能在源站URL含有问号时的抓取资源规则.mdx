@@ -1,0 +1,9 @@
+镜像存储功能在 [镜像存储与qrsync数据同步的使用](/kodo/kb/1345/the-combination-of-image-storage-and-qrsync-tool-data-migration-plan) 中已有介绍。在使用镜像存储的时候，七牛会回源站拉取文件，如果源 URL 中带有问号，资源会按照如下规则来抓取和存储： 
+
+1，
+如果源站的 URL 是类似这样的：`http://example.com/a/b/c/d.txt?version=20130807`，那么镜像存储会将文件 `d.txt` 抓取过来，并在七牛保存为`a/b/c/d.txt` (在七牛云存储中称为 `key`)，忽略问号后面的参数。
+
+2，如果源站的 URL 是类似这样的：`http://example.com/?version=20130807`，那么镜像存储会将访问该 URL 得到的结果保存在七牛云存储，但是保存的 key 为空的 key 值（不是不存在）。
+
+3，如果源站的url是这样：`http://example.com/xxx.js?v=12222333332`，如果存在xxx.js这个文件，并且问号后面不同的版本号对应不同的文件，那么在抓取文件时，需要将？进行url编码后才可以正常拉取
+

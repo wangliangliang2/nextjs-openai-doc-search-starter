@@ -1,0 +1,768 @@
+### Rust SDK 使用指南
+
+Rust SDK 基于<span id="Productname">七牛云</span> API 参考手册构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到<span id="Productname">七牛云</span>上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过<span id="Productname">七牛云存储</span>及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
+
+Rust SDK 属于服务端 SDK 之一，包含以下特性：
+- 通过提供多个不同的 Crate，为不同层次的开发都提供了方便易用的编程接口。
+- 同时提供阻塞 IO 接口和基于 Async/Await 的异步 IO 接口。
+- 提供大量的可供二次开发的 Trait，方便灵活定制，例如 HTTP 客户端提供了 `ureq`，`reqwest` 和 `isahc` 三种不同的库实现，也可以基于 `qiniu-http` 自行定制开发接入其他 HTTP 客户端实现；又例如 DNS 客户端提供了 `libc`，`c-ares`，`trust-dns` 三种不同的库实现，也可以基于 [Resolver](https://docs.rs/qiniu-http-client/latest/qiniu_http_client/trait.Resolver.html) 自行定制开发接入其他 DNS 客户端实现。
+
+# 开源
+
+- [Rust SDK 项目地址](https://github.com/qiniu/rust-sdk)
+- [Rust SDK 发布地址](https://github.com/qiniu/rust-sdk/releases)
+
+# 安装
+
+Qiniu SDK for Rust 包含以下 Crates:
+
+| Crate 链接                                                                                                                            | 文档                                                                                                   | 描述                                                                                                                                                                                                                                                                               |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [![qiniu-etag](https://img.shields.io/crates/v/qiniu-etag.svg)](https://crates.io/crates/qiniu-etag)                                  | [![docs.rs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/qiniu-etag)            | Etag 算法库，实现七牛 Etag 算法                                                                                                                                                                                                                                                    |
+| [![qiniu-credential](https://img.shields.io/crates/v/qiniu-credential.svg)](https://crates.io/crates/qiniu-credential)                | [![docs.rs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/qiniu-credential)      | 七牛认证库，实现七牛认证接口以及签名相关算法                                                                                                                                                                                                                                       |
+| [![qiniu-upload-token](https://img.shields.io/crates/v/qiniu-upload-token.svg)](https://crates.io/crates/qiniu-upload-token)          | [![docs.rs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/qiniu-upload-token)    | 七牛上传凭证，实现七牛上传策略和上传凭证接口以及相关算法                                                                                                                                                                                                                           |
+| [![qiniu-http](https://img.shields.io/crates/v/qiniu-http.svg)](https://crates.io/crates/qiniu-http)                                  | [![docs.rs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/qiniu-http)            | 七牛客户端 HTTP 接口，为不同的 HTTP 客户端实现提供相同的基础接口                                                                                                                                                                                                                   |
+| [![qiniu-ureq](https://img.shields.io/crates/v/qiniu-ureq.svg)](https://crates.io/crates/qiniu-ureq)                                  | [![docs.rs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/qiniu-ureq)            | 基于 [Ureq](https://docs.rs/ureq) 库实现七牛客户端 HTTP 接口，对于使用 `qiniu-http-request`，`qiniu-apis`，`qiniu-objects-manager` 或 `qiniu-upload-manager` 的用户，可以直接启用 `ureq` 功能，将默认使用该 HTTP 客户端实现。需要注意的是，如果需要使用异步接口，则不能选择 `ureq` |
+| [![qiniu-isahc](https://img.shields.io/crates/v/qiniu-isahc.svg)](https://crates.io/crates/qiniu-isahc)                               | [![docs.rs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/qiniu-isahc)           | 基于 [Isahc](https://docs.rs/isahc) 库实现七牛客户端 HTTP 接口，对于使用 `qiniu-http-request`，`qiniu-apis`，`qiniu-objects-manager` 或 `qiniu-upload-manager` 的用户，可以直接启用 `isahc` 功能，将默认使用该 HTTP 客户端实现                                                     |
+| [![qiniu-reqwest](https://img.shields.io/crates/v/qiniu-reqwest.svg)](https://crates.io/crates/qiniu-reqwest)                         | [![docs.rs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/qiniu-reqwest)         | 基于 [Reqwest](https://docs.rs/reqwest) 库实现七牛客户端 HTTP 接口，对于使用 `qiniu-http-request`，`qiniu-apis`，`qiniu-objects-manager` 或 `qiniu-upload-manager` 的用户，可以直接启用 `reqwest` 功能，将默认使用该 HTTP 客户端实现                                               |
+| [![qiniu-http-client](https://img.shields.io/crates/v/qiniu-http-client.svg)](https://crates.io/crates/qiniu-http-client)             | [![docs.rs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/qiniu-http-client)     | 基于 [qiniu-http](https://docs.rs/qiniu-http) 提供具有重试功能的 HTTP 客户端                                                                                                                                                                                                       |
+| [![qiniu-apis](https://img.shields.io/crates/v/qiniu-apis.svg)](https://crates.io/crates/qiniu-apis)                                  | [![docs.rs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/qiniu-apis)            | 实现七牛 API 调用客户端接口                                                                                                                                                                                                                                                        |
+| [![qiniu-objects-manager](https://img.shields.io/crates/v/qiniu-objects-manager.svg)](https://crates.io/crates/qiniu-objects-manager) | [![docs.rs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/qiniu-objects-manager) | 实现七牛对象相关管理接口，包含对象的列举和操作                                                                                                                                                                                                                                     |
+| [![qiniu-upload-manager](https://img.shields.io/crates/v/qiniu-upload-manager.svg)](https://crates.io/crates/qiniu-upload-manager)    | [![docs.rs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/qiniu-upload-manager)  | 实现七牛对象上传功能                                                                                                                                                                                                                                                               |
+| [![qiniu-sdk](https://img.shields.io/crates/v/qiniu-sdk.svg)](https://crates.io/crates/qiniu-sdk)                                     | [![docs.rs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/qiniu-sdk)             | 七牛 SDK 入口                                                                                                                                                                                                                                                                      |
+
+# 鉴权
+
+Rust SDK 的所有的功能，都需要合法的授权。授权凭证的签算需要<span id="Productname">七牛</span>账号下的一对有效的`Access Key`和`Secret Key`，这对密钥可以通过如下步骤获得：
+
+1. <span id="Null">点击[注册🔗](https://portal.qiniu.com/signup)</span>开通<span id="Productname">七牛</span>开发者帐号
+2. 如果已有账号，直接登录<span id="Productname">七牛</span>开发者后台，<span id="Null">点击[这里🔗](https://portal.qiniu.com/user/key)</span>查看 Access Key 和 Secret Key
+
+以下所有代码示例都以 `qiniu-sdk` 作为入口。
+
+<a id="io-put"></a>
+# 文件上传
+- <a href="#upload-flow">上传流程</a>
+- <a href="#upload-token">客户端上传凭证</a>
+     - <a href="#simple-uptoken">简单上传凭证</a>
+     - <a href="#overwrite-uptoken">覆盖上传凭证</a>
+     - <a href="#returnbody-uptoken">自定义上传回复凭证</a>
+     - <a href="#callback-uptoken">带回调业务服务器的凭证</a>
+     - <a href="#param-uptoken">带自定义参数的凭证</a>
+     - <a href="#general-uptoken">综合上传凭证</a>
+- <a href="#server-upload">服务器直传</a>
+ 	- <a href="#upload-file">文件上传</a>
+ 	- <a href="#upload-bytes">字节数组上传 / 数据流上传</a>
+ 	- <a href="#upload-selfdefineParam">自定义参数上传</a>
+
+### 上传流程
+
+文件上传分为客户端上传（主要是指网页端和移动端等面向终端用户的场景）和服务端上传两种场景，具体可以参考文档[业务流程](/kodo/manual/1205/programming-model)。
+
+服务端 SDK 在上传方面主要提供两种功能，一种是生成客户端上传所需要的上传凭证，另外一种是直接上传文件到云端。
+
+<a id="upload-token"></a>
+
+### 客户端上传凭证（需要依赖 `qiniu-sdk` 启用 `upload-token` 功能）
+
+客户端（移动端或者 Web 端）上传文件的时候，需要从客户自己的业务服务器获取上传凭证，而这些上传凭证是通过服务端的 SDK 来生成的，然后通过客户自己的业务 API 分发给客户端使用。根据上传的业务需求不同，Rust SDK支持丰富的上传凭证生成方式。
+
+<a id="simple-uptoken"></a>
+
+#### 简单上传的凭证
+
+最简单的上传凭证只需要 `access key`，`secret key` 和 `bucket` 就可以，并指定上传凭证的有效期。
+
+```rust
+use qiniu_sdk::upload_token::{UploadPolicy, credential::Credential, prelude::*};
+use std::time::Duration;
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let credential = Credential::new(access_key, secret_key);
+let upload_token = UploadPolicy::new_for_bucket(bucket_name, Duration::from_secs(3600))
+    .build_token(credential, Default::default())?;
+println!("{}", upload_token);
+```
+
+<a id="overwrite-uptoken"></a>
+
+#### 覆盖上传的凭证
+
+覆盖上传除了需要简单上传所需要的信息之外，还需要想进行覆盖的对象名称 `object name`，这个对象名称同时是客户端上传代码中指定的对象名称，两者必须一致。
+
+```rust
+use qiniu_sdk::upload_token::{UploadPolicy, credential::Credential, prelude::*};
+use std::time::Duration;
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let object_name = "object name";
+let credential = Credential::new(access_key, secret_key);
+let upload_token = UploadPolicy::new_for_object(bucket_name, object_name, Duration::from_secs(3600))
+    .build_token(credential, Default::default())?;
+println!("{}", upload_token);
+```
+
+<a id="returnbody-uptoken"></a>
+
+#### 自定义上传回复的凭证
+
+默认情况下，文件上传到存储之后，在没有设置 `return_body` 或者`回调`相关的参数情况下，<span id="Productname">七牛</span>返回给上传端的回复格式为 `hash` 和 `key`，例如：
+
+```json
+{"hash":"Ftgm-CkWePC9fzMBTRNmPMhGBcSV","key":"qiniu.jpg"}
+```
+
+有时候我们希望能自定义这个返回的 JSON 格式的内容，可以通过设置 `return_body` 参数来实现，在 `return_body` 中，我们可以使用<span id="Productname">七牛</span>支持的[魔法变量](/kodo/manual/1235/vars#magicvar)和[自定义变量](/kodo/manual/1235/vars#xvar)。
+
+```rust
+use qiniu_sdk::upload_token::{UploadPolicy, credential::Credential, prelude::*};
+use std::time::Duration;
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let object_name = "object name";
+let credential = Credential::new(access_key, secret_key);
+let upload_token = UploadPolicy::new_for_object(bucket_name, object_name, Duration::from_secs(3600))
+    .return_body("{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"bucket\":\"$(bucket)\",\"fsize\":$(fsize)}")
+    .build_token(credential, Default::default())?;
+println!("{}", upload_token);
+```
+
+则文件上传到<span id="Productname">七牛</span>之后，收到的回复内容如下：
+
+```json
+{"key":"qiniu.jpg","hash":"Ftgm-CkWePC9fzMBTRNmPMhGBcSV","bucket":"if-bc","fsize":39335}
+```
+
+<a id="callback-uptoken"></a>
+
+#### 带回调业务服务器的凭证
+
+上面生成的自定义上传回复的上传凭证适用于上传端（无论是客户端还是服务端）和<span id="Productname">七牛</span>服务器之间进行直接交互的情况下。在客户端上传的场景之下，有时候客户端需要在文件上传到<span id="Productname">七牛</span>之后，从业务服务器获取相关的信息，这个时候就要用到<span id="Productname">七牛</span>的上传回调及相关回调参数的设置。
+
+```rust
+use qiniu_sdk::upload_token::{UploadPolicy, credential::Credential, prelude::*};
+use std::time::Duration;
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let object_name = "object name";
+let credential = Credential::new(access_key, secret_key);
+let upload_token = UploadPolicy::new_for_object(bucket_name, object_name, Duration::from_secs(3600))
+    .callback(&["http://api.example.com/qiniu/upload/callback"], "", "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"bucket\":\"$(bucket)\",\"fsize\":$(fsize)}", "application/json")
+    .build_token(credential, Default::default())?;
+println!("{}", upload_token);
+```
+
+在使用了上传回调的情况下，客户端收到的回复就是业务服务器响应<span id="Productname">七牛</span>的 JSON 格式内容。
+通常情况下，我们建议使用 `application/json` 格式来设置 `callback_body`，保持数据格式的统一性。实际情况下，`callback_body` 也支持 `application/x-www-form-urlencoded` 格式来组织内容，这个主要看业务服务器在接收到 `callback_body` 的内容时如何解析。例如：
+
+```rust
+use qiniu_sdk::upload_token::{UploadPolicy, credential::Credential, prelude::*};
+use std::time::Duration;
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let object_name = "object name";
+let credential = Credential::new(access_key, secret_key);
+let upload_token = UploadPolicy::new_for_object(bucket_name, object_name, Duration::from_secs(3600))
+    .callback(&["http://api.example.com/qiniu/upload/callback"], "", "key=$(key)&hash=$(etag)&bucket=$(bucket)&fsize=$(fsize)", "")
+    .build_token(credential, Default::default())?;
+println!("{}", upload_token);
+```
+
+<a id="param-uptoken"></a>
+#### 带自定义参数的凭证
+
+存储服务支持客户端上传文件的时候定义一些自定义参数，这些参数可以在 `returnBody` 和 `callbackBody` 里面和<span id="Productname">七牛</span>内置支持的魔法变量（即系统变量）通过相同的方式来引用。这些自定义的参数名称必须以 `x:` 开头。例如客户端上传的时候指定了自定义的参数 `x:user` 和 `x:age` 分别是 `String` 和 `usize` 类型。那么可以通过下面的方式引用：
+
+```rust
+upload_policy_builder.return_body("{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"bucket\":\"$(bucket)\",\"fsize\":$(fsize),\"user\":\"$(x:user)\",\"age\",$(x:age)}");
+```
+
+或者
+
+```rust
+upload_policy_builder.callback(&["http://api.example.com/qiniu/upload/callback"], "", "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"bucket\":\"$(bucket)\",\"fsize\":$(fsize),\"user\":\"$(x:user)\",\"age\",$(x:age)}", "application/json")
+```
+
+<a id="general-uptoken"></a>
+#### 综合上传凭证
+
+上面的生成上传凭证的方法，都是通过设置[上传策略🔗](/kodo/manual/1206/put-policy)相关的参数来支持的，这些参数可以通过不同的组合方式来满足不同的业务需求，可以灵活地组织你所需要的上传凭证。
+
+<a id="server-upload"></a>
+### 服务端直传（需要依赖 `qiniu-sdk` 启用 `upload` 功能）
+
+服务端直传是指客户利用<span id="Productname">七牛</span>服务端 SDK 从服务端直接上传文件到<span id="Productname">七牛云</span>，交互的双方一般都在机房里面，所以服务端可以自己生成上传凭证，然后利用 SDK 中的上传逻辑进行上传，最后从<span id="Productname">七牛云</span>获取上传的结果，这个过程中由于双方都是业务服务器，所以很少利用到上传回调的功能，而是直接自定义 `return_body` 来获取自定义的回复内容。
+
+<a id="upload-file"></a>
+#### 文件上传
+最简单的就是上传本地文件，直接指定文件的完整路径即可上传。
+
+```rust
+use qiniu_sdk::upload::{
+    apis::credential::Credential, AutoUploader, AutoUploaderObjectParams, UploadManager,
+    UploadTokenSigner,
+};
+use std::{time::Duration};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let object_name = "object name";
+let credential = Credential::new(access_key, secret_key);
+let upload_manager = UploadManager::builder(UploadTokenSigner::new_credential_provider(
+    credential,
+    bucket_name,
+    Duration::from_secs(3600),
+))
+.build();
+let uploader: AutoUploader = upload_manager.auto_uploader();
+
+let params = AutoUploaderObjectParams::builder().object_name(object_name).file_name(object_name).build();
+uploader.upload_path("/home/qiniu/test.png", params)?;
+```
+
+在这个场景下，`AutoUploader` 会自动根据文件尺寸判定是否启用断点续上传，如果文件较大，上传了一部分时因各种原因从而中断，再重新执行相同的代码时，SDK 会尝试找到先前没有完成的上传任务，从而继续进行上传。
+
+<a id="upload-bytes"></a>
+
+#### 字节数组上传 / 数据流上传
+
+可以支持将内存中的字节数组或实现了 `std::io::Read` 的实例上传到空间中。
+
+```rust
+use qiniu_sdk::upload::{
+    apis::credential::Credential, AutoUploader, AutoUploaderObjectParams, UploadManager,
+    UploadTokenSigner,
+};
+use std::{io::Cursor, time::Duration};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let object_name = "object name";
+let credential = Credential::new(access_key, secret_key);
+let upload_manager = UploadManager::builder(UploadTokenSigner::new_credential_provider(
+    credential,
+    bucket_name,
+    Duration::from_secs(3600),
+))
+.build();
+let uploader: AutoUploader = upload_manager.auto_uploader();
+
+let params = AutoUploaderObjectParams::builder().object_name(object_name).file_name(object_name).build();
+uploader.upload_reader(Cursor::new("hello qiniu cloud"), params)?;
+```
+
+<a id="upload-selfdefineParam"></a>
+#### 自定义参数上传
+
+```rust
+use qiniu_sdk::upload::{
+    apis::credential::Credential, AutoUploader, AutoUploaderObjectParams, UploadManager, UploadTokenSigner,
+};
+use std::{io::Cursor, time::Duration};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let object_name = "object name";
+let credential = Credential::new(access_key, secret_key);
+let upload_manager = UploadManager::builder(
+    UploadTokenSigner::new_credential_provider_builder(credential, bucket_name, Duration::from_secs(3600))
+        .on_policy_generated(|builder| {
+            builder
+                .return_body("{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"fname\":\"$(x:fname)\",\"age\",$(x:age)}");
+        })
+        .build(),
+)
+.build();
+let uploader: AutoUploader = upload_manager.auto_uploader();
+
+let params = AutoUploaderObjectParams::builder()
+    .object_name(object_name)
+    .file_name(object_name)
+    .insert_custom_var("fname", "123.jpg")
+    .insert_custom_var("age", "20")
+    .build();
+uploader.upload_path("/home/qiniu/test.mp4", params)?;
+```
+
+<a id="io-get"></a>
+# 下载文件
+
+ - <a href="#public-get">公开空间</a>
+ - <a href="#private-get">私有空间</a>
+
+文件下载分为公开空间的文件下载和私有空间的文件下载。
+
+<a id="public-get"></a>
+### 公开空间
+
+对于公开空间，其访问的链接主要是将空间绑定的域名拼接上空间里面的文件名即可访问，标准情况下需要在拼接链接之前，将文件名进行 `urlencode` 以兼容不同的字符。如果有其他访问处理需求，在文件名之后继续拼接即可。这个过程实际上不需要使用<span id="Productname">七牛</span> SDK 也可以完成。
+
+```rust
+use http::Uri;
+
+let object_name = "公司/存储/qiniu.jpg";
+let domain = "devtools.qiniu.com";
+let mut path = "/".to_string();
+url_escape::encode_path_to_string(object_name, &mut path);
+let url = Uri::builder()
+    .scheme("http")
+    .authority(domain)
+    .path_and_query(path)
+    .build()?;
+println!("{}", url);
+```
+
+<a id="private-get"></a>
+### 私有空间（需要依赖 `qiniu-sdk` 启用 `credential` 功能）
+
+对于私有空间，首先需要按照公开空间的文件访问方式构建对应的公开空间访问链接，然后再对这个链接进行私有授权签名。
+
+```rust
+use qiniu_sdk::credential::Credential;
+use http::Uri;
+
+let access_key = "access key";
+let secret_key = "secret key";
+let object_name = "公司/存储/qiniu.jpg";
+let domain = "devtools.qiniu.com";
+let mut path = "/".to_string();
+url_escape::encode_path_to_string(object_name, &mut path);
+let url = Uri::builder()
+    .scheme("http")
+    .authority(domain)
+    .path_and_query(path)
+    .build()?;
+let credential = Credential::new(access_key, secret_key);
+let url = credential.sign_download_url(url, Duration::from_secs(3600));
+println!("{}", url);
+```
+
+<a id="rs"></a>
+# 资源管理（需要依赖 `qiniu-sdk` 启用 `objects` 功能）
+
+资源管理包括的主要功能有：
+
+- <a href="#rs-stat">获取文件信息</a>
+- <a href="#rs-chgm">修改文件类型</a>
+- <a href="#rs-move">移动或重命名文件</a>
+- <a href="#rs-copy">复制文件副本</a>
+- <a href="#rs-delete">删除空间中的文件</a>
+- <a href="#rs-delete-after-days">设置或更新文件生存时间</a>
+- <a href="#rs-list">获取空间文件列表</a>
+- <a href="#rs-batch">资源管理批量操作</a>
+    - <a href="#rs-batch-stat">批量获取文件信息<a/>
+    - <a href="#rs-batch-chgm">批量修改文件类型<a/>
+    - <a href="#rs-batch-delete">批量删除文件<a/>
+    - <a href="#rs-batch-move">批量移动或重命名文件<a/>
+    - <a href="#rs-batch-copy">批量复制文件<a/>
+    - <a href="#rs-batch-restoreAr">批量解冻归档存储类型文件<a/>
+
+<a id="rs-stat"></a>
+#### 获取文件信息
+
+```rust
+use qiniu_sdk::objects::{apis::credential::Credential, ObjectsManager};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let object_name = "object name";
+let credential = Credential::new(access_key, secret_key);
+let object_manager = ObjectsManager::builder(credential).build();
+let bucket = object_manager.bucket(bucket_name);
+
+let response = bucket.stat_object(object_name).call()?;
+let entry = response.into_body();
+println!("{}", entry.get_hash_as_str());
+println!("{}", entry.get_size_as_u64());
+println!("{}", entry.get_mime_type_as_str());
+println!("{}", entry.get_put_time_as_u64());
+```
+
+<a id="rs-chgm"></a>
+#### 修改文件类型
+
+```rust
+use qiniu_sdk::objects::{apis::credential::Credential, ObjectsManager};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let object_name = "object name";
+let credential = Credential::new(access_key, secret_key);
+let object_manager = ObjectsManager::builder(credential).build();
+let bucket = object_manager.bucket(bucket_name);
+
+bucket
+    .modify_object_metadata(object_name, mime::APPLICATION_JSON)
+    .call()?;
+```
+
+<a id="rs-move"></a>
+#### 移动或重命名文件
+
+移动操作本身支持移动文件到相同，不同空间中，在移动的同时也可以支持文件重命名。唯一的限制条件是，移动的源空间和目标空间必须在同一个机房。
+
+`move_object_to` 操作支持强制覆盖选项，即如果目标文件已存在，可以设置强制覆盖参数 `is_force(true)` 来覆盖那个文件的内容。
+
+```rust
+use qiniu_sdk::objects::{apis::credential::Credential, ObjectsManager};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let object_name = "object name";
+let to_bucket_name = "to bucket name";
+let to_object_name = "new object name";
+let credential = Credential::new(access_key, secret_key);
+let object_manager = ObjectsManager::builder(credential).build();
+let bucket = object_manager.bucket(bucket_name);
+
+bucket
+    .move_object_to(object_name, to_bucket_name, to_object_name);
+    .call()?;
+```
+
+<a id="rs-copy"></a>
+#### 复制文件副本
+
+文件的复制和文件移动其实操作一样，主要的区别是移动后源文件不存在了，而复制的结果是源文件还存在，只是多了一个新的文件副本。
+
+```rust
+use qiniu_sdk::objects::{apis::credential::Credential, ObjectsManager};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let object_name = "object name";
+let to_bucket_name = "to bucket name";
+let to_object_name = "new object name";
+let credential = Credential::new(access_key, secret_key);
+let object_manager = ObjectsManager::builder(credential).build();
+let bucket = object_manager.bucket(bucket_name);
+
+bucket
+    .copy_object_to(object_name, to_bucket_name, to_object_name);
+    .call()?;
+```
+
+<a id="rs-delete"></a>
+#### 删除空间中的文件
+
+```rust
+use qiniu_sdk::objects::{apis::credential::Credential, ObjectsManager};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let object_name = "object name";
+let credential = Credential::new(access_key, secret_key);
+let object_manager = ObjectsManager::builder(credential).build();
+let bucket = object_manager.bucket(bucket_name);
+
+bucket
+    .delete_object(object_name);
+    .call()?;
+```
+
+<a id="rs-delete-after-days"></a>
+#### 设置或更新文件的生存时间
+
+可以给已经存在于空间中的文件设置文件生存时间，或者更新已设置了生存时间但尚未被删除的文件的新的生存时间。
+
+```rust
+use qiniu_sdk::objects::{apis::credential::Credential, AfterDays, ObjectsManager};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let object_name = "object name";
+let credential = Credential::new(access_key, secret_key);
+let object_manager = ObjectsManager::builder(credential).build();
+let bucket = object_manager.bucket(bucket_name);
+
+bucket
+    .modify_object_life_cycle(object_name)
+    .delete_after_days(AfterDays::new(10)) // 过期天数，该文件将于 10 天后删除
+    .call()?;
+```
+
+<a id="rs-list"></a>
+#### 获取空间文件列表
+
+```rust
+use qiniu_sdk::objects::{apis::credential::Credential, ObjectsManager};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let credential = Credential::new(access_key, secret_key);
+let object_manager = ObjectsManager::builder(credential).build();
+let bucket = object_manager.bucket(bucket_name);
+
+let mut iter = bucket.list().iter();
+while let Some(entry) = iter.next() {
+    let entry = entry?;
+    println!(
+        "{}\n  hash: {}\n  size: {}\n  mime type: {}",
+        entry.get_key_as_str(),
+        entry.get_hash_as_str(),
+        entry.get_size_as_u64(),
+        entry.get_mime_type_as_str(),
+    );
+}
+```
+
+<a id="rs-batch"></a>
+## 资源管理批量操作
+
+<a id="rs-batch-stat"></a>
+#### 批量获取文件信息
+
+```rust
+use qiniu_sdk::objects::{apis::credential::Credential, ObjectsManager};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let credential = Credential::new(access_key, secret_key);
+let object_manager = ObjectsManager::builder(credential).build();
+let bucket = object_manager.bucket(bucket_name);
+let mut ops = bucket.batch_ops();
+ops.add_operation(bucket.stat_object("qiniu.jpg"));
+ops.add_operation(bucket.stat_object("qiniu.mp4"));
+ops.add_operation(bucket.stat_object("qiniu.png"));
+
+let mut iter = ops.call();
+while let Some(result) = iter.next() {
+    match result {
+        Ok(entry) => {
+            println!(
+                "hash: {:?}\n  size: {:?}\n  mime type: {:?}",
+                entry.get_hash_as_str(),
+                entry.get_size_as_u64(),
+                entry.get_mime_type_as_str(),
+            );
+        }
+        Err(err) => {
+            println!("{:?}", err);
+        }
+    }
+}
+```
+
+<a id="rs-batch-chgm"></a>
+#### 批量修改文件类型
+
+```rust
+use qiniu_sdk::objects::{apis::credential::Credential, ObjectsManager};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let credential = Credential::new(access_key, secret_key);
+let object_manager = ObjectsManager::builder(credential).build();
+let bucket = object_manager.bucket(bucket_name);
+let mut ops = bucket.batch_ops();
+ops.add_operation(bucket.modify_object_metadata("qiniu.jpg", mime::IMAGE_JPEG));
+ops.add_operation(bucket.modify_object_metadata("qiniu.png", mime::IMAGE_PNG));
+ops.add_operation(bucket.modify_object_metadata("qiniu.mp4", "video/mp4".parse()?));
+
+let mut iter = ops.call();
+while let Some(result) = iter.next() {
+    match result {
+        Ok(_) => {
+            println!("Ok");
+        }
+        Err(err) => {
+            println!("{:?}", err);
+        }
+    }
+}
+```
+
+<a id="rs-batch-delete"></a>
+#### 批量删除文件
+
+```rust
+use qiniu_sdk::objects::{apis::credential::Credential, ObjectsManager};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let credential = Credential::new(access_key, secret_key);
+let object_manager = ObjectsManager::builder(credential).build();
+let bucket = object_manager.bucket(bucket_name);
+let mut ops = bucket.batch_ops();
+ops.add_operation(bucket.delete_object("qiniu.jpg"));
+ops.add_operation(bucket.delete_object("qiniu.png"));
+ops.add_operation(bucket.delete_object("qiniu.mp4"));
+
+let mut iter = ops.call();
+while let Some(result) = iter.next() {
+    match result {
+        Ok(_) => {
+            println!("Ok");
+        }
+        Err(err) => {
+            println!("{:?}", err);
+        }
+    }
+}
+```
+
+<a id="rs-batch-move"></a>
+#### 批量移动或重命名文件
+
+```rust
+use qiniu_sdk::objects::{apis::credential::Credential, ObjectsManager};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let credential = Credential::new(access_key, secret_key);
+let object_manager = ObjectsManager::builder(credential).build();
+let bucket = object_manager.bucket(bucket_name);
+let mut ops = bucket.batch_ops();
+ops.add_operation(bucket.move_object_to("qiniu.jpg", bucket_name, "qiniu.jpg.move"));
+ops.add_operation(bucket.move_object_to("qiniu.png", bucket_name, "qiniu.png.move"));
+ops.add_operation(bucket.move_object_to("qiniu.mp4", bucket_name, "qiniu.mp4.move"));
+
+let mut iter = ops.call();
+while let Some(result) = iter.next() {
+    match result {
+        Ok(_) => {
+            println!("Ok");
+        }
+        Err(err) => {
+            println!("{:?}", err);
+        }
+    }
+}
+```
+
+<a id="rs-batch-copy"></a>
+#### 批量复制文件
+
+```rust
+use qiniu_sdk::objects::{apis::credential::Credential, ObjectsManager};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let credential = Credential::new(access_key, secret_key);
+let object_manager = ObjectsManager::builder(credential).build();
+let bucket = object_manager.bucket(bucket_name);
+let mut ops = bucket.batch_ops();
+ops.add_operation(bucket.copy_object_to("qiniu.jpg", bucket_name, "qiniu.jpg.move"));
+ops.add_operation(bucket.copy_object_to("qiniu.png", bucket_name, "qiniu.png.move"));
+ops.add_operation(bucket.copy_object_to("qiniu.mp4", bucket_name, "qiniu.mp4.move"));
+
+let mut iter = ops.call();
+while let Some(result) = iter.next() {
+    match result {
+        Ok(_) => {
+            println!("Ok");
+        }
+        Err(err) => {
+            println!("{:?}", err);
+        }
+    }
+}
+```
+
+<a id="rs-batch-restoreAr"></a>
+#### 批量解冻归档存储类型文件
+
+```rust
+use qiniu_sdk::objects::{apis::credential::Credential, ObjectsManager};
+
+let access_key = "access key";
+let secret_key = "secret key";
+let bucket_name = "bucket name";
+let credential = Credential::new(access_key, secret_key);
+let object_manager = ObjectsManager::builder(credential).build();
+let bucket = object_manager.bucket(bucket_name);
+let mut ops = bucket.batch_ops();
+ops.add_operation(bucket.restore_archived_object("qiniu.jpg", 7));
+ops.add_operation(bucket.restore_archived_object("qiniu.png", 7));
+ops.add_operation(bucket.restore_archived_object("qiniu.mp4", 7));
+
+let mut iter = ops.call();
+while let Some(result) = iter.next() {
+    match result {
+        Ok(_) => {
+            println!("Ok");
+        }
+        Err(err) => {
+            println!("{:?}", err);
+        }
+    }
+}
+```
+
+<a id="api-references"></a>
+# API 参考
+
+- [存储 API 参考](/kodo/api/3939/overview-of-the-api)
+
+<a id="faq"></a>
+# 最低支持的 Rust 版本（MSRV）
+
+- 1.60.0 Stable
+
+<a id="related-resources"></a>
+# 相关资源
+
+如果您有任何关于我们文档或产品的建议和想法，欢迎您通过以下方式与我们互动讨论：
+
+* [技术论坛](http://segmentfault.com/qiniu) - 在这里您可以和其他开发者愉快的讨论如何更好的使用七牛云服务
+* [提交工单](https://support.qiniu.com/tickets/new) - 如果您的问题不适合在论坛讨论或希望及时解决，您也可以提交一个工单，我们的技术支持人员会第一时间回复您
+* [博客](http://blog.qiniu.com) - 这里会持续更新发布市场活动和技术分享文章
+* [微博](http://weibo.com/qiniutek)
+* [常见问题](https://support.qiniu.com/question)
+	
+<span id="del_in_kodoe_docs_block_end"></span>
+
+<a id="contribute-code"></a>
+# 贡献代码
+
+1. Fork
+
+2. 创建您的特性分支 git checkout -b my-new-feature
+
+3. 提交您的改动 git commit -am 'Added some feature'
+
+4. 将您的修改记录提交到远程 git 仓库 git push origin my-new-feature
+
+5. 然后到 github 网站的该 git 远程仓库的 my-new-feature 分支下发起 Pull Request
+
+<a id="license"></a>
+# 许可证
+
+Copyright (c) 2022 qiniu.com
+
+基于 MIT 协议发布:
+
+* [www.opensource.org/licenses/MIT](http://www.opensource.org/licenses/MIT)
+
+<script>
+  $().ready(function(){
+    $(".topic-detail a a img").each(function(i, img){
+      $(img).parent('a').parent('a').html($(img))
+    })
+  })
+</script>

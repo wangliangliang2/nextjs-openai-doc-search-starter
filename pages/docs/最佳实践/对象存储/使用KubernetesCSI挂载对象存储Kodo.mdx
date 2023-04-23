@@ -1,0 +1,309 @@
+在 Kubernetes 中，我们支持通过 Container Storage Interface (CSI) 驱动将七牛云对象存储 Kodo 的存储空间以卷的形式直接在 Kubernetes 容器内挂载，并通过 POSIX 接口直接读写对象存储中的数据。
+- 该功能要求 Kubernetes 的版本在 1.18 以上
+- 查看 [Kubernetes 相关文档](https://kubernetes.io/docs/concepts/storage/volumes/#csi)
+
+# **安装 Kodo CSI 驱动**
+查看 [Kodo CSI Github](https://github.com/qiniu/csi-driver) 页面，克隆代码到本地
+```
+git clone --depth 1 -b v0.1.1 https://github.com/qiniu/csi-driver.git
+```
+将 Kodo CSI 安装进 Kubernetes
+```
+kubectl apply ./csi-driver/k8s/kodo
+```
+<br>
+
+# **使用指定的存储空间**
+Kodo CSI 驱动支持声明指定了对象存储空间的 PV，并通过 PVC 将该 PV 挂载到 Kubernetes 容器内，这样就可以在 Kubernetes 容器内访问到指定存储空间的数据。
+
+**编辑 ./csi-driver/examples/kodo/static-provisioning/secret.yaml**
+```
+   apiVersion: v1
+   metadata:
+     name: kodo-csi-pv-secret                 # Secret 名称，可以修改
+   kind: Secret
+   type: Opaque
+   data:
+     accesskey: "<Qiniu Access Key>"
+     secretkey: "<Qiniu Secret Key>"
+     bucketname: "<bucketname>"
+     ucendpoint: "<ucendpoint>"
+     storageclass: "STANDARD"
+     region: "z0"
+```
+
+参数说明：
+|参数|必填|说明
+|-|-|-
+|accesskey|是|Access Key|
+|secretkey|是|- Secret Key <br> - 必须注意，在 Kubernetes 中，Secret 的值必须以 Base64 的形式填写，可以参考[官方案例](https://kubernetes.io/docs/concepts/configuration/secret/#editing-a-secret)。
+|bucketname|是|空间名称
+|ucendpoint|是|在公有云中，该字段可以填写为 https://uc.qbox.me
+|storageclass|否|默认为 STANDARD，可选值为 STANDARD，LINE，GLACIER，DEEP_ARCHIVE
+|region|否|默认为 z0 代表华东区
+
+
+
+<br>
+
+**编辑 ./csi-driver/examples/kodo/static-provisioning/pv.yaml**
+```
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kodo-csi-pv                        # PV 名称，可以修改
+  labels:
+    kodo-pvname: kodo-csi-pv               # PVC 匹配用的标签，可以修改
+spec:
+  capacity:
+    storage: 5Gi                           # 空间大小，可以修改
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain    # 无需修改，Kodo CSI 驱动只支持 Retain 策略
+  csi:
+    driver: kodoplugin.storage.qiniu.com
+    volumeHandle: kodo-csi-pv              # 指定为上面的 PV 名称
+    volumeAttributes:
+       uploadcutoff: "209715200"          
+       uploadchunksize: "5242880"         
+       uploadconcurrency: "4"            
+       vfscachemode: "off"               
+       dircacheduration: "5m0s"           
+       buffersize: "16777216"             
+       vfsreadahead: "0"                  
+       vfscachemaxage: "1h0m0s"           
+       vfscachemaxsize: "off"            
+       vfscachepollinterval: "1m0s"       
+       vfswriteback: "5s"                 
+       vfsreadchunksize: "134217728"      
+       vfsreadchunksizelimit: "off"       
+       nochecksum: "no"                   
+       nomodtime: "no"                    
+       noseek: "no"                       
+       readonly: "no"                     
+       transfers: "4"                     
+    nodePublishSecretRef:
+      name: kodo-csi-pv-secret             # 指定 Secret 名称
+      namespace: default
+```
+参数说明：
+|参数|必填|说明
+|-|-|-
+|uploadcutoff|否|- 分片上传阈值，大于该阈值的文件将自动使用分片的形式上传，单位为字节。 <br>- 默认为 200 MB，最小值为 0，最大不能超过 5 GB。
+|uploadchunksize|否|- 分片大小，单位为字节，默认为 5 MB。<br> - 对于大文件而言，适当提高分片大小将有效提升上传效率。
+|uploadconcurrency|否|分片上传并发度，默认为 4。
+|vfscachemode|否|- 本地缓存模式，可选值为 off，minimal，writes，full。<br>- 默认为 off，即无本地缓存，具体参见[高级参数详解](#5)内的说明。
+|dircacheduration|否|- 目录缓存时长，默认为 5m0s。<br> - 当列举目录时，如果目录没有缓存或缓存已经失效，则会从云存储列举，然后刷新缓存。
+|buffersize|否|- 文件内存缓冲区最大尺寸，单位为字节，默认为 16 MB。<br> - 当文件被下载时，数据将被读入内存缓冲区等待读请求来获取。
+|vfsreadahead|否|- 额外预读取大小，单位为字节，默认为 0。<br> - 仅在 vfscachemode 为 full 时，当文件被下载时，buffersize 大小的数据将被读取到内存缓冲区等待读取，之后的 vfsreadahead 大小的数据则被读取到本地缓存中等待读取。
+|vfscachemaxage|否|- 本地缓存时长，默认为 1h0m0s。<br> - 当本地缓存被启用时，缓存的数据最长有效期，超过有效期的数据将被自动删除。
+|vfscachemaxsize|否|最大本地缓存尺寸，默认为 off。
+|vfscachepollinterval|否|清理缓存频率，默认为 1m0s。
+|vfswriteback|否|- 本地缓存上传延迟时长，默认为 5s。<br> - 当本地写缓存被启用时，被写入的文件仅在被关闭后，且在延迟时长内没有被再打开的数据才会被上传到云存储。
+|vfsreadchunksize|否|- 首次下载分片大小，单位为字节，默认为 128 MB。<br> - 当 vfsreadchunksize 大于 0 时，文件总是以分片的形式被下载，且每次下载的分片被读取完毕后，下次下载的分片大小是前一次的两倍，直到分片大小达到 vfsreadchunksizelimit 或文件被下载完毕为止。
+|vfsreadchunksizelimit|否|- 最大下载分片大小，单位为字节，默认为 off。<br> - 当下载的分片大小不断翻倍直到大于等于 vfsreadchunksizelimit 后，之后每次下载的分片大小总是等于 vfsreadchunksizelimit，直到文件被下载完毕为止。
+|nochecksum|否|上传下载时不再校验数据，默认为总是校验数据。
+|nomodtime|否|- 不再读写文件修改时间，默认为总是读写文件修改时间。<br> - 禁止读写文件修改时间可以提升文件系统的性能。
+|noseek|否|禁止文件寻址，默认为允许文件寻址。
+|readonly|否|只读文件系统，默认为可以修改文件系统。
+|transfers|否|- 本地缓存上传并发度，默认为 4。<br> - 当本地写缓存被启用时，异步上传文件的并发度。
+
+<br>
+
+**编辑 ./csi-driver/examples/kodo/static-provisioning/pvc.yaml**
+```
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kodo-pvc                           # PVC 名称，可以修改
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: ''
+  resources:
+    requests:
+      storage: 5Gi                         # 申请空间大小，可以修改
+  selector:
+    matchLabels:
+      kodo-pvname: kodo-csi-pv             # 匹配 PV 的标签
+```
+<br>
+
+**将 Secret，PV，PVC 导入 Kubernetes**
+```
+kubectl create -f ./csi-driver/examples/kodo/static-provisioning
+```
+
+<br>
+
+# **使用 CSI 驱动动态创建的存储空间**
+Kodo CSI 驱动也支持声明 StorageClass，并在创建 PVC 的过程中当场为其创建对象存储空间。当容器只是需要非特定的对象存储空间时，动态创建存储空间的方式将更加方便。但需要注意，该功能需要您的账户开启 [IAM 功能](https://developer.qiniu.com/af/10149/iam-introduction)，该功能将允许您创建并管理子账户。如果之前从未开启过，请与七牛技术支持联系。
+
+**编辑 ./csi-driver/examples/kodo/dynamic-provisioning/secret.yaml**
+```
+apiVersion: v1
+metadata:
+  name: kodo-csi-sc-secret
+kind: Secret
+type: Opaque
+data:
+  accesskey: "<Qiniu Access Key>"
+  secretkey: "<Qiniu Secret Key>"
+  ucendpoint: "<ucendpoint>"
+  storageclass: "STANDARD"
+  region: "z0"
+```
+参数说明：
+|参数|必填|说明
+|-|-|-
+|accesskey|是|Access Key|
+|secretkey|是|- Secret Key <br> - 必须注意，在 Kubernetes 中，Secret 的值必须以 Base64 的形式填写，可以参考[官方案例](https://kubernetes.io/docs/concepts/configuration/secret/#editing-a-secret)。
+|ucendpoint|是|在公有云中，该字段可以填写为 https://uc.qbox.me
+|storageclass|否|默认为 STANDARD，可选值为 STANDARD，LINE，GLACIER，DEEP_ARCHIVE
+|region|否|默认为 z0 代表华东区
+
+<br>
+
+**编辑 ./csi-driver/examples/kodo/dynamic-provisioning/sc.yaml**
+```
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: kodo-csi-sc       # StorageClass 名称，可以修改
+parameters:
+  uploadcutoff: "209715200"          
+  uploadchunksize: "5242880"         
+  uploadconcurrency: "4"            
+  vfscachemode: "off"               
+  dircacheduration: "5m0s"           
+  buffersize: "16777216"             
+  vfsreadahead: "0"                  
+  vfscachemaxage: "1h0m0s"           
+  vfscachemaxsize: "off"            
+  vfscachepollinterval: "1m0s"       
+  vfswriteback: "5s"                 
+  vfsreadchunksize: "134217728"      
+  vfsreadchunksizelimit: "off"       
+  nochecksum: "no"                   
+  nomodtime: "no"                    
+  noseek: "no"                       
+  readonly: "no"                     
+  transfers: "4"                     
+  csi.storage.k8s.io/provisioner-secret-name: kodo-csi-sc-secret   # 指定 Secret 名称
+  csi.storage.k8s.io/provisioner-secret-namespace: default
+provisioner: kodoplugin.storage.qiniu.com
+reclaimPolicy: Retain       # 当 PVC 被删除时，相关存储空间的处理策略。可选值为 Retain，Delete，Retain 表示存储空间及相关数据将被保留，Delete 表示存储空间及相关数据将被删除。默认为 Retain。
+```
+参数说明：
+|参数|必填|说明
+|-|-|-
+|uploadcutoff|否|- 分片上传阈值，大于该阈值的文件将自动使用分片的形式上传，单位为字节。 <br>- 默认为 200 MB，最小值为 0，最大不能超过 5 GB。
+|uploadchunksize|否|- 分片大小，单位为字节，默认为 5 MB。<br> - 对于大文件而言，适当提高分片大小将有效提升上传效率。
+|uploadconcurrency|否|分片上传并发度，默认为 4。
+|vfscachemode|否|- 本地缓存模式，可选值为 off，minimal，writes，full。<br> - 默认为 off，即无本地缓存，具体参见[高级参数详解](#5)内的说明。
+|dircacheduration|否|- 目录缓存时长，默认为 5m0s。<br> - 当列举目录时，如果目录没有缓存或缓存已经失效，则会从云存储列举，然后刷新缓存。
+|buffersize|否|- 文件内存缓冲区最大尺寸，单位为字节，默认为 16 MB。<br> - 当文件被下载时，数据将被读入内存缓冲区等待读请求来获取。
+|vfsreadahead|否|- 额外预读取大小，单位为字节，默认为 0。<br> - 仅在 vfscachemode 为 full 时，当文件被下载时，buffersize 大小的数据将被读取到内存缓冲区等待读取，之后的 vfsreadahead 大小的数据则被读取到本地缓存中等待读取。
+|vfscachemaxage|否|- 本地缓存时长，默认为 1h0m0s。<br> - 当本地缓存被启用时，缓存的数据最长有效期，超过有效期的数据将被自动删除。
+|vfscachemaxsize|否|最大本地缓存尺寸，默认为 off。
+|vfscachepollinterval|否|清理缓存频率，默认为 1m0s。
+|vfswriteback|否|- 本地缓存上传延迟时长，默认为 5s。<br> - 当本地写缓存被启用时，被写入的文件仅在被关闭后，且在延迟时长内没有被再打开的数据才会被上传到云存储。
+|vfsreadchunksize|否|- 首次下载分片大小，单位为字节，默认为 128 MB。<br> - 当 vfsreadchunksize 大于 0 时，文件总是以分片的形式被下载，且每次下载的分片被读取完毕后，下次下载的分片大小是前一次的两倍，直到分片大小达到 vfsreadchunksizelimit 或文件被下载完毕为止。
+|vfsreadchunksizelimit|否|- 最大下载分片大小，单位为字节，默认为 off。<br> - 当下载的分片大小不断翻倍直到大于等于 vfsreadchunksizelimit 后，之后每次下载的分片大小总是等于 vfsreadchunksizelimit，直到文件被下载完毕为止。
+|nochecksum|否|上传下载时不再校验数据，默认为总是校验数据。
+|nomodtime|否|- 不再读写文件修改时间，默认为总是读写文件修改时间。<br> - 禁止读写文件修改时间可以提升文件系统的性能。
+|noseek|否|禁止文件寻址，默认为允许文件寻址。
+|readonly|否|只读文件系统，默认为可以修改文件系统。
+|transfers|否|- 本地缓存上传并发度，默认为 4。<br> - 当本地写缓存被启用时，异步上传文件的并发度。
+<br>
+
+**编辑 ./csi-driver/examples/kodo/dynamic-provisioning/pvc.yaml**
+```
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kodo-pvc                            # PVC 名称，可以修改
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: kodo-csi-sc             # 指定对应的 StorageClass
+  resources:
+    requests:
+      storage: 5Gi                          # 申请空间大小，可以修改
+```
+<br>
+
+**将 Secret，StorageClass，PVC 导入 Kubernetes**
+```
+kubectl create -f ./csi-driver/examples/kodo/dynamic-provisioning
+```
+<br>
+
+# **将 PVC 挂载进容器**
+这里以 Nginx 容器为例，展示将 PVC 挂载进容器的方式
+**编辑 ./csi-driver/examples/kodo/deploy.yaml**
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-kodo
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.22.0-alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - name: kodo-pvc                   # 指定 Volume 名称，与下面 Volume 的名称对应
+            mountPath: "/data"               # 挂载路径
+      volumes:
+        - name: kodo-pvc                     # Volume 名称，可以修改
+          persistentVolumeClaim:
+            claimName: kodo-pvc              # 要挂载的 PVC 名称
+```
+<br>
+
+**将容器导入 Kubernetes 并启动**
+```
+kubectl create -f ./csi-driver/examples/kodo/deploy.yaml
+```
+<br>
+
+<a id="parameter"></a>
+# **高级参数详解**
+`vfscachemode` 表示文件在读写过程中在本地缓存的模式，可选值为 off，minimal，writes，full。
+**off**
+- 默认模式，完全没有本地缓存，写入的数据直接上传到云存储，读取的数据也直接从云存储读取。
+- 该模式下：
+   - 文件不能同时以读和写模式打开。
+   - 通过写模式打开的文件无法被寻址。
+   - 对于已经存在的文件，如果想要通过写模式打开，则必须添加 O_TRUNC 选项。
+   - 如果上传失败了，将无法被重试。
+
+
+**minimal**
+- 仅对同时以读和写模式打开的文件提供本地缓存功能，文件将在本地缓存被写入完毕后异步上传到云存储。
+- 该模式下：
+   - 仅通过写模式打开的文件无法被寻址。
+   - 对于已经存在的文件，如果想要通过写模式打开，则必须添加 O_TRUNC 选项。
+   - 如果上传失败了，将无法被重试。
+
+
+**writes**
+- 仅以读模式打开的文件将直接从云存储读取，以写模式打开或同时以读模式和写模式打开的文件都将在本地缓存被写入完毕后，文件将在本地被写入完毕后异步上传到云存储。
+- 该模式支持所有正常的文件操作。
+
+**full**
+- 无论读取还是写入操作，都会从本地缓存读写，写入操作与 writes 机制相同。
+- 对于读取操作，缓存会追踪已经读取的范围，并将下载的数据片段缓存在本地。
+- 该模式支持所有正常的文件操作。

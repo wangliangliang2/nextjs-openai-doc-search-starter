@@ -1,0 +1,54 @@
+解析数组类型，并将其转化为键值对填充到原数据中。
+
+* 要进行Transform变化的键(`key`)：要解析的数据所在字段名称，支持多级嵌套，多级间用.符号连接，如abc.xyz，表示 data["abc"]["xyz"]中的数据。
+
+### **示例**：
+parser 解析后的数据为:
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "arrayfield": ["a", 1, 3.0, "d", "e"]
+}
+```
+经过 arrayexpand 后的数据将变为:
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "arrayfield": ["a", 1, 3.0, "d", "e"],
+    "arrayfield0": "a",
+    "arrayfield1": 1,
+    "arrayfield2": 3.0,
+    "arrayfield3": "d",
+    "arrayfield4": "e"
+}
+```
+
+>注意：若 arrayexpand 解析生成的字段与数据中原有字段冲突，则会再加一个数字位进行重命名。 例如:
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "arrayfield3": "xxx",
+    "arrayfield": ["a", "b", "c", "d", "e"]
+}
+```
+经过 arrayexpand 后的数据将变为:
+
+```
+{
+    "field1": "aaaa",
+    "field2": "bbbb",
+    "arrayfield3": "xxx",
+    "arrayfield": ["a", "b", "c", "d", "e"]
+    "arrayfield0": "a",
+    "arrayfield1": "b",
+    "arrayfield2": "c",
+    "arrayfield3_0": "b",
+    "arrayfield4": "e"
+}
+```

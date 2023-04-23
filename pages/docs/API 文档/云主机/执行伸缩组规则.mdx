@@ -1,0 +1,30 @@
+# 请求路径
+> `POST` /v1/ess/rule/execute 
+
+# 请求参数
+
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region_id | string | body | 是 | 地域 ID |
+| scaling_rule_ari | string | body | 是 | 伸缩规则唯一标识符。 |
+| breach_threshold | string | body | 否 | 执行步进伸缩规则时指定的当前阈值，取值范围-9.999999E18~9.999999E18。参考值: 1。|
+| client_token | string | body | 否 | 用于保证请求的幂等性, 要保证在不同请求间唯一 |
+| metric_value | double | body | 否 | 执行步进伸缩规则时指定的当前指标值，取值范围-9.999999E18~9.999999E18。参考值: 1。 |
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| request_id | string | 是 | 请求记录 ID |
+| scaling_activity_id | string | 是 | 伸缩活动的ID。 |
+
+
+
+# 示例
+### 正常返回示例
+```json
+{
+    "request_id": "504ce405-58d1-40b1-9674-40d7d3875d65",
+    "scaling_activity_id": "assaf"
+}
+```

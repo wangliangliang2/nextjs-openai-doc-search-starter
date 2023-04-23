@@ -1,0 +1,32 @@
+**使用场景：**
+
+连续数据不限于定义的单独值，而是可以占用连续范围内的任何值。在任何两个连续数据值之间，可能有无限多个其他值。比如身高、体重、温度、价格等等。当我们需要在一组连续数据中发现与其他数据有明显区别的数据，我们通常使用异常检测算法(Anomaly Detection)来解决问题。
+
+异常值检测算法可以根据其使用目的分成两大类：一是新颖点检测（Novelty Detection)，二是离群点检测（Outlier Detection）。
+新颖性检测假设训练数据中*不包含*异常值，即通过学习历史数据，模型可以学习“正常数据”的特征和其分布，并且以此检测**新数据**是否符合“正常数据”的特征。
+离群点检测假设训练数据中*包含*异常值，即通过相关算法，找到训练数据的中心模式，并且把训练数据中远离中心模式的数据点定义为异常数据。因此，在离群点检测的场景中，算法不支持模型的保存和重新应用，需要在新数据上重新用fit训练模型。
+
+**通用语法：**
+
+```
+...|fit <algo_name> [options] <feature_field_1> <feature_field_2> [into model_name]... 
+```
+
+**通用参数说明：**
+
+- <algo_name> 必填，用来指定训练模型采用的算法名称。
+- [options]可选，为算法的内置参数，根据提供的算法变化。
+- <feature_field> 必填，可以是一个或者多个字段，用来指定建模使用的特征字段，给定的feature_field值必须存在于数据集中。
+- [into model_name]可选，用来将fit训练出来的模型保存成model_name以便下次调用。在使用LocalOutlierFactor算法并且设参数novelty为False的时候，不支持模型保存。
+- 数据集必须不为空。
+
+
+
+以下算法可以用来检测连续数据中的异常数据：
+
+- [局部异常因子 - Local Outlier Factor(LOF)](/express/manual/11064/local-anomalies-factor-the-local-outlier-factor-lof)
+- [一类支持向量机 - One Class SVM](/express/manual/11065/a-support-vector-machine-svm-one-class-svm)
+- [孤立森林 - Isolation Forest](/express/manual/11066/isolated-forests-the-isolation-forest)
+- [基于方差的鲁棒的异常检测值检测 - EllipticEnvelope](/express/manual/11067/based-on-the-variance-of-the-robust-ellipticenvelope-anomaly-detection-value-of-detection)
+
+

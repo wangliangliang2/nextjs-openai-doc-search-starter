@@ -1,0 +1,25 @@
+Redis Reader 输出的是 redis 中存储的字符串，具体字符串是什么格式，可以在 parser 中用对应方式解析。
+在redis reader中redis被作为一个消息队列使用，会清除已经读取过的数据。
+
+### **基础配置信息**
+
+  * `数据读取模式(redis_datatype)`：包含 `list`, `channel`, `pattern_channel`,`hash`,`sortedSet`,`set`,`string` 七种模式：
+     * `string 模式`用于读取redis中value存储类型为`string`的数据，`redis_key`指定的即为值的名称，固定通过 Redis 的 GET 获取数据。
+     * `hash 模式`用于读取redis中value存储类型为`hash`的数据，`redis_key`指定的即为hash表的名称，固定通过 Redis 的 HGET 获取数据。
+     * `set 模式`用于读取redis中value存储类型为`set`的数据，`redis_key`指定的即为set集合的名称，固定通过 Redis 的 SPOP 获取数据。
+     * `zset 模式`用于读取redis中value存储类型为`zset`的数据，`redis_key`指定的即为sorted set集合的名称，固定通过 Redis 的 ZRANGE 获取数据。
+     * `list 模式`用于读取redis中value存储类型为`list`的数据，固定通过 Redis 的 BLPOP 获取数据，即用户的数据是通过 `LPUSH` 或者 `RPUSH` 的方式存进 list 中（持续写入的话，`推荐使用 RPUSH` 的方式，以免 Redis 高并发写入下出现异常情况），然后 redis 从`最左边元素`依次读取。在这个模式下 `redis_key` 模式的就是指定 list 的名称。
+     * `channel 模式`通过 Redis 的 `Pub/Sub` 模式读取，启动 Redis 后，`订阅(Sub) redis_key `指定的键(即 Redis 中的 channel)，当该 channel 有信息被发布(Pub)时，即获取该数据。
+     * `pattern_channel`，该模式与 channel 模式几乎相同，区别是，在该模式下 redis_key 可以指定为一个模式串，如 "abc*",则所有 "abc" 为前缀的 channel 都会被监听。
+  * `redis键类型(redis_datatype)`：Redis 监听键值的类型，`默认为 "list"`。
+  * `数据库名称(redis_db)`：Redis 的数据库名，`默认为 "0"`。
+  * `redis 键(redis_key)`：Redis 监听的键值，在不同模式（redis_datatype）下表示不同含义。
+  * `数据库地址(redis_address)`：Redis 的地址（IP+端口），`默认为 "127.0.0.1:6379"` 
+
+### **高级选项**
+
+  * `单次读取超时时间(redis_timeout)`：`默认为 "5s"`，在模式为 list 时每次等待键值数据的超时时间。
+  * `密码(redis_password)`：`选填`，登录redis的密码。
+  * `hash模式对应的数据结构域(redisHash_area)`：当数据读取模式为`hash`时生效，用于指定需要获取hash表中value对应的field。
+
+`注`：若选取的数据类型与redis中实际的数据类型不一致，创建runner时会报错。

@@ -1,0 +1,62 @@
+# 请求路径
+> `GET` /v1/ess/group/:id/instance
+
+# 请求参数
+
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region_id | string | query | 是 | 地域 ID |
+| id | string | path | 是 | 伸缩组 ID |
+| scaling_configuration_id | string | query | 否 | 关联伸缩配置的ID |
+| instance_id | string | query | 否 | 待查询主机的ID，最多可以输入10个，用逗号','分隔。 |
+| health_status | string | query | 否 | ECS实例在伸缩组中的健康状态，未处于运行中（Running）状态的ECS实例会被判定为不健康的ECS实例, 取值: Healthy, Unhealthy。 |
+| creation_type | string | query | 否 | ECS实例的创建方式，取值范围：AutoCreated：弹性伸缩根据实例配置信息来源自动创建的ECS实例; Attached：不是通过弹性伸缩服务创建，而是由您手动添加到伸缩组中的ECS实例 |
+| lifecycle_state | string | query| 是 | 在伸缩组中的生命周期状态, 可选值： InService：已成功加入伸缩组并正常提供服务。 Pending：正在加入伸缩组但还未完成相关配置，包括创建实例、加入负载均衡、添加RDS访问名单等过程。 Removing：正在移出伸缩组。 |
+| page | int | query | 否 | 页码 |
+| size | int | query | 否 | 分页大小 |
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| data | [] ScalingInstance | 是 | 伸缩组主机列表 |
+| request_id | string | 是 | 请求记录 ID |
+| page | int | 是 | 页码 |
+| size | int | 是 | 分页大小 |
+| total | int | 是 | 查询到的总数 |
+
+
+### ScalingInstance 伸缩组内主机信息
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| instance_id | string | 是 | 主机 ID |
+| scaling_group_id | string | 是 | 伸缩组 ID |
+| scaling_configuration_id | string | 是 | 关联的伸缩配置ID |
+| health_status | string | 是 | 在伸缩组中的健康状态 |
+| lifecycle_state | string | 是 | 在伸缩组中的生命周期状态 |
+| creation_time | string | 是 | 加入伸缩组的时间 |
+| creation_type | int | 是 | ECS实例的创建类型 |
+| warmup_state | int | 是 | 实例的预热状态。可选值：NoNeedWarmup WaitingForInstanceWarmup InstanceWarmupFinish |
+
+
+# 示例
+### 正常返回示例
+```json
+{
+    "total_count": 1,
+    "page_number": 1,
+    "page_size": 10,
+    "data": [
+        {
+            "instance_id": "i-bp193fq79b99gycgl92h",
+            "scaling_group_id": "asg-bp1b4cly11t2sr6tbnje",
+            "health_status": "Healthy",
+            "lifecycle_state": "InService",
+            "creation_time": "2021-12-22T02:34Z",
+            "creation_type": "Attached",
+            "warmup_state": "NoNeedWarmup"
+        }
+    ],
+    "request_id": "TqeOOZVsgPEW88IW"
+}
+```

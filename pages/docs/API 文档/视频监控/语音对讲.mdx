@@ -1,0 +1,133 @@
+# **描述**
+
+## 前置说明
+
+### 1.本接口要求设备具备音频的输入和外放能力，`且以gb28181`的方式接入。
+
+### 2.发送的音频数据编码格式为g711a，可以参考如下前端音频采集的demo。
+
+- 前端web语音对讲demo [web示例](https://public.qnlinking.com/%E5%89%8D%E7%AB%AF%E9%87%87%E9%9B%86g711a%E9%9F%B3%E9%A2%91sample.zip)
+- ios语音对讲demo [ios示例](https://public.qnlinking.com/IOSTalk2.0.zip)
+- android语音对讲demo [android示例](https://public.qnlinking.com/AndroidTalk.zip)
+- 微信小程序语音对讲demo [微信小程序示例](https://public.qnlinking.com/WxTalks.zip)
+
+### 3.目前已验证支持`gb28181公网`对讲的摄像头厂商: 大华、华为、睿瞳科技、京目科技、TPLINK、天地伟业、部分海康型号(比如iDS-2DF8S433IX-A、DS-2CD3T47FWDP2-LS)。
+
+
+## **接口分两个步骤进行**
+
+## **`步骤1`:首先获取发送音频的url**
+
+* 接口请求域名：qvs.qiniuapi.com
+* 请求方式：POST
+* 接口路径：/v1/namespaces/{namespaceId}/devices/{deviceId}/talk
+
+## **请求参数**
+
+**路径参数**
+
+| 参数名称    | 必填 | 字段类型 | 说明   |
+| ----------- | ---- | -------- | ------ |
+| namespaceId | 是   | string   | 空间ID |
+| deviceId    | 是   | string   | 设备ID |
+
+**Body**
+
+| 参数名称      | 必填 | 字段类型   | 说明                                                         |
+| ------------- | ---- | ---------- | ------------------------------------------------------------ |
+| isV2          | 是   | bool       | 该字段为true时，启用低延迟版本，收到返回地址后在发送语音数据 |
+| channels      | 否   | string数组 | 设备类型为`平台`时，需指定通道ID                             |
+| version       | 否   | string     | 对讲国标协议版本，取值"2014"或"2016"，默认为2014，例如大部分大华摄像头为GBT 28181-2014版本对讲模式 |
+| transProtocol | 否   | string     | 取值"tcp"或"udp"，流传输模式，默认udp                        |
+
+## **响应参数** <a name="step1"></a>
+
+| 参数名称                      | 字段类型 | 说明                                                        |
+| ----------------------------- | -------- | ----------------------------------------------------------- |
+| audioSendAddrForHttp          | string   | 用来发送音频数据的http地址                                  |
+| audioSendAddrForHttps         | string   | 用来发送音频https地址                                       |
+| streamUri | string   | onvif流地址(`onvif设备`在[步骤2](#streamUri)会用到这个参数) |
+
+**注意** `当连续1min没有向该地址发送语音, 则需重新执行本接口,获取新的地址,`
+
+## **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarvzvyijd/devices/31011500991320000028/talk \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json'
+  --data-raw '{
+    "isV2": true
+  }'
+```
+
+**响应示例**
+
+```
+{
+ "audioSendAddrForHttp":"http://1945028622.cloudvdn.com/api/v1/gb28181?action=append_audio_pcm&id=31011500991320003732&ssrc=1623567",
+ "audioSendAddrForHttps":"https://1945028622.cloudvdn.com/api/v1/gb28181?action=append_audio_pcm&id=31011500991320003732&ssrc=1623567"
+}
+```
+
+
+
+## **`步骤2`:向第一步返回的url地址发送音频。`从语音采集端可直接向改地址发送数据,不需要代理`**
+
+
+## **音频发送报文格式**
+
+* 接口地址：`步骤1`中接口返回
+* 请求方式：POST
+
+## **请求参数**
+
+**路径参数**
+null
+
+**Body**<a name="streamUri"></a>
+
+| 参数名称                      | 必填                    | 字段类型 | 说明                                                         |
+| ----------------------------- | ----------------------- | -------- | ------------------------------------------------------------ |
+| base64_pcm                    | 是                      | string   | `base64`编码的`g711a`格式音频数据, 音频采样率务必`8000`,base64数据中不能有换行符\n |
+| deviceId                      | 当设备类型为onvif时必须 | string   | 设备id                                                       |
+| streamUri | 当设备类型为onvif时必须 | string   | onvif流地址([步骤1](#step1)返回)                             |
+
+
+## **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url https://1945028622.cloudvdn.com/api/v1/gb28181?action=append_audio_pcm&id=31011500991320003732&ssrc=1623567 \
+  --header 'content-type: application/json'
+  --data-raw '{
+    "base64_pcm":"1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1VVVVdXV1dVVVVVVVVTV1dTV1FRV1NRQV9TU1dfWVlXX0VJW11RX0NFW199IfXRcWlHawc32"
+  }'
+```
+
+**响应示例**
+
+```
+{
+// 当code为0,请求成功; code为6002,请求失败。失败原因: 当连续1min, 没有向该地址发送语音,需要重新执行步骤1，获取新的url
+  "code": Number 
+}
+```{
+// 当code为0,请求成功; code为6002,请求失败。失败原因: 当连续1min, 没有向该地址发送语音,需要重新执行步骤1，获取新的url
+  "code": Number 
+}
+````{
+// 当code为0,请求成功; code为6002,请求失败。失败原因: 当连续1min, 没有向该地址发送语音,需要重新执行步骤1，获取新的url
+  "code": Number 
+}
+```{
+// 当code为0,请求成功; code为6002,请求失败。失败原因: 当连续1min, 没有向该地址发送语音,需要重新执行步骤1，获取新的url
+  "code": Number 
+}
+
+```

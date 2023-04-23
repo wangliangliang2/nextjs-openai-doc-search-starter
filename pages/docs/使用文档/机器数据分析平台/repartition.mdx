@@ -1,0 +1,65 @@
+`repartition` 算子用于在计算时单节点性能不足，如内存不足或数据量太大时将数据按指定规则（随机或者Hash）重新进行分片。重新分片后, 计算引擎会为每一个分片分配一个 Task 来处理, 这些 Task 会并行的执行。
+
+## 语法
+
+```
+*|repartition [<partition-count>] [by <field-list>]
+```
+
+## 参数说明
+可选参数
+- `partition-count`：对数据重新分片后的分片数量， `<int>`，默认值为节点数量。
+
+- `field-list`：根据指定字段的 hash 值对数据进行分片；缺省时，表示使用随机的方式对数据进行分片。
+> ### 使用说明
+> 在 SPL 的不同位置执行 repartition 会产生不同的分布式并行计划，合适的并行计划有助于充分利用硬件资源，提升性能，避免单节点内存瓶颈问题；过度的并行也可能适得其反。我们可以通过 [explain](http://) 算子可以查看最终的分布式并行计划，并通过 [analyze](http://) 算子分析分布式并行计划的执行的情况，指导我们调整合适的并行计划。
+
+
+## 示例
+
+### 1. 加速海量分组场景的计算
+
+默认情况下，分组聚合的 merge 阶段使用单节点单核心进行计算。当出现海量分组时，单节点的 merge 执行策略在 cpu 和 内存资源上，均可能出现瓶颈。此时可以使用 repartition 算子执行分布式并行计划。
+
+```spl
+search2 repo="click" 
+| repartition by link, ip 
+| stats count() by link, ip 
+| stats count(cnt) as click by link 
+| sort 100 by click
+```
+
+### 2. Join 大数据量子查询
+
+默认情况下，join 使用小表广播策略进行计算。该策略对右表的数据数据量大小有限制，上限为单个节点的可使用内存大小。当有更大的右表需要处理时，可以使用 co-partitioned hash join 执行策略。
+co-partitioned hash join 执行策略下，左右两表会根据指定的 join key 的 hash 值分布到多个计算节点进行 join，如果数据均衡，此时可容纳的右表数据量大小为所有计算节点的可用内存大小之和。
+
+```spl
+search2 repo="demo"
+| repartition by remote_ip
+| join max_events=0 remote_ip [ search2 repo="demo" | repartition by remote_ip ]
+| stats sum(bytes) by remote_ip
+| explain
+```
+
+> 小表广播: 把 join 的子查询数据广播复制到每个节点上，执行 join，适用于 join 子查询数据规模较小的场景。
+> co-partitioned hash join: 把 join 左右两边查询的数据都 hash 切片，分发到每个集群节点上执行 join，适用于 join 子查询数据规模较大的场景。
+
+
+### 3. 存算分离，通过扩容计算资源，加速计算
+
+默认情况下, 引擎会把计算任务调度到数据节点进行计算. 当数据节点的计算资源不足时 (cpu, 内存资源), 可以考虑扩容新的计算节点来进行计算. 下面的 SPL 示例中, 会把
+repartition 后的计算指令调度到 pandora-1, pandora-2 两个节点上去进行计算.
+
+```spl
+search2 repo="demo"
+| repartition
+| where response=404
+| bin _time span="1m"
+| stats count() by _time
+| noop scheduler.nodes.include._name = "pandora-1, pandora-2"
+```
+
+## 相关算子
+
+* [noop](https://developer.qiniu.io/express/10777/noop)

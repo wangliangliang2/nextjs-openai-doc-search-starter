@@ -1,0 +1,68 @@
+# **描述**
+实体隶属于图像库。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/imagelibs/{libId}/entities`
+
+# **请求参数**
+
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|libId|是|string|图像库ID
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|name|是|string|实体所属姓名,可包含中文、字母、数字、中划线、下划线
+|gender|否|string|性别, 可选项为 male 或 female, 默认 male.
+|phoneNum|否|string|手机号
+|certNum|否|string|证件号
+|addr|否|string|地址
+|desc|否|string|备注
+
+
+
+# **响应参数**
+|参数名称|类型|说明|
+|---|---|---|
+|libId|string| 所属的库ID
+|id|string| 实体id
+|urls|string数组| 实体的图片数组，实体创建后为空，可以调用添加图片接口给实体添加图片
+|name|string|实体所属姓名,可包含字母、数字、中划线、下划线
+|gender|string|性别, 可选项为 male 或 female, 默认 male.
+|phoneNum|string|手机号
+|certNum|string|证件号
+|addr|string|地址
+|desc|string|备注	
+|createdAt|integer|创建时间
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com//v1/imagelibs/xxxx/entities \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{
+	"name":"test0013",
+	"desc":"this is a test"
+}'
+```
+**响应示例**
+
+```
+{
+  "libId": "xxxx",
+  "id": "2akrars59hm2l",
+  "name": "test0013",
+  "urls": [],
+  "desc": "this is a test",
+  "createdAt": 1586847620
+}
+```

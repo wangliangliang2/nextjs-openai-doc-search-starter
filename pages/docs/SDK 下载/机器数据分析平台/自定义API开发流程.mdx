@@ -1,0 +1,125 @@
+## 插件和主站交互简介
+
+插件和主站之间采用json方式进行通信，主站会将API请求的method、header、body、主站地址等相关信息发送给插件，插件对请求进行处理后将API的响应信息以json的形式再回传给主站进行后续处理。
+
+
+## 自定义API接口协议
+
+自定义 API 协议中包含 `init`, `data`, `end` 三种命令，当主站收到指向自定义 API 的请求时，会向自定义 API 脚本进程发送相关命令以控制自定义 API 脚本完成相关的处理。
+
+### 自定义 API 协议调用命令类型
+
+|命令|目的|内容|
+|---|---|---|
+|init|通知一个自定义api脚本进行初始化工作（如建立数据库连接，初始化全局变量等）|用于初始化的相关信息|
+|data|将请求中所包含的数据传递给自定义api脚本，并通知api脚本对数据进行处理（数据格式和内容详见数据结构解析）|请求相关数据|
+|end|通知自定义api脚本进入销毁流程（如关闭数据库连接，释放相关内存等）|-|
+
+
+## 自定义API的接口类说明
+
+OnDemandApi：实现了插件和主站进行数据交换的协议，并对外提供了数据处理的接口。
+
+
+### 自定义API的重要方法
+
+|方法|参数类型|返回类型|作用|调用方式|是否必须实现|
+|---|---|---|---|---|---|
+|do_handle_init()|ApiRequestPacket|-|执行脚本初始化的相关工作|当脚本收到主站发来的 init 命令的时候，会调用此方法进行初始化|非必须|
+|do_handle_data()|ApiRacketBody|str \*|接受主站发来的数据，处理并返回|当脚本收到主站发来 data 命令的时候，会调用此方法执行数据处理流程|必须实现|
+|do_handle_end()|-|-|销毁逻辑|当脚本收到主站发来的 end 命令的时候，会调用此方法进行进程的销毁工作|非必须|
+
+\*: 返回体应为一个json string，关键字段为：
+
+```json
+{
+    "http_code": 200,
+		"actual_response": "{}"
+}
+```
+
+### 自定义 API 相关数据结构：
+
+#### ApiRequestPacket
+
+|方法名称|描述|返回类型|
+|---|---|---|
+|is_init()|是否包含init命令|bool|
+|is_end()|是否包含end命令|bool|
+|contains_data()|是否包含数据|bool|
+|body_length()|数据长度|int|
+|body()|获取数据|ApiPacketBody|
+
+
+#### ApiPacketBody
+
+|方法名称|描述|返回类型|
+|---|---|---|
+|contains_metadata()|是否包含metadata|bool|
+|contains_request()|是否包含request|bool|
+|metadata()|metadata信息|dict|
+|request()|请求数据|ApiRequest|
+
+#### Metadata 包含的字段
+
+|字段名称|描述|类型|
+|---|---|---|
+|server_uri|主站uri|str|
+|session_key|本次请求的session key|str|
+
+
+#### ApiRequest
+
+|方法名称|描述|返回类型|
+|---|---|---|
+|method()|请求 method | str |
+|header()|请求 header |dict|
+|param()|请求 param |dict|
+|path()|请求 uri |str|
+|request_body()|请求体 | str |
+|uuid()|请求 uuid |str|
+
+
+## 样例
+
+
+```python
+from pdr_python_sdk.api.on_demand_api import OnDemandApi
+from pdr_python_sdk.api.response import Response
+from pdr_python_sdk.on_demand_action import run
+
+class SampleApi(OnDemandApi):
+    def do_handle_init(self, packet):
+        """
+        actual initialization actions. If no initilization required, ignore this method
+        @param ApiRequestPacket packet: packet received from the request
+        """
+        pass
+		
+    def do_handle_data(self, data):
+        """
+        actual data processing actions
+        @param ApiPacketBody data: data block in request
+        @rtype: str
+        @return: response as a string
+        """
+				
+        if not data.contains_request():
+            raise Exception('api data should contain request details')
+
+        request = data.request()
+        if 'GET' != str.upper(request.method()):
+            return Response(400, 'request is not GET').to_string()
+
+        return Response(200, "{'sample':'demo'}").to_string()
+	
+    def do_handle_end(self):
+        """
+        perform terminating processes. Can be ignored
+        """
+        pass
+
+
+if __name__ == '__main__':
+    run(SampleApi, sys.argv, sys.stdin.buffer, sys.stdout.buffer)
+```

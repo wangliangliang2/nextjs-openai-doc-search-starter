@@ -1,0 +1,16 @@
+* `<groups>`元素用定义图表中用于颜色分组（在图表中表现为不同颜色的数据）的字段，根据图表类型的不同，在一个图表中可添加多个分组字段，也可没有分组字段。
+
+### 父元素
+
+在 `<chart>`元素下，只有当 type 属性指定如下值时，可以使用`<groups>`元素。
+	
+* `<chart type="line">`
+* `<chart type="bar">`
+*	`<chart type="area">`
+*	`<chart type="scatter">`
+* `<chart type="bubble">`
+
+示例：
+```
+<groups>['name', '_time']</groups>
+```

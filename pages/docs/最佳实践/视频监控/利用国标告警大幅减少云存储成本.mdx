@@ -1,0 +1,11 @@
+
+# **前置准备**
+* 设备必须通过gb28181接入，并具备告警能力(登录到设备的web配置界面，能看到告警配置，代表有告警能力)![test.png](https://dn-odum9helk.qbox.me/FipySAV3S7DdkIYmNkwI0mGVLUwf)
+* 打开设备的告警事件通知(qvs控制台“设备管理”->查看或编辑“设备信息”,以控制告警开关),[控制台告警配置详细步骤](https://developer.qiniu.com/qvs/7999/alarm-event-notification)
+* 设置回调地址(控制台“空间管理”->选择某个空间点击“配置”->`基本信息`界面中点击`编辑`，可配置回调地址)。平台会把设备上的告警回调给客户
+* 空间绑定录制模板。(控制台“空间管理”->选择某个空间点击“配置”->"模版配置")，录制模板`录制方式务必为“按需录制”`
+
+# **使用流程**
+* 当客户收到qvs的回调通知时，解析回调[回调数据示例](https://developer.qiniu.com/qvs/10240/the-message-callback)
+* 回调数据 "type": "alarm"，代表是来自设备的告警消息；客户可根据具体的告警类型，[触发云端录制](https://developer.qiniu.com/qvs/6743/start-record-stream)，一段时间后(例如录制6s的视频后)或者一段时间内，无新的告警时，[终止云端录制](https://developer.qiniu.com/qvs/6744/stop-record-stream)
+* 通过以上功能组合，客户可以只保存告警发生时的视频，例如摄像头有画面移动时触发的`移动侦测，入侵检测等`，而不必7 * 24小时录制，从而消减存储成本

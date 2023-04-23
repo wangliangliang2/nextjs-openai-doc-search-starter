@@ -1,0 +1,209 @@
+本场景主要教大家如何将 logkit-pro 作为一个 HTTP 服务端(请求代理)使用。在这个场景下，logkit-pro 既可以是您的日志服务端，也可以是您的日志中转代理。
+客户端可以通过http请求直接把数据发到 logkit-pro，再由 logkit-pro 做数据处理，最后发送到七牛智能日志管理平台或其他下游服务。
+
+
+
+# **1.安装 logkit-pro**
+
+1.登录 [logkit-pro](http://logkit-pro.qiniu.com/)，进入机器管理页面，点击添加机器。
+
+![](https://pandora-kibana.qiniu.com/k8s/add_machine.png)
+
+2.手动安装：根据您机器的操作系统版本选择对应的命令，复制到命令行工具即可，如图所示：
+
+![](https://pandora-kibana.qiniu.com/k8s/addbyhand.png)
+
+![](https://pandora-kibana.qiniu.com/logkit/running.png)
+
+详细的安装文档可以阅读 [logkit-pro 安装](/insight/manual/4682/download-and-install) 。
+
+1. 安装完毕后，您可以在机器列表页面看到您安装的机器:
+
+![](https://dn-odum9helk.qbox.me/FpmPwc2L2arnlHd9OpBEXkJs0rbx)
+
+-----
+
+# **2.选择监听的 IP 和端口**
+
+logkit-pro 需要接收 客户端 发送过来的http请求，所以要确保 logkit-pro 和 客户端 的网络连通性，只要 客户端 能访问 logkit-pro 即可，如果 logkit-pro 有多个 IP，为了确保安全性，我们尽可能选择 客户端 机器能访问到的 IP。
+
+查看 IP 的方法, ```ifconfig -a```
+
+可能获得的结果如下：
+```
+eth0      Link encap:Ethernet  HWaddr 04:01:06:a7:6f:01  
+          inet addr:101.46.8.0  Bcast:123.456.78.255  Mask:255.255.255.0
+          inet6 addr: fe80::601:6ff:fea7:6f01/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:168 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:137 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:18903 (18.9 KB)  TX bytes:15024 (15.0 KB)
+
+eth1      Link encap:Ethernet  HWaddr 04:01:06:a7:6f:02  
+          inet addr:10.100.20.41  Bcast:10.128.255.255  Mask:255.255.0.0
+          inet6 addr: fe80::601:6ff:fea7:6f02/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:6 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:5 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:468 (468.0 B)  TX bytes:398 (398.0 B)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+```
+
+可以看到 ```eth0``` 设备为外网可访问的 IP，而 ```eth1``` 为内网 IP，若 客户端 可以访问 ```10.200.20.41```，那就选择内网 IP， 通过 ping 命令可以验证网络联通性。
+```
+$ping 10.200.20.41
+sun@lcoal:~/logkit_test/_package$ ping 10.200.20.41
+PING 10.200.20.41 (10.200.20.41) 56(84) bytes of data.
+64 bytes from 10.200.20.41: icmp_seq=1 ttl=64 time=0.122 ms
+64 bytes from 10.200.20.41: icmp_seq=2 ttl=64 time=0.105 ms
+^C
+--- 10.200.20.41 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 999ms
+rtt min/avg/max/mdev = 0.105/0.113/0.122/0.013 ms
+```
+
+如上所示表示网络可以联通，我们将 ```10.200.20.41``` 选做我们监听的 IP 地址，而 ```8080``` 作为监听的端口（logkit-pro 此处使用 ```8080``` 作为示例，也可以配置为别的端口）。
+
+
+# **3.配置 logkit-pro 收集数据**
+
+
+安装好 logkit-pro 以后，您就可以使用 logkit-pro 来收集日志。
+
+进入数据收集页面，点击 **添加收集器** -> **日志收集**。
+
+![](https://pandora-kibana.qiniu.com/k8s/collect.png)
+
+## **添加数据源**
+
+如下图所示，选择从 HTTP 读取，在监听的地址一栏填入我们之前确定好的 IP 和端口内容，地址前缀可以按需要写 `/data`。
+
+## `**请注意，此时配置的IP和端口以及路径，就是客户端要发送的目的地**`
+
+```
+10.200.20.40:8080
+```
+
+![](https://dn-odum9helk.qbox.me/Fn18gfHQ2-semitM_jICc4oDiefF)
+
+
+
+## **根据数据的实际格式选择解析方式**
+
+读取到实际的数据后，可以根据数据实际的格式选择解析方式，如图所示，我们读取到的是 `json` 格式的数据，可以直接使用 `json` 解析方式对数据解析。
+
+![](https://dn-odum9helk.qbox.me/FvMFlk97PIV7S27LxfAORi-CKzX5)
+
+具体的不同解析方式选择和详细介绍，可以参考[解析器](/insight/manual/4755/parsers)文档进一步查看。
+
+
+## **【可选功能】转换数据**
+
+解析完毕后，会进入到数据转换界面，可以根据您的需要进行数据转换。常见的一些转换需求如下：
+
+### 1. **针对 IP 进行扩展，有助于在服务端进行日志分析时绘制中国地图及世界地图。**
+
+选择 `IP` 转换工具，将数据中的 IP 字段扩展出相应的区域、地理、运营商等信息。支持本地( IP 库)、服务端(七牛 IP 库)两种方式解析。如图所示，我们将 `myip` 字段的IP值解析出来了 `myip_country` 等字段。
+
+![](https://dn-odum9helk.qbox.me/Fvo3oopHIgejGFAIfZ9795qFyBsw)
+
+### 2. **过滤掉不关心的数据，有助于在客户端做边缘计算，去除大量无用的字段，节省传输带宽。**
+
+选择 `discard` 转换工具，勾选需要去掉的字段，当然也可以选择 `pick` 工具，勾选需要保留的字段，其他都删除。如图所示，我们勾选了 `haah` 字段，在转换后的数据中已经没有这个字段。
+
+![](https://dn-odum9helk.qbox.me/FmR9oxKLlSV92Z1g8YPXNy6RrVH6)
+
+### 3. **重命名，有助于解决大数据平台数据字段类型冲突问题**
+
+选择 `rename` 转换工具，将需要改名的字段，命名为新的名称。新的名称可以在随后定义为新的类型，不会与老的数据命名冲突。如图所示，我们将 `myip` 字段改名为了 `client_ip`。如果要从本地解析 IP 转为使用服务端解析 IP，记得用重命名功能改个名字，因为服务端解析 IP 会将字段定义为 IP 类型，而本地解析只是字符串类型。
+
+![](https://dn-odum9helk.qbox.me/FupHNf-koyxQCxsEpGmITqpl5jqa)
+
+
+### 4. **时间类型转换，确定时间字段有助于后续按照日志的事件时间进行分析**
+
+选择 `date` 转换工具后，大多数情况下能自动识别出时间格式并转换，若无法识别，可以按照智能推荐填写，也可以根据[date 转换文档](https://developer.qiniu.com/insight/manual/4791/date-transformer)中的说明填写自定义格式。如图所示，选择 `time` 字段后会自动识别并转化为 `RFC3339` 格式，转化后的数据字段没有改变只是因为我没有点击添加，您配置转换工具的时候也不要忘了添加哦。
+
+![](https://dn-odum9helk.qbox.me/Fl6yi2mWh6cSPlRiG0fx-hV7wQUx)
+
+## 5. **字段类型转换，有助于按特定类型进行分析，如数值类型求平均值等**
+
+选择 `convert` 转换工具，可以勾选字段，并转换为对应类型。如图所示，我们将 `mynumber` 字段改为了 `long` 类型，在样例日志中还是字符串类型，转换后就变成了整数，在这个例子中不想丢失精度也可以转为 `float` 类型。
+
+![](https://dn-odum9helk.qbox.me/FkgbRyNHjs7AfOROej-P-zyrRioA)
+
+还有非常多转换工具，不再一一介绍，可以参考 [转换器](https://developer.qiniu.com/insight/manual/4767/transformers)相关文档了解更多内容。
+
+
+## **发送数据**
+
+### 1. **发送到七牛智能日志管理平台，进行丰富的日志分析**
+
+七牛智能日志管理平台提供丰富而详尽的日志查询分析、报表展示、监控报警、数据智能等能力，解决您大规模数据量下的数据分析难题。可以查看[智能日志管理平台](https://developer.qiniu.com/insight/manual/4684/product-induction)、[搜索分析](https://developer.qiniu.com/insight/manual/4629/search-analysis)、[报表展示](https://developer.qiniu.com/insight/manual/4692/reports-and-dashboards)等文档，获得更多详细的功能说明。
+
+![](https://dn-odum9helk.qbox.me/FjP7uizRmMB7JrVzZOqhwwjU3fr4)
+
+如图所示，填写一个实时仓库名称和工作流名称即可，若仓库不存在会自动创建。默认情况下就会导出到日志仓库。发送到七牛智能日志管理平台的数据，可以同时存一份到七牛云存储，只需要开启`自动导出到七牛云存储`功能即可。
+
+
+### 2. **发送到七牛云存储，进行数据备份和分析**
+
+若您的数据不需要实时查询分析，也可以将数据单独发送到七牛云存储进行备份，后续也可以通过七牛的[Spark 服务](https://developer.qiniu.com/insight/manual/4965/xspark)对数据进行批量分析。七牛云存储与七牛Spark服务相结合，使得您可以以极低的成本对海量数据进行分析。
+
+![](https://dn-odum9helk.qbox.me/FhjF_CahyO-fUVJeGEVlGlJwduLV)
+
+### 3. **发送到 Kafka，进行机房间数据同步**
+
+当然，您完全可以选择其他发送服务，如发送到其他机房的 Kafka，进行数据同步功能。
+
+![](https://dn-odum9helk.qbox.me/Fp0VdIWxnW1-pKHD0zY60Nx8wLiM)
+
+更多发送源，可以查看[发送源](https://developer.qiniu.com/insight/manual/4782/senders)进行了解。
+
+## **添加并分发到机器**
+
+接下来，点击下一步，提交并分发到机器即可。
+
+![](https://dn-odum9helk.qbox.me/FkXS7YQsV4Z53ImGZ0KbUmAsVlPD)
+
+## **查看运行状态**
+
+分发完成后，您可以在【数据收集】页面，也可以在【机器管理】页面，进入查看您的收集任务运行状态。
+
+![](https://dn-odum9helk.qbox.me/FkPl2NgwoSzO9aSLj9B00WOtFiP_)
+
+至此，logkit-pro 就配置完毕了.
+
+
+# **使用http发送工具验证**
+
+我们可以用 `postman` 或者 `curl` 之类的工具尝试发送到我们刚刚配置的logkit服务中。
+
+## **请注意，此时客户端要发送的目的地，就是我们刚刚在配置logkit读取时配置的IP和端口以及路径**
+
+如下所示：
+
+
+```
+curl -XPOST 100.100.68.50:8080/data -d "hahahah"
+```
+
+如果返回的内容为
+
+```
+{}
+```
+
+代表已经发送成功。
+
+也可以在运行状态中验证。

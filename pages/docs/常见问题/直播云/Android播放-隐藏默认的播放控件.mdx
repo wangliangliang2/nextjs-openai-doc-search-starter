@@ -1,0 +1,10 @@
+Q：如何隐藏默认的播放控件，如 pause seekbar 等 UI 控件
+
+![](https://dn-odum9helk.qbox.me/FgArjHDNrd76ibhDastLNCG33XaG)
+
+A：使用 PLVideoTextureView 和 PLVideoView 时，播放的 UI 控件是由 MediaController 管理，开发者可以参考 sdk demo 自行实现自定义的 UI 控件，如果直接使用 demo 中的 MediaController 同时又希望不显示 UI 控件，如下修改 MediaController 
+```
+public void show(int timeout) {
+    return;
+}
+```

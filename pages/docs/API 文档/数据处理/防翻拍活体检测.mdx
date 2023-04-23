@@ -1,0 +1,118 @@
+# 接口简介
+七牛防翻拍活体检测接口`face-piclive` ，即检测单张静态图片中的人脸是否为活体。
+
+**注意**
+
+- 接口超时时间为 30 秒。
+- 资源的 Mime 文件格式仅支持图片类型：image/*，如：image/jpeg、image/png。
+- 请求接口为标准的HTTP/HTTPS 协议。
+
+# API使用
+## 请求语法
+
+```
+POST http(s)://face-piclive.qiniuapi.com/picturelive
+Host: face-piclive.qiniuapi.com
+Content-Type: application/json
+Authorization: QiniuToken
+```
+
+## 头部信息
+头部名称          | 必填 | 说明
+:-------------  | :--- | :------------------------------------------
+Host            | 是   |  固定为  face-piclive.qiniuapi.com
+Content-Type    | 是   |  固定为 application/json
+Authorization   | 是   |  该参数应严格按照[管理凭证格式](https://developer.qiniu.io/kodo/manual/1201/access-token)进行填充，否则会返回 401 错误码。一个合法的 Authorization 值应类似于：Qiniu QNJi_bYJlmO5LeY08FfoNj9w_r7...
+
+
+## 请求 body
+字段             | 是否必填 |   类型  |说明
+:-------------  | :--- | :---------| :---------------------------------
+frames          | 是   | [ ]frame  |  json 列表，每个 json 包含 base64 编码的二进制图片数据、 相应的 image_id 和图像质量分数A
+
+### frame
+字段             | 是否必填 |   类型  |说明
+:-------------  | :--- | :--------| :----------------------------------
+image_b64      | 是   | string  |  base64 编码的二进制图像数据
+image_id        | 是   | string  |  图片相应的 image_id
+quality         | 是   | float   |  图像质量分数
+
+# 存储资源使用
+## 请求语法
+
+```
+GET <DownloadURI>?face-piclive HTTP/1.1
+Host: <DownloadHost>
+```
+
+# 返回
+
+字段         | 类型 | 说明
+:-------------  | :--- | :------------------------------------------
+session_id      | string   |  唯一会话 id
+best_frames     | [ ]best_frame  |  json 列表，每个 json 包含返回图片的 image_id、活体分数和图像质量分数
+errorcode       | int      |  返回状态码
+errormsg        | string   |  返回错误消息
+
+## best_frame
+
+字段         | 类型 | 说明
+:-------------  | :--- | :------------------------------------------
+image_id        | string   |  图片相应的 image_id
+live_score      | float    |  防翻拍活体分数, 取值范围是[0,100]
+quality         | float    |  图像质量分数, 取值范围是[0,100]
+
+# 示例
+
+```
+POST face-piclive.qiniuapi.com/picturelive HTTP/1.1
+Host: face-piclive.qiniuapi.com
+		
+Authorization: Qiniu aWQ6lF1Zxxse43jB6V7lsdfaadf:7cWZPxxxxxasdffed60zkI8=
+Content-Type: application/json 
+{
+	frames: [
+	{
+    image_b64: "<image_data>",
+		image_id: "<image_id>",
+		quality: 80.0
+	},
+	{
+		image_b64: "<image_data>",
+		image_id: "<image_id>",
+		quality: 90.0
+	},
+	]
+}
+```
+
+**返回示例**
+
+```
+{
+"best_frames": [
+	{
+		"image_id": "0", 
+		"live_score": 0,
+		"quality": 80
+	},
+	{
+		"image_id": "1", 
+		"live_score": 0, 
+		"quality": 90
+	}],
+"errorcode": 0,
+"errormsg": "OK",
+"session_id": "20200408090650YcZfT2eMSE"
+}
+```
+
+## 防翻拍活体检测错误码
+错误码           | 错误信息     | 说明
+:-------------  | :---        | :------------------------------------------
+0               | OK                      |  请求成功，无错误
+55060001        | ERROR_PARAMETER_INVALID |  请求字段有非法传输
+55060002        | IMAGE_DECODE_FAILED     |  图片解码失败
+55060006        | FEATURE_EXTRACT_FAILED  |  人脸特征提取失败
+55060016        | NOT_LIVE_BODY           |  不是活体
+

@@ -1,0 +1,1492 @@
+# 七牛云对外账单API文档
+
+### 更新日志
+* 2021/12/22 v0.1 内部文档
+* 2022/01/04 v1.0 对外文档
+* 2022/02/24 v1.1 增加detail接口
+* 2022/08/04 v1.2 增加订单、资源包管理接口
+* 2023/03/03 v2.0 增加实时消费每日快照详情接口、月结算单详情接口v2
+
+### 概述
+财务对外 API 为七牛用户提供更加灵活的财务管理方式。作为对[财务中心](https://portal.qiniu.com/)管理系统的补充，可查看用户在某个账期内各产品的消费情况。
+
+### 注意事项
+按量计费的账单每月4号出账，为保数据的完整性，请在5号后查看上月账单。如2021年6月账单应在7月5号后查看。
+接口支持查询近24个月的数据。
+
+### 接口域名
+https://api.qiniu.com/
+
+### 接口列表
+* [月结算单概览](#月结算单概览接口)
+* [月结算单详情](#月结算单详情接口)
+* [订单列表](#订单列表接口)
+* [订单详情](#订单详情接口)
+* [订单取消](#订单取消接口)
+* [资源包当月概览](#资源包当月概览接口)
+* [资源包列表](#资源包列表接口)
+* [资源包详情](#资源包详情接口)
+* [资源包历史抵扣明细](#资源包历史抵扣明细接口)
+* [实时消费每日快照详情接口](#实时消费每日快照详情接口)
+
+### API签名
+
+[文档地址](https://developer.qiniu.com/kodo/1201/access-token)
+
+<span id="error-code"></span>
+### 错误码
+
+| 错误码  | 错误消息                        | 错误说明        |
+|------|-----------------------------|-------------|
+| 1000 | InvalidParameter            | 请求参数不正确     |
+| 1001 | BaseBillGetFailed           | 账单数据获取失败    |
+| 1002 | CustomBillGetFailed         | 自定义账单数据获取失败 |
+| 1003 | OrderGetFailed              | 订单数据获取失败    |
+| 1004 | MonthStatementGetFailed     | 月结算单获取失败    |
+| 1005 | QueryTimeExceeded           | 请求的时间不正确    |
+| 1006 | TransactionGetFailed        | 流水数据获取失败    |
+| 1007 | CouponUsageGetFailed        | 优惠券使用量获取失败  |
+| 1008 | CancelOrderByUnionOrderHash | 取消订单失败      |
+| 1009 | MonthOverviewGetFailed      | 资源包当月概览获取失败 |
+| 1010 | RespackOverviewGetFailed    | 资源包列表获取失败   |
+| 1011 | RespackDetailGetFailed      | 资源包详情获取失败   |
+| 1012 | HistoryUsageGetFailed       | 资源包历史抵扣获取失败 |
+
+<span id="order-seller"></span>
+### 订单产品归属
+
+以下列举了目前订单系统内商品的产品归属对应常量值，即订单相关接口中的 seller_id
+
+| seller_id | 名称            |
+|-----------|---------------|
+| 33        | SSL 证书        |
+| 39        | 存储            |
+| 45        | CDN           |
+| 51        | 内容安全          |
+| 54        | 云主机           |
+| 60        | 直播            |
+| 72        | 云短信           |
+| 75        | 短视频 SDK       |
+| 78        | 智能多媒体         |
+| 79        | 实时音视频         |
+| 82        | 视频监控          |
+| 94        | 企业直播aPaaS-P01 |
+| 98        | 企业直播aPaaS-P02 |
+| 99        | SDK           |
+
+<span id="%E5%AE%9E%E6%97%B6%E6%B6%88%E8%B4%B9%E6%AF%8F%E6%97%A5%E5%BF%AB%E7%85%A7%E8%AF%A6%E6%83%85%E6%8E%A5%E5%8F%A3"></span>
+### **实时消费每日快照详情接口**
+
+#### 描述
+本接口使用 HTTP GET 请求来获取实时消费每日快照详情数据。该接口的请求需要使用 Authorization 签名认证；
+若您要请求当天的数据，请您在上午 8 点以后调用此接口。
+
+##### 实时消费快照说明
+1，每月 1 号的实时消费快照为上月 1 号到本月 1 号（不含）的累计消费
+2，每月其他日期的实时消费快照为当月 1 号到查询日期（不含）的累计消费
+
+#### 请求
+##### 请求语法
+```
+GET /billing-api/v2/bill/snapshot?date=<SnapshotDate> HTTP/1.1
+Host: api.qiniu.com
+Content-Type: application/x-www-form-urlencoded
+Authorization: Qiniu <AccessToken>
+```
+
+##### 请求参数
+
+| 字段名称 | 类型     | 是否必须 | 说明                                                          | 示例（以2023年3月为例）                                                                                                                    |
+|------|--------|------|-------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| date | string | 是    | 1，日期（东八区时间）格式为 YYYY-mm-ddT00:00:00<br>2，仅支持传入当前月份 1 号到今天的日期 | 1，当入参是 2023-03-01T00:00:00，返回的是 3 月 1 号的快照，包含的是 2 月整月的累计消费<br>2，当入参是 2023-03-10T00:00:00，返回的是 3 月 10 号的快照，包含的是 1 号到 10 号（不含）的累计消费 |
+
+
+##### 请求头
+该请求操作的实现使用了所有操作的公共请求头。有着详细信息，请查阅[公共请求头](https://developer.qiniu.com/kodo/3924/common-request-headers)。
+
+##### 请求内容
+该请求操作的的请求体为空
+
+#### 响应
+##### 响应语法
+```
+HTTP/1.1 200 OK
+ContentType: application/json
+{
+        "code": <ErrorCode>,
+        "data": <Data>,
+        "message": <Message>
+}
+```
+
+##### 响应头
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.com/kodo/3924/common-request-headers)。
+
+
+##### 响应内容
+
+| 字段名称        | 类型         | 示例           | 描述                |
+|-------------|------------|--------------|-------------------|
+| currency    | string     | CNY          | 币种：CNY=人民币，USD=美元 |
+| total_money | int64      | 538323000000 | 总费用，精确到小数点后面8位    |
+| list        | List<List> || 详情列表         |
+
+List
+
+| 字段名称              | 类型              | 示例                  | 描述                                                                                                                                                                                                                                                       |
+|-------------------|-----------------|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| start             | string          | 2021-09-01T00:00:00 | 账单开始时间(东八区时间)<br>如果是月计费账单，那么该时间为账单月份的 1 号 0 点<br>如果是日计费账单，该时间是账单日的 0 点                                                                                                                                                                                   |
+| end               | string          | 2021-10-01T00:00:00 | 账单结束时间(东八区时间)<br>如果是月计费账单，那么该时间为传入的参数 date <br>如果是日计费账单，那么该时间比 start 大一天                                                                                                                                                                                 |
+| product           | string          | CDN加速               | 产品线                                                                                                                                                                                                                                                      |
+| item              | string          | 动态加速-动态请求次数-华东      | 计费项描述                                                                                                                                                                                                                                                    |
+| zone              | string          | 华东                  | 地区                                                                                                                                                                                                                                                       |
+| bill_period       | string          | 月出账单                | 账单周期                                                                                                                                                                                                                                                     |
+| package_usage     | int64           | 0                   | 免费额度使用量                                                                                                                                                                                                                                                  |
+| respack_usage     | int64           | 0                   | 资源包抵扣量                                                                                                                                                                                                                                                   |
+| total_usage       | int64           | 7015066             | 总用量，计量原始量                                                                                                                                                                                                                                                |
+| usage_coefficient | int64           | 1073741824          | 计量转化数，计费的用量 = 计量原始量 ÷ 计量转化数，计量单位为 `usage_unit` 字段中表示的单位。<br>例如：<br>&nbsp;计量原始量 total_usage = 7015066<br>&nbsp;计量转化数 usage_coefficient = 1024 * 1024 * 1024 = 1073741824<br>&nbsp;计量单位 usage_unit = GB<br>则  计费的用量 = 7015066 ÷ 1073741824 = 0.00653329 GB |
+| usage_unit        | string          | GB                  | 计量单位                                                                                                                                                                                                                                                     |
+| price_type        | string          | 各阶梯单价               | 价格表类型                                                                                                                                                                                                                                                    |
+| price_unit        | string          | CNY/GB              | 价格单位                                                                                                                                                                                                                                                     |
+| item_money        | int64           | 13233000000         | 计费项费用，此价格已经计算减免以及抵扣的费用                                                                                                                                                                                                                                   |
+| discount_money    | int64           | -13225000000        | 折扣金额                                                                                                                                                                                                                                                     |
+| rebate_money      | int64           | 0                   | 减免金额                                                                                                                                                                                                                                                     |
+| currency          | string          | CNY                 | 币种：CNY=人民币，USD=美元                                                                                                                                                                                                                                        |
+| usage_cost        | List<UsageCost> || 各价格阶梯用量与费用          |
+
+
+UsageCost
+
+| 字段名称                | 类型      | 示例        | 描述                                |
+|---------------------|---------|-----------|-----------------------------------|
+| is_guaranteed_price | Boolean | false     | 是否是阶梯保底价格                         |
+| money               | int64   | 0         | 此价格阶梯产生的费用                        |
+| price               | int64   | 112000000 | 价格，加上price_unit是单价                |
+| usage               | int64   | 7015066   | 使用量，计量原始值，根据usage_coefficient进行换算 |
+| usage_from          | int64   | 0         | 价格阶梯起始量，计量原始量                     |
+| usage_to            | int64   | 1024      | 价格阶梯结束量，计量原始量，-1表示无穷大             |
+
+
+##### 响应状态码
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误码](#error-code)。
+
+
+#### 示例
+
+##### 请求示例
+```
+GET /billing-api/v2/bill/snapshot?date=2021-11-01T00:00:00
+Host: api.qiniu.com
+Authorization: Qiniu HwFOxpYCQU6oXoZXFOTh1mq5ZZig6Yyocgk3BTZZ:8tgafMszuwgd99Ix4eQ2HeVT9B0=
+```
+注：要在 Authorization 头部的 <AccessToken> 前添加 Qiniu 和半角空格。
+
+###### 响应示例
+```
+HTTP/1.1 200 OK
+Content-Length: chunked
+Connection: keep-alive
+Content-Type: application/json
+Date: Thu, 24 Feb 2022 08:29:17 GMT
+X-Reqid: 2ZUBFPIhD-akXtYW
+
+{
+  "code": 0,
+  "message": "Success",
+  "data": {
+    "total_money": 0,
+    "currency": "CNY",
+    "list": [
+      {
+        "start": "2023-02-07T00:00:00",
+        "end": "2023-03-01T00:00:00",
+        "product": "对象存储",
+        "item": "存储空间-华南",
+        "zone": "华南",
+        "bill_period": "按月出账",
+        "price_type": "各阶梯单价",
+        "total_usage": 23530065,
+        "package_usage": 23530065,
+        "respack_usage": 0,
+        "usage_coefficient": 1073741824,
+        "usage_unit": "GB",
+        "price_unit": "CNY/GB",
+        "usage_cost": [
+          {
+            "usage_from": 0,
+            "usage_to": -1,
+            "price": 9900000,
+            "is_guaranteed_price": false,
+            "usage": 0,
+            "money": 0
+          }
+        ],
+        "item_money": 0,
+        "rebate_money": 0,
+        "discount_money": 0,
+        "currency": "CNY"
+      },
+      {
+        "start": "2023-02-07T00:00:00",
+        "end": "2023-03-01T00:00:00",
+        "product": "对象存储",
+        "item": "标准存储CDN回源流出流量-华南",
+        "zone": "华南",
+        "bill_period": "按月出账",
+        "price_type": "各阶梯单价",
+        "total_usage": 81538534,
+        "package_usage": 81538534,
+        "respack_usage": 0,
+        "usage_coefficient": 1073741824,
+        "usage_unit": "GB",
+        "price_unit": "CNY/GB",
+        "usage_cost": [
+          {
+            "usage_from": 0,
+            "usage_to": -1,
+            "price": 15000000,
+            "is_guaranteed_price": false,
+            "usage": 0,
+            "money": 0
+          }
+        ],
+        "item_money": 0,
+        "rebate_money": 0,
+        "discount_money": 0,
+        "currency": "CNY"
+      },
+      {
+        "start": "2023-02-07T00:00:00",
+        "end": "2023-03-01T00:00:00",
+        "product": "CDN加速",
+        "item": "CDN-HTTPS 流量-中国大陆",
+        "zone": "中国大陆",
+        "bill_period": "按月出账",
+        "price_type": "各阶梯单价",
+        "total_usage": 189458719719,
+        "package_usage": 0,
+        "respack_usage": 10240,
+        "usage_coefficient": 1073741824,
+        "usage_unit": "GB",
+        "price_unit": "CNY/GB",
+        "usage_cost": [
+          {
+            "usage_from": 0,
+            "usage_to": 109951162777600,
+            "price": 28000000,
+            "is_guaranteed_price": false,
+            "usage": 0,
+            "money": 0
+          },
+          {
+            "usage_from": 109951162777600,
+            "usage_to": 1125899906842624,
+            "price": 23000000,
+            "is_guaranteed_price": false,
+            "usage": 0,
+            "money": 0
+          },
+          {
+            "usage_from": 1125899906842624,
+            "usage_to": -1,
+            "price": 18000000,
+            "is_guaranteed_price": false,
+            "usage": 0,
+            "money": 0
+          }
+        ],
+        "item_money": 0,
+        "rebate_money": 0,
+        "discount_money": 0,
+        "currency": "CNY"
+      },
+      {
+        "start": "2023-02-07T00:00:00",
+        "end": "2023-03-01T00:00:00",
+        "product": "对象存储",
+        "item": "PUT请求数-华南",
+        "zone": "华南",
+        "bill_period": "按月出账",
+        "price_type": "各阶梯单价",
+        "total_usage": 76,
+        "package_usage": 76,
+        "respack_usage": 0,
+        "usage_coefficient": 1000,
+        "usage_unit": "千次",
+        "price_unit": "CNY/千次",
+        "usage_cost": [
+          {
+            "usage_from": 0,
+            "usage_to": -1,
+            "price": 100000,
+            "is_guaranteed_price": false,
+            "usage": 0,
+            "money": 0
+          }
+        ],
+        "item_money": 0,
+        "rebate_money": 0,
+        "discount_money": 0,
+        "currency": "CNY"
+      }
+    ]
+  }
+}
+```
+
+<span id="%E6%9C%88%E7%BB%93%E7%AE%97%E5%8D%95%E6%A6%82%E8%A7%88%E6%8E%A5%E5%8F%A3"></span>
+### **月结算单概览接口**
+
+#### 描述
+本接口作GET请求用来获取请求拥有的所有月结算单的概览列表。该接口需要您使用带Authorization签名认证的请求，如果使用匿名请求无法获取账单概览。
+
+#### 请求
+##### 请求语法
+```
+GET /billing-api/v1/bill/overview?start=<StartTime>&end=<EndTime> HTTP/1.1
+Host: api.qiniu.com
+Content-Type: application/x-www-form-urlencoded
+Authorization: Qiniu <AccessToken>
+```
+
+##### 请求参数
+
+| 字段名称  | 类型     | 是否必须 | 示例                  | 说明                     |
+|-------|--------|------|---------------------|------------------------|
+| start | string | 是    | 2021-09-01T00:00:00 | 开始时间(东八区时间)，目前只支持按月查询  |
+| end   | string | 是    | 2021-10-01T00:00:00 | 结束时间(东八区时间)，时间范围支持左闭右开 |
+
+
+##### 请求头
+该请求操作的实现使用了所有操作的公共请求头。有着详细信息，请查阅[公共请求头](https://developer.qiniu.com/kodo/3924/common-request-headers)。
+
+##### 请求内容
+该请求操作的的请求体为空
+
+#### 响应
+##### 响应语法
+```
+HTTP/1.1 200 OK
+ContentType: application/json
+{
+        "code": <ErrorCode>,
+        "data": <Data>,
+        "message": <Message>
+}
+```
+
+##### 响应头
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.com/kodo/3924/common-request-headers)。
+
+
+##### 响应内容
+| 字段名称       | 类型      | 示例                               | 描述                                                         |
+|------------|---------|----------------------------------|------------------------------------------------------------|
+| start      | string  | 2021-09-01T00:00:00              | 账单开始时间(东八区时间)                                              |
+| end        | string  | 2021-10-01T00:00:00              | 账单结束时间(东八区时间)，左闭右开                                         |
+| billID     | string  | 3489e21b4a1240d61d45c38e40f376a8 | 账单或者订单编号                                                   |
+| type       | string  | bill                             | 账单类型有：bill、order，分别表示：账单、订单                                |
+| payStatus  | string  | paid                             | 支付状态有：unpaid、paid、refunded、postpaid，分别表示：未支付、已支付、已退款、转为后付费 |
+| product    | string  | SSL证书                            | 产品名称                                                       |
+| itemDesc   | string  | Geotrust 企业型SSL证书                | 订单显示商品名，账单显示计费项名                                           |
+| fee        | integer | 1995000000                       | 支付总金额，精确到小数点后8位，示例值为19.95元                                 |
+| couponFee  | integer | 0                                | 优惠券金额，精确到小数点后8位                                            |
+| presentFee | integer | 0                                | 赠送金支付金额，精确到小数点后8位                                          |
+| cashFee    | integer | 0                                | 现金支付金额，精确到小数点后8位                                           |
+| currency   | string  | CNY                              | 币种：CNY=人民币，USD=美元                                          |
+
+##### 响应状态码
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误码](#error-code)。
+
+
+#### 示例
+
+##### 请求示例
+```
+GET /billing-api/v1/bill/overview?start=2021-11-01T00:00:00&end=2021-12-01T00:00:00
+Host: api.qiniu.com
+Authorization: Qiniu HwFOxpYCQU6oXoZXFOTh1mq5ZZig6Yyocgk3BTZZ:8tgafMszuwgd99Ix4eQ2HeVT9B0=
+```
+注：要在 Authorization 头部的 <AccessToken> 前添加 Qiniu 和半角空格。
+
+###### 响应示例
+```
+HTTP/1.1 200 OK
+Content-Length: chunked
+Connection: keep-alive
+Content-Type: application/json
+Date: Tue, 04 Jan 2022 09:13:06 GMT
+X-Reqid: kXAAAACiAypdBscW
+
+
+{
+    "code":0,
+    "message":"Success",
+    "data":[
+        {
+            "start":"2021-12-01T00:00:00",
+            "end":"2022-01-01T00:00:00",
+            "billID":"61d085825e65d175d97c8efb",
+            "type":"bill",
+            "payStatus":"paid",
+            "product":"对象存储",
+            "itemDesc":"存储空间-华北",
+            "fee":0,
+            "couponFee":0,
+            "presentFee":0,
+            "cashFee":0,
+            "currency":"CNY"
+        },
+        {
+            "start":"2021-12-01T00:00:00",
+            "end":"2022-01-01T00:00:00",
+            "billID":"61d08582722bbb5ef2fb22f7",
+            "type":"bill",
+            "payStatus":"unpaid",
+            "product":"对象存储",
+            "itemDesc":"存储空间-华东",
+            "fee":7329416000000,
+            "couponFee":0,
+            "presentFee":0,
+            "cashFee":0,
+            "currency":"CNY"
+        }
+    ]
+}
+```
+
+<span id="%E6%9C%88%E7%BB%93%E7%AE%97%E5%8D%95%E8%AF%A6%E6%83%85%E6%8E%A5%E5%8F%A3"></span>
+### **月结算单详情接口**
+
+#### 描述
+本接口使用GET请求用来获取请求拥有的所有月结算单详情的列表。该接口需要您使用带Authorization签名认证的请求，如果使用匿名请求无法获取账单概览。
+
+#### 请求
+##### 请求语法
+```
+GET /billing-api/v1/bill/detail?start=<StartTime>&end=<EndTime> HTTP/1.1
+Host: api.qiniu.com
+Content-Type: application/x-www-form-urlencoded
+Authorization: Qiniu <AccessToken>
+
+
+注：第一版本的 /billing-api/v1/bill/detail，当您查询日计费的月结算单详情时，响应体里面的 start 和 end 不
+会精确到天，若您需要日计费的时间精确到天，请使用第二版 /billing-api/v2/bill/detail 接口，该接口与第一版本的
+行为完全一致，唯一的差别是响应体里面的日计费 start 和 end 值会精确到天。
+```
+
+##### 请求参数
+
+| 字段名称  | 类型     | 是否必须 | 示例                  | 说明                     |
+|-------|--------|------|---------------------|------------------------|
+| start | string | 是    | 2021-09-01T00:00:00 | 开始时间(东八区时间)，目前只支持按月查询  |
+| end   | string | 是    | 2021-10-01T00:00:00 | 结束时间(东八区时间)，时间范围支持左闭右开 |
+
+
+##### 请求头
+该请求操作的实现使用了所有操作的公共请求头。有着详细信息，请查阅[公共请求头](https://developer.qiniu.com/kodo/3924/common-request-headers)。
+
+##### 请求内容
+该请求操作的的请求体为空
+
+#### 响应
+##### 响应语法
+```
+HTTP/1.1 200 OK
+ContentType: application/json
+{
+        "code": <ErrorCode>,
+        "data": <Data>,
+        "message": <Message>
+}
+```
+
+##### 响应头
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.com/kodo/3924/common-request-headers)。
+
+
+##### 响应内容
+
+| 字段名称        | 类型         | 示例           | 描述                 |
+|-------------|------------|--------------|--------------------|
+| currency    | string     | CNY          | 币种：CNY=人民币，USD=美元  |
+| total_money | int64      | 538323000000 | 总费用，精确到小数点后面8位     |
+| list        | List<List> || 详情列表         |
+
+List
+
+| 字段名称              | 类型              | 示例                  | 描述                                                                                                                                                                                                                                                       |
+|-------------------|-----------------|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| start             | string          | 2021-09-01T00:00:00 | 账单开始时间(东八区时间)                                                                                                                                                                                                                                            |
+| end               | string          | 2021-10-01T00:00:00 | 账单结束时间(东八区时间)，左闭右开                                                                                                                                                                                                                                       |
+| product           | string          | CDN加速               | 产品线                                                                                                                                                                                                                                                      |
+| item              | string          | 动态加速-动态请求次数-华东      | 计费项描述                                                                                                                                                                                                                                                    |
+| zone              | string          | 华东                  | 地区                                                                                                                                                                                                                                                       |
+| bill_period       | string          | 月出账单                | 账单周期                                                                                                                                                                                                                                                     |
+| package_usage     | int64           | 0                   | 免费额度使用量                                                                                                                                                                                                                                                  |
+| respack_usage     | int64           | 0                   | 资源包抵扣量                                                                                                                                                                                                                                                   |
+| total_usage       | int64           | 7015066             | 总用量，计量原始量                                                                                                                                                                                                                                                |
+| usage_coefficient | int64           | 1073741824          | 计量转化数，计费的用量 = 计量原始量 ÷ 计量转化数，计量单位为 `usage_unit` 字段中表示的单位。<br>例如：<br>&nbsp;计量原始量 total_usage = 7015066<br>&nbsp;计量转化数 usage_coefficient = 1024 * 1024 * 1024 = 1073741824<br>&nbsp;计量单位 usage_unit = GB<br>则  计费的用量 = 7015066 ÷ 1073741824 = 0.00653329 GB |
+| usage_unit        | string          | GB                  | 计量单位                                                                                                                                                                                                                                                     |
+| price_type        | string          | 各阶梯单价               | 价格表类型                                                                                                                                                                                                                                                    |
+| price_unit        | string          | CNY/GB              | 价格单位                                                                                                                                                                                                                                                     |
+| item_money        | int64           | 13233000000         | 计费项费用，此价格已经计算减免以及抵扣的费用                                                                                                                                                                                                                                   |
+| discount_money    | int64           | -13225000000        | 折扣金额                                                                                                                                                                                                                                                     |
+| rebate_money      | int64           | 0                   | 减免金额                                                                                                                                                                                                                                                     |
+| currency          | string          | CNY                 | 币种：CNY=人民币，USD=美元                                                                                                                                                                                                                                        |
+| usage_cost        | List<UsageCost> || 各价格阶梯用量与费用          |
+
+
+UsageCost
+
+| 字段名称                | 类型      | 示例        | 描述                                |
+|---------------------|---------|-----------|-----------------------------------|
+| is_guaranteed_price | Boolean | false     | 是否是阶梯保底价格                         |
+| money               | int64   | 0         | 此价格阶梯产生的费用                        |
+| price               | int64   | 112000000 | 价格，加上price_unit是单价                |
+| usage               | int64   | 7015066   | 使用量，计量原始值，根据usage_coefficient进行换算 |
+| usage_from          | int64   | 0         | 价格阶梯起始量，计量原始量                     |
+| usage_to            | int64   | 1024      | 价格阶梯结束量，计量原始量，-1表示无穷大             |
+
+
+##### 响应状态码
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误码](#error-code)。
+
+
+#### 示例
+
+##### 请求示例
+```
+GET /billing-api/v1/bill/detail?start=2021-11-01T00:00:00&end=2021-12-01T00:00:00
+Host: api.qiniu.com
+Authorization: Qiniu HwFOxpYCQU6oXoZXFOTh1mq5ZZig6Yyocgk3BTZZ:8tgafMszuwgd99Ix4eQ2HeVT9B0=
+```
+注：要在 Authorization 头部的 <AccessToken> 前添加 Qiniu 和半角空格。
+
+###### 响应示例
+```
+HTTP/1.1 200 OK
+Content-Length: chunked
+Connection: keep-alive
+Content-Type: application/json
+Date: Thu, 24 Feb 2022 08:29:17 GMT
+X-Reqid: 2ZUBFPIhD-akXtYW
+
+{
+ "code": 0,
+ "message": "Success",
+ "data": {
+         "currency": "CNY",
+         "total_money": 538323000000,
+         "list": [
+            {
+                "currency": "CNY",
+                "discount_money": 0,
+                "end": "2022-03-01T00:00:00",
+                "item": "CDN-HTTPS 流量-其它地区",
+                "item_money": 0,
+                "package_usage": 0,
+                "price_type": "各阶梯单价",
+                "price_unit": "CNY/GB",
+                "product": "CDN加速",
+                "rebate_money": 0,
+                "respack_usage": 0,
+                "start": "2022-02-01T00:00:00",
+                "total_usage": 7015066,
+                "usage_coefficient": 1073741824,
+                "usage_cost": [
+                    {
+                        "is_guaranteed_price": false,
+                        "money": 0,
+                        "price": 112000000,
+                        "usage": 7015066,
+                        "usage_from": 0,
+                        "usage_to": 10995116277760
+                    },
+                    {
+                        "is_guaranteed_price": false,
+                        "money": 0,
+                        "price": 98000000,
+                        "usage": 0,
+                        "usage_from": 10995116277760,
+                        "usage_to": 54975581388800
+                    },
+                    {
+                        "is_guaranteed_price": false,
+                        "money": 0,
+                        "price": 85000000,
+                        "usage": 0,
+                        "usage_from": 54975581388800,
+                        "usage_to": 109951162777600
+                    },
+                    {
+                        "is_guaranteed_price": false,
+                        "money": 0,
+                        "price": 85000000,
+                        "usage": 0,
+                        "usage_from": 109951162777600,
+                        "usage_to": 109951162777600 
+                    }
+                ],
+                "usage_unit": "GB",
+                "zone": "其它地区"
+            },
+        }
+} 
+```
+
+<span id="%E8%AE%A2%E5%8D%95%E5%88%97%E8%A1%A8%E6%8E%A5%E5%8F%A3"></span>
+### **订单列表接口**
+
+#### 描述
+
+本接口作 GET 请求用来获取订单列表数据。该接口需要您使用带Authorization签名认证的请求，如果使用匿名请求无法获取订单数据。
+
+#### 请求
+
+##### 请求语法
+
+```
+GET /billing-api/v1/order/order-list?seller_id=<SellerID>&create_time_start=<startTime>&create_time_end=<endTime>&status=<status>&page=<page>&page_size=<pageSize> HTTP/1.1
+Host: api.qiniu.com
+Content-Type: application/x-www-form-urlencoded
+Authorization: Qiniu <AccessToken>
+```
+
+##### 请求参数
+
+
+| 字段名称              | 类型      | 是否必须 | 示例                        | 说明                                           |
+|-------------------|---------|------|---------------------------|----------------------------------------------|
+| seller_id         | integer | 否    | 45                        | 通过产品归属过滤，产品归属常量值见 [订单产品归属](#order-seller) 章节 |
+| status            | array   | 否    | 1                         | 通过订单状态过滤，取值范围：1(新建)、2(已支付)、3(已作废)、5(后付费)     |
+| create_time_start | string  | 否    | 2021-07-31T23:50:00+08:00 | 通过订单创建时间过滤，默认查询当前时间最近6个月内订单 ( 东八区时间 )        |
+| create_time_end   | string  | 否    | 2022-07-31T23:50:00+08:00 | 通过订单创建时间过滤，默认查询当前时间最近6个月内订单 ( 东八区时间 )        |
+| page              | integer | 否    | 1                         | 页码，从1开始                                      |
+| page_size         | integer | 否    | 20                        | 每页条数，默认20，最大不超过200                           |
+
+##### 请求头
+
+该请求操作的实现使用了所有操作的公共请求头。有着详细信息，请查阅[公共请求头](https://developer.qiniu.com/kodo/3924/common-request-headers)。
+
+##### 请求内容
+
+该请求操作的的请求体为空
+
+#### 响应
+
+##### 响应语法
+
+```
+HTTP/1.1 200 OK
+ContentType: application/json
+{
+        "code": <ErrorCode>,
+        "data": <Data>,
+        "message": <Message>
+}
+```
+
+##### 响应头
+
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.com/kodo/3924/common-request-headers)。
+
+##### 响应内容
+
+
+| 字段名称             | 类型      | 示例                               | 描述                                                       |
+|------------------|---------|----------------------------------|----------------------------------------------------------|
+| order_hash       | string  | 3489e21b4a1240d61d45c38e40f376a8 | 订单唯一编号                                                   |
+| union_order_hash | string  | QU01G762EJHZY4QS8E82BASDWR0G     | 订单统一编号                                                   |
+| create_time      | string  | 3489e21b4a1240d61d45c38e40f376a8 | 订单创建时间 ( 东八区时间 )                                         |
+| pay_action_time  | string  | 0001-01-01T00:00:00+08:00        | 订单支付时间 ( 东八区时间 )，未支付订单返回零值时间                             |
+| expired_time     | string  | 2022-07-31T23:50:00+08:00        | 订单支付过期时间 ( 东八区时间 )                                       |
+| seller_id        | integer | 45                               | 订单产品归属，释义见 [订单产品归属](#order-seller) 章节                    |
+| status           | integer | 2                                | 订单状态：1(新建)、2(已支付)、3(已作废)、5(后付费)，                         |
+| currency_type    | string  | CNY                              | 订单币种：CNY(人民币)、USD(美元)                                    |
+| c_fee            | integer | 1200000000                       | 订单总金额，实际金额保留2位小数乘以100000000的整数值，如实际金额 1.23，则返回 123000000 |
+
+##### 响应状态码
+
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误码](#error-code)。
+
+#### 示例
+
+##### 请求示例
+
+```
+GET /billing-api/v1/order/order-list?status=1&status=2&seller_id=45
+Host: api.qiniu.com
+Authorization: Qiniu HwFOxpYCQU6oXoZXFOTh1mq5ZZig6Yyocgk3BTZZ:8tgafMszuwgd99Ix4eQ2HeVT9B0=
+```
+
+注：要在 Authorization 头部的 <AccessToken> 前添加 Qiniu 和半角空格。
+
+###### 响应示例
+
+```
+HTTP/1.1 200 OK
+Content-Length: chunked
+Connection: keep-alive
+Content-Type: application/json
+Date: Tue, 04 Jan 2022 09:13:06 GMT
+X-Reqid: kXAAAACiAypdBscW
+
+{
+    "code": 0,
+    "data": [
+        {
+            "c_fee": 89870000000,
+            "create_time": "2022-08-02T18:09:03+08:00",
+            "currency_type": "CNY",
+            "expired_time": "2022-08-09T18:09:03+08:00",
+            "order_hash": "13a54eb19f708bc8b94824bafd143f76",
+            "pay_action_time": "2022-08-09T18:19:03+08:00",
+            "seller_id": 45,
+            "status": 2,
+            "union_order_hash": "QU01G9F0FGQK1S1HSAP921WAV4PA"
+        },
+        {
+            "c_fee": 89870000000,
+            "create_time": "2022-07-28T15:07:03+08:00",
+            "currency_type": "CNY",
+            "expired_time": "2022-07-31T23:50:00+08:00",
+            "order_hash": "9a05f866685148fae608fd509a19c822",
+            "pay_action_time": "0001-01-01T00:00:00+08:00",
+            "seller_id": 45,
+            "status": 1,
+            "union_order_hash": "QU01G91T2P0JE9TQ04M1HEP548Z5"
+        }
+    ],
+    "message": "Success"
+}
+```
+
+<span id="%E8%AE%A2%E5%8D%95%E8%AF%A6%E6%83%85%E6%8E%A5%E5%8F%A3"></span>
+### **订单详情接口**
+
+#### 描述
+
+本接口作 GET 请求用来获取订单详情数据。该接口需要您使用带Authorization签名认证的请求，如果使用匿名请求无法获取订单详情。
+
+#### 请求
+
+##### 请求语法
+
+```
+GET /billing-api/v1/order/order-detail?order_hash=<OrderHash> HTTP/1.1
+Host: api.qiniu.com
+Content-Type: application/x-www-form-urlencoded
+Authorization: Qiniu <AccessToken>
+```
+
+##### 请求参数
+
+| 字段名称       | 类型     | 是否必须 | 示例                               | 说明     |
+|------------|--------|------|----------------------------------|--------|
+| order_hash | string | 是    | 3489e21b4a1240d61d45c38e40f376a8 | 订单唯一编号 |
+
+##### 请求头
+
+该请求操作的实现使用了所有操作的公共请求头。有着详细信息，请查阅[公共请求头](https://developer.qiniu.com/kodo/3924/common-request-headers)
+。
+
+##### 请求内容
+
+该请求操作的的请求体为空
+
+#### 响应
+
+##### 响应语法
+
+```
+HTTP/1.1 200 OK
+ContentType: application/json
+{
+        "code": <ErrorCode>,
+        "data": <Data>,
+        "message": <Message>
+}
+```
+
+##### 响应头
+
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.com/kodo/3924/common-request-headers)
+。
+
+##### 响应内容
+
+| 字段名称             | 类型      | 示例                               | 描述                                                       |
+|------------------|---------|----------------------------------|----------------------------------------------------------|
+| order_hash       | string  | 3489e21b4a1240d61d45c38e40f376a8 | 订单唯一编号                                                   |
+| union_order_hash | string  | QU01G762EJHZY4QS8E82BASDWR0G     | 订单统一编号 (调用订单取消接口时需要传递此参数)                                |
+| create_time      | string  | 3489e21b4a1240d61d45c38e40f376a8 | 订单创建时间 ( 东八区时间 )                                         |
+| pay_action_time  | string  | 0001-01-01T00:00:00+08:00        | 订单支付时间 ( 东八区时间 )，未支付订单返回零值时间                             |
+| expired_time     | string  | 2022-07-31T23:50:00+08:00        | 订单支付过期时间 ( 东八区时间 )                                       |
+| seller_id        | integer | 45                               | 订单产品归属，释义见 [订单产品归属](#order-seller) 章节                    |
+| status           | integer | 2                                | 订单状态: 1(新建)、2(已支付)、3(已作废)、5(后付费)，                        |
+| currency_type    | string  | CNY                              | 订单币种: CNY(人民币)、USD(美元)                                   |
+| c_fee            | integer | 1200000000                       | 订单总金额，实际金额保留2位小数乘以100000000的整数值，如实际金额 1.23，则返回 123000000 |
+| product_orders   | array   | [{...}]                          | 商品订单明细，结构见下表                                             |
+
+商品订单明细(product_orders)结构:
+
+| 字段名称                | 类型      | 示例                        | 描述                                                                                                                                       |
+|---------------------|---------|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| product_name        | string  | CDN流量                     | 商品名称                                                                                                                                     |
+| seller_name         | string  | CDN                       | 产品归属，释义见 [订单产品归属](#order-seller) 章节                                                                                                      |
+| quantity            | integer | 1                         | 数量                                                                                                                                       |
+| c_fee               | integer | 120000000                 | 商品订单金额，实际金额保留2位小数乘以100000000的整数值，如实际金额 1.23，则返回 123000000                                                                                |
+| product_description | string  | CDN流量100TB                | 商品描述，可能为空                                                                                                                                |
+| status              | integer | 2                         | 发货状态，取值范围: 1(新建)、2(完成）                                                                                                                   |
+| start_time          | string  | 0001-01-01T00:00:00+08:00 | 初始值为零值时间，仅发货完成后有值 ( 东八区时间 )                                                                                                              |
+| end_time            | string  | 0001-01-01T00:00:00+08:00 | 初始值为零值时间，仅发货完成后有值 ( 东八区时间 )                                                                                                              |
+| category_id         | integer | 0                         | 商品分类，默认为0，资源包类订单值为 3                                                                                                                     |
+| carry_over_policy   | integer | 2                         | 结转方式，仅对资源包类订单有效，取值范围: 0(按月分配可结转)、1(按月分配不可结转)、2(一次性分配)，释义见[资源包介绍](https://developer.qiniu.com/af/12146/the-resource-bundle-is-introduced) |
+| effect_time         | string  | 2022-06-01T00:00:00+08:00 | 资源包生效时间，仅对资源包类订单有效 ( 东八区时间 )                                                                                                             |
+| extra_details       | array   | [{"label":"","value":""}] | 其他额外细节信息，结构见下表                                            <br/><br/>                                                                     |
+
+其他额外细节信息(extra_details)结构:
+
+| 字段名称  | 类型     | 示例   | 描述  |
+|-------|--------|------|-----|
+| label | string | 资源类型 |     |
+| value | string | 云主机  |     |
+
+
+##### 响应状态码
+
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误码](#error-code)。
+
+#### 示例
+
+##### 请求示例
+
+```
+GET /billing-api/v1/order/order-detail?order_hash=3489e21b4a1240d61d45c38e40f376a8
+Host: api.qiniu.com
+Authorization: Qiniu HwFOxpYCQU6oXoZXFOTh1mq5ZZig6Yyocgk3BTZZ:8tgafMszuwgd99Ix4eQ2HeVT9B0=
+```
+
+注：要在 Authorization 头部的 <AccessToken> 前添加 Qiniu 和半角空格。
+
+###### 响应示例
+
+```
+HTTP/1.1 200 OK
+Content-Length: chunked
+Connection: keep-alive
+Content-Type: application/json
+Date: Tue, 04 Jan 2022 09:13:06 GMT
+X-Reqid: kXAAAACiAypdBscW
+
+{
+    "code":0,
+    "data":{
+        "c_fee":1350000000,
+        "create_time":"2022-05-19T17:18:35+08:00",
+        "currency_type":"CNY",
+        "expired_time":"2022-05-26T17:18:35+08:00",
+        "order_hash":"30e9bcc5762be923aa29bdf3bdd31f5b",
+        "pay_action_time":"0001-01-01T00:00:00+08:00",
+        "product_orders":[
+            {
+                "c_fee":1350000000,
+                "carry_over_policy":2,
+                "category_id":3,
+                "effect_time":"2022-06-01T00:00:00+08:00",
+                "end_time":"0001-01-01T00:00:00+08:00",
+                "extra_details":[
+                    {
+                        "label":"订单类型",
+                        "value":"资源包"
+                    }
+                ],
+                "product_description":"",
+                "product_name":"视频监控上行流量100GB包年",
+                "quantity":1,
+                "seller_name":"视频监控",
+                "start_time":"0001-01-01T00:00:00+08:00",
+                "status":1
+            }
+        ],
+        "seller_id":82,
+        "status":1,
+        "union_order_hash":"QU01G3DSS6XJ466ZGVBAKQVFPYGX"
+    },
+    "message":"Success"
+}
+```
+<span id="%E8%AE%A2%E5%8D%95%E5%8F%96%E6%B6%88%E6%8E%A5%E5%8F%A3"></span>
+### **订单取消接口**
+
+#### 描述
+
+本接口作 POST 请求用来取消订单。该接口需要您使用带Authorization签名认证的请求，如果使用匿名请求无法获取订单详情。
+
+#### 请求
+
+##### 请求语法
+
+```
+POST /billing-api/v1/order/order-cancel HTTP/1.1
+Host: api.qiniu.com
+Content-Type: application/json
+Authorization: Qiniu <AccessToken>
+```
+
+##### 请求参数
+
+| 字段名称             | 类型     | 是否必须 | 示例                           | 说明                |
+|------------------|--------|------|------------------------------|-------------------|
+| union_order_hash | string | 是    | QU01G762EJHZY4QS8E82BASDWR0G | 订单统一编号，注意不是订单唯一编号 |
+
+##### 请求头
+
+该请求操作的实现使用了所有操作的公共请求头。有着详细信息，请查阅[公共请求头](https://developer.qiniu.com/kodo/3924/common-request-headers)
+。
+
+##### 请求内容
+
+```
+{"union_order_hash":"string"}
+```
+
+#### 响应
+
+##### 响应语法
+
+```
+HTTP/1.1 200 OK
+ContentType: application/json
+{
+        "code": <ErrorCode>,
+        "data": <Data>,
+        "message": <Message>
+}
+```
+
+##### 响应头
+
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.com/kodo/3924/common-request-headers)
+。
+
+##### 响应内容
+
+该请求正常无响应内容
+
+##### 响应状态码
+
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误码](#error-code)。
+
+#### 示例
+
+##### 请求示例
+
+```
+POST /billing-api/v1/order/order-cancel
+Host: api.qiniu.com
+Authorization: Qiniu HwFOxpYCQU6oXoZXFOTh1mq5ZZig6Yyocgk3BTZZ:8tgafMszuwgd99Ix4eQ2HeVT9B0=
+Content-Type: application/json
+
+{"union_order_hash":"QU01G3DSS6XJ466ZGVBAKQVFPYGX"}
+```
+
+注：要在 Authorization 头部的 <AccessToken> 前添加 Qiniu 和半角空格。
+
+###### 响应示例
+
+```
+HTTP/1.1 200 OK
+Content-Length: chunked
+Connection: keep-alive
+Content-Type: application/json
+Date: Tue, 04 Jan 2022 09:13:06 GMT
+X-Reqid: kXAAAACiAypdBscW
+
+{
+    "code":0,
+    "message":"Success"
+}
+```
+<span id="%E8%B5%84%E6%BA%90%E5%8C%85%E5%BD%93%E6%9C%88%E6%A6%82%E8%A7%88%E6%8E%A5%E5%8F%A3"></span>
+### **资源包当月概览接口**
+
+#### 描述
+
+本接口作 GET 请求用来获取资源包当月概览数据。该接口需要您使用带Authorization签名认证的请求，如果使用匿名请求无法获取数据。
+
+#### 请求
+
+##### 请求语法
+
+```
+GET /billing-api/v1/respack/month-overview?page=<Page>&page_size=<PageSize> HTTP/1.1
+Host: api.qiniu.com
+Authorization: Qiniu <AccessToken>
+```
+
+##### 请求参数
+
+| 字段名称      | 类型      | 是否必须 | 示例  | 说明                 |
+|-----------|---------|------|-----|--------------------|
+| page      | integer | 否    | 1   | 页码，从1开始            |
+| page_size | integer | 否    | 20  | 每页条数，默认20，最大不超过200 |
+
+##### 请求头
+
+该请求操作的实现使用了所有操作的公共请求头。有着详细信息，请查阅[公共请求头](https://developer.qiniu.com/kodo/3924/common-request-headers)
+。
+
+##### 请求内容
+
+该请求操作的的请求体为空
+
+#### 响应
+
+##### 响应语法
+
+```
+HTTP/1.1 200 OK
+ContentType: application/json
+{
+        "code": <ErrorCode>,
+        "data": <Data>,
+        "message": <Message>
+}
+```
+
+##### 响应头
+
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.com/kodo/3924/common-request-headers)
+。
+
+##### 响应内容
+
+| 字段名称           | 类型      | 示例        | 描述     |
+|----------------|---------|-----------|--------|
+| item_name      | string  | CDN加速通用流量 | 计费项目   |
+| zone_name      | string  | 中国大陆      | 可用区域   |
+| available_time | string  | 全时段       | 可用时段   |
+| total_surplus  | integer | 1024      | 当月可用总量 |
+| month_used     | integer | 0         | 当月已用量  |
+| month_remain   | integer | 1024      | 当月剩余可用 |
+| respack_unit   | string  | GB        | 用量单位   |
+
+##### 响应状态码
+
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误码](#error-code)。
+
+#### 示例
+
+##### 请求示例
+
+```
+GET /billing-api/v1/respack/month-overview?page=1&page_size=20
+Host: api.qiniu.com
+Authorization: Qiniu HwFOxpYCQU6oXoZXFOTh1mq5ZZig6Yyocgk3BTZZ:8tgafMszuwgd99Ix4eQ2HeVT9B0=
+```
+
+注：要在 Authorization 头部的 <AccessToken> 前添加 Qiniu 和半角空格。
+
+###### 响应示例
+
+```
+HTTP/1.1 200 OK
+Content-Length: chunked
+Connection: keep-alive
+Content-Type: application/json
+Date: Tue, 04 Jan 2022 09:13:06 GMT
+X-Reqid: kXAAAACiAypdBscW
+
+{
+    "code": 0,
+    "data": [
+        {
+            "available_time": "全时段",
+            "item_name": "CDN加速通用计费项",
+            "month_remain": 5120,
+            "month_used": 0,
+            "respack_unit": "GB",
+            "total_surplus": 5120,
+            "zone_name": "中国大陆"
+        }
+    ],
+    "message": "Success"
+}
+```
+<span id="%E8%B5%84%E6%BA%90%E5%8C%85%E5%88%97%E8%A1%A8%E6%8E%A5%E5%8F%A3"></span>
+### **资源包列表接口**
+
+#### 描述
+
+本接口作 GET 请求用来获取资源包列表数据。该接口需要您使用带Authorization签名认证的请求，如果使用匿名请求无法获取数据。
+
+#### 请求
+
+##### 请求语法
+
+```
+GET /billing-api/v1/respack/list?page=<Page>&page_size=<PageSize> HTTP/1.1
+Host: api.qiniu.com
+Authorization: Qiniu <AccessToken>
+```
+
+##### 请求参数
+
+| 字段名称       | 类型      | 是否必须 | 示例  | 说明                                 |
+|------------|---------|------|-----|------------------------------------|
+| order_hash | string  | 否    | 1   | 订单唯一编号，查询指定订单的资源包                  |
+| status     | integer | 否    | 1   | 资源包状态: 1(未使用)、2(使用中)、3(已用完)、4(已过期) |
+| page       | integer | 否    | 1   | 页码，从1开始                            |
+| page_size  | integer | 否    | 20  | 每页条数，默认20，最大不超过200                 |
+
+##### 请求头
+
+该请求操作的实现使用了所有操作的公共请求头。有着详细信息，请查阅[公共请求头](https://developer.qiniu.com/kodo/3924/common-request-headers)
+。
+
+##### 请求内容
+
+该请求操作的的请求体为空
+
+#### 响应
+
+##### 响应语法
+
+```
+HTTP/1.1 200 OK
+ContentType: application/json
+{
+        "code": <ErrorCode>,
+        "data": <Data>,
+        "message": <Message>
+}
+```
+
+##### 响应头
+
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.com/kodo/3924/common-request-headers)
+。
+
+##### 响应内容
+
+| 字段名称              | 类型      | 示例                               | 描述                                                                                                                            |
+|-------------------|---------|----------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| respack_name      | string  | 中国大陆全时段加速流量5TB	                  | 资源包名称                                                                                                                         |
+| effective_start   | string  | 2020-08-11T04:05:14+08:00        | 有效时间起始 ( 东八区时间 )                                                                                                              |
+| effective_end     | string  | 2022-08-11T04:05:14+08:00        | 有效时间终止 ( 东八区时间 )                                                                                                              |
+| carry_over_policy | integer | 1                                | 分配方式，取值范围: 0(按月分配可结转)、1(按月分配不可结转)、2(一次性分配)，释义见[资源包介绍](https://developer.qiniu.com/af/12146/the-resource-bundle-is-introduced) |
+| status            | integer | 2                                | 资源包状态: 1(未使用)、2(使用中)、3(已用完)、4(已过期)                                                                                            |
+| total_amount      | integer | 1024                             | 资源包总量                                                                                                                         |
+| used_amount	      | integer | 1024                             | 已用量                                                                                                                           |
+| respack_unit      | string  | GB                               | 用量单位                                                                                                                          |
+| data_update_time  | string  | 2022-05-11T04:05:14+08:00        | 数据更新时间 ( 东八区时间 )                                                                                                              |
+| order_hash        | string  | f9cefba946e0b547a72abb4a9d4acc3c | 订单唯一编号，用于查询资源包详情                                                                                                              |
+| po_id             | integer | 1                                | 商品订单编号，用于查询资源包详情                                                                                                              |
+
+##### 响应状态码
+
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误码](#error-code)。
+
+#### 示例
+
+##### 请求示例
+
+```
+GET /billing-api/v1/respack/list?page=1&page_size=20
+Host: api.qiniu.com
+Authorization: Qiniu HwFOxpYCQU6oXoZXFOTh1mq5ZZig6Yyocgk3BTZZ:8tgafMszuwgd99Ix4eQ2HeVT9B0=
+```
+
+注：要在 Authorization 头部的 <AccessToken> 前添加 Qiniu 和半角空格。
+
+###### 响应示例
+
+```
+HTTP/1.1 200 OK
+Content-Length: chunked
+Connection: keep-alive
+Content-Type: application/json
+Date: Tue, 04 Jan 2022 09:13:06 GMT
+X-Reqid: kXAAAACiAypdBscW
+
+{
+    "code": 0,
+    "data": [
+        {
+            "carry_over_policy": 2,
+            "data_update_time": "2022-08-11T04:05:14+08:00",
+            "effective_end": "2022-08-11T04:05:14+08:00",
+            "effective_start": "2020-08-11T04:05:14+08:00",
+            "order_hash": "65abb4569ce66c6592571824d8492666",
+            "po_id": 524913,
+            "respack_name": "国内 HTTPS 10GB 动态加速闲时包年",
+            "respack_unit": "GB",
+            "status": 4,
+            "total_amount": 10,
+            "used_amount": 0
+        }
+    ],
+    "message": "Success"
+}
+```
+<span id="%E8%B5%84%E6%BA%90%E5%8C%85%E8%AF%A6%E6%83%85%E6%8E%A5%E5%8F%A3"></span>
+### **资源包详情接口**
+
+#### 描述
+
+本接口作 GET 请求用来获取资源包详情数据。该接口需要您使用带Authorization签名认证的请求，如果使用匿名请求无法获取数据。
+
+#### 请求
+
+##### 请求语法
+
+```
+GET /billing-api/v1/respack/detail?order_hash=<OrderHash>&po_id=<PoID> HTTP/1.1
+Host: api.qiniu.com
+Authorization: Qiniu <AccessToken>
+```
+
+##### 请求参数
+
+| 字段名称       | 类型      | 是否必须 | 示例                               | 说明                                  |
+|------------|---------|------|----------------------------------|-------------------------------------|
+| order_hash | string  | 是    | 65abb4569ce66c6592571824d8492666 | 订单唯一编号                              |
+| po_id      | integer | 是    | 524913                           | 商品订单编号，取自 respack/list 返回结果中的 po_id |
+
+##### 请求头
+
+该请求操作的实现使用了所有操作的公共请求头。有着详细信息，请查阅[公共请求头](https://developer.qiniu.com/kodo/3924/common-request-headers)
+。
+
+##### 请求内容
+
+该请求操作的的请求体为空
+
+#### 响应
+
+##### 响应语法
+
+```
+HTTP/1.1 200 OK
+ContentType: application/json
+{
+        "code": <ErrorCode>,
+        "data": <Data>,
+        "message": <Message>
+}
+```
+
+##### 响应头
+
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.com/kodo/3924/common-request-headers)
+。
+
+##### 响应内容
+
+| 字段名称              | 类型      | 示例                                             | 描述                                                                                                                            |
+|-------------------|---------|------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| respack_name      | string  | 中国大陆全时段加速流量5TB	                                | 资源包名称                                                                                                                         |
+| effective_start   | string  | 2020-06-01T00:00:00+08:00                      | 有效时间起始 ( 东八区时间 )                                                                                                              |
+| effective_end     | string  | 2022-06-01T00:00:00+08:00                      | 有效时间终止 ( 东八区时间 )                                                                                                              |
+| carry_over_policy | integer | 1                                              | 分配方式，取值范围: 0(按月分配可结转)、1(按月分配不可结转)、2(一次性分配)，释义见[资源包介绍](https://developer.qiniu.com/af/12146/the-resource-bundle-is-introduced) |
+| status            | integer | 2                                              | 资源包状态: 1(未使用)、2(使用中)、3(已用完)、4(已过期)                                                                                            |
+| total_amount      | integer | 1024                                           | 资源包总量                                                                                                                         |
+| used_amount	      | integer | 1024                                           | 已用量                                                                                                                           |
+| respack_unit      | string  | GB                                             | 用量单位                                                                                                                          |
+| data_update_time  | string  | 2021-10-01T00:00:00+08:00                      | 数据更新时间 ( 东八区时间 )                                                                                                              |
+| order_hash        | string  | f9cefba946e0b547a72abb4a9d4acc3c               | 订单唯一编号，用于查询资源包详情                                                                                                              |
+| po_id             | integer | 1                                              | 商品订单编号，用于查询资源包详情                                                                                                              |
+| is_combo_item     | bool    | false                                          | 是否是融合资源包，true表示融合资源包，false表示普通包                                                                                               |
+| description       | string  | 全站加速DCDN-HTTP 流量、全站加速DCDN-HTTPS 流量，抵扣系数为1:1.15 | 融合计费项抵扣规则说明                                                                                                                   |
+| deduct_details	   | array   | [{...}]                                        | 资源包抵扣明细，结构见下表                                                                                                                 |
+
+资源包抵扣明细(deduct_details) 结构:
+
+| 字段名称          | 类型      | 示例                        | 描述                        |
+|---------------|---------|---------------------------|---------------------------|
+| deduct_date   | string  | 2021-10-01T00:00:00+08:00 | 抵扣月份 ( 东八区时间 )            |
+| deduct_status | integer | 2                         | 出账抵扣状态: 1(未出账抵扣)、2(已出账抵扣) |
+| deduct_amount | string  | 1024                      | 抵扣量                       |
+
+##### 响应状态码
+
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误码](#error-code)。
+
+#### 示例
+
+##### 请求示例
+
+```
+GET /billing-api/v1/respack/detail?order_hash=65abb4569ce66c6592571824d8492666&po_id=524913
+Host: api.qiniu.com
+Authorization: Qiniu HwFOxpYCQU6oXoZXFOTh1mq5ZZig6Yyocgk3BTZZ:8tgafMszuwgd99Ix4eQ2HeVT9B0=
+```
+
+注：要在 Authorization 头部的 <AccessToken> 前添加 Qiniu 和半角空格。
+
+###### 响应示例
+
+```
+HTTP/1.1 200 OK
+Content-Length: chunked
+Connection: keep-alive
+Content-Type: application/json
+Date: Tue, 04 Jan 2022 09:13:06 GMT
+X-Reqid: kXAAAACiAypdBscW
+
+
+{
+    "code": 0,
+    "data": {
+        "carry_over_policy": 2,
+        "deduct_details": [
+            {
+                "deduct_date": "2021-10-01T00:00:00+08:00",
+                "deduct_status": 2,
+                "deduct_amount: 1024
+            }
+        ],
+        "description": "",
+        "effective_end": "2022-06-01T00:00:00+08:00",
+        "effective_start": "2021-06-01T00:00:00+08:00",
+        "is_combo_item": false,
+        "item_code": "fusion:dyn:transfer:https",
+        "order_hash": "65abb4569ce66c6592571824d8492666",
+        "respack_name": "国内 HTTPS 10GB 动态加速闲时包年",
+        "respack_unit": "GB",
+        "status": 4,
+        "total_amount": 10,
+        "used_amount": 0
+    },
+    "message": "Success"
+}
+```
+<span id="%E8%B5%84%E6%BA%90%E5%8C%85%E5%8E%86%E5%8F%B2%E6%8A%B5%E6%89%A3%E6%98%8E%E7%BB%86%E6%8E%A5%E5%8F%A3"></span>
+### **资源包历史抵扣明细接口**
+
+#### 描述
+
+本接口作 GET 请求用来获取资源包历史抵扣数据。该接口需要您使用带Authorization签名认证的请求，如果使用匿名请求无法获取数据。
+
+#### 请求
+
+##### 请求语法
+
+```
+GET /billing-api/v1/respack/history-usage?month=<Month> HTTP/1.1
+Host: api.qiniu.com
+Authorization: Qiniu <AccessToken>
+```
+
+##### 请求参数
+
+| 字段名称  | 类型     | 是否必须 | 示例     | 说明            |
+|-------|--------|------|--------|---------------|
+| month | string | 是    | 202205 | 月份，格式: YYYYmm |
+
+##### 请求头
+
+该请求操作的实现使用了所有操作的公共请求头。有着详细信息，请查阅[公共请求头](https://developer.qiniu.com/kodo/3924/common-request-headers)
+。
+
+##### 请求内容
+
+该请求操作的的请求体为空
+
+#### 响应
+
+##### 响应语法
+
+```
+HTTP/1.1 200 OK
+ContentType: application/json
+{
+        "code": <ErrorCode>,
+        "data": <Data>,
+        "message": <Message>
+}
+```
+
+##### 响应头
+
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.com/kodo/3924/common-request-headers)
+。
+
+##### 响应内容
+
+| 字段名称               | 类型      | 示例                               | 描述                                                                                           |
+|--------------------|---------|----------------------------------|----------------------------------------------------------------------------------------------|
+| order_hash         | string  | 9cf81ce0056dc6df87901c5fe2fcfaaf | 订单唯一编号                                                                                       |
+| respack_name	      | string  | 中国大陆全时段加速流量5TB                   | 资源包名称                                                                                        |
+| item_name	         | string  | CDN加速通用加速                        | 计费项目                                                                                         |
+| is_combo_item	     | bool    | false                            | 是否是融合计费项目，释义见[资源包介绍](https://developer.qiniu.com/af/12146/the-resource-bundle-is-introduced) |
+| total_this_month	  | integer | 5120                             | 当月总共可用(含上月结余)                                                                                |
+| used_this_month	   | integer | 0                                | 当月本包已用                                                                                       |
+| usable_this_month	 | integer | 5120                             | 本月剩余可用                                                                                       |
+| respack_unit	      | string  | GB                               | 用量单位                                                                                         |
+| data_update_time   | string  | 2020-10-31T16:00:00Z             | 数据更新时间 ( 东八区时间 )                                                                             |
+| combo_item_details | array   | [{...}]                          | 融合包的单计费项抵扣明细，结构见下表                                                                           |
+
+融合包的单计费项抵扣明细(combo_item_details) 结构:
+
+| 字段名称                | 类型      | 示例    | 描述      |
+|---------------------|---------|-------|---------|
+| item_name           | string  | CDN加速 | 计费项项目   |
+| used_raw_this_month | integer | 2     | 账单上的抵扣量 |
+
+##### 响应状态码
+
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误码](#error-code)。
+
+#### 示例
+
+##### 请求示例
+
+```
+GET /billing-api/v1/respack/history-usage?month=202206
+Host: api.qiniu.com
+Authorization: Qiniu HwFOxpYCQU6oXoZXFOTh1mq5ZZig6Yyocgk3BTZZ:8tgafMszuwgd99Ix4eQ2HeVT9B0=
+```
+
+注：要在 Authorization 头部的 <AccessToken> 前添加 Qiniu 和半角空格。
+
+###### 响应示例
+
+```
+HTTP/1.1 200 OK
+Content-Length: chunked
+Connection: keep-alive
+Content-Type: application/json
+Date: Tue, 04 Jan 2022 09:13:06 GMT
+X-Reqid: kXAAAACiAypdBscW
+
+{
+    "code": 0,
+    "data": [
+        {
+            "combo_item_details": [
+                {
+                    "item_name": "CDN加速 HTTP",
+                    "used_raw_this_month": 0
+                },
+                {
+                    "item_name": "CND加速 HTTPS",
+                   "used_raw_this_month": 0
+                },
+            ],
+            "data_update_time": "2022-06-01T00:00:00+08:00",
+            "is_combo_item": true,
+            "item_name": "CDN加速通用计费项-版本2",
+            "order_hash": "9cf81ce0056dc6df87901c5fe2fcfaaf",
+            "respack_name": "中国大陆全时段加速流量5TB",
+            "respack_unit": "GB",
+            "total_this_month": 5120,
+            "usable_this_month": 5120,
+            "used_this_month": 0
+        }
+    ],
+    "message": "Success"
+}
+```

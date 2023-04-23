@@ -1,0 +1,36 @@
+# 逻辑回归 - Logistic Regression
+
+逻辑回归常用于二分类的情况，即目标变量中仅含两个变量值。比如，“是否故障”这个变量中只含有“是”和“否”两个变量值，那么判断“是否故障”这个问题即为一个二分类问题。
+
+**语法：**
+```
+..| fit LogisticRegression penalty=<l1 | l2(default) | elasticnet | none> solver=<newton-cg | lbfgs(default) | liblinear | sag | saga> multi_class=<auto(default) | ovr | multinomial> l1_ratio=<float> random_state=<int> <target_field> from <feature_field_1> <feature_field_2>... 
+```
+
+**参数说明：**
+
+- penalty为正则化参数。
+	+ penalty=l2（默认值），使用L2正则化。当solver = newton-cg、sag或者lbfgs时，penalty只能使用L2正则化，因为L1正则化的损失函数不是连续可导的。
+	+ penalty=l1，使用L1正则化。
+	+ penalty=elasticnet，使用弹性网络正则化，是L1正则化和L2正则化的混合项，仅支持solver=saga的情况，必须配合l1_ratio一起使用。
+	+ penalty=none，不使用正则化，不支持solver=liblinear的情况。
+
+- solver为损失函数优化器。
+	+ solver=lbfgs（默认值），拟牛顿法的一种，利用损失函数二阶导数矩阵即海森矩阵来迭代优化损失函数。只能搭配penalty=l2使用。
+	+ solver=newton_cg, 牛顿法的一种，利用损失函数二阶导数矩阵即海森矩阵来迭代优化损失函数。只能搭配penalty=l2使用。
+	+ solver=liblinear, 使用了开源的liblinear库实现，内部使用了坐标轴下降法来迭代优化损失函数，适用于小数据集，不支持penalty=none的情况。
+	+ solver=sag，随机平均梯度下降，是梯度下降法的变种，和普通梯度下降法的区别是每次迭代仅仅用一部分的样本来计算梯度，适合于样本数据多的时候，sag是一种线性收敛算法，这个速度远比梯度下降法快。只能搭配penalty=l2使用。
+	+ solver=saga，快速梯度下降法，线性收敛的随机优化算法的的变种，适用于样本量非常大的数据集。
+
+- multi_class为分类方式选择参数。
+	+ multi_class=ovr，代表one-vs-rest。
+	+ multi_class=multinomial，代表many-vs-many。
+	+ multi_class=auto，自动选择ovr或者multinomial。如果solver=liblinear或者当数据是二分类的时候则选择ovr，否则选择multinomial。
+	+ 如果是二元逻辑回归，ovr和multinomial并没有任何区别。如果是多元逻辑回归，ovr不论是几元回归，都当成二元回归来处理。multinomial会从多个类中每次选两个类进行二元回归。
+	+ ovr分类速度快，但是结果相对略差；multinomial则相反。
+
+- l1_ratio为L1正则化所占的比重参数。
+	+ 只适用于penalty=elasticnet的场景，用来制定在混合项中，L1正则化所占的比重。
+	+ l1_ratio 必须为[0,1]之间的float，如果l1_ratio=0，则等于使用L2正则化，如果l1_ratio=1，则等于使用L1正则化。如果0 < l1_ratio <1，那么使用L1正则化和L2正则化的混合项。l1_ratio越大，L1正则化在混合项中所占比例越大。
+
+- random_state为随机数种子，用来控制样本自助抽样的随机性和特征抽样的随机性。如果给定特定值，重新跑模型的时候，可以得出同样的结果。

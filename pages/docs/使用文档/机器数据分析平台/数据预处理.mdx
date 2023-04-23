@@ -1,0 +1,27 @@
+**使用场景**
+
+在数据比较原始或者比较粗糙的情况下，我们需要先先通过数据缩放、数据编码等方式对数据进行一些处理，使其可以更有效地用于统计分析或者机器学习。
+
+
+**通用语法**
+
+```
+|fit <algo_name> [options] <feature_field_1> <feature_field_2> [into model_name]...  
+```
+
+**通用参数说明：**
+
++ <algo_name> 必填，用来指定训练模型采用的算法名称。
++ [options]可选，为算法的内置参数，根据提供的算法变化。
++ <feature_field> 必填，可以是一个或者多个字段，用来指定需要的特征字段，给定的feature_field值必须存在于数据集中。
++ [into model_name]可选，用来将fit训练出来的模型保存成model_name以便下次调用。
++ 数据集必须不为空。
+
+
+以下算法可以用来做特征加工：
+
+- [数据标准化 - StandardScaler](/express/manual/11072/data-standardization-standardscaler)
+- [稳健标准化 - RobustScaler](/express/manual/11073/standardized-robustscaler-steadily)
+- [独热编码 - OneHotEncoder](/express/manual/11074/hot-coding-onehotencoder-alone)
+- [标签编码 - LabelEncoder](/express/manual/11075/encoding-labelencoder-tags)
+

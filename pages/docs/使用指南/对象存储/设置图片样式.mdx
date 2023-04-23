@@ -1,0 +1,34 @@
+对象存储 Kodo 支持通过控制台提供一键式图片编辑功能，方便您对空间（Bucket）内上传文件（Object）做批量图片处理。
+
+您可在本功能中进行：
+- 图片样式：支持对图片进行如剪裁、添加水印、格式变更等的处理。图片样式将冗长的图片数据处理重新定义的一个友好别名，以简洁的方式描述对图片的处理模式。
+- 样式分隔符：样式分隔符是用于连接资源链接和图片样式的特殊符号，为防止访问出错，您可自定义样式名中不可出现的分隔符。
+<br>
+
+# **说明**
+- 更多关于图片编辑的操作，请参考七牛云智能多媒体服务的[图片处理](https://developer.qiniu.com/dora/3683/img-directions-for-use)。
+- 更多详情请参考[图片样式](/kodo/development_guidelines/8623/dev-the-picture-style)。
+<br>
+
+
+# **操作步骤**
+
+1. 登录 Kodo 控制台进入[空间管理](https://portal.qiniu.com/kodo/bucket)界面
+2. 单击**目标空间名称**进入空间概览，单击**图片样式**进入如图1:图片样式列表
+图1:
+![截屏2021-08-11 下午2.28.30.png](https://dn-odum9helk.qbox.me/FhJdxmQVfDJSKsH-iQH2vOac5Rci)
+3. 单击 **+新建图片样式**，以新建图片样式规则，详情请参考智能多媒体服务[图片样式](https://developer.qiniu.com/dora/8264/the-picture-style)。
+4. 单击**样式分隔符设置**，右侧将弹出样式分隔符设置界面。单击**请选择样式分隔符**栏获取下拉菜单如图2
+图2:
+![image2021-8-18_16-38-7.png](https://dn-odum9helk.qbox.me/FnA4cJXysxz9qYH0LTfwRc4vll7d)
+5. **单选或多选**指定分隔符，单击 **+添加**，单击**保存**，完成样式分隔符设置。
+<br>
+
+
+# **具体示例**
+1. 样式名称为 `imageFop`，样式内容为：`imageView2/0/w/48/h/48`，样式分隔符为 `-`
+2. 原始图片链接 `http://dn-odum9helk.qbox.me/qiniu-picture1.jpg`
+3. 通过访问 `http://dn-odum9helk.qbox.me/qiniu-picture1.jpg-imageFop` 即可获得效果缩放效果
+注意事项：
+   - 创建分隔符时，不建议使用在样式名称中出现的符号作为分隔符。
+   - 修改分隔符是个危险操作，全网生效须 24 小时。

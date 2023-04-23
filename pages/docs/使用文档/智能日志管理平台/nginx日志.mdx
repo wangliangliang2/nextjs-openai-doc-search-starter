@@ -1,0 +1,40 @@
+Nginx Parser 是专门解析 Nginx 日志的解析器。仅需指定 nginx 的配置文件地址，即可进行 nginx 日志解析。
+
+### **Nginx Parser 的解析原理**
+
+Nginx Parser 会根据 Nginx 配置文件去寻找 Nginx 日志的生成格式，举例来说:
+
+```
+ log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $bytes_sent $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for" '
+                      '$upstream_addr $host $sent_http_x_reqid $request_time';
+```
+
+这个日志格式会生成一个正则表达式，匹配每个`$`符号后的字符串，以格式中定义的分隔符为正则表达式的终结符。 如`$remote_addr`后面跟着空格，则认为匹配的 remote_addr 字段，匹配到空格为止。 如果被双引号""包裹，如`"$http_user_agent"`，则认为匹配到双引号为止，又比如[$time_local]会认为匹配左括号[开始到右括号]结尾。
+
+通过上述生成的正则表达式，就可以匹配 Nginx access日志了。
+
+上述方式生成的正则表达式可以解析大部分情况下的 Nginx 配置，但是确实也存在一些情况会出现解析异常，如上述的 case 下，如果 http_user_agent 没有通过双引号引起来，那么就会导致提前匹配到 http_user_agent 中可能存在的空格，导致解析失败。针对这样的情况，我们就推荐使用[Grok Parser](/insight/manual/4759/grok-parser)，或者[服务端划词](/insight/manual/4812/sever-regex-parser)来解析。
+
+### **基础配置信息 **
+
+* nginx配置路径(`nginx_log_format_path`): 上传nginx配置文件，配置文件中需要包含 log_format 格式，nginx配置样例如下图所示。
+
+![](http://op26gaeek.bkt.clouddn.com/logformat.png)
+
+* nginx日志格式名称(`nginx_log_format_name`): 根据您日志实际使用的 access log 选择使用的格式名称。
+
+![](http://op26gaeek.bkt.clouddn.com/realnginxconfig.png)
+
+### **高级选项**
+
+* 手动指定字段类型(`nginx_schema`): 默认情况下 nginx 日志都被解析为 string，指定该格式可以设置为float、long、date 等三种类型。指定范式为逗号分隔每个字段和类型，每个字段和类型用空格分隔，左边为字段名称，右边为类型。
+
+* 指定名称(`name`): Nginx Parser 是根据您 Nginx 配置文件自动生成配置正则表达式解析日志的方式，parser名称和 Nginx 配置文件中 log_format 定义的名称一致。
+  
+* 额外的标签信息(`labels`): 中定义的标签如果跟数据有冲突，labels 中的标签会被舍弃。
+  
+* 禁止记录解析失败数据(`disable_record_errdata`): 默认为 false，解析失败的数据会默认出现在`pandora_stash`字段，该选项可以禁止记录解析失败的数据。
+
+* 保留原始数据（`keep_raw_data`）:默认为`false`，配置此选项之后会保留原始数据在`raw_data`字段下。

@@ -1,0 +1,568 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+创建一台预付费（包年包月）或者按量付费的云主机实例。创建实例的同时，您需要自行确定实例的操作系统类型、磁盘容量和网络类型等配置。
+
+##### 镜像
+在创建实例时，必须要选择镜像，确定新创建实例的系统盘配置。基于镜像创建实例后，实例的系统盘即为此镜像的完全克隆。
+
+* 实例内存为512 MiB时不能使用除Windows Server 1709之外的Windows镜像。
+* 实例内存为4 GiB以上时不能使用32位操作系统的镜像。
+
+
+##### 网络配置
+* 专有网络VPC类型实例只能在创建时指定，必须且只能属于一个交换机。
+* 指定 VSwitchId 时，SecurityGroupId 和 VSwitchId 要属于同一个VPC。
+* VSwitchId 和 PrivateIpAddress 同时指定时，PrivateIpAddress 要包含在交换机的CidrBlock之内。
+* PrivateIpAddress 依赖于 VSwitchId，不能单独指定 PrivateIpAddress。
+
+
+##### 安全组
+* 安全组需要预先创建。
+* 可以在新创建实例时指定安全组。
+* 在同一个安全组内的实例内网可以相互访问。不同安全组之间默认隔离，不可相互访问，但是可以授权访问。
+* 同一个安全组内的实例数量不能超过1000台。
+
+##### 存储
+* 不同类型云盘的最大容量不同：
+ * 单块高效云盘（cloud_efficiency）容量最大不超过32 TiB（32768 GiB）。
+ * 单块SSD云盘（cloud_ssd）容量最大不能超过32 TiB（32768 GiB）。
+* 创建实例时，我们根据您指定的镜像为实例分配一个相应大小的系统盘。系统盘容量必须大于或者等于max{20, ImageSize}。系统盘的种类有高效云盘（cloud_efficiency）、SSD云盘（cloud_ssd）。
+* 一个实例最多添加16块数据盘。数据盘挂载点由系统默认顺序分配，/dev/xvdb开始到/dev/xvdz。
+
+# 请求路径
+> `POST` /v1/vm/instance
+
+
+# 请求参数 ([查看付费参数](https://developer.qiniu.com/qvm/8006/common-params))
+
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>地域 ID。</p>
+        <p>您可以调用 DescribeRegions 查看最新的七牛云地域列表。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>cost_charge_type</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        付费方式:
+        <ul>
+          <li>PostPaid: 按需计费</li>
+          <li>PrePaid: 预付费</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>cost_charge_mode</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        计费方式, PayByInstance
+      </td>
+    </tr>
+    <tr>
+      <td>cost_period_unit</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        计费单位
+      </td>
+    </tr>
+    <tr>
+      <td>cost_period</td>
+      <td>integer</td>
+      <td>body</td>
+      <td>是</td>
+      <td>计费周期</td>
+    </tr>
+    <tr>
+      <td>image_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>镜像 ID，启动实例时选择的镜像资源。您可以通过 DescribeImages 查询您可以使用的镜像资源。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_type</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>实例的资源规格。具体可选规格请使用接口【查看可用资源列表】查询</p>
+      </td>
+    </tr>
+    <tr>
+      <td>security_group_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>指定新创建实例所属于的安全组 ID。同一个安全组内的实例之间可以互相访问，一个安全组能容纳的实例数量视安全组类型而定，具体请参见使用限制的安全组章节。
+            <br>如果指定了安全组 ID，则要求也指定该安全组所属的VPC ID。
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td>zone_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>实例所属的可用区 ID，您可以调用 DescribeZones 获取可用区列表。默认值：系统随机选择。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>system_disk_category</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>系统盘的云盘种类。取值范围：</p>
+        <ul>
+          <li>cloud_efficiency：高效云盘</li>
+          <li>cloud_ssd：SSD 云盘</li>
+          <li>cloud：普通云盘</li>
+          <li>ephemeral_ssd：本地 SSD 盘</li>
+        </ul>
+        <p>已停售的实例规格且非 I/O 优化实例默认值为 cloud，否则默认值为 cloud_efficiency。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>system_disk_size</td>
+      <td>integer</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>系统盘大小，单位为 GiB。取值范围：20~500 该参数的取值必须大于或者等于 max{20, ImageSize}。 默认值：max{40, ImageSize}</p>
+      </td>
+    </tr>
+    <tr>
+      <td>system_disk_name</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>系统盘名称。长度为 2~128 个英文或中文字符。必须以大小字母或中文开头，不能以 http:// 和 https:// 开头。可以包含数字、半角冒号（:）、下划线（_）或者连字符（-）。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>system_disk_description</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>系统盘描述。长度为 2~256 个英文或中文字符，不能以 http:// 和 https:// 开头。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>system_disk_performance_level</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>创建 ESSD 云盘作为系统盘使用时，设置云盘的性能等级。</p>
+        <p>取值范围：</p>
+        <ul>
+          <li>PL1（默认）：单盘最高随机读写 IOPS 5 万</li>
+          <li>PL2：单盘最高随机读写 IOPS 10 万</li>
+          <li>PL3：单盘最高随机读写 IOPS 100 万。</li>
+        </ul>
+        <p>有关如何选择 ESSD 性能等级，请参见 ESSD 云盘。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>data_disk</td>
+      <td>object[]</td>
+      <td>body</td>
+      <td>否</td>
+      <td>数据盘</td>
+    </tr>
+    <tr>
+      <td>data_disk[n].category</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>数据盘n的磁盘种类。取值范围：<br>cloud_efficiency：高效云盘<br>cloud_ssd：SSD 云盘<br><br>默认值：cloud</td>
+    </tr>
+    <tr>
+      <td>data_disk[n].size</td>
+      <td>integer</td>
+      <td>body</td>
+      <td>否</td>
+      <td>第n个数据盘的容量大小，n的取值范围为[1, 16]，内存单位为 GiB。取值范围：<br>cloud_efficiency：[20, 32768]<br>cloud_ssd：[20, 32768]<br><br>该参数的取值必须大于等于参数 SnapshotId 指定的快照的大小。</td>
+    </tr>
+    <tr>
+      <td>data_disk[n].name</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>数据盘名称。长度为 [2, 128] 个英文或中文字符。必须以大小字母或中文开头，不能以 http:// 和 https:// 开头。可以包含数字、半角冒号（:）、下划线（_）或者连字符（-）。<br>默认值：空。</td>
+    </tr>
+    <tr>
+      <td>data_disk[n].description</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>数据盘描述。长度为 [2, 256] 个英文或中文字符，不能以 http:// 和 https:// 开头。<br>默认值：空。</td>
+    </tr>
+    <tr>
+      <td>data_disk[n].encrypted</td>
+      <td>boolean</td>
+      <td>body</td>
+      <td>否</td>
+      <td>数据盘n是否加密。<br>默认值：false</td>
+    </tr>
+    <tr>
+      <td>data_disk[n].snapshot_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>创建数据盘n使用的快照。 指定参数DataDisk.n.SnapshotId后，参数DataDisk.n.Size会被忽略，实际创建的磁盘大小为参数 SnapshotId 的大小。</td>
+    </tr>
+    <tr>
+      <td>data_disk[n].delete_with_instance</td>
+      <td>boolean</td>
+      <td>body</td>
+      <td>否</td>
+      <td>表示数据盘是否随实例释放。<br>默认值：true</td>
+    </tr>
+    <tr>
+      <td>data_disk[n].performance_level</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>ESSD云盘性能等级<br>取值： PL1, PL2, PL3</td>
+    </tr>
+    <tr>
+      <td>v_switch_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>虚拟交换机 ID。如果您创建的是 VPC 类型 ECS 实例，必须指定虚拟交换机 ID，且安全组和虚拟交换机在同一个专有网络 VPC 中。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>instance_name</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>实例的名称。长度为 2~128 个英文或中文字符。必须以大小字母或中文开头，不能以 http:// 和 https:// 开头。 可以包含数字、半角冒号（:）、下划线（_）、英文句号（.）或者连字符（-）。 如果没有指定该参数，默认值为实例的 InstanceId。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>host_name</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>云服务器的主机名。</p>
+        <ul>
+          <li>英文句号（.）和短横线（-）不能作为首尾字符，更不能连续使用。</li>
+          <li>Windows 实例：字符长度为 2~15，不支持英文句号（.），不能全是数字。允许大小写英文字母、数字和短横线（-）。</li>
+          <li>其他类型实例（Linux 等）：字符长度为 2~64，支持多个英文句号（.），英文句号之间为一段，每段允许大小写英文字母、数字和短横线（-）。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>description</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>实例的描述。长度为 2~256 个英文或中文字符，不能以 http:// 和 https:// 开头。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>password</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>实例的密码。长度为 8 至 30 个字符，必须同时包含大小写英文字母、数字和特殊符号中的三类字符。特殊符号可以是：</p>
+        <pre><code>()`~!@#$%^&amp;*-_+=|{}[]:;'&lt;&gt;,.?/</code></pre>
+        <p>其中，Windows 实例不能以斜线号（/）为密码首字符。</p>
+        <p>@GSE:NOTE: 如果传入 Password 参数，建议您使用 HTTPS 协议发送请求，避免密码泄露。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>password_inherit</td>
+      <td>boolean</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>是否使用镜像预设的密码。使用该参数时，Password 参数必须为空，同时您需要确保使用的镜像已经设置了密码。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>key_pair_name</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>密钥对名称。</p>
+        <ul>
+          <li>Windows 实例，忽略该参数。默认为空。即使填写了该参数，仍旧只执行 Password 的内容。</li>
+          <li>Linux 实例的密码登录方式会被初始化成禁止。为提高实例安全性，强烈建议您使用密钥对的连接方式。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>security_enhancement_strategy</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>是否开启安全加固。取值范围：</p>
+        <ul>
+          <li>Active：启用安全加固，只对系统镜像生效。</li>
+          <li>Deactive：不启用安全加固，对所有镜像类型生效。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>vpc_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>VPC ID</p>
+      </td>
+    </tr>
+    <tr>
+      <td>client_token</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>enable_assign_ipv6</td>
+      <td>boolean</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>是否免费分配 ipv6 地址,默认不分配，需要先检查实例是否支持 ipv6</p>
+      </td>
+    </tr>
+    <tr>
+      <td>eip_info</td>
+      <td>object</td>
+      <td>body</td>
+      <td>否</td>
+      <td>弹性公网 IP 信息<br> 购买主机时可同时申请弹性公网IP并绑定。当选择按带宽计费时，IP为包年包月计费；当选择按流量计费时，IP为按量计费（创建按量资源要求订单支付后账户余额>100元）。具体格式见请求参数示例</td>
+    </tr>
+    <tr>
+      <td>eip_info.name</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>弹性公网IP名称</td>
+    </tr>
+    <tr>
+      <td>enable_auto_renew</td>
+      <td>boolean</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>是否打开自动续费</p>
+      </td>
+    </tr>
+    <tr>
+      <td>customized_release_time</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>后付费定时删除的时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>auto_release_time</td>
+      <td>string</td>
+      <td>body</td>
+      <td>否</td>
+      <td>
+        <p>自动释放时间</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+## 请求参数示例
+```json
+{
+  "region_id": "cn-hongkong",
+  "zone_id": "cn-hongkong-b",
+  "image_id": "centos_8_2_x64_20G_alibase_20201120.vhd",
+  "instance_type": "ecs.g6.xlarge",
+  "security_group_id": "sg-j6ceb0xiipj4hvsbdzqa",
+  "v_switch_id": "vsw-j6cy33sz3ao7tgw7hh31b",
+  "vpc_id": "vpc-j6cvjra8txm22zxu7vixj",
+  "enable_assign_ipv6": false,
+  "client_token": "3405156817531265",
+  "system_disk_category": "cloud_efficiency",
+  "system_disk_size": 40,
+  "system_disk_name": "ABCD_SD-p0fBq",
+  "data_disk": null,
+  "cost_charge_type": "PostPaid",
+  "cost_charge_mode": "PayByInstance",
+  "cost_period_unit": "Hour",
+  "cost_period": 1,
+  "enable_auto_renew": false,
+  "eip_info": {
+    "eip_name": "ABCD_E-vRv9f",
+    "eip_bandwidth": "30",
+    "cost_period": 1,
+    "cost_charge_type": "PostPaid",
+    "cost_period_unit": "Hour",
+    "cost_charge_mode": "PayByTraffic"
+  },
+  "password": "39dkg8IKMYUi",
+  "amount": 1,
+  "instance_name": "ABCD"
+}
+```
+
+
+# 返回值
+| 名称 | 类型 | 是否必须 | 描述 |
+| ----- | ----- | ----- | ----- |
+| instance_id | string | 是 | 实例ID，是访问实例的唯一标识。 |
+| order | string | 否 | 预付费创建返回订单号。 |
+
+## 返回示例
+```json
+{
+  "data": {
+    "instance_id": "i-j6cj2dtpmvcp8xgyie4z",
+    "order": "1QW2F998-8642-2346-I2K3-0OKMNHY65TG4",
+    "image_info": {
+      "image_id": "centos_8_2_x64_20G_alibase_20201120.vhd",
+      "description": "",
+      "product_code": "",
+      "os_type": "linux",
+      "architecture": "x86_64",
+      "os_name": "CentOS  8.2 64位",
+      "image_owner_alias": "system",
+      "progress": "100%",
+      "usage": "instance",
+      "image_version": "",
+      "status": "Available",
+      "image_name": "centos_8_2_x64_20G_alibase_20201120.vhd",
+      "is_self_shared": "",
+      "platform": "CentOS",
+      "size": 20,
+      "is_support_cloudinit": true,
+      "is_support_io_optimized": true,
+      "is_copied": false,
+      "is_subscribed": false,
+      "disk_device_mappings": {
+        "disk_device_mapping": []
+      },
+      "snapshot_id": "",
+      "min_disk_size": ""
+    },
+    "vlan_id": "",
+    "zone_id": "cn-hongkong-b",
+    "spot_strategy": "",
+    "stopped_mode": "",
+    "serial_number": "",
+    "io_optimized": false,
+    "memory": 0,
+    "cpu": 0,
+    "device_available": false,
+    "sale_cycle": "",
+    "spot_price_limit": 0,
+    "auto_release_time": "",
+    "instance_name": "I-fd6Zn",
+    "description": "",
+    "resource_group_id": "",
+    "os_type": "",
+    "os_name": "",
+    "host_name": "",
+    "instance_type": "ecs.g6.xlarge",
+    "instance_type_family": "",
+    "status": "Creating",
+    "cluster_id": "",
+    "recyclable": false,
+    "region_id": "cn-hongkong",
+    "gpu_spec": "",
+    "gpu_amount": 0,
+    "vnc_passwd": "",
+    "key_pair_name": "",
+    "instance_charge_type": "",
+    "instance_network_type": "",
+    "expired_time": "0001-01-01T00:00:00Z",
+    "network_interfaces": {
+      "network_interface": null
+    },
+    "vpc_attributes": {
+      "nat_ip_address": "",
+      "private_ip_address": {
+        "ip_address": null
+      },
+      "v_switch_id": "",
+      "vpc_id": "",
+      "vpc_name": "",
+      "v_switch_name": ""
+    },
+    "security_group_ids": {
+      "security_group_id": [
+        "sg-j6ceb0xiipj4hvsbdzqa"
+      ],
+      "security_group_name": null
+    },
+    "operation_locks": {
+      "lock_reason": null
+    },
+    "inner_ip_address": {
+      "ip_address": null
+    },
+    "eip_address": {
+      "ip_address": "",
+      "allocation_id": "",
+      "internet_charge_type": "",
+      "is_support_unassociate": false,
+      "bandwidth": 0
+    },
+    "public_ip_address": {
+      "ip_address": null
+    },
+    "enable_assign_ipv6": false,
+    "tags": null,
+    "auto_renew_info": null,
+    "customized_expire_time": null,
+    "cost_charge_type": "",
+    "cost_charge_mode": "",
+    "updated_at": "2020-12-17T10:56:25.936338842+08:00",
+    "created_at": "2020-12-17T10:56:25.936338842+08:00"
+  },
+  "request_id": "ScKvESOFwCWJYVEW"
+}
+```

@@ -1,0 +1,75 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                跨房媒体转发的配置类</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Properties</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#srcRoomInfo`)'>srcRoomInfo</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#destRoomInfos`)'>destRoomInfos</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">Core methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setDestRoomInfo`)'>setDestRoomInfo</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#removeDestRoomInfo`)'>removeDestRoomInfo</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Properties</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="srcRoomInfo">
+srcRoomInfo</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">@property (strong, nonatomic) <a href='10142/QNRoomMediaRelayInfo-iOS'>QNRoomMediaRelayInfo</a> *srcRoomInfo;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>源房间的信息</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="destRoomInfos">
+destRoomInfos</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">@property (strong, nonatomic, readonly) NSMutableDictionary *destRoomInfos;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>目标房间信息 <a href='10142/QNRoomMediaRelayInfo-iOS'>QNRoomMediaRelayInfo</a> 列表</p>
+    </div>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">Core methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setDestRoomInfo">
+setDestRoomInfo</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (BOOL)setDestRoomInfo:(<a href='10142/QNRoomMediaRelayInfo-iOS'>QNRoomMediaRelayInfo</a> *_Nonnull)destRoomInfo forRoomName:(NSString *_Nonnull)roomName;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置目标房间信息</p>
+        <p>若需将流转发到多个目标房间，可多次调用该方法，设置多个房间的 <a href='10142/QNRoomMediaRelayInfo-iOS'>QNRoomMediaRelayInfo</a>。</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="removeDestRoomInfo">
+removeDestRoomInfo</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (BOOL)removeDestRoomInfo:(NSString *_Nonnull)roomName;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>删除目标房间的信息</p>
+    </div>
+</li>
+</ul>
+</section>
+</div>
+
+

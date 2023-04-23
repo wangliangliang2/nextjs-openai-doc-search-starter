@@ -1,0 +1,103 @@
+SkyWalking 是一款基于 Java 字节码增强技术的，支持 Opentracing 协议的，分布式全链路追踪系统。它的重要组件包括：
+
+* Agent（字节码增强、搜集 Tracing 数据，并发往 Collector 端）
+
+* Collector （注册 Agent 追踪的服务，搜集、分析和存储 Tracing 数据）
+
+* UI（展示链路详情和服务依赖等信息）。
+
+智能日志平台全链路追踪服务支持 SkyWalking 数据源，用户服务的链路数据经由 SkyWalking Agent（定制过）发往 logkit-pro 组件，由 logkit-pro 转发到 Pandora 智能日志管理平台。本文档主要演示如何通过智能日志平台的全链路追踪应用追踪 Tomcat 服务的 skywalking tracing 数据。
+# **1.环境准备**
+## ** 1.1 安装 JDK **
+
+建议使用 JDK8 或以上版本，请至 [Oracle官网下载](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)。
+
+## ** 1.2 下载 SkyWalking Agent 包**
+下载[定制过的 SkyWalking Agent 1.0.0版本](http://phi0wxlj4.bkt.clouddn.com/skywalking-agent-1.0.0.tar.gz)。该包可用于 Pandora 全链路追踪服务的数据接入，配置和使用方式与 SkyWalking Agent 原始使用方式一致。用户可以对自己的服务进行配置监控。本 Demo 中的服务，已经在可执行包里配置和封装好了 SkyWalking Agent，不需要使用此包。
+
+# **2. 准备 Demo：JAVA Tomcat Servlet 服务**
+## **2.1 Demo 服务结构简介**
+为了演示如何使用全链路追踪功能，这里提供三个应用 Demo：分别为 Sky_hello， Sky_service1。两者之间的调用关系如下：
+
+<img src="https://pandora-kibana.qiniu.com/%E5%9B%BE%E7%BA%B80%20%282%29.png" width="500" hegiht="330" align=center />
+
+## **2.2 通过 Tomcat 包启动 Demo**
+下载 [Demo 可执行包](http://phi0wxlj4.bkt.clouddn.com/spring-demo-pkg.1.0.0.tar.gz)
+解压 spring-demo-pkg.1.0.0.tar.gz, 解压结果如下图：
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8A%E5%8D%8810.01.31.jpg" width="500" hegiht="330" align=center/>
+Linux 或 Mac 环境启动服务方式
+```
+# 启动 Sky_hello, 需要 16080 端口可用
+cd apache-tomcat-8.5.34-hello/bin/
+./startup.sh
+# 启动 Sky_service1，需要 16081 端口可用
+cd apache-tomcat-8.5.34-service1/bin/
+./startup.sh
+```
+Windows 环境启动服务方式（请确保解压后的文件夹 spring-demo-pkg 所在路径上无中文字符）
+```
+进入 apache-tomcat-8.5.34-hello/bin/ 目录，双击 startup.bat
+进入 apache-tomcat-8.5.34-service1/bin/ 目录，双击 startup.bat
+```
+
+# **3.到 logkit-pro 接入 SkyWalking Agent 收集的 tracing 数据**
+进入 [logkit-pro 数据收集](https://logkit-pro.qiniu.com/#/dataCollect/configInfo)页面，点击 **添加收集器** -> **日志收集**。
+
+![](https://pandora-kibana.qiniu.com/k8s/collect.png)
+
+**3.1 配置数据源**
+
+选择数据源类型为`Tracing Collector`，其中调用链数据类型选择 `skywalking`， 监听的地址和端口填 `udp://:10800`。
+
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8A%E5%8D%8810.55.35.jpg" align=center />
+
+跳过数据解析与数据转换。
+
+**3.2 填写发送信息**
+
+选择发送到智能日志平台的链路追踪服务。
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8B%E5%8D%882.34.57.jpg)
+
+`注意：`数据发送到智能日志平台全链路追踪服务会同时生成两个日志仓库 `tracingspan` 和 `tracingservice`。`tracingspan` 仓库里只记录 tracing 数据， `tracingservice` 仓库里记录服务数据。
+
+**3.3 分发收集器到机器**
+
+确认添加收集器之后系统会提示您是否需要分发到当前机器，选择确认分发。
+
+![](https://pandora-kibana.qiniu.com/k8s/k8s_distribute.png)
+
+**3.4 观察数据收集情况**
+
+进入数据收集页面，找到刚刚配置的收集器，点击查看机器运行信息查看收集器运行情况：
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8A%E5%8D%8810.59.46.jpg)
+
+有读取成功和发送成功记录证明数据采集发送成功。
+# **4.操作验证**
+浏览器中输入 `http://localhost:16080/home/hello` ，这是 Sky_hello 服务的对外接口。浏览器响应如下图：
+
+<img src="https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8A%E5%8D%8811.03.26.png" width="400" hegiht="250" align=center />
+
+证明服务已经启动，接下来使用全链路追踪应用查看链路调用详情。
+
+# **5.到全链路追踪服务查看链路详情**
+
+**5.1到智能日志管理平台查看 tracing 数据：**
+
+选择 logkit-pro 发送数据时自动生成的 repo（`tracingspan` ），搜索 tracing 数据：
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8A%E5%8D%8811.05.57.jpg)
+
+**5.2 到全链路追踪服务查看链路之间的调用关系**
+
+根据服务名 `Sky_hello` 搜索出链路：
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8A%E5%8D%8811.13.14.jpg)
+
+点击链路，查看全链路详细信息，如下图，显示的全链路调用关系与 2.1 节中描述的一致：
+
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8A%E5%8D%8811.14.04.jpg)
+
+点击链路图谱，查看服务依赖拓扑结构
+![](https://pandora-kibana.qiniu.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-11-01%20%E4%B8%8A%E5%8D%8811.14.24.jpg)

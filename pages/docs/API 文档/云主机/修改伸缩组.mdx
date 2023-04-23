@@ -1,0 +1,34 @@
+# 请求路径
+> `PATCH` /v1/ess/group/:id
+
+# 请求参数
+
+| 名称 | 类型 | 位置 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| region_id | string | body | 是 | 地域 ID |
+| id | string | path | 是 | 伸缩组 ID |
+| scaling_group_name | string | body | 否 | 伸缩组名称 |
+| min_size | int | body | 否 | 伸缩组内ECS实例台数的最小值。 |
+| max_size | int | body | 否 | 伸缩组内ECS实例台数的最大值。|
+| default_cooldown | int | body | 否 | 伸缩组默认的冷却时间。冷却时间内，该伸缩组不执行其它的伸缩活动。 |
+| removal_policies | []string | body | 否 | ECS实例移出伸缩组的策略的集合。取值范围：OldestInstance (取最早创建的 ECS 实例), NewestInstance (取最新创建的实例), OldestScalingConfiguration (取最早伸缩配置创建的 ECS 实例)。 |
+| active_scaling_configuration_id | string | body | 否 | 伸缩组内生效的伸缩配置 ID。 |
+| v_switch_ids | []string | body | 否 | 伸缩组关联虚拟交换机的ID集合。如果您使用了VSwitchIds参数，VSwitchId参数将被忽略。 |
+| health_check_type | string | body | 是 | 伸缩组的健康检查方式。取值范围：NONE (不做健康检查), ECS (对伸缩组内的ECS实例做健康检查)。 |
+
+
+# 返回值
+
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| request_id | string | 是 | 请求记录 ID |
+
+
+
+# 示例
+### 正常返回示例
+```json
+{
+    "request_id": "504ce405-58d1-40b1-9674-40d7d3875d65"
+}
+```

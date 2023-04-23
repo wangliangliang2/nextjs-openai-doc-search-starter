@@ -1,0 +1,191 @@
+存量审核适用于 对已保存在对象存储中的资源进行内容审核 的场景。开启存量审核后，能帮助用户扫描空间中已存在的资源文件，并提供一份详细的审核结果，同时支持审核结果复核，以保障业务安全。
+
+# 适用需求场景
+
+* 用户的资源已保存在对象存储中
+* 用户需要对已存在的资源进行内容审核，扫描资源是否违规
+* 用户需要做审核的资源，无前缀要求、属于指定的前缀下或者过滤排除指定的前缀
+* 用户有人力在机器审核完成后进行人工审核
+
+# 使用限制须知
+
+* 存量审核开通后，不支持后续修改配置，请在开通时仔细检查确认信息
+* 存量审核开通后，不支持用户直接操作停止关闭，请在开通时仔细检查确认信息。如需操作，请提工单/联系技术支持
+* 目前存量审核支持华东、华南、华北三个区域，不支持东南亚、北美等海外区域
+* 审核结果文件和视频截帧保存只支持华东的存储空间，不支持保存到其他区域
+* 支持只对指定前缀下的特定文件类型的文件进行内容审核，不支持指定文件后缀或类型
+* 支持前缀过滤，被过滤的前缀下的文件将`不会`触发存量审核
+* 关于审核文件限制，请参考：[审核文件适用规格](/censor/5919/products-limited#2)
+* 支持的审核能力如下表：
+  
+|文件类型|支持审核类型|
+|-|-|
+|图片|涉黄、暴恐、敏感人物、广告、不良场景（提交工单/联系技术支持开启）|
+|视频|涉黄、暴恐、敏感人物、广告|
+|音频|反垃圾|
+
+# 开启存量审核
+
+打开并登陆内容审核控制台 [https://portal.qiniu.com/censor](https://portal.qiniu.com/censor)，点击侧边栏的 存储空间审核 -> 存量审核，点击 新建任务 按钮
+
+![create-1.png](https://dn-odum9helk.qbox.me/FqJzvee5a6H6eAZwV1qkipqGcktY)
+
+填写存量审核配置
+
+`存量审核开启后，不支持用户自行操作停止和后续修改配置，请在开启时仔细确认检查信息。如需操作请提工单/联系技术支持`
+
+![create-2.png](https://dn-odum9helk.qbox.me/FlLnYwIc9n0hlLXFfSgr6rZNS2_-)
+
+各个配置项说明如下：
+
+|配置项|必输|默认|说明|
+|-|-|-|-|
+|存储空间|存储空间必输，前缀可选||需要开启存量审核的存储空间。开启后将扫描该存储空间，对符合审核条件的资源进行内容审核。可填写前缀，只对指定前缀下的资源进行审核。比如填写 2019/，则只会审核前缀 2019/ 下的资源。若需要审核该空间的所有资源，不填前缀即可|
+|前缀过滤|可选||需要过滤掉特定前缀的资源，该前缀下的资源将`不会`触发存量审核|
+|文件类型|必选||图片/视频/音频。关于具体支持格式，参考：[审核文件适用规格](/censor/5919/products-limited#2)|
+|审核范围|必选|存量审核，不可修改||
+|审核类型|必选，至少开启一项||涉黄/暴恐/敏感人物/广告
+|视频截帧|必输|1 秒/帧|当文件类型为视频时，需要设置视频截帧频率，默认1 秒/帧。若视频长度为60秒，截帧频率为1 秒/帧，则会截成60张图片进行图片审核。截帧数字越小，审核准确率越高|
+|截帧存放地址|存储空间必选，前缀可选||文件类型为视频时，需要设置视频截帧保存的空间和前缀，只支持保存到华东区域的空间。建议设置为非业务空间，与业务空间隔离。设置前缀可将视频截帧保存到特定的前缀下，比如 2019/，则截帧图片会保存到前缀 2019/ 下|
+|结果存放地址|存储空间必选，前缀可选||设置存量审核结果保存的空间和前缀，存量审核的结果将会以文本文件的格式存放在该存储空间下，只支持保存到华东区域的空间。建议设置为非业务空间，与业务空间隔离。设置前缀可将结果文件保存到特定前缀下，比如 2019/，则结果文件会保存到前缀 2019/ 下|
+
+核对任务配置，确认无误后，点击保存开启存量审核任务。
+
+`如需开通华东区域以外的视频存量审核，请参照填写以上信息，提交工单/联系技术支持申请开通`
+
+# 查看进度
+
+可以直接在存量任务列表上看到存量任务执行的进度
+
+![存量进度](https://dn-odum9helk.qbox.me/FmoSq7JGiJzI5HuTg1WmgwME_l4l)
+
+# 查看配置
+
+点击 更多 -> 查看任务 查看任务配置
+
+![view-1.png](https://dn-odum9helk.qbox.me/FlgpbpaUQz2_GRFIypT9QwTpvq3T)
+
+![view-2.png](https://dn-odum9helk.qbox.me/Fo9o9HOcmG4oqHB1YjBBMj90ce4K)
+
+
+# 处理存量结果
+
+如果需要对存量的结果进行处理，可以点击 更多 -> 存量结果 进行操作。目前支持封禁、 删除、导出 三种操作。
+
+![存量结果](https://dn-odum9helk.qbox.me/FulPWntbkWP9sHmRsWeEQV4RLoRC)
+
+## 结果预览
+
+`操作前请先通过 结果复核 确认审核结果是否正确，符合预期，避免误封/误删资源。`
+
+在 结果预览 子菜单下能预览过滤条件筛选后的存量结果记录。结果以原始记录的格式给出，见 `存量结果格式`。
+
+然后勾选下方的 选择所有过滤结果，然后进行批量操作。目前支持封禁、 删除、导出 三种操作。
+
+![结果预览界面](https://dn-odum9helk.qbox.me/Fm97D_9CQuhPLTuXsWIzHO9JrYmS)
+
+各个操作说明如下：
+
+|操作|说明|
+|-|-|
+|封禁|将过滤后的结果对应的文件进行封禁，封禁后的文件不可直接访问，但仍保存在存储空间中。|
+|删除|将过滤后的结果对应的文件直接从存储空间中删除，`不可恢复，谨慎操作`。|
+|导出|当结果数量不多时，直接下载过滤后的结果保存到本地，进行后续操作；当有大量结果时，需要将过滤后的结果保存到存储空间，然后从存储空间下载进行后续操作。|
+
+如：如需封禁所有审核结果为 违规 的文件，则可以在 审核结果 中选择 违规，然后勾选 选择所有过滤结果，最后点击 封禁 按钮
+
+![封禁违规资源](https://dn-odum9helk.qbox.me/Fq7qAwxF95KJHLH4a8bUg8TZTq-E)
+
+## 操作记录
+
+用户对存量结果进行的操作会保存到操作记录中。
+
+用户可以查看操作执行的进度，完成后可以下载结果/日志。
+
+`操作记录仅保存近7天数据，请及时查看。`
+
+![操作记录](https://dn-odum9helk.qbox.me/FqyaEBBkZ9INKLAnsByZN78MFAWU)
+
+## 结果文件
+
+直接下载存量的原始结果，原始结果格式见 `存量结果格式`。
+
+![result-1.png](https://dn-odum9helk.qbox.me/FpmE27LG0-q8zx_EPBz2qv8BHr7E)
+
+点击每行后方的 **下载** 可以下载单个结果文件；也可勾选，然后点击表格上方的 **下载** 进行批量下载
+
+![下载存量结果](https://dn-odum9helk.qbox.me/FippHq70ER7Wd2VVtgCRbssEAMa2)
+
+当结果文件较多时，`推荐`使用命令行工具 [qshell](/kodo/1302/qshell) 的 [qdownload](https://github.com/qiniu/qshell/blob/master/docs/qdownload.md) 命令批量下载，具体方法见页面窗口
+
+![qshell 下载](https://dn-odum9helk.qbox.me/Fg-i7PreoPm4fHgS6vh9k_XvvVI5)
+
+下载文件后，用户可以通过读取结果文件进行批量操作，如：通过对象存储 API 进行清除或封禁资源等。请参考：
+
+* [资源删除接口](/kodo/api/1257/delete)
+* [资源封禁接口](/kodo/api/4173/modify-the-file-status)
+
+## 存量结果格式
+
+下载的存量结果文件格式是 .gz 的压缩文件，需要用户解压缩后才能查看内容。解压后的文件是文本文件，可用一般的文本编辑器查看
+
+样例：
+```
+qiniu://uid@zone/bucket/key1	{"code":200,"mimetype":"image","result":{"code":200,"message":"OK","suggestion":"pass","scenes":{"pulp":{"suggestion":"pass","result":{"label":"normal","score":0.98726}}}}}
+qiniu://uid@zone/bucket/key2	{"code":200,"mimetype":"image","result":{"code":200,"message":"OK","suggestion":"pass","scenes":{"pulp":{"suggestion":"pass","result":{"label":"normal","score":0.91785}}}}}
+qiniu://uid@zone/bucket/key3	{"code":200,"mimetype":"image","result":{"code":200,"message":"OK","suggestion":"pass","scenes":{"pulp":{"suggestion":"pass","result":{"label":"normal","score":0.96497}}}}}
+qiniu://uid@zone/bucket/key4	{"code":200,"mimetype":"image","result":{"code":200,"message":"OK","suggestion":"pass","scenes":{"pulp":{"suggestion":"pass","result":{"label":"normal","score":0.95022}}}}}
+qiniu://uid@zone/bucket/key5	{"code":200,"mimetype":"image","result":{"code":200,"message":"OK","suggestion":"pass","scenes":{"pulp":{"suggestion":"pass","result":{"label":"normal","score":0.9697}}}}}
+qiniu://uid@zone/bucket/key6	{"code":200,"mimetype":"image","result":{"code":200,"message":"OK","suggestion":"pass","scenes":{"pulp":{"suggestion":"pass","result":{"label":"normal","score":0.94184}}}}}
+```
+
+每一行为一个文件的结果，包含 文件名 和 审核结果，以 `tab` 分隔
+
+字段说明如下：
+
+| 字段 | 说明 |
+|-|-|
+| 文件名 | 七牛协议的文件名，格式为 qiniu://`{用户id}`@`{存储空间区域}`/`{存储空间}`/`{文件名}` |
+| 审核结果 | json 格式，字段说明见下表 |
+
+审核结果字段如下：
+
+| 字段   | 值 | 说明 |
+|-|-|-|
+| code | | http code |
+|mimetype| image 图片 / video 视频 / audio 音频 |文件类型 |
+| result | | 审核结果 |
+| result.code | | http code |
+| result.message | | 错误信息 |
+| result.suggestion | pass 正常 / block 违规 / review 疑似 | 最终的审核结果 |
+| result.scenes | | 包含各审核类型的结果，包含的 key 为存量任务开启的审核类型 |
+| result.scenes.`{scene}`.suggestion| pass 正常 / block 违规 / review 疑似 | 审核类型 `${scene}` 的结果
+| result.scenes.`{scene}`.result | | 审核类型 `${scene}` 的结果详情 |
+| result.scenes.`{scene}`.result.label | 参考 [审核标签说明](/censor/7299/censor-params) | 审核类型 `${scene}` 的结果标签 |
+| result.scenes.`{scene}`.result.score | | 审核类型 `${scene}` 的结果分数 |
+
+# 结果复核
+
+点击 结果复核 进入结果复核界面。请参考：[审核结果复核](/censor/manual/8071/censor-portal-review)
+
+![review-1.png](https://dn-odum9helk.qbox.me/FpK6QviL4bcZbykXNCITYKPaCHUR)
+
+`将复核结果设为违规将自动封禁存储空间中的资源，设为正常则将自动解封资源。`
+
+# 数据统计
+
+点击 数据统计 进入数据统计界面，查看审核结果分布的情况。请参考：[审核结果数据统计](/censor/manual/8069/censor-portal-stats)
+
+![stats-1.png](https://dn-odum9helk.qbox.me/FsQ_lAHKcntkEUsYRDco_ipCxuhT)
+
+# 计费说明
+
+计费方式：
+
+|文件类型|说明|
+|-|-|
+|图片|按审核的图片数和审核类型数计费，如：同时开启审核类型 涉黄 和 敏感人物，则费用为 图片数 * （涉黄单价 + 敏感人物单价）|
+|视频|按审核的视频截帧数和审核类型数计费|
+|音频|按音频时长和审核类型数计费|
+
+价格：[机器智能审核阶梯计费方式](/censor/4833/censor-price)、[机器智能审核资源包](/censor/4835/censor-plus-manual)

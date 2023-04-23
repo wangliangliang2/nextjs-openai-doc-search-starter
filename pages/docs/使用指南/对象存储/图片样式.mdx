@@ -1,0 +1,32 @@
+对象存储 Kodo 支持为空间中的图片提供图片处理服务。
+<br>
+
+# **具体说明**
+- **什么是样式？**
+   - 样式是将冗长的数据处理重新定义的一个友好别名，其本质仍然是对图片的处理模式。
+- **什么是图片样式？**
+   - 针对图片进行如剪裁、添加水印、格式变更等的处理。并以简洁的方式，即图片样式，来描述对图片的处理模式。
+   - 具体支持的图片处理功能，请参考[图片处理参数](https://developer.qiniu.com/dora/3683/img-directions-for-use)
+- **什么是样式分隔符？**
+   - 样式分隔符是用于连接资源链接和图片样式的特殊符号，为防止访问出错，样式名中不可出现用户当前所设置启用的分隔符。
+<br>
+# **使用案例**
+1. 若期望对图片进行[缩略处理](https://developer.qiniu.com/dora/1279/basic-processing-images-imageview2)，如指定长短边缩略剪裁方式为：缩至指定长短边区域内（长边最多为 48px，短边最多为 48px），将生成如下指令代码作为图片样式的具体样式内容：`imageView2/0/w/48/h/48`。
+2. 将该图片样式命名为 `imageFop`，并指定样式分隔符为 `-`。
+   图片样式预览效果如下：
+   ![image.png](https://dn-odum9helk.qbox.me/FgZ8U6D95FVHqx6PNofT4DdMYWdM)
+3. 原始图片链接 `http://dn-odum9helk.qbox.me/qiniu-picture1.jpg`。
+4. 将原图链接使用样式分隔符 `-` 拼接图片样式名 `imageFop`，即访问 `http://dn-odum9helk.qbox.me/qiniu-picture1.jpg-imageFop` 便可直接获得缩放效果图。
+*注：*
+   - *创建分隔符时，不建议使用在样式名称中出现的符号作为分隔符。*
+   - *修改分隔符是个危险操作，全网生效须 24 小时。*
+
+
+<br>
+
+# **操作方式**
+Kodo 支持使用命令行辅助工具或通过控制台设置。
+|支持的操作方式|参考文档|
+|-|-|
+|控制台	|[设置图片样式](/kodo/development_guidelines/8558/set-the-picture-style)|
+|命令行辅助工具	|[qrsctl 数据处理](/kodo/tools/1300/qrsctl#8)|

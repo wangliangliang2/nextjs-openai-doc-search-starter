@@ -1,0 +1,58 @@
+# 前言
+
+许多客户将软件安装包（比如 andriod 的安装包 xxx.apk）托管在七牛的存储空间，通过融合CDN线路进行安装包的分发。&nbsp;
+
+而这些软件包在分发的过程中有可能被第三方或者各个运营商的劫持，从而导致用户下载不到自己的安装包。&nbsp;
+
+为了避免这种劫持我们可以在文件名中隐藏掉&nbsp;`apk`&nbsp;等关键字。
+
+# 解决办法
+
+1. 在&nbsp;存储空间&nbsp;的&nbsp;_图片处理_&nbsp;中 新建一个样式
+
+2. 使用&nbsp;[qrstcl](/kodo/tools/qrsctl)&nbsp;工具&nbsp;[设置API规则别名](/kodo/tools/qrsctl#api-style)
+
+# 举例说明
+
+用户使用进行下载时，运营商检测到链接 `http://xbox.qiniudemo.com/Kingdom_Rush_Origins.apk` 中含有关键字 apk 然后进行劫持，致使下载到其他的 apk 文件。
+
+为了防止被劫持，我们只需要将 url 中`apk`关键字去除；在空间中新建一个样式&nbsp;`sytle`&nbsp;来做到该效果。
+
+在存储空间 xbox 中以 apk 结尾的文件创建个别名为 ninja，例如&nbsp;
+
+- `http://xbox.qiniudemo.com/Kingdom_Rush_Origins.apk`
+
+使用 ninja 样式后的链接为：
+
+- `http://xbox.qiniudemo.com/Kingdom_Rush_Origins-ninja`
+
+## 方法一
+
+在存储空间 xbox 中 新建一个样式 ninja -\> 高级设置中填写 &nbsp;$0.apk -\> 保存设置
+
+![](https://oi2ix6x26.qnssl.com/attachments/download/1041603/00157d290aae32694a09669319f4f26/)
+
+![](https://oi2ix6x26.qnssl.com/attachments/download/1041604/00157d290ad37e1c0839cf89d5bc89c/)
+
+## 方法二
+
+下载工具&nbsp;[qrsctl](/kodo/tools/qrsctl)
+
+- (1) 登录
+```
+qrsctl login <User> <Passwd>
+    or
+qrsctl login <AK> <SK>
+```		
+- (2) [设置API规格别名](/kodo/tools/qrsctl#api-style)，执行：
+```
+qrsctl style xbox ninja '$0.apk'
+# Bucket    -> 存储空间
+# aliasName -> 样式名称
+# fop       -> $0.apk
+qrsctl style <Bucket> <aliasName> <fop>
+```
+
+- (3) 验证结果。如果失败，请重复之前的步骤；如果还不可以，可以在个人面板-\>提交工单
+![](https://oi2ix6x26.qnssl.com/attachments/download/1041607/00157d290b0b5d6e064e713fa04b53e/)
+

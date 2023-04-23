@@ -1,0 +1,52 @@
+## pdr_python_sdk安装
+
+常用的安装方式有使用pip安装和手动安装两种，推荐使用Python包管理工具（PIP）安装pdr_python_sdk环境，详情请参见[pip安装说明](https://pip.pypa.io/en/stable/)安装PIP工具
+
+
+### 使用pip安装
+执行如下命令将会自动安装最新版本的pdr_python_sdk，默认安装到Python的site-packages目录下。
+
+```shell
+pip install pdr_python_sdk
+```
+
+执行如下命令检查安装是否成功。
+
+```python
+$ python
+Python 3.9.1 (default, Dec 11 2020, 06:28:49)
+[Clang 10.0.0 ] :: Anaconda, Inc. on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import pdr_python_sdk
+>>>
+```
+
+import 成功则代表安装成功
+
+
+### 手动安装
+
+如果机器上没有pip工具，可以选择手动安装pdr-python-sdk，已经发布的包地址为：https://pypi.org/project/pdr-python-sdk
+选择对应的版本下载后，手动解压，然后放到site-packages目录下。
+
+## 包依赖
+
+Pandora发布的Python基础环境包中会包含pdr-python-sdk，基础环境包的地址为：
+
+    linux版本：http://7xtfy5.com2.z0.glb.clouddn.com/pdr-apps/pdr_python_env_linux_x86_64.tar.gz
+    mac版本：http://7xtfy5.com2.z0.glb.clouddn.com/pdr-apps/pdr_python_env_darwin_x86_64.tar.gz
+
+如果开发的APP还存在其它环境包依赖，建议手动将依赖包放到[APP应用模板](http://pw7x36qrk.bkt.clouddn.com/sampleapp.tar.gz)的bins/lib 目录下再进行使用
+
+## 日志路径
+如果在程序中打印了如下的日志，打印日志的文件名为phoenix_app.log，如果执行脚本是在/user/phoenix/script 目录下，日志文件则是在 /user/phoenix/log目录下。
+```python
+import logging
+   
+logging.info('test path')
+```
+
+
+
+
+

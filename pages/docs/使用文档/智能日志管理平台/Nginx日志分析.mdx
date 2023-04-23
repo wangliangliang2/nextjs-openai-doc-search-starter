@@ -1,0 +1,228 @@
+本文档介绍如何使用 logkit-pro + 日志搜索 + 内置报表仪表盘 10 分钟搭建 Nginx 日志分析和实时监控系统。
+
+在开始场景实践之前，请确保您已经完整体验了我们的 [快速开始](/insight/manual/4679/nginx-log-collection) 下所有内容，对我们的产品有一个基础的了解。
+
+本场景案例分为五个步骤：
+
+<a href="#1">1.安装 logkit-pro</a>
+
+<a href="#2">2.使用 logkit-pro 收集日志</a>
+
+<a href="#3">3.在日志平台搜索分析日志</a>
+
+<a href="#4">4.配置日志分析图表</a>
+
+<a href="#5">5.在仪表盘对 Nginx 日志实时监控</a>
+
+-----
+
+<a name="1"></a>
+
+# **1.安装 logkit-pro**
+
+logkit-pro 是一款专业的日志收集工具，支持上百种数据源采集，内置数十种解析、转换、计算方式，并支持发送到七牛的智能日志管理平台和其他自有的服务（Kafka、Mongo、HTTP服务、文件系统等等）。详情阅读[logkit-pro](/insight/manual/4738/logkit-pro-induction)。
+
+1.登录 [logkit-pro](http://logkit-pro.qiniu.com/)，进入机器管理页面，点击添加机器。
+
+![](https://pandora-kibana.qiniu.com/k8s/add_machine.png)
+
+2.手动安装：根据您机器的操作系统版本选择对应的命令，复制到命令行工具即可，如图所示：
+
+![](https://pandora-kibana.qiniu.com/k8s/addbyhand.png)
+
+![](https://pandora-kibana.qiniu.com/logkit/running.png)
+
+其他安装方式请阅读 [logkit-pro 安装](/insight/manual/4682/download-and-install) 。
+
+3. 安装完毕后，您可以在机器列表页面看到您安装的机器:
+
+![](https://dn-odum9helk.qbox.me/FpmPwc2L2arnlHd9OpBEXkJs0rbx)
+
+-----
+
+<a name="2"></a>
+
+
+# **2.使用 logkit-pro 收集日志**
+
+在机器上安装好 logkit-pro 之后就可以开始收集数据。进入数据收集页面，点击 **添加收集器** -> **日志收集**。
+
+![](https://pandora-kibana.qiniu.com/k8s/collect.png)
+
+第一步：添加数据源，logkit-pro 支持多种数据源，这里选择从文件读取，填写您的 Nginx 日志所在路径即可。
+
+填写好配置信息之后，点击【获取数据】，验证获取数据是否成功。
+
+![](https://pandora-kibana.qiniu.com/nginx/reader.png)
+
+> 关于nginx日志收集的数据源配置，需要根据nginx的rotate方式选择对应的[文件收集模式](/insight/manual/4751/file-reader)，一般情况下是 `file` 模式，利用类似 `mv nginx.log nginx.log-YYYY.MM.DD && kill -USR1 <nginx pid>` 的方法，使nginx将日志打到新的文件inode，以此实现日志文件 `rotate` 的效果。
+
+第二步：这根据日志格式配置合适的解析方式，抽取日志中的字段，方便在日志平台分析日志。这里我们选择按 grok 格式解析，logkit-pro 提供了一些默认的 grok 表达式，其中``` %{COMMON_LOG_FORMAT}``` 就可以解析 Nginx 日志，无需手动编写 grok。点击解析样例数据，查看解析是否成功。
+
+![](https://pandora-kibana.qiniu.com/nginx/parser.png)
+
+第三步：数据转换，这一步可以做一些更精细的字段解析。在这里，我们将 IP 转换成对应的省市、运营商等信息，以及将字符串格式的时间字段转换成时间类型。
+
+ip 转换：选择需要进行转换的 ip 字段，从本地上传 ip 数据库即可，填好配置信息点击`添加`。
+
+![](https://pandora-kibana.qiniu.com/nginx/ip_transformer.png)
+
+时间转换：选择需要进行转换的时间字段，点击`解析`即可一键查看解析结果，点击`添加`将转换器应用到样例数据。
+
+![](https://pandora-kibana.qiniu.com/nginx/date_transformer.png)
+
+转换后的数据：
+
+![](https://pandora-kibana.qiniu.com/after_transform.png)
+
+第四步：将数据发送至智能日志分析平台，输入工作流（pipeline）名称和实时仓库名称(默认同时生成日志仓库，与实时仓库同名)，点击下一步。
+
+![](https://pandora-kibana.qiniu.com/nginx/sender.png)
+
+第五步：确认收集数据，填写收集器名称确认添加数据收集器。
+
+![](https://pandora-kibana.qiniu.com/nginx/confirm.png)
+
+第六步：分发收集器到机器。
+
+确认添加收集器之后系统会提示您是否需要分发到当前机器，选择确认分发。
+
+![](https://pandora-kibana.qiniu.com/k8s/k8s_distribute.png)
+
+-----
+
+<a name="3"></a>
+
+# **3.在日志平台搜索分析日志**
+
+进入[智能日志分析平台日志搜索页面](https://portal.qiniu.com/insight/logdb/overview)，选择在 logkit-pro 发送时填写的仓库名称，输入搜索条件搜索日志内容。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/search1.png)
+
+<a name="4"></a>
+# **4.配置日志分析图表**
+
+依然在日志搜索页面，切换到`可视化`tab，开始配置分析报表。
+
+如：
+
+1.分析过去 1 小时的 UV（即独立 IP 访问总数）：选择图表类型为折线图，指标为 remote_addr（客户端 IP 地址），根据时间字段分组。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/remote_addr.png)
+
+折线图的图表样式设置请阅读[折线图](/insight/manual/4861/the-line-chart)。
+
+点击`添加到仪表盘`，输入仪表盘名称和此图表名称，将图表加入指定仪表盘统一管理。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/savetodashboard.png)
+
+2.分析 PV（即请求总数）:
+
+   - 时序 PV：选择图表类型为折线图，指标为计数，根据时间字段分组。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/count.png)
+
+   - 当前 PV：选择图表类型为单值图，指标为计数，根据时间字段分组。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/sequence_count.png)
+
+图上的小字号的数字意义为相比上一个时间点请求数量减少了 166261。
+
+同时您可以通过开启单值图的时序折线选项了解请求数量的变化趋势，时序折线可以通过图表样式设置开启。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/sequence_count1.png)
+
+单值图的图表样式设置请阅读[单值图](/insight/manual/4865/single-value-figure)。
+
+3.分析 ip 来源分布:选择图表类型为饼图，指标为计数，分组字段为 remote_addr。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/remote_addr1.png)
+
+可以在图表样式设置里设置图表形式为`玫瑰图`、`环图`。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/remote_addr2.png)
+
+4.分析最近 5 分钟各种请求的占比:选择图表类型为饼图，指标为计数，分组字段为 request。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/request_path.png)
+
+可以点击以取消图例，只观察感兴趣的分组。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/request_path1.png)
+
+或者通过图例选择取消全选，再点击具体图例以显示。适用于图例数量比较多的情况。
+
+![](http://p9hhpzcmq.bkt.clouddn.com/nginx_analysis/request_path2.png)
+
+更多饼图的样式设置使用说明请阅读[饼图](/insight/manual/4862/the-pie-chart)。
+
+5.分析最近 1 小时各种 http 状态码的分布：选择图表类型为饼图，选择指标为计数，分组字段为 status。
+
+![](http://p9hhpzcmq.bkt.clouddn.com/status_code.png)
+
+6.分析最近一天访问 PV 前 10 的来源信息：选择图表类型为柱状图，选择指标为计数，分组字段为 http_referer（来源地址）。
+
+![](http://p9hhpzcmq.bkt.clouddn.com/nginx_analysis/http_refer.png)
+
+柱状图的样式设置请阅读[柱状图](/insight/manual/4860/a-histogram)。
+
+7.统计最近一小时用户来源设备的占比情况:选择图表类型为饼图，指标为计数，分组字段为 http_user_agent。
+
+![](http://p9hhpzcmq.bkt.clouddn.com/nginx_analysis/user_agent.png)
+
+除了一些默认的访问指标外，站长常常还需要对一些访问请求进行诊断，查看有哪些比较大的请求时间，哪些页面的请求时间比较大。
+
+8.每 5 分钟的平均请求时间和最大请求时间，从整体上了解请求时间分布情况:
+
+  - 选择图表类型为折线图，指标为 request_time 的平均值，按照时间字段分组：
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/request_time_avg.png)
+
+  - 选择图表类型为折线图，指标为 request_time 的最大值，按照时间字段分组：
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/request_time_max.png)
+
+知道了最大请求时间之后，需要明确最大请求时间对应的请求来源，以方便进一步优化页面响应。
+
+9.选择图表类型为折线图，指标为 request_time 的最大值，分组字段为 http_refer。找出最大请求时间对应的请求页面。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/m_r_t_p1.png)
+
+找到了请求时间最大的页面，为了对该页面进行调优，接下来需要统计该页面的访问 PV、UV、各种 method 次数、各种status 次数等。
+
+更多报表的操作方式请阅读[报表说明](/insight/manual/4692/reports-and-dashboards#2)。
+
+<a name="5"></a>
+# **5.在仪表盘对 Nginx 日志实时监控**
+进入[仪表盘列表](https://portal.qiniu.com/insight/dashboard)，找到保存图表时创建的仪表盘。
+
+![](https://pandora-kibana.qiniu.com/dashboard/dashboard.png)
+
+在仪表盘详情页，您可以对图表进行统一管理以及实时监控数据。
+
+1.仪表盘支持自动刷新，您可以根据需要自定义刷新时间。
+
+![](https://pandora-kibana.qiniu.com/dashboard/refresh1.png)
+
+2.仪表盘支持灵活控制图表显示时间，除了全局调整仪表盘所有图表的时间范围以外，您也可以对单个图表单独设置时间范围。
+
+![](https://pandora-kibana.qiniu.com/dashboard/edit_time2.png)
+
+![](https://pandora-kibana.qiniu.com/dashboard/edit_time1.png)
+
+3.使用大屏功能对图表进行监控。
+
+![](https://pandora-kibana.qiniu.com/full_screen.png)
+
+4.在仪表盘点击任意感兴趣的数据，即可下钻进入日志详情页面。
+
+![](https://pandora-kibana.qiniu.com/dashboard/xiazuan.png)
+
+点击下钻以后：
+
+![](https://pandora-kibana.qiniu.com/dashboard/xiazuan1.png)
+
+仪表盘也支持编辑图表等操作，详情请阅读[仪表盘](/insight/manual/4867/the-dashboard)。
+
+
+

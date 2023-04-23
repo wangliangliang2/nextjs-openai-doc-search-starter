@@ -1,0 +1,109 @@
+# **描述**
+本接口用于获取流列表。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceid}/streams?offset=<offset>&line=<line>&qtype=<qtype>&prefix=<prefix>&sortBy=<sortBy>`
+* Get请求，通过`非SDK`方式调用的客户，http头部Content-Type`要么置空`, `要么不要携带`,`要么设置为application/x-www-form-urlencoded` [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|line|否|integer|一次返回多少条,最多1000,当超过1000条时，需要结合offset 循环读取。
+|offset|否|integer|偏移量。当数据较多，需要循环读取时使用。例如有2001条数据，初始值offset = 0, 第N次请求时offset = (N -1) * line
+|qtype|否|integer|查询流类型， 0:全部，1:在线流，2:离线流
+|prefix|否|string|流ID 前缀，可根据`流ID`或者`描述`字段 进行前缀检索查询
+|sortBy|否|string|asc 表示升序，desc 表示降序，默认按创建时间降序排列(可参与排序的字段有createdAt、updatedAt、lastPushedAt)。asc:updatedAt表示更新时间从小到大排序，desc:updatedAt表示更新时间从大到小排序
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|items|流数组|流数组
+|items.streamId|string|流ID
+|items.desc|string|描述
+|items.nsId|string|所属空间ID
+|items.nsName|string|所属空间名称
+|items.recordTemplateId|string|录制模版ID
+|items.snapshotTemplateId|string|截图模版ID
+|items.aiTemplateId|string|AI模版ID
+|items.recordTemplateName|string|录制模版名称
+|items.snapshotTemplateName|string|截图模版名称
+|items.aiTemplateName|string|AI模版名称
+|items.disabled|boolean|流是否被禁用
+|items.lastPushedAt|integer|最后一次推流时间，0:表示流从创建开始尚未进行过推流操作
+|pullType|否|string|主动拉流模式的空间下，流的接入类型。rtsp/rtmp/http-flv/hls/other 拉流
+|pullAddr|否|string|主动拉流模式的空间下，拉流地址
+|pullVideoModel|否|integer|主动拉流模式的空间下，0代表视频源为实时流 1代表视频源为点播内容或静态文件
+|rtspModel|否|integer|主动拉流模式的空间下，当拉流地址为rtsp时 0:代表udp拉流，1:代表tcp拉流。默认为0即udp拉流
+|items.status|bool|流是否在线
+|items.createdAt|integer|流创建时间
+|items.updatedAt|integer|流更新时间
+|items.userCount|integer|在线观看人数(只有在流在线的时候才会出现)
+|items.clientIp|integer|推流端IP(只有在流在线的时候才会出现)
+|items.audioFrameRate|integer|直播流的实时音频帧率(只有在流在线的时候才会出现)
+|items.bitRate|integer|直播流的实时码率(只有在流在线的时候才会出现)
+|items.videoFrameRate|integer|直播流的实时视频帧率(只有在流在线的时候才会出现)
+|total|integer|空间下流总数
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarrpj8lcl/streams \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "items": [
+    {
+      "streamId": "abcdef",
+      "nsId": "2akrarrpj8lcl",
+      "nsName": "test_name3",
+      "recordTemplateId": "2akrarrviqwvu",
+      "snapshotTemplateId": "",
+      "aiTemplateId": "",
+      "createdAt": 1586258862,
+      "updatedAt": 1586258862,
+      "status": false,
+      "disabled": false,
+      "lastPushedAt": 0
+    },
+    {
+      "streamId": "xcfdde",
+      "nsId": "2akrarrpj8lcl",
+      "nsName": "test_name3",
+      "recordTemplateId": "2akrarrpisqps",
+      "snapshotTemplateId": "",
+      "aiTemplateId": "",
+      "createdAt": 1585898236,
+      "updatedAt": 1585898236,
+      "status": false,
+      "disabled": false,
+      "lastPushedAt": 0
+    },
+    {
+      "streamId": "xcfdd",
+      "nsId": "2akrarrpj8lcl",
+      "nsName": "test_name3",
+      "recordTemplateId": "",
+      "snapshotTemplateId": "",
+      "aiTemplateId": "",
+      "createdAt": 1585896582,
+      "updatedAt": 1585896582,
+      "status": false,
+      "disabled": false,
+      "lastPushedAt": 0
+    }
+  ],
+  "total": 3
+}
+}
+```

@@ -1,0 +1,182 @@
+# 1. 接口清单
+
+Token 管理接口是操作 Pandora 2.0 非常敏感的接口，通过接口形式操作API风险很高，尽量确保可信网络下，或者在界面操作。以下是搜索接口的清单：
+
+1. 创建Token 接口：`POST /api/v1/auth/tokens`
+2. 查询Token接口：`GET /api/v1/auth/tokens`
+3. 启用Token 接口：`PUT /api/v1/auth/tokens/{id}/status`
+4. 禁用Token 接口：`PUT /api/v1/auth/tokens/{id}/status`
+5. 删除Token 接口：`DELETE /api/v1/auth/tokens/{id}/`
+
+> 注意：搜索接口的请求格式是json格式，所以请求Header中必须添加 'Content-Type: application/json' 
+
+# 2. 接口描述
+
+准备工作，先参考文档[准备工作](https://developer.qiniu.com/express/api/6468/the-preparatory-work)中所指导步骤，创建一个可用的Token，对接下来的其他Token进行操作。
+
+## 2.1 创建Token 接口
+
+请求路径：`/api/v1/auth/tokens`
+
+请求方法：`POST`
+
+请求体示例：
+
+```
+{
+	"username":"pandora@qiniu.com",
+	"audience":"default",
+	"notBefore":1584344002522,
+	"expireTime":1584430402522
+}
+```
+
+请求体字段解释：
+
+| 字段名 | 是否必填 | 字段解释 | 默认值 |
+| -------- | -------- | -------- | -------- |    
+| username     | 是      | 需是系统已存在的⽤户名 |   无  |
+| audience     | 是    | Token面向受众  |    无      |
+| notBefore     | 是    | Token 生效时间，为13位时间戳   |    无      |
+| expireTime     | 是    | Token 失效时间，为13位时间戳   |    无   |
+
+
+
+
+响应体示例：
+
+```
+{
+  "id": "<TokenId>",
+  "token":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+```
+
+响应体字段释义：
+
+| 字段名 | 是否必填 | 字段解释 | 
+| -------- | -------- | -------- | 
+| token     | 是      | token值，只显示一次，之后无法二次获得  | 
+
+
+
+## 2.2 查询Token接口：
+
+
+请求路径：`GET /api/v1/auth/tokens?pageNo=<pageNo>&pageSize=<pageSize>&sort=<sort>&order=<order>&prefix=<prefix>` 
+
+
+请求方法：`GET`
+
+URL参数解释：
+
+| 字段名 | 是否必填 | 字段解释 | 默认值 |
+| -------- | -------- | -------- | -------- |    
+| pageNo     | 否      | 指定⻚号（1~n） |   1  |
+| pageSize     | 否    | 指定每⻚所包含的条⽬数  |    10      |
+| sort     | 否    |  指定排序键，可填以下内容之⼀：username, 按“⽤户名”排序; audience, 按“⽤途”排序; issuedAt, 按“发⾏于”排序; expireTime, 按“过期时间”排序; lastAccessTime，按“上次使⽤时间”排序  |    无（若URL参数中不包含sort参数，则将按自然顺序返回Token信息列表）   |
+| order     | 否    | 指定排序顺序。可填以下内容之⼀：desc降序，asc升序   |    desc   |
+| prefix     | 否    | 预匹配字符，⽤于匹配“⽤户名”   |    无   |
+
+
+
+
+响应体示例：
+
+```
+{
+	"total":2,
+	"pageNo":1,
+	"pageSize":2,
+	"tokens":[
+		{
+			"id":"09e456c0-9b86-468c-b31d-3e963d3c024e",
+			"username":"pandora@qiniu.com",
+			"audience":"default",
+			"notBefore":1575527903578,
+			"expireTime":1575533907928,
+			"issuedAt":1575527909225,
+			"issuer":"pandora@qiniu.com",
+			"status":"enabled",
+			"lastAccessIP":"100.100.32.114",
+			"lastAccessTime":1575528203896
+		},
+		{
+			"id":"12a20dff-9182-4b51-afa7-d1a16a8ff33d",
+			"username":"pandora@qiniu.com",
+			"audience":"default",
+			"notBefore":1576483954865,
+			"expireTime":1576484435486,
+			"issuedAt":1576483837431,
+			"issuer":"pandora@qiniu.com",
+			"status":"enabled",
+			"lastAccessIP":null,
+			"lastAccessTime":-1
+		}
+	]
+}
+```
+
+
+响应体字段示例：
+
+| 字段名 | 是否必填 | 字段解释 | 
+| -------- | -------- | -------- | 
+| total     | 是      | 总共Token 数量  | 
+| pageNo     | 是      | 分页页码  | 
+| pageSize     | 是      | 每页数量  | 
+| tokens.id     | 是      |  Token 的唯一标识id | 
+| tokens.username     | 是      | Token的生效用户  | 
+| tokens.audience     | 是      | Token的用途  | 
+| tokens.notBefore     | 是      | Token的生效时间  | 
+| tokens.expireTime     | 是      | Token的过期时间  | 
+| tokens.issuedAt     | 是      | Token的创建时间  | 
+| tokens.issuer     | 是      | Token的创建者  | 
+| tokens.status     | 是      | Token的状态，enabled生效，disabled失效  | 
+| tokens.lastAccessIP     | 是      | Token的最后访问IP  | 
+| tokens.lastAccessTime     | 是      | Token的最后访问时间，-1代表未被使用过  | 
+
+
+
+## 2.3 启用、禁用 Token  
+
+
+请求路径：`/api/v1/auth/tokens/{id}/status` 
+
+**注意**：
+
+1. `<id>` 为Token 的唯一标识
+
+请求方法：`PUT`
+
+请求体示例：
+
+```
+{
+	"status":"enabled"
+}
+```
+
+请求体释义：
+
+
+| 字段名 | 是否必填 | 字段解释 | 
+| -------- | -------- | -------- | 
+| status     | 是      |  状态，enabled代表启用，disabled代表禁用  | 
+
+
+
+
+## 2.4 删除 token
+
+请求路径：`/api/v1/auth/tokens/{id}/`
+
+**注意**：`<id>` 为Token 唯一标识
+
+请求方法：`DELETE`
+
+响应码200为删除成功
+
+
+
+> 注意：建议定期更新Token，并关注Token的使用情况，避免Token泄露造成严重的数据风险。

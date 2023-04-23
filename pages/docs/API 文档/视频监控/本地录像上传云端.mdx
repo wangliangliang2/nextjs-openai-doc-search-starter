@@ -1,0 +1,51 @@
+# **描述**
+本接口可将设备`SD卡本地录像文件`上传到云端。具体可参考[设备本地录像上传云端存储最佳实践](https://developer.qiniu.com/qvs/8425/local-video-upload-the-cloud)
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/devices/{gbId}/sdcardsave/start`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|gbId|是|string|设备国标Id
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|channelId|否|string|平台设备指定需要启动的通道国标ID
+|start|是|integer| 开始时间(unix时间戳,单位为秒)
+|end|是| integer | 结束时间(unix时间戳,单位为秒)
+|processId|否|string|客户自定义ID，在视频录制到云端后，七牛平台会把该ID回调给客户.[录制回调格式](https://developer.qiniu.com/qvs/10240/the-message-callback)
+
+**注意**:
+用户使用该接口将摄像头本地的录像通过国标推流到云端并进行录制, 首先需要保证摄像头本地是有录制文件的,可以通过[查询本地录像列表
+](https://developer.qiniu.com/qvs/7112/query-local-video-list)获取本地录像列表
+# **响应参数**
+200
+
+# **示例**
+
+**请求示例**
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarvzvyijd/devices/31011500991320000028/sdcardsave/start \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json'
+  --data '{
+	"channelId": "34020000001310000003",
+	"start":1612191900,
+	"end":1612191960
+}'
+```
+
+**响应示例**
+```
+{
+  "code": 200
+}
+```

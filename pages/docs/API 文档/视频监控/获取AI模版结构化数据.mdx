@@ -1,0 +1,100 @@
+# **描述**
+本接口用于获取人脸识别结构化数据列表。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}/aidata/?start=<start>&end=<end>&line=<line>&offset=<offset>&sort=<sort>&algorithm=<algorithm>`
+* Get请求，通过`非SDK`方式调用的客户，http头部Content-Type,`要么设置为application/x-www-form-urlencoded`,`要么置空`, `要么不要携带`; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|流ID
+|start|否|integer|开始时间
+|end|否|integer|结束时间
+|line|否|integer|一次返回多少条，最多1000,当超过1000条时，需要结合offset 循环读取
+|offset|否|integer|偏移量，当需要循环读取时,初始值offset = 0, 第N次请求时offset = (N -1) * line
+|sort|否|string|默认按创建时间降序排列，sort由"asc/desc"和可参与排序的字段组成，其中 asc 表示升序，desc 表示降序
+|algorithm|是|string|算法类型，"1"表示安全帽检测，"2"表示人脸识别
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|items|数组|结构化数据数组
+|items.timestamp|integer|截帧的时间,单位为秒,unix时间戳
+|items.frameUrl|string|截帧的url地址
+|items.structuredData|string|结构化数据
+|total|integer|数据总条数
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/namespaces/123/streams/test/aidata?algorithm=1 \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "items": [
+    {
+      "timestamp": "1586850533",
+      "frameUrl": "http://qvs.com/demo.jpg",
+      "structuredData": "this is a test",
+    }
+  ],
+  "total": 1
+}
+```
+**结构化数据格式**
+
+安全帽检测
+```
+[
+    {
+        //检测到的目标具体信息
+        "details": [
+            {
+                "bbox": [874,192,932,260], //检测框在图⽚中的位置[left,top,right,bottom]
+                "label": "helmet",
+                "score": "0.92" //置信度
+            },
+            {
+                "bbox": [1162,173,1190,208],
+                "label": "helmet",
+                "score": "0.81"
+            }
+        ],
+        //是否通过检测
+        "suggestion": "pass"
+    }
+]
+```
+
+人脸识别
+```
+{
+    //检测到的目标具体信息
+    "details": [
+        {
+            "bbox": [714,117,916,376], //检测框在图⽚中的位置[left,top,right,bottom]
+            "label": "李四",
+            "landmark": [761,852,794,767,831,205,208,250,310,314] //面部关键特征点
+        },
+        {
+            "bbox": [773,217,807,261],
+            "label": "王二",
+            "landmark": [777,788,779,783,790,232,230,241,251,249]
+        }
+    ],
+    //检测到的目标
+    "imageLabel": ["李四","王二"]
+}
+```

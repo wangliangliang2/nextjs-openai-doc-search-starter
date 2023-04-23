@@ -1,0 +1,38 @@
+Firewall Transformer 转换 Cisco, Shorewall, Susefirewall2 防火墙日志。
+
+* 要进行Transform变化的键(`key`): 支持多级嵌套，多级间用 *.* 符号连接，如 abc.xyz，表示 data["abc"]["xyz"]中的数据。
+
+* 新的字段名(`new`): 选填，新的字段名称。
+
+* 防火墙日志类型(`category`): 默认为 cisco, 支持 cisco, shorewall, susefirewall2
+
+
+### **示例**：
+
+例如， parser 解析后的数据为:
+
+```
+{ 
+   "raw": "Teardown dynamic TCP translation from Inside:100.20.50.100/70000 to Outside:8.8.8.8/40000 duration 0:00:00" 
+}
+```
+cisco防火墙 转换器：
+![](https://dn-odum9helk.qbox.me/FtWWeg719Zu95675a-kIaNjxozG8)
+
+经过 cisco防火墙 变换后的数据将变为:
+
+```
+{
+  "raw": "Teardown dynamic TCP translation from Inside:100.20.50.100/70000 to Outside:8.8.8.8/40000 duration 0:00:00",
+	"action":"Teardown",
+	"protocol":"TCP",
+	"src_interface":"Inside",
+	"src_ip":"100.20.50.100",
+	"src_port":"70000",
+	"src_xlated_interface":"Outside",
+	"src_xlated_ip":"8.8.8.8",
+	"timestamp":"2019-02-28T18:30:09.001023679+08:00",
+	"xlate_type":"dynamic"	
+},
+```
+

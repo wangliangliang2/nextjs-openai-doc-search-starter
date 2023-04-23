@@ -1,0 +1,46 @@
+本章主要讲述应用的下的设备的添加操作说明，您可以创建单个设备，也可以批量创建设备。
+
+# **创建单个设备**
+### **操作说明**
+
+1.登录[七牛开发者平台](https://sso.qiniu.com/?client_id=PIapUKqa3u6S24H868BelwrG0OFu8dS7AxVQ8oz8HznLXhgrl2BnjaO9cs9LzxK2&redirect_url=https:%2F%2Fportal.qiniu.com%2Fapi%2Fgaea%2Fsso%2Fsignin%3Fredirect%3D%252Fcreate)。
+
+2.选择IoT视频云产品，进入产品控制台，选择**设备管理**，进入设备管理页面。
+
+创建设备前需要确保已经完成了应用创建，否则需要先去创建应用，如下图所示：
+![](https://dn-odum9helk.qbox.me/Fswppn1iQra37B7wFLcWxrlEa5DN)
+3.点击**添加设备**，进行设备的添加。
+![设备列表](https://dn-odum9helk.qbox.me/Fgt4hvWqegAs-5_6HAHlxqZIDlM3)
+![添加设备](https://dn-odum9helk.qbox.me/FrgM-YQLNGEGKW71zjmgT5-J3QYc)
+
+**配置项说明**
+
+|配置项|说明|
+|---|---|
+|设备名称|设备名称只能由 4-200 位英文字母和数字组成，非必填，不填写时系统将自动生成|
+|类型|添加的设备类型，可选项为普通设备与网关设备|
+|所属应用|添加设备所属的应用，默认为当前页面所选择的应用，支持修改|
+|上传文件的生命周期|配置设备级的视频文件上传时的生存周期，设备级配置生效级别高于应用配置，可选配置项：遵循应用配置、永久保存、自定义、不启用，默认为遵循应用的配置|
+|上传文件的存储类型|配置设备级的视频文件的上传模式，可选配置项：遵循应用配置、遵循设备采集端配置、强制24小时上传、强制关闭上传|
+
+4.创建完成
+设备创建完成后，在设备列表中可查询到此设备，点击**密钥**可以获取设备的密钥。
+# **批量添加设备**
+平台同时支持批量添加设备，一次最多可以创建1000台设备。
+### **操作说明**
+
+1.在设备管理页面中，点击**批量添加**，进行设备的批量添加，批量添加支持自动生成与批量上传两种方式。
+![设备列表](https://dn-odum9helk.qbox.me/FnZoSgJCCQXInXLqUq14hDxPGLRg)
+
+**自动生成：**
+无需指定设备名称，设备名称将自动生成，只需填写要添加的设备数量即可。
+![自动生成](https://dn-odum9helk.qbox.me/Fh2UgIgxZK1ifSszFzwucLKUVN0q)
+**批量上传：**
+需指定设备名称，下载.csv模板下载表格模板，在模板中填写设备名称，然后将填好的表格上传至控制台。，点击【确定】即可。
+![批量上传](https://dn-odum9helk.qbox.me/Fgg8rhDfGgc0n7rKQsRIRdps8pal)
+
+**配置项说明**
+请参阅创建单个设备中的配置说明。
+
+2.设备创建完成后会提示创建结果，同时可以下载设备密钥。
+![](https://dn-odum9helk.qbox.me/Fj2WHFzIZBJc7ftkWB7wpTFlsJyJ)

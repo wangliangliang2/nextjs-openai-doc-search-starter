@@ -1,0 +1,28 @@
+在二维图表中：`<base-line>`元素用于表示图表的基线。
+ 
+### 父元素 {docsify-ignore-all}
+ 
+在 `<chart>`元素下，只有当 type 属性指定如下值时，`<base-line>`才可用。
+	
+* `<chart type="line">`
+* `<chart type="area">`
+
+### 子元素
+	
+|子元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<name>`|基线名称，用于在图例上显示|''|
+|`<color>`|基线颜色|#2C6DD2|
+|`<line-type>`|基线类型，可选solid、dashed、dotted|'solid'|
+|`<value>`|基线值|0|
+
+示例：
+
+   ```
+<base-line>
+  <name>base-line-1</name>
+  <color>#ff0000</color>
+  <line-type>dashed</line-type>
+  <value>1000</value>
+</base-line>
+```

@@ -1,0 +1,55 @@
+
+&nbsp;&nbsp;&nbsp;&nbsp;Pandora为满足不同角色对不同数据的访问控制需求，对数据本身的敏感程度进行安全级别划分，并在角色权限的数据脱敏中实现动态数据脱敏能力（搜索时脱敏），除了严格控制不同角色对仓库中的数据访问权限，针对不同角色配置不同的数据脱敏策略（使数据本身的安全等级降级），就可以在开发、测试和其它非生产环境以及外包或云计算环境中安全地使用脱敏后的真实数据集，这样才能更精细得管理数据访问控制、保护数据安全。借助数据脱敏技术，屏蔽敏感信息，并使屏蔽的信息保留其原始数据格式和属性，以确保应用程序可在使用脱敏数据的开发与测试过程中正常运行。
+&nbsp;&nbsp;&nbsp;&nbsp;给需要的用户查看脱敏后的数据的方法共分为三步：
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.为敏感数据设置脱敏规则
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.为角色配置脱敏限制
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.脱敏角色设置给需要的用户     
+&nbsp;&nbsp;&nbsp;&nbsp;下面我们以一个例子来说明用法，背景信息如下表：
+
+|类别|信息|
+|-|-|
+|用户名|小明|
+|所属角色名|用户运营|
+|敏感数据|用户手机号|
+|敏感数据所在仓库|teacher|
+|敏感数据使用来源类型|json_new|
+
+#### 一、为敏感数据设置脱敏规则
+**前提条件**
+1. 操作者拥有数据脱敏功能权限
+2. 目标数据已经进入PDR仓库
+
+**操作说明**
+1. 点击配置/系统配置/数据脱敏，进入数据脱敏策略配置页面
+![tuomin1.png](https://dn-odum9helk.qbox.me/Fs4X4_oqXahHLCAayc2UzoAYfYFw)
+2. 点击新建脱敏策略，进入新建页面
+![tuomin2.png](https://dn-odum9helk.qbox.me/Fg6rYJ14SNjq5516r6chHKNADmq1)
+3. 输入必要的参数如下
+
+|参数名称|说明|
+|-|-|
+|规则|脱敏规则名称|
+|描述|脱敏规则描述|-|
+|来源类型|一条脱敏规则只可选择一个来源类型|
+|匹配方式|有字段或正则两种匹配方式，只可选择一种匹配方式|
+|目标数据|选择字段或者输入正则表达式，根据匹配方式来确定|
+|脱敏方式|选择需要的脱敏方式，Pandora内置了中文姓名、手机号码、固话、身份证、银行卡号等10种脱敏模板，也可以自定义脱敏方式|
+
+**ps：如果选择字段方式脱敏，需额外对日志原始报文raw进行脱敏，如下图所示：**
+![tuomin3.png](https://dn-odum9helk.qbox.me/Fli3sxSE9FOpoC62HKyhPLRnCuEL)
+4. 在左侧搜索预览目标数据，查看脱敏数据是否符合预期
+![tuomin4.png](https://dn-odum9helk.qbox.me/FoqDmTDXVLSweyjuO_iRjgtYZhX8)
+#### 二、 为相关角色打开脱敏
+**前置条件**
+1. 操作者拥有角色编辑权限
+
+**操作说明**
+1. 进入角色列表，找到相关角色（此例中为角色用户运营），点击编辑，进入角色“用户运营”的编辑页面
+![TUOMIN6.png](https://dn-odum9helk.qbox.me/Fp4a19dVsaRiPeVgoXGJGFYeI2l2)
+![TUOMIN7.png](https://dn-odum9helk.qbox.me/FiCp4vTdaT3RLCk8f7-hZOjEm6MA)
+2. 点击进入仓库数据限制tab页，找到角色“用户运营”不能查看敏感数据的仓库（仓库teacher），在仓库后方勾选脱敏
+![tuomin5.png](https://dn-odum9helk.qbox.me/FoPvZ1q3uY_xXS-QQyK1sIpa_JZx)
+3. 保存角色。
+
+  至此已为角色"用户运营"限制查看客户身份证号码，用户小明登录Pandora平台，查询teacher下的json_new时，手机号已为脱敏后数据，如下图所示：
+![tuomin8.png](https://dn-odum9helk.qbox.me/FpBEZgH2LC9osx1sfKOjz_xKsSJB)

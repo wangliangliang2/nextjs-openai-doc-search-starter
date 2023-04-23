@@ -1,0 +1,1111 @@
+在 [快速开始](/pili/sdk/12222/qplayer2-core-basic-ability-to-use) 中，我们完成了qplayer2播放器的创建\播放\销毁，本文介绍如何使用qplayer2的播放能力
+
+
+
+# 播放
+
+## 创建播放数据
+
+```objective-c
+
+    QMediaModelBuilder *modleBuilder = [[QMediaModelBuilder alloc] initWithIsLive:NO];
+    [modleBuilder addStreamElementWithUserType:@""                                                     //预留字段，可以为空
+                             urlType:QURL_TYPE_QAUDIO_AND_VIDEO                      //资源的类型，这里的url对应的资源是音视频
+                             url:@"http://demo-videos.qnsdk.com/qiniu-1080p.mp4"     //播放地址
+                             quality:1080                                            //清晰度数值标记为1080
+                             isSelected:YES                                          //是否是默认元素，默认元素是指，起播的时候默认会播放这个元素
+                             backupUrl:@""                                            //备用地址
+                             referer:@""                                              //http/https 协议的地址 支持该属性              
+                             renderType:QPLAYER_RENDER_TYPE_PLANE];                   //视频类型
+    																										
+    QMediaModel *model = [modleBuilder build];
+```
+
+
+
+addStreamElements 属性说明
+
+| 属性名     | 属性说明                                            |
+| ---------- | --------------------------------------------------- |
+| userType   | 用户自定义Type，目前预留，可以填空字符串            |
+| url        | 资源地址                                            |
+| urlType    | 媒体的资源属性 只包含视频/只包含音频/同时有视频音频 |
+| quality    | 清晰度                                              |
+| isSelected | 是否起播时播放该流                                  |
+| backupUrl  | 备用地址                                            |
+| referer    | http/https 协议的地址 支持该属性                    |
+| renderType | 视频的渲染类型                                      |
+
+## 视频URL类型枚举
+```objective-c
+typedef NS_ENUM(NSInteger, QPlayerURLType){
+    QURL_TYPE_QAUDIO_AND_VIDEO = 0,        //音频和视频
+    QURL_TYPE_QAUDIO,                      //仅音频
+    QURL_TYPE_QVIDEO,                      //仅视频
+    QURL_TYPE_NONE,                        //无
+};
+```
+
+## 播放媒体资源
+
+```objective-c
+/*** 播放音视频资源
+ * @param pmediaModel 音视频资源
+ * @param startPos 起播时间戳 毫秒
+ */  
+[self.playerContext.controlHandler playMediaModel:model startPos:0];
+```
+
+
+## 播放错误监听
+
+添加监听前需要签订QIPlayerMediaNetworkListener协议。当视频起播时，如果遇到网络等问题原因，导致没有和服务器建立链接，那么会导致视频播放失败，总共会有3次重试机会，3次都失败的情况下会回调onOpenFailed方法。
+当视频已经起播后，在中途遇到网络等问题原因，进入buffer, 那么内核会一直重试，直到再次连接上服务端继续播放，或者用户通过接口停止播放该视频，在重试的过程中 onReconnectStart / onReconnectEnd 会被回调，那么可以监控回调的次数来做业务层的结束播放的策略，当然在正常播放的情况下，这两个方法也是会被回调的，所以最好结合buffer的回调数据一起使用。
+
+```objective-c
+/***
+ 开始重连
+ @param context 当前的播放器
+ @param userType 重连url流的userType
+ @param urlType 重连url流的urlType
+ @param url 重连的url
+ @param retryTime 已重试的次数
+*/
+-(void)onReconnectStart:(QPlayerContext *)context userType:(NSString *)userType urlType:(QPlayerURLType)urlType url:(NSString *)url retryTime:(NSInteger)retryTime{
+  
+}
+
+/***
+ 重连结束
+ @param context 当前的播放器
+ @param userType 重连url流的userType
+ @param urlType 重连url流的urlType
+ @param url 重连的url
+ @param retryTime 已重试的次数
+ @param error 错误码
+*/
+-(void)onReconnectEnd:(QPlayerContext *)context userType:(NSString *)userType urlType:(QPlayerURLType)urlType url:(NSString *)url retryTime:(NSInteger)retryTime error:(QPlayerOpenError)error{
+  
+}
+
+/***
+ 打开失败
+ @param context 当前的播放器
+ @param userType 重连url流的userType
+ @param urlType 重连url流的urlType
+ @param url 重连的url
+ @param error 错误码
+*/
+-(void)onOpenFailed:(QPlayerContext *)context userType:(NSString *)userType urlType:(QPlayerURLType)urlType url:(NSString *)url error:(QPlayerOpenError)error{
+  
+}
+
+//添加监听
+[self.playerContext.controlHandler addPlayerMediaNetworkListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerMediaNetworkListener:self];
+//移除全部监听
+[self.playerContext.controlHandler removeAllPlayerMediaNetworkListener];
+```
+## 播放错误码枚举
+
+```objective-c
+typedef NS_ENUM(NSInteger, QPlayerOpenError) {
+    QPLAYER_OPEN_ERROR_UNKOWN = 10000,
+    QPLAYER_OPEN_ERROR_NONE = 0,
+    QPLAYER_OPEN_ERROR_IOERROR = -5,
+    QPLAYER_OPEN_ERROR_INTERRUPT = -1414092869,
+    QPLAYER_OPEN_ERROR_URL_INVALID = -875574520,
+    QPLAYER_OPEN_ERROR_FORMAT_INVALID = -1094995529
+};
+```
+
+
+## 暂停播放
+
+```objective-c
+[self.playerContext.controlHandler pauseRender];
+```
+
+
+
+## 恢复播放
+
+```objective-c
+[self.playerContext.controlHandler resumeRender];
+```
+
+
+
+## 停止当前视频播放
+
+```objective-c
+[self.playerContext.controlHandler stop];
+```
+
+# 鉴权
+鉴权功能介绍见[鉴权相关文档](https://developer.qiniu.io/pili/12223/qplayer2-core-authentication-related)
+## 强制网络鉴权
+调用该接口时，会强制进行网络鉴权
+```objective-c
+[self.playerContext.controlHandler forceAuthenticationFromNetwork];
+```
+## 鉴权监听
+添加监听前需要签订QIPlayerAuthenticationListener协议。
+
+```objective-c
+/**
+ @brief 鉴权失败回调
+ @param context 当前播放器
+ @param error 失败错误码
+ */
+-(void)onAuthenticationFailed:(QPlayerContext*)context error:(QPlayerAuthenticationErrorType)error{
+}
+
+/**
+ @brief 鉴权成功回调
+ @param context 当前播放器
+ */
+@optional
+-(void)onAuthenticationSuccess:(QPlayerContext*)context{
+}
+
+
+//添加监听
+[self.playerContext.renderHandler addPlayerAuthenticationListener:self];
+//移除监听
+[self.playerContext.renderHandler removePlayerAuthenticationListener:self];
+//移除所有监听
+[self.playerContext.renderHandler removeAllPlayerAuthenticationListener];
+```
+
+## 鉴权错误码枚举
+```objective-c
+typedef NS_ENUM(NSInteger, QPlayerAuthenticationErrorType) {
+    QPLAYER_AUTHENTICATION_ERROR_TYPE_AET_NONE,             //鉴权出错
+    QPLAYER_AUTHENTICATION_ERROR_TYPE_AET_NO_BASE_AUTH,     //缺少基础功能权限
+    QPLAYER_AUTHENTICATION_ERROR_TYPE_AET_NO_VR_AUTH,       //缺少VR功能权限
+    QPLAYER_AUTHENTICATION_ERROR_TYPE_AET_NO_BLIND_AUTH,    //缺少色盲功能权限
+    QPLAYER_AUTHENTICATION_ERROR_TYPE_AET_NO_SEI_AUTH,      //缺少SEI功能权限
+    QPLAYER_AUTHENTICATION_ERROR_TYPE_AET_NO_SRT_AUTH       //缺少SRT功能权限
+};
+```
+
+# 预加载
+播放预加载实例用于点播（一般用在短视频场景中），不能用在直播上，播放预加载实例能提升首帧的速度。
+预加载的加载时机策略由业务层自行实
+
+## 预加载的简单使用
+
+```objective-c 
+//创建预加载实例,一般是提前创建,model为预加载的资源，startPos为预加载开始时间
+QMediaItemContext *item = [[QMediaItemContext alloc]initItemComtextWithMediaModel:model startPos:0 storageDir:documentsDir logLevel:LOG_VERBOSE];
+
+//开始预加载
+[item.controlHandler start];
+
+//播放预加载资源
+
+[self.playerContext.controlHandler playMediaItem:item];
+
+//停止预加载实例
+[item.controlHandler stop];
+```
+## 预加载实例状态枚举
+```objective-c 
+typedef NS_ENUM(NSInteger, QMediaItemState) {
+    QMEDIAITEM_STATE_NONE = 100,            //初始状态
+    QMEDIAITEM_STATE_PREPARE,               //开始加载前，准备工作状态
+    QMEDIAITEM_STATE_LOADING,               //开始加载
+    QMEDIAITEM_STATE_PAUSED,                //暂停加载
+    QMEDIAITEM_STATE_STOPED,                //停止加载, 无法恢复
+    QMEDIAITEM_STATE_ERROR,                 //加载出错
+    QMEDIAITEM_STATE_PREPARE_USE,           //准备使用播放
+    QMEDIAITEM_STATE_USED,                  //已经使用
+    QMEDIAITEM_STATE_DISCARD,               //废弃
+};
+```
+## 预加载实例状态监听
+```objective-c
+/**
+ * 状态变更监听
+ * @param context 当前预加载上下文
+ * @param state 改变后的状态
+ */
+-(void)onStateChanged:(QMediaItemContext *)context state:(QMediaItemState)state{
+}
+
+ //添加监听
+[item.controlHandler addMediaItemStateChangeListener:self];
+//移除监听
+[item.controlHandler removeMediaItemStateChangeListener:self];
+//移除所有监听
+[item.controlHandler removeAllMediaItemStateChangeListener];
+```
+
+## 预加载状态异常的监听
+```objective-c
+/**
+ * 播放器操作（eg.playMediaModel/seek 等操作）由于状态问题导致的失败
+ * @param context 当前预加载上下文
+ * @param commandName 操作名称
+ * @param state 异常发生时的的状态
+ */
+-(void)onCommandNotAllow:(QMediaItemContext *)context commandName:(NSString *)commandName state:(QMediaItemState)state{
+}
+
+ //添加监听
+[item.controlHandler addMediaItemCommandNotAllowListener:self];
+//移除监听
+[item.controlHandler removeMediaItemCommandNotAllowListener:self];
+//移除所有监听
+[item.controlHandler removeAllMediaItemCommandNotAllowListener];
+```
+
+# 切换视频进度
+参数为要定位的position 单位毫秒
+```objective-c 
+[self.playerContext.controlHandler seek:2000];
+```
+
+
+
+# 视频解码方式
+
+目前支持的解码方式有:软解、硬解、自动，一般情况下，使用自动，内核会根据手机的硬件情况，要播放的视频资源编码格式等信息，挑选合适的解码方式进行解码，各个解码方式的优劣情况如下
+软解: 解码较慢，但是兼容性好，适用于所有手机
+硬解：解码性能高，但是有一定兼容性，比如某些视频资源的编码格式，硬解芯片不支持。并且相对于软解，首帧的速度慢。
+
+## 设置优先选择哪种解码方式
+设置完成后下一次播放生效.
+最终的解码方式可能不是设置的，在设置的解码方式不能正确解码时，内核会进行降级，选择其他能正确解码的方式
+```objective-c
+[self.playerContext.controlHandler setDecoderType: QPLAYER_DECODER_SETTING_AUTO];
+```
+
+## 优先选择的解码方式枚举
+该枚举主要用于设置解码方式
+``` objective-c
+typedef NS_ENUM(NSInteger, QPlayerDecoder) {
+    QPLAYER_DECODER_SETTING_AUTO = 0,            //自动选择
+    QPLAYER_DECODER_SETTING_HARDWARE_PRIORITY,   //硬解优先
+    QPLAYER_DECODER_SETTING_SOFT_PRIORITY,       //软解优先
+};
+```
+
+## 播放器视频解码监听相关
+添加监听前需要签订QIPlayerVideoDecodeListener协议。
+
+```objective-c
+/**
+ 当前视频用的是哪种解码方式
+ @param context 当前的播放器
+ @param type 解码方式
+*/
+-(void)onVideoDecodeByType:(QPlayerContext *)context Type:(QPlayerDecoderType)type{
+  
+}
+
+/**
+ 如果当前视频编码 所在设备或者sdk不支持 则回调该方法
+ @param context 当前的播放器
+ @param codecId 视频的编码id
+*/
+-(void)notSupportCodecFormat:(QPlayerContext *)context codec:(NSInteger)codecId{
+  
+}
+
+ //添加监听
+[self.playerContext.controlHandler addPlayerVideoDecodeTypeListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayeVideoDecodeTypeListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerVideoDecodeTypeListener];
+```
+## 解码方式枚举
+该枚举主要用于监听返回的解码方式
+``` objective-c
+typedef NS_ENUM(NSInteger, QPlayerDecoderType) {
+    QPLAYER_DECODER_TYPE_NONE = 0,          //无
+    QPLAYER_DECODER_TYPE_SOFTWARE,          //软解
+    QPLAYER_DECODER_TYPE_HARDWARE,          //硬解
+};
+```
+
+
+# 设置起播方式
+下一次播放生效
+```objective-c
+[self.playerContext.controlHandler setStartAction:QPLAYER_START_SETTING_PLAYING];
+```
+
+## 起播方式枚举
+```objective-c
+typedef NS_ENUM(NSInteger, QPlayerStart){
+    QPLAYER_START_SETTING_PLAYING = 0,      //起播播放
+    QPLAYER_START_SETTING_PAUSE,            //起播暂停在首帧
+};
+```
+
+# 设置 seek 方式
+下一次播放生效
+```objective-c
+[self.playerContext.controlHandler  setSeekMode:QPLAYER_SEEK_SETTING_NORMAL];
+```
+
+## seek方式枚举
+```objective-c
+typedef NS_ENUM(NSInteger, QPlayerSeek) {
+    QPLAYER_SEEK_SETTING_NORMAL = 0,        //关键帧seek，每次seek 都seek到离目标位置向前的最近的一个关键帧，耗时少
+    QPLAYER_SEEK_SETTING_ACCURATE,          //精准seek，耗时比关键帧seek多，且耗时和视频的gop间隔的大小成正比
+};
+```
+
+## seek 状态监听
+一般情况下 seek都会成功，如果网络差的情况下，会无限loading（除非调用stop才会停止），直到seek到指定的位置为止。但是如果视频源本身是格式不正确的，比如pts错乱等问题，才会导致seek失败，所以在seek失败回调中，做好提示工作就好，不要尝试再次seek
+```objective-c
+/**
+ seek成功回调
+ @param context 当前的播放器
+*/
+-(void)onSeekSuccess:(QPlayerContext *)context{
+
+}
+
+/**
+ seek失败回调
+ @param context 当前的播放器
+*/
+-(void)onSeekFailed:(QPlayerContext *)context{
+
+}
+
+ //添加监听
+[self.playerContext.controlHandler addPlayerSeekListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerSeekListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerSeekListener];
+```
+
+# 获取当前播放状态
+
+```objective-c
+self.playerContext.controlHandler.currentPlayerState
+```
+
+
+
+# 获取视频时长
+
+```objective-c
+self.playerContext.controlHandler.duration
+```
+
+
+
+# 获取当前进度
+
+```objective-c
+self.playerContext.controlHandler.currentPosition
+```
+
+
+
+# 获取当前下载速度
+
+```objective-c
+self.playerContext.controlHandler.downloadSpeed
+```
+
+
+
+# 获取当前缓冲进度
+
+```objective-c
+self.playerContext.controlHandler.bufferPostion
+```
+
+
+
+# 播放器状态
+
+在整个播放器实例生命周期中，播放会在不同的状态中切换，用户可以通过监听播放器状态，实现上层业务逻辑，
+比如在视频播放完时，展示其他视频的推荐页，那么只需监听播放器状态回调，待回调的状态是COMPLETED，则展示推荐页
+
+
+
+## 播放器状态枚举
+
+```objective-c
+typedef NS_ENUM(NSInteger, QPlayerState){
+    QPLAYER_STATE_NONE = 0,                //初始状态
+    QPLAYER_STATE_INIT = 1,                //播放器开始创建各种对象 没有对应的state 创建完对象就上报这个状态
+    QPLAYER_STATE_PREPARE = 2,             //开始拉视频数据解码变换等，重新换地址后，都走这个状态
+    QPLAYER_STATE_PLAYING = 4,             //播放中
+    QPLAYER_STATE_PAUSED_RENDER = 6,       //用户暂停
+    QPLAYER_STATE_COMPLETED = 7,           //播放完成
+    QPLAYER_STATE_SEEKING = 8,             //SEEK
+    QPLAYER_STATE_STOPPED = 9,             //停止当前播放的视频
+    QPLAYER_STATE_ERROR = 10,              //播放出错（是否需要分 可恢复 和 不可恢复 ）
+    QPLAYER_STATE_END = 11,                //播放器释放各种对象完成
+    QPLAYER_STATE_MEDIA_ITEM_PREPARE = 12, //开始拉视频数据解码变换等，重新换地址后，都走这个状态 针对Media Item的play 方式
+    QPLAYER_STATE_RELEASE = 13,            //播放器结束，且释放各类资源
+};
+```
+
+
+
+## 播放器状态变更监听相关
+添加监听前需要签订QIPlayerStateChangeListener协议。
+
+```objective-c
+/**
+ 状态变更回调
+ @param context 当前的播放器 
+ @param state 播放器状态
+ */
+-(void)onStateChange:(QPlayerContext *)context state:(QPlayerState)state{
+  
+}
+
+//添加监听
+[self.playerContext.controlHandler addPlayerStateListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerStateListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerStateListener];
+```
+
+
+
+# 播放速度
+
+播放速度的调整范围建议在0.25-2.0之间，这样会有一个比较好的效果
+
+
+
+## 设置播放速度
+参数为倍速值
+```objective-c
+[self.playerContext.controlHandler setSpeed:1.0];
+```
+
+
+
+## 获取当前播放速度
+
+```objective-c
+self.playerContext.controlHandler.playerSpeed
+```
+
+
+
+## 速度变更监听相关
+添加监听前需要签订QIPlayerSpeedListener协议。
+
+```objective-c
+/**
+ 倍速改变回调
+ @param context 当前的播放器 
+ @param speed 改变后的倍速
+*/
+-(void)onSpeedChanged:(QPlayerContext *)context speed:(float)speed{
+
+}
+
+
+//添加监听
+[self.playerContext.controlHandler addPlayerSpeedChangeListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayeSpeedChangeListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerSpeedChangeListener];
+```
+
+
+
+# 清晰度
+
+QPlayer2提供的清晰度能力是无缝切换清晰度方案，在切换过程中，画面是连续的画面，不会出现类似跳帧的情况。
+使用无缝切换清晰度功能，必须在mediaModel中配置多路清晰度，如果使用非immediately方式(即异步方式)时，同时只能有一次切换会话存在，会话结束后，才能切下一次
+
+## 切换视频清晰度
+
+```objective-c
+//使用该方法时，mediaModel中需要存在多个StreamElement
+
+/**
+  切换清晰度
+  @param userType 切换清晰度的url流的userType
+  @param urlType 切换清晰度的url流的 urlType
+  @param quality 要切到哪路清晰度
+  @param immediately true 立即切换 用于直播流，false 无缝切换，切换过程是一个异步过程，用于点播流
+  @return true 调用成功， false 调用失败
+*/
+[self.playerContext.controlHandler switchQuality:"" urlType:QURL_TYPE_QAUDIO_AND_VIDEO quality:1080 immediately:false];
+```
+
+
+
+## 获取当前的清晰度
+
+```objective-c
+//使用该方法时，mediaModel中需要存在多个StreamElement，返回清晰度数值标记
+
+/**
+ 获取指定 userType urlType 的清晰度
+  @param userType 切换清晰度的url流的userType
+  @param urlType 切换清晰度的url流的 urlType
+  @return true 调用成功， false 调用失败
+*/
+[self.playerContext.controlHandler getCurrentQuality:@"" urlType: QURL_TYPE_QAUDIO_AND_VIDEO ];
+```
+
+
+
+## 获取当前正在切换的清晰度
+
+```objective-c
+/**
+ 获取指定 userType urlType 流正在切换的清晰度（非immediately方式）
+  @param userType 切换清晰度的url流的userType
+  @param urlType 切换清晰度的url流的 urlType
+  @return true 调用成功， false 调用失败
+*/
+[self.playerContext.controlHandler getSwitchingQuality:@"" urlType: QURL_TYPE_QAUDIO_AND_VIDEO ];
+```
+
+
+
+## 播放器清晰度相关监听
+添加监听前需要签订QIPlayerQualityListener协议。
+
+```objective-c
+/**
+ 开始清晰度切换
+ @param context 当前的播放器
+ @param userType 开始切换清晰度的url流的userType
+ @param urlType 开始切换清晰度的url流的
+ @param oldQuality 切换前的清晰度
+ @param newQuality 要切到哪路清晰度
+*/
+-(void)onQualitySwitchStart:(QPlayerContext *)context usertype:(NSString *)usertype urlType:(QPlayerURLType)urlType oldQuality:(NSInteger)oldQuality newQuality:(NSInteger)newQuality{
+
+}
+
+/**
+ 清晰度切换完成
+ @param context 当前的播放器
+ @param userType 开始切换清晰度的url流的userType
+ @param urlType 开始切换清晰度的url流的
+ @param oldQuality 切换前的清晰度
+ @param newQuality 要切到哪路清晰度
+*/
+-(void)onQualitySwitchComplete:(QPlayerContext *)context usertype:(NSString *)usertype urlType:(QPlayerURLType)urlType oldQuality:(NSInteger)oldQuality newQuality:(NSInteger)newQuality{
+}
+
+/**
+ 清晰度切换取消
+ @param context 当前的播放器
+ @param userType 开始切换清晰度的url流的userType
+ @param urlType 开始切换清晰度的url流的
+ @param oldQuality 切换前的清晰度
+ @param newQuality 要切到哪路清晰度
+*/
+-(void)onQualitySwitchCanceled:(QPlayerContext *)context usertype:(NSString *)usertype urlType:(QPlayerURLType)urlType oldQuality:(NSInteger)oldQuality newQuality:(NSInteger)newQuality{
+
+}
+
+/**
+ 清晰度切换失败
+ @param context 当前的播放器
+ @param userType 开始切换清晰度的url流的userType
+ @param urlType 开始切换清晰度的url流的
+ @param oldQuality 切换前的清晰度
+ @param newQuality 要切到哪路清晰度
+*/
+-(void)onQualitySwitchFailed:(QPlayerContext *)context usertype:(NSString *)usertype urlType:(QPlayerURLType)urlType oldQuality:(NSInteger)oldQuality newQuality:(NSInteger)newQuality{
+
+}
+
+/**
+ 目前仅支持同时有一个清晰度切换，如果前一个还未切换完，再次发起切换 会回调这个函数
+ @param context 当前的播放器
+ @param userType 开始切换清晰度的url流的userType
+ @param urlType 开始切换清晰度的url流的
+ @param newQuality 要切到哪路清晰度
+*/
+-(void)onQualitySwitchRetryLater:(QPlayerContext *)context  usertype:(NSString *)usertype urlType:(QPlayerURLType)urlType{
+
+}
+
+
+//添加监听
+[self.playerContext.controlHandler addPlayerQualityListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerQualityListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerQualityListener];
+```
+
+## 直播支持多路清晰度切换
+无缝切换清晰度方案需要配置以下三个条件
+1. 首先切换的模式要选择立即切换即：immediately=true 
+2. 服务端配置PTS透传，
+3. 对应的清晰度要做主动转码设置
+
+如果无法满足以上3个条件，那么建议用最基础的能力来实现清晰度切换，即每个清晰度都是一个media model，切换时，调用playMediaModel来播放新的清晰度流。
+
+# 视频宽高改变监听
+在视频首帧渲染时，会调用该回调，告诉上层当前的视频宽高是多少，如果在这个这个视频播放的生命周期中，宽高改变，那么还会再次调用该回调.
+添加监听前需要签订QIPlayerVideoFrameSizeChangeListener协议。
+
+```objective-c
+/**
+ 推流端视频长宽变化回调
+ @param context 当前的播放器
+ @param width 视频宽度
+ @param height 视频高度
+*/
+-(void)onVideoFrameSizeChanged:(QPlayerContext *)context width:(int)width height:(int)height{
+
+}
+
+//添加监听
+[self.playerContext.controlHandler addPlayerVideoFrameSizeChangeListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerVideoFrameSizeChangeListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerVideoFrameSizeChangeListener];
+```
+
+
+# 播放进度监听
+添加监听前需要签订QIPlayerProgressListener协议。
+
+只有在点播的时候 duration 和 progress 才有意义，直播的话这两个值没有参考意义
+
+```objective-c
+/***
+ 进度变更回调
+ @param context 当前的播放器
+ @param progress 当前进度 单位毫秒
+ @param duration 当前视频总时长 单位毫秒
+*/
+-(void)onProgressChanged:(QPlayerContext *)context  progress:(NSInteger)progress duration:(NSInteger)duration{
+}
+
+
+//添加监听
+[self.playerContext.controlHandler addPlayerProgressChangeListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerProgressChangeListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerProgressChangeListener];
+```
+
+
+
+# 实时帧率
+
+## 获取当前fps
+
+```objective-c
+self.playerContext.controlHandler.fps
+```
+
+
+
+## 实时帧率监听
+添加监听前需要签订QIPlayerFPSListener协议。
+
+```objective-c
+/**
+ @brief fps 改变的回调
+ @param context 当前的播放器
+ @param fps 帧率
+ */
+-(void)onFPSChanged:(QPlayerContext *)context FPS:(NSInteger)fps{
+
+}
+
+
+//添加监听
+[self.playerContext.controlHandler addPlayerFPSChangeListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerFPSChangeListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerFPSChangeListener];
+```
+
+
+
+# 像素格式或者音频sample格式不支持的监听
+添加监听前需要签订QIPlayerFormatListener协议。
+
+```objective-c
+/**
+ @brief 当前有format 不支持，所以视频没法播放
+ @param context 当前的播放器
+ */
+-(void)onFormatNotSupport:(QPlayerContext*)context{
+  
+}
+
+//添加监听
+[self.playerContext.controlHandler addPlayerFormatListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerFormatListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerFormatListener];
+```
+
+
+
+# 缓冲拉流监听
+添加监听前需要签订QIPlayerDownloadListener协议。
+
+```objective-c
+/**
+ @brief 拉流速率改变
+ @param context 当前的播放器
+ @param downloadSpeed 速度 单位: b/s (比特每秒)
+ @param bufferPos 缓冲的进度
+ */
+-(void)onDownloadChanged:(QPlayerContext *)context speed:(NSInteger)downloadSpeed bufferPos:(NSInteger)bufferPos{
+
+}
+
+
+//添加监听
+[self.playerContext.controlHandler addPlayerDownloadChangeListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerDownloadChangeListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerDownloadChangeListener];
+```
+
+
+
+# 播放器操作不允许执行监听
+
+添加监听前需要签订QIPlayerCommandNotAllowListener协议。在某些状态下，一些操作将不被执行，通过该监听回调上来通知
+
+```objective-c
+/**
+ @brief 操作不被允许回调
+ @param context 操作异常的播放器
+ @param commandName 操作名称
+ @param state 操作被检测时播放器的状态
+ */
+-(void)onCommandNotAllow:(QPlayerContext *)context commandName:(NSString *)commandName state:(QPlayerState) state{
+
+}
+
+
+//添加监听
+[self.playerContext.controlHandler addPlayerCommandNotAllowListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerCommandNotAllowListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerCommandNotAllowListener];
+```
+
+
+
+# buffering 监听
+添加监听前需要签订QIPlayerBufferingListener协议。
+
+```objective-c
+/**
+ @brief 开始buffering
+ @param context 当前播放器  
+ */
+-(void)onBufferingStart:(QPlayerContext *)context{
+
+}
+
+/**
+ @brief 结束buffering
+ @param context 当前播放器
+ */
+-(void)onBufferingEnd:(QPlayerContext *)context{
+
+}
+
+
+//添加监听
+[self.playerContext.controlHandler addPlayerBufferingChangeListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerBufferingChangeListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerBufferingChangeListener];
+```
+
+# 静音播放
+控制播放器静音，且该静音非系统的声音设置，仅仅只是把播放器设置为静音
+
+## 获取是否静音播放状态
+
+```objective-c
+self.playerContext.controlHandler.isMute;
+```
+
+## 设置静音播放
+
+```objective-c
+/**
+ * 设置静音状态
+ * @param isMute true 静音播放 false 非静音播放。默认为非静音播放
+ */
+[self.player.controlHandler setMute:YES];
+```
+## 静音播放相关监听
+添加监听前需要签订QIPlayerAudioListener协议。
+
+```objective-c
+/**
+ 静音播放状态发生变化
+ @param context 当前的播放器
+ @param isMute 是否静音播放
+*/
+-(void)onMuteChanged:(QPlayerContext *)context isMute:(BOOL)isMute{
+
+}
+
+
+//添加监听
+[self.playerContext.controlHandler addPlayerAudioListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerAudioListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerAudioListener];
+```
+
+# 截图
+
+调用截图接口，就会回调截图时的video画面，并以jpeg的格式返回
+
+```objective-c
+/**
+ 截图
+ */
+[self.playerContext.controlHandler shootVideo];
+```
+
+## 截图图片类型枚举
+```objective-c
+typedef NS_ENUM(NSInteger, QPlayerShootVideoType) {
+    QPLAYER_SHOOT_VIDEO_NONE = 0,
+    QPLAYER_SHOOT_VIDEO_JPEG            //jpeg格式
+};
+```
+
+## 截图相关监听
+添加监听前需要签订QIPlayerShootVideoListener协议。
+
+```objective-c
+/**
+ 截图成功回调
+ @param context 当前的播放器
+ @param imageData 图片的 NSData 数据
+ @param width 图片的宽
+ @param height 图片的高
+ @param type 图片类型
+*/
+-(void)onShootSuccessful:(QPlayerContext *)context imageData:(NSData *)imageData width:(int)width height:(int)height type:(QPlayerShootVideoType)type{
+
+}
+
+/**
+ 截图失败回调
+ @param context 当前的播放器
+*/
+-(void)onShootFailed:(QPlayerContext *)context{
+
+}
+
+
+//添加监听
+[self.playerContext.controlHandler addPlayerShootVideoListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerShootVideoListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerShootVideoListener];
+```
+
+
+# 码率
+
+## 获取当前码率
+
+```objective-c
+self.playerContext.controlHandler.biteRate
+```
+
+
+
+## 实时码率监听
+添加监听前需要签订QIPlayerBiteRateListener协议。
+
+```objective-c
+/**
+ @brief 码率变换回调
+ @param context 当前播放器 
+ @param bitrate 比特率， 单位：bps
+ */
+-(void)onBiteRateChanged:(QPlayerContext *)context bitrate:(NSInteger)bitrate{
+
+}
+
+
+//添加监听
+[self.playerContext.controlHandler addPlayerBiteRateChangeListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerBiteRateChangeListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerBiteRateChangeListener];
+```
+
+
+
+# SEI 数据回调
+
+用户自定义数据可以带在H264或者H265的编码帧里，用于实现一些基于时间轴的业务场景。
+开启该功能后，如果视频资源内带有SEI数据 会通过监听接口抛给业务层。
+该功能需要单独开通，具体可以联系技术支持咨询。
+
+## 开启 SEI
+
+```objective-c
+[self.playerContext.controlHandler setSEIEnable:YES];
+```
+
+
+
+## SEI 数据监听
+添加监听前需要签订QIPlayerSEIDataListener协议。
+
+```objective-c
+/**
+ SEI 数据回调，且回调时机为SEI数据所在帧的时间
+ @param context 当前的播放器
+ @param data SEI 数据
+*/
+-(void)onSEIData:(QPlayerContext *)context data:(NSData *)data{
+
+}
+
+
+//添加监听
+[self.playerContext.controlHandler addPlayerSEIDataListener:self];
+//移除监听
+[self.playerContext.controlHandler removePlayerSEIDataListener:self];
+//移除所有监听
+[self.playerContext.controlHandler removeAllPlayerSEIDataListener];
+```
+
+
+
+# 渲染相关监听
+添加监听前需要签订QIPlayerRenderListener协议。
+
+```objective-c
+/**
+ 首帧耗时回调
+ @param context 当前的播放器
+ @param elapsedTime 从play 开始到首帧渲染出来的总耗时 单位毫秒
+*/
+-(void)onFirstFrameRendered:(QPlayerContext *)context elapsedTime:(NSInteger)elapsedTime{
+
+}
+
+
+//添加监听
+[self.playerContext.renderHandler addPlayerRenderListener:self];
+//移除监听
+[self.playerContext.renderHandler removePlayerRenderListener:self];
+//移除所有监听
+[self.playerContext.renderHandler removeAllPlayerRenderListener];
+```
+
+# 设置视频渲染比例
+```objective-c
+[self.playerContext.renderHandler setRenderRatio:QPLAYER_RATIO_SETTING_AUTO];
+```
+## 视频比例枚举
+``` objectiv-c
+typedef NS_ENUM(NSInteger, QPlayerRenderRatio) {
+    QPLAYER_RATIO_SETTING_AUTO = 1,         //自动
+    QPLAYER_RATIO_SETTING_STRETCH,          //拉伸
+    QPLAYER_RATIO_SETTING_FULL_SCREEN,      //铺满
+    QPLAYER_RATIO_SETTING_16_9,             //16:9
+    QPLAYER_RATIO_SETTING_4_3,              //4:3
+};
+```
+# 设置色觉优化
+```objective-c
+[self.playerContext.renderHandler setBlindType:QPLAYER_BLIND_SETTING_NONE];
+```
+## 色觉优化枚举
+```objective-c
+typedef NS_ENUM(NSInteger, QPlayerBlind) {
+    QPLAYER_BLIND_SETTING_NONE=0,           //无
+    QPLAYER_BLIND_SETTING_RED,              //红色盲
+    QPLAYER_BLIND_SETTING_GREEN,            //绿色盲
+    QPLAYER_BLIND_SETTING_BLUE,             //蓝色盲
+};
+```
+
+
+# VR视频播放
+
+在播放VR视频时，需要在mediaModel中配置vr视频的资源 并且将streamElement的QPlayerRenderType设置为QPLAYER_RENDER_TYPE_PANORAMA_EQUIRECT_ANGULAR
+然后通过设置vr视频视角改变视频朝向
+该功能需要单独开通，具体可以联系技术支持咨询。
+
+```objective-c
+/***
+ * 设置VR视频的旋转角度
+ * @param rotateX 横向角度 （360度制）
+ * @param rotateY 纵向角度 （360度制）
+ * @return true 设置成功 false 设置失败
+ */
+[self.playerContext.renderHandler setPanoramaViewRotate:rotateX rotateY:rotateY];
+```
+## 视频类型枚举
+```objective-c
+typedef NS_ENUM(NSInteger, QPlayerRenderType){
+    QPLAYER_RENDER_TYPE_PLANE = 0,                          //普通视频
+    QPLAYER_RENDER_TYPE_PANORAMA_EQUIRECT_ANGULAR = 1,      //ANGULAR类 VR视频
+};
+```
+
+
+
+# 后台播放
+
+## 设置是否支持后台播放
+
+```objective-c
+/**
+ *设置是否后台播放
+ * @param enable yes后台播放，no后台播放暂停
+ */
+[self.playerContext.controlHandler setBackgroundPlayEnable:YES];
+```
+
+
+
+## 获取当前是否支持后台播放
+
+```objective-c
+/**
+ 获取当前是否支持后台播放
+ @return true: 支持后台播放 false: 支持后台播放
+*/
+[self.playerContext.controlHandler getBackgroundPlayEnable];
+```
+
+

@@ -1,0 +1,95 @@
+在 QAPP 中部署应用实例后，可以通过新建 `异步任务入口` 实现公网访问，通过分配的域名，创建对应 HTTP 接口的异步调用。
+
+
+
+# **操作步骤**
+
+1. 登录 [容器轻应用平台](https://portal.qiniu.com/dora/qapp)。
+
+2. 在左侧导航栏单击 **具体应用名称**，在顶部菜单栏选择 **入口管理**。
+
+   ![img](https://dora-doc.qiniu.com/WX20221103-200328%402x.png)
+
+3. 切换区域，点击 **新建入口**，弹窗点击确定。
+
+4. 异步任务入口创建成功。
+
+   ![img](https://dora-doc.qiniu.com/WX20221103-200460%402x.png)
+
+   > **说明**
+   >
+   > - 操作->删除：可删除异步任务入口。
+   > - 操作->访问权限：更细粒度的访问权限控制，请[提交工单](https://support.qiniu.com/question)申请。
+
+5. 结果验证，如下。
+
+   
+
+
+
+# **结果验证**
+
+此处介绍异步任务入口，即通过分配的域名，创建对应 HTTP 接口的异步调用，关于发任务、查任务两部分的内容如下：
+
+## **1. 发任务**
+
+### 请求
+```
+POST https://<app-name>.async-z0.qiniuapp.com/...
+Authorization: Qiniu <AccessToken>
+```
+注意：  
+1）`<app-name>`替换为真实的部署应用名；  
+2）请求需要进行Qiniu签名；
+
+### 返回结果
+```
+{
+    "id": "01aa8888888888888888888888888888" // 异步任务ID
+}
+```
+
+
+
+## **2. 查任务**
+
+### 请求
+```
+GET https://async.qiniuapp.com/v1/task/<id>
+Authorization: Qiniu <AccessToken>
+```
+注意：  
+1）`<id>`替换为发任务时返回的真实ID；  
+2）请求需要进行Qiniu签名；  
+
+### 返回结果
+```
+{
+    "id": "01aa8888888888888888888888888888", // 异步任务ID
+    "req_id": "0AXXX...",
+    "request": {
+        "method": "POST",
+        "path": "/...",
+        "raw_query": "?key=value&...",
+        "header": {
+            "Content-Type": ["application/json"],
+            ...
+        },
+        "body": "AAA...AAA==" // base64 encoded string
+    },
+    "created_at": 123123123, // 任务创建时间，纳秒Unix时间戳
+    "state": 10, // 0 - waiting | 1 - doing | 10 - success | 11 - failed
+    "response": {
+        "status_code": 200,
+        "header": {
+            "Content-Type": ["application/json"],
+            ...
+        },
+        "body": "AAA...AAA==" // base64 encoded string
+    },
+    "exec_at": 123123123 // 任务完成时间，纳秒Unix时间戳
+}
+```
+
+
+

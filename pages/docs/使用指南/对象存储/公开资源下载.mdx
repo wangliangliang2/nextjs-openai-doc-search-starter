@@ -1,0 +1,19 @@
+公开资源下载通过 HTTP GET 的方式访问资源 URL 即可。资源 URL 的构成如下：
+
+```
+http://<domain>/<key>
+```
+
+其中`<domain>`有两种形态：七牛子域名和自定义域名。
+
+七牛子域名是创建空间时默认分配的域名，开发者请前往[七牛开发者平台](https://portal.qiniu.com/bucket)，选择一个空间后查看**测试域名**即七牛子域名。子域名形式类似于 *78re52.com1.z0.glb.clouddn.com*，用户可以通过以下 URL 下载名为 *resource/flower.jpg* 的资源：
+
+```
+http://78re52.com1.z0.glb.clouddn.com/resource/flower.jpg
+```
+
+您也可以为某特定空间，申请绑定自定义域名，通过这个自定义域名访问资源，例如绑定的自定义域名为 *i.example.com*，您就可以通过以下 URL 访问同样的资源：
+
+```
+http://i.example.com/resource/flower.jpg
+```

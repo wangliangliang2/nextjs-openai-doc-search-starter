@@ -1,0 +1,109 @@
+# **描述**
+本接口用于创建新的业务空间。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces`
+* 默认只能创建`10`个空间，如果需要更多的配额，请提工单, 在后台为您提升配额后，可以通过接口创建更多的空间,(超过10个后，无法通过控制台创建，只能通过接口)。
+
+# **请求参数**
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|name|是|string|空间名称(格式"^[a-zA-Z0-9_-]{1,100}$")
+|desc|否|string|空间描述	
+|accessType|是|string|接入类型(rtmp,gb28181,pull,onvif)
+|~~rtmpUrlType~~(废弃,请使用urlMode)|是|integer|推拉流地址计算方式，1:static, 2:dynamic
+|urlMode|是|integer|推拉流地址计算方式，1:static, 2:dynamic
+|domains|urlMode为1时必填|string 数组|直播域名
+|zone|否|string|zone为服务区域, 可根据流媒体实时处理、视频录制、截图的存储需求选择对应的区域, 可选项为z0, z1, z2, cn-east-2, as0, 默认为z0. z0表示华东, z1表示华北、z2表示华南, cn-east-2代表华东-浙江2区域, as0代表亚太-新加坡区域
+|callBack|否|string|回调地址，可用于获取空间内设备/流状态更新时的信息
+|hlsLowLatency|否|boolean|hls低延迟开关
+|recordTemplateId|否|string|录制模版ID，需要录制功能时输入对应的模板ID，录制模板ID可以模板管理中获取
+|snapshotTemplateId|否|string|截图模版ID，需要截图功能时输入对应的模板ID，截图模板ID可以模板管理中获取
+|aiTemplateId|否|string|AI模版ID，需要AI分析功能时输入对应的模板ID，AI模板ID可以模板管理中获取
+|recordTemplateApplyAll|否|boolean|空间模版是否应用到全局
+|snapshotTemplateApplyAll|否|boolean|截图模版是否应用到全局
+|aiTemplateApplyAll|否|boolean|AI模版是否应用到全局
+|onDemandPull|否|boolean|按需拉流开关，默认关闭
+|retryInterval|否|integer|accessType为"pull"时，拉流中断重连间隔
+|retryCount|否|integer|accessType为"pull"时，拉流中断重连次数
+|rtpAudio|否|boolean|是否开启音频
+|rtpAudioTranscode|否|boolean|是否开启音频转码
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|id|string|空间ID
+|name|string|空间名称
+|desc|string|空间描述	
+|domains|string数组|rtmp 静态接入的时候的域名
+|zone|string|服务区域
+|accessType|string|接入类型
+|urlMode|integer|推拉流地址计算方式，1:static, 2:dynamic
+|sipAddrs|sip信息数组|sip信息数组
+|sipAddrs.sipServerId|string|accessType为gb28181时sip服务器地址，地址前10位为对应sip域
+|sipAddrs.sipServerIP|string|accessType为gb28181时sip服务器IP
+|sipAddrs.sipServerPort|string数组|accessType为gb28181时sip服务器端口
+|callBack|string|回调地址
+|hlsLowLatency|boolean|hls低延迟
+|recordTemplateId|string|录制模版ID
+|snapshotTemplateId|string|截图模版ID
+|aiTemplateId|string|AI模版ID
+|recordTemplateApplyAll|boolean|空间模版是否应用到全局
+|snapshotTemplateApplyAll|boolean|截图模版是否应用到全局
+|aiTemplateApplyAll|boolean|截图模版是否应用到全局
+|disabled|boolean|空间是否被禁用
+|onDemandPull|boolean|按需拉流开关
+|createdAt|integer|空间创建时间
+|updatedAt|integer|空间更新时间
+|retryInterval|integer|accessType为"pull"时，拉流中断重连间隔，单位为秒
+|retryCount|integer|accessType为"pull"时，拉流中断重连次数，单位为次
+|rtpAudio|boolean|是否开启音频
+|rtpAudioTranscode|boolean|是否开启音频转码
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{
+	"name":"test001235",
+	"accessType":"rtmp",
+	"urlMode":1,
+	"zone": "z1",
+	"domains":["tests6.com"],
+	"recordTemplateId":"2akrarrzr7rh5"
+}'
+```
+**响应示例**
+
+```
+{
+  "id": "2akrars3nkw3s",
+  "name": "test001235",
+  "domains": [
+    "qiniu.com"
+  ],
+  "accessType": "rtmp",
+  "urlMode": 1,
+  "zone": "z1",
+  "hlsLowLatency": false,
+  "createdAt": 1586750356,
+  "updatedAt": 1586750356,
+  "recordTemplateId": "2akrarrzr7rh5",
+  "recordTemplateApplyAll": false,
+  "snapshotTemplateApplyAll": false,
+  "aiTemplateApplyAll": false,
+  "disabled": false,
+  "onDemandPull": false,
+  "authMode": "expiryAuth",
+  "authExpire": 86400
+}
+```

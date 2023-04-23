@@ -1,0 +1,64 @@
+空间概览展示了您当前所选空间的概览信息，包括该空间的
+- 基本信息：存储区域、存储总量、文件总数、访问控制限制以及空间类型；
+- 快捷链接：空间概览、文件管理、域名管理、图片样式、转码样式、空间设置；
+- 域名信息：CDN 加速域名、CDN 测试域名；
+- 快捷链接进行常用基础配置：访问控制、生命周期、空间授权、事件通知、镜像回源、查看 S3 域名；
+- 空间使用信息：各存储类型对应的存储量、文件数、API 请求数、外网下载流量及 CDN 回源流量
+
+<br>
+
+# **操作步骤**
+
+1. 登录 Kodo 控制台界面进入[空间管理](https://portal.qiniu.com/kodo/bucket)界面
+2. 在 Bucket 列表，选择目标空间的**概览**，将跳转进入空间概览界面，如图1:空间概览.
+图1:
+![image.png](https://dn-odum9helk.qbox.me/FonOYVkPQ4fNHLVxPt7kqHPqheTd)
+
+<br>
+
+## **空间概览 基本信息：**
+- 如图1:空间概览，直接展示了该空间的基本信息，如存储区域、存储总量、文件总数、访问控制限制以及空间类型。
+
+<br>
+
+
+## **空间概览 快捷链接：**
+1. 如图1:空间概览，您可点击目标链接，快速跳转至对应界面。
+2. 具体其他操作步骤可根据您的目标选择参考<a href="/kodo/development_guidelines/8561/file-management" target="_blank">文件管理</a>、<a href="/kodo/development_guidelines/8527/kodo-domain-name-management" target="_blank">域名管理</a>、<a href="/kodo/development_guidelines/8558/set-the-picture-style" target="_blank">设置图片样式</a>、<a href="/kodo/development_guidelines/8559/set-the-transcoding-style" target="_blank">设置转码样式</a>、<a href="/kodo/development_guidelines/8501/space-settings" target="_blank">空间设置</a>。
+
+<br>
+
+## **空间概览 域名信息：**
+1. 如图1:空间概览，单击 CDN 加速域名栏**自定义域名**，将跳转进入添加域名界面，后续相关操作参考<a href="/kodo/development_guidelines/8555/set-the-custom-cdn-to-accelerate-the-domain-name" target="_blank">自定义 CDN 加速域名</a>。
+2. 右侧 CDN 测试域名栏则显示当前空间所绑定的七牛云融合 CDN 测试域名（以 clouddn.com/qiniucdn.com/qnssl.com/qbox.me 结尾）。
+*注：每个测试域名每日限总流量 10GB，每个测试域名自创建起 30 个自然日后系统会自动回收，仅供测试使用并且不支持 Https 访问，详情请见[七牛测试域名使用规范](https://developer.qiniu.com/fusion/kb/1319/test-domain-access-restriction-rules)。单击**域名链接**可查看每个域名剩余回收时间。*
+
+
+
+
+<br>
+
+
+## **空间概览 基础配置：**
+1. 如图1:空间概览，单击目标常用配置下的**点击进入**，将跳转至对应的配置界面。
+2. 具体配置步骤可参考<a href="/kodo/development_guidelines/8502/set-access-control" target="_blank">访问控制</a>、<a href="/kodo/development_guidelines/8540/set-the-life-cycle" target="_blank">生命周期</a>、<a href="/kodo/development_guidelines/8537/set-the-space-authorization" target="_blank">空间授权</a>、<a href="/kodo/development_guidelines/8541/set-the-event-notification" target="_blank">事件通知</a>、<a href="/kodo/development_guidelines/8542/set-up-the-mirror-back-to-the-source" target="_blank">镜像回源</a>，以进行快捷链接下的常用基础配置。
+3. 您也可单击 S3 域名下的**点击查看**查看 S3 域名，将出现如图2弹窗
+图2:
+![截屏2021-08-06 上午11.56.12.png](https://dn-odum9helk.qbox.me/FiVQjQhKFvWtNbzMpQknCz3UQrmf)
+<br>
+
+   |项目|相关说明|
+   |-|-|
+   |S3 域名|空间的 S3 域名仅限通过 AWS S3 兼容 api 对接时使用，且通过该域名访问空间时将产生外网流出流量 。[了解 AWS S3 兼容详情](https://developer.qiniu.com/kodo/4088/s3-access-domainname)。|
+   |Endpoint（区域节点）|显示您当前空间所在的区域节点信息|
+   |空间域名|s3 域名格式为 <s3 空间名>.endpoint，其中 s3 空间名全局唯一（遵循 s3 协议的要求）。 空间名称全局唯一时，s3 空间名=空间名称；空间名称全局不唯一时，系统会为空间自动生成一个 s3 空间名。|
+
+<br>
+
+## **空间概览 空间使用信息：**
+1. 如图1:空间概览，您可单击**标准存储/低频存储/归档存储/深度归档存储**切换显示不同存储类型，以展示该空间内对应选择存储类型的今日和昨日的存储量、文件数，本月和上月的 API 请求次数（GET/PUT）、外网下载流量、CDN 回源流量；
+2. 如图3，空间概览界面也会图表化展示该空间七天内的流量（您可点击**外网下载/ CDN 回源**切换显示外网下载或 CDN 回源）、带宽、存储量及 API（GET/PUT）请求量；
+图3:
+![截屏2021-08-05 下午5.43.09.png](https://dn-odum9helk.qbox.me/FqiIfA9hU4_AXRa2-3f5GOUVQiTG)
+
+

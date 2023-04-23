@@ -1,0 +1,84 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本部分介绍音视频 <a href="/rtc/11390/UniappQNTrack">Track</a> 的创建及采集等功能的使用。</p>
+<blockquote>
+<ul>
+<li>一路 Track 代表一路音频或者视频的数据</li>
+<li>SDK 支持创建并发布多路视频 Track，但是仅支持同时创建一路音频 Track，重复创建将会失败</li>
+</ul>
+</blockquote>
+
+# 摄像头视频 Track
+<p><a href="/rtc/11433/UniappQNCameraVideoTrack">QNCameraVideoTrack</a> 为摄像头采集的本地 track，其创建方式如下：</p>
+<pre><code class="language-typescript"><span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createCameraVideoTrack</span>({
+<span></span>    <span class="hljs-attr">bitrate</span>: <span class="hljs-number">800</span>,
+<span></span>    <span class="hljs-attr">height</span>: <span class="hljs-number">480</span>,
+<span></span>    <span class="hljs-attr">width</span>: <span class="hljs-number">640</span>
+<span></span>})
+<span></span></code></pre>
+<p>其中可以传入 <a href="/rtc/11394/UniappQNCameraVideoTrackConfig">QNCameraVideoTrackConfig</a> 对象修改默认配置。</p>
+<p>在创建好 <a href="/rtc/11433/UniappQNCameraVideoTrack">QNCameraVideoTrack</a> 之后，就可以通过调用 SDK 提供的相关方法进行摄像头的相关操作：</p>
+<h3 id="开始停止摄像头采集"><a href="#%E5%BC%80%E5%A7%8B%E5%81%9C%E6%AD%A2%E6%91%84%E5%83%8F%E5%A4%B4%E9%87%87%E9%9B%86" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>开始/停止摄像头采集</h3>
+<p>通过调用 <a href="/rtc/11433/UniappQNCameraVideoTrack#startCapture">QNCameraVideoTrack.startCapture</a> 接口进行摄像头采集，通过调用 <a href="/rtc/11433/UniappQNCameraVideoTrack#stopCapture">QNCameraVideoTrack.stopCapture</a> 接口停止摄像头采集。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> cameraVideoTrack = <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createCameraVideoTrack</span>()
+<span></span>cameraVideoTrack.<span class="hljs-title function_">startCapture</span>()
+<span></span>cameraVideoTrack.<span class="hljs-title function_">stopCapture</span>()
+<span></span></code></pre>
+<blockquote>
+<p>创建 <strong>Track</strong> 后， sdk 会自动采集，由于 <strong>Android</strong> 和 <strong>iOS</strong> 中的相机资源是单例的，若应用占用了相机资源则会导致其他应用无法获取到相机资源，SDK 支持在通话过程中可以通过 <a href="/rtc/11433/UniappQNCameraVideoTrack#startCapture">QNCameraVideoTrack.startCapture</a> 获取相机资源，通过 <a href="/rtc/11433/UniappQNCameraVideoTrack#stopCapture">QNCameraVideoTrack.stopCapture</a> 释放相机资源。</p>
+</blockquote>
+<h3 id="预览窗口"><a href="#%E9%A2%84%E8%A7%88%E7%AA%97%E5%8F%A3" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>预览窗口</h3>
+<p>通过在 nvue 中添加原生组件，即可在试图中预览摄像头采集的窗口</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">QNRTC-UniPlugin-SurfaceView</span> <span class="hljs-attr">:local</span>=<span class="hljs-string">&quot;0&quot;</span> <span class="hljs-attr">:identifyID</span>=<span class="hljs-string">&quot;cameraVideoTrack.identifyID&quot;</span> <span class="hljs-attr">:trackID</span>=<span class="hljs-string">&quot;cameraVideoTrack.trackID&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">QNRTC-UniPlugin-SurfaceView</span>&gt;</span>
+<span></span></code></pre>
+<ul>
+<li>local:  0 本地 track 视图，1 远端 track 视图</li>
+<li>identifyID: uniapp 中每个 track 的唯一标识符</li>
+<li>trackID: 服务器对于每个 track 的唯一标识符（track 未发布时该值为""）</li>
+</ul>
+<h3 id="开启关闭闪光灯"><a href="#%E5%BC%80%E5%90%AF%E5%85%B3%E9%97%AD%E9%97%AA%E5%85%89%E7%81%AF" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>开启/关闭闪光灯</h3>
+<p>通过调用 <a href="/rtc/11433/UniappQNCameraVideoTrack#turnLightOn">QNCameraVideoTrack.turnLightOn</a> 接口开启闪光灯，通过调用 <a href="/rtc/11433/UniappQNCameraVideoTrack#turnLightOff">QNCameraVideoTrack.turnLightOff</a> 接口关闭闪光灯：</p>
+<pre><code class="language-typescript">cameraVideoTrack.<span class="hljs-title function_">turnLightOn</span>()
+<span></span>cameraVideoTrack.<span class="hljs-title function_">turnLightOff</span>()
+<span></span></code></pre>
+<h3 id="切换摄像头"><a href="#%E5%88%87%E6%8D%A2%E6%91%84%E5%83%8F%E5%A4%B4" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>切换摄像头</h3>
+<p>通过调用 <a href="/rtc/11433/UniappQNCameraVideoTrack#switchCamera">QNCameraVideoTrack.switchCamera</a> 接口进行摄像头的切换。</p>
+<pre><code class="language-typescript">cameraVideoTrack.<span class="hljs-title function_">switchCamera</span>()
+<span></span></code></pre>
+<h3 id="设置缩放"><a href="#%E8%AE%BE%E7%BD%AE%E7%BC%A9%E6%94%BE" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>设置缩放</h3>
+<p>通过调用 <a href="/rtc/11433/UniappQNCameraVideoTrack#setZoom">QNCameraVideoTrack.setZoom</a> 接口对相机采集的画面进行缩放。需要注意的是 setZoom 里的参数必须是通过调用 <a href="/rtc/11433/UniappQNCameraVideoTrack#getZooms">QNCameraVideoTrack.getZoom</a> 接口获取到的列表范围内的数值，如果 <a href="/rtc/11433/UniappQNCameraVideoTrack#getZooms">QNCameraVideoTrack.getZooms</a> 接口获取到的列表为空，即代表不支持缩放设置：</p>
+<pre><code class="language-typescript">cameraVideoTrack.<span class="hljs-title function_">setZoom</span>()
+<span></span></code></pre>
+
+# 屏幕共享视频 Track
+<p><a href="/rtc/11421/UniappQNScreenVideoTrack">QNScreenVideoTrack</a> 为屏幕共享的本地 track，录屏连麦的主要步骤如下：</p>
+<h3 id="判断设备是否支持屏幕共享"><a href="#%E5%88%A4%E6%96%AD%E8%AE%BE%E5%A4%87%E6%98%AF%E5%90%A6%E6%94%AF%E6%8C%81%E5%B1%8F%E5%B9%95%E5%85%B1%E4%BA%AB" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>判断设备是否支持屏幕共享</h3>
+<p>屏幕共享依赖系统版本，可通过 SDK 提供的如下接口判断是否支持：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> isSupported = <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">isScreenCaptureSupported</span>()
+<span></span></code></pre>
+<h3 id="发起屏幕共享请求"><a href="#%E5%8F%91%E8%B5%B7%E5%B1%8F%E5%B9%95%E5%85%B1%E4%BA%AB%E8%AF%B7%E6%B1%82" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>发起屏幕共享请求</h3>
+<p>由于 iOS 与 Android 系统的差异，在 Android 中需要发起屏幕共享请求，iOS 可跳过此步骤：</p>
+<pre><code class="language-typescript"><span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">requestPermission</span>(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+<span></span>    <span class="hljs-keyword">if</span>(res) {
+<span></span>        <span class="hljs-comment">// 请求成功</span>
+<span></span>    }<span class="hljs-keyword">else</span> {
+<span></span>        <span class="hljs-comment">// 请求失败</span>
+<span></span>    }
+<span></span>})
+<span></span></code></pre>
+<h3 id="创建-screen-track"><a href="#%E5%88%9B%E5%BB%BA-screen-track" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>创建 Screen Track</h3>
+<p>在通过了屏幕共享申请后，可以通过如下方式进行 Screen Track 的创建：</p>
+<pre><code class="language-typescript"><span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createScreenVideoTrack</span>({
+<span></span>    <span class="hljs-attr">bitrate</span>: <span class="hljs-number">800</span>,
+<span></span>    <span class="hljs-attr">multiStreamEnable</span>: <span class="hljs-literal">true</span>
+<span></span>})
+<span></span></code></pre>
+<p>可以传入 <a href="/rtc/11434/UniappQNScreenVideoTrackConfig">QNScreenVideoTrackConfig</a> 对象进行参数配置。</p>
+
+# 麦克风音频 Track
+<p><a href="/rtc/11388/UniappQNMicrophoneAudioTrack">QNMicrophoneAudioTrack</a> 为麦克风采集的音频 track，如需以麦克风采集数据作为音频源，仅需创建一个 <a href="/rtc/11388/UniappQNMicrophoneAudioTrack">QNMicrophoneAudioTrack</a> 并发布即可，其创建方式如下：</p>
+<pre><code class="language-typescript"><span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createMicrophoneAudioTrack</span>({
+<span></span>    <span class="hljs-attr">bitrate</span>: <span class="hljs-number">24</span>
+<span></span>})
+<span></span></code></pre>
+<p>可以传入 <a href="/rtc/11431/UniappQNMicrophoneAudioTrackConfig">QNMicrophoneAudioTrackConfig</a> 对象进行参数配置。</p></div></div>

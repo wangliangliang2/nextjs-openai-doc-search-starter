@@ -1,0 +1,33 @@
+方差分析用于两个及两个以上样本均数差别的显著性检验，主要计算连续型因变量与离散型自变量之间的关系。
+
+**语法：**
+
+```
+| score anova formula=<string> type=<int> scale=<float> test=<f(default)|chisq|cp> robust=<hc0|hc1|hc2|hc3> output=<anova(default)|model_accuracy|coefficients>
+```
+
+**参数说明：**
+
+- formula，用来指定用来做计算的 OLS 模型，_必填_。
+  - 必须是“dependent_variable \~ dependent_variable_1 +|\* dependent_variable_2 +|\*...+|\* dependent_variable_n”的格式，例如：formula="petal_length ~ sepal_length + sepal_length \* sepal_width + sepal_width"
+  - dependent_variable 指代因变量，即模型中被解释的变量，必须为连续性数据，且必须是一个字段。
+  - independent_variable 指代自变量，即模型中用来解释的变量，必须为离散型数据，可以是一个或者多个字段。
+  - independent_variable 中间可以用 + 或者 \*连接
+    - +代表前后两个自变量之间没有相关性
+    - \*代表前后两个自变量之间存在相关性，在计算中需要同时考虑这两个自变量的相关项。
+  - 不支持模糊匹配（\*）。
+- type，用来指定使用 I 型，II 型或 III 型 ANOVA。如不提供，默认为 1。
+  - type=1， 使用 I 型 ANOVA，I 类型的平方和效应根据表达式中先出现的效应做调整，适用于数据均衡的状态。
+  - type=2，使用 II 型 ANOVA，II 类型的平方和效应根据同水平或低水平的效应做调整，适用于数据存在不均衡的情况。
+  - type=3，使用 III 型 ANOVA，III 类型的平方和每个效应根据模型其他各效应做相应调整，适用于数据存在不均衡的情况。
+- scale，用来指定估计方差，如不提供，默认根据根据最大的模型计算估计方差。
+- test，用来指定检定方式。
+  - test=f（默认值），使用 F 检定
+  - test=chisq，使用卡方检定
+  - test=cp，使用马洛斯 CP 检定
+- robust, 用来指定是否使用异差方性计算协方差矩阵。提供 hc0, hc1, hc2, hc3 的选项。如不提供，默认不使用。
+  - 如果要使用 robust 参数，推荐使用 hc3。
+- output，用来指定模型输出结果。
+  - output=anova（默认值），输出一个真实的 ANOVA 模型表格，包含均方值、残差平方和、自由度、F 值、P 值。
+  - output=model_accuracy，输出模型准确性表格，包含 R 平方值、F 值、对数似然、Omnibus 全局检验、杜宾-瓦特森统计量（Durbin–Watson statistic）。
+  - output=coefficients，输出表格，包含各项系数、标准差、t 检定结果、P 值的上界和下界。

@@ -1,0 +1,35 @@
+共享带宽资源的功能就是可以给多个弹性公网 IP 共享带宽，这里介绍下添加的IP管理。
+
+**前提：**
+您已经创建了EIP，且EIP满足以下条件：
+- EIP的计费方式为按量计费。
+- EIP的地域与要加入的共享带宽的地域相同。
+- EIP的线路类型与要加入的共享带宽的线路类型一致。
+
+**1.添加弹性IP**
+
+![](https://dn-odum9helk.qbox.me/FjIH1LLBGB5KW-wwKnpXkhniEcRx)
+<br>
+从列表页可以点击【添加IP】进入IP管理界面，这里展示了所有添加的IP列表，
+
+![](https://dn-odum9helk.qbox.me/Fl812K8Lx3TKK6cwQ4TWDiysywPp)
+<br>
+点击【添加IP】可以进入添加EIP页面，这里只会提供相同地域的按量付费IP让您选择，因为共享带宽只支持添加按量付费的弹性IP，选择需要添加的EIP后点击完成即添加成功。
+
+![](https://dn-odum9helk.qbox.me/FlfIJYExAHmKp2RWcA9nhWRE43Rm)
+
+![](https://dn-odum9helk.qbox.me/FncjskXn5YNKX8gflDz4BIVrLYrz)
+<br>
+可以看到这里EIP的弹性带宽值已经变成2Mbps，和共享带宽值一样，如果需要对eip资源进行其他操作可以点击实例ID或【管理】跳转至弹性IP列表页。
+
+![](https://dn-odum9helk.qbox.me/FibzfjSh23uE3NxkLLbgrcd9Gvx4)
+
+**2.将EIP移出共享带宽**
+
+在IP管理页面提供将EIP移出共享带宽的功能，既可以只移出单个EIP,也支持批量移出。
+
+![](https://dn-odum9helk.qbox.me/FiS2gbWEWaBdJBBLfrAhF5Npsx7G)
+这里移出EIP带宽是不考虑EIP是否绑定资源的，一律移出，移出后eip的绑定状态不发生改变，IP带宽值会变为加入共享带宽前的带宽大小。
+
+![](https://dn-odum9helk.qbox.me/FkJS_JTe3TmYOTDQxn1laIexHjmW)
+<br>

@@ -1,0 +1,23 @@
+
+# **前提条件**
+1. 已开通短信服务。
+2. 已添加短信签名和短信模板并通过审核
+
+
+# **API发送接口**
+
+| 接口 | 描述 |  
+| --- | --- | 
+| 发送短信 | 发送单条或者群发短信：[/v1/message（POST方式）](https://developer.qiniu.com/sms/api/5897/sms-api-send-message#1) |  
+| 发送单条短信 | [/v1/message/single](https://developer.qiniu.com/sms/api/5897/sms-api-send-message#2) |  
+|发送国际短信 |[/v1/message/oversea](https://developer.qiniu.com/sms/api/5897/sms-api-send-message#3)|
+|发送全文本短信(不需要传模版 ID) | [/v1/message/fulltext](https://developer.qiniu.com/sms/api/5897/sms-api-send-message#4)| 
+
+# **查询发送记录**
+- [/v1/messages（GET 方式）](https://developer.qiniu.com/sms/api/5852/query-send-sms)
+
+
+# **回调消息**
+分为状态回调和上行回调。
+
+详情请参考[消息推送](https://developer.qiniu.com/sms/api/5910/message-push#1)。

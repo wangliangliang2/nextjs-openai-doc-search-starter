@@ -1,0 +1,129 @@
+上传策略是资源上传时附带的一组配置设定。通过这组配置信息，<span id="Productname">七牛云存储</span>可以了解用户上传的需求：它将上传什么资源，上传到哪个空间，上传结果是回调通知还是使用重定向跳转，是否需要设置反馈信息的内容，以及授权上传的截止时间等等。  
+
+上传策略同时还参与请求验证，可以验证用户对某个资源的上传请求是否完整。
+
+<br>
+
+<a id="format"></a>
+## **格式**
+
+```
+{
+
+    "scope":               "<Bucket                   string>",
+    "isPrefixalScope":     <IsPrefixalScope          int>,
+    "deadline":            <UnixTimestamp            uint32>,
+    "insertOnly":          <AllowFileUpdating        int>,
+
+    "endUser":             "<EndUserId                string>",
+
+    "returnUrl":           "<RedirectURL              string>",
+    "returnBody":          "<ResponseBodyForAppClient string>",
+
+    "callbackUrl":         "<RequestUrlForAppServer   string>",
+    "callbackHost":        "<RequestHostForAppServer  string>",
+    "callbackBody":        "<RequestBodyForAppServer  string>",
+    "callbackBodyType":    "<RequestBodyTypeForAppServer  string>",
+
+    "persistentOps":       "<persistentOpsCmds        string>",
+    "persistentNotifyUrl": "<persistentNotifyUrl      string>",
+    "persistentPipeline":  "<persistentPipeline       string>",
+		"forcesaveKey":        <forcesaveKey                bool>,
+    "saveKey":             "<SaveKey                  string>",
+    "fsizeMin":            <FileSizeMin              int64>,
+    "fsizeLimit":          <FileSizeLimit            int64>,
+
+    "detectMime":          <AutoDetectMimeType       int>,
+
+    "mimeLimit":           "<MimeLimit                string>",
+    "fileType":             <fileType                  int>
+}
+```
+
+<style>
+table th:first-of-type {
+    width: 100px;
+}
+</style>
+
+字段名  | 必填 | 说明 
+------- | ---------------- | ------------ 
+<a id="scope"></a>scope   | 是   | 指定上传的目标资源空间 Bucket 和资源键 Key（最大为 750 字节）。有三种格式：<li>&lt;bucket&gt;，表示允许用户上传文件到指定的 bucket。在这种格式下文件只能**新增**（[分片上传 v1 版](https://developer.qiniu.com/kodo/1650/chunked-upload) 需要指定 insertOnly 为 1 才是新增，否则也为覆盖上传），若已存在同名资源（且文件内容/etag不一致），上传会失败；若已存在资源的内容/etag一致，则上传会返回成功。</li> <li>&lt;bucket&gt;:&lt;key&gt;，表示只允许用户上传指定 key 的文件。在这种格式下文件默认允许**修改**，若已存在同名资源则会被**覆盖**。如果只希望上传指定 key 的文件，并且不允许修改，那么可以将下面的 insertOnly 属性值设为 1。</li> <li>&lt;bucket&gt;:&lt;keyPrefix&gt;，表示只允许用户上传指定以 keyPrefix 为前缀的文件，当且仅当 isPrefixalScope 字段为 1 时生效，isPrefixalScope 为 1 时无法覆盖上传。</li>
+<a id="put-isPrefixalScope"></a>isPrefixalScope          |      | 若为 1，表示允许用户上传以 scope 的 keyPrefix 为前缀的文件。 
+<a id="put-policy-deadline"></a>deadline            | 是   | 上传凭证有效截止时间。[Unix时间戳](/kodo/glossary/1647/u#unixtime)，单位为秒。该截止时间为上传完成后，在<span id="Productname">七牛</span>空间生成文件的校验时间，而非上传的开始时间，一般建议设置为上传开始时间 + 3600s，用户可根据具体的业务场景对凭证截止时间进行调整。
+<a id="put-policy-insert-only"></a>insertOnly          |      | 限定为**新增**语意。如果设置为非 0 值，则无论 scope 设置为什么形式，仅能以**新增**模式上传文件。
+<a id="put-policy-end-user"></a>endUser             |      | 唯一属主标识。特殊场景下非常有用，例如根据 App-Client 标识给图片或视频打水印。
+<a id="put-policy-return-url"></a>returnUrl           |      |  Web 端文件上传成功后，浏览器执行 303 跳转的 URL。通常用于[表单上传](/kodo/manual/1272/form-upload)。文件上传成功后会跳转到 &lt;returnUrl&gt;?upload_ret=&lt;queryString&gt;，&lt;queryString&gt;包含 returnBody 内容。如不设置 returnUrl，则直接将 returnBody 的内容返回给客户端。
+<a id="put-policy-return-body"></a>returnBody          |      | 上传成功后，自定义<span id="Productname">七牛云</span>最终返回給上传端（在指定 returnUrl 时是携带在跳转路径参数中）的数据。支持[魔法变量](/kodo/manual/1235/vars#magicvar)和[自定义变量](/kodo/manual/1235/vars#xvar)。returnBody 要求是合法的 JSON 文本。例如 {"key": $(key), "hash": $(etag), "w": $(imageInfo.width), "h": $(imageInfo.height)}。
+<a id="put-policy-callback-url"></a>callbackUrl         |      | 上传成功后，<span id="Productname">七牛云</span>向业务服务器发送 POST 请求的 URL。必须是公网上可以正常进行 POST 请求并能响应 HTTP/1.1 200 OK 的有效 URL。另外，为了给客户端有一致的体验，我们要求 callbackUrl 返回包 Content-Type 为 "application/json"，即返回的内容必须是合法的 JSON 文本。出于高可用的考虑，本字段允许设置多个 callbackUrl（用英文符号 ; 分隔），在前一个 callbackUrl 请求失败的时候会依次重试下一个 callbackUrl。一个典型例子是：`http://<ip1>/callback;http://<ip2>/callback`，并同时指定下面的 callbackHost 字段。在 callbackUrl 中使用 ip 的好处是减少对 dns 解析的依赖，可改善回调的性能和稳定性。指定 callbackUrl，必须指定 callbackbody，且值不能为空。
+<a id="put-policy-callback-host"></a>callbackHost         |      | 上传成功后，<span id="Productname">七牛云</span>向业务服务器发送回调通知时的 Host 值。与 callbackUrl 配合使用，仅当设置了 callbackUrl 时才有效。
+<a id="put-policy-callback-body"></a>callbackBody        |      | 上传成功后，<span id="Productname">七牛云</span>向业务服务器发送 Content-Type: application/x-www-form-urlencoded 的 POST 请求。业务服务器可以通过直接读取请求的 query 来获得该字段，支持[魔法变量](/kodo/manual/1235/vars#magicvar)和[自定义变量](/kodo/manual/1235/vars#xvar)。callbackBody 要求是合法的 url query string。例如key=$(key)&hash=$(etag)&w=$(imageInfo.width)&h=$(imageInfo.height)。如果callbackBodyType指定为application/json，则callbackBody应为json格式，例如:{"key":"$(key)","hash":"$(etag)","w":"$(imageInfo.width)","h":"$(imageInfo.height)"}。
+<a id="put-policy-callback-body-type"></a>callbackBodyType |      | 上传成功后，<span id="Productname">七牛云</span>向业务服务器发送回调通知 callbackBody 的 Content-Type。默认为 application/x-www-form-urlencoded，也可设置为 application/json。
+<a id="put-policy-persistent-ops"></a>persistentOps      |      | 资源上传成功后触发执行的预转持久化处理指令列表。fileType=2或3（上传归档存储或深度归档存储文件）时，不支持使用该参数。支持[魔法变量](/kodo/manual/1235/vars#magicvar)和[自定义变量](/kodo/manual/1235/vars#xvar)。每个指令是一个 API 规格字符串，多个指令用`;`分隔。请参阅[persistenOps详解](#persistentOps)与[示例](#demo)。同时添加 persistentPipeline 字段，使用专用队列处理，请参阅[persistentPipeline](#put-policy-persistentPipeline)。
+<a id="putpolicy-persistentNotifyUrl"></a>persistentNotifyUrl |      | 接收持久化处理结果通知的 URL。必须是公网上可以正常进行 POST 请求并能响应 HTTP/1.1 200 OK 的有效 URL。该 URL 获取的内容和[持久化处理状态查询](/dora/api/1206/persistent-processing-status-query-prefop)的处理结果一致。发送 body 格式是 Content-Type 为 application/json 的 POST 请求，需要按照读取流的形式读取请求的 body 才能获取。
+<a id="put-policy-persistentPipeline"></a>persistentPipeline| |  转码队列名。资源上传成功后，触发转码时指定独立的队列进行转码。为空则表示使用公用队列，处理速度比较慢。建议使用[专用队列](https://portal.qiniu.com/dora/media-gate/pipeline)。
+<a id="forcesaveKey"></a>forceSaveKey             |      | saveKey的优先级设置。为 true 时，saveKey不能为空，会忽略客户端指定的key，强制使用saveKey进行文件命名。参数不设置时，默认值为false
+<a id="save-key"></a>saveKey             |      | 自定义资源名。支持[魔法变量](/kodo/manual/1235/vars#magicvar)和[自定义变量](/kodo/manual/1235/vars#xvar)。forceSaveKey 为false时，这个字段仅当用户上传的时候没有主动指定 key 时起作用；forceSaveKey 为true时，将强制按这个字段的格式命名。
+<a id="put-policy-fsize-min"></a>fsizeMin          |      | 限定上传文件大小最小值，单位`Byte`。小于限制上传文件大小的最小值会被判为上传失败，返回 403 状态码
+<a id="fsize-limit"></a>fsizeLimit          |      | 限定上传文件大小最大值，单位`Byte`。超过限制上传文件大小的最大值会被判为上传失败，返回 413 状态码。
+<a id="put-policy-detect-mime"></a>detectMime         |      |开启 MimeType 侦测功能，并按照下述规则进行侦测；如不能侦测出正确的值，会默认使用 `application/octet-stream` 。<br>设为非 0 值，则忽略上传端传递的文件 MimeType 信息，并按如下顺序侦测 MimeType 值：<br>1. 侦测内容；<br>2. 检查文件扩展名；<br>3. 检查 Key 扩展名。<br> 默认设为 0 值，如上传端指定了 MimeType 则直接使用该值，否则按如下顺序侦测 MimeType 值：<br>1. 检查文件扩展名；<br>2. 检查 Key 扩展名；<br>3. 侦测内容。
+<a id="put-policy-mime-limit"></a>mimeLimit          |      |  限定用户上传的文件类型。无论 detectMime 是否定义，当指定本字段 mimeLimit 值后，<span id="Productname">七牛</span>服务器会侦测文件内容以判断 MimeType，再用判断值跟指定值进行匹配，匹配成功则允许上传，匹配失败则返回 403 状态码。示例：<li>`image/*` 表示只允许上传图片类型 <li> `image/jpeg;image/png` 表示只允许上传 `jpg` 和 `png` 类型的图片 <li> `!application/json;text/plain` 表示禁止上传 `json` 文本和纯文本。**注意最前面的感叹号！** 
+<a id="put-policy-fileType"></a>fileType |      | 文件存储类型。0 为标准存储（默认），1 为低频存储，2 为归档存储，3 为深度归档存储。
+
+使用说明：
+
+* `Key` 必须采用 utf-8 编码，使用非 utf-8 编码的资源名访问时会报错。 
+*  `callbackUrl` 与 `callbackBody` 配合使用，`returnUrl` 与 `returnBody` 配合使用，callbackXXX 与 returnXXX 不可混用。当同时设置 `returnUrl` 和 `callbackUrl` 字段时，优先启用 `callbackUrl` 回调并返回 `callbackBody`（未设置则返回内容为空），更多详情请见[自定义响应](https://developer.qiniu.com/kodo/manual/1654/response-body)。
+* 文件上传后的命名将遵循以下规则：
+	* 源 Bucket 和目标 Bucket 必须在同一区域，即处理结果不能跨区域另存。
+	* `forceSaveKey=false`，以客户端指定的 `Key` 为高优先级命名
+		* 客户端已指定 Key，以 Key 命名
+		* 客户端未指定 Key，上传策略中设置了 saveKey，以 saveKey 的格式命名。
+		* 客户端未指定 Key，上传策略中未设置 saveKey，以文件 hash(etag) 命名。
+	* `forceSaveKey=true`，以上传策略中的 `saveKey` 为高优先级命名；此时上传策略中的 `saveKey` 不允许为空
+		* 客户端已指定 Key，以上传策略中 saveKey 的格式命名
+		* 客户端未指定 Key，以上传策略中 saveKey 的格式命名
+* 文件分片上传的创建文件步骤中。若未指定 `Key`，为达到**不覆盖**同名资源效果，必须使用 `insertOnly` 字段。
+
+<br>
+
+<a id="persistentOps"></a>
+## **persistentOps 详解**
+
+`persistentOps` 字段用于指定预转数据处理命令和保存处理结果的存储空间与资源名。在上传归档存储或深度归档存储文件（fileType=2或3）时，不支持使用该字段。
+
+为此字段指定非空值，则在成功上传一个文件后，会启动一个异步数据处理任务。`persistentId` 字段，唯一标识此任务。
+当 `returnBody` 中指定了 `persistentId` 魔法变量时，客户端收到的响应内容 `returnBody` 中会有 `persistentId`；当没有指定 `returnBody` 时，默认也会返回 `persistentId`。
+
+* 使用默认的存储空间和资源名
+
+	当只指定了数据处理命令时，服务端会选择上传文件的 Bucket 作为数据处理结果的存储空间，`Key` 由<span id="Productname">七牛</span>服务器自动生成。
+
+* 使用指定的存储空间和资源名
+
+	在数据处理命令后用管道符`|`拼接`saveas/<encodedEntryURI>`指令，指示<span id="Productname">七牛</span>服务器使用[EncodedEntryURI](/kodo/api/1276/data-format)格式中指定的 Bucket 与 Key 来保存处理结果（需要注意的是，如果指定的 Bucket 中存在同 Key 的文件将会被处理结果覆盖）。如 *avthumb/flv|saveas/cWJ1Y2tldDpxa2V5*，是将上传的视频文件转码 `flv` 格式后存储为`qbucket:qkey`，其中`cWJ1Y2tldDpxa2V5`是`qbucket:qkey`的[URL安全的Base64编码](/kodo/manual/1231/appendix#urlsafe-base64)结果。以上方式可以同时作用于多个数据处理命令，用`;`分隔，如 *avthumb/mp4|saveas/cWJ1Y2tldDpxa2V5;avthumb/flv|saveas/cWJ1Y2tldDpxa2V5Mg==*
+
+
+ 
+<br>
+
+<a id="demo"></a>
+## **示例**
+
+`persistentOps`与`persistentNotifyUrl`字段
+
+上传一个视频资源，并在成功后触发两个预转处理（转成 mp4 资源和对原资源进行 HLS 切片）：
+
+```
+{
+    "scope":                "qiniu-ts-demo",
+    "deadline":             1390528576,
+    "persistentOps":        "avthumb/mp4;avthumb/m3u8/noDomain/1/segtime/15/vb/440k",
+    "persistentNotifyUrl":  "http://fake.com/qiniu/notify"
+}
+```
+<span id="Null">关于 `avthumb` 接口的详细信息请参阅[音视频转码](/dora/api/audio-and-video-transcoding-avthumb)。</span>
+
+
+
+

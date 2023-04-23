@@ -1,0 +1,95 @@
+
+
+# 请求包
+**备注：如果是海外的pub转推任务，请将Host改为：pili-hw-pub.qiniuapi.com**
+
+```
+GET /tasks?marker=123&limit=123&name=abc
+Host: pili-pub.qiniuapi.com
+Authorization: <QiniuToken>
+
+```
+
+| 参数名称 | 必填 | 说明 |
+| ----------- |---------------------|------------------------------------------ |
+| marker | 否 | 字符串，定位标识。 |
+| limit | 否 | 整型，请求数目，上限1000。 |
+| name | 否 | 字符串，任务名称和任务描述模糊匹配。 |
+
+
+# 返回包
+
+```
+200 {
+    "marker": "",
+    "isEnd": true,
+    "list": [
+        {
+            "taskID": "123",
+            "uid": 123,
+            "name": "",
+            "desc": "",
+            "sourceUrls": [
+                {
+                    "url": "",
+                    "isp": "",
+                    "seek":<SEEK>,
+                    "videoType":<VIDEOTYPE>,
+                    "rtspType":<RTSPTYPE>
+                } 
+            ],           
+            "forwardUrls": [
+                {
+                    "url": "",
+                    "isp": ""
+                }   
+            ],
+            "filter": {
+                "area": "",
+                "isp": "",
+                "ip": ["",""]
+            },
+            "status": "",
+            "deliverStartTime": 1630551226526, 
+            "deliverStopTime": 1630551226526, 
+            "startTime": 1630551226526,
+            "stopTime": 1630551226526,
+            "retry": 4,
+            "createTime": 1630551226526,
+            "loopTimes": 0,
+            "retryTime": 60,
+            "preload": {
+                "enable": true,
+                "preloadTime": 1637000600000
+            },
+            "preloadStatus": "finished",
+            "statusCallback": {
+                 "type": "JSON",
+                 "url": <URL>,
+                 "vars": <VARS>,
+                 "timeout": 5,
+                 "retryTimes": 3,
+                 "retryInterval": 1
+            }
+        }
+    ]
+}
+
+
+400 {
+    "error": "invalid parameter"
+}
+
+500 {
+    "error": "query task fail"
+}
+```
+
+# 返回参数
+| 参数名称 | 类型 | 说明 |
+| ----------- |------------|--------------------------------------------------- |
+| marker | 字符串 | 定位标识。 |
+| isEnd | 布尔类型 | 是否结束。 |
+| list | 对象数组 | 任务列表。|
+
+- 详细参数说明见[参数说明](/pili/api/7326/parameters-that-pub)

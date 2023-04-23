@@ -1,0 +1,117 @@
+<a id="getbucketTagging-description"></a>
+# **描述** 
+
+本接口用于查询指定空间已设置的标签信息。
+
+<br>
+
+<a id="getbucketTagging-requests"></a>
+# **请求**
+<a id="getbucketTagging-requests-syntax"></a>
+### **请求语法**
+
+```
+GET /bucketTagging?bucket=<BucketName> HTTP/1.1
+Host: uc.qiniuapi.com
+Content-Type: application/x-www-form-urlencoded
+X-Qiniu-Date: 20060102T150405Z
+Authorization: Qiniu <AccessToken>
+```
+
+
+<br>
+
+<a id="getbucketTagging-request-parameters"></a>
+### **请求参数**
+
+| 参数名称 | 必填 | 说明 |
+| --- | --- | --- |
+| BucketName | 是 | 空间名称|
+
+
+<br>
+
+<a id="getbucketTagging-request-headers"></a>
+### **请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](/kodo/api/3924/common-request-headers)。
+
+<br>
+
+<a id="getbucketTagging-request-elements"></a>
+### **请求内容**
+该请求操作的请求体为空。
+
+<br>
+
+<a id="getbucketTagging-responses"></a>
+# **响应**
+### **响应语法**
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+ {
+ "Tags":[{"Key":xx,"Value":xx}]
+}
+```
+<br>
+
+<a id="getbucketTagging-request-headers"></a>
+### **响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](/kodo/api/3924/common-response-headers)。
+
+<br>
+
+<a id="getbucketTagging-response-elements"></a>
+### **响应内容**
+| 名称 | 说明 |
+| --- | --- | 
+| Key | 标签名称 |
+| Value | 标签值 |
+
+<br>
+
+<a id="getbucketTagging-special-errors"></a>
+### **响应状态码**
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误响应](/kodo/api/3928/error-responses)。
+
+<br>
+
+<a id="getbucketTagging-examples"></a>
+# **示例**
+<a id="getbucketTagging-request-examples"></a>
+### **请求示例**
+```
+GET /bucketTagging?bucket=temp-bucket-jnacytgvzwpgiotaprp1z0 HTTP/1.1
+Host: uc.qiniuapi.com
+User-Agent: Go-http-client/1.1
+Content-Length: 0
+X-Qiniu-Date: 20060102T150405Z
+Authorization: Qiniu HwFOxpYCQU6oXoZXFOTh1mq5ZZig6Yyocgk3BTZZ:z_ksteUK6jI_0MLAaHNEPFqrpqY=
+Content-Type: application/json 
+```
+
+<br>
+
+<a id="getbucketTagging-response-examples"></a>
+### **响应示例**
+```
+HTTP/1.1 200 OK
+Content-Length: 2
+Connection: keep-alive
+Content-Type: application/json
+Date: Mon, 02 Jan 2006 15:04:05 GMT
+X-Reqid: rWkAAGaeqzDGrdYV
+
+ {
+	"Tags": [
+		{
+			"Key": "123",
+			"Value": "0000"
+		},
+		{
+			"Key": "aaaaa",
+			"Value": "bbbbb"
+		}
+	]
+}
+```

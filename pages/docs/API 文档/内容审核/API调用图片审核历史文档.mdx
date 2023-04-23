@@ -1,0 +1,13 @@
+目前七牛API调用审核接口有两个版本：v1版本、v3版本
+我们推荐您使用v3版本，如果您目前在使用v1版本，建议您更换至v3版本
+
+v1与v3版本区别
+* v3版本是线上环境最新版本，v1是旧版本，不提供维护。内容审核存量/增量审核，目前都是用的v3版本
+* v3与v1接口参数有所差异，比如 图片审核参数中审核类型，v3是params.scenes，v1是params.type
+* v3版本审核结果准确度更高
+
+以下是v1版本的历史文档，若需要可以参考：
+* [API调用图片审核 V1](/censor/api/5658/image-censor-v1)
+* [API调用图片鉴黄V1](/censor/api/4849/picture-pulp)
+* [API调用图片鉴暴恐V1](/censor/api/4850/picture-terror)
+* [API调用图片敏感人物识别V1](/censor/api/4851/picture-politician)

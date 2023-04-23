@@ -1,0 +1,93 @@
+资源管理属于敏感的操作，原则上所有资源管理操作均应在业务服务端进行。关于管理配置，<span id="Productname">七牛</span>支持的服务端语言 SDK 都已经封装好，例如资源删除、移动和复制等操作只需调用相应的方法即可，不需要手动生成管理配置的发送请求。各 SDK 的对应入口如下：
+
+- [Java](https://github.com/qiniu/java-sdk/blob/master/src/main/java/com/qiniu/util/Auth.java)
+- [Python](https://github.com/qiniu/python-sdk/blob/master/qiniu/auth.py)
+- [PHP](https://github.com/qiniu/php-sdk/blob/master/src/Qiniu/Auth.php)
+- [Go](https://github.com/qiniu/go-sdk/blob/master/storage/token.go)
+- [Node.js](https://developer.qiniu.com/kodo/sdk/1289/nodejs#private-get)
+- [C/C++](https://github.com/qiniu/c-sdk/blob/master/qiniu/rs.c)
+- [C#](https://github.com/qiniu/csharp-sdk/blob/master/src/Qiniu/Util/Auth.cs)
+- [Ruby](https://github.com/qiniu/ruby-sdk/blob/master/lib/qiniu/auth.rb)
+
+每一个资源管理请求均需在 HTTP 请求头部增加一个 Authorization 字段，其值为符合管理凭证的字符串，示例如下：
+
+```
+GET /stat/<EncodedEntryURI> HTTP/1.1
+Host: rs.qiniu.com
+Authorization: Qiniu <管理凭证>
+```
+
+注意： `EncodedEntryURI` 的细节请参考 [数据格式](/kodo/api/1276/data-format)
+
+管理凭证是<span id="Productname">七牛云存储</span>用于验证管理请求是否合法的机制，建议在业务服务器端使用。例如查看资源元信息、删除或移动资源等，通常需要带一个合法的管理凭证。不带凭证或带非法凭证的管理请求将返回 HTTP 错误码 401，代表认证失败。管理凭证的作用与[下载凭证](/kodo/manual/1202/download-token)类似：
+
+- 保证请求发起者拥有对目标空间的管理权限。
+- 保证服务端收到的管理请求内容未经中途篡改，具体包括代表管理动作的 URI 和该管理动作的参数信息均应未受到篡改。
+
+<a id="algorithm"></a>
+# 算法
+
+1.生成待签名的原始字符串：<br>原始字符串由请求req的Method、Path、query、Host、Header和请求的Body按照以下格式组成(括号及中文仅表示注释，比如“（空格）”)
+
+```
+signingStr=req.Method（HTTP协议的Method是大小写敏感的） + " "（空格） +req.Path
+如果query为非空字符串(query不包含问号(?)字符)
+signingStr=req.Method + " "（空格） +req.Path+?(英文问号)+req.query
+
+接下来增加Host信息
+signingStr=signingStr+\n(换行符)Host:(英文符号冒号) （空格）+req.Host
+
+如果您设置了Content-Type的 Header,也需要添加
+signingStr=signingStr+\n(换行符)Content-Type:(英文符号冒号) (空格)+req.Content-Type
+
+对于七牛特殊的X-Qiniu-<key>头信息，如果有也需要添加， ”X-Qiniu-<key>“header是指在请求Header中以“X-Qiniu-”字符串开头的头部信息对,为七牛服务端理解。其中key不可为空字符。在生成签名算法中对key有一定的格式转换要求，第一个字母和连字符（-）后面的字母大写，其余字母都是小写。满足以上条件的键值对，根据<key>字符串 ASCII大小排序后，由小到大，依次加入待签名字符串
+signingStr=signingStr+\n(换行符)+<key1>:(英文符号冒号) (空格)+<value1>+\n(换行符)+<key2>:(英文符号冒号) (空格)+<value2>+...
+
+完成以上信息之后加入2个连续对换行符
+signingStr=signingStr+\n(换行符)+\n(换行符)
+
+如果您设置了请求Body，并且设置Content-Type不为"application/octet-stream"类型，Body也需要加入待签名字符串
+signingStr=signingStr+<body>
+```
+
+2.使用[SecertKey](https://portal.qiniu.com/user/key)对上一步生成的原始字符串计算[HMAC-SHA1](/kodo/glossary/1643/h)签名：
+
+```
+sign = hmac_sha1(signingStr, "<SecretKey>")
+```
+3.对签名进行[URL 安全的 Base64 编码](/kodo/manual/1231/appendix#urlsafe-base64)：
+
+```
+encodedSign = urlsafe_base64_encode(sign)
+```
+4.将 AccessKey 和 encodedSign 用英文符号 : 连接起来： 
+
+```
+accessToken = "<AccessKey>:<encodedSign>"
+```
+
+<a id="examples"></a>
+# 示例
+
+```
+# 假设有如下的管理请求：  
+AccessKey = "MY_ACCESS_KEY"
+SecretKey = "MY_SECRET_KEY"
+url = "http://rs.qiniu.com/move/bmV3ZG9jczpmaW5kX21hbi50eHQ=/bmV3ZG9jczpmaW5kLm1hbi50eHQ="
+method = "POST"
+
+#则待签名的原始字符串是：
+signingStr = "POST /move/bmV3ZG9jczpmaW5kX21hbi50eHQ=/bmV3ZG9jczpmaW5kLm1hbi50eHQ=\nHost: rs.qiniu.com\n\n"
+
+#签名字符串是：  
+sign = "d6e2efb9933a97aa02cd916a909ea8238a053154"
+注意：签名结果是二进制数据，此处输出的是每个字节的十六进制表示，以便核对检查。
+
+#编码后的签名字符串是：
+encodedSign = "1uLvuZM6l6oCzZFqkJ6oI4oFMVQ="
+
+#最终的管理凭证是：  
+accessToken = "MY_ACCESS_KEY:1uLvuZM6l6oCzZFqkJ6oI4oFMVQ="
+```
+
+ 

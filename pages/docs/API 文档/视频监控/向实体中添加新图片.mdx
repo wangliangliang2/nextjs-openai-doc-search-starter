@@ -1,0 +1,51 @@
+# **描述**
+本接口用于向实体中添加新的图片,每个实体最多上传10张图片，该接口调用后会自动更新实体的图片数组，无需再手动更新实体的图片数组。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/imagelibs/{libId}/entities/{entityId}/images`
+
+# **请求参数**
+
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|libId|是|string|图像库ID
+|entityId|是|string|实体ID
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|imageData|是|string| 图片的base64编码
+
+
+
+# **响应参数**
+
+|参数名称|字段类型|说明|
+|---|---|---|
+|url|string| 图片的url
+
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/imagelibs/xxxx/entities/yyyy/images \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{
+	"imageData":"YWRzYWRhc2Q="
+}'
+```
+**响应示例**
+
+```
+{
+  "url": asdu2wns.hd-bkt.clouddn.com/1626352621.jpg
+}
+```

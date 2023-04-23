@@ -1,0 +1,237 @@
+本文介绍了同步调用图片内容审核`/v3/image/censor`的接口，帮助您正确使用此API进行图片内容审核。图片内容审核API支持基于API URL发起HTTP/HTTPS POST请求。
+
+# 使用限制
+* 图片大小不超过10M
+* 图片尺寸大于32x32，小于5000x5000
+* RGB通道数为3和3以内的图片，不能包含 alpha 通道
+* 图片格式支持 png、jpg、jpeg、bmp、webp、tif 和 gif
+* 接口响应时间依赖图片的下载时间。请保证被审核图片所在的存储服务稳定可靠，建议您使用七牛云存储或者CDN缓存等。
+
+# 功能描述
+图片内容审核 API 主要用于检测或识别图片中的不良信息，并给出审核结果管控建议。支持的审核类型包括：图片鉴黄、图片鉴暴恐、图片敏感人物识别、图片广告识别。
+**审核类型scenes与相应的label/group**
+在提交内容审核任务时，您需要指定审核类型**scenes**；而在返回结果中，则包含了您指定的类型对应的label结果分类参数。
+
+|审核类型|说明|scenes|label/group|
+| :--- | :--- | :--- | :--- |
+|图片鉴黄|识别图片中的色情、性感内容。|pulp|normal：正常图片，无色情内容<br>sexy：性感图片<br>pulp：色情图片|
+|图片鉴暴恐|识别图片中的暴恐内容。|terror|bloodiness：血腥<br>self_burning：自焚<br>beheaded：斩首类<br>march_crowed：人群聚集类<br>fight_police：警民冲突<br>fight_person：民众肢体接触<br>illegal_flag：违规旗帜类<br>guns：枪<br>knives：刀<br>anime_bloodiness：动漫血腥类<br>anime_knives：二次元刀<br>anime_guns：二次元枪<br>politics：涉政<br>violence：暴恐<br>normal：正常<br>|
+|图片敏感人物识别|识别图片中的敏感人物人脸。|politician|图片敏感人物识别的label返回的是敏感人物的姓名；<br>group返回的是该敏感人物所属的分组，目前支持的分组有：<br>domestic_statesman：国内政要<br>foreign_statesman：国外政要<br>chinese_martyr：革命英烈<br>affairs_official_gov：落马官员（政府）<br>affairs_official_ent：落马官员（企事业）<br>terrorist：恐怖分子<br>affairs_celebrity：劣迹艺人<br>politics：涉政人物<br>|
+|图片广告识别|识别图片中的广告内容。|ads|图片广告识别的label有：<br>summary_ads：文字广告<br> qr_code：二维码<br>bar_code：一维码<br>ad: 其它广告<br>normal: 正常|
+|图片不良场景识别|识别图片中的不良场景内容。|behavior|图片不良场景识别的label有：<br>behavior：不良场景<br> normal: 正常|
+
+# 请求参数
+对公网可访问的图片，通过图片URL发起POST请求的方式，进行高性能的图片鉴黄、图片鉴暴恐、图片敏感人物识别和图片广告识别。目前，支持提交单张图片进行同步审核。此方法同时支持对七牛云bucket中的单张图片进行同步审核。
+
+**请求方式** POST
+
+**请求接口** http://ai.qiniuapi.com/v3/image/censor
+
+**请求Header**
+
+|字段|取值|
+| :--- | :--- |
+|Content-Type|application/json|
+|Authorization|Qiniu &lt;AccessKey&gt;:&lt;Sign&gt; <br>注意: 用户请根据AccessKey和SecretKey后生成鉴权，以便进行身份验证。`Sign`的取值以及`Authorization`签名方法请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken)|
+	
+**请求参数**
+
+|字段|类型|是否必选|说明|
+| :--- | :--- | :--- | :--- |
+|data.uri|string|Y|图片资源。支持两种资源表达方式：<br>1. 网络图片URL地址，支持http、https和[qiniu协议](/censor/7299/censor-params#2)的资源；<br>2. 图片 base64 编码字符串，需在编码字符串前加上前缀 `data:application/octet-stream;base64`, 例：`data:application/octet-stream;base64,xxx`|
+|params.scenes|string array|Y|审核类型，必填字段，没有默认值，可选项：pulp/terror/politician/ads|
+
+# 返回参数
+
+**返回参数**
+
+|字段|取值|说明|
+| :--- | :--- | :--- |
+|code|int|处理状态：200 调用成功|
+|message|string|与code对应的状态描述信息|
+|result.suggestion|string|图片的审核结果管控建议说明<br> 根据内容审核中各种审核类型的返回结果，系统会将审核结果转换成对应的管控建议，取值包括：block/review/pass。<br>  suggestion=block：表示系统确认审核内容违规，建议您将其删除。<br> suggestion=review：表示系统无法确认审核内容是否违规，建议您进行人工复核。<br> suggestion=pass：表示系统确认审核内容正常，建议您忽略该文件。<br> |
+|result.scenes.`<scene>`|json 结构体|审核类型，目前支持：pulp/terror/politician/ads/behavior|
+|result.scenes.`<scene>`.suggestion|string|该审核类型的结果管控建议，参见result.suggestion|
+|result.scenes.`<scene>`.details[]|object array|该审核类型的详细信息数组|
+|result.scenes.`<scene>`.details[].suggestion|string|详细的结果管控建议，参见result.suggestion|
+|result.scenes.`<scene>`.details[].label|string|该审核类型返回的标签，具体请参见上文中**审核类型scenes与相应的label/group**|
+|result.scenes.`<scene>`.details[].score|float|该审核类型结果置信度|
+
+## 敏感人物识别返回参数
+
+|字段|取值|说明|
+| :--- | :--- | :--- |
+|result.scenes.politician.details[].group|string|敏感人物的分组，具体请参见上文中**审核类型scenes与相应的label/group**|
+|result.scenes.politician.details[].detections[].pts|array|图片中检测到的敏感人物人方框坐标，形式为[4][2]int，分别表示方框的[左上，右上，右下，左下]|
+|result.scenes.politician.details[].detections[].score|float|图片中检测到的人脸匹配为敏感人物的置信度|
+|result.scenes.politician.details[].sample.uri|string|该敏感人物的参考图链接|
+|result.scenes.politician.details[].sample.pts|array|参考图中敏感人物的人脸方框坐标|
+
+## 鉴暴恐返回参数
+
+|字段|取值|说明|
+| :--- | :--- | :--- |
+|result.scenes.terror.details[].detections[].pts|array|形式为[4][2]int，分别表示方框的[左上，右上，右下，左下]。图片鉴暴恐审核，当审核结果label为以下五种时，该字段用于返回检测到的物体方框坐标：<br>“illegal_flag：违规旗帜类”<br>”guns：枪”<br>”knives：刀”<br>”anime_knives：二次元刀”<br>“anime_guns：二次元枪”|
+|result.scenes.terror.details[].detections[].score|float|图片中检测到的物体置信度|
+
+## 广告识别返回参数
+
+|字段|取值|说明|
+| :--- | :--- | :--- |
+|result.scenes.ads.details[].detections[].pts|array|形式为[4][2]int，分别表示方框的[左上，右上，右下，左下]。图片广告审核，该字段用于返回检测到的物体或敏感词的方框坐标|
+|result.scenes.ads.details[].detections[].score|float|图片中检测到的物体置信度|
+|result.scenes.ads.details[].detections[].comments|array|图片广告审核，当审核结果label为"summary_ads”(文字广告)，该字段用于返回识别到的敏感词|
+
+# 示例
+## 请求示例
+
+```
+POST /v3/image/censor HTTP/1.1
+Host: ai.qiniuapi.com
+Content-Type: application/json
+Authorization: Qiniu YnxrxOSvGotRZpqkZnMzl_euuoqRzOKUd6zwbRju:r6a-o2UpBg6A4puIMnkCExH8lE8=
+{
+    "data": {
+        "uri": "https://mars-assets.qnssl.com/resource/gogopher.jpg"
+    },
+    "params": {
+        "scenes": [
+            "pulp",
+            "terror",
+            "politician"
+        ]
+    }
+}
+```
+注意： 请把 Authorization 换成您的账号七牛鉴权 QiniuToken
+
+## 返回示例
+
+```
+{
+    "message": "OK",
+    "code": 200,
+    "result": {
+        "scenes": {
+            "terror": {
+                "details": [
+                    {
+                        "score": 0.99985,
+                        "suggestion": "pass",
+                        "label": "normal"
+                    }
+                ],
+                "suggestion": "pass"
+            },
+            "politician": {
+                "suggestion": "pass"
+            },
+            "pulp": {
+                "details": [
+                    {
+                        "score": 0.65191,
+                        "suggestion": "pass",
+                        "label": "normal"
+                    }
+                ],
+                "suggestion": "pass"
+            }
+        },
+        "suggestion": "pass"
+    }
+}
+```
+
+# 代码示例
+**注意**
+* 运行方法：`python ImageReview.py <censor | pulp | terror | politician | ads> <uri>`
+* 代码中需填入账号的 `ak`、`sk`
+
+图片内容审核（ImageReview.py）
+```
+# -*- coding: utf-8 -*-
+from qiniu import Auth, QiniuMacAuth, http
+import requests, json, sys
+
+url = 'http://ai.qiniuapi.com/v3/image/censor'
+
+access_key = '<ak>'
+secret_key = '<sk>'
+
+auth = QiniuMacAuth(access_key, secret_key)
+
+body = {
+    "data": {
+        "uri": "<uri>"
+    },
+    "params": {
+        "scenes": []
+    }
+}
+
+scenes = {
+    'censor': ['pulp', 'terror', 'politician', 'ads'],
+    'pulp': ['pulp'],
+    'terror': ['terror'],
+    'politician': ['politician'],
+		'ads': ['ads']
+}
+
+body["params"]["scenes"] = scenes[sys.argv[1]]
+body["data"]["uri"] = sys.argv[2]
+
+ret, res = http._post_with_qiniu_mac(url, body, auth)
+
+headers = {"code": res.status_code, "reqid": res.req_id, "xlog": res.x_log}
+
+print(json.dumps(headers, indent=4, ensure_ascii=False))
+print(json.dumps(ret, indent=4, ensure_ascii=False))
+```
+
+**注意**
+* 调用命令：`python ImageReview.py censor https://mars-assets.qnssl.com/resource/gogopher.jpg`
+* 第一段是响应头headers，请在反馈问题时提供`reqid`字段
+* 第二段是响应body，即审核结果，字段解释参考返回报文
+
+```
+{
+    "reqid": "IisAABW7lT5croUV, IisAABW7lT5croUV",
+    "code": 200,
+    "xlog": "COMMON-GATE:255;AI:256"
+}
+{
+    "message": "OK",
+    "code": 200,
+    "result": {
+        "scenes": {
+            "terror": {
+                "details": [
+                    {
+                        "score": 0.99985,
+                        "suggestion": "pass",
+                        "label": "normal"
+                    }
+                ],
+                "suggestion": "pass"
+            },
+            "politician": {
+                "suggestion": "pass"
+            },
+            "pulp": {
+                "details": [
+                    {
+                        "score": 0.65191,
+                        "suggestion": "pass",
+                        "label": "normal"
+                    }
+                ],
+                "suggestion": "pass"
+            }
+        },
+        "suggestion": "pass"
+    }
+}
+```
+
+# 服务价格
+内容审核 API 仅支持机器智能审核，服务价格请参考[机器智能审核阶梯计费方式](https://developer.qiniu.com/censor/manual/4833/censor-price)。

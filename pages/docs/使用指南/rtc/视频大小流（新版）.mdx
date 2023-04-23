@@ -1,0 +1,83 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本部分介绍视频大小流的使用方式。</p>
+<blockquote>
+<p>注意，自 SDK 4.0.9 版本开始，增加了新版本的大小流功能，本篇文档介绍新版本大小流的用法。如果想要查看旧版本大小流的用法，可以参考 <a href="/rtc/9472/video-size-flow-web">视频大小流（旧版）</a>。</p>
+</blockquote>
+
+# 功能介绍
+<p><img src="https://docs.qnsdk.com/multistream_new.png" alt="大小流示意图"></img></p>
+<p>当用户 A 开启大小流时，会发送两个不同分辨率的视频码流到服务端；此时，不同的用户需要订阅 A 的视频流时可以根据自己的需要或者服务端的策略来订阅到不同质量的视频流。</p>
+<blockquote>
+<p>新版本大小流功能开启后，会在原视频流的基础上创建一路小流，大流和小流共享同一个 Track，一并发布到房间。</p>
+</blockquote>
+
+# 开启大小流
+<p>在创建视频 track 时，可以通过传入配置参数 lowStreamConfig 来指定小流的配置，该参数接口类型如下：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">QNLowStreamConfig</span> {
+<span></span>  <span class="hljs-attr">scaleResolutionDownBy</span>: <span class="hljs-built_in">number</span>; <span class="hljs-comment">// 小流缩放比例</span>
+<span></span>  <span class="hljs-attr">bitrate</span>: <span class="hljs-built_in">number</span>; <span class="hljs-comment">// 小流码率（kbps）</span>
+<span></span>}
+<span></span></code></pre>
+<p>下面是一个实际发送大小流的例子：</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// 创建一个摄像头 track</span>
+<span></span><span class="hljs-keyword">const</span> cameraTrack = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createCameraVideoTrack</span>({
+<span></span>  <span class="hljs-attr">encoderConfig</span>: {
+<span></span>    <span class="hljs-attr">width</span>: <span class="hljs-number">640</span>, <span class="hljs-comment">// 大流的宽</span>
+<span></span>    <span class="hljs-attr">height</span>: <span class="hljs-number">480</span>, <span class="hljs-comment">// 大流的高</span>
+<span></span>    <span class="hljs-attr">lowStreamConfig</span>: {
+<span></span>      <span class="hljs-attr">scaleResolutionDownBy</span>: <span class="hljs-number">2</span>, <span class="hljs-comment">// 小流缩放比例，值为 2 表示小流分辨率是大流配置的 1/2</span>
+<span></span>      <span class="hljs-attr">bitrate</span>: <span class="hljs-number">100</span> <span class="hljs-comment">// 小流码率</span>
+<span></span>    }
+<span></span>  }
+<span></span>});
+<span></span></code></pre>
+
+# 订阅大小流
+<p>在选择订阅小流前，首先需要知道目前 track 是否开启了大小流。这个信息可以从 <a href="/rtc/9060/WebQNRemoteVideoTrack">QNRemoteVideoTrack</a> 的 <a href="rtc/9060/WebQNRemoteVideoTrack#isLowStreamEnabled">isLowStreamEnabled</a> 属性中获取。</p>
+<p>当确认该路流开启了大小流后，可以通过接口 <code>QNRemoteVideoTrack.setLowStream</code> 接口来决定是否切换大流和小流。</p>
+<p>当调用接口指定切换小流后，因为各种原因（发布方网络差等）可能发生没有成功切换的情况。如果需要明确知道是否切换成功，可以通过监听 <code>low-stream-state-changed</code> 获取该信息。</p>
+<p>代码举例如下：</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// 监听远端用户发布 track</span>
+<span></span>mClient.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;user-published&#x27;</span>, <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span>(<span class="hljs-params">userID, remoteTracks</span>){
+<span></span>
+<span></span>    <span class="hljs-comment">// 订阅该 track</span>
+<span></span>    <span class="hljs-keyword">const</span> {videoTracks, audioTracks} = <span class="hljs-keyword">await</span> client.<span class="hljs-title function_">subscribe</span>(remoteTracks);
+<span></span>    
+<span></span>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> track <span class="hljs-keyword">of</span> videoTracks) {
+<span></span>        
+<span></span>        <span class="hljs-comment">// 检查该 track 是否开启了大小流</span>
+<span></span>        <span class="hljs-keyword">if</span> (track.<span class="hljs-property">isLowStreamEnabled</span>) {
+<span></span>
+<span></span>            <span class="hljs-comment">// 监听事件，判断当前使用的是大流还是小流。回调布尔值，true 表示正在使用小流，false 表示使用的是大流</span>
+<span></span>            track.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;low-stream-state-changed&quot;</span>, <span class="hljs-function">(<span class="hljs-params">state: <span class="hljs-built_in">boolean</span></span>) =&gt;</span> { });
+<span></span>
+<span></span>            <span class="hljs-comment">// 传入布尔值，true 表示切换成小流，false 表示切换成大流</span>
+<span></span>            track.<span class="hljs-title function_">setLowStream</span>(<span class="hljs-literal">true</span>);
+<span></span>        }
+<span></span>    }
+<span></span>});
+<span></span></code></pre>
+
+# 注意事项
+<ul>
+<li>浏览器兼容性：目前仅桌面版 Chrome（78 及以上）和 Safari（14 及以上） 支持</li>
+<li>发布多路 video track 时，同一时间仅支持其中一路开启大小流</li>
+<li>小流的分辨率不可太低，否则浏览器编码无法支持。实际测试，Chrome 下当小流分辨率小于 200*150 时，小流会生成失败</li>
+</ul>
+
+# 新旧版本兼容
+<p>大小流新版本和旧版本在使用上主要的区别有下面几点：</p>
+<ul>
+<li>旧版本大小流会发布三路流，新版本发送两路</li>
+<li>旧版本接口和新版本接口完全不同，两套接口并行</li>
+</ul>
+<p>如果完全使用旧版本的大小流，或者完全使用新版本的大小流，均没有问题。但是如果需要在使用旧版本的大小流的客户端和新版本的大小流的客户端之间沟通，则需要注意如下几点：</p>
+<ul>
+<li>不可在同一个客户端内同时使用新旧两套接口</li>
+<li>一个客户端使用旧版本接口发布大小流，另一个客户端可以使用新版本接口订阅（只能指定小流，MEDIUM 流无法指定）</li>
+<li>一个客户端使用新版本接口发布大小流，另一个客户端可以使用旧版本接口订阅（此时没有 MEDIUM 流，不可指定该选项）</li>
+</ul>
+
+# 示例代码
+<p>视频大小流示例代码可参考 <a href="https://github.com/pili-engineering/QNRTC-Web/tree/master/API-Examples-Web/videoDualStream">API-Examples-Web/videoDualStream</a></p></div></div>

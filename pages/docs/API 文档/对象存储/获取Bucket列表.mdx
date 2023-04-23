@@ -1,0 +1,107 @@
+<a id="buckets-description"></a>
+# **描述** 
+
+本接口作 GET 请求用来获取请求者拥有的所有存储空间列表。该接口需要您使用带 Authorization 签名认证的请求，如果使用匿名请求无法获取存储空间列表，且只能获取签名中 AccessKey 所属账户的存储空间列表。
+
+
+<br>
+<a id="buckets-requests"></a>
+
+# **请求**
+<a id="buckets-requests-syntax"></a>
+
+### **请求语法**
+```
+GET /buckets?tagCondition=<Encodedtags> HTTP/1.1
+Host: uc.qiniuapi.com
+Content-Type: application/x-www-form-urlencoded
+X-Qiniu-Date: 20060102T150405Z
+Authorization: Qiniu <AccessToken>
+```
+<br>
+
+<a id="buckets-request-parameters"></a>
+### **请求参数**
+| 参数名称 | 必填 | 说明 |
+| --- | --- | --- |
+| Encodedtags | 否 | 过滤空间的标签或标签值条件，指定多个标签或标签值时同时满足条件的空间才会返回。参数值必须做[URL 安全的 Base64 编码](/kodo/manual/1231/appendix#urlsafe-base64)。<br>按标签名过滤空间时，参数值设置为Encoded(key1=&key2=)；按标签值过滤空间时，参数值设置为Encoded(key1=value1&key2=value2)<br>别人授权的空间，标签属性不传递，因此依据标签列举空间时只会返回自己创建的空间|
+
+
+<br>
+
+<a id="buckets-request-headers"></a>
+### **请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](/kodo/api/3924/common-request-headers)。
+
+<br>
+
+<a id="buckets-request-elements"></a>
+### **请求内容**
+该请求操作的请求体为空。
+
+<br>
+
+<a id="buckets-responses"></a>
+# **响应**
+### **响应语法**
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+{
+BucketName
+}
+```
+<br>
+
+<a id="buckets-response-headers"></a>
+### **响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](/kodo/api/3924/common-request-headers)。
+
+<br>
+
+<a id="buckets-response-elements"></a>
+### **响应内容**
+| 名称 | 说明 |
+| --- | --- |
+| BucketName| 空间名称<br><br> 类型：字符串|
+
+<br>
+
+<a id="buckets-special-errors"></a>
+### **响应状态码**
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误响应](/kodo/api/3928/error-responses)。
+
+<br>
+
+<a id="buckets-examples"></a>
+# **示例**
+
+<a id="buckets-request-examples"></a>
+### **请求示例**
+```
+GET /buckets?tagCondition=S09ETy1CVUtDRVQtVEFHUy1rZXktWDdPNjZiNkxLdz1LT0RPLUJVS0NFVC1UQUdTLXZhbHVlLWdFOGhIV2VXUGo= HTTP/1.1
+Host: uc.qiniuapi.com
+User-Agent: Go-http-client/1.1
+X-Qiniu-Date: 20060102T150405Z
+Authorization: Qiniu HwFOxpYCQU6oXoZXFOTh1mq5ZZig6Yyocgk3BTZZ:8tgafMszuwgd99Ix4eQ2HeVT9B0=
+```
+*注：要在 `Authorization` 头部的 `<AccessToken>` 前添加 `Qiniu` 和半角空格。*
+
+<br>
+
+<a id="buckets-response-examples"></a>
+### **响应示例**
+```
+HTTP/1.1 200 OK
+Content-Length: 75
+Connection: keep-alive
+Content-Type: application/json
+Date: Mon, 02 Jan 2006 15:04:05 GMT
+X-Reqid: rWkAACgHbskB5dYV
+
+{
+  "temp-bucket-xufk1x3r1wa9ayoy7knuz0", 
+  "temp-bucket-pighpwdt7lu88ljltffmz0"
+}
+```

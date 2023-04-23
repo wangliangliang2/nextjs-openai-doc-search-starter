@@ -1,0 +1,139 @@
+智能日志管理平台是七牛云提供的、针对海量日志收集、存储、查询、计算的日志分析服务，您可以通过智能日志管理平台完成日志的采集、查询分析、计算以及投递到对象存储等其他产品做进一步分析。
+
+本文档在 mac 环境下，为您演示通过 logkit-pro 采集日志完成日志的查询分析并投递到对象存储服务的基本流程。本案例涉及采集日志、日志查询分析、数据计算、数据投递等日志服务基本功能，是智能日志管理平台的入门级操作指南。
+
+在开始本次教程之前，请确保您已经拥有七牛账号并开通了智能日志平台的服务。开通步骤请阅读[开通产品](/insight/manual/4605/opening-the-product)。
+
+# **1.采集日志**
+## **安装 logkit-pro**
+
+1.登录 [logkit-pro](http://logkit-pro.qiniu.com/)，进入机器管理页面，点击添加机器。
+
+![](https://pandora-kibana.qiniu.com/k8s/add_machine.png)
+
+2.手动安装：根据您机器的操作系统版本选择对应的命令，复制到命令行工具即可，如图所示：
+
+![](https://pandora-kibana.qiniu.com/k8s/addbyhand.png)
+
+![](https://pandora-kibana.qiniu.com/logkit/running.png)
+
+详细的安装文档可以阅读 [logkit-pro 安装](/insight/manual/4682/download-and-install) 。
+
+3. 安装完毕后，您可以在机器列表页面看到您安装的机器:
+
+![](https://dn-odum9helk.qbox.me/FpmPwc2L2arnlHd9OpBEXkJs0rbx)
+
+## **采集日志**
+
+安装好 logkit-pro 以后，您就可以使用 logkit-pro 来收集日志。
+
+进入数据收集页面，点击 **添加收集器** -> **日志收集**。
+
+![](https://pandora-kibana.qiniu.com/k8s/collect.png)
+
+### **添加数据源**
+
+1.添加数据源，logkit-pro 支持多种数据源，这里选择从文件读取，填写您的日志所在路径即可。
+
+填写好配置信息之后，点击【获取数据】，验证获取数据是否成功。
+
+![](https://pandora-kibana.qiniu.com/intellj_tutorial/datasource.png)
+
+### **数据解析**
+
+2.根据日志格式配置合适解析方式，抽取日志中的字段。对于 csv 格式的日志,选择按 csv 格式解析即可，选择分隔符为逗号，可以修改字段名与字段类型，如图所示。然后点击解析样例数据，查看解析是否成功。
+
+![](https://pandora-kibana.qiniu.com/intellj_tutorial/parser.png)
+
+### **数据转换**
+
+3.可以做一些更精细的字段解析。对于教程里的数据，我们需要将 timestamp 转换成时间类型，使用 `date 转换器`即可。选择需要转换的 key 为 timestamp，点击解析查看转换结果，最后点击添加使转换器生效。
+
+![](https://pandora-kibana.qiniu.com/intellj_tutorial/transformer.png)
+
+### **发送数据**
+
+4.将数据发送至日志分析平台，填写工作流（pipeline）名称和智能日志平台的实时仓库名称即可。日志仓库名称无需填写，开启`自动创建并导出到日志分析`，系统将会自动创建与实时仓库同名的日志仓库。
+
+![](https://pandora-kibana.qiniu.com/logkit/send.png)
+
+### 确认添加收集器
+
+5.填写收集器名称，确认添加收集器收集数据。
+
+![](https://pandora-kibana.qiniu.com/logkitPro/sys_confirm.png)
+
+### **分发收集器到机器**
+
+6.分发收集器到指定机器：确认添加收集器之后系统会提示您是否需要分发到当前机器，选择确认分发。
+
+![](https://pandora-kibana.qiniu.com/k8s/k8s_distribute.png)
+
+这样，您的数据就被采集并发送到智能日志平台了，您可以到智能日志平台对数据进行搜索分析。
+
+# **2.查询分析 & 可视化**
+进入智能日志平台[日志搜索](https://portal.qiniu.com/insight/logdb/overview)页面，选择从 logkit Pro 发送数据时自动创建的日志仓库，选择时间过滤字段为日志入库时间字段 _time，查询刚刚发送到日志平台的日志。
+
+![](https://pandora-kibana.qiniu.com/quickstart/quick_start_search.png)
+
+## **配置报表**
+
+切换日志搜索结果 tab 到可视化 tab，进入图表配置页面。在这里根据分析需要可以配置各种图表，日志分析平台目前支持的图表类型包括柱状图、折线图、区域图、饼图、统计地图（中国地图、世界地图）、单值图（数字单值图、仪表单值图）、数据表格。本教程给出以下几个图表配置案例。
+
+1.数据表格：统计不同 location 的记录数目。
+
+选择分组字段为 location，指标为计数。
+
+![](https://pandora-kibana.qiniu.com/intellj_tutorial/table_1.png)
+
+2.柱状图：不同数量的 honeybees 统计。
+
+选择分组字段为 honeybees，指标为计数。
+
+![](https://pandora-kibana.qiniu.com/intellj_tutorial/barchart_1.png)
+
+3.饼图：不同 sensor 的计数。
+
+选择分组字段为 sensor，指标为计数。
+
+![](https://pandora-kibana.qiniu.com/intellj_tutorial/pie_chart.png)
+
+点击添加到仪表盘，将图表添加到仪表盘进行统一管理、监控日志。
+
+![](https://pandora-kibana.qiniu.com/addtodashboard.png)
+
+更多报表配置操作请阅读[报表说明](/insight/manual/4692/reports-and-dashboards)。
+
+# **3.数据计算 & 投递**
+
+如果您还需要对数据进行计算并投递的话，进入[工作流](https://portal.qiniu.com/pandora/dags)页面，找到在 logkit Pro 发送时创建的工作流，点击查看/编辑进入工作流工作界面。
+
+![](https://pandora-kibana.qiniu.com/intellj_tutorial/workflow.png)
+
+1.选择数据源节点，右键并选择流式计算对数据进行实时计算。选择流式计算会自动生成一个消息队列节点。
+
+![](https://pandora-kibana.qiniu.com/intellj_tutorial/calculate.png)
+
+2.在流式计算节点的编辑栏，选择计算模式为 SQL 计算，并输入 SQL 代码。
+
+![](https://pandora-kibana.qiniu.com/quickstart_cal.png)
+
+3.在新的消息队列节点上点击右键并选择导出到对象存储。
+
+![](https://pandora-kibana.qiniu.com/intellj_tutorial/export.png)
+
+4.在对象存储节点编辑栏，填写对象存储的空间名称、导出文件的名称前缀、导出文件的类型，其他参数保持默认即可。
+
+![](https://pandora-kibana.qiniu.com/kodo_param.png)
+
+5.打开[七牛对象存储]()，找到刚刚在工作流填写的空间名称，可以看到一条刚刚导出的 csv 文件：
+
+![](https://pandora-kibana.qiniu.com/exporttokodo.png)
+
+将文件下载到本地验证是否是我们发送到工作流的数据：
+
+![](https://pandora-kibana.qiniu.com/kodo_csv.png)
+
+验证无误，与我们通过 logkit Pro 采集并经过数据计算逻辑的数据一致。
+
+至此，您就完成了一整套采集数据、查询数据、对数据进行可视化分析、对数据进行计算并导出到对象存储的流程啦！

@@ -1,0 +1,41 @@
+# 请求包
+```
+POST /v1/casters/<CasterID>/start
+Host: pili-caster.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/json
+{
+  "start": 0,
+  "hour": 0
+}
+```
+
+# 请求参数
+
+参数名称 | 必填 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---|---
+CasterID | 是 | string | - | 云导播唯一ID
+start | 否 | int | - | 开启时间，留空为立即启动；导播台已开启时，禁止设置开启时间，规格为时间戳（秒级）
+hour | 否 | int | [1,~] | 开启时长，留空为1小时；导播台已开启时，表示延长开启时长
+
+# 返回包
+```
+200 OK
+```
+
+
+# 返回参数
+
+- 详细参数说明见[云导播参数说明](/pili/api/4735#caster)
+
+
+# 相关接口
+
+- [创建云导播 POST /v1/casters](/pili/api/4709)
+- [更新云导播 POST /v1/casters/<CasterID\>](/pili/api/4711)
+- [删除云导播 DELETE /v1/casters/<CasterID\>](/pili/api/4712)
+- [开启云导播 POST /v1/casters/<CasterID\>/start](/pili/api/4713)
+- [关闭云导播 POST /v1/casters/<CasterID\>/stop](/pili/api/4714)
+- [云导播列表 GET /v1/casters](/pili/api/4715)
+- [云导播信息 GET /v1/casters/<CasterID\>](/pili/api/4716)
+

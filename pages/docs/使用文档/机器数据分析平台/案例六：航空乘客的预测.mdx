@@ -1,0 +1,168 @@
+案例六：航空乘客的预测
+
+# 背景介绍
+
+## 数据来源
+
+对于航空公司来说，如何尽可能精准地航空乘客的人数预测对其优化运营、提高效能至关重要。根据公司实际的运营数据进行建模预测的方法越来越受到企业重视。
+
+本数据集是一份根据国外某航空公司实际运营情况模拟的历时12年的月度乘客人数。这里，我们运用时间序列分析的方法，探索乘客人数变化的规律，并能够对下一年度的乘客人数进行预测。
+
+数据集的下载链接如下：
+
+<https://pandora-kibana.qiniu.com/monthly_passengers.csv>
+
+## 字段含义
+
+  **特征变量名称**   **特征变量含义**
+  ------------------ ------------------
+  month              月份
+  passengers         乘客人数
+
+# 数据预处理
+
+## 数据质量检查
+
+已完成，此处不考虑。
+
+## 数据清洗
+
+已完成，此处不考虑。
+
+## 数据探索
+
+我们将monthly_pasengers.csv导入平台，并保存为同名的repo。使用平台基本的可视化功能，绘制出乘客人数随时间变化的折线图。从图中不难发现，乘客人数的趋势性和周期性明显，适合用时间序列分析的方法进行建模预测。
+
+```
+repo="monthly_passengers"
+```
+
+![1.png](https://dn-odum9helk.qbox.me/Fm9ceUyzBT76_BUEmh32IyWIytNM)
+
+# 建模
+
+## 算法选择
+
+在**时间序列分析**的算法中，**自回归移动平均（ARIMA）**是一种通用性较强的算法，能够发现和量化时序数据中的趋势性、周期性，甚至不规则性变化的规律。在没有发现更适合的算法之前，我们就先采用这种算法进行下面的建模分析。
+
+## 数据拆分
+
+与普通的机器学习方法不同，时间序列分析的训练集和测试集划分不需要考虑随机性，而是会将前期的数据作为训练集，后期的数据作为测试集。初步决定将最后一个周期的数据作为测试集，其余的数据全部作为训练集。具体的实施过程可以在训练模型的脚本中一起指定。
+
+## 训练模型
+
+在机器学习APP内，我们使用fit算子训练时序模型。从前期的数据探索可以发现，该时序的线性趋势明显，所以取d=1，D=1。周期性也很明显，每个周期的时间跨度约为12（个月），所以取s=12。通过几次尝试，发现其他参数中，当p=1，q=P=Q=0时，拟合的效果就不错，所以最终确定(p,d,q)为(1,1,0)，(P,D,Q,S)为(0,1,0,12)。同时，因为之前已决定只取最后一个周期的数据作为测试集，所以最终确定holdback=12。
+
+```
+repo="monthly_passengers"
+
+| fit ARIMA order="1,1,0" seasonal_order="0,1,0,12" holdback=12 passengers
+```
+
+![2.png](https://dn-odum9helk.qbox.me/FhBtpWm8smNY0sGCrbLpzNBp1jtB)
+
+# 预测结果
+
+## 模型效果评估
+
+首先，通过计算一些经典的统计量，如R平方、均方根误差等来评价模型的效果。
+
+训练集：
+
+```
+repo="monthly_passengers"
+
+| fit ARIMA order="1,1,0" seasonal_order="0,1,0,12" holdback=12 passengers
+
+| where holdback="train"
+
+| score r2_score passengers against predicted_passengers
+
+| join type=inner "Actual field" [
+
+| from dataset:monthly_passengers
+
+| fit ARIMA order="1,1,0" seasonal_order="0,1,0,12" holdback=12 passengers
+
+| where holdback="train"
+
+| score mean_squared_error passengers against predicted_passengers]
+
+| eval root_mean_squared_error=sqrt(mean_squared_error)
+
+| fields - "Actual field" "Predicted field" "mean_squared_error"
+```
+
+![3.png](https://dn-odum9helk.qbox.me/FvtnJOBThXFl4HlPJHX673neSGbG)
+
+测试集：
+
+```
+repo="monthly_passengers"
+
+| fit ARIMA order="1,1,0" seasonal_order="0,1,0,12" holdback=12 passengers
+
+| where holdback="test"
+
+| score r2_score passengers against predicted_passengers
+
+| join type=inner "Actual field" [
+
+| from dataset:monthly_passengers
+
+| fit ARIMA order="1,1,0" seasonal_order="0,1,0,12" holdback=12 passengers
+
+| where holdback="test"
+
+| score mean_squared_error passengers against predicted_passengers]
+
+| eval root_mean_squared_error=sqrt(mean_squared_error)
+
+| fields - "Actual field" "Predicted field" "mean_squared_error"
+```
+
+![4.png](https://dn-odum9helk.qbox.me/FriPDq_UhZBkCszyHE4ToHpKSntU)
+
+从训练集和测试集的结果来看，R平方都在90%以上，均方根误差都在18左右，差别不大，说明模型的稳定性较好。
+
+然后，用可视化的方式，也可以直观地发现模型的训练效果不错。
+
+```
+repo="monthly_passengers"
+
+| fit ARIMA order="1,1,0" seasonal_order="0,1,0,12" holdback=12 passengers
+
+| eval Pred_Pass_Train=if(holdback=="train", predicted_passengers, '')
+
+| eval Pred_Pass_Test=if(holdback=="test", predicted_passengers, '')
+```
+
+![5.png](https://dn-odum9helk.qbox.me/Fpj84SZQkB1pTPpspD71INvD_FAj)
+
+## 模型应用
+
+在确定时序预测模型的质量较好之后，我们可以用它来预测下一个周期（即12个月）的航空乘客。它显示在"Pred_Pass_Forecast"列的最后12行中。
+
+```
+repo="monthly_passengers"
+
+| fit ARIMA order="1,1,0" seasonal_order="0,1,0,12" holdback=12 steps=12 passengers
+
+| eval Pred_Pass_Train=if(holdback=="train", predicted_passengers, '')
+
+| eval Pred_Pass_Test=if(holdback=="test", predicted_passengers, '')
+
+| eval Pred_Pass_Forecast=if(holdback=="forecast", predicted_passengers, '')
+
+| eval tempid=1
+
+| streamstats sum(tempid) as timeid
+
+| fields -tempid
+```
+
+![6.png](https://dn-odum9helk.qbox.me/FuJb7UA3QF6__GinOHiyJB9oPUQU)
+
+同样，也可以用可视化的方式，直观地评判模型的预测效果，比较训练集、测试集和预测集的不同。
+
+![7.png](https://dn-odum9helk.qbox.me/FplArzinL3Gs_B3Lgj27yS_90Xf7)

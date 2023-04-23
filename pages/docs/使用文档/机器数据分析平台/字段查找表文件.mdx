@@ -1,0 +1,33 @@
+您可以通过CSV表文件的方式，从静态的CSV文件中查找字段并输出到数据搜索结果中，CSV文件中的每一列都可作为输出字段。当您的数据量较小且相对静态时，建议使用CSV查找。
+
+## CSV文件查找使用步骤
+1. 创建lookup表文件，并设置文件权限(默认为个人使用，可以设置将使用权限开放给部分用户角色)
+2. （可选）创建基于该CSV文件的查找规则，设置查找规则权限(默认为个人使用，可以设置将使用权限开放给部分用户角色)
+3. （可选）将查找规则设置为自动
+4. 在搜索中调用lookup算子进行字段查找[lookup算子语法](http://)
+
+## 创建lookup表文件
+点击“+创建”新建lookup表文件
+- 选择上传表文件所的目标应用
+- 点击授权可以将对应表文件进行共享，可将表文件的查看/编辑（仅可编辑描述）/删除权限授予指定角色
+
+## 预过滤CSV查找表
+在部分字段查找中，如果您只需要查找表中⼀个⼦集时，可以在查找规则配置过滤条件，过滤掉查找表中所有不需要查找的记录来提高搜索性能。过滤条件包含带有布尔表达式和/或比较运算符（==、!=、>、<、<=、>=、OR、AND 和 NOT）的搜索查询。当运行使用该查找的搜索时，就会运行此过滤查询。例如，配置过滤条件(alertID>500) AND (alertName="pandora*")，将仅从alertID值大于 500 且alertName值以pandora开头的记录中查找。另外当在搜索中调用inputlookup算子时结合where子句使用，也可以从csv文件中过滤内容。
+
+**CSV查找表文件使用注意**
+- CSV文件中不能包含非utf-8字符；
+- CSV文件中需至少包含两列数据，其中一列作为输入字段跟搜索数据进行匹配查找，文件中的字段名称无需与搜索数据中一致；
+- CSV文件中所有列字段都可以有多个相同值，来表示多值字段；
+
+## CSV查找示例
+该示例中定义了HTTP状态码的查找，针对Web访问日志，用户可以基于查找表http_status.csv进行查找，该查找将事件中的http_status_code字段与查找表中对应列相匹配，在Web访问日志中输出相应的http_status_name和http_status_description字段。
+|http_status_code|http_status_name|http_status_description|
+|-|-|-|
+|100|Continue|继续。客户端应继续其请求|
+|...|...|...|
+点击下载该[http_status.csv](https://pandora-kibana.qiniu.com/csv/http_statushttp_status_code.csv)文件
+- 创建csv文件 http_status.csv
+- （可选）创建基于该csv文件的查找规则http_status，详见[创建查找规则](http://)
+- 在搜索中使用lookup命令，例如运行以下搜索，在包含http_status_code字段的Apache访问日志access_log中添加http_status_description。
+``` repo="apache"| lookup http_status.csv http_status_code output http_status_description
+```

@@ -1,0 +1,30 @@
+# 产品简介
+七牛云播放器 SDK 是一款全自研内核的跨平台 多媒体播放器，该播放器内核由有着18年播放器经验的音视频专家团队研发。目前支持 Android 和 iOS 平台。七牛云播放器 SDK 具有包体小、首开快、播放流畅、使用简单等明显优势可支持直播、点播 场景下的多种视频格式及流媒体协议。
+
+播放器完全免费，不强制绑定任何其他产品，下载地址如下：
+[Android 播放器 SDK](https://developer.qiniu.com/pili/sdk/1210/the-android-client-sdk)
+Android Github 地址：https://github.com/pili-engineering/PLDroidPlayer `除支持h264外，也支持rtmp和http-flv的h265播放`
+
+[iOS 播放器 SDK](https://developer.qiniu.com/pili/sdk/1211/ios-playback-end-the-sdk) 
+iOS Github 地址：https://github.com/pili-engineering/PLPlayerKit  `除支持h264外，也支持rtmp和http-flv的h265播放`
+
+[小程序播放器]
+[推荐小程序原生播放器](https://developers.weixin.qq.com/miniprogram/dev/component/live-player.html#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81)    `仅支持视频编码h264`
+
+[web播放器]
+推荐西瓜播放器 <br>[web http播放器](http://v2.h5player.bytedance.com/generate/) 适用于http地址 `仅支持视频编码h264`
+[web https 播放器](https://v2.h5player.bytedance.com/generate/)适用于https地址               `仅支持视频编码h264`
+
+
+**webrtc 快直播低延迟专用播放器SDK：** `仅支持视频编码格式h264`
+以下3种播放器SDK仅仅支持webrtc协议，如果是非webrtc协议请参考上面的SDK
+[低延时 Web SDK](https://developer.qiniu.com/pili/7730/geek-web-sdk) 
+[低延时 Android SDK](https://developer.qiniu.com/pili/7731/geek-android-sdk)
+[低延时 iOS SDK](https://developer.qiniu.com/pili/7732/geek-ios-sdk)
+[webrtc接入最佳实践](https://developer.qiniu.com/qvs/7812/low-latency-will-broadcast-live-webrtc-access-process)
+
+**七牛QVS控制台播放器展示**
+其中播放器1，是采用hls播放拉流地址，延迟8s左右；播放器2，采用的是webrtc 低延迟播放拉流地址，延迟在500ms；客户可以根据自身场景选择不同的播放拉流协议。
+<img src="https://dn-odum9helk.qbox.me/Fk_5GqWShIoGyn1rXezTJDfAsCek" width = "450" height = "300" alt="播放协议" align=center />
+
+**注意：各端 Gihub 地址下的 repo 中，有相应的 demo 文件，用户可以体验并参考使用。**

@@ -1,0 +1,30 @@
+* `<color-palette>`元素定义图表的颜色呈现规则。
+
+### 父元素
+
+* `<color-splitter>`
+
+### 子元素
+
+|元素|说明|默认值|
+|:--:|:--:|:--:|
+|value|一个范围的边界值或一个常量值|无|
+|color|颜色设置|无|
+
+### 属性
+
+|属性|说明|默认值|
+|:--:|:--:|:--:|
+|type|颜色盘类型可选: 'list', 'map'; <br> type="map"时，表示颜色和字段值一一对应，类型为对象，e.g：{car: 'red', dog: 'yellow'} 表示当列中的值为 car 时，字体颜色为'red'， 列中的值为 dog 时，字体颜色为'yellow'；<br>type="list"时，表示颜色和数值范围对应，数值范围详见`<scale>`标签。|无|
+
+示例：
+
+```
+<color-splitter>
+  <color-palette type="list">['red', 'yellow']</color-palette>
+  <scale>2,5,6</scale>
+</color-splitter>
+```
+
+该例子表示当数值范围为 (2, 5]时字体颜色为red，数值范围为(5,6]时，字体颜色为yellow。
+

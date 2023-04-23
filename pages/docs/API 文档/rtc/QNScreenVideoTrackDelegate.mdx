@@ -1,0 +1,42 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                录屏 Track 回调代理，可通过 <a href='8850/QNScreenVideoTrack-iOS#screenDelegate'>QNScreenVideoTrack.screenDelegate</a> 进行设置，用来实现录屏 Track 发生错误时的回调。</section>
+            <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>若有录屏 Track 实现，请务必设置 <a href='8850/QNScreenVideoTrack-iOS#screenDelegate'>QNScreenVideoTrack.screenDelegate</a> 代理，实现该回调方法，便于及时对系统录屏产生的错误做处理</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didFailWithError`)'>didFailWithError</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didFailWithError">
+didFailWithError</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)screenVideoTrack:(<a href='8850/QNScreenVideoTrack-iOS'>QNScreenVideoTrack</a> *)screenVideoTrack didFailWithError:(NSError *)error;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>录屏运行过程中发生错误会通过该方法回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            error: NSError
+        </div>
+                <p>error 错误</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

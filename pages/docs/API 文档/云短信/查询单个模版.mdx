@@ -1,0 +1,41 @@
+# 查询单个模版信息
+
+## 请求定义
+
+```
+GET /v1/template/{id} HTTP/1.1
+Host: sms.qiniuapi.com
+Authorization: <QiniuToken>
+Content-Type: application/x-www-form-urlencoded
+```
+
+### 请求头
+
+> 请参考 [请求认证](/sms/api/5842/sms-api-authentication)
+
+### 请求参数
+
+该接口定义以下请求参数:
+
+参数名称 | 必填 | 描述 
+---- | ---- | ----
+id | 是 | 模版ID信息
+
+## 响应定义
+
+### 该接口正确处理请求时返回如下 JSON 数据
+
+```json
+{
+	"id": string,
+	"name": string,
+	"template": string,
+	"audit_status": string,
+	"reject_reason": string,
+	"type": string,
+	"signature_id": string, // 模版绑定的签名ID
+	"signature_text": string, // 模版绑定的签名内容
+	"created_at": int64,
+	"updated_at": int64   
+}
+```

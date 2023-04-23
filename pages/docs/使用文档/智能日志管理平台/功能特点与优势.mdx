@@ -1,0 +1,110 @@
+[logkit-pro](https://logkit-pro.qiniu.com/) 是一款专业的日志、监控信息采集、边缘计算工具，支持上百种数据源采集和监控、内置数十种解析、转换、计算方式，并支持发送到七牛的智能日志管理平台和其他自有的服务（Kafka、Mongo、HTTP服务、文件系统等等）。
+
+[logkit-pro](https://logkit-pro.qiniu.com/) 支持各种数据格式的日志一键解析，直接将原始日志转化为结构化数据。并且支持更精细的字段转换，如将 ip 字符串扩展为 ip 对应的区域、城市、省份、运营商等信息，或者将指定字段解析为时间等，将您从繁琐的日志解析中解放出来。
+
+[logkit-pro](https://logkit-pro.qiniu.com/) 也支持集群管理，可以帮您轻松管理上万的机器agent。
+
+
+[logkit-pro](https://logkit-pro.qiniu.com/) 采集日志并发送到智能日志管理平台的工作流程如下：
+
+![](https://pandora-kibana.qiniu.com/quickstart/step.png)
+
+
+# **丰富的采集数据源支持**
+
+* **文本文件**: 读取文件中的日志数据，包括 csv 格式的文件，kafka-rest 日志文件， nginx 日志文件等，并支持多种读取模式（fileauto、dir、file、tailx）
+* **系统日志**：Linux syslog，Windows evenlog等等。
+* **传统数据库**: 读取或同步 MySQL、Microsoft SQL Server、PostgreSQL、Oracle(单独部署)等数据库中的数据。
+* **NoSQL 数据库**: 读取或同步 ElasticSearch、MongoDB、HDFS 等服务中的数据。
+* **消息队列**：读取 Kafka 、 Redis等消息队列中的数据。
+* **网络套接字**: 读取 tcp、udp、unixsocket 协议中的数据。
+* **HTTP服务**: 作为 http 服务端，接受 POST 请求发送过来的数据。
+* **可执行脚本**: 支持执行脚本，读取执行结果中的数据。
+* **常见网络协议**: 如SNMP服务，主动抓取 SNMP 服务中的数据等。
+* **各类云服务** 如同步AWS S3、CloudWatch、Cloudtrail等服务中的数据。
+
+
+[点此进入数据源页面](/insight/manual/4750/logkit-pro-readers)获取更详细的采集数据源介绍。
+
+![](https://dn-odum9helk.qbox.me/FgZnI8WGoLag3HxNs0Rya3G8PFKK)
+
+# **上百种监控采集指标支持**
+
+* **系统性能指标** 如CPU、内存、磁盘、网络、机器负载、连接数、IO吞吐等等。
+* **对接所有prometheus类协议的采集节点** 支持所有prometheus支持的上百种监控类别，包括数据库监控、硬件、操作系统、中间件等等。
+* **支持自定义脚本监控** 可以自己编写监控脚本，获得监控数据指标。
+* **服务拨测** 定时对服务进行拨测，监控服务健康状态。
+* **进程监控** 支持对单个进程进行详细的监控。
+* **硬件监控** 监控机器的温度、湿度、转速等等。
+
+[点此进入监控采集页面](/insight/manual/4895/monitoring-metrics)获取更详细的监控采集介绍。
+
+![](https://dn-odum9helk.qbox.me/FhIiN1zZl1xXxL0SwyyeyuA4_PPb)
+
+
+# **跨平台**
+
+多操作系统支持，支持Windows、Linux、MacOS、AIX等机型， 其中AIX需单独联系部署。
+
+我们也支持Docker、[Kubernetes](/insight/manual/4667/kubernetes-scene)等容器云解决方案。
+
+我们提供了最简便的安装方式，可以一键安装、批量安装、脚本初始化安装，提供多样化、最简便的安装方式。
+
+
+进入[安装](/insight/manual/4682/logkit-pro-install)页面获取详细的安装手册。
+
+![](https://dn-odum9helk.qbox.me/FvFmXW8lB1eyhwZQSdoiBGTX4_VB)
+
+
+# **集群管理**
+
+对所有agent提供中心化的管理，支持统一监控、查看以及任务批量下发等功能。
+
+进入[配置分发与批量操作](/insight/manual/4935/configuration-distribution-and-batch-management)查看详细的集群管理功能。
+
+![](https://dn-odum9helk.qbox.me/FpU3WtNgHVCXyt9-2i4agpJZ96bU)
+
+
+# **边缘计算/本地解析变换**
+
+logkit-pro支持在 agent 端对数据进行解析和变换，让您拥有边缘计算的能力，使得冗余数据可以大大减少，节约带宽成本。
+
+* 数据解析：在数据被 logkit-pro 读取后，用户可以根据需要配置日志解析格式，抽取数据中的字段，转化为结构化数据。logkit Pro 支持包括 json、csv、grok、logfmt、thinkphp5等大多数主流日志解析方式。
+
+  [点此](/insight/manual/4755/parsers)了解更多 logkit-pro 数据解析功能。
+  
+* 字段转换: 针对字段做数据变换, 来满足整体数据解析满足不了的需求，比如将 ip 字符串扩展为 ip 对应的区域、城市、省份、运营商等信息， 除了支持脚本自定义数据变化以外，我们内置支持了包括字符串替换、ip 扩展、格式转换等数十种种数据变换方式。
+
+  [点此](/insight/manual/4767/transformers)了解更多 logkit Pro 数据字段变换功能。
+
+![](https://dn-odum9helk.qbox.me/Fjstd2FpHZO-GrisG2lwnv26v8uo)
+
+
+# **多种发送端支持**
+
+除了发送到七牛智能日志管理平台以外，我们还提供多种发送渠道，满足您自有的运营、运维平台对数据的使用需要。
+
+[点此](/insight/manual/4782/senders)获取更详细的发送端介绍。
+
+![](https://dn-odum9helk.qbox.me/FkOdC3pyjfDINdQthVoSgjCOEHtx)
+
+
+# **采集任务监控**
+
+对您不同的数据采集任务，我们提供详细的任务运行监控信息。
+
+![](https://dn-odum9helk.qbox.me/FrOVXIjPX4V8dtjmlbn8po4YqoDB)
+
+
+# **机器监控**
+
+
+部署logkit-pro agent后，可以直接一键开启机器监控，提供详细的机器监控信息，检测机器状态。
+
+![](https://dn-odum9helk.qbox.me/Ft-efYtGrezLVdotXbYvlJDksLAC)
+
+
+
+阅读[安装文档](/insight/manual/4682/logkit-pro-install) 下载安装， 访问 [logkit-pro](https://logkit-pro.qiniu.com/) 官方页面开始使用，
+
+更多详细内容，可以[阅读功能详解](/insight/manual/4737/logkit-pro-function)做进一步了解。

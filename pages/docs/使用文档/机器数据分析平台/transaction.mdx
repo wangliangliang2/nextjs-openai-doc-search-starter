@@ -1,0 +1,87 @@
+transaction 命令通过多种约束条件将多条日志聚合成一条日志，形成完整的事务。transaction非常适合做跨多行日志的分析，进行更复杂的搜索和运算。
+
+transaction 命令的行为：
+
+transaction 命令将指定字段的值相同的事件的 _raw 字段中的日志拼接在一起，将多行事件拼接成为一行。同时，transaction的结果会给日志添加上新的字段：
+* _event_count：记录一个事务中包含多少条原始日志
+* _duration_second：记录这个事务从开始到结束持续了多少秒钟时间
+* _trans_closed：代表这个事务是否是闭合的，即是否同时满足了事务的起始条件和终止条件。
+
+例如，原始日志如下：
+
+![transaction_1.png](https://dn-odum9helk.qbox.me/FqCLOOg-eYHeC1yXhVdq59xr_smD)
+
+输入transaction 命令:
+
+```
+……| transaction action startswith="begin" endswith="end" 
+```
+
+返回结果：
+
+![transaction_2.png](https://dn-odum9helk.qbox.me/FnmxTH0G3csIMTCNnZNLVbnIANv5)
+
+其中， 原始日志中的_raw 字段拼接结果如下：
+
+![transaction_3.png](https://dn-odum9helk.qbox.me/FmncSEIzFHq9fIdqWnUQFEFI4Fj0)
+
+**语法：**
+
+```
+transaction <field_list>
+startswith=<QuotedString|eval(BOOL_EVAL_EXPRESSION)> 
+endswith=<QuotedString|eval(BOOL_EVAL_EXPRESSION)> 
+maxspan=<5s|5m|5h> 
+maxpause=<5s|5m|5h> 
+maxevents=< Maxevents >
+mvraw=<true|false> 
+delim=< QuotedString>  
+mvlist=< true|false|field_list > 
+nullstr=< QuotedString > 
+maxopentxn=< Maxopentxn >
+maxopenevents=< Maxopenevents >
+```
+
+**参数说明：**
+
+必要参数：
+
+* `field_list`:根据指定字段的唯一值对事务进行聚合，即只有指定字段值相同的日志会被聚合到一个事务中。
+
+可选参数：
+
+* `startswith` 和 `endswith` 支持关键词或者Eval表达式对事务的起始和终止做约束，例如 `startswith="begin" endswith=eval(contains(_raw, "rollback")  OR contains(_raw, "commit")) `代表事务以日志出现 begin 关键词为开始，以出现 rollback 或者 commit 关键词为结束。
+
+* `maxspan` 代表事务最长持续时间，支持时间表达式，如`maxspan=5m`表示事务持续时间超过5分钟则认为事件结束。
+
+* `maxpause` 代表事务的最大停顿时间，支持时间表达式，如`maxpause=5m`表示事务和后续的一条日志中间相差了5分钟或者以上的时间，则认为事务结束。
+
+* `maxevents` 代表事务中最大可包含的日志数量，如100 代表如果事务中日志已经达到100，则认为事务结束。默认值为 1000。
+
+* `mvraw `和 `delim` 代表如何拼接原始日志，mvraw=false （默认值）代表着日志通过换行符进行拼接，mvraw=true 代表日志通过 delim 指定的分隔符进行拼接，delim 默认值是空格符。
+
+* `mvlist` 和 `nullstr` 代表如何将字段值进行拼接，如果mvlist=false （默认值）代表着事务会将该字段所有值进行去重，mvlist=true 代表事务会将所有日志中字段按顺序形成数组，如果遇到null值，会使用nullstr进行字段替换。nullstr 默认为 "NULL"。
+
+* `maxopentxn` ：查询内存控制参数，代表最大容许未关闭状态transaction的数量，如果达到最大值，则使用 LRU 策略置换事务。默认值为 10000。
+
+* maxopenevents 查询内存控制参数，代表所有未关闭状态transaction中日志数量和的最大值，如果达到最大值，则使用 LRU 策略置换事务。默认值为 200000。
+
+
+**用法示例：**
+
+对于数据库的SQL执行日志进行事务分析，按照db 实例聚合事务，当出现begin的时候认为事务开始，当出现rollback 或者 commit 的时候事务结束。
+
+```
+transaction db_instance startswith="begin" endswith=eval(contains(_raw, "rollback") OR contains(_raw, "commit"))
+```
+
+[点此](/express/manual/6015/eval)了解eval命令。
+
+
+对用户进行行为分析，用户如果持续在进行操作的时候是属于事务，如果有十分钟以上不操作，则认为事务结束。
+
+```
+transaction user maxpause=10m
+```
+
+

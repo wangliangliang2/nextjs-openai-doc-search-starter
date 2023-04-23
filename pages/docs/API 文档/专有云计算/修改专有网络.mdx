@@ -1,0 +1,52 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `PUT` /api/rio/v1/network/vpc/:id/modify
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id              | string | header | 是 | 地域 ID
+id             | string | path | 是 | 专有网络 ID
+vpc_name     | string | body | 否 | 专有网络 名称
+description     | string | body | 否 | 描述
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+
+
+## 请求示例
+```json
+{
+    "request_id":"HtPfo3OPBmScsW",
+    "data":[
+       {
+	{
+	vpc_id: "2c334284-5774-4bef-bc94-0cf75b513d4d",
+	zone_id: "wenzhou",
+	status: "Available"
+}
+}
+    ]
+}
+```
+
+## 返回值示例
+```json
+{
+	"request_id": "GS1NO1a4-ZmyPQW",
+	"data": [{
+		"vpc_id": "2c334284-574-4bef-bc94-0cf75b513d4d",
+		"zone_id": "wenzhou",
+		"status": "Available",
+		"vpc_name": "V-USd6",
+		"vswitch_ids": ["4f2b16f-36ba-4808-8ee7-83fc76a1f9eb"],
+		"cidr": "0.0.0.0/0",
+		"description": "",
+		"created_at": 1654158065000
+	}]
+}
+```

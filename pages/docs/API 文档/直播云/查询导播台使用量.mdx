@@ -1,0 +1,134 @@
+# 接口描述
+
+查询一段时间内导播台使用时长，延迟分钟级
+
+# 请求参数
+
+```
+GET /statd/caster?$resolution=<resolution>&$container=<container>&begin=<begin>&end=<end>&g=<g>&group=<group>&select=<select>
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/x-www-form-urlencoded 
+```
+
+| 参数            | 必填           | 描述                                                            |
+|---------------|--------------|---------------------------------------------------------------|
+|  begin        | 是            | 开始时间，支持格式：20060102、20060102150405                             |
+|  end          | 否            | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+|  g            | 是            | 时间粒度，可取值为 5min、hour、day、month                                 |
+|  group        | 是            | 按特定条件将返回数据分组，可取值为条件字段                                         |
+| $container  | 否            | 容器，条件字段，用于筛选符合条件的数据                            |
+| $resolution | 否            | 分辨率，可选值为480p、720p、1080p、2k、4k，条件字段，用于筛选符合条件的数据|
+|  select      | 是            | 值字段，用于返回需要查询的数据。可选值包括：<br>upflow：上行流量，单位：byte<br>downflow：下行流量，单位：byte<br>duration：使用时长，单位：秒|
+
+# 返回数据
+
+<html>
+ <head></head>
+ <body>
+  <table> 
+   <thead class="ant-table-thead"> 
+    <tr> 
+     <th key="name">参数</th>
+    <th key="type">类型</th>
+     <th key="desc">描述</th>
+    </tr> 
+   </thead>
+   <tbody classname="ant-table-tbody">
+    <tr key="0-0">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> 统计返回</span></td>
+     <td key="1"><span>object[]</span></td>
+     <td key="2"><span style="white-space: pre-wrap">统计返回值</span></td>
+    </tr>
+    <tr key="0-0-1">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> time</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">时间</span></td>
+    </tr>
+    <tr key="0-0-2">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> values</span></td>
+     <td key="1"><span>map</span></td>
+     <td key="2"><span style="white-space: pre-wrap">数据<br>不使用分组查询时形式如："values":{"upflow":4527162977}，其中"upflow"对应select项<br>使用分组查询时形式如："values":{"SD":{"upflow":4527162977}}，其中"SD"对应group项，"upflow"对应select项</br></span></td>
+    </tr> 
+   </tbody> 
+  </table> 
+ </body>
+</html>
+
+# 示例
+
+## 不使用分组查询
+
+请求体:
+
+```
+GET /statd/caster?begin=20210928&end=20210930&g=day&select=upflow&select=downflow&select=duration HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>  
+Content-Type: application/x-www-form-urlencoded 
+```
+
+返回体:
+
+```
+200 OK
+
+[
+    {
+        "time": "2021-09-28T00:00:00+08:00",
+        "values":
+            {
+                "downflow": 0,
+                "duration": 0,
+                "upflow": 0
+            }
+    },
+    {
+        "time": "2021-09-29T00:00:00+08:00",
+        "values":
+            {
+                "downflow": 0,
+                "duration": 0,
+                "upflow": 0
+            }
+    }
+]
+```
+
+## 使用分组查询
+
+请求体:
+
+```
+GET /statd/caster?$resolution=480p&begin=20210928&end=20210930&g=day&group=resolution&select=upflow HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/x-www-form-urlencoded 
+```
+
+返回体:
+
+```
+200 OK
+
+[
+    {
+        "time": "2021-09-28T00:00:00+08:00",
+        "values":
+            {
+                "720p": {"upflow": 8653}
+            }
+    },
+    {
+        "time": "2021-09-29T00:00:00+08:00",
+        "values":
+            {
+                "720p": {"upflow": 8654}
+            }
+    }
+]
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

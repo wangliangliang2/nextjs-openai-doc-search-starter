@@ -1,0 +1,38 @@
+# **简介**
+
+现在视频水印功能已经和 [普通音视频转码](/dora/api/1248/audio-and-video-transcoding-avthumb) 功能合并，可以同时转码加水印。
+
+- 功能合并，不影响 `avwatermark` 接口的正常使用。
+- 如需使用视频水印功能，请参考 [普通音视频转码](/dora/api/1248/audio-and-video-transcoding-avthumb)  的水印参数。
+
+# **示例**
+为指定视频资源打上图片水印`http://78re52.com1.z0.glb.clouddn.com/resource%2Flogo.jpg`, 位置是右上角；同时给视频打上文字水印`weloveqiniu`，颜色为红色，大小为3磅（60缇），字体为黑体，位置为正上方；生成文件名为为`sample_target.mp4`的新`mp4`视频资源。
+
+- 以 `资源上传时自动触发` 形式，给视频资源打图片和文字水印：  
+
+  ```
+  {
+        "scope":                "test:sample.mp4",
+        "deadline":             1608652800,
+        "persistentOps":        "avthumb/mp4/wmImage/aHR0cDovL3Rlc3QtMi5xaW5pdWRuLmNvbS9sb2dvLnBuZw==/wmText/d2Vsb3ZlcWluaXU=/wmFontColor/cmVk/wmFontSize/60/wmGravityText/North|saveas/dGVzdDpzYW1wbGVfdGFyZ2V0Lm1wNA==",
+        "persistentPipeline":   "newtest",
+        "persistentNotifyUrl":  "http://fake.com/qiniu/notify"
+  }
+  ```
+
+  ​
+
+
+- 以 `对已有资源手动触发` 形式，给视频资源打水印：  
+
+  ```
+  POST /pfop/ HTTP/1.1
+  Host: api.qiniu.com  
+  Content-Type: application/x-www-form-urlencoded  
+  Authorization: QBox <AccessToken>  
+      
+  bucket=test&key=sample.mp4&fops=avthumb%2fmp4%2fwmImage%2faHR0cDovL3Rlc3QtMi5xaW5pdWRuLmNvbS9sb2dvLnBuZw==%2fwmText%2fd2Vsb3ZlcWluaXU=%2fwmFontColor%2fcmVk%2fwmFontSize%2f60%2fwmGravityText%2fNorth%2csaveas%2fdGVzdDpzYW1wbGVfdGFyZ2V0Lm1wNA==&notifyURL=http%3A%2F%2Ffake.com%2Fqiniu%2Fnotify
+  ```
+  **注意**：要在`Authorization`头部的`<AccessToken>`前添加`QBox`和半角空格。
+
+

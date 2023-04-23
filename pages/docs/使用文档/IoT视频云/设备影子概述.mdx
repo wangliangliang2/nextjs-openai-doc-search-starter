@@ -1,0 +1,28 @@
+IoT视频云平台提供设备影子功能，用于缓存设备状态。设备在线时，可以直接获取云端指令；设备离线时，上线后可以主动拉取云端指令。
+
+设备影子是一个 JSON 文档，用于存储设备上报状态、应用程序期望状态信息。
+
+每个设备有且只有一个设备影子，设备可以通过MQTT获取和设置设备影子来同步状态，该同步可以是影子同步给设备，也可以是设备同步给影子。
+
+设备影子文档是服务器端为设备缓存的一份状态和配置数据。它以 JSON 文本形式存储，由以下部分组成：
+
+<img src="https://dn-odum9helk.qbox.me/Fq66GB8qjZH0UpzDgBv5si7nrV0_" width="550" hegiht="313" align=center />
+
+参数说明请参数[设备影子JSON详情](https://developer.qiniu.io/linking/manual/6305/device-shadow-details)
+# **查询更新设备影子**
+您可以登录**七牛开发者平台**进入IoT视频云控制台，查看设备影子信息，更新设备影子状态。
+
+### **操作说明**
+1.登录[七牛开发者平台](https://sso.qiniu.com/?client_id=PIapUKqa3u6S24H868BelwrG0OFu8dS7AxVQ8oz8HznLXhgrl2BnjaO9cs9LzxK2&redirect_url=https:%2F%2Fportal.qiniu.com%2Fapi%2Fgaea%2Fsso%2Fsignin%3Fredirect%3D%252Fcreate)
+2.选择**设备管理**模块，点击进入设备管理页面，选定指定的设备点击**查看**按钮，点击进入设备详情页。
+3.点击**设备影子**，查询设备的设备影子信息。
+
+![](https://dn-odum9helk.qbox.me/Fn289He0qyMqO3K888W5ZalfdWLj)
+
+**初始状态**
+创建设备后，设备处于未激活状态，此时设备影子内容为空。
+
+**设备端上报状态后**
+设备端激活后会上报状态到IoT视频云平台，此时控制台将显示最新的设备影子状态。
+
+4.点击**更新设备影子**，在“desired”部分，填入期望设备状态，reported 字段可以为空；修改完成后点击**确定**完成设备影子的更新操作。

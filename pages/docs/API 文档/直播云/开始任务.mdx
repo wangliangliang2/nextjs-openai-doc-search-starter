@@ -1,0 +1,55 @@
+# 请求包
+**备注：如果是海外的pub转推任务，请将Host改为：pili-hw-pub.qiniuapi.com**
+
+```
+POST /tasks/<taskID>/start
+Host: pili-pub.qiniuapi.com
+Authorization: <QiniuToken>
+
+```
+
+| 参数名称 | 必填 | 说明 |
+| ----------- |---------------------------|------------------------------------ |
+| taskID | 是 | 任务id。|
+
+# 返回包
+
+```
+200 {}
+
+400 {
+    "error": "invalid parameter"
+}
+
+404 {
+    "error": "not fond"
+}
+
+500 {
+    "error": "query task fail"
+}
+
+400 {
+    "error": "repeat operation"
+}
+
+500 {
+    "error": "get worker fail"
+}
+
+500 {
+    "error": "no worker"
+}
+
+500 {
+    "error": "no workers available"
+}
+
+500 {
+    "error": "add worker's task fail"
+}
+
+500 {
+    "error": "call worker fail"
+}
+```

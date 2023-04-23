@@ -1,0 +1,34 @@
+完整的App需配置以下内容，使app以视图的形式展示分析数据：
+
+* [来源类型和提取规则](/express/extend/6555/app-knowledge)：一个应用的数据通常为一种或者多种类型的日志，系统正确的识别并解析日志是后续业务和场景化展示的前提。您需要将应用相关的来源类型和解析规则添加到应用的配置文件，以便在创建应用的搜索和仪表盘时能使用配置文件中的来源类型和解析规则。
+
+* [视图页面](/express/extend/6556/views)：配置xml视图页面（您希望的数据展示形式）来展示您的分析数据。
+
+* [导航栏](/express/extend/6557/nav)：如果您的应用中包含多个视图页面，需配置导航栏指定每个页面的入口。
+
+本节介绍如何配置应用的来源类型和提取规则。
+
+
+### 配置来源类型
+
+您可以配置应用中数据使用的来源类型。Pandora 2.0 平台内置了大量的常用来源类型，应用的开发者可以直接导出系统内置的来源类型，添加至应用的配置文件中。如果系统内置的来源类型无法满足您的需求，您也可以新建来源类型。
+
+
+1. 新建来源类型，步骤参考[数据上传](https://developer.qiniu.com/express/manual/6024/file_upload)章节。
+2. 导出来源类型。
+
+![](https://dn-odum9helk.qbox.me/FoOAdOxOUJNUQmVi0xeVcx_VYSnK)
+
+3. 将导出的来源类型文件添加至`[appname] >> resources >> sourcetypes`目录。
+
+### 配置应用的解析规则
+
+您可以配置应用中数据使用的解析规则。
+
+1. 创建提取字段规则，可以参考[提取字段](https://developer.qiniu.com/express/manual/6039/field_extract)章节。
+
+2. 导出字段提取规则。
+
+![](https://dn-odum9helk.qbox.me/FuIH6nON_7DMAT-KYlreNPlJ4h_a)
+
+3. 将提取字段规则文件添加至`[appname] >> resources >> extractions`目录。

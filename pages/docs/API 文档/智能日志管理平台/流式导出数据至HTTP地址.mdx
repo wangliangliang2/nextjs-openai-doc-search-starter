@@ -1,0 +1,46 @@
+**请求语法**
+
+```
+POST /v2/repos/<RepoName>/exports/<ExportName>
+Content-Type: application/json
+Authorization: Pandora <auth>
+{
+  "type": <http>,
+  "whence": <ExportWhence>,
+  "spec": {
+		"host": <Host>,      
+		"uri": <RequestURI>,
+		"format": <ExportFormat>  
+	}
+}
+```
+
+**请求内容**
+
+|参数|类型|必填|说明|
+|:---|:---|:---:|:---|
+| RepoName |string|是|需要导出数据的消息队列名称|
+| ExportName |string|是|导出任务名称</br>命名规则: `^[a-zA-Z_][a-zA-Z0-9_]{0,127}$`|
+| Type |string|是|导出方式</br>目前支持`http`、`logdb`、`mongo`、`tsdb`、`kodo`、`report`</br>在这里我们选择`http`|
+|whence|string|否|导出数据的起始位置</br>目前支持`oldest`、`newest`,</br>分别表示从指定仓库的`最早`、`最新`数据开始导出</br>默认值为oldest|
+| Spec |json|是|导出任务的参数主体</br>选择不同的`type`</br>`Spec`也需要填写不同的参数</br>将在下面分开讲解|
+| host |string|是|服务器地址（ip或域名）</br>例如:`https://pipeline.qiniu.com` </br>或 `127.0.0.1:7758`|
+| uri |string|是|请求资源路径（具体地址,不包含ip或域名）</br>例如:`/test/repos`|
+| format |string|否|导出方式</br>支持`text`和`json`</br>如果没有填写此项，默认为`text`|
+
+!> 注意: 导出数据格式和`推送数据`相同。
+
+**示例**
+
+```
+curl -X POST https://pipeline.qiniu.com/v2/repos/test_Repo/exports/export_job1 \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Pandora 2J1e7iG13J66GA8vWBzZdF-UR_d1MF-kacOdUUS4:NTi3wH_WlGxYOnXsvgUrO4XMD6Y=' \
+-d '{
+  "type": "http",
+  "spec": {
+	"host": "www.qiniu.com",
+	"uri": "/test/repos"
+  }
+}'
+```

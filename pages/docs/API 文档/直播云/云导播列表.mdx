@@ -1,0 +1,128 @@
+# 请求包
+```
+GET /v1/casters?name=<name>&marker=<marker>&limit=<limit>
+Host: pili-caster.qiniuapi.com
+Authorization: <QiniuToken>
+```
+
+# 请求参数
+
+参数名称 | 必填 | 字段类型 | 取值范围 | 说明
+ ---|---|---|---|---
+name | 否 | string | - | 云导播名称前缀匹配
+marker | 否 | string | - | 如果上一次返回的结果超过了单次查询限制，则会返回marker表示上一次读取到哪条记录；这一次请求带上marker后，继续从该marker后开始读取
+limit | 否 | int | - | 返回的最大数量，默认为50
+
+# 返回包
+```
+200 OK
+{
+  "count": 1,
+  "marker": "<marker>",
+  "items": [
+    {
+      "id": "<id>",
+      "uid": <uid>,
+      "name": "<name>",
+      "staticKey": "<staticKey>",
+      "monitors": {
+        "0": {
+          "url": "<url>",
+          "vol": 100,
+          "muted": false
+        },
+        "1": {
+          "url": "<url>",
+          "vol": 100,
+          "muted": true
+        },
+        "2": {
+          "url": "<url>",
+          "vol": 100,
+          "muted": true
+        },
+        "3": {
+          "url": "<url>",
+          "vol": 100,
+          "muted": true
+        },
+        "4": {
+          "url": "<url>",
+          "vol": 100,
+          "muted": true
+        },
+        "5": {
+          "url": "<url>",
+          "vol": 100,
+          "muted": true
+        },
+        "6": {
+          "url": "<url>",
+          "vol": 100,
+          "muted": true
+        },
+        "7": {
+          "url": "<url>",
+          "vol": 100,
+          "muted": true
+        }
+      },
+      "canvas": {
+        "resolution": "<resolution>",
+        "height": <height>,
+        "width": <width>
+      },
+      "timeSwitch": {
+        "start": <start>,
+        "stop": <stop>
+      },
+      "pvwOutput": {
+        "play": "<url>",
+        "channel": 0,
+        "layout": 0
+      },
+      "pgmOutput": {
+        "closed": false,
+        "publish": "<url>",
+        "ab": 64,
+        "vb": 1000,
+        "channel": 0,
+        "overlay": {},
+        "text": {},
+        "emergencyMode": false,
+        "emergencyChannel": 0,
+        "delay": 0
+      },
+      "layouts": {
+        "0": {
+          "title": "<title>",
+          "overlay": {},
+          "text": {},
+          "updateAt": <timestamp>
+        }
+      },
+      "stage": 1,
+      "status": "pending",
+      "createAt": <timestamp>,
+      "updateAt": <timestamp>
+    }
+  ]
+}
+```
+
+
+# 返回参数
+
+- 详细参数说明见[云导播参数说明](/pili/api/4735#caster)
+
+
+# 相关接口
+
+- [创建云导播 POST /v1/casters](/pili/api/4709)
+- [更新云导播 POST /v1/casters/<CasterID\>](/pili/api/4711)
+- [删除云导播 DELETE /v1/casters/<CasterID\>](/pili/api/4712)
+- [开启云导播 POST /v1/casters/<CasterID\>/start](/pili/api/4713)
+- [关闭云导播 POST /v1/casters/<CasterID\>/stop](/pili/api/4714)
+- [云导播列表 GET /v1/casters](/pili/api/4715)
+- [云导播信息 GET /v1/casters/<CasterID\>](/pili/api/4716)
+

@@ -1,0 +1,72 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>桌面电脑中可能使用多个媒体设备，本篇文档介绍如何在 SDK 中管理媒体设备。</p>
+
+# 摄像头
+<p>可以通过 <a href="/rtc/9070/WebQNRTC#getCameras">QNRTC.getCameras</a> 方法来获取当前所有的摄像头信息。该方法返回值是一个数组，每个元素是一个 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo">MediaDeviceInfo</a> 对象，包含了一个摄像头设备的详细信息。获取该对象之后，就可以通过该对象的 label 属性获取设备的名称，通过 deviceId 属性获取设备的唯一标识。</p>
+<p>该方法获取是调用时所有的摄像头信息，有些外接摄像头可能存在频繁插入、拔出的情况，因此需要通过监听事件来获取最新的设备信息。代码举例如下：</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// 监听摄像头设备变化</span>
+<span></span><span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-property">onCameraChanged</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">info</span>) {
+<span></span>
+<span></span>  <span class="hljs-comment">// 获取到摄像头变化的信息</span>
+<span></span>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;camera changed!&#x27;</span>, info);
+<span></span>
+<span></span>  <span class="hljs-comment">// 获取变化后当前所有的摄像头信息</span>
+<span></span>  <span class="hljs-keyword">const</span> cameras = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">getCameras</span>();
+<span></span>};
+<span></span></code></pre>
+<p>获取到 deviceId 后，就可以在采集摄像头 Track 时，传入该参数，指定特定的摄像头采集了。代码举例如下：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> mCameraTrack = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createCameraVideoTrack</span>({
+<span></span>  <span class="hljs-attr">cameraId</span>: <span class="hljs-string">&quot;xxx&quot;</span>, <span class="hljs-comment">// 传入前面获取到的 deviceId 值</span>
+<span></span>});
+<span></span></code></pre>
+
+# 麦克风
+<p>麦克风的处理逻辑与摄像头类似。首先通过 <a href="/rtc/9070/WebQNRTC#getMicrophones">QNRTC.getMicrophones</a> 方法来获取到所有的麦克风设备，返回数据同样是 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo">MediaDeviceInfo</a> 对象数组，然后通过监听事件来获取麦克风设备的变化信息。</p>
+<p>代码举例如下：</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// 监听麦克风设备变化</span>
+<span></span><span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-property">onMicrophoneChanged</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">info</span>) {
+<span></span>
+<span></span>  <span class="hljs-comment">// 获取到麦克风变化的信息</span>
+<span></span>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;microphone changed!&#x27;</span>, info);
+<span></span>
+<span></span>  <span class="hljs-comment">// 获取变化后当前所有的麦克风信息</span>
+<span></span>  <span class="hljs-keyword">const</span> microphones = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">getMicrophones</span>();
+<span></span>};
+<span></span>
+<span></span><span class="hljs-comment">// 指定 microphone 采集</span>
+<span></span><span class="hljs-keyword">const</span> mMicrophoneTrack = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createMicrophoneAudioTrack</span>({
+<span></span>  <span class="hljs-attr">microphoneId</span>: <span class="hljs-string">&quot;xxx&quot;</span> <span class="hljs-comment">// 传入前面获取到的 deviceId 值</span>
+<span></span>});
+<span></span></code></pre>
+
+# 扬声器
+<p>扬声器也可能有多个，获取的逻辑与摄像头、麦克风类似。主要区别是，我们不会指定扬声器采集，而是指定扬声器来播放指定的音频 Track。</p>
+<p>首先通过 <a href="/rtc/9070/WebQNRTC#getPlaybackDevices">QNRTC.getPlaybackDevices</a> 方法来获取所有的扬声器设备，返回数据同样是 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo">MediaDeviceInfo</a> 对象数组，然后通过监听事件来获取扬声器设备的变化信息。代码举例如下：</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// 监听扬声器设备变化</span>
+<span></span><span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-property">onPlaybackDeviceChanged</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">info</span>) {
+<span></span>
+<span></span>  <span class="hljs-comment">// 获取到扬声器变化的信息</span>
+<span></span>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;playback device changed!&#x27;</span>, info);
+<span></span>
+<span></span>  <span class="hljs-comment">// 获取变化后当前所有的扬声器信息</span>
+<span></span>  <span class="hljs-keyword">const</span> playbackDevices = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">getPlaybackDevices</span>();
+<span></span>};
+<span></span></code></pre>
+<p>获取到扬声器的设备信息后，就可以通过 <a href="/rtc/9087/WebQNRemoteAudioTrack#setPlaybackDevice">setPlaybackDevice</a> 方法来指定特定的扬声器来播放音频。代码举例如下：</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// 传入前面获取到的扬声器的 deviceId</span>
+<span></span><span class="hljs-keyword">await</span> remoteAudioTrack.<span class="hljs-title function_">setPlaybackDevice</span>(<span class="hljs-string">&quot;xxx&quot;</span>);
+<span></span></code></pre>
+
+# 设备权限
+<p>前面介绍了三个获取设备信息的方法，分别是：</p>
+<ul>
+<li>getCameras</li>
+<li>getMicrophones</li>
+<li>getPlaybackDevices</li>
+</ul>
+<p>这里需要注意的是，浏览器对媒体设备做了权限管理，当还没有获取对应的媒体权限时，获取到的媒体设备信息可能不完整。</p>
+<p>因此，这三个方法都可以设置一个 <a href="/rtc/9070/WebQNRTC#getCameras">skipPermissionCheck</a> 参数。当该参数值为 false 时，SDK 在请求媒体设备信息前，先请求对应的媒体设备权限。当用户授予权限后，SDK 就可以请求到完整的媒体设备信息并返回。如果此时用户没有授权，则方法会抛出错误。</p>
+
+# 示例代码
+<p>设备管理场景示例代码可参考 <a href="https://github.com/pili-engineering/QNRTC-Web/tree/master/API-Examples-Web/switchMediaDevices">API-Examples-Web/switchMediaDevices</a></p></div></div>

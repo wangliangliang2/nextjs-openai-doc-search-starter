@@ -1,0 +1,99 @@
+内容审核平台提供可视化的界面展示审核结果，用户可以查看审核结果，并根据审核结果进行复核操作。
+
+`我们不承诺永久保存数据，目前只保留近七天数据，请及时复核。`
+
+# 审核结果复核
+
+打开并登陆内容审核控制台 [https://portal.qiniu.com/censor](https://portal.qiniu.com/censor)
+
+对调用内容审核 API 的资源进行复核，可直接通过侧边栏 API 审核 -> 对应的审核 API 直接进入。直播审核需要选择对应的直播任务进行复核。关于调用内容审核 API，请参考：[内容审核 API 文档](/censor/5588/image-censor)
+
+![复核](https://dn-odum9helk.qbox.me/FiyTW0ZKImoc4K_AcqmZ68655-2d)
+
+![直播复核](https://dn-odum9helk.qbox.me/FrFRwK-MZb5E2sQGZOrDmjV9TnCH)
+
+对增量/存量任务审核的资源进行复核，请查看 [增量审核](/censor/manual/8066/censor-portal-stream)/[存量审核](/censor/manual/8067/censor-portal-batch) 的操作指南。
+
+对直播云审核的资源进行复核，请查看 [直播云审核](/censor/manual/8070/censor-portal-pili) 的操作指南。
+
+对多媒体工作流的资源进行复核，请查看 [多媒体工作流审核](/censor/manual/8064/censor-portal-dora-workflow) 的操作指南。
+
+我们通过不同的颜色来标识审核结果：
+
+* `红色` 代表 `违规`
+* `黄色` 代表 `疑似`
+* `绿色` 代表 `正常`
+
+在列表界面时我们将不显示审核结果为正常的审核类型，但可以在详情中查看所有审核类型的结果。
+  
+根据相关部门的标准，七牛云在审核结果中对每个文件给出了管控建议：
+
+* 违规，指审核结果为违规的文件，等待客户进行处理，一般建议是在复核时将复核结果设为违规
+* 疑似，指审核结果为疑似的文件，需要客户根据自身业务类型确认，确认后进行合适的处理。如果确定是违规则将复核结果设为违规，如果确定不是违规，则可以忽略或将复核结果设为正常
+* 正常，指审核结果为正常的文件，一般不需要用户做任何操作
+
+# 设置筛选条件
+
+复核界面支持设置以下筛选条件，可以通过按钮展开/收起筛选条件
+
+![筛选条件](https://dn-odum9helk.qbox.me/FkxYf27rcscMMeclNzPHz1fhUqqO)
+
+|条件|说明|
+|-|-|
+| 审核结果 | 内容审核的审核结果 |
+| 审核类型 | 当只选择了审核类型时，会筛选出使用了该审核类型的结果 <br/> 当选择了审核类型 + 审核结果过时，会筛选出审核类型的结果为审核结果的结果  |
+| 时间 | 审核结果的创建时间 |
+| 复核结果 | 如果进行了人工复核，则可以通过复核结果筛选结果 |
+| entry_id | 可以通过返回中的 entry_id 进行精确筛选，不支持与其他条件组合使用；参考 [内容审核返回](https://developer.qiniu.com/censor/5588/image-censor#4) |
+| 资源 | 可以通过审核资源的 url 链接进行筛选，为精确匹配，不支持与其他条件组合使用 |
+
+# 选择条目
+
+在结果复核页面上，当需要批量操作时，用户可以通过以下几种方式选择条目：
+
+1. 单选框勾选，适合条目数较少且比较分散时使用；
+2. 拖拽选择，适合条目数较多且分布连续时使用；
+3. 全选，选择当前页面上所有`未复核`的资源（`已复核的资源不会被再次选中`）。可以与以上两种方式结合使用，例如：当存在少量违规资源时，用户可以先通过以上两种方式对违规资源进行复核操作，再通过全选将其余资源的复核结果设为正常。
+
+![选择](https://dn-odum9helk.qbox.me/FiBVMaGByx6BekyOtnk-yD0WULxa)
+
+页面上会显示已选择的条目数量，方便用户核对、确认。
+
+![选择条目数](https://dn-odum9helk.qbox.me/FonQBE06riiaH9B3tc82s5ZjPnqz)
+
+# 查看详情
+
+对于图片、视频文件，点击缩略图卡片则可显示复核详情。
+
+![查看详情](https://dn-odum9helk.qbox.me/Fku8INbbYRdU_wnx3imdWK4ciY5U)
+
+对于音频、文本文件，点击表格行后方的详情按钮可显示复核详情。
+
+![查看详情](https://dn-odum9helk.qbox.me/FkHeWOsHeGdBPBmQHg4Gs2danQFq)
+
+# 复核操作
+
+可以通过对 卡片/表格行 进行勾选 或 勾选全选 来选中多个结果，然后点击 正常 或 封禁 按钮来进行批量操作。
+
+![复核](https://dn-odum9helk.qbox.me/Fm4TtDK04T-ch2GS9PBXLUPkQlC_)
+
+也可以在 结果详情 中，仔细确认结果后，点击弹出框下方的 正常 或 封禁 按钮对单个审核结果进行复核。
+
+![复核](https://dn-odum9helk.qbox.me/FhlqjrWJ4k2mR0v9D0PreRfNyPvo)
+
+# 封禁/删除文件
+
+对于**增量/存量**结果的复核，在将复核结果设为违规时能同时选择将对应的文件 封禁/删除（`不可恢复，谨慎操作`）；删除后会显示 **文件已删除**，`无法在复核界面直接预览该文件内容`。
+
+![封禁/删除文件](https://dn-odum9helk.qbox.me/Fg27NAQP_vTiJ7Ckp4wt2uj51Mbg)
+
+![显示文件已删除](https://dn-odum9helk.qbox.me/FomdEoxUOdi_ObeMn2e1eAmtSyx9)
+
+# 导出文件列表
+
+![导出](https://dn-odum9helk.qbox.me/Fq6VHYINM3DGh2O5eSyF39bBMScL)
+
+用户可以在页面上导出文件列表，然后进行批量操作，如：通过对象存储 API 进行清除或封禁资源等。请参考：
+
+* [资源删除接口](/kodo/api/1257/delete)
+* [资源封禁接口](/kodo/api/4173/modify-the-file-status)

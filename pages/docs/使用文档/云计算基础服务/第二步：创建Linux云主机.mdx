@@ -1,0 +1,92 @@
+## 1.
+
+登录 [云主机控制台](https://portal.qiniu.com/kylin), 点击【新建实例】按钮，进入 [云主机购买页面](https://portal.qiniu.com/kylin/instances/create)
+
+<br style="clear: both;"/>
+
+## 2.
+选择计费模式：包年包月或按量付费，两种付费模式一个按整月计算一个按实际使用的秒数计算。更多信息请看 [计费模式说明](/fec/manual/pricing-model)。
+
+<div style="padding: 10px;background-color: #e6e6e6;width: auto;float: left;">![](https://dn-odum9helk.qbox.me/FmVq2Dne5fTsi2s7q3kBCBwZZMU-)</div>
+
+<br style="clear: both;"/>
+
+## 3.
+
+选择地域和可用区。当您需要多台云主机时推荐分别选择不同可用区以达到容灾效果。
+
+<br style="clear: both;"/>
+
+## 4.
+
+选择机型和配置。根据底层硬件的不同，七牛云目前提供了 _系列 1_ 和 _系列 2_ （下文也称为 _一代实例_ 和 _二代实例_ ）两种不同的实例系列，不同的实例系列提供如下实例类型：
+
+**二代实例类型** ：[标准型S2](/fec/manual/standard-s2-instance)，[高IO型I2](/fec/manual/high-i-o-type-i2-instance)，[内存型M2](/fec/manual/memory-type-m2-instance)，[计算型C2](/fec/manual/computational-examples-of-c2)  
+**一代实例类型** ：标准型S1，高IO型I1，内存型M1
+
+为获得最佳性能，我们建议您在新建实例时使用二代实例类型。实例类型详细说明，请参见 [实例类型概述](/fec/manual/instance-type-overview)。
+
+根据第二步确定的配置选择实例规格。
+
+<div style="padding: 10px;background-color: #e6e6e6;width: auto;float: left;">![](https://dn-odum9helk.qbox.me/FsD8MAYZhQdnNP0ypFHEju2h6i9u)</div>
+
+<br style="clear: both;"/>
+
+## 5.
+
+  对于刚开始使用七牛云的用户可选择公共镜像，七牛云提供了包括但不限于 CentOS， Ubuntu， Debian， SUSE， OpenSUSE， FreeBSD 等操作系统，后续运行环境自行搭建。操作系统选择 Linux，并根据需要挑选版本。
+
+<div style="padding: 10px;background-color: #e6e6e6;width: auto;float: left;">![](https://dn-odum9helk.qbox.me/Fg3rWIP23U_75fziR0nWT2-EWQJc)</div>
+
+<br style="clear: both;"/>
+
+- Linux 为开源系统，支持各种主流编程语言，支持 MySQL 等数据库（需自行安装） 
+
+<br style="clear: both;"/>
+
+## 6.
+
+七牛云提供云硬盘和本地硬盘两种类型。
+
+- 云硬盘：采用一盘三备的分布式存储方式，数据可靠性高
+- 本地硬盘：高IO机型专用，具体对比可以参考 [存储概述](/fec/manual/summary-of-storage)。
+
+不管选择哪种硬盘类型，Linux 云主机都默认赠送 20GB 系统盘，且允许您通过付费方式调整至 50GB 大小。
+
+<div style="padding: 10px;background-color: #e6e6e6;width: auto;float: left;">![](https://dn-odum9helk.qbox.me/FkNgTlDMZqIQ5V3dsGfoNIcnAhJC)</div>
+
+<br style="clear: both;"/>
+
+## 7.
+
+选择网络计费模式（固定带宽计费或流量计费）。
+
+- 固定带宽计费：选择固定带宽，超过本带宽时将丢包。适合网络波动较小的场景。
+- 流量计费：按实际使用流量收费。可限制峰值带宽避免意外流量带来的费用，当瞬时带宽超过该值时将丢包。适合网络波动较大的场景。
+
+<div style="padding: 10px;background-color: #e6e6e6;width: auto; float: left">![](https://dn-odum9helk.qbox.me/FouST6P4q_O9GN68Klsq9qguwizd)</div>
+
+<br style="clear: both;"/>
+
+## 8.
+确定服务器数量和使用时长（包年包月）
+
+<br style="clear: both;"/>
+
+## 9. 
+设置主机名和选择登陆方式，您可以选择在购买时主机命名方式为【立即命名】并填入有语义的名字，限制在 20 个字符以内，比如 `qcs-sandbox`。
+
+七牛云支持多种云主机登录方式，用户可以自行选择设置：
+
+- 密码登录：用户可指定访问密码，并通过默认用户名及密码登录 Linux 云主机。
+- 密钥登录：安全性高于普通密码登录，要求您先创建一对密钥。
+
+<div style="padding: 10px;background-color: #e6e6e6;width: auto; float: left">![](https://dn-odum9helk.qbox.me/FkbzLpe6mmSqlrrJcxn-DY5hgd1M)</div>
+
+<br style="clear: both;"/>
+
+## 10.
+
+（<font color="red">确保登录端口 22（Linux）开放</font>，更多信息见 [安全组](/fec/manual/the-security-group)），点击【立即购买】按钮，完成支付后即可进入 [云主机控制台](https://portal.qiniu.com/kylin) 查收您的云主机。
+
+云主机创建好后用户将会收到邮件通知，内容包括实例名称、公网 IP 地址、内网 IP 地址、登录名等信息，您可以使用这些信息登录和管理实例。

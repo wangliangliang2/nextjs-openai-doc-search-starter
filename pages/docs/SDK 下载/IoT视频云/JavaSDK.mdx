@@ -1,0 +1,388 @@
+
+<a id="intro"></a>
+# 简介
+
+此 SDK 适用于 Java 8 及以上版本。使用此 SDK 构建您的物联网数据云服务，能让您以非常便捷的方式快速地实现设备接入、云端存储、远程观看等一站式视频场景能力，七牛云及其 SDK支持设备管理、存储管理、视频管理，帮助智能视频硬件厂商更快捷地使设备接入云服务。
+
+<a id="opensource"></a>
+# 开源
+
+- [Java SDK 项目地址](https://github.com/qiniu/java-sdk)
+- [Java SDK 发布地址](https://github.com/qiniu/java-sdk/releases)
+
+<a id="install"></a>
+
+# 安装
+
+- <a href="#install-by-gradle">使用Gradle</a>
+- <a href="#install-by-maven">使用Maven</a>
+- <a href="#install-by-yourself">手动安装</a>
+
+## 注意
+* 从 7.2.24 开始，okhttp3 升级到 3.14.2，其要求 java 1.8 及以上。
+* 若一定 java 1.7 ，请手动指定 okhttp3 依赖 3.12.3， `com.squareup.okhttp3:okhttp:3.12.3`
+```
+    compile ('com.qiniu:qiniu-java-sdk:7.2.+') {
+        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    }
+    compile 'com.squareup.okhttp3:okhttp:3.12.3'
+```
+
+<a id="install-by-gradle"></a>
+### Gradle
+
+```
+compile 'com.qiniu:qiniu-java-sdk:7.2.+'
+```
+
+<a id="install-by-maven"></a>
+### Maven
+
+```
+<dependency>
+  <groupId>com.qiniu</groupId>
+  <artifactId>qiniu-java-sdk</artifactId>
+  <version>[7.2.0, 7.2.99]</version>
+</dependency>
+```
+这里的`version`指定了一个版本范围，每次更新`pom.xml`的时候会尝试去下载`7.2.x`版本中的最新版本，你可以手动指定一个固定的版本。
+
+<a id="install-by-yourself"></a>
+### 手动下载
+
+请尽量使用包管理工具自动解决依赖问题。如果条件实在不满足，只能通过手动下载jar包的方式来解决。本项目自身jar及依赖的第三方库如下：
+
+Java SDK依赖的第三方库及其版本如下：
+
+```
+<dependencies>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>3.14.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.5</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.qiniu</groupId>
+      <artifactId>happy-dns-java</artifactId>
+      <version>0.1.6</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+```
+
+|库名称|库项目地址|库下载地址|
+|----|-----------|-------|
+|qiniu-java-sdk|[链接🔗](https://github.com/qiniu/java-sdk)|[链接🔗](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22qiniu-java-sdk%22)|
+|happy-dns-java|[链接🔗](https://github.com/qiniu/happy-dns-java)|[链接🔗](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22happy-dns-java%22)|
+|okhttp3|[链接🔗](https://github.com/square/okhttp)|[链接🔗](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.squareup.okhttp3%22)|
+|okio|[链接🔗](https://github.com/square/okio)|[链接🔗](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.squareup.okio%22)|
+|gson|[链接🔗](https://github.com/google/gson)|[链接🔗](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.google.code.gson%22)|
+|junit|[链接🔗](http://junit.org/junit4/)|[链接🔗](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22junit%22)|
+可以点击每个库的下载链接，然后选择对应的jar进行下载，然后引入到项目中。
+
+<a id="api-auth"></a>
+# 鉴权
+Java SDK的所有的功能，都需要合法的授权。授权凭证的签算需要七牛账号下的一对有效的`Access Key`和`Secret Key`，这对密钥可以通过如下步骤获得：
+
+1. 点击[注册🔗](https://portal.qiniu.com/signup)开通七牛开发者帐号
+2. 如果已有账号，直接登录七牛开发者后台，点击[这里🔗](https://portal.qiniu.com/user/key)查看 Access Key 和 Secret Key
+
+
+# 设备管理
+
+LINNKING设备管理支持设备的添加、设备信息的查询和更新、设备的删除、设备列表的查询以及设备在线记录的查询。
+
+
+   - <a href="#device-add">添加新设备</a>
+   - <a href="#device-query">查询设备详细信息</a>
+   - <a href="#device-list">查询所有设备列表</a>
+   - <a href="#device-history-query">查询设备的在线记录</a>
+   - <a href="#device-update">更新设备配置</a>
+   - <a href="#device-delete">删除指定设备</a>
+
+
+###  **添加新设备**
+
+在指定的应用下添加设备。
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+LinkingDeviceManager deviceManager = new LinkingDeviceManager(auth);
+String appid = "your appid name";
+String deviceName = "your device name";
+deviceManager.createDevice(appid, deviceName);
+```
+
+<a id="device-query"></a>
+### **查询设备详细信息**
+
+查询指定设备的详细信息。
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+LinkingDeviceManager deviceManager = new LinkingDeviceManager(auth);
+String appid = "your appid name";
+String deviceName = "your device name";
+deviceManager.getDevice(appid, deviceName);
+```
+
+<a id="device-list"></a>
+### **查询所有设备列表**
+
+查询指定应用下所有设备的列表。
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+LinkingDeviceManager deviceManager = new LinkingDeviceManager(auth);
+String appid = "your appid name";
+// 使用设备名称的前缀进行查询
+String prefix = "sdk-testListDevice";
+// marker 为上次列举返回的位置标记，作为本次列举的起点信息(默认为"")
+String marker = "";
+// limit 为最大返回多少条数据,最大1000条
+String limit = 1000;
+// online为true时只返回在线的设备
+boolean online = false;
+deviceManager.listDevice(appid, prefix, marker, limit, online);
+```
+
+<a id="device-history-query"></a>
+### **查询设备的在线记录**
+
+查询指定时间段内设备的在线记录。
+
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+LinkingDeviceManager deviceManager = new LinkingDeviceManager(auth);
+String appid = "your appid name";
+String device = "your device name";
+long start = 0;
+long end = (new Date().getTime()) / 1000;
+// marker 为上次列举返回的位置标记，作为本次列举的起点信息(默认为"")
+String marker = "";
+// limit 为最大返回多少条数据,最大1000条
+String limit = 1000;
+deviceManager.listDeviceHistory(appid, device, start, end, marker, limit);
+```
+
+<a id="device-update"></a>
+### **更新设备配置**
+
+更新设备配置信息。
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+LinkingDeviceManager deviceManager = new LinkingDeviceManager(auth);
+String appid = "your appid name";
+String device = "your device name";
+
+// 更新设备segmentexpiredays为9
+PatchOperation[] operations = {new PatchOperation("replace", "segmentExpireDays", 9)};
+
+deviceManager.updateDevice(appid, device, operations)
+```
+
+
+<a id="device-delete"></a>
+### **删除指定设备**
+删除指定的设备。
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+LinkingDeviceManager deviceManager = new LinkingDeviceManager(auth);
+String appid = "your appid name";
+String device = "your device name";
+
+deviceManager.deleteDevice(appid, device);
+```
+
+# 设备秘钥管理
+
+设备秘钥管理。
+
+ - <a href="#deviceKey-add">新增设备秘钥</a>
+ - <a href="#deviceKey-query">查询设备秘钥</a>
+ - <a href="#deviceKey-delete">删除设备秘钥</a>
+ - <a href="#deviceKey-state-set">禁用、启用设备的密钥</a>
+ - <a href="#deviceKey-clone">克隆设备秘钥</a>
+ - <a href="#query-by-deviceKey">通过DAK查询信息</a>
+
+<a id="deviceKey-add"></a>
+### **新增设备秘钥**
+
+新增设备的密钥，每个设备最多有两对密钥。
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+LinkingDeviceManager deviceManager = new LinkingDeviceManager(auth);
+String appid = "your appid name";
+String device = "your device name";
+
+DeviceKey[] keys = deviceManager.addDeviceKey(appid, device)
+```
+
+<a id="deviceKey-query"></a>
+### **查询设备秘钥**
+
+查询指定设备的密钥。
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+LinkingDeviceManager deviceManager = new LinkingDeviceManager(auth);
+String appid = "your appid name";
+String device = "your device name";
+
+DeviceKey[] keys = deviceManager.queryDeviceKey(appid, device);
+```
+
+<a id="deviceKey-delete"></a>
+### **删除设备秘钥**
+
+删除设备的密钥。
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+LinkingDeviceManager deviceManager = new LinkingDeviceManager(auth);
+String appid = "your appid name";
+String device = "your device name";
+DeviceKey[] keys = deviceManager.queryDeviceKey(appid, device);
+
+deviceManager.deleteDeviceKey(appid, device, keys[0].getAccessKey());
+```
+
+<a id="deviceKey-state-set"></a>
+### **禁用、启用设备的密钥**
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+LinkingDeviceManager deviceManager = new LinkingDeviceManager(auth);
+String appid = "your appid name";
+String device = "your device name";
+int state = 1;
+DeviceKey[] keys = deviceManager.queryDeviceKey(appid, device);
+
+deviceManager.updateDeviceKeyState(appid, device, keys[0].getAccessKey(), state)
+```
+
+<a id="deviceKey-clone"></a>
+### **克隆设备秘钥**
+某个设备的密钥克隆给新的设备，不用重新对设备进行烧录新的密钥。
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+LinkingDeviceManager deviceManager = new LinkingDeviceManager(auth);
+String appid = "your appid name";
+String fromDevice = "from device name";
+String toDevice = "to device name";
+// cleanSelfKey 秘钥克隆后是否删除原设备秘钥
+boolean cleanSelfKey = false
+// deleteDevice 秘钥克隆后是否删除原设备
+boolean deleteDevice = false
+DeviceKey[] keys = deviceManager.queryDeviceKey(appid, fromDevice);
+
+deviceManager.cloneDeviceKey(appid, fromDevice, toDevice, cleanSelfKey, deleteDevice, keys[0].getAccessKey())
+```
+
+<a id="query-by-deviceKey"></a>
+### **通过DAK查询信息**
+
+通过dak查询appid和deviceName。
+
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+LinkingDeviceManager deviceManager = new LinkingDeviceManager(auth);
+String appid = "your appid name";
+String device = "your device name";
+Strinng dak = "your dak"
+Device dev = deviceManager.getDeviceByAccessKey(dak);
+```
+
+
+## **视频播放**
+
+- <a href="#linking-vod-save">视频片段收藏</a>
+- <a href="#linking-vod-api">视频播放类API参考</a>
+
+<a id="linking-vod-save"></a>
+### **视频片段收藏**
+对指定的视频片段进行收藏，保存在云存储上。
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+LinkingVodManager vodManager = new LinkingVodManager(auth);
+String appid = "your appid name";
+String device = "your device name";
+// 开始时间，unix timestamp 以秒为单位
+long start = (new Date().getTime()) / 1000 - 3600;
+// 结束时间，unix timestamp 以秒为单位
+long end = (new Date().getTime()) / 1000;
+// 设置保存文件的名称，不指定的话会默认生成
+String frame = "testSaveas.mp4" 
+// 文件格式，默认和fname的后缀相同，如果两者有冲突则返回错误
+String format = "mp4" 
+SaveasReply saveasReply = vodManager.Saveas(appid, device, start, end, frame, format)
+```
+
+<a id="linking-vod-api"></a>
+### **视频播放类API参考**
+其他视频播放操作，建议直接调用对应的API。
+
+|接口|说明|
+|---|---|
+|[视频回放](https://developer.qiniu.io/linking/api/5650/the-playback)|该接口用于查询指定时间段的视频片段进行录像回放|
+|[直播观看](https://developer.qiniu.io/linking/api/5903/live-Standard-Edition)|该接口用户rtmp可控推流的直播观看功能|
+|[缩略图查询](https://developer.qiniu.io/linking/api/5651/the-thumbnail-query)|该接口用于查询指定时间段内视频片段的缩略图|
+|[视频片段查询](https://developer.qiniu.io/linking/api/5646/video-fragment-query)|该接口用于查询某个时间段内的视频切片的片段记录|
+|[倍速播放](https://developer.qiniu.io/linking/api/5648/times-the-speed-of-playback)|该接口用于设置视频回放的播放倍速|
+|[延时直播](https://developer.qiniu.io/linking/api/5649/delay-live)|该接口可用于视频直播的延时播放|
+
+# 设备访问凭证
+
+我们引入设备访问凭证，由七牛账号的密钥对签算生成对设备资源临时性访问的凭证。
+
+访问策略
+```
+{
+    "appid": "<appid>",  // 使用七牛账号密钥对签名时，需要该字段
+    "device": "<deviceName>", // 使用七牛账号密钥对签名时，需要该字段
+    "deadline": <deadlineTimestamp>, // token过期时间
+    "random": <randomNumber>, // 随机数，用来保证DEVICE ACCESS TOKEN全局唯一
+    "statement":[
+        {
+            "action": "linking:vod"
+        },
+        {
+            "action": "linking:tutk"
+        }
+    ]
+}
+```
+其中密钥对可以采用七牛账号或设备端的密钥对，如果使用设备端的密钥对签名则访问策略中不需要app和device字段。当前tutk相关的action只支持设备端密钥。
+
+action列表
+```
+linking:status 设备基础信息/上下线记录
+linking:vod 回放相关(切片片段查询、截帧、伪直播、倍速播放等)
+linking:tutk tutk建连
+linking:rpc rpc 控制
+```
+
+```
+Auth auth = Auth.create(AccessKey, SecretKey);  
+
+String appid = "your appid name";
+String device = "your device name";
+long deadline = 1000;
+
+// 设备基础信息/上下线记录
+String statusToken = auth.generateLinkingDeviceTokenWithExpires(appid, device, deadline, new String[]{"linking:status"})
+
+// 视频回放/缩略图查询/倍速播放/延时直播/视频片段查询
+String vodToken = auth.generateLinkingDeviceTokenWithExpires(appid, device, deadline, new String[]{"linking:vod"})
+
+// tutk建连
+String tutkToken = auth.generateLinkingDeviceTokenWithExpires(appid, device, deadline, new String[]{"linking:tutk"})
+```
+

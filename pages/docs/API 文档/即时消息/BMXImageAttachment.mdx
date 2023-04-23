@@ -1,0 +1,286 @@
+## 类 BMXImageAttachment ##
+
+ *  java.lang.Object
+ *   *  BMXBaseObject
+     *   *  im.floo.floolib.BMXMessageAttachment
+         *   *  im.floo.floolib.BMXFileAttachment
+             *   *  im.floo.floolib.BMXImageAttachment
+
+ *  --------------------
+    
+      
+    
+    
+        public class BMXImageAttachment
+        extends BMXFileAttachment
+    
+    图片消息附件
+
+ *   *  ### 嵌套类概要 ###
+        
+         *  ### 从类继承的嵌套类/接口 im.floo.floolib.BMXMessageAttachment ###
+            
+            `BMXMessageAttachment.DownloadStatus, BMXMessageAttachment.Size, BMXMessageAttachment.Type`
+    
+     *  ### 构造器概要 ###
+        
+        <table>  <span>构造器</span><span>&nbsp;</span>  
+         <tbody> 
+          <tr> 
+           <th>限定符</th> 
+           <th>构造器和说明</th> 
+          </tr> 
+          <tr> 
+           <td><code>protected </code></td> 
+           <td><code><span><a rel="nofollow">BMXImageAttachment</a></span>(long&nbsp;cPtr, boolean&nbsp;cMemoryOwn)</code>&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td><code>&nbsp;</code></td> 
+           <td><code><span><a rel="nofollow">BMXImageAttachment</a></span>(java.lang.String&nbsp;path, <a title="im.floo.floolib中的类" rel="nofollow">BMXMessageAttachment.Size</a>&nbsp;size)</code>&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td><code>&nbsp;</code></td> 
+           <td><code><span><a rel="nofollow">BMXImageAttachment</a></span>(java.lang.String&nbsp;path, <a title="im.floo.floolib中的类" rel="nofollow">BMXMessageAttachment.Size</a>&nbsp;size, java.lang.String&nbsp;displayName)</code> 
+            <div>
+              构造函数，构建发送图片消息附件 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>&nbsp;</code></td> 
+           <td><code><span><a rel="nofollow">BMXImageAttachment</a></span>(java.lang.String&nbsp;ratelUrl, <a title="im.floo.floolib中的类" rel="nofollow">BMXMessageAttachment.Size</a>&nbsp;size, java.lang.String&nbsp;displayName, long&nbsp;fileLength)</code> 
+            <div>
+              构造函数，构建接收图片消息附件 
+            </div> </td> 
+          </tr> 
+         </tbody> 
+        </table>
+    
+     *  ### 方法概要 ###
+        
+        <table>  <span><span>所有方法</span><span>&nbsp;</span></span><span><span><a rel="nofollow">静态方法</a></span><span>&nbsp;</span></span><span><span><a rel="nofollow">实例方法</a></span><span>&nbsp;</span></span><span><span><a rel="nofollow">具体方法</a></span><span>&nbsp;</span></span>  
+         <tbody> 
+          <tr> 
+           <th>限定符和类型</th> 
+           <th>方法和说明</th> 
+          </tr> 
+          <tr> 
+           <td><code><a title="im.floo.floolib中的类" rel="nofollow">BMXMessageAttachment</a></code></td> 
+           <td><code><span><a rel="nofollow">clone</a></span>()</code> 
+            <div>
+              克隆函数 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">delete</a></span>()</code>&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td><code>static <a title="im.floo.floolib中的类" rel="nofollow">BMXImageAttachment</a></code></td> 
+           <td><code><span><a rel="nofollow">dynamic_cast</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXMessageAttachment</a>&nbsp;attachment)</code>&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td><code>protected void</code></td> 
+           <td><code><span><a rel="nofollow">finalize</a></span>()</code>&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td><code>protected static long</code></td> 
+           <td><code><span><a rel="nofollow">getCPtr</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXImageAttachment</a>&nbsp;obj)</code>&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">setThumbnail</a></span>(java.lang.String&nbsp;path)</code> 
+            <div>
+              设置发送图片消息缩略图 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code><a title="im.floo.floolib中的类" rel="nofollow">BMXMessageAttachment.Size</a></code></td> 
+           <td><code><span><a rel="nofollow">size</a></span>()</code> 
+            <div>
+              图片大小 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code><a title="im.floo.floolib中的枚举" rel="nofollow">BMXMessageAttachment.DownloadStatus</a></code></td> 
+           <td><code><span><a rel="nofollow">thumbnailDownloadStatus</a></span>()</code> 
+            <div>
+              缩略图下载状态 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>java.lang.String</code></td> 
+           <td><code><span><a rel="nofollow">thumbnailPath</a></span>()</code> 
+            <div>
+              缩略图本地路径 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>java.lang.String</code></td> 
+           <td><code><span><a rel="nofollow">thumbnailUrl</a></span>()</code>&nbsp;</td> 
+          </tr> 
+          <tr> 
+           <td><code><a title="im.floo.floolib中的枚举" rel="nofollow">BMXMessageAttachment.Type</a></code></td> 
+           <td><code><span><a rel="nofollow">type</a></span>()</code> 
+            <div>
+              返回图片附件类型 
+            </div> </td> 
+          </tr> 
+         </tbody> 
+        </table>
+        
+         *  ### 从类继承的方法 im.floo.floolib.BMXFileAttachment ###
+            
+            `displayName, downloadStatus, fileLength, getCPtr, path, ratelUrl, url`
+        
+         *  ### 从类继承的方法 im.floo.floolib.BMXMessageAttachment ###
+            
+            `getCPtr`
+        
+         *  ### 从类继承的方法 java.lang.Object ###
+            
+            `equals, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait`
+
+ *   *  ### 构造器详细资料 ###
+        
+         *  #### BMXImageAttachment ####
+            
+                protected BMXImageAttachment(long cPtr,
+                                             boolean cMemoryOwn)
+        
+         *  #### BMXImageAttachment ####
+            
+                public BMXImageAttachment(java.lang.String path,
+                                          BMXMessageAttachment.Size size,
+                                          java.lang.String displayName)
+            
+            构造函数，构建发送图片消息附件
+            
+            参数:
+            
+            `path` \- 本地路径
+            
+            `size` \- 图片的大小，宽度和高度
+            
+            `displayName` \- 展示名
+        
+         *  #### BMXImageAttachment ####
+            
+                public BMXImageAttachment(java.lang.String path,
+                                          BMXMessageAttachment.Size size)
+        
+         *  #### BMXImageAttachment ####
+            
+                public BMXImageAttachment(java.lang.String ratelUrl,
+                                          BMXMessageAttachment.Size size,
+                                          java.lang.String displayName,
+                                          long fileLength)
+            
+            构造函数，构建接收图片消息附件
+            
+            参数:
+            
+            `ratelUrl` \- ratel服务器地址
+            
+            `size` \- 图片的大小，宽度和高度
+            
+            `displayName` \- 展示名
+            
+            `fileLength` \- 文件大小
+    
+     *  ### 方法详细资料 ###
+        
+         *  #### getCPtr ####
+            
+                protected static long getCPtr(BMXImageAttachment obj)
+        
+         *  #### finalize ####
+            
+                protected void finalize()
+            
+            覆盖:
+            
+            `finalize` 在类中 `BMXFileAttachment`
+        
+         *  #### delete ####
+            
+                public void delete()
+            
+            覆盖:
+            
+            `delete` 在类中 `BMXFileAttachment`
+        
+         *  #### type ####
+            
+                public BMXMessageAttachment.Type type()
+            
+            返回图片附件类型
+            
+            覆盖:
+            
+            `type` 在类中 `BMXFileAttachment`
+            
+            返回:
+            
+            Type
+        
+         *  #### clone ####
+            
+                public BMXMessageAttachment clone()
+            
+            克隆函数
+            
+            覆盖:
+            
+            `clone` 在类中 `BMXFileAttachment`
+            
+            返回:
+            
+            BMXMessageAttachmentPtr
+        
+         *  #### size ####
+            
+                public BMXMessageAttachment.Size size()
+            
+            图片大小
+            
+            返回:
+            
+            Size
+        
+         *  #### thumbnailUrl ####
+            
+                public java.lang.String thumbnailUrl()
+        
+         *  #### setThumbnail ####
+            
+                public void setThumbnail(java.lang.String path)
+            
+            设置发送图片消息缩略图
+            
+            参数:
+            
+            `path` \- 本地路径
+        
+         *  #### thumbnailPath ####
+            
+                public java.lang.String thumbnailPath()
+            
+            缩略图本地路径
+            
+            返回:
+            
+            std::string
+        
+         *  #### thumbnailDownloadStatus ####
+            
+                public BMXMessageAttachment.DownloadStatus thumbnailDownloadStatus()
+            
+            缩略图下载状态
+            
+            返回:
+            
+            DownloadStatus
+        
+         *  #### dynamic\_cast ####
+            
+                public static BMXImageAttachment dynamic_cast(BMXMessageAttachment attachment)

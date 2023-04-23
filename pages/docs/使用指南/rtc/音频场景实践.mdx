@@ -1,0 +1,47 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文主要介绍实时音视频通话过程中的一些特殊音频场景的使用方式。</p>
+
+# 音乐交互类场景
+<p>若您的业务场景中包含乐器弹奏、唱歌、外部设备音乐的播放（如伴奏）等音乐交互场景，为了避免系统的降噪对乐器弹奏、伴奏等音乐产生影响，建议在用户演奏时通过 <a href="/rtc/api/8732/QNRTC#setAudioScene">QNRTC.setAudioScene</a> 接口将音频场景设置为 <a href="/rtc/api/12165/QNAudioScene#SOUND_EQUALIZE">QNAudioScene.SOUND_EQUALIZE</a>，该场景对环境音和音乐声的还原性更优，可以为用户提供更好的演奏体验。</p>
+
+# 背景音乐（音效）场景
+<p>若您的业务场景有添加背景音乐的需求，可以通过 SDK 提供的混音管理类实现：</p>
+<ul>
+<li><a href="/rtc/api/11921/QNAudioMusicMixer">QNAudioMusicMixer</a>: 音乐混音，多用于对时长较长的背景音乐的混音，同时仅支持对一路音频进行混音</li>
+<li><a href="/rtc/api/11923/QNAudioEffectMixer">QNAudioEffectMixer</a>: 音效混音，多用于对时长较短的音乐的混音，如掌声、欢呼声、喝彩声等氛围音以及礼物音效等。支持同时对多路音效文件进行混音</li>
+<li><a href="/rtc/api/12212/QNAudioSourceMixer">QNAudioSourceMixer</a>: 音源混音，多用于对音频原始数据 (pcm) 的混音，支持同时对多路音源数据进行混音</li>
+</ul>
+<h2 id="本地播放"><a href="#%E6%9C%AC%E5%9C%B0%E6%92%AD%E6%94%BE" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>本地播放</h2>
+<p>从 v5.2.0 版本开始，SDK 支持关闭混音音乐、音效的推送功能，关闭推送后，混音音乐、音效将只做本地播放。</p>
+<p>若您的业务<strong>仅需本地播放音乐、音效，无需将音乐声音推送到远端</strong>，那么为了避免系统的降噪对通话质量产生影响，我们建议您<strong>通过上述混音接口替代其他音频播放器来实现本地音乐的播放</strong>。</p>
+<p>关闭远端推送的接口示例如下：</p>
+<pre><code class="language-java"><span class="hljs-comment">// 停止背景音乐混音的推送</span>
+<span></span>QNAudioMusicMixer.setPublishEnabled(<span class="hljs-literal">false</span>);
+<span></span><span class="hljs-comment">// 停止音效混音的推送</span>
+<span></span>QNAudioEffectMixer.setPublishEnabled(<span class="hljs-string">&quot;effectID&quot;</span>, <span class="hljs-literal">false</span>);
+<span></span><span class="hljs-comment">// 停止音源混音的推送</span>
+<span></span>QNAudioSourceMixer.setPublishEnabled(<span class="hljs-string">&quot;sourceID&quot;</span>, <span class="hljs-literal">false</span>);
+<span></span></code></pre>
+
+# 游戏场景
+<p>游戏直播等场景通常需要实现游戏声音的录制、推送功能。为了实现对游戏音频的录制，需要满足如下前提条件：</p>
+<ul>
+<li>游戏应用允许其声音被第三方应用捕获</li>
+<li>您的应用具有相应权限，并实现了“捕获播放的音频”功能</li>
+</ul>
+<p>对于上述条件的实现方式，可以参考 <a href="https://developer.android.google.cn/guide/topics/media/playback-capture">Android 官方文档</a>。</p>
+<p>在具备了上述前提条件后，即可通过如下方式完成游戏声音的录制和推送：</p>
+<ul>
+<li>捕获游戏声音</li>
+<li>将游戏声音作为一路音源推送至 SDK，并通过 SDK 推送至远端。音源混音可参考 <a href="/rtc/api/12212/QNAudioSourceMixer">QNAudioSourceMixer</a></li>
+</ul>
+
+# 参考文档
+<ul>
+<li><a href="/rtc/api/12165/QNAudioScene">QNAudioScene</a></li>
+<li><a href="/rtc/api/11921/QNAudioMusicMixer">QNAudioMusicMixer</a></li>
+<li><a href="/rtc/api/11923/QNAudioEffectMixer">QNAudioEffectMixer</a></li>
+<li><a href="/rtc/api/12212/QNAudioSourceMixer">QNAudioSourceMixer</a></li>
+<li><a href="https://developer.android.google.cn/guide/topics/media/playback-capture">“捕获播放的音频”官方文档</a></li>
+</ul></div></div>

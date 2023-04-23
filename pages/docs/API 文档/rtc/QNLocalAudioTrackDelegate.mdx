@@ -1,0 +1,60 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                本地音频 Track 回调代理，可通过 <a href='8854/QNLocalAudioTrack-iOS#delegate'>QNLocalAudioTrack.delegate</a> 进行设置，本地音频 Track 视频数据的回调。</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didGetAudioBuffer`)'>didGetAudioBuffer</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didGetAudioBuffer">
+didGetAudioBuffer</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)localAudioTrack:(<a href='8854/QNLocalAudioTrack-iOS'>QNLocalAudioTrack</a> *)localAudioTrack didGetAudioBuffer:(AudioBuffer *)audioBuffer bitsPerSample:(NSUInteger)bitsPerSample sampleRate:(NSUInteger)sampleRate;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>本地音频 Track 的数据回调</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>该回调在 AU Remote IO 线程，请不要做过于耗时的操作，否则可能阻塞该线程影响音频输出或其他未知问题。</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            localAudioTrack: <a href='8854/QNLocalAudioTrack-iOS'>QNLocalAudioTrack</a>
+        </div>
+                <p>本地音频 Track</p>
+    </li>
+    <li>
+        <div>
+            audioBuffer: AudioBuffer
+        </div>
+                <p>音频数据</p>
+    </li>
+    <li>
+        <div>
+            bitsPerSample: NSUInteger
+        </div>
+                <p>音频数据位宽</p>
+    </li>
+    <li>
+        <div>
+            sampleRate: NSUInteger
+        </div>
+                <p>音频数据采样率</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

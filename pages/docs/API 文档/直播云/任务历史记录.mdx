@@ -1,0 +1,51 @@
+# 请求包
+**备注：如果是海外的pub转推任务，请将Host改为：pili-hw-pub.qiniuapi.com**
+
+```
+GET /history?marker=<Marker>?limit=<Limit>&name=<Name>&start=<Start>&end=<End>
+Host: pili-pub.qiniuapi.com
+Authorization: <QiniuToken>
+
+```
+
+| 参数名称 | 必填 | 说明 |
+| ----------- |-------------------|-------------------------------------------- |
+| marker | 否 | 字符串，定位符。|
+| limit | 否 | 整型，限制数，上线1000。|
+| name | 否 | 字符串，任务名称，前缀匹配。|
+| start | 否 | 整型，开始时间，单位：毫秒。|
+| end | 否 | 整型， 结束时间，单位：毫秒。|
+
+# 返回包
+
+```
+200 {
+    "marker": "",
+    "isEnd": true,
+    "histories" : [
+        {
+            "name": "name",
+            "startTime": 1667459219157, 
+            "stopTime": 1667459220156, 
+            "message": ""
+        }
+    ]
+}
+
+400 {
+    "error": "invalid parameter"
+}
+
+500 {
+     "error": "query history fail"
+}
+```
+
+# 返回参数
+| 参数名称 | 类型 | 说明 |
+| ----------- |-------------------|-------------------------------------------- |
+| marker | 字符串 | 定位标识。 |
+| isEnd | 布尔类型 | 是否结束。 |
+| histories | 对象数组 | 历史记录。|
+
+- 详细参数说明见[参数说明](/pili/api/7326/parameters-that-pub)

@@ -1,0 +1,70 @@
+在 QAPP 中部署应用实例后，可以通过开启 `Fop请求入口` 实现对存储在七牛对象存储的文件调用。
+
+
+
+# **操作步骤**
+
+1. 登录 [容器轻应用平台](https://portal.qiniu.com/dora/qapp)。
+
+2. 在左侧导航栏单击 **具体应用名称**，在顶部菜单栏选择 **设置**。
+
+3. 在设置页面，开启  **Fop请求入口**。
+
+   ![img](https://dora-doc.qiniu.com/WX20221104-114423%402x.png)
+
+4. 结果验证，如下。
+
+
+
+# **开发指南**
+
+针对存储在七牛云上的文件做数据处理操作。如果服务需要支持 `fop` 方式调用，必须满足以下两点:
+
+- 启动后监听 9100 端口
+- 接受 HTTP POST /handler?cmd=XXX&url=XXX 的请求，并返回数据处理结果
+
+![img](https://dora-doc.qiniu.com/ufop-developing-logic.png)
+
+## 接口
+
+| METHOD | PATH                     | NOTE                                                         |
+| ------ | ------------------------ | ------------------------------------------------------------ |
+| POST   | /handler?cmd=XXX&url=XXX | `cmd` 的值为query, 可参见上述示例；`url` 为待处理资源的地址，**url为空时**待处理数据存在于请求 Body 中。 |
+
+**注意**：应用必须同时支持这两种请求格式。
+
+## 示例请求
+
+```
+POST /handler?cmd=XXX&url=XXX
+```
+
+
+
+# **调用方式**
+
+提供以下两种方式调用：
+
+- 通过  `<url>?<app>/<cmd>...` 调用
+- 通过  [pfop](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 调用
+
+
+
+# **示例**
+
+示例：应用名为  `app1` 。
+- 外部请求
+
+  ```
+    GET http://abc.xxx.com/resource.jpg?app1/cmd/...
+  ```
+
+
+- app 接受到的请求
+
+  ```
+  POST /handler?url=<URL-resource.jpg>&cmd=app1/cmd/...
+  ```
+
+  
+

@@ -1,0 +1,100 @@
+<a id="abortMultipartUpload-description"></a>
+# **描述** 
+
+该接口根据 UploadId 终止 Multipart Upload 。
+
+
+<br>
+
+<a id="abortMultipartUpload-requests"></a>
+# **请求**
+<a id="abortMultipartUpload-requests-syntax"></a>
+
+### **请求语法**
+
+```
+DELETE /buckets/<BucketName>/objects/<EncodedObjectName>/uploads/<UploadId> HTTP/1.1
+Host: <UpHost>
+Authorization: UpToken <UploadToken>
+```
+使用说明：
+* 当调用该 API 终止 Multipart Upload 后，无法再使用这个 UploadId 做任何操作，已经上传的 Part 数据也会被删除。
+
+
+<br>
+
+<a id="abortMultipartUpload-request-parameters"></a>
+### **请求参数**
+
+| 参数名称 | 必填 | 说明 |
+| --- | --- | --- |
+| BucketName | 是 | 空间名称|
+| EncodedObjectName | 否 | 资源名，EncodedObjectName 需要经过 Base64 编码。具体可以参照：[URL 安全的 Base64 编码](/kodo/manual/1231/appendix#urlsafe-base64) |
+| UploadId | 是 | 在服务端申请的 Multipart Upload 任务 id |
+
+<br>
+
+<a id="abortMultipartUpload-request-headers"></a>
+### **请求头**
+|头部名称       | 必填 | 说明|
+|------------- | --- | -------------------------------- | 
+|Host           | 是   | 上传域名。<span id="Endpoint">七牛对象存储支持的区域和对应区域上传域名列表见 [存储区域列表](/kodo/1671/region-endpoint-fq)</span> |
+|Authorization  | 是   | 该参数应严格按照[上传凭证](/kodo/manual/1208/upload-token)格式进行填充，否则会返回 401 错误码。一个合法的 Authorization 值应类似于 Authorization: UpToken QNJi_bYJlmO5LeY08FfoNj9w_r... |
+
+<br>
+
+<a id="abortMultipartUpload-request-elements"></a>
+### **请求内容**
+该请求操作的请求体为空。
+
+<br>
+
+<a id="abortMultipartUpload-responses"></a>
+# **响应**
+
+<a id="abortMultipartUpload-request-headers"></a>
+### **响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](/kodo/api/3924/common-response-headers)。
+
+
+<br>
+
+<a id="buckets-response-elements"></a>
+### **响应内容**
+该请求操作的响应体为空。
+
+<br>
+
+<a id="buckets-special-errors"></a>
+### **响应状态码**
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误响应](/kodo/api/3928/error-responses)。
+
+<br>
+
+<a id="abortMultipartUpload-examples"></a>
+# **示例**
+<a id="abortMultipartUpload-request-examples"></a>
+
+### **请求示例**
+```
+DELETE /buckets/myBucket/objects/bXlPYmplY3Q=/uploads/myUploadID/1 HTTP/1.1
+Host: up.qiniup.com
+Authorization: UpToken j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:nP7NSSyGo4x3W_nJ8T9X1gJrgpk=
+```
+
+<br>
+
+<a id="abortMultipartUpload-response-examples"></a>
+### **响应示例**
+```
+HTTP/1.1 200 OK
+Content-Length: 2
+Connection: keep-alive
+Content-Type: application/json
+Date: Wed, 18 Dec 2019 17:02:11 GMT
+Server: nginx
+X-Reqid: SFkAAAC8BDebTtsU
+
+{
+}
+```

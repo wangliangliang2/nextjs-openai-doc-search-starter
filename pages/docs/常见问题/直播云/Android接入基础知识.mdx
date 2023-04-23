@@ -1,0 +1,70 @@
+## Q：Android 接入需要哪些准备？
+
+1. 设备要求：搭载 Android 系统的设备
+2. 系统要求：Android 4.0.3(API 15) 及其以上
+3. 已注册七牛账号
+4. 一个已经备案的域名
+5. 通过官网申请并已开通直播权限
+
+<br/>
+
+## Q：Android 的 sdk 在哪里下载？
+
+- 安卓推流 SDK：https://github.com/pili-engineering/PLDroidMediaStreaming
+- 安卓播放 SDK：https://github.com/pili-engineering/PLDroidPlayer
+
+<br/>
+
+## Q：Android 的 sdk 文档在哪？
+
+- 安卓推流 SDK 的文档：https://github.com/pili-engineering/PLDroidMediaStreaming/wiki
+- 安卓播放 SDK 的文档：https://github.com/pili-engineering/PLDroidPlayer/wiki
+
+<br/>
+
+## Q：Android 连麦/推流 SDK 包体的说明（针对用户减少APP体积的需求）？
+  关于 Android 连麦/推流 SDK 中的 so 对应的功能如下，  
+开发者可以选择性的使用，删除不需要的 so，用以减小APP的体积大小：
+
+推流网络模块：libpldroid_streaming_core.so   
+推流视频软编：libpldroid_streaming_h264_encoder.so  
+推流音频软编：libpldroid_streaming_aac_encoder.so  
+内置美颜模块：libpldroid_mmprocessing.so  
+连麦模块：libpldroid_rtc_streaming.so  
+
+比如，开发者只需要使用 连麦SDK，则不需要其他没有用到的 so，从而可以减少体积。
+
+## Q：当前 Android 支持的功能特性有哪些？
+
+- 支持 H.264 和 AAC 软编（推荐）
+- 支持 H.264 和 AAC 硬编
+- 软编支持 Android Min API 15（Android 4.0.3）及其以上版本
+- 硬编支持 Android Min API 18（Android 4.3）及其以上版本
+- 支持构造带安全授权凭证的 RTMP 推流地址
+- 支持 RTMP 封包及推流
+- 支持 RTMP 推流自适应网络质量动态切换码率或自定义策略
+- 支持内置美颜，以及可动态调节美颜效果
+- 支持数据源回调接口，可自定义 Filter (滤镜) 特效处理
+- 支持前后置摄像头，以及动态切换
+- 支持自动对焦
+- 支持手动对焦
+- 支持 Encoding Mirror 设置
+- 支持 Zoom 操作
+- 支持 Mute/Unmute
+- 支持闪光灯操作
+- 支持纯音频推流，以及后台运行
+- 支持截帧功能
+- 支持动态更改 Encoding Orientation
+- 支持动态切换横竖屏
+- 支持蓝牙麦克风
+- 支持 ARM, ARMv7a, ARM64v8a, X86 主流芯片体系架构
+
+<br/>
+
+## Q：Android 接入注意事项有哪些？
+为了保证正常使用 SDK ，请在 proguard-rules.pro 文件中添加以下代码：
+
+`-keep class com.qiniu.pili.droid.streaming.** { *; }`
+
+
+

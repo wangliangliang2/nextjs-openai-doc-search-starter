@@ -1,0 +1,199 @@
+# **登录/鉴权问题**
+
+> Q: logkit-pro **无法登录** 或 **数据发送失败** ，显示 access_key 或 secret_key  不正确？
+
+A: 请确认您的机器时间是准确的，我们的接口鉴权会根据系统时间生成，需要保证您的系统时间和实际的时间误差在15分钟内。
+
+
+
+# **配置相关**
+
+> ** Q：修改收集器配置是否需要重启logkit-pro？**
+
+A：
+
+**网页操作**：无需重启。
+
+1. 对于本地的单机版本，如果在网页上修改配置，提交后立即生效，无需重启。
+2. 对于服务器的 agent，在服务端修改配置后，需要重新分发生效。
+
+**控制台修改文件**：分情况。
+
+无论是本地的单机版，还是服务器的agent，我们的配置中都有`confs_path` 监听的目录，在主配置文件中设置了的监听目录，修改配置无需重启。
+其他目录，如默认保存前端配置文件的目录`.logkitconf` 修改里面的收集器配置，需要重启 logkit 后生效。
+
+
+
+
+# **日志读取相关**
+
+> ** Q： 希望读取的日志在不同路径下该如何配置？** 
+
+A：可以使用 [file reader](/insight/manual/4751/file-reader) 中的 `tailx` 模式。
+
+
+> ** Q： 如何定位 logkit Pro 读取的日志来源？**
+
+A：
+1. 在所有 parser 中都有一个 label 功能，这个功能可以用于填写机器编号，ip，服务名、团队名称等各种各样用于区别 logkit Pro 数据来源的标签，这些标签会附加在 logkit Pro 的日志中，便于在大的方向上定位日志来源。
+2. 如果是在 tailx 模式下，一个配置文件可以读多个路径，可以使用 `datasource_tag` 功能，将读取的日志路径作为一个字段记录在日志中。
+
+
+> ** Q： 读取的时候带上通配符`*`就报错`read line timeout, no data received`，单个文件读取是正常的？**
+
+A： 带 `*` 读取的时候，为了不使打开的句柄过多，文件会有个过期时间，默认是24小时，如果文件的最后修改时间超过了24小时，就会读取不到。如果要解决这个问题，只要将读取的模式选择为`tailx`，然后把 `expire` 的配置设置更长即可。
+
+
+> ** Q: 为什么尝试读取数据选择了 newest 就读取不到？**
+
+A: `newest` 是从数据最新的地方开始读，系统默认读取时间为1分钟，如果这一分钟内没有新的数据出现(追加)，那么就无法读取到，建议尝试读取的时候先选择 `oldest`，等到获取完成数据后再改为 `newest`。
+
+
+> ** Q: 为什么修改runner，选择了 newest/oldest 读取没有按照预期从最新/最老数据开始读取？**
+
+A: oldest和newest只是在最开始的时候有效，一旦runner启动了，就会在本地记录一个meta文件夹，记录读取的位置(offset)，然后按照offset读取。使用runner的`重置`功能会清除这个offset记录。部分读取如`kafka`，offset是记录在对应的kafka服务中的，此时您需要修改其`kafka_groupid`，使用一个新的 id 即可。
+
+
+
+# **日志发送相关**
+
+> ** Q： 如何不重不漏的高效发送日志数据 ？**
+
+A：
+1. logkit-pro sender 的默认策略(`fr_stategy`) 是 数据不经过本地队列直接发送到下游（`backup_only`），一旦出现发送错误，则报错到本地队列等待重试。
+2. 如果想要加快发送速度，可以设置策略(`fr_stategy`) 为 并发发送(`concurrent`)，此时会开启多线程发送，还可以设置策略(`ft_stategy`) 为 磁盘队列缓存发送(`always_save`)，则所有数据会先发送到本地队列。两者的主要区别在于 `concurrent` 策略会直接并发发送，不经过队列。`concurrent` 和 `always_save` 都可配合 `ft_procs` 使用。
+3. 在配置了并发策略后，可以配置并发数量（`ft_procs`）， 设置为 "2"，就是开 2 个并发发送，速度就能大大提升。
+4. 如果还嫌不够快怎么办？可以用内存管道替换磁盘队列噢。但是需要说明，使用内存队列在 logkit-pro 异常退出时有丢失数据的风险。可以设置 `ft_memory_channel` 为 `true`，使用 内存队列代替磁盘队列，使得发送和数据读取解析变为异步，在发送较慢的情况下数据可以缓存在内存队列里，不阻塞数据读取和解析的过程。但是使用内存队列数据不落磁盘，会有数据丢失的风险。该功能适合与并发数量(`ft_procs`)参数配合使用，利用内存队列，异步后，在发送端多并发加速。
+
+> ** Q： 如何发送一份数据到多个数据源？**
+
+A： 
+1. 我们推荐添加多个收集器分别发送。
+2. 也支持在一个收集器里面写多个sender，但是这样做的隐患是一个sender发送缓慢会阻塞所有的发送。
+具体如何配置请[查看文档](/insight/manual/4782/senders)
+
+
+> ** Q： 发送到 Pandora 的数据变化怎么处理？**
+
+A：
+1. 在发送到 Pandora 的过程中，如果数据字段有增加，只要配置 sender 的 `pandora_schema_free` 为 true 即可，会自动识别并更新数据源的 schema。
+2. 发送到 Pandora 的数据，类型不能被 logkit Pro 自动判别怎么办？ 此时在配置 `pandora_schema_free` 的情况下，再配置一下 `pandora_auto_create`, 只需要填写那些特殊的类型即可，比如 fieldx jsonstring，其他字段依旧可以通过 `pandora_schema_free` 自动更新。
+3. Pandora 不接受的字段名称如何处理呢？ 在 ELK 中，常见的就是 @timestamp，但是 @ 符号，Pandora 是不支持的，此时只要使用 `pandora_schema` 字段配置一下 pandora 的别名即可，如："@timestamp timestamp,..."。同样不支持的符号还包括中划线、竖线等，目前 Pandora 支持的符号是数字、字母以及下划线。 
+注意最后要填写,... 表示其他字段都要。因为 `pandora_schema` 除了别名功能以外，还支持字段的选择，如果不加",..."则表示其他字段都不选。
+
+
+> ** Q： 发送出错的数据会被怎么处理？ **
+
+A： 默认情况下会放到 `pandora_stash` 字段。如果发送出错的数据大于 2M, 会进行切片发送，切片大小为 64KB, 如果在发送出错的数据的  key value 中找到 string 类型的 value 大于 2M，则对该 string 类型的 value 进行切片，尝试发送。否则对于该 value 进行 marshal 之后进行切片，放入 `pandaora_stash` 中。进行切片的数据会自动增加 `pandora_separate_id` 记录该切片的顺序，`pandora_separate_id` 的值为 `separateId + "_" + separateDataKey + "_" + idx`，其中 `separateId` 是随机生成的值，`separateDataKey` 为该切片 value 的 key， `idx` 为该切片在原始数据中的顺序。
+
+
+> ** Q： 使用logkit-pro发送报错? **
+> `Invalid args, argName: Schema, reason: invalid field key: @timestamp, RequestId=, failDatas size : 1`
+
+A：目前智能日志管理平台的字段命名规则为: 长度在1-128个字符内,支持小写字母、数字、下划线；**必须以小写字母开头**。   其中`@timestamp`包含了`@`符号，不符合要求，所以无法创建。
+
+> ** Q： 使用logkit-pro发送报错? **
+> `Invalid args, argName: Schema, reason: invalid field key: @timestamp, RequestId=, failDatas size : 1`
+
+A：目前智能日志管理平台的字段命名规则为: 长度在1-128个字符内,支持小写字母、数字、下划线；**必须以小写字母开头**。   其中`@timestamp`包含了`@`符号，不符合要求，所以无法创建。
+
+> ** Q： 使用logkit-pro发送报错? **
+> `error type conflict: key mydata old type is <string> want change to type <long>`
+
+A：目前智能日志管理平台的字段类型一旦确定将无法修改，如果您没有手动指定类型，logkit-pro 会自动根据您的数据进行推导确定，推导的方式就是按第一批数据的格式确定，如数字就确定为`long`，浮点数就确定为`float`，嵌套的类型确定为`map`，数组确定为`array`，其他为`string`。当您的后续数据与之前确定的类型出现冲突时，如之前推导为 `long`类型的字段(如`123`)，出现了一些字符串(`abc`)，那么数据就会出现这样的类型错误。
+解决该问题的方法可以在上传数据之前先确定字段的类型，在`发送到智能日志平台`中有个高级选项`以DSL语法自动创建实时仓库(pandora_auto_create)`，该选项可以在先提前确定仓库类型。
+也可以使用 `convert` 数据变换，将类型转为您希望的类型。
+
+
+
+
+# **解析日志相关**
+
+> ** Q： 解析出错的数据会被怎么处理？**
+
+A：默认情况下，解析失败的数据会默认出现在 `pandora_stash` 字段， 除非在解析 parser 部分，配置 `disable_record_errdata` 为 `true`，该选项可以禁止记录解析失败的数据。
+
+# **转换日志相关**
+
+> ** Q： 为什么查询的时候不能按我自己日志里的时间搜索？**
+
+A：默认情况下，logkit不会自动识别您日志里的时间字段，您需要在数据转换部分选择 `date` 转换器，勾选你要转换的时间字段。（注意，智能日志管理平台是不能修改数据类型的，所以如果你这个字段之前已经确定为string类型，此时要设置为时间字段，就要再进行一次重命名，可以使用`rename`转换器）
+
+
+
+
+# **性能相关**
+
+
+
+> ** Q： 如何限制/提高logkit-pro使用的CPU资源？ **
+
+A： 主配置文件中有 `runtime.max_procs` 一项，该项配置控制了logkit-pro整体使用的CPU数量，默认为1，当您希望限制使用的核数时，配置为您希望限制的数量即可，当您希望提高使用量时也是相应修改。
+
+```
+{
+  "version": 1,
+  "service": {
+    "bind_host": ":3000",
+    "static_dir": "public",
+    "upload_dir": "data/upload"
+  },
+  "service_url": {
+    "smart_elf": "https://logkit-pro.qiniu.com/"
+  },
+  "runtime": {
+    "max_procs": 1
+  },
+  "security": {
+    "disable_auths": false,
+    "auths_file": "auths.conf"
+  }
+}
+```
+
+> ** Q： 读取、发送慢怎么提升？ **
+
+A： 读取、解析、发送跟实际的配置关系较为紧密，请参考各个模块的配置选项，可以关闭一些性能消耗大但您实际不使用的功能进行一些性能优化。
+		除此之外，还要查看机器的资源是否已经达到瓶颈，主要查看： `CPU`，`内存`，`磁盘IO`，`网络带宽`这四项。
+		一般情况下，`读取文件`的速度不会成为性能瓶颈，而`读取消息队列`如kafka，则可以考虑通过多实例(多个runner)配置同一个consumergroup，来进行并发消费。
+		`解析(parser)` 和 `转换(transformer)`主要消耗`CPU`，如果`CPU`被打满，极有可能是配置的解析和转换较多，此时可以从解析方式或者转换方式上考虑优化，如能用csv的转换就不用grok，等等。
+		`发送(sender)` 的优化方式较为多样，可以参考上文中日志发送常见问题里的`如何不重不漏的高效发送日志数据` 部分。
+
+
+# **Agent离线排查**
+
+
+如果您的 logkit-pro agent 处于离线状态，请按照以下步骤进行排查：
+
+1. 登录您的服务器查看 logkit-pro 进程是否正常运行。
+
+* Windows 系统： 在任务管理器中查看相关进程是否正常运行，logkit-pro相关字样。
+* Linux 系统： 执行如top命令查看相关进程是否正常运行，logkit-pro相关字样。
+
+如果 logkit-pro 进程不存在，请尝试重新启动进程。（注意，使用自动安装的用户，只有Linux root状态下的自动安装才会开机自动启动，如果您中间有过关机，请尝试重新启动） 
+
+* Windows用户可执行`C:\logkit-pro\agent\start.bat`
+* Linux root用户执行 `service logkit-pro restart`
+* Linux 普通用户进入 `$HOME/logkit-pro/agent/` 执行  `nohup ./logkit-pro -f logkit.conf > logkit.log 2>&1 &`
+
+如果重新启动进程失败或无法正常运行，建议您重新[安装](https://developer.qiniu.com/insight/manual/4682/logkit-pro-install)。
+
+
+2. 若进程存在，确保与七牛的logkit-pro服务器网络连通，检查DNS服务器、防火墙等是否配置有误。
+
+`ping logkit-pro.qiniu.com`
+
+3. 其他情况，请查看logkit-pro的日志中是否有报出什么错误异常日志。
+
+Linux用户root权限： `/var/local/logkit-pro/agent/logkit.log`
+Linux用户非root权限： `$HOME/logkit-pro/agent/logkit.log` 在当前用户的主目录下。
+Windows用户： `C:\logkit-pro\agent\logkit.log`
+Mac用户： `$HOME/logkit-pro/agent/logkit.log` 在当前用户的主目录下。
+
+若显示鉴权不通过，请确认ak\sk正确填写，同时参考FAQ相关登录鉴权问题回答。
+
+其他错误，请备份logkit-pro相关日志文件后联系我们。
+
+
+
+

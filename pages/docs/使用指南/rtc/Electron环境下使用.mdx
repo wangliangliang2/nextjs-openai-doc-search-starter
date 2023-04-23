@@ -1,0 +1,103 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>自 v4.0.9 开始，QNRTC Web SDK 支持直接在 Electron 中使用。</p>
+
+# 启动项目
+<p>首先初始化一个 Electron 项目，<code>package.json</code> 文件大概如下：</p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+<span></span>  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;rtc-electron-demo&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>  <span class="hljs-attr">&quot;version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1.0.0&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>  <span class="hljs-attr">&quot;private&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-keyword">true</span><span class="hljs-punctuation">,</span>
+<span></span>  <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;rtc electron demo&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>  <span class="hljs-attr">&quot;main&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;main.js&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>  <span class="hljs-attr">&quot;scripts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+<span></span>    <span class="hljs-attr">&quot;start&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;electron .&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>    <span class="hljs-attr">&quot;build&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;electron-builder -mwl&quot;</span>
+<span></span>  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+<span></span>  <span class="hljs-attr">&quot;license&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;MIT&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>  <span class="hljs-attr">&quot;devDependencies&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+<span></span>    <span class="hljs-attr">&quot;electron&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;^17.0.0&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>    <span class="hljs-attr">&quot;electron-builder&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;^22.14.13&quot;</span>
+<span></span>  <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+<span></span>  <span class="hljs-attr">&quot;build&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+<span></span>    <span class="hljs-attr">&quot;appId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;qiniu.pili-rtc-web&quot;</span><span class="hljs-punctuation">,</span>
+<span></span>    <span class="hljs-attr">&quot;mac&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+<span></span>      <span class="hljs-attr">&quot;category&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;public.app-category.business&quot;</span>
+<span></span>    <span class="hljs-punctuation">}</span>
+<span></span>  <span class="hljs-punctuation">}</span>
+<span></span><span class="hljs-punctuation">}</span>
+<span></span></code></pre>
+<p>可以看到，这里定义的入口文件为 <code>main.js</code>，下面是一个简单的例子：</p>
+<pre><code class="language-js"><span class="hljs-keyword">const</span> { app, <span class="hljs-title class_">BrowserWindow</span> } = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;electron&#x27;</span>)
+<span></span><span class="hljs-keyword">const</span> { ipcMain, desktopCapturer } = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;electron&#x27;</span>)
+<span></span>
+<span></span><span class="hljs-comment">// 注意这里，Electron 中实现屏幕共享的一个步骤</span>
+<span></span>ipcMain.<span class="hljs-title function_">handle</span>(
+<span></span>  <span class="hljs-string">&#x27;QNRTC_DESKTOP_CAPTURER_GET_SOURCES&#x27;</span>,
+<span></span>  <span class="hljs-function">(<span class="hljs-params">event, opts</span>) =&gt;</span> desktopCapturer.<span class="hljs-title function_">getSources</span>(opts)
+<span></span>)
+<span></span>
+<span></span><span class="hljs-keyword">function</span> <span class="hljs-title function_">createWindow</span>(<span class="hljs-params"></span>) {
+<span></span>  <span class="hljs-keyword">const</span> win = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BrowserWindow</span>({
+<span></span>    <span class="hljs-attr">width</span>: <span class="hljs-number">800</span>,
+<span></span>    <span class="hljs-attr">height</span>: <span class="hljs-number">600</span>,
+<span></span>    <span class="hljs-attr">webPreferences</span>: {
+<span></span>      <span class="hljs-attr">nodeIntegration</span>: <span class="hljs-literal">true</span>,
+<span></span>      <span class="hljs-attr">contextIsolation</span>: <span class="hljs-literal">false</span>,
+<span></span>    },
+<span></span>  })
+<span></span>
+<span></span>  <span class="hljs-comment">// 直接加载牛会议 Demo</span>
+<span></span>  win.<span class="hljs-title function_">loadURL</span>(<span class="hljs-string">&#x27;https://demo-rtc.qnsdk.com/&#x27;</span>)
+<span></span>}
+<span></span>
+<span></span>app.<span class="hljs-title function_">whenReady</span>().<span class="hljs-title function_">then</span>(createWindow)
+<span></span>
+<span></span>app.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;window-all-closed&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
+<span></span>  <span class="hljs-keyword">if</span> (process.<span class="hljs-property">platform</span> !== <span class="hljs-string">&#x27;darwin&#x27;</span>) {
+<span></span>    app.<span class="hljs-title function_">quit</span>()
+<span></span>  }
+<span></span>})
+<span></span>
+<span></span>app.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;activate&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
+<span></span>  <span class="hljs-keyword">if</span> (<span class="hljs-title class_">BrowserWindow</span>.<span class="hljs-title function_">getAllWindows</span>().<span class="hljs-property">length</span> === <span class="hljs-number">0</span>) {
+<span></span>    <span class="hljs-title function_">createWindow</span>()
+<span></span>  }
+<span></span>})
+<span></span></code></pre>
+<p>最后安装相关依赖，即可启动：</p>
+<pre><code>npm install
+<span></span>npm run <span class="hljs-keyword">start</span>
+<span></span></code></pre>
+
+# 屏幕共享
+<p>Electron 中可以直接调用 Web SDK 的接口，但是屏幕共享功能在 Electron 环境中比较特殊，需要调用单独的接口。</p>
+<p>Electron 中实现屏幕共享，需要调用 Electron 提供的 <a href="https://www.electronjs.org/docs/latest/api/desktop-capturer">desktop capturer</a> 接口。</p>
+<p>可以自己调用该接口来获取数据源，然后结合 SDK 提供的 <a href="https://developer.qiniu.com/rtc/9070/WebQNRTC#createCustomVideoTrack">createCustomVideoTrack</a> 接口来创建自定义视频 Track 发布到房间。</p>
+<p>SDK 也对该功能提供了一定程度的封装，提供了两种方法，方便直接调用。下面来看如何使用 SDK 提供的接口完成屏幕共享。</p>
+<p>由于 Electron 在 17.0 中 <a href="https://www.electronjs.org/docs/latest/breaking-changes#planned-breaking-api-changes-170">删除</a> 了在 renderer 中直接引用 desktopCapturer，因此需要在主进程中将该方法提供给 renderer，供 SDK 运行时调用。代码如下：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> { ipcMain, desktopCapturer } = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;electron&#x27;</span>)
+<span></span>
+<span></span><span class="hljs-comment">// 注意参数不可修改，SDK 需要根据这里的参数定义来做相应的调用</span>
+<span></span>ipcMain.<span class="hljs-title function_">handle</span>(
+<span></span>  <span class="hljs-string">&#x27;QNRTC_DESKTOP_CAPTURER_GET_SOURCES&#x27;</span>,
+<span></span>  <span class="hljs-function">(<span class="hljs-params">event, opts</span>) =&gt;</span> desktopCapturer.<span class="hljs-title function_">getSources</span>(opts)
+<span></span>)
+<span></span></code></pre>
+<p>然后下面就可以开始调用 SDK 的方法来完成屏幕共享了。</p>
+<p>第一种方法，直接调用 createScreenVideoTrack 方法，调用与正常逻辑完全一致，SDK 会自动判断是否处于 Electron 环境，并调用相应的方法来完成屏幕数据采集。</p>
+<p>使用这个方法，SDK 提供了一个默认的 UI 选择框，用户点击相应的数据源之后就会直接采集了。</p>
+<p>第二种方法，可以先调用接口获取数据源列表，然后再指定特定的数据源进行屏幕数据采集。这种方法针对需要进行更多自定义的场景。示例代码如下：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">import</span> <span class="hljs-variable constant_">QNRTC</span>, { QNElectronScreenSourceType } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;qnweb-rtc&quot;</span>;
+<span></span>
+<span></span><span class="hljs-comment">// 获取数据源列表</span>
+<span></span><span class="hljs-keyword">const</span> sources = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">getElectronScreenSources</span>(QNElectronScreenSourceType.<span class="hljs-property">ALL</span>);
+<span></span>
+<span></span><span class="hljs-comment">// 选择特定的数据源</span>
+<span></span><span class="hljs-keyword">const</span> targetSourceID = sources[<span class="hljs-number">0</span>].<span class="hljs-property">ID</span>;
+<span></span>
+<span></span><span class="hljs-comment">// 采集特定 sourceID 的屏幕数据</span>
+<span></span><span class="hljs-keyword">const</span> mScreenVideoTrack = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createScreenVideoTrack</span>({
+<span></span>    <span class="hljs-attr">electronScreenSourceID</span>: targetSourceID
+<span></span>});
+<span></span></code></pre></div></div>

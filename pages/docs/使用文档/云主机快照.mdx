@@ -1,0 +1,47 @@
+# 主机快照简介
+七牛 EVM 的云主机快照就是云主机在某一时刻的快照，创建完成后可以在主机快照列表页进行查看。
+七牛 EVM 支持用户使用云主机的快照也就是私有快照来创建一个新的云主机，这样用户就可以自定义软件环境和数据信息在私有镜像中。  
+![](https://dn-odum9helk.qbox.me/Fji6MkxLCSmfqGXmPISpfbKwq1aX)
+
+# 创建主机快照
+- 在主机列表中选中一台云主机，点击 **操作** 按钮弹出的  **创建主机快照** 按钮  
+
+	![](https://dn-odum9helk.qbox.me/Fvcdf80UCHYLgiDhgVjot43pLOSI)
+
+- 在弹出的对话框中确认快照的名称和付费方式，点击确定完成主机快照  
+
+	![](https://dn-odum9helk.qbox.me/FqYo70x9mXgHyGIw5u-zcSq1NgJF)
+
+- 创建成功后可以在 [主机快照](https://evm.qiniu.com/machines-snap/) 菜单下查看快照列表  
+	![](https://dn-odum9helk.qbox.me/FgcBjvO2UUO9yQKmM24bhGRch4Cu)
+
+# 删除快照
+- 在快照列表中选中相应的快照，点击 **删除主机快照**   
+
+	![](https://dn-odum9helk.qbox.me/FtDEMWber5GnlK-Xq19mFdjVdgCO)
+
+- 在弹出的确认对话框中输入对应快照的名称进行确认  
+
+	![](https://dn-odum9helk.qbox.me/FrZMiLYu8RjC34YmgQ1L02iUSGji)
+
+- 最后需要输入用户的密码防止被恶意删除  
+
+	![](https://dn-odum9helk.qbox.me/Fqy3FzDQmkveKl7UYiUMaSut6CdC)
+
+# 使用主机快照
+- 用户可以在创建主机的时候选择私有镜像，然后选择对应的快照，也可以直接在主机快照列表页选中一个快照然后点击 **新建主机** 按钮
+
+	![](https://dn-odum9helk.qbox.me/FpbH0O-fL3eBRV3mqIw71liMG3_u)
+
+- 这个操作会跳到 [新建主机](/evm/manual/4005/create-a-cloud-host) 的操作页，并且默认帮用户选中先前选中的主机快照  
+
+	![](https://dn-odum9helk.qbox.me/Fji6MkxLCSmfqGXmPISpfbKwq1aX)
+
+**【注意事项】**
+
+1. 七牛EVM 创建的私有镜像不能跨 [区域](/evm/manual/3983/area) 使用。
+- 使用私有镜像开通的云服务器可以升级 CPU、内存、带宽、硬盘等。
+- 私有镜像(主机快照)只有按需计费的方式，并且和原主机的计费模式无关
+- 内核和操作系统版本请不要随意进行升级。
+- 请检查系统盘使用剩余空间，确保系统盘没有被写满。
+- 请勿修改关键系统文件如 /sbin, /bin, /lib 目录等。

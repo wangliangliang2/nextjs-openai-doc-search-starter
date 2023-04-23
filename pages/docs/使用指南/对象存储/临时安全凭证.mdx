@@ -1,0 +1,21 @@
+兼容 AWS Security Token Service (STS) 的联合身份临时安全凭证 (federation token) ，更多详细信息请查阅 [AWS 临时安全凭证](https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/id_credentials_temp_request.html#api_getfederationtoken)。
+# **兼容API**
+| STS API	 | 请求兼容描述	| 响应兼容描述 |
+| ----- | ---- | --------- |
+| GetFederationToken | 未支持请求参数 PolicyArns.member.N	 | 未支持响应参数 PackedPolicySize |
+
+请求参数中的 Policy 结构与 S3 一致，对于策略中的 Action 元素，目前已经兼容的包括：
+
+* s3:CreateBucket
+* s3:ListBucket
+* s3:DeleteBucket
+* s3:GetBucketLocation
+* s3:ListAllMyBuckets
+* s3:DeleteObject
+* s3:PutObject
+* s3:GetObject
+* s3:AbortMultipartUpload
+* s3:ListMulitpartUploadParts
+
+您也可以使用通配符 “\*” 或 “S3:\*” 表示任意操作。关于 Policy 更多内容请查阅[会话策略](https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/access_policies.html#policies_session)。
+

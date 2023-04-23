@@ -1,0 +1,59 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `POST` /api/rio/v1/network/vpc
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id              | string | header | 是 | 地域 ID
+vpc           | object | body | 是 | 专有网络对象
+vswitch            | object | body | 是 | 虚拟交换机对象
+description            | string | body | 否 | 交换机描述
+
+# vpc
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+vpc_name           | string | body | 是 | 专有网络名称
+client_token            | string | body | 否 | 
+
+# vswitch
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+vpc_id   | string | body | 否 | 专有网络id
+vswitch_name           | string | body | 是 | 虚拟交换机名称
+vswitch_cidr            | string | body | 是 | 网段
+client_token            | string | body | 否 | 
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+vpc_id	| string  | 专有网络 ID
+data	| string  | 
+
+
+## 请求示例
+```json
+{
+    "vpc": {
+        "vpc_name": "V-W7Cjy",
+        "client_token": "0.7137663018333993"
+    },
+    "vswitch": {
+        "vpc_id": "",
+        "vswitch_name": "S-X7e6O",
+        "vswitch_cidr": "0.0.0.0/24",
+        "client_token": "0.27315096380261084"
+    }
+}```
+
+## 返回值示例
+```json
+{
+    "request_id": "ZsPWvsBHBgfVuEoX",
+    "data": null,
+    "vpc_id": "2ec7e9d6-5897-4d40-b127-5afa752700f9"
+}
+```

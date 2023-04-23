@@ -1,0 +1,58 @@
+# 公开空间
+
+1. 直接在内容管理界面上获得链接  
+![blob.png](https://oi2ix6x26.qnssl.com/attachments/download/535118/00156efafbc31dae7810d74bce9c534/)
+
+2. 通过以下地址访问。  
+```
+http://<domain>/<key>
+```  
+其中`<domain>`是 bucket 所对应的域名。七牛会给每个 bucket 分配一个测试域名，但由于 [测试域名的访问限制](https://developer.qiniu.com/fusion/kb/1319/test-domain-access-restriction-rules)，生产环境需要 [绑定自定义域名](https://portal.qiniu.com/domain/create) 访问。&nbsp;`<key>`可理解为文件名，但可包含文件分隔符等其它字符。可参考：[特殊 key 资源的访问](/kodo/kb/special-access-to-key-resources)  
+**注意： key必须采用utf8编码，如使用非utf8编码访问七牛云将反馈错误**  
+
+3. [批量获取下载链接](https://developer.qiniu.com/kodo/kb/4072/batch-obtains-download-chain-method)
+
+# 私有空间
+
+1.私有空间区别于公开空间，私有空间在控制台**`无法直接获取外链`**
+![](https://dn-odum9helk.qbox.me/FqfFMrSEoPE8l4vnqYK8HonW2qbv)
+
+2.私有资源必须通过临时 [下载凭证] (/kodo/manual/download-token)(downloadToken)进行下载，如下：
+
+    [GET] http://<domain>/<key>?e=<deadline>&token=<downloadToken>
+
+注意，尖括号不是必需，代表替换项。
+
+`deadline`&nbsp;由服务器时间加上 指定秒数 表示过期时间点。默认 3600 秒，服务器时间需校准，不要与标准时间相差太大。&nbsp;`downloadToken`&nbsp;可以使用 SDK 提供的方法生成。
+
+
+以下提供python生成私有空间外链的参考代码，更多详细请参考[官方sdk](https://developer.qiniu.com/sdk#official-sdk)
+
+```python
+# -*- coding: utf-8 -*-
+# flake8: noqa
+import requests
+
+from qiniu import Auth
+
+#AK、SK可在控制台的个人中心里面获取
+access_key = 'AK'
+secret_key = 'SK'
+
+q = Auth(access_key, secret_key)
+
+#有两种方式构造base_url的形式
+base_url = 'http://%s/%s' % (bucket_domain, key)
+
+#或者直接输入url的方式下载
+base_url = 'http://domain/key'
+
+#可以设置token过期时间
+private_url = q.private_download_url(base_url, expires=3600)
+
+print(private_url)
+r = requests.get(private_url)
+assert r.status_code == 200
+```
+
+

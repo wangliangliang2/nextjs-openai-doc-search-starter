@@ -1,0 +1,59 @@
+Qiniu Log Parser 可以用于解析如下日志格式【允许日志出现多行，样例日志只是多行行首示例】：
+
+格式1. 七牛开源的 Golang 日志库[https://github.com/qiniu/log](https://github.com/qiniu/log) 。
+
+样例日志:  `2018/08/17 10:49:29 [INFO][github.com/qiniu/logkit/reader] seqfile.go:538: Runner[UndefinedRunnerName] test log`
+
+格式2. 七牛内部 `xlog` 包，与开源的格式区别在于多了请求的审计ID `reqid`，审计日志可能存在也可能不存在。
+
+样例日志: `2017/03/28 15:41:06 [Wm0AAPg-IUMW-68U][INFO] bdc.go:573: deleted: 67608`
+
+格式3. 七牛内部 `teapot`包，区别是日志文件会以中括号加双引号的形式加在 reqid和level后面， reqid和level的顺序可能会调换，并且reqid可能没有。
+
+样例日志: `2018/08/30 11:45:00.386289 [gRI0EyK7amyzjE8V][INFO]["github.com/teapots/request-logger/logger.go:75"] [REQ_END] 200 0.010k 183.637ms`
+
+格式4. 其他情况1，区别是在level和reqid后面会出现一个日志所在的包(module)
+
+样例日志: `2017/03/28 15:41:06 [Wm0AAPg-IUMW-68U][INFO][github.com/xxx/request] bdc.go:573: deleted: 67608`
+
+格式5. 其他情况2，在最前面会出现一个服务前缀，及`REQ`, 当且仅当日期前面出现一个字符串时才算有服务前缀。
+
+样例日志：`REQ 2017/03/28 15:41:06 [Wm0AAPg-IUMW-68U][INFO][github.com/xxx/request] bdc.go:573: deleted: 67608`
+
+# **可配选项**
+
+* `disable_record_errdata` 默认为`false`，解析失败的数据会默认出现在"pandora_stash"字段，该选项可以禁止记录解析失败的数据。
+
+* `keep_raw_data` 默认为`false`，配置此选项之后会保留原始数据在`raw_data`字段下。
+
+# **解析说明**
+
+默认情况下，无需额外配置，我们可以自动解析出下面几种日志：
+
+* 格式1 `2018/08/17 10:49:29 [INFO][github.com/qiniu/logkit/reader] seqfile.go:538: Runner[UndefinedRunnerName] test log`
+* 格式2（reqid可以不存在但是reqid一定在level前面） `2017/03/28 15:41:06 [Wm0AAPg-IUMW-68U][INFO] bdc.go:573: deleted: 67608`
+* 格式3 （reqid可以不存在但是reqid一定在level前面）`2018/08/30 11:45:00.386289 [gRI0EyK7amyzjE8V][INFO]["github.com/teapots/request-logger/logger.go:75"] [REQ_END] 200 0.010k 183.637ms`
+* 格式4 （reqid可以不存在但是reqid一定在level前面）`2017/03/28 15:41:06 [Wm0AAPg-IUMW-68U][INFO][github.com/xxx/request] bdc.go:573: deleted: 67608`
+
+> 注意到，如果reqid和level的顺序不同，或者有服务前缀，默认的配置是不支持的，需要额外配置。
+
+为了灵活的解析上述5种可能的日志格式，确保顺序可以变更，我们将日志拆成如下几个模块，可以根据日志的模块顺序组装，只需要在高级选项  `qiniulog_log_headers` 进行配置即可。
+
+* prefix:  针对格式5中的服务前缀，如果有的话，需要组装式填写，当且仅当日期前面出现了字符串时才算有服务前缀。
+* date: 日志日期
+* time: 日志时间
+* reqid: 日志中用户请求的ID
+* level: 日志级别
+* file: 日志产生的代码位置，如果有module，也会一起解析出来
+* combinedReqidLevel : reqid和level组合，代表reqid可能有、可能没有，但是如果都有，前者被认定为一定reqid
+
+那么默认的 `qiniulog_log_headers` 实际上就是： `date,time,combinedReqidLevel,file`
+
+而针对格式5，需要配置成 `prefix,date,time,combinedReqidLevel,file`
+
+针对格式3 reqid在level后面的情况，需要配置成 `prefix,date,time,level,reqid,file`
+
+头部解析生效的数据和多行的其他行都会被放到 `log` 字段。
+
+
+最终 qiniu log parser 解析出来的字段为 `prefix`、`time`、`reqid`、`level`、`module`、`file`、`log` 以及标签。

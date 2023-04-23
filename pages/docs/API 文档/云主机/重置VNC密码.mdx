@@ -1,0 +1,55 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `PUT` /v1/vm/instance/:instance_id/vnc_passwd
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+   <tr>
+      <td>instance_id</td>
+      <td>string</td>
+      <td>path</td>
+      <td>是</td>
+      <td>
+      云主机实例ID
+      </td>
+    </tr>
+     <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+        <p>地域 ID。</p>
+        <p>您可以调用 DescribeRegions 查看最新的七牛云地域列表。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>vnc_password</td>
+      <td>string</td>
+      <td>body</td>
+      <td>是</td>
+      <td>
+      主机实例 VNC 管理终端连接密码
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string | 请求 ID

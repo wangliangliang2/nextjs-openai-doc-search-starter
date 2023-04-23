@@ -1,0 +1,2231 @@
+# 创建群
+## 基本信息
+```
+POST  /group/create
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+创建群。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "type": <type>,            //群类型 0表示私有群, 2表示聊天室
+    "name":"<name>",           //群名称
+    "description":"",          //群描述
+    "avatar":"<url>",          //头像URL
+    "user_list"[<userid>, <userid>]   //邀请入群的用户id列表
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "group_id":<groupid>,        //群ID
+        "owner_id":<userid>,         //群主用户ID
+        "name":"",                   //群名称
+        "avatar":"",                 //群头像URL
+        "description":"",            //群描述
+        "ext":"",                    //群扩展信息
+        "type":0,                    //群类型 0表示私有群, 2表示聊天室
+        "status":0,                  //群状态, 0：正常, 1：已解散
+        "created_at":<timestamp>,    //创建时间，毫秒时间戳
+        "updated_at":<timestamp>,    //更新时间，毫秒时间戳
+        "apply_approval":0,          //入群申请审批设置, 0:同意所有申请 1:需要管理员确认 2:拒绝所有申请
+        "ban_expire_time":<timestamp>, //全员禁言过期时间时间戳（秒），禁言期间只允许管理员发消息， 为0或小于当前时间表示不禁言, -1表示永久禁言
+        "history_visible":true,      //新成员是否可见历史聊天记录
+        "member_invite":true,        //群成员是否可以邀请用户进群
+        "member_modify":true,        //群成员是否可以修改群信息
+        "msg_mute_mode":0,           //群消息屏蔽模式： 0 不屏蔽1 屏蔽本地消息通知2 屏蔽消息，不接收消息
+        "msg_push_mode":0,           //群消息推送类型： 0:接收所有推送;1:不接受推送;2:接收管理员和@消息推送;3:只接收管理员消息推送;4:只接收@消息推送
+        "read_ack":true              //群消息已读功能是否开启
+    }
+}
+```
+
+# 解散群
+## 基本信息
+```
+POST /group/destroy
+DELETE /group/destroy
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+解散指定的群。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称     |  类型    | 必须  | 备注  |
+| ----------- | ------  | ------------ | ------------ |
+| group_id    | integer | 是  |  群ID |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+
+# 转让群
+## 基本信息
+```
+POST  /group/transfer
+PUT   /group/transfer
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+
+### 接口描述
+转让群主身份给另外一个用户。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,    //群ID
+    "new_owner":<userid>     //群的新群主用户ID
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "user_id":<userid>, //用户ID
+        "result":"success", //success 成功，fail 失败
+        "reason":""         //失败原因
+    }
+}
+```
+
+# 获取群信息
+## 基本信息
+```
+GET /group/info
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+根据群ID，查询群信息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  |  类型     | 必须  | 备注  |
+| -------- | -------- | ------------ | ------------ |
+| group_id | integer  | 是  |  群ID |
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "group_id":<groupid>,        //群ID
+        "owner_id":<userid>,         //群主用户ID
+        "name":"",                   //群名称
+        "avatar":"",                 //群头像URL
+        "description":"",            //群描述
+        "ext":"",                    //群扩展信息
+        "type":0,                    //群类型 0表示私有群, 2表示聊天室
+        "status":0,                  //群状态, 0：正常, 1：已解散
+        "created_at":<timestamp>,    //创建时间，毫秒时间戳
+        "updated_at":<timestamp>,    //更新时间，毫秒时间戳
+        "apply_approval":0,          //入群申请审批设置, 0:同意所有申请 1:需要管理员确认 2:拒绝所有申请
+        "ban_expire_time":<timestamp>, //全员禁言过期时间时间戳（秒），禁言期间只允许管理员发消息， 为0或小于当前时间表示不禁言, -1表示永久禁言
+        "history_visible":true,      //新成员是否可见历史聊天记录
+        "member_invite":true,        //群成员是否可以邀请用户进群
+        "member_modify":true,        //群成员是否可以修改群信息
+        "msg_mute_mode":0,           //群消息屏蔽模式： 0 不屏蔽1 屏蔽本地消息通知2 屏蔽消息，不接收消息
+        "msg_push_mode":0,           //群消息推送类型： 0:接收所有推送;1:不接受推送;2:接收管理员和@消息推送;3:只接收管理员消息推送;4:只接收@消息推送
+        "read_ack":true              //群消息已读功能是否开启
+    }
+}
+```
+
+            
+# 批量获取群信息
+## 基本信息
+```
+POST /group/info/batch
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+根据group id，批量获取群信息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_list":[<groupid>, <groupid>],          //群ID 列表
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [{
+        "group_id":<groupid>,        //群ID
+        "owner":<userid>,            //群主用户ID
+        "name":"",                   //群名称
+        "avatar":"",                 //群头像URL
+        "type":0,                    //群类型 0表示私有群, 2表示聊天室
+        "status":0,                  //群状态, 0：正常, 1：已解散
+        "count":<count>,             //群成员容量，可以加入的成员最大数
+        "capacity":<capacity>,       //当前群成员数量
+        "apply_approval":0,          //入群申请审批设置, 0:同意所有申请 1:需要管理员确认 2:拒绝所有申请
+        "msg_mute_mode":0,           //群消息屏蔽模式： 0 不屏蔽1 屏蔽本地消息通知2 屏蔽消息，不接收消息
+        "msg_push_mode":0            //群消息推送类型： 0:接收所有推送;1:不接受推送;2:接收管理员和@消息推送;3:只接收管理员消息推送;4:只接收@消息推送
+    }]
+}
+```
+
+# 获取群设置
+## 基本信息
+```
+GET /group/settings
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+获取群的设置信息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  |  类型 | 必须  | 备注  |
+| ------------ | ------------ | ------------ | ------------ |
+| group_id | integer  | 是  |  群ID |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "group_id":<groupid>,        //群ID
+        "owner_id":<userid>,         //群主用户ID
+        "name":"",                   //群名称
+        "avatar":"",                 //群头像URL
+        "description":"",            //群描述
+        "ext":"",                    //群扩展信息
+        "type":0,                    //群类型 0表示私有群, 2表示聊天室
+        "status":0,                  //群状态, 0：正常, 1：已解散
+        "created_at":<timestamp>,    //创建时间，毫秒时间戳
+        "updated_at":<timestamp>,    //更新时间，毫秒时间戳
+        "apply_approval":0,          //入群申请审批设置, 0:同意所有申请 1:需要管理员确认 2:拒绝所有申请
+        "ban_expire_time":<timestamp>, //全员禁言过期时间时间戳（秒），禁言期间只允许管理员发消息， 为0或小于当前时间表示不禁言, -1表示永久禁言
+        "history_visible":true,      //新成员是否可见历史聊天记录
+        "member_invite":true,        //群成员是否可以邀请用户进群
+        "member_modify":true,        //群成员是否可以修改群信息
+        "msg_mute_mode":0,           //群消息屏蔽模式： 0 不屏蔽1 屏蔽本地消息通知2 屏蔽消息，不接收消息
+        "msg_push_mode":0,           //群消息推送类型： 0:接收所有推送;1:不接受推送;2:接收管理员和@消息推送;3:只接收管理员消息推送;4:只接收@消息推送
+        "read_ack":true              //群消息已读功能是否开启
+    }
+}
+```
+ 
+
+# 更新群名称
+## 基本信息
+```
+POST   /group/info/name
+PUT    /group/info/name
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+更新群名称。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,   //群ID
+    "value":""              //群名称
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+            
+# 更新群头像
+## 基本信息
+```
+POST   /group/info/avatar
+PUT    /group/info/avatar
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+更新群的头像信息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,   //群ID
+    "value":""              //群头像URL
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+
+            
+# 更新群描述
+## 基本信息
+```
+POST   /group/info/description
+PUT    /group/info/description
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+更新群描述信息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,   //群ID
+    "value":""              //群描述信息
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+
+# 更新群扩展信息
+## 基本信息
+```
+POST  /group/info/ext
+PUT   /group/info/ext
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+更新群的扩展信息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,   //群ID
+    "value":""              //扩展信息
+}
+```
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+
+
+# 更新群设置--群成员是否可修改群信息
+## 基本信息
+```
+POST /group/settings/allow_member_modify
+PUT  /group/settings/allow_member_modify
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+修改群设置，设置群成员是否可以修改群信息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<group id>,    //群ID
+    "value": true             //true 允许；false 不允许
+}
+```
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+            
+# 更新群设置--新成员是否可见群历史聊天记录
+## 基本信息
+```
+POST   /group/settings/history_visible
+PUT    /group/settings/history_visible
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+更新群设置。设置新成员进群，是否课件历史聊天记录。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,   //群ID
+    "value":true            //true 允许查看；false 不允许查看
+}
+```
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+            
+# 更新群设置--是否允许成员邀请
+## 基本信息
+```
+POST   /group/settings/allow_member_invitation
+PUT    /group/settings/allow_member_invitation
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+更新群设置。设置是否允许群成员邀请其他用户进群。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,   //群ID
+    "value":true            //true 允许；false 不允许
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+            
+# 更新群设置--是否开启群消息已读功能
+## 基本信息
+```
+POST   /group/settings/enable_read_ack
+PUT    /group/settings/enable_read_ack
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置群是否开启消息已读功能。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,   //群ID
+    "value":true            //true 开启；false 不开启
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+            
+
+# 设置群消息屏蔽模式
+## 基本信息
+```
+POST /group/msg/mute_mode
+PUT  /group/msg/mute_mode
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+
+### 接口描述
+设置群消息的屏蔽模式。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,    //群ID
+    "msg_mute_mode":<mode>   //群消息屏蔽模式： 0 不屏蔽1 屏蔽本地消息通知2 屏蔽消息，不接收消息
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+            
+
+# 设置群消息推送模式
+## 基本信息
+```
+POST /group/msg/push_mode
+PUT  /group/msg/push_mode
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置群消息的推送模式。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,    //群ID
+    "msg_push_mode":<mode>   //群消息推送类型： 0:接收所有推送;1:不接受推送;2:接收管理员和@消息推送;3:只接收管理员消息推送;4:只接收@消息推送	
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+# 更新群设置--群申请是否需要管理员审批
+## 基本信息
+```
+POST /group/settings/require_admin_approval
+PUT  /group/settings/require_admin_approval
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+设置进群申请，是否需要管理员审批。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,      //群ID
+    "apply_approval":0         //入群申请审批设置, 0:同意所有申请 1:需要管理员确认 2:拒绝所有申请
+}
+```
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+
+    
+
+# 申请入群
+## 基本信息
+```
+POST /group/apply
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+用户申请加入群。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,       //群ID
+    "reason":""                 //申请入群原因
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "user_id":<userid>,             //用户ID
+        "result":"success",             //success 成功；fail 失败
+        "reason":""                     //失败原因
+    }    
+}
+```
+
+# 获取群申请列表
+## 基本信息
+```
+POST /group/application_list
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+查询群申请列表。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+| 参数名称     |  类型    | 必须  | 备注  |
+| ----------- | ------  | ------------ | ------------ |
+| cursor      | string  | 否  |  cursor |
+| limit       | integer  |  否 |  返回列表的最大条数 |
+
+### Body
+```
+{
+    "group_list":[<groupid>, <groupid>]       //群id 列表
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "total":<totalcount>,         //总数
+    "cursor":"",                  //游标，用于翻页。返回结果中缺失 cursor，表示已经返回最后一页
+    "data": [{
+        "group_id":<groupid>,        //群ID
+        "applicant_id":<apply id>,   //申请ID
+        "status":<status>,           //状态 0 - 待处理，1 - 同意，2 - 拒绝
+        "reason":"",                 //原因
+        "expired_time":<timestamp>.  //过期时间（毫秒）
+    }]
+}
+```
+   
+
+# 管理员处理入群申请
+## 基本信息
+```
+POST /group/apply/handle
+PUT  /group/apply/handle
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+管理员处理进群申请。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,     //群ID
+    "user_id":<userid>,       //用户ID
+    "user_id":true            //true 同意；false 拒绝。
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "user_id":<userid>,          //用户ID
+            "result":"<result>",         //success 成功；fail 失败
+            "reason":""                  //失败原因
+        }
+    ]
+}
+```
+
+
+# 邀请入群
+## 基本信息
+```
+POST  /group/invite
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+邀请用户加入群。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,  //群ID
+    "reason":"",           //邀请理由说明
+    ”user_list:[<userid>, <userid>]  //带邀请的用户ID 列表。
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [{
+        "user_id":<userid>, //用户ID
+        "result":"success", //success 成功，fail 失败
+        "reason":""         //失败原因
+    }]
+}
+```
+
+# 获取群邀请二维码信息
+## 基本信息
+```
+GET /group/qrcode/sign
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+获取群邀请二维码。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+| 参数名称  |  类型 | 必须  | 备注  |
+| ------------ | ------------ | ------------ | ------------ |
+| group_id | integer  | 是  |  群ID |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "qr_info":"",          //二维码信息
+        "created_at":<timestamp>,    //创建时间，毫秒时间戳
+        "expire_at":<timestamp>      //过期时间，毫秒时间戳
+    }
+}
+```
+   
+
+# 二维码邀请入群
+## 基本信息
+```
+POST /group/qrcode/invite
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+通过群二维码进群。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "qr_info":"<qr code>",  //二维码内容，通过扫描群二维码获得
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true //返回结果，true 成功
+}
+```
+
+# 获取群邀请列表
+## 基本信息
+```
+GET /group/invitation_list
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+获取群邀请列表信息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称    |  是否 | 必须  | 备注  |
+| ---------- | ------------ | ------------ | ------------ |
+| cursor     | string  |  否 |  翻页游标 |
+| limit      | integer  |  否 |  返回最大数量 |
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "total":<totalcount>,         //禁言用户总数
+    "cursor":"",                  //游标，用于翻页。返回结果中缺失 cursor，表示已经返回最后一页
+    "data": [
+        {
+            "group_id":<groupid>,    //群ID
+            "inviter_id":<userid>,   //发起邀请的用户ID
+            "invitee_id":<userid>,   //被邀请的用户ID
+            "status":0,              //0 - 待处理，1 - 用户同意，2 - 用户拒绝
+            "reason":"",             //原因
+            "expired_time":<timestamp>, //超时时间，毫秒时间戳
+            "updated_at":<timestamp>    //更新时间
+        }
+    ]
+}
+```
+
+
+# 用户处理入群邀请
+## 基本信息
+```
+POST /group/invite/handle
+PUT  /group/invite/handle
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+用户处理收到的进群邀请。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,           //群ID
+    "user_id":<userid>,             //用户ID
+    "approval":true                 //true 同意邀请进群；false 拒绝邀请
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+ 
+# 成员退出群
+### 基本信息
+```
+POST  /group/leave
+DELETE /group/leave
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+指定的用户，主动退群。
+
+## 请求参数
+### Headers
+| 参数名称  | 参数值  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ | ------------ |
+| Content-Type  |  application/json | 是  |   |   |
+| access-token  |   | 否  |   |  令牌 |
+| app_id  |   | 是  |   |  应用ID |
+| user_id  |   | 否  |   |  仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+| 参数名称  |  类型     | 必须  | 备注  |
+| -------- | -------- | ---- | ------------ |
+| group_id | integer  |  是  |  group_id |
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+
+
+# 获取群成员列表
+## 基本信息
+```
+GET /group/member_list
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+根据群ID，获取群成员列表。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称     |  类型    | 必须  | 备注  |
+| ----------- | ------  | ------------ | ------------ |
+| cursor      | string  | 否  |  分页游标 |
+| group_id    | integer | 是  |  群ID |
+| limit       | integer  |  否 |  返回列表的最大条数 |
+
+## 返回数据
+```
+{
+   {
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "cursor":"",                  //分页游标
+    "data": [{
+        "user_id":<userid>,         //用户ID
+        "display_name":"",          //群成员名片
+        "join_time":<timestamp>,    //群成员进群时间，毫秒时间戳
+        "expired_time":<timestamp>  //禁言过期时间，毫秒时间戳
+    }]
+}
+```
+
+# 将成员踢出群
+## 基本信息
+```
+POST  /group/kick
+DELETE  /group/kick
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+将群成员踢出群。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,              //群ID
+    "user_list":[<userid>, <userid>]   //用户ID 列表
+}
+```
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "user_id":<userid>,   //用户ID
+            "result":"<result>",  //success 成功；fail 失败
+            "reason":""           //失败原因
+        }
+    ]
+}
+```
+
+# 获取用户的群组列表
+## 基本信息
+```
+GET /group/user_joined
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+获取用户加入的群组列表。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [<groupid>]           //用户加入的群组ID 列表
+}
+```
+
+
+# 将用户加入黑名单
+## 基本信息
+```
+POST  /group/block
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+将用户加入黑名单。群黑名单，不允许加入群。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,              //群ID
+    "user_list":[<userid>, <userid>]   //用户ID 列表
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "user_id":<userid>,   //用户ID
+            "result":"<result>",  //success 成功；fail 失败
+            "reason":""           //失败原因
+        }
+    ]
+}
+```
+
+# 获取黑名单列表
+## 基本信息
+```
+GET /group/blocked_list
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+获取群黑名单列表。
+
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称     |  类型    | 必须  | 备注  |
+| ----------- | ------  | ------------ | ------------ |
+| cursor      | string  | 否  |  分页游标 |
+| group_id    | integer | 是  |  群ID |
+| limit       | integer  |  否 |  返回列表的最大条数 |
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "total":<totalcount>,         //禁言用户总数
+    "cursor":"",                  //游标，用于翻页。返回结果中缺失 cursor，表示已经返回最后一页
+    "data": [
+        {
+            "group_id":<groupid>,    //群ID
+            "user_id":<userid>,      //用户ID
+            "created_at":<timestamp> //创建时间，毫秒时间戳
+        }
+    ]
+}
+```
+
+# 从黑名单移除用户
+## 基本信息
+```
+POST  /group/unblock
+DELETE   /group/unblock
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+从群黑名单中，移除用户。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,              //群ID
+    "user_list":[<userid>, <userid>]   //用户ID 列表
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "user_id":<userid>,          //用户ID
+            "result":"<result>",         //success 成功；fail 失败
+            "reason":""                  //失败原因
+        }
+    ]
+}
+```
+
+
+# 上传群文件
+## 基本信息
+```
+POST /group/file/upload
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+上传群文件。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<group id>,    //群ID
+    "name":"<name>",          //文件名称
+    "type":"<type>",          //文件类型
+    "size":<size>,            //文件大小
+    "url":"<url>"             //文件URL
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "group_id":<group id>,      //群ID
+        "file_id":<file id>,        //共享文件ID
+        "name":"<name>",            //共享文件名称
+        "type":"<type>",            //文件类型
+        "size":<size>,              //文件大小
+        "uploader":<userid>,        //上传者用户ID
+        "url":"<url>",              //共享文件URL
+        "created_at":<timestamp>,   //创建时间，毫秒时间戳
+        "updated_at":<timestamp>    //更新时间，毫秒时间戳
+    }
+}
+```
+
+# 删除群文件
+## 基本信息
+```
+POST  /group/file/delete
+DELETE   /group/file/delete
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+删除指定的群文件。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,         //群ID
+    "file_list":[                 //文件id列表
+        <fileid>,
+        <fileid>
+    ]
+}
+```
+      
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "file_id":<fileid>,   //文件ID
+            "result":"<result>",  //success 成功；fail 失败
+            "reason":""           //失败原因
+        }
+    ]
+}
+```
+
+# 更新群文件名称
+## 基本信息
+```
+POST   /group/file/update_name
+PUT    /group/file/update_name
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+更新群文件的名称。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,   //群ID
+    "file_id":<fileid>,     //群文件ID
+    "value":""              //群文件新名称
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+            
+# 获取群文件列表
+## 基本信息
+```
+GET /group/file/list
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+获取群文件列表。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+| 参数名称  |  类型     | 必须  | 备注  |
+| -------- | -------- | ---- | ------------ |
+| group_id | integer  |  是  |  群ID |
+
+### 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [{
+        "group_id":<group id>,      //群ID
+        "file_id":<file id>,        //共享文件ID
+        "name":"<name>",            //共享文件名称
+        "type":"<type>",            //文件类型
+        "size":<size>,              //文件大小
+        "uploader":<userid>,        //上传者用户ID
+        "url":"<url>",              //共享文件URL
+        "created_at":<timestamp>,   //创建时间，毫秒时间戳
+        "updated_at":<timestamp>    //更新时间，毫秒时间戳
+    }]
+}
+```
+
+
+# 下载群文件
+## 基本信息
+```
+GET   /group/file
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+下载群文件。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+| 参数名称  |  类型     | 必须 | 备注  |
+| -------- | -------- | --- | ------------ |
+| file_id  | integer  | 是  |  文件ID |
+| group_id | integer  | 是  |  群ID |
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "group_id":<groupid>,     //群ID
+        "file_id":<fileid>,       //文件ID
+        "name":"",                //文件名
+        "type":"",                //文件类型
+        "size":123,               //文件大小
+        "url":"<url>",            //文件URL
+        "uploader":<userid>,      //文件上传者
+        "created_at":<timestamp>, //创建时间，毫秒级时间戳
+        "updated_at":<timestamp>  //更新时间，毫秒级时间戳
+    }
+}
+```
+
+# 将用户禁言
+## 基本信息
+```
+POST  /group/ban
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+将用户禁言。禁言后，用户不能在群里发消息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,              //群ID
+    "duration":<minute>,               //禁言时间，单位：分钟
+    "user_list":[<userid>, <userid>]   //用户ID 列表
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "user_id":<userid>,   //用户ID
+            "result":"<result>",  //success 成功；fail 失败
+            "reason":""           //失败原因
+        }
+    ]
+}
+```
+      
+
+# 从禁言列表移除用户
+## 基本信息
+```
+POST  /group/unban
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+从禁言列表移除用户。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,              //群ID
+    "user_list":[<userid>, <userid>]   //用户ID 列表
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "user_id":<userid>,          //用户ID
+            "result":"<result>",         //success 成功；fail 失败
+            "reason":""                  //失败原因
+        }
+    ]
+}
+```
+
+ # 获取禁言列表
+## 基本信息
+```
+GET /group/banned_list
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+获取群组的禁言用户列表。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称    |  是否 | 必须  | 备注  |
+| ---------- | ------------ | ------------ | ------------ |
+| cursor     | string  |  否 |  翻页游标 |
+| group_id   | integer  |  是 |  群ID |
+| limit      | integer  |  否 |  返回最大数量 |
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "total":<totalcount>,         //禁言用户总数
+    "cursor":"",                  //游标，用于翻页。返回结果中缺失 cursor，表示已经返回最后一页
+    "data": [
+        {
+            "user_id":<userid>,      //群成员用户ID
+            "display_name":"",       //成员群名片
+            "join_time":<timestamp>, //进群时间，毫秒时间戳
+            "expired_time":<timestamp> //禁言过期时间，毫秒时间戳
+        }
+    ]
+}
+```
+
+# 全员禁言，只允许管理员发消息
+## 基本信息
+```
+POST /group/settings/ban_all
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+群内全员禁言，只允许管理员发消息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,              //群ID
+    "duration":<minute>               //禁言时间，单位：分钟
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": 
+        {
+			       "ban_expire_time": 0  //全员禁言过期时间（秒），禁言期间只允许管理员发消息， 为0或小于当前时间表示不禁言, -1表示永久禁言
+        }
+}
+```
+      
+
+# 取消全员禁言
+## 基本信息
+```
+POST  /group/settings/unban_all
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+取消全员禁言。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>              //群ID
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  // true 成功；false 失败
+}
+```
+  
+            
+      
+            
+
+# 批量获取群成员的群名片
+## 基本信息
+```
+POST  /group/members/display_name
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+批量获取群成员的群名片。
+
+## 请求参数
+### Headers
+| 参数名称  | 参数值  |  是否必须 | 示例  | 备注  |
+| ------------ | ------------ | ------------ | ------------ | ------------ |
+| Content-Type  |  application/json | 是  |   |   |
+| access-token  |   | 否  |   |  令牌 |
+| app_id  |   | 是  |   |  应用ID |
+| user_id  |   | 否  |   |  仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,              //群ID
+    "user_list":[<userid>, <userid>]   //用户ID 列表
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "user_id":<userid>,   //用户ID
+            "result":"<result>",  //success 成功；fail 失败
+            "reason":""           //失败原因
+        }
+    ]
+}
+```
+
+
+            
+ 
+# 更新群名片
+## 基本信息
+```
+POST   /group/display_name
+PUT    /group/display_name
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+更新群的群名片信息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,   //群ID
+    "value":""              //群名片
+}
+```
+
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+
+            
+        
+# 添加群管理员
+## 基本信息
+```
+POST /group/admin/add
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+添加用户为群管理员。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,             //群ID   
+    "user_list":[<userid>, <userid>]  //待添加为管理员的用户ID
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "user_id":<userid>,          //用户ID
+            "result":"<result>",         //success 成功；fail 失败
+            "reason":""                  //失败原因
+        }
+    ]
+}
+```
+            
+           
+
+# 移除群管理员
+## 基本信息
+```
+POST /group/admin/remove
+DELETE  /group/admin/remove
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+群主删除群管理员。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,             //群ID   
+    "user_list":[<userid>, <userid>]  //待添加为管理员的用户ID
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "user_id":<userid>,          //用户ID
+            "result":"<result>",         //success 成功；fail 失败
+            "reason":""                  //失败原因
+        }
+    ]
+}
+```
+
+
+# 获取群管理员列表
+## 基本信息
+```
+GET /group/admin_list
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+获取群管理员列表。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  |  类型 | 必须  | 备注  |
+| ------------ | ------------ | ------------ | ------------ |
+| group_id | integer  | 是  |  群ID |
+
+## 返回数据
+```
+{
+    "code": 200,  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [{
+        "user_id":<userid>,    //用户ID
+        "display_name":"",     //成员群名片
+        "expired_time":<timestamp>.  //用户进群时间（毫秒）
+    }]
+}
+```
+            
+
+# 编辑群公告
+## 基本信息
+```
+POST /group/announcement/edit
+PUT  /group/announcement/edit
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+编辑群公告。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Body
+```
+{
+    "group_id":<groupid>,     //群ID
+    "title":"",               //公告标题	
+    "content":""              //公告内容	
+}
+```
+            
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "id":<id>,                   //公告ID
+            "group_id":<groupid>,        //群ID
+            "author":<userid>,           //公告发布者用户ID
+            "title":" ",                 //公告标题
+            "content":""                 //公告内容
+            "created_at":<timestamp>     //公告发布时间，毫秒时间戳
+        }
+    ]
+}
+```
+            
+
+# 删除公告
+## 基本信息
+```
+POST  /group/announcement/delete
+DELETE   /group/announcement/delete
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+删除群的群公告。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称         |  类型     | 必须  | 备注  |
+| ------------    | -------- | ---- | ------------ |
+| group_id        | integer  |  是  |  群ID |
+| announcement_id | integer  |  是  |  公告ID |
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": true                  //返回结果，true 成功
+}
+```
+
+# 获取群公告列表
+## 基本信息
+```
+GET /group/announcement/list
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+获取群的公告列表。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+| 参数名称  |  类型     | 必须  | 备注  |
+| -------- | -------- | ---- | ------------ |
+| group_id | integer  |  是  |  群ID |
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "id":<id>,                   //公告ID
+            "group_id":<groupid>,        //群ID
+            "author":<userid>,           //公告发布者用户ID
+            "title":" ",                 //公告标题
+            "content":""                 //公告内容
+            "created_at":<timestamp>     //公告发布时间，毫秒时间戳
+        }
+    ]
+}
+```
+            
+# 获取最新一条群公告详情
+## 基本信息
+```
+GET /group/announcement/last
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+获取群的最新一条公告详情信息。
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称  |  类型 | 必须  | 备注  |
+| -------- | ------------ | ------------ | ------------ |
+| group_id | integer | 是  |  群ID |
+
+## 返回数据
+```
+{
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": [
+        {
+            "id":<id>,                   //公告ID
+            "group_id":<groupid>,        //群ID
+            "author":<userid>,           //公告发布者用户ID
+            "title":" ",                 //公告标题
+            "content":""                 //公告内容
+            "created_at":<timestamp>     //公告发布时间，毫秒时间戳
+        }
+    ]
+}
+```
+            
+# 根据群id和公告id获取群公告详情
+## 基本信息
+```
+GET /group/announcement
+Host: <api-endpoint>
+Content-Type: application/json
+```
+
+### 接口描述
+根据群id和公告id获取群公告详情
+
+## 请求参数
+### Headers
+| 参数名称      | 参数类型  |必填 | 备注  |
+| ------------ | ------  |---  | ------------ |
+| access-token | string  | 否  | 令牌 |
+| app_id       | int64   | 是  | 应用ID |
+| group_id     | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此群ID的管理员身份来调用此接口 |
+| user_id      | int64   | 否  | 仅当access-token为管理员token时，可以设置此字段，表示以此用户ID的身份来调用此接口 |
+
+### Query
+
+| 参数名称         |  类型     | 示例  | 备注  |
+| ------------    | -------- | ---  | ------------ |
+| announcement_id | integer  |  是 |  群公告ID  |
+| group_id        | integer  |  是 |  群ID |
+
+## 返回数据
+```
+{
+   {
+    "code": 200,                  //返回码，200 表示成功
+    "message": "<error message>", //错误信息。如果成功，该字段为空。
+    "data": {
+        "group_id":<groupid>,       //群ID
+        "author":<userid>,          //公告发布者用户ID
+        "content":"",               //公告内容
+        "created_at":<timestamp>    //公告发布时间，毫秒时间戳
+    }
+}
+```
+    			
+ 

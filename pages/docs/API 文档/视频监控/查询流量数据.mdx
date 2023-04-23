@@ -1,0 +1,79 @@
+# **描述**
+本接口用于查询用户或者空间下的流量数据
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/stats/flow?nsId=<nsId>&streamId=<streamId>&start=<start>&end=<end>&tu=<Tu>`
+* Get请求，通过`非SDK`方式调用的客户，http头部Content-Type`要么置空`, `要么不要携带`,否则鉴权会失败; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|nsId|是|string|空间ID
+|streamId|否|string|流ID，可以输入多个
+|start|是|integer|年月日模式(20191001)或者年月日时分秒模式(20201012204005)
+|end|是|integer|年月日模式(20191002)或者年月日时分秒模式(20201012204005)
+|tu|是|string|时间粒度 可以是 5min, hour, day
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|time|integer 数组|时间点数组(unix timestamp)
+|data|object|上下行数据
+|data.up|integer 数组|上行流量数据，单位：bytes，换算单位为1024
+|data.down|integer 数组|下线流量数据，单位：bytes，换算单位为1024
+
+# **示例**
+
+**请求示例**
+- 查询空间下某几路流的流量数据
+```
+curl --request GET \
+  --url 'http://qvs.qiniuapi.com/v1/stats/flow?tu=day&nsId=3nm4x0vyz7xlu&start=20201015&end=20201016&streamId=31011500991320000580&streamId=31011500991320001037' \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "time": [
+    1602691200
+  ],
+  "data": {
+    "up": [
+      250225168
+    ],
+    "down": [
+      169983762
+    ]
+  }
+}
+```
+
+- 查询整个空间下总共流量数据
+
+```
+curl --request GET \
+  --url 'http://qvs.qiniuapi.com/v1/stats/flow?tu=day&nsId=3nm4x0vyz7xlu&start=20201015&end=20201016' \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "time": [
+    1602691200
+  ],
+  "data": {
+    "up": [
+      250225168
+    ],
+    "down": [
+      169983762
+    ]
+  }
+}
+```

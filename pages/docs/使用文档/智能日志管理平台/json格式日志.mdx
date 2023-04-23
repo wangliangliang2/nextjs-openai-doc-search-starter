@@ -1,0 +1,11 @@
+JSON parser 是一个 schema free 的 parser，会把 json 的字符串反序列化成 Golang 中map[string]interface{} 的形式，然后交由 sender 做处理。若日志的 json 格式不规范，则解析失败，解析失败的数据会被忽略。
+​
+![](https://pandora-kibana.qiniu.com/jsonparser.png)
+​
+### **高级选项**
+​
+  * 额外的标签信息(`labels`)：`labels` 中定义的标签如果跟数据有冲突，`labels` 中的标签会被舍弃
+​
+  * 禁止记录解析失败数据(`disable_record_errdata`)：默认为 false，解析失败的数据会默认出现在 `pandora_stash` 字段，该选项可以禁止记录解析失败的数据。
+​
+  * `keep_raw_data` 默认为`false`，配置此选项之后会保留原始数据在`raw_data`字段下。

@@ -1,0 +1,28 @@
+**使用场景**
+
+提供一些数据或者统计学的工具，可以用于计算一些辅助量。
+
+
+**通用语法**
+
+```
+|fit <algo_name> [options] <target_field> from <feature_field_1> <feature_field_2> [into model_name]... 
+```
+
+**通用参数说明：**
++ <algo_name> 必填，用来指定训练模型采用的算法名称。
++ [options]可选，为算法的内置参数，根据提供的算法变化。
++ <target_field> 必填，且只能是一个字段，用来指定建模使用的目标字段，给定的target_field值必须存在于数据集中。target_field的数据必须为连续数据（只能是int或者float）。
++ <feature_field> 必填，可以是一个或者多个字段，用来指定建模使用的特征字段，给定的feature_field值必须存在于数据集中。
++ [into model_name]可选，用来将fit训练出来的模型保存成model_name以便下次调用。
++ 数据集必须不为空。
+
+
+以下算法可以用来预测连续型指标：
+
+- [自相关函数 - ACF](/express/manual/11076/autocorrelation-function-acf)
+- [偏自相关函数 - PACF](/express/manual/11077/partial-autocorrelation-function-pacf)
+
+
+
+  

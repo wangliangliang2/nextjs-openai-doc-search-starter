@@ -1,0 +1,170 @@
+消息队列 RocketMQ 提供三种方式来发送普通消息：可靠同步发送、可靠异步发送和单向（Oneway）发送。本文介绍了每种发送方式的原理、使用场景、示例代码，以及三种发送方式的对比。
+**注意：顺序消息只支持可靠同步发送。**
+# 可靠同步发送
+
+- 原理
+同步发送是指消息发送方发出数据后，会在收到接收方发回响应之后才发下一个数据包的通讯方式。
+![](https://dn-odum9helk.qbox.me/Fg_IufeEBzoZy3v9e7awfJCGaeeH)
+- 应用场景
+此种方式应用场景非常广泛，例如重要通知邮件、报名短信通知、营销短信系统等。
+- 示例代码
+```
+  import java.util.Properties;
+  public class ProducerTest {
+      public static void main(String[] args) {
+          Properties properties = new Properties();
+          // AccessKey 身份验证，在消息队列管理控制台创建
+          properties.put(PropertyKeyConst.AccessKey,"XXX");
+          // SecretKey 身份验证，在消息队列管理控制台创建
+          properties.put(PropertyKeyConst.SecretKey, "XXX");
+          //设置发送超时时间，单位毫秒
+          properties.setProperty(PropertyKeyConst.SendMsgTimeoutMillis, "3000");
+          // 设置 TCP 接入域名，进入控制台的实例管理页面的“获取接入点信息”区域查看
+          properties.put(PropertyKeyConst.NAMESRV_ADDR,
+            "XXX");
+          Producer producer = ONSFactory.createProducer(properties);
+          // 在发送消息前，必须调用 start 方法来启动 Producer，只需调用一次即可
+          producer.start();
+          //循环发送消息
+          for (int i = 0; i < 100; i++){
+              Message msg = new Message( //
+                  // Message 所属的 Topic
+                  "TopicTestMQ",
+                  // Message Tag 可理解为 Gmail 中的标签，对消息进行再归类，方便 Consumer 指定过滤条件在消息队列 RocketMQ 的服务器过滤
+                  "TagA",
+                  // Message Body 可以是任何二进制形式的数据， 消息队列 RocketMQ 不做任何干预，
+                  // 需要 Producer 与 Consumer 协商好一致的序列化和反序列化方式
+                  "Hello MQ".getBytes());
+              // 设置代表消息的业务关键属性，请尽可能全局唯一。
+              // 注意：不设置也不会影响消息正常收发
+              msg.setKey("ORDERID_" + i);
+              try {
+                  SendResult sendResult = producer.send(msg);
+                  // 同步发送消息，只要不抛异常就是成功
+                  if (sendResult != null) {
+                      System.out.println(new Date() + " Send mq message success. Topic is:" + msg.getTopic() + " msgId is: " + sendResult.getMessageId());
+                  }
+              }
+              catch (Exception e) {
+                  // 消息发送失败，需要进行重试处理，可重新发送这条消息或持久化这条数据进行补偿处理
+                  System.out.println(new Date() + " Send mq message failed. Topic is:" + msg.getTopic());
+                  e.printStackTrace();
+              }
+          }
+          // 在应用退出前，销毁 Producer 对象
+          // 注意：如果不销毁也没有问题
+          producer.shutdown();
+      }
+  }
+```
+
+# 可靠异步发送
+
+- 原理
+异步发送是指发送方发出数据后，不等接收方发回响应，接着发送下个数据包的通讯方式。消息队列 RocketMQ 的异步发送，需要用户实现异步发送回调接口（SendCallback）。消息发送方在发送了一条消息后，不需要等待服务器响应即可返回，进行第二条消息发送。发送方通过回调接口接收服务器响应，并对响应结果进行处理。
+![](https://dn-odum9helk.qbox.me/Fo5tawZwi6JU2vjhbULEpp2nNB0o)
+- 应用场景
+异步发送一般用于链路耗时较长，对 RT 响应时间较为敏感的业务场景，例如用户视频上传后通知启动转码服务，转码完成后通知推送转码结果等。
+- 示例代码
+```
+  public class ProducerTest {
+      public static void main(String[] args) {
+          Properties properties = new Properties();
+          // AccessKey 身份验证，在消息队列管理控制台创建
+          properties.put(PropertyKeyConst.AccessKey, "XXX");
+          // SecretKey 身份验证，在消息队列管理控制台创建
+          properties.put(PropertyKeyConst.SecretKey, "XXX");
+          //设置发送超时时间，单位毫秒
+          properties.setProperty(PropertyKeyConst.SendMsgTimeoutMillis, "3000");
+          // 设置 TCP 接入域名，进入控制台的实例管理页面的“获取接入点信息”区域查看
+          properties.put(PropertyKeyConst.NAMESRV_ADDR,
+            "XXX");
+          Producer producer = ONSFactory.createProducer(properties);
+          // 在发送消息前，必须调用 start 方法来启动 Producer，只需调用一次即可。
+          producer.start();
+          Message msg = new Message(
+                  // Message 所属的 Topic
+                  "TopicTestMQ",
+                  // Message Tag,可理解为 Gmail 中的标签，对消息进行再归类，方便 Consumer 指定过滤条件在消息队列 RocketMQ 的服务器过滤
+                  "TagA",
+                  // Message Body，任何二进制形式的数据，消息队列 RocketMQ 不做任何干预，需要 Producer 与 Consumer 协商好一致的序列化和反序列化方式
+                  "Hello MQ".getBytes());
+          // 设置代表消息的业务关键属性，请尽可能全局唯一。
+          // 注意：不设置也不会影响消息正常收发
+          msg.setKey("ORDERID_100");
+          // 异步发送消息, 发送结果通过 callback 返回给客户端。
+          producer.sendAsync(msg, new SendCallback() {
+              @Override
+              public void onSuccess(final SendResult sendResult) {
+                  // 消费发送成功
+                  System.out.println("send message success. topic=" + sendResult.getTopic() + ", msgId=" + sendResult.getMessageId());
+              }
+              @Override
+              public void onException(OnExceptionContext context) {
+                  // 消息发送失败，需要进行重试处理，可重新发送这条消息或持久化这条数据进行补偿处理
+                  System.out.println("send message failed. topic=" + context.getTopic() + ", msgId=" + context.getMessageId());
+              }
+          });
+          // 在 callback 返回之前即可取得 msgId。
+          System.out.println("send message async. topic=" + msg.getTopic() + ", msgId=" + msg.getMsgID());
+          // 在应用退出前，销毁 Producer 对象。 注意：如果不销毁也没有问题
+          producer.shutdown();
+      }
+  }
+```
+# 单向（Oneway）发送
+
+- 原理
+单向（Oneway）发送特点为发送方只负责发送消息，不等待服务器回应且没有回调函数触发，即只发送请求不等待应答。此方式发送消息的过程耗时非常短，一般在微秒级别。
+![](https://dn-odum9helk.qbox.me/FkT7SPRilIeUKJ3d7KyXGF9PUAZu)
+- 应用场景
+适用于某些耗时非常短，但对可靠性要求并不高的场景，例如日志收集。
+- 示例代码
+```
+  public class ProducerTest {
+      public static void main(String[] args) {
+          Properties properties = new Properties();
+          // AccessKey 身份验证，在消息队列管理控制台创建
+          properties.put(PropertyKeyConst.AccessKey, "XXX");
+          // SecretKey 身份验证，在消息队列管理控制台创建
+          properties.put(PropertyKeyConst.SecretKey, "XXX");
+          //设置发送超时时间，单位毫秒
+          properties.setProperty(PropertyKeyConst.SendMsgTimeoutMillis, "3000");
+          // 设置 TCP 接入域名，进入控制台的实例管理页面的“获取接入点信息”区域查看
+          properties.put(PropertyKeyConst.NAMESRV_ADDR,
+            "XXX");
+          Producer producer = ONSFactory.createProducer(properties);
+          // 在发送消息前，必须调用 start 方法来启动 Producer，只需调用一次即可。
+          producer.start();
+          //循环发送消息
+          for (int i = 0; i < 100; i++){
+              Message msg = new Message(
+                      // Message 所属的 Topic
+                      "TopicTestMQ",
+                      // Message Tag,
+                      // 可理解为 Gmail 中的标签，对消息进行再归类，方便 Consumer 指定过滤条件在消息队列 RocketMQ 的服务器过滤
+                      "TagA",
+                      // Message Body
+                      // 任何二进制形式的数据，消息队列 RocketMQ 不做任何干预，需要 Producer 与 Consumer 协商好一致的序列化和反序列化方式
+                      "Hello MQ".getBytes());
+              // 设置代表消息的业务关键属性，请尽可能全局唯一。
+              // 注意：不设置也不会影响消息正常收发
+              msg.setKey("ORDERID_" + i);
+              // 由于在 oneway 方式发送消息时没有请求应答处理，一旦出现消息发送失败，则会因为没有重试而导致数据丢失。若数据不可丢，建议选用可靠同步或可靠异步发送方式。
+              producer.sendOneway(msg);
+          }
+          // 在应用退出前，销毁 Producer 对象
+          // 注意：如果不销毁也没有问题
+          producer.shutdown();
+      }
+  }
+```
+# 三种发送方式的对比
+
+下表概括了三者的特点和主要区别。
+
+| 发送方式	| 发送 TPS	| 发送结果反馈	| 可靠性 |
+|----------|----------|-------------|-------|
+| 同步发送	| 快	| 有	| 不丢失 |
+| 异步发送	| 快	| 有	| 不丢失 |
+| 单向发送	| 最快	| 无	| 可能丢失 |

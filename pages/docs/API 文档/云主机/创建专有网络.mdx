@@ -1,0 +1,217 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `POST` /v1/vm/vpc/
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+region_id | string  | body | 是 | VPC 所在的地域 ID
+vpc       | VPC     | body | 是 | 专有网络信息
+switch    | VSwitch | body | 否 | 交换机信息（可选）
+
+### VPC
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>是</td>
+      <td>
+        <p>VPC 所在的地域</p>
+        <p>您可以通过调用 DescribeRegions 接口获取地域 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>cidr_block</td>
+      <td>string</td>
+      <td>否</td>
+      <td>
+        <p>VPC 的网段</p>
+        <p>您可以使用以下网段或其子集作为 VPC 的网段：</p>
+        <ul>
+          <li>172.16.0.0/12（默认值）。</li>
+          <li>10.0.0.0/8。</li>
+          <li>192.168.0.0/16。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>vpc_name</td>
+      <td>string</td>
+      <td>否</td>
+      <td>
+        <p>VPC 的名称</p>
+        <p>长度为 2~128 个字符，必须以字母或中文开头，可包含数字、点号（.）、下划线（_）和短横线（-），但不能以 <code>http://</code> 或 <code>https://</code> 开头。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>description</td>
+      <td>string</td>
+      <td>否</td>
+      <td>
+        <p>VPC 的描述信息</p>
+        <p>长度为 2~256 个字符，必须以字母或中文开头，但不能以 <code>http://</code> 或 <code>https://</code> 开头。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>client_token</td>
+      <td>string</td>
+      <td>否</td>
+      <td>
+        <p>保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>user_cidr</td>
+      <td>string</td>
+      <td>否</td>
+      <td>
+        <p>用户网段，如需定义多个网段请使用半角逗号隔开，最多支持 3 个网段</p>
+      </td>
+    </tr>
+    <tr>
+      <td>ipv6_cidr_block</td>
+      <td>string</td>
+      <td>否</td>
+      <td>
+        <p>VPC 的 IPv6 网段，目前只支持自动分配</p>
+      </td>
+    </tr>
+    <tr>
+      <td>enable_ipv6</td>
+      <td>boolean</td>
+      <td>否</td>
+      <td>
+        <p>是否开启 IPv6 网段</p>
+        <p>取值：</p>
+        <ul>
+          <li><code>false</code>：不开启（默认值）</li>
+          <li><code>true</code>：开启。</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+### VSwitch
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>zone_id</td>
+      <td>string</td>
+      <td>是</td>
+      <td>
+        <p>要创建的交换机所属的可用区 ID</p>
+        <p>您可以通过调用 DescribeZones 接口获取可用区 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>region_id</td>
+      <td>string</td>
+      <td>是</td>
+      <td>
+        <p>要创建的交换机的地域 ID</p>
+        <p>您可以通过调用 DescribeRegions 接口获取地域 ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>cidr_block</td>
+      <td>string</td>
+      <td>是</td>
+      <td>
+        <p>交换机的网段。交换机网段要求如下：</p>
+        <ul>
+          <li>交换机的网段的掩码长度范围为 16~29 位。</li>
+          <li>交换机的网段必须从属于所在 VPC 的网段。</li>
+          <li>交换机的网段不能与所在 VPC 中路由条目的目标网段相同，但可以是目标网段的子集。</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>vpc_id</td>
+      <td>string</td>
+      <td>是</td>
+      <td>
+        <p>要创建的交换机所属的 VPC ID。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>v_switch_name</td>
+      <td>string</td>
+      <td>否</td>
+      <td>
+        <p>交换机的名称</p>
+        <p>名称长度为 2~128 个字符，必须以字母或中文开头，但不能以 <code>http://</code> 或 <code>https://</code> 开头。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>description</td>
+      <td>string</td>
+      <td>否</td>
+      <td>
+        <p>交换机的描述信息</p>
+        <p>描述长度为 2~256 个字符，必须以字母或中文开头，但不能以 <code>http://</code> 或 <code>https://</code> 开头。</p>
+      </td>
+    </tr>
+    <tr>
+      <td>ipv6_cidr_block_number</td>
+      <td>integer</td>
+      <td>否</td>
+      <td>
+        <p>交换机 IPv6 网段的最后 8 比特位</p>
+        <p>取值：0~255。</p>
+        <p>重设 json 的 key，避免和 model 内的 ipv6_cidr_block 类型不同 convert 失败</p>
+      </td>
+    </tr>
+    <tr>
+      <td>client_token</td>
+      <td>string</td>
+      <td>否</td>
+      <td>
+        <p>保证请求幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID
+data       | object{} | VPC 专有网络信息详情
+data.vpc_id         | string | VPC ID
+data.v_router_id    | string | VPC 路由器的 ID
+data.route_table_id | string | 路由表的ID
+
+
+## 返回值示例
+```json
+{
+  "data": {
+    "request_id": "55988F1C-EA1C-4CC3-BC80",
+    "vpc_id": "vpc-bp19h4cyqds0ywa",
+    "v_router_id": "vrt-bp1rxgf0kl9tmz",
+    "route_table_id": "vtb-lur2g9m5cst0ek"
+  },
+  "request_id": "ScKvER-NfSeZ91IW"
+}
+```

@@ -1,0 +1,59 @@
+# 打通七牛 EVM 到 KODO 网络
+我们七牛的 EVM 云主机是可以通过修改一定的访问配置让云主机访问同       Region 的七牛云存储 KODO 走内网访问，从而提高访问云存储的速度。
+
+目前 EVM 主要有三个区域（Region）: 华东（cn-east-1）、华北（cn-north-1）和华南（cn-south-1）三个 EVM 区域
+
+# 华东区域
+1. 默认 EVM 镜像修改了 /etc/resolv.conf 文件，前两个 DNS 地址为内网自建 DNS 服务器地址；如果使用默认 DNS 情况下，ping nbnb-gate-up.qiniu.com 或 ping nbnb-gate-io.qiniu.com 服务 < 1ms 则说明网络路径符合预期，请将测试服务的 UP 地址修改为 nbnb-gate.up.qiniu.com、DOWN 地址修改为 nbnb-gate-io.qiniu.com 直接测试；否则，请继续...
+
+2. 既然默认配置无法满足测试需求，首先的解决方案是修改 /etc/resolv.conf 中的 DNS 服务器地址，修改为以下地址：  
+-119.29.29.29</br>-223.5.5.5</br>-114.114.114.114</br>
+然后重新执行第 1 步骤
+
+3. 可使用 "./qshell_linux_amd64 rput bucketname keyname localfilename http://nbnb-gate-up.qiniu.com" 来测试效果
+
+
+- 访问域名
+
+| IDC | 下载源站 HTTP 地址 | 上传源站 HTTP 地址 |
+|---|---|---|
+| 华东宁波	| nbnb-gate-io.qiniu.com | nbnb-gate-up.qiniu.com |
+
+- 七牛专线路由规则
+
+```
+ip route-static 101.71.78.224 255.255.255.224 172.31.255.2
+
+ip route-static 101.71.81.0 255.255.255.128 172.31.255.2
+
+ip route-static 101.71.84.192 255.255.255.224 172.31.255.2
+
+ip route-static 101.71.85.64 255.255.255.224 172.31.255.2
+
+ip route-static 101.71.89.192 255.255.255.224 172.31.255.2
+
+ip route-static 115.231.182.128 255.255.255.224 172.31.255.2
+
+ip route-static 115.231.183.128 255.255.255.128 172.31.255.2
+
+ip route-static 115.238.138.224 255.255.255.224 172.31.255.2
+
+ip route-static 183.136.128.144 255.255.255.240 172.31.255.2
+
+ip route-static 183.136.139.0 255.255.255.224 172.31.255.2
+```
+
+# 华北区域
+
+使用默认 DNS 情况下，ping bc-gate-up.qiniu.com 或 ping bc-gate-io.qiniu.com 服务 < 1ms 则说明网络路径符合预期，请将测试服务的 UP 地址修改为 bc-gate.up.qiniu.com、DOWN 地址修改为 bc-gate-io.qiniu.com 直接测试
+
+| IDC | 下载源站 HTTP 地址 | 上传源站 HTTP 地址 |
+|---|---|---|
+| 华北区域	| bc-gate-io.qiniu.com |  bc-gate-up.qiniu.com |
+
+# 华南区域
+使用默认 DNS 情况下，ping hngz-gate-up.qiniu.com 或 ping hngz-gate-io.qiniu.com 服务 < 1ms 则说明网络路径符合预期，请将测试服务的 UP 地址修改为 hngz-gate.up.qiniu.com、DOWN 地址修改为 hngz-gate-io.qiniu.com 直接测试
+
+| IDC | 下载源站 HTTP 地址 | 上传源站 HTTP 地址 |
+|---|---|---|
+| 华南区域	| hngz-gate-io.qiniu.com | hngz-gate-up.qiniu.com |

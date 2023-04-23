@@ -1,0 +1,35 @@
+**请求语法**
+
+```
+GET /v2/repos/<RepoName>/transforms/<TransformName>
+Authorization: Pandora <auth>
+```
+
+**响应报文** 
+
+```
+200 OK
+Transform-Type: application/<TransformType>
+{
+    "name": "<TransformName1>",
+    "to": "<DestRepo1>",
+    "spec": {
+      "plugin": {
+        "name": <PluginName>,
+        "output": [
+          {
+            "name": <FieldName1>,
+            "type": <FieldType>
+          },
+          {
+            "name": <FieldName2>
+          },
+          ...
+        ],
+      },
+      "mode": <Mode>,
+      "code": <Code>,
+      "interval": <Interval>
+    }
+}
+```

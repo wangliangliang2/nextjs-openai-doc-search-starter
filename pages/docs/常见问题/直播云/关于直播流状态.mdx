@@ -1,0 +1,65 @@
+# 流状态共有两种  
+- connected
+- disconnected
+
+# 回调：  
+1. 流状态发生改变都会回调  
+2. `http raw post data` 发送到回调服务器，  
+```
+# 使用 curl 命令模拟 POST 请求回调服务器
+$ curl -X POST --data 'data=xxx' <url>
+```
+3. 在直播空间推流域名设置中可以填写回调服务器地址  
+![](https://dn-odum9helk.qbox.me/FieJ9xezvQcEIz546ZGlBxcC8iJv)
+具体的直播回调逻辑和算法参考 [关于直播状态回调](/pili/kb/server-about-the-live-status-callback)
+
+## 关于推流状态判断：  
+客户端可以发送 stopStreaming 给服务端，主动断开连接，如果因为网络或者其他原因，客户端未能发送断开请求；
+
+服务端有一个 status() 方法，查询流状态；
+
+如果在超时时间内还未能收到断开请求，服务端就会主动将 status 置为 disconnected ；
+
+超时时间在直播推流域名设置中可以选择，默认 30s
+
+# FAQ
+## Q：什么是流状态？
+流状态指流在当下的状态描述。状态包括 connected 表示正在推流中; disconnected 表示推流终止。
+
+
+## Q：stream.status 有几个状态呢？
+两个状态：connected 和 disconnected
+
+
+## Q：直播流状态的格式是什么样的？(可自定义回调参数)
+类似于如下的格式，分别为 推流 IP 、 推流起始时间 、 连接状态 、 每秒传递字节数 、 音视频帧数等
+```
+{
+    "addr":"222.73.202.226:2572",
+    "startFrom": "2015-09-10T05:58:10.289+08:00",
+    "status":"connected",
+    "bytesPerSecond":16870.200000000001,
+    "framesPerSecond":{
+        "audio":42.200000000000003,
+        "video":14.733333333333333,
+        "data":0.066666666666666666
+    }
+}
+```
+
+## Q：disconnected 的状态产生场景有哪些？
+当流的状态为持续无数据的时间超过 hub.DataTimeoutSecond (推流超时时间)，流的状态为 disconnected ，表示推流终止。
+
+
+## Q：如果因为推流端网络原因直播断开，那么业务端如何判断流状态呢？
+正在推流中的直播流因为网络原因或推流端的原因，造成直播流中无数据；
+
+当持续无数据的时间超过推流中断超时饰则直播流状态变 为  disconnected ，链接断开。
+
+hub.DataTimeoutSecond 即推流超时时间，用来描述直播流中持续无数据的时间，默认是 30s，这个值可以 在用户 portal 中的应用属性中设置。
+
+## Q：推流状态在哪些情况下回调？
+详见 [关于直播状态回调](https://developer.qiniu.com/pili/kb/server-about-the-live-status-callback)
+
+## Q：播放器如何判断推流端断流？
+详见 [5.3.1 如何判断直播结束](https://github.com/pili-engineering/PLDroidPlayer/wiki/5-%E5%8A%9F%E8%83%BD%E4%BD%BF%E7%94%A8#5.3.1)

@@ -1,0 +1,95 @@
+# 请求路径
+> `GET` /v1/vm/instance_types
+
+
+# 返回值
+ 名称 | 类型 | 描述 |
+----- | ----- | -----
+type                      | string  | 实例规格族代号
+family                    | string  | 实例规格族
+family_name               | string  | 实例规格族名称
+cpu                       | integer | vCPU 内核数目
+memory                    | float   | 内存大小，单位 GiB
+gpu_spec                  | string  | 实例规格附带 GPU 类型
+gpu_amount                | integer | 实例规格附带 GPU 数量
+local_storage_amount      | integer | 实例挂载的本地存储的数量	 
+local_storage_category    | string  | 实例挂载的本地存储的类型
+local_storage_capacity    | float   | 实例挂载的本地存储的单盘容量 
+private_pps               | float   | 内网收发包（万PPS） 
+intranet_bandwidth        | float   | 内网带宽 Gbps
+clock_speed               | string  | vCPU 时钟速率
+physical_processor        | string  | 处理器
+eni_ipv6_address_quantity | integer | 单块弹性网卡的 IPv6 地址上限
+
+
+## 返回值示例
+```json
+{
+  "data": [
+    {
+      "namespace_name": "default",
+      "type": "ecs.c4.2xlarge",
+      "family": "ecs.c4",
+      "family_name": "高主频计算型 c4",
+      "cpu": 8,
+      "memory": 16,
+      "gpu_spec": "",
+      "gpu_amount": 0,
+      "local_storage_amount": 0,
+      "local_storage_category": "",
+      "local_storage_capacity": 0,
+      "private_pps": 40,
+      "intranet_bandwidth": 3,
+      "clock_speed": "3.2 GHz",
+      "physical_processor": "Intel Xeon E5-2667v4",
+      "eni_ipv6_address_quantity": 0,
+      "architecture": "",
+      "updated_at": "2020-06-23T14:21:18.701+08:00",
+      "created_at": "2018-08-26T14:06:37.368+08:00"
+    },
+    {
+      "namespace_name": "default",
+      "type": "ecs.c4.3xlarge",
+      "family": "ecs.c4",
+      "family_name": "高主频计算型 c4",
+      "cpu": 12,
+      "memory": 24,
+      "gpu_spec": "",
+      "gpu_amount": 0,
+      "local_storage_amount": 0,
+      "local_storage_category": "",
+      "local_storage_capacity": 0,
+      "private_pps": 60,
+      "intranet_bandwidth": 4.5,
+      "clock_speed": "3.2 GHz",
+      "physical_processor": "Intel Xeon E5-2667v4",
+      "eni_ipv6_address_quantity": 0,
+      "architecture": "",
+      "updated_at": "2020-06-23T14:21:18.703+08:00",
+      "created_at": "2018-08-26T14:06:37.368+08:00"
+    },
+    {
+      "namespace_name": "default",
+      "type": "ecs.c4.4xlarge",
+      "family": "ecs.c4",
+      "family_name": "高主频计算型 c4",
+      "cpu": 16,
+      "memory": 32,
+      "gpu_spec": "",
+      "gpu_amount": 0,
+      "local_storage_amount": 0,
+      "local_storage_category": "",
+      "local_storage_capacity": 0,
+      "private_pps": 80,
+      "intranet_bandwidth": 6,
+      "clock_speed": "3.2 GHz",
+      "physical_processor": "Intel Xeon E5-2667v4",
+      "eni_ipv6_address_quantity": 0,
+      "architecture": "",
+      "updated_at": "2020-06-23T14:21:18.7+08:00",
+      "created_at": "2018-08-26T14:06:37.368+08:00"
+    }
+  ],
+  "request_id": "ScKvERPbRsR-Y1EW"
+}
+```

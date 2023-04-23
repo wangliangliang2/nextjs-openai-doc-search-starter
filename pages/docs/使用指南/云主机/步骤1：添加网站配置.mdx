@@ -1,0 +1,31 @@
+### 1. 在实例列表找到网站配置入口（下图红圈部分），在域名列表中点击添加网站
+<br>
+
+![](https://dn-odum9helk.qbox.me/FtfTNwdHilq0xUDDAm1g0JZR27kR)
+
+![](https://dn-odum9helk.qbox.me/FgwibT64k17djFwQyrwjUshJ8hcZ)
+<br>
+### 2. 填写域名配置，可以选择对应的规格，一个域名可以绑定一个或同一类规格的多个BGP实例，根据需求设置源站IP或源站域名，再选择合适的协议及端口，标准功能只能选择HTTP 80/8080 或HTTPS 443/8443，增强功能可以选择一些非标准端口，具体可点击查看可选范围。
+<br>
+
+![](https://dn-odum9helk.qbox.me/FlVbnAgOOE3JYZpGYNOENn628mjH)
+<br>
+
+域名配置的具体说明如下表所示。
+
+| <span style="white-space:nowrap;">配置项&emsp;&emsp;</span>     | 描述                                                         |
+| ---------- | ------------------------------------------------------------ |
+| 规格       | 选择功能套餐规格。取值：标准功能，增强功能                   |
+| 实例       | 根据您在规格中选择的功能套餐类型显示对应的新BGP高防IP实例供您选择，一个域名最多关联8个实例（注：如果无可选实例，表示您当。前无可用的该功能套餐规格的新BGP高防IP实例。您可以选择新购增强功能套餐实例或升级已有的标准功能套餐实例。） |
+| 网站       | 填写要防护的网站域名，可以是一级域名，二级域名或者泛域名。             |
+| 协议类型   | 选择网站支持的协议类型，可选值：HTTP, HTTPS,   Websocket    , Websockets. 注： 选择Websocket必须选择HTTP，选择Websockets必须选择HTTPS |
+| 服务器地址 | 可以选择源站IP或源站域名。源站IP：如果选择源站IP类型，支持配置最多20个源站IP地址。配置多个源站IP后，新BGP高防IP实例将以IP   Hash的方式转发网站访问流量至源站，自动实现源站的负载均衡。      源站域名：如果您在部署新BGP高防IP实例后还需要部署Web应用防火墙（WAF），以提升应用安全防护能力，您可以选择源站域名类型，并填写WAF实例分配给源站的CNAME地址。 |
+| 服务器端口 | 转发端口和服务器端口保持一致。协议类型为HTTP或Websocket时，默认服务器端口为80。    协议类型为HTTPS或Websockets时，默认服务器端口为443。 |
+
+<br>
+
+### 3. 复制高防IP地址，去DNS服务商处修改DNS解析，修改完成则高防生效。
+<br>
+
+![](https://dn-odum9helk.qbox.me/Fq38mEkycit_MDvDVU8qMUbcA15Q)
+

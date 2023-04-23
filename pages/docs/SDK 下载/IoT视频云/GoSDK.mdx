@@ -1,0 +1,361 @@
+
+<a id="intro"></a>
+# 简介
+
+此 SDK 适用于 Go 1.10.0 及以上版本。使用此 SDK 构建您的物联网数据云服务，客户可简单快速地实现设备接入、云端存储、远程观看等一站式视频场景能力，七牛云及其 SDK支持设备管理、存储管理、视频管理，帮助智能视频硬件厂商更快捷地使设备接入云服务。
+
+<a id="opensource"></a>
+# 开源
+
+- [Go SDK 项目地址](https://github.com/qiniu/api.v7)
+- [Go SDK 发布地址](https://github.com/qiniu/api.v7/releases)
+
+<a id="install"></a>
+# 安装
+
+按照Go语言的推荐方式，使用如下的命令安装：
+
+```
+$ go get -u github.com/qiniu/api.v7
+```
+
+<a id="api-auth"></a>
+# 鉴权
+
+七牛 Go SDK 的所有的功能，都需要合法的授权。授权凭证的签算需要七牛账号下的一对有效的`Access Key`和`Secret Key`，这对密钥可以通过如下步骤获得：
+
+1. 点击[注册🔗](https://portal.qiniu.com/signup)开通七牛开发者帐号
+2. 如果已有账号，直接登录七牛开发者后台，点击[这里🔗](https://portal.qiniu.com/user/key)查看 Access Key 和 Secret Key
+
+
+# 设备管理
+LINKING设备管理支持设备的添加、设备信息的查询和更新、设备的删除、设备列表的查询以及设备在线记录的查询。
+
+
+   - <a href="#device-add">添加新设备</a>
+   - <a href="#device-query">查询设备详细信息</a>
+   - <a href="#device-list">查询所有设备列表</a>
+   - <a href="#device-history-query">查询设备的在线记录</a>
+   - <a href="#device-update">更新设备配置</a>
+   - <a href="#device-delete">删除指定设备</a>
+
+
+
+```
+// LINKING相关功能的引入包只有这两个，后面不再赘述
+import (
+	"github.com/qiniu/api.v7/v7/auth/qbox"
+	"github.com/qiniu/api.v7/v7/linking"
+)
+
+accessKey := "your access key"
+secretKey := "your secret key"
+mac := qbox.NewMac(accessKey, secretKey)
+```
+
+<a id="device-add"></a>
+
+### **添加新设备**
+
+在指定的应用下添加设备。
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+dev := &Device{
+	Device: "your device name",
+	SegmentExpireDays: 7,
+}
+manager.AddDevice(appid, dev)
+```
+
+
+<a id="device-query"></a>
+### **查询设备详细信息**
+
+查询指定设备的详细信息。
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+device := "your device name"
+manager.QueryDevice(appid, device)
+```
+
+<a id="device-list"></a>
+### **查询所有设备列表**
+
+查询指定应用下所有设备的列表。
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+// 使用设备名称的前缀进行查询
+prefix := "sdk-testListDevice"
+// online为true时只返回在线的设备
+online := false
+// status用于返回设备列表信息是否包含设备在线消息；status=false时不返回设备在线信息，status=true时返回；该参数只有在online=false或不输入online参数时才会生效
+status := false
+// deviceType为设备类型，type=0 只返回普通设备，type=1 只返回网关设备，type=2 返回全部设备(包含网关设备和普通设备)
+deviceType := 0
+manager.ListDevice(appid, prefix, "", 1000, false, false, 0, "")
+```
+
+<a id="device-history-query"></a>
+### **查询设备的在线记录**
+
+查询指定时间段内设备的在线记录。
+
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+device := "your device name"
+// start、end 为开始时间和结束时间，unix timestamp，以秒为单位
+start := time.Now().Add(-time.Hour).Unix()
+end := time.Now().Unix()
+// marker 为上次列举返回的位置标记，作为本次列举的起点信息(默认为"")
+marker := ""
+// limit 为最大返回多少条数据,最大1000条
+limit := 1000
+manager.ListDeviceHistoryactivity(appid, device, int(start), int(end), marker, limit)
+```
+
+<a id="device-update"></a>
+### **更新设备配置**
+
+更新设备配置信息。
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+device := "your device name"
+
+// 更新设备segmentexpiredays为30
+ops := []linking.PatchOperation{  
+   PatchOperation{Op: "replace", Key: "segmentExpireDays", Value: 30},  
+}
+manager.UpdateDevice(appid, device, ops)
+```
+
+
+<a id="device-delete"></a>
+### **删除指定设备**
+删除指定的设备。
+
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+device := "your device name"
+manager.DeleteDevice(appid, device)
+```
+
+
+# 设备秘钥管理
+
+设备秘钥管理。
+
+- <a href="#deviceKey-add">新增设备秘钥</a>
+- <a href="#deviceKey-query">查询设备秘钥</a>
+- <a href="#deviceKey-delete">删除设备秘钥</a>
+- <a href="#deviceKey-state-set">禁用、启用设备的密钥</a>
+- <a href="#deviceKey-clone">克隆设备秘钥</a>
+- <a href="#query-by-deviceKey">通过DAK查询信息</a>
+
+<a id="deviceKey-add"></a>
+### **新增设备秘钥**
+
+新增设备的密钥，每个设备最多有两对密钥。
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+device := "your device name"
+manager.AddDeviceKey(appid, device)
+```
+
+<a id="deviceKey-query"></a>
+### **查询设备秘钥**
+
+查询指定设备的密钥。
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+device := "your device name"
+
+var deviceKeyInfo linking.DeviceKey
+deviceKeyInfo, err := manager.QueryDeviceKey(appid, device)
+if err != nil {
+    fmt.Println(err)
+    return
+}
+```
+
+<a id="deviceKey-delete"></a>
+### **删除设备秘钥**
+
+删除设备的密钥。
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+device := "your device name"
+deviceKeyInfo, err := manager.QueryDeviceKey(appid, device)
+if err != nil {
+    fmt.Println(err)
+    return
+}
+dak := deviceKeyInfo[0].AccessKey
+manager.DeleteDeviceKey(appid, device, dak)
+```
+
+<a id="deviceKey-state-set"></a>
+### **禁用、启用设备的密钥**
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+device := "your device name"
+deviceKeyInfo, err := manager.QueryDeviceKey(appid, device)
+if err != nil {
+    fmt.Println(err)
+    return
+}
+dak := deviceKeyInfo[0].AccessKey
+state := 1
+manager.UpdateDeviceKeyState(appid, device, dak, state)
+```
+
+<a id="deviceKey-clone"></a>
+### **克隆设备秘钥**
+某个设备的密钥克隆给新的设备，不用重新对设备进行烧录新的密钥。
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+fromDevice := "from device name"
+toDevice := "to device name"
+
+// cleanSelfKey 秘钥克隆后是否删除原设备秘钥
+cleanSelfKey := false
+
+// deleteDevice 秘钥克隆后是否删除原设备
+deleteDevice := false
+
+deviceKeyInfo, err := manager.QueryDeviceKey(appid, fromDevice)
+if err != nil {
+    fmt.Println(err)
+    return
+}
+dak1 := deviceKeyInfo[0].AccessKey
+manager.CloneDeviceKey(appid, fromDevice, toDevice, cleanSelfKey, deleteDevice,  dak1)
+```
+
+<a id="query-by-deviceKey"></a>
+### **通过DAK查询信息**
+
+通过dak查询appid和deviceName。
+
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+device := "your device name"
+deviceKeyInfo, err := manager.QueryDeviceKey(appid, device)
+if err != nil {
+    fmt.Println(err)
+    return
+}
+dak := deviceKeyInfo[0].AccessKey
+realAppid, realDevice, err := manager.QueryAppidDeviceNameByAccessKey(dak)
+```
+
+# 视频播放
+- <a href="#linking-vod-save">视频片段收藏</a>
+- <a href="#linking-vod-api">视频播放类API参考</a>
+
+### **视频片段收藏**
+对指定的视频片段进行收藏，保存在云存储上。
+
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+device := "your device name"
+
+end :=  time.Now().Unix() // 结束时间，unix timestamp 以秒为单位
+start := time.Now().Add(-time.Hour).Unix()// 开始时间，unix timestamp 以秒为单位
+frame := "testSaveas.mp4" // 设置保存文件的名称，不指定的话会默认生成
+format := "mp4" // 文件格式，默认和fname的后缀相同，如果两者有冲突则返回错误
+
+manager.Saveas(appid, device, int(start), int(end), frame, format)
+```
+
+<a id="linking-vod-api"></a>
+### **视频播放类API参考**
+其他视频播放操作，建议直接调用对应的API。
+
+|接口|说明|
+|---|---|
+|[视频回放](https://developer.qiniu.io/linking/api/5650/the-playback)|该接口用于查询指定时间段的视频片段进行录像回放|
+|[直播观看](https://developer.qiniu.io/linking/api/5903/live-Standard-Edition)|该接口用户rtmp可控推流的直播观看功能|
+|[缩略图查询](https://developer.qiniu.io/linking/api/5651/the-thumbnail-query)|该接口用于查询指定时间段内视频片段的缩略图|
+|[视频片段查询](https://developer.qiniu.io/linking/api/5646/video-fragment-query)|该接口用于查询某个时间段内的视频切片的片段记录|
+|[倍速播放](https://developer.qiniu.io/linking/api/5648/times-the-speed-of-playback)|该接口用于设置视频回放的播放倍速|
+|[延时直播](https://developer.qiniu.io/linking/api/5649/delay-live)|该接口可用于视频直播的延时播放|
+
+# 设备访问凭证
+
+我们引入设备访问凭证，由七牛账号的密钥对签算生成对设备资源临时性访问的凭证。
+
+访问策略
+```
+{
+    "appid": "<appid>",  // 使用七牛账号密钥对签名时，需要该字段
+    "device": "<deviceName>", // 使用七牛账号密钥对签名时，需要该字段
+    "deadline": <deadlineTimestamp>, // token有效时间
+    "random": <randomNumber>, // 随机数，用来保证DEVICE ACCESS TOKEN全局唯一
+    "statement":[
+        {
+            "action": "linking:vod"
+        },
+        {
+            "action": "linking:tutk"
+        },
+        {
+            "action": "linking:status"
+        } 
+    ]
+}
+```
+其中密钥对可以采用七牛账号或设备端的密钥对，如果使用设备端的密钥对签名则访问策略中不需要app和device字段。当前tutk相关的action只支持设备端密钥。
+
+action列表
+```
+linking:status 设备基础信息/上下线记录
+linking:vod 回放相关(切片片段查询、截帧、伪直播、倍速播放等)
+linking:tutk tutk建连
+linking:rpc rpc 控制
+```
+
+```
+mac := auth.New(AccessKey, SecretKey)
+manager := NewManager(mac, nil)
+appid := "your appid name"
+device := "your device name"
+deadline := time.Now().Add(time.Hour*5).Unix()
+
+// 设备基础信息/上下线记录
+statusToken, err := manager.Token(appid, device, deadline, []linking.Statement{{Action: "linking:status"}})
+
+// 视频回放/缩略图查询/倍速播放/延时直播/视频片段查询
+vodToken, err := manager.Token(appid, device, deadline, []linking.Statement{{Action: "linking:vod"}})
+
+// tutk建连
+tutkToken, err := manager.Token(appid, device, deadline, []linking.Statement{{Action: "linking:tutk"}})
+```
+
+
+

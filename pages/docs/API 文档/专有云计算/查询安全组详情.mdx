@@ -1,0 +1,72 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+
+> `GET` /api/rio/v1/compute/security_group/:id/detail
+
+# 请求参数
+
+| 名称          | 类型     | 位置   | 必须 | 描述                                                                                          |
+| ------------- | -------- | ------ | ---- | --------------------------------------------------------------------------------------------- |
+| x-rio-zone-id | string   | header | 是   | 地域 ID                                                                                       |
+| id            | string   | path   | 是   | 安全组 ID                                                                                     |
+| direction     | []string | query  | 否   | 流量方向：<ul><li>`all` : 全部</li><li>`ingress` : 入方向</li><li>`egress` : 出方向</li></ul> |
+
+# 返回值
+
+| 名称       | 类型          | 描述       |
+| ---------- | ------------- | ---------- |
+| request_id | string        | 请求 ID    |
+| data       | SecurityGroup | 安全组对象 |
+
+## SecurityGroup 安全组对象
+
+| 名称                 | 类型                | 描述           |
+| -------------------- | ------------------- | -------------- |
+| zone_id              | string              | 地域 ID        |
+| security_group_id    | string              | 安全组 ID      |
+| security_group_name  | string              | 安全组名称     |
+| security_group_rules | []SecurityGroupRule | 安全组规则列表 |
+| description          | string              | 安全组描述信息 |
+
+## SecurityGroupRule 安全组规则对象
+
+| 名称                     | 类型   | 描述                                                                                                                          |
+| ------------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| security_group_rule_id   | string | 安全组规则 ID                                                                                                                 |
+| protocol                 | string | IP 协议类型：<ul><li>`all` : 全部</li><li>`tcp` : TCP</li><li>`udp` : UDP</li><li>`icmp` : ICMP</li><li>`gre` : GRE</li></ul> |
+| direction                | string | 流量方向：<ul><li>`all` : 全部</li><li>`ingress` : 入方向</li><li>`egress` : 出方向</li></ul>                                 |
+| remote_security_group_id | string | 远端安全组 ID                                                                                                                 |
+| from_port                | integer    | 最小端口号                                                                                                                    |
+| to_port                  | integer    | 最大端口号                                                                                                                    |
+| cidr                     | string | 安全组描述信息                                                                                                                |
+| type                     | string | 安全组授权类型：<ul><li>`1` : 安全组</li><li>`2` : Ipv4 地址</li></ul>                                                        |
+| created_at               | integer  | 安全组规则创建时间                                                                                                            |
+
+## 返回值示例
+
+```json
+{
+  "request_id": "HtPfEs8eUKh_8csW",
+  "data": {
+    "security_group_id": "fc30b21d-3c08-4362-8b27-b4ebaade14bf",
+    "zone_id": "wenzhou",
+    "security_group_name": "sgVRWXt",
+    "description": "",
+    "security_group_rules": [
+      {
+        "security_group_rule_id": "8782e14d-63a9-419c-a897-819273d94660",
+        "direction": "egress",
+        "type": 2,
+        "remote_security_group_id": null,
+        "cidr": "0.0.0.0/0",
+        "protocol": "all",
+        "from_port": null,
+        "to_port": null,
+        "description": "",
+        "created_at": 1642672019000
+      }
+    ]
+  }
+}
+```

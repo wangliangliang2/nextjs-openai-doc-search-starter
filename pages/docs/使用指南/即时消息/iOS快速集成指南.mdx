@@ -1,0 +1,154 @@
+
+   # 七牛即时通讯IM 
+
+
+## 前期准备
+
+在demo中下载 QNIMSDK.framework , 然后将文件引用到您的项目中，并配置target->genaral-> embed and sign。
+
+
+ ### 初始化
+    在您需要使用QNIMSDK功能的类中，import 相关头文件。
+    您在使用QNIMSDK所有功能之前，您必须先调用此方法初始化 SDK。 在 App 的整个生命周期中，您只需要将 SDK 初始化一次。
+``` 
+// 设置存储路径
+
+NSString* dataDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@“ChatData”];
+
+NSString* cacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject stringByAppendingString:@“UserCache”];
+
+// 初始化
+
+QNSDKConfig *config = [[QNSDKConfig alloc] initConfigWithDataDir:dataDir cacheDir:cacheDir pushCertName:@“Your APNS Certification” userAgent:@“userAgent”];
+
+config.appID = @“Your AppID”;
+
+[[QNIMClient sharedClient] registerWithSDKConfig:config];
+
+```
+
+  ### 登录链接服务器
+    
+   通过 QNIMClient的单例,用UserId登录IM，即可建立与服务器的连接。
+
+``` 
+ [[QNIMClient sharedClient] signInByName:im_username password:im_password completion:^(QNIMError * _Nonnull error) {
+  }];
+```
+
+### 聊天室
+
+##### 加入聊天室 
+``` 
+// groupID：聊天室ID  message：加入聊天室验证消息（可不传）
+- (void)joinGroupWithGroupId:(NSString *)groupId
+          message:(NSString *)message
+       completion:(void(^)(QNIMError *error))aCompletionBlock;
+```
+##### 获取聊天室信息
+``` 
+//forceRefresh 如果设置了forceRefresh则从服务器拉取
+- (void)getGroupInfoByGroupId:(long long)groupId
+                 forceRefresh:(BOOL)forceRefresh
+                   completion:(void(^)(QNIMGroup *group,
+                                       QNIMError *error))aCompletionBlock;
+```
+
+##### 退出聊天室
+   ``` 
+[[QNIMGroupOption sharedOption] leaveGroupWithGroupId:self.groupId completion:^(QNIMError * _Nonnull error) {
+        
+}];
+```
+
+##### 群监听
+``` 
+[[QNIMGroupOption sharedOption] addDelegate:self];
+```
+
+##### 代理方法
+``` 
+/**
+ 退出了某群
+ */
+- (void)groupLeft:(QNIMGroup *)group reason:(NSString *)reason{
+
+}
+```
+
+``` 
+/**
+ * 加入新成员
+ **/
+- (void)groupMemberJoined:(QNIMGroup *)group
+                 memberId:(NSInteger)memberId
+                  inviter:(NSInteger)inviter{
+
+}
+```
+
+``` 
+/**
+ * 群成员退出
+ **/
+- (void)groupMemberLeft:(QNIMGroup *)group
+               memberId:(NSInteger)memberId
+                reason:(NSString *)reason{
+
+}
+```
+
+### 构建消息实体
+
+```
+ /**
+ 创建文本消息
+
+ @param content 内容
+ @param fromId 发送id
+ @param toId 接收id
+ @param mtype 消息类型
+ @param conversationId 会话id
+ @return QNIMMessageObject
+ */
+- (instancetype)initWithQNIMMessageText:(NSString *)content
+                                fromId:(long long )fromId
+                                  toId:(long long)toId
+                                  type:(QNIMMessageType)mtype
+                        conversationId:(long long )conversationId;
+```   
+
+### 消息操作
+消息实体构建完成后，通过 QNIMChatOption的单例，调用 -sendMessage: 方法，将构建好的消息实体传入，即可实现消息发送。
+``` 
+QNIMMessageObject *messageModel = [[QNIMMessageObject alloc]initWithQNIMMessageText:@"加入了房间" fromId:imUserId.longLongValue toId:self.groupId.longLongValue type:QNIMMessageTypeGroup conversationId:self.groupId.longLongValue];
+[[QNIMChatOption sharedOption] sendMessage:messageModel];
+```
+   
+### 消息收发监听
+``` 
+//添加监听者
+[[QNIMChatOption sharedOption] addDelegate:self];
+```
+
+##### 代理方法
+
+``` 
+//收到消息
+ - (void)receivedMessages:(NSArray<QNIMMessageObject *> *)messages {
+    
+}
+```
+
+``` 
+//  消息状态发生变化
+  - (void)messageStatusChanged:(QNIMMessageObject *)message error:(QNIMError *)error {
+    
+}
+```
+
+
+
+
+
+

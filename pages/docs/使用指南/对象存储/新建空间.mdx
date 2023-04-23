@@ -1,0 +1,37 @@
+存储空间（Bucket）是用于存储对象（Object）的容器。您必须先创建存储空间才能上传文件。
+
+# **说明**
+- 创建 Bucket 本身不收取任何费用，仅收取上传至 Bucket 中 Object 的存储费用或者访问 Object 产生的流量费用等。详情请见[购买指南](/kodo/buying_guide/6379/metering-and-billing)。
+- Bucket 一旦创建，则无法更改其名称及所在地域。
+- Bucket 创建后可修改其访问控制，详情请见<a href="/kodo/development_guidelines/8502/set-access-control" target="_blank">设置访问控制</a>。
+<br>
+
+# **操作步骤**
+
+1. 登录 Kodo 控制台界面进入[空间管理](https://portal.qiniu.com/kodo/bucket)界面
+2. 单击 **+新建空间**，右侧弹出如图1的新建存储空间界面。
+图1:
+<img src=https://dn-odum9helk.qbox.me/FoSQdAO-sjeogbquhTjSDzRVau2q width=80% />
+<br>
+
+3. 在新建存储空间界面，按如下说明配置各项参数:
+
+   |操作名称   |说明             |规则描述                                    |
+   |----------|----------------|------------------------------------------|
+   |存储空间名称|请自定义存储空间名称| - 存储空间名称必填且不允许重复，遇到冲突请更换名称 <br>  - 名称格式为 3～63 个字符 <br> - 可以包含小写字母、数字、短划线 <br>  - 且必须以小写字母或者数字开头和结尾 <br>  - 存储空间名称创建后不可修改|
+   |存储区域|请选择您将要创建的存储空间所属区域| - 选择数据中心区域以新建存储空间 <br> <ul><li> 华东、华北、华南、北美、东南亚、华东-浙江2</ul> - 各区域不通用 <br> - 存储区域创建后不可更改|
+   |访问控制|请选择您将要创建的存储空间的访问限制|- 公开和私有仅对 Bucket 的读文件生效，修改、删除、写入等对 Bucket 的操作均需要拥有者的授权才能进行操作。<br> - 创建完成后，可在空间设置中更改限制。|
+
+4. 单击**确定**，空间创建成功并弹出如图2域名绑定提示。
+图2:
+<img src=https://dn-odum9helk.qbox.me/FndDIHM2S_BrTGxcamZV9t9s0dEt width=50% />
+
+
+5. 系统已自动为空间配备测试域名， 有效期 30 天，仅限用于业务对接测试，不可用于正式生产环境。请参考以下测试域名限制与规范:
+   - 测试域名每个自然日访问总流量限额 10GB，自创建起 30 个自然日后自动回收。
+   - 测试域名不得作为生产域名，使用期间不在 SLA 保障范围内。
+   - 不得使用测试域名存储、发布、传播违法违规内容，禁止下载应用程序(apk、ipa、exe、dmg等)。 当测试域名下有非法资源时，该域名将被直接冻结并不予解封。
+   - 更多测试域名使用规范请参考[测试域名使用规范](https://developer.qiniu.com/fusion/kb/1319/test-domain-access-restriction-rules)。
+   <br>
+6. 单击**好的，我知道了**，使用当前测试域名完成空间创建。后续您可参考<a href="/kodo/development_guidelines/8527/kodo-domain-name-management" target="_blank">域名管理</a>，为当前空间配置域名。
+7. 单击**立即绑定自定义域名**，将跳转至<a href="/kodo/development_guidelines/8527/kodo-domain-name-management" target="_blank">域名管理</a>界面，请参考域名管理绑定自定义域名为生产域名。

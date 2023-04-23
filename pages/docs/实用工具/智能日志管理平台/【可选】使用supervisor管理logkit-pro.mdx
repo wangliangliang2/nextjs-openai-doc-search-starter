@@ -1,0 +1,193 @@
+对于logkit-pro这样的服务，我们推荐使用supervisor作为守护进程进行管理，这样即使程序由于某种原因异常关闭，还能通过supervisor自动重启。
+
+**logkit-pro在设计上保证了即使异常重启也保证数据不会丢失，最坏情况是意外中断后重启导致出现部分数据重复，正常情况都是不重不漏发送**
+
+
+[Supervisor](http://supervisord.org/)是用Python开发的Linux/Unix系统下的一个进程管理工具。它可以很方便的监听、启动、停止、重启一个或多个进程。用Supervisor管理的进程，当一个进程意外终止，supervisor监听到进程不存活时，会自动将它重新拉起，很方便的做到进程自动恢复的功能，不再需要自己写脚本来控制。
+
+
+## 安装`supervisor`
+
+如果您的机器已经安装了 `supervisor`，可以跳过这一步。
+
+supervisor 是 python 编写的，所以机器上首先要安装 python，一般的 Linux 发行版都已经自带 python 了。
+
+supervisor [官方推荐的安装方式](http://supervisord.org/installing.html)，第一种是使用 `easy_install` 工具安装。
+
+所以如果您机器上没有`easy_install`，需要先安装一下。
+
+### 安装 `easy_install`
+
+```
+wget --no-check-certificate https://bootstrap.pypa.io/ez_setup.py -O - | sudo python
+```
+
+### 通过`easy_install`安装`supervisor`
+
+
+```
+easy_install supervisor
+```
+
+
+### Ubuntu用户安装`supervisor`
+
+只需执行如下命令：
+
+```
+sudo apt-get install supervisor
+```
+
+
+## 配置logkit-pro
+
+安装完成后，supervisor的主配置文件一般存放在 `/etc/supervisor/supervisord.conf` 
+
+打开可以看到 
+
+```
+[include]
+files = /etc/supervisor/conf.d/*.conf
+```
+
+会监听 ` /etc/supervisor/conf.d/` 下的配置文件。
+
+如果没有这个主配置文件，你就要创建一个`/etc/supervisor`文件夹，然后用如下命令生成
+
+```
+echo_supervisord_conf > /etc/supervisor/supervisord.conf
+```
+
+根据实际情况对supervisor的配置文件做修改。
+
+也可以将下列配置文件手动写入到 `/etc/supervisor/supervisord.conf` 中。
+
+```
+; supervisor config file
+
+[unix_http_server]
+file=/var/run/supervisor.sock   ; (the path to the socket file)
+chmod=0700                       ; sockef file mode (default 0700)
+
+[supervisord]
+logfile=/var/log/supervisor/supervisord.log ; (main log file;default $CWD/supervisord.log)
+pidfile=/var/run/supervisord.pid ; (supervisord pidfile;default supervisord.pid)
+childlogdir=/var/log/supervisor            ; ('AUTO' child log dir, default $TEMP)
+
+; the below section must remain in the config file for RPC
+; (supervisorctl/web interface) to work, additional interfaces may be
+; added by defining them in separate rpcinterface: sections
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+[supervisorctl]
+serverurl=unix:///var/run/supervisor.sock ; use a unix:// URL  for a unix socket
+
+; The [include] section can just contain the "files" setting.  This
+; setting can list multiple files (separated by whitespace or
+; newlines).  It can also contain wildcards.  The filenames are
+; interpreted as relative to this file.  Included files *cannot*
+; include files themselves.
+
+[include]
+files = /etc/supervisor/conf.d/*.conf
+```
+
+修改配置文件后，重启下`supervisord` 
+
+```
+service supervisord restart
+```
+
+如果service中没有supervisord，参考文档[如何在linux上自动启动](https://serverfault.com/questions/96499/how-to-automatically-start-supervisord-on-linux-ubuntu)
+
+至此，supervisor守护进程已经安装完毕。
+
+我们假设logkit已经下载并解压缩到 `/home/qiniu/logkit-pro/` 目录下，并包含了运行所需的所有文件，如下所示。
+
+```
+$ ls /home/qiniu/logkit-pro/
+auths.conf      logkit-pro      logkit-pro.conf public
+```
+
+
+我们编写配置文件 `logkit_supervisor.conf` 并放置到 `/etc/supervisor/conf.d/` 目录，编写的配置内容如下所示。
+
+```
+[program:logkit-pro]
+command=/home/qiniu/logkit-pro/logkit-pro -f /home/qiniu/logkit-pro/logkit-pro.conf
+directory=/home/qiniu/logkit-pro/
+priority=999
+autostart=true
+startsecs=3
+stopwaitsecs=200
+autorestart=true
+user=qiniu
+redirect_stderr=true
+log_level=info
+stdout_logfile=/home/qiniu/logkit-pro/logkit-pro.log
+stdout_logfile_maxbyte=200MB
+stdout_logfile_backups=2
+```
+
+其中
+* `program` 表示使用supervisor管理时进程的名称
+* `command` 表示运行的命令
+* `directory` 表示启动的工作目录，即进程运行时的当前目录。
+* `user` 表示运行进程的用户组
+* `stdout_logfile` 表示程序输出的日志文件路径
+* `startsecs` 表示启动时等待程序程序运行的世界
+* `stopwaitsecs` 表示正常关闭后等待时间，如果超过等待时间则发送SIGKILL强制关闭，因为logkit关停需要时间结束发送等过程，建议设置时间稍长，supervisor默认配置的时间为10s
+
+
+## supervisor重载配置并启动logkit-pro
+
+配置完成后，我们要让supervisor载入当前的新配置，执行如下命令：
+
+```
+supervisorctl reread
+```
+
+supervisor感知到新配置后，我们就可以将logkit-pro加入到管理中，执行如下命令：
+
+```
+supervisorctl add logkit-pro
+```
+
+然后程序就已经正常运行了，可以通过supervisor查看
+
+```
+supervisorctl status
+```
+
+通过supervisor停止、启动、重启的命令如下：
+
+```
+supervisorctl stop logkit-pro
+supervisorctl start logkit-pro
+supervisorctl restart logkit-pro
+```
+
+详细的命令可以参考[supervisor的官方文档](http://supervisord.org/running.html#running)
+
+
+## 查看日志
+
+根据我们的supervisor配置，logkit-pro的日志存放在
+
+```
+/home/qiniu/logkit-pro/logkit-pro.log
+```
+
+而supervisor本身的日志可以在supervisor的主配置文件中查看
+
+```
+cat /etc/supervisor/supervisord.conf
+```
+
+默认情况下存放在
+
+```
+/var/log/supervisor/supervisord.log
+```
+

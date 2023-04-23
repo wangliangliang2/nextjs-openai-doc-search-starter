@@ -1,0 +1,639 @@
+本文介绍了 API 调用直播内容审核和回调使用须知，帮助您正确使用此 API 进行直播内容审核，支持基于 API URL 发起 HTTP/HTTPS POST 请求的方式调用。
+
+**注意**
+
+- 直播流格式支持`rtmp`、`hls`、`flv`等主流协议
+- 支持用户设定图片截帧频率
+
+# 功能描述
+
+直播内容审核 API 主要用于检测或识别直播中的不良信息，并给出审核结果管控建议。支持的审核类型包括：直播鉴黄、直播鉴暴恐、直播敏感人物识别、直播语音违规内容识别。
+
+## 使用步骤
+
+- 创建任务
+- 审核结果回调
+- 查询审核结果
+- 查询任务
+- 列取任务
+- 关闭任务
+
+# 公共参数
+
+请求地址：http://ai.qiniuapi.com/v3/live/censor
+
+**请求 Header**
+
+| 字段          | 取值                                                                                                                                                                                                      |
+| :------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Content-Type  | application/json                                                                                                                                                                                          |
+| Authorization | Qiniu &lt; AccessKey&gt; :&lt; Sign&gt; <br>注意: 用户请根据 AccessKey 和 SecretKey 后生成鉴权，以便进行身份验证， `<Sign>` 的取值请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken)。 |
+
+# 创建任务
+
+请求方式：POST
+
+请求 url：http://ai.qiniuapi.com/v3/live/censor
+
+**请求参数**
+
+| 字段                        | 类型        | 必选 | 说明                                                                                                                                                                                                           |
+| :-------------------------- | :---------- | :--- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| data.id                     | string      | N    | 直播流标示                                                                                                                                                                                                     |
+| data.uri                    | string      | Y    | 直播流地址，目前支持`rtmp`、`hls`、`flv`等。                                                                                                                                                                   |
+| data.info                   | json 结构体 | N    | 直播流附加信息，通过回调透传给客户                                                                                                                                                                             |
+| params.hook_url             | string      | N    | 回调地址，七牛将会向你设置的 URL 发起 `Content-Type: application/json` 的 `POST` 请求。                                                                                                                        |
+| params.hook_auth            | boolean     | N    | true/false，默认为 false，设置回调请求中加入请求头 authorization，用于回调服务器鉴权。                                                                                                                         |
+| params.image.is_on          | boolean     | N    | true/false，默认为 false。图片审核和音频审核必须开启一个。                                                                                                                                                     |
+| params.image.scenes         | array       | N    | 图片审核类型，如果图片审核开启，则为必填字段，没有默认值，可选项：`pulp` `terror` `politician` `ads`。                                                                                                         |
+| params.image.interval_msecs | int         | N    | 截帧频率，如果图片审核开启，则为必填字段，单位：毫秒，取值范围为 1000 ～ 60000（即 1s~60s）。                                                                                                                  |
+| params.image.saver.bucket   | string      | N    | 如果开启图片审核，则为必填字段，直播图片截帧文件存入的 bucket，目前只支持存入七牛云华东的 bucket。如何创建七牛云 bucket，请参见[文档](https://developer.qiniu.com/kodo/manual/1233/console-quickstart#step1)。 |
+| params.image.saver.prefix   | string      | N    | 保存的图片截帧文件的前缀。                                                                                                                                                                                     |
+| params.image.hook_rule      | int         | N    | 图片审核结果回调规则，0/1。默认为 0，返回判定结果违规的审核结果；设为 1 时，返回所有审核结果。                                                                                                                 |
+| params.audio.is_on          | boolean     | N    | true/false，默认为 false。图片审核和音频审核必须开启一个。                                                                                                                                                     |
+| params.audio.scenes         | array       | N    | 音频审核类型，如果音频审核开启，则为必填字段，没有默认值，目前可选项：`antispam`。                                                                                                                             |
+| params.audio.saver.bucket   | string      | N    | 如果开启音频审核，则为必填字段，直播音频截帧文件存入的 bucket，目前只支持存入七牛云华东的 bucket。如何创建七牛云 bucket，请参见[文档](https://developer.qiniu.com/kodo/manual/1233/console-quickstart#step1)。 |
+| params.image.saver.prefix   | string      | N    | 保存的音频截帧文件的前缀。                                                                                                                                                                                     |
+| params.audio.hook_rule      | string      | N    | 音频审核结果回调规则，0/1。默认为 0，返回判定结果违规的审核结果；设为 1 时，返回所有审核结果。                                                                                                                 |
+
+> 示例
+>
+> ```
+> POST /v3/live/censor HTTP/1.1
+> Host: ai.qiniuapi.com
+> Content-Type: application/json
+> Authorization: Qiniu YnxrxOSvGotRZpqkZnMzl_euuoqRzOKUd6zwbRju:r6a-o2UpBg6A4puIMnkCExH8lE8=
+>
+> {
+>     "data": {
+>         "id": "live-censor",
+>         "uri": "rtmp://pili-live-rtmp.qiniu.co/live/censor",
+>         "info": {
+>             "live_id": "example"
+>         }
+>     },
+>     "params": {
+>         "image": {
+>             "is_on": true,
+>             "scenes": [
+>                 "pulp",
+>                 "terror",
+>                 "politician"
+>             ],
+>             "interval_msecs": 1000,
+>             "saver": {
+>                 "bucket": "live",
+>                 "prefix": "image/"
+>             },
+>             "hook_rule": 0
+>         },
+>         "audio": {
+>             "is_on": true,
+>             "scenes": [
+>                 "antispam"
+>             ],
+>             "saver": {
+>                 "bucket": "live",
+>                 "prefix": "audio/"
+>             },
+>             "hook_rule": 0
+>         },
+>         "hook_url": "http://requestbin.fullcontact.com/1mhqoh41",
+>         "hook_auth": true
+>     }
+> }
+> ```
+
+注意： 请把 Authorization 换成您的账号七牛鉴权 QiniuToken
+
+**返回参数说明**
+
+| 参数     | 类型   | 说明                                               |
+| :------- | :----- | :------------------------------------------------- |
+| code     | int    | 请求处理结果的状态码，200 表示成功，否则表示异常。 |
+| message  | string | 请求处理信息。                                     |
+| data.job | string | 唯一标识该直播审核任务的 ID。                      |
+
+> 示例
+>
+> ```
+> HTTP/1.1 200 OK
+> Content-Type: application/json
+>
+> {
+>     "code": 200,
+>     "message": "ok",
+>     "data": {
+>        "job": "example_id"
+>     }
+> }
+> ```
+
+# 审核结果回调
+
+**请求 Header**
+
+| 字段         | 取值             |
+| :----------- | :--------------- |
+| Content-Type | application/json |
+
+**请求参数**
+
+| 字段             | 取值        | 说明                                                           |
+| :--------------- | :---------- | :------------------------------------------------------------- |
+| job              | string      | 唯一标识该直播审核任务的 ID。                                  |
+| live.id          | string      | 该直播流的 ID。                                                |
+| live.uri         | string      | 该直播流的地址。                                               |
+| live.info        | json 结构体  | 该直播流附加信息。                                             |
+| error.timestamp  | int         | 错误信息的时间戳。                                             |
+| error.message    | string      | 回调的错误信息。                                               |
+| image.code       | int         | 处理状态：200 调用成功。                                       |
+| image.message    | string      | 与 code 对应的状态描述信息。                                   |
+| image.job        | string      | 唯一标识该直播审核任务的 ID。                                  |
+| image.url        | string      | 图片的 URL。                                                   |
+| image.timestamp  | int         | 图片的时间戳。                                                 |
+| image.result     | json 结构体 | 该图片资源的审核返回结果，详情请查看*表. 资源的审核返回结果*。 |
+| audio.code       | int         | 处理状态：200 调用成功。                                       |
+| audio.message    | string      | 与 code 对应的状态描述信息。                                   |
+| audio.job        | string      | 唯一标识该直播审核任务的 ID。                                  |
+| audio.url        | string      | 音频段的 URL。                                                 |
+| audio.start      | int         | 音频开始的时间戳。                                             |
+| audio.end        | int         | 音频结束的时间戳。                                             |
+| audio.audio_text | string      | 该音频资源的语言识别文本。                                     |
+| audio.result     | json 结构体 | 该音频资源的审核返回结果，详情请查看*表. 资源的审核返回结果*。 |
+
+> 示例
+>
+> ```
+> {
+>     "job": "example_id",
+>     "live": {
+>         "id": "live-censor",
+>         "uri": "rtmp://pili-live-rtmp.qiniu.co/live/censor?sign=live",
+>         "info": {
+>             "live_id": "example"
+>         }
+>     },
+>     "error": {
+>         "timestamp": 1596845288,
+>         "message": "example error msg"
+>     },
+>     "image": {
+>         "code": 200,
+>         "message": "ok",
+>         "job": "example_id",
+>         "timestamp": 1596845288,
+>         "url": "qiniu://11111111@z0/image_save_bucket_name/image_cut_file_key.jpg",
+>         "result": {
+>             "suggestion": "pass",
+>             "scenes": {
+>                 "pulp": {
+>                     "suggestion": "pass",
+>                     "details": [
+>                         {
+>                             "suggestion": "pass",
+>                             "label": "normal",
+>                             "score": 0.99
+>                         },
+>                         {}
+>                     ]
+>                 }
+>             }
+>         }
+>     },
+>     "audio": {
+>         "code": 200,
+>         "message": "ok",
+>         "job": "example_id",
+>         "start": 1596845288,
+>         "end": 1596881288,
+>         "url": "qiniu://11111111@z0/audio_save_bucket_name/audio_cut_file_key.aac",
+>         "audio_text": "直播审核",
+>         "result": {
+>             "suggestion": "pass",
+>             "scenes": {
+>                 "pulp": {
+>                     "suggestion": "pass",
+>                     "details": [
+>                         {
+>                             "suggestion": "pass",
+>                             "label": "normal",
+>                             "text": "直播",
+>                             "score": 0.99
+>                         },
+>                         {
+>                             "suggestion": "pass",
+>                             "label": "normal",
+>                             "text": "审核",
+>                             "score": 0.88
+>                         }
+>                     ]
+>                 }
+>             }
+>         }
+>     }
+> }
+> ```
+
+# 查询审核结果
+
+请求方式： POST
+
+请求 url： http://ai.qiniuapi.com/v3/live/censor/query
+
+**请求参数**
+
+| 参数        | 类型   | 必选 | 说明                                                                   |
+| :---------- | :----- | :--: | :--------------------------------------------------------------------- |
+| job         | string |  Y   | 唯一标识该直播审核任务的 ID。                                          |
+| suggestions | array  |  N   | 查询过滤条件，默认为空，即查询全部。可选项：pass/review/block。        |
+| start       | int    |  Y   | 查询结果开始时间，数值为开始时间的时间戳。                             |
+| end         | int    |  N   | 查询结果结束时间，默认值为开始时间加 10min; 结束时间和开始时间的差值最大为 10min |
+
+> 示例
+>
+> ```
+> POST /v3/live/censor/query HTTP/1.1
+> Host: ai.qiniuapi.com
+> Content-Type: application/json
+> Authorization: Qiniu <AccessKey>:<Sign>
+>
+> {
+>     "job": "example_id",
+>     "suggestions": ["review", "block"],
+>     "start": 1614153600,
+>     "end": 1614154200
+> }
+> ```
+
+**返回参数说明**
+
+| 字段             | 取值        | 说明                                                                 |
+| :--------------- | :---------- | :------------------------------------------------------------------- |
+| data.marker      | string      | 返回游标信息，用于下一次拉取。如果没有剩余条目则返回空字符串。       |
+| data.items.image | json 结构体 | 直播图片审核的返回结果，详情请查看*表. 直播审核图片信息的返回结果*。 |
+| data.items.audio | json 结构体 | 直播音频审核的返回结果，详情请查看*表. 直播审核音频信息的返回结果*。 |
+
+_表. 直播审核图片信息的返回结果_
+
+| 字段            | 取值        | 说明                                                           |
+| :-------------- | :---------- | :------------------------------------------------------------- |
+| image.code      | int         | 处理状态：200 调用成功。                                       |
+| image.message   | string      | 与 code 对应的状态描述信息。                                   |
+| image.job       | int         | 唯一标识该直播审核任务的 ID。                                  |
+| image.url       | string      | 图片的 URL。                                                   |
+| image.timestamp | int         | 图片的时间戳。                                                 |
+| image.result    | json 结构体 | 该图片资源的审核返回结果，详情请查看*表. 资源的审核返回结果*。 |
+
+_表. 直播审核音频信息的返回结果_
+
+| 字段             | 取值        | 说明                                                           |
+| :--------------- | :---------- | :------------------------------------------------------------- |
+| audio.code       | int         | 处理状态：200 调用成功。                                       |
+| audio.message    | string      | 与 code 对应的状态描述信息。                                   |
+| audio.job        | int         | 唯一标识该直播审核任务的 ID。                                  |
+| audio.url        | string      | 音频段的 URL。                                                 |
+| audio.start      | int         | 音频开始的时间戳。                                             |
+| audio.end        | int         | 音频结束的时间戳。                                             |
+| audio.audio_text | string      | 该音频资源的语言识别文本。                                     |
+| audio.result     | json 结构体 | 该音频资源的审核返回结果，详情请查看*表. 资源的审核返回结果*。 |
+
+_表. 资源的审核返回结果_
+
+| 字段                                          | 取值        | 说明                                                                                                                                                                                                                                                                                                                                                            |
+| :-------------------------------------------- | :---------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| result.suggestion                             | string      | 直播的审核结果管控建议说明<br>根据内容审核中各种审核类型的返回结果，系统会将审核结果转换成对应的管控建议，取值包括：[“block”, ”review”, ”pass”]。<br>suggestion=block：表示系统确认审核内容违规，建议您将其删除。<br>suggestion=review：表示系统无法确认审核内容是否违规，建议您进行人工复核。<br>suggestion=pass：表示系统确认审核内容正常，建议您忽略该文件。 |
+| result.scenes. `<type>`                       | json 结构体 | 审核类型，目前支持 "pulp", "terror"，"politician"，"antispam"。                                                                                                                                                                                                                                                                                                 |
+| result.scenes. `<type>` .suggestion           | string      | 该审核类型的结果管控建议，参见 result.suggestion。                                                                                                                                                                                                                                                                                                              |
+| result.scenes. `<type>` .details[]            | array       | 该审核类型的资源审核结果数组。                                                                                                                                                                                                                                                                                                                                  |
+| result.scenes. `<type>` .details[].suggestion | string      | 该审核类型的资源审核结果管控建议，参见 result.suggestion。                                                                                                                                                                                                                                                                                                      |
+| result.scenes. `<type>` .details[].label      | string      | 该审核类型的截帧审核结果标签，具体请参见[内容审核](https://developer.qiniu.io/censor/api/7299/censor-params)的 label/group。                                                                                                                                                                                                                                    |
+| result.scenes. `<type>` .details[].group      | string      | 该审核类型的截帧审核结果分组信息，具体请参见[内容审核](https://developer.qiniu.io/censor/api/7299/censor-params)的 label/group。                                                                                                                                                                                                                                |
+| result.scenes. `<type>` .details[].score      | float       | 该审核类型的截帧审核结果置信度。                                                                                                                                                                                                                                                                                                                                |
+| result.scenes. `<type>` .details[].text       | string      | 音频审核违规内容结果字段。                                                                                                                                                                                                                                                                                                                                      |
+
+> 示例
+>
+> ```
+> {
+>     "code": 200,
+>     "message": "ok",
+>     "data": {
+>         "marker": "",
+>         "items": {
+>             "image": [
+>                 {
+>                     "code": 200,
+>                     "message": "ok",
+>                     "job": "example_id",
+>                     "timestamp": 1596845288,
+>                     "url": "qiniu://11111111@z0/image_save_bucket_name/image_cut_file_key.jpg",
+>                     "result": {
+>                         "suggestion": "pass",
+>                         "scenes": {
+>                             "pulp": {
+>                                 "suggestion": "pass",
+>                                 "details": [
+>                                     {
+>                                         "suggestion": "pass",
+>                                         "label": "normal",
+>                                         "score": 0.99
+>                                     },
+>                                     {}
+>                                 ]
+>                             }
+>                         }
+>                     }
+>                 },
+>                 {}
+>             ],
+>             "audio": [
+>                 {
+>                     "code": 200,
+>                     "message": "ok",
+>                     "job": "example_id",
+>                     "start": 1596845288,
+>                     "end": 1596881288,
+>                     "url": "qiniu://11111111@z0/audio_save_bucket_name/audio_cut_file_key.aac",
+>                     "audio_text": "直播审核",
+>                     "result": {
+>                         "suggestion": "pass",
+>                         "scenes": {
+>                             "antispam": {
+>                                 "suggestion": "pass",
+>                                 "details": [
+>                                     {
+>                                         "suggestion": "pass",
+>                                         "label": "normal",
+>                                         "text": "直播",
+>                                         "score": 0.99
+>                                     },
+>                                     {
+>                                         "suggestion": "pass",
+>                                         "label": "normal",
+>                                         "text": "审核",
+>                                         "score": 0.88
+>                                     }
+>                                 ]
+>                             }
+>                         }
+>                     }
+>                 },
+>                 {}
+>             ]
+>         }
+>     }
+> }
+> ```
+
+# 查询任务
+
+请求方式： POST
+
+请求 url： http://ai.qiniuapi.com/v3/live/censor/jobinfo
+
+**请求参数**
+
+| 参数 | 类型   | 必选 | 说明                          |
+| :--- | :----- | :--: | :---------------------------- |
+| job  | string |  Y   | 唯一标识该直播审核任务的 ID。 |
+
+> 示例
+>
+> ```
+> POST /v3/live/censor/jobinfo HTTP/1.1
+> Host: ai.qiniuapi.com
+> Content-Type: application/json
+> Authorization: Qiniu <AccessKey>:<Sign>
+>
+> {
+>     "job": "example_id"
+> }
+> ```
+
+**返回参数说明**
+
+| 字段                             | 取值        | 说明                                               |
+| :------------------------------- | :---------- | :------------------------------------------------- |
+| code                             | int         | 请求处理结果的状态码，200 表示成功，否则表示异常。 |
+| message                          | string      | 请求处理结果的提示信息。                           |
+| data.id                          | string      | 直播审核任务标示                                   |
+| data.data.id                     | string      | 直播流标示                                         |
+| data.data.uri                    | string      | 直播流地址                                         |
+| data.data.info                   | json 结构体 | 直播流附加信息                                     |
+| data.params.hook_url             | string      | 回调地址                                           |
+| data.params.hook_auth            | boolean     | 回调鉴权是否开启                                   |
+| data.params.image.is_on          | boolean     | 直播图片审核是否开启                               |
+| data.params.image.scenes         | array       | 图片审核类型                                       |
+| data.params.image.interval_msecs | int         | 截帧频率                                           |
+| data.params.image.saver.bucket   | string      | 截帧文件存入的 bucket                              |
+| data.params.image.saver.prefix   | string      | 保存图片截帧文件前缀。                             |
+| data.params.image.hook_rule      | int         | 图片审核结果回调规则                               |
+| data.params.audio.is_on          | boolean     | 音频审核是否开启                                   |
+| data.params.audio.scenes         | array       | 音频审核类型                                       |
+| data.params.audio.saver.bucket   | string      | 音频截帧文件存入的 bucket                          |
+| data.params.image.saver.prefix   | string      | 保存音频截帧文件前缀。                             |
+| data.params.audio.hook_rule      | string      | 音频审核结果回调规则                               |
+| data.message                     | string      | 任务状态相关信息                                   |
+| data.status                      | string      | 任务状态， `waiting/doing/stop/finished` 。        |
+| data.created_at                  | string      | 任务创建时间戳                                     |
+| data.updated_at                  | string      | 任务更新时间戳                                     |
+
+> 示例
+>
+> ```
+> {
+>     "code": 200,
+>     "message": "ok",
+>     "data": {
+>         "id": "example_id",
+>         "data": {
+>             "id": "",
+>             "uri": "",
+>             "info": {}
+>         },
+>         "params": {
+>             "hook_url": "",
+>             "hook_auth": false,
+>             "image": {
+>                 "is_on": true,
+>                 "scenes": [
+>                     "pulp",
+>                     "terror"
+>                 ],
+>                 "interval_msecs": 1000,
+>                 "saver": {
+>                     "bucket": "",
+>                     "prefix": ""
+>                 },
+>                 "hook_rule": 0
+>             },
+>             "audio": {
+>                 "is_on": true,
+>                 "scenes": [
+>                     "antispam"
+>                 ],
+>                 "saver": {
+>                     "bucket": "",
+>                     "prefix": ""
+>                 },
+>                 "hook_rule": 0
+>             }
+>         },
+>         "message": "",
+>         "status": "doing",
+>         "created_at": 1596845288,
+>         "updated_at": 1596845888
+>     }
+> }
+> ```
+
+# 列取任务
+
+请求方式： POST
+
+请求 url： http://ai.qiniuapi.com/v3/live/censor/list
+
+**请求参数**
+
+| 参数   | 类型   | 必选 | 说明                                                                   |
+| :----- | :----- | :--: | :--------------------------------------------------------------------- |
+| start  | int    |  Y   | 查询时间段开始时间戳。                                                 |
+| end    | int    |  Y   | 查询时间段结束时间戳。                                                 |
+| status | string |  Y   | 任务状态， `waiting/doing/stop/finished` 。                            |
+| limit  | int    |  N   | 查询审核结果条数，默认为 10，最大 100 条。                             |
+| marker | string |  N   | 上一次请求返回的标记，作为本次请求的起点信息。可选，默认值为空字符串。 |
+
+> 示例
+>
+> ```
+> POST /v3/live/censor/list HTTP/1.1
+> Host: ai.qiniuapi.com
+> Content-Type: application/json
+> Authorization: Qiniu <AccessKey>:<Sign>
+>
+> {
+>     "start": 1596845288,
+>     "end": 1596881288,
+>     "status": "doing",
+>     "limit": 100,
+>     "marker": ""
+> }
+> ```
+
+**返回参数说明**
+
+| 字段                                     | 取值        | 说明                                                           |
+| :--------------------------------------- | :---------- | :------------------------------------------------------------- |
+| code                                     | int         | 请求处理结果的状态码，200 表示成功，否则表示异常。             |
+| message                                  | string      | 请求处理结果的提示信息。                                       |
+| data.marker                              | string      | 返回游标信息，用于下一次拉取。如果没有剩余条目则返回空字符串。 |
+| data.items[]                             | array       | 直播审核任务查询结果。                                         |
+| data.items[].id                          | string      | 直播审核任务标示                                               |
+| data.items[].data.id                     | string      | 直播流标示                                                     |
+| data.items[].data.uri                    | string      | 直播流地址                                                     |
+| data.items[].data.info                   | json 结构体 | 直播流附加信息                                                 |
+| data.items[].params.hook_url             | string      | 回调地址                                                       |
+| data.items[].params.hook_auth            | boolean     | 回调鉴权是否开启                                               |
+| data.items[].params.image.is_on          | boolean     | 直播图片审核是否开启                                           |
+| data.items[].params.image.scenes         | array       | 图片审核类型                                                   |
+| data.items[].params.image.interval_msecs | int         | 截帧频率                                                       |
+| data.items[].params.image.saver.bucket   | string      | 截帧文件存入的 bucket                                          |
+| data.items[].params.image.saver.prefix   | string      | 保存图片截帧文件前缀。                                         |
+| data.items[].params.image.hook_rule      | int         | 图片审核结果回调规则                                           |
+| data.items[].params.audio.is_on          | boolean     | 音频审核是否开启                                               |
+| data.items[].params.audio.scenes         | array       | 音频审核类型                                                   |
+| data.items[].params.audio.saver.bucket   | string      | 音频截帧文件存入的 bucket                                      |
+| data.items[].params.image.saver.prefix   | string      | 保存音频截帧文件前缀。                                         |
+| data.items[].params.audio.hook_rule      | string      | 音频审核结果回调规则                                           |
+| data.items[].message                     | string      | 任务状态相关的处理信息。                                       |
+| data.items[].status                      | string      | 任务状态， `waiting/doing/stop/finished` 。                    |
+| data.items[].created_at                  | string      | 任务创建时间戳                                                 |
+| data.items[].updated_at                  | string      | 任务更新时间戳                                                 |
+
+> 示例
+>
+> ```
+> {
+>     "code": 200,
+>     "message": "ok",
+>     "data": {
+>         "items": [
+>             {
+>                 "id": "example_id",
+>                 "data": {
+>                     "id": "",
+>                     "uri": "",
+>                     "info": {}
+>                 },
+>                 "params": {
+>                     "hook_url": "",
+>                     "hook_auth": false,
+>                     "image": {
+>                         "is_on": true,
+>                         "scenes": [
+>                             "pulp",
+>                             "terror"
+>                         ],
+>                         "interval_msecs": 1000,
+>                         "saver": {
+>                             "bucket": "",
+>                             "prefix": ""
+>                         },
+>                         "hook_rule": 0
+>                     },
+>                     "audio": {
+>                         "is_on": true,
+>                         "scenes": [
+>                             "antispam"
+>                         ],
+>                         "saver": {
+>                             "bucket": "",
+>                             "prefix": ""
+>                         },
+>                         "hook_rule": 0
+>                     }
+>                 },
+>                 "message": "",
+>                 "status": "doing",
+>                 "created_at": 1596845288,
+>                 "updated_at": 1596845888
+>             },
+>             {}
+>         ],
+>         "marker": ""
+>     }
+> }
+> ```
+
+# 关闭任务
+
+请求方式： POST
+
+请求 url： http://ai.qiniuapi.com/v3/live/censor/close
+
+**请求参数**
+
+| 参数 | 类型   | 必选 | 说明                          |
+| :--- | :----- | :--: | :---------------------------- |
+| job  | string |  Y   | 唯一标识该直播审核任务的 ID。 |
+
+> 示例
+>
+> ```
+> POST /v3/live/censor/close HTTP/1.1
+> Host: ai.qiniuapi.com
+> Content-Type: application/json
+> Authorization: Qiniu <AccessKey>:<Sign>
+>
+> {
+>     "job": example_id"
+> }
+> ```
+>
+> ```
+> {
+>     "code": 200,
+>     "message": "ok"
+> }
+> ```

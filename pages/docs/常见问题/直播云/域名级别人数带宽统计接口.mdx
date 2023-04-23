@@ -1,0 +1,160 @@
+## 关于鉴权
+
+* 鉴权使用的签名算法是 HMAC-SHA1，密钥对是 Qiniu 账号的 [AccessKey/SecretKey](/kodo/manual/1277/product-introduction#ak-sk)。
+
+### 域名级别实时播放人数带宽
+* 查询实时的域名级别播放人数以及播放带宽
+#### 规格
+请求包:
+
+```
+GET /v2/hubs/<Hub>/stat/play/more?stream=<Stream>
+Host: pili.qiniuapi.com
+Authorization: <QiniuToken>
+```
+
+* `<Hub>`: 直播空间名
+* `<Stream>`: 流名前缀匹配
+
+返回包:
+```
+200   {
+         "total": {
+            "count": <Count>,
+            "bandwidth": <Bandwidth>
+        },
+        "items": [
+           {
+              "streamTitle": <StreamTitle>,
+              "domain": <Domain>,
+              "type": <Type>,
+              "count": <Count>,
+              "bandwidth": <Bandwidth>
+          }
+        ]
+      }
+```
+* total.count: 总的播放人数
+* total.bandwidth: 总的播放带宽，单位 bps
+* items.streamTitle: 流名，形如 rtmp://xxxx/dctest/test中的test
+* items.domain: 播放域名
+* items.type: 播放类型，有三种播放类型: rtmp、hls、flv
+* items.count: 这路流的播放人数
+* items.bandwidth: 这路流的播放带宽，单位 bps
+
+返回示例
+```
+{
+    "total": {
+        "count": 4,
+        "bandwidth": 1131368
+    },
+    "items": [
+        {
+            "streamTitle": "stream-1522120761039222475",
+            "domain": "xxxx",
+            "type": "hls",
+            "count": 1,
+            "bandwidth": 115864
+        },
+        {
+            "streamTitle": "stream-1522120761039222475",
+            "domain": "xxxx",
+            "type": "flv",
+            "count": 1,
+            "bandwidth": 200912
+        },
+        {
+            "streamTitle": "stream-1522120761039222475",
+            "domain": "xxxx",
+            "type": "rtmp",
+            "count": 1,
+            "bandwidth": 242992
+        },
+        {
+            "streamTitle": "stream-1522120761039222475",
+            "domain": "xxxxx",
+            "type": "rtmp",
+            "count": 1,
+            "bandwidth": 571600
+        }
+    ]
+}
+```
+
+### 历史时间段内的域名级别播放人数带宽
+* 查询过去一段时间内的域名级别播放人数带宽
+* 返回的列表以 5 分钟为间隔
+#### 规格
+
+请求包：
+
+```
+GET /v2/hubs/<Hub>/stat/play/history/more?start=<Start>&end=<End>&stream=<Stream>&limit=<Limit>&marker=<Marker>
+Host: pili.qiniuapi.com
+Authorization: <QiniuToken>
+```
+
+* `<Hub>`: 直播空间名
+* `<Start>`: 开始时间戳。不填，默认一小时前的时间戳
+* `<End>`: 结束时间戳。不填，默认当前时间戳
+* `<Stream>`: 流名前缀匹配
+* `<Limit>`: 返回的列表个数限制。不填，默认 10000
+* `<Marker>`: 如果上一次返回的结果超过了 limit，则会返回 marker 表示上一次读取到哪条记录。这一次请求带上 marker 后，继续从该 marker 后开始读取
+
+返回包:
+```
+200   {
+         "marker": "",
+         "items": [
+            {
+               "time": <Time>,
+               "values": [
+                  {
+                     "streamTitle": <StreamTitle>,
+                     "domain": <Domain>,
+                     "type": <Type>,
+                     "count": <Count>,
+                     "bandwidth": <Bandwidth>
+                  },
+               ]
+            }
+         ]
+      }
+```
+
+* marker: 若这次请求 items 个数超过了 limit，读取到哪条记录记为 marker
+* items.time: 这条记录的的时间戳，对齐到 5 分钟
+* items.streamTitle: 流名，形如 rtmp://xxxx/dctest/test中的test
+* items.domain: 播放域名
+* items.type: 播放类型，有三种播放类型: rtmp、hls、flv
+* items.count: 这路流的播放人数
+* items.bandwidth: 这路流的播放带宽，单位 bps
+
+返回示例
+```
+{
+  "marker": "",
+  "items": [
+    {
+      "time": 1521771600,
+      "values": [
+        {
+          "streamTitle": "stream-1521771326595869695",
+          "domain": "xxxxx",
+          "type": "flv",
+          "count": 1,
+          "bandwidth": 110588
+        },
+        {
+          "streamTitle": "stream-1521771326186319627",
+          "domain": "xxxx",
+          "type": "hls",
+          "count": 1,
+          "bandwidth": 20936
+        }
+      ]
+    }
+  ]
+}
+```

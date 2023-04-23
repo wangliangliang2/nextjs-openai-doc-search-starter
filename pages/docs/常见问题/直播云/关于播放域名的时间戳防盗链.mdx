@@ -1,0 +1,43 @@
+> 播放域名的时间戳防盗链  
+- 域名级别的时间戳防盗链，支持 RTMP播放，HLS，HDL 三类播放域名进行设置
+- 采用指定过期时间的播放鉴权
+- 作用是避免播放 url 被盗链
+> 
+
+### Q1: 在 portal 上哪里可以设置播放域名的时间戳防盗链？
+portal 上有三个地方可以进行设置。
+
+1）在`新建直播空间`操作的第三步`高级设置`可以对播放域名进行统一设置：
+![高级设置-时间戳防盗链1](https://dn-odum9helk.qbox.me/Fr_5vpxFg2RJpOsFro8fLEF0OLtm)
+
+![高级设置-时间戳防盗链2](https://dn-odum9helk.qbox.me/Fhgqf0L2bQz-K5It4odPAWq-GqhS)
+
+2）`域名管理`下，进行`绑定域名`时，绑定的域名类型为RTMP 播放、HLS 播放、HDL 播放时，会要求设置时间戳防盗链：
+![绑定域名-时间戳防盗链](https://dn-odum9helk.qbox.me/Fu6jxWV0Acb_W4Srx50qtvSqimtP)
+
+3）在`域名管理`>`域名详情`页面，点击到播放域名的`管理`页面，可进行设置：
+![域名管理-时间戳防盗链1](https://dn-odum9helk.qbox.me/Fpslx6BOb0qi0Wrs4DgJynoB-E-_)
+
+![域名管理-时间戳防盗链2](https://dn-odum9helk.qbox.me/Flt1eAuFIphM0Cm3msPN5UvPbpdR)
+
+### Q2: 时间戳防盗链的配置参数怎么怎么填写？
+
+域名的时间戳防盗链，采用指定过期时间戳的播放鉴权。根据 url 中的过期时间参数(t=xxx)，再结合设置的`密钥`，使用 md5 算法生成相应鉴权签名(sign=xxx)。
+
+设置参数分为以下：
+
+- 开关：是否对该域名开启时间戳防盗链
+- 主副密钥：用于生成相应鉴权签名的 key
+
+### Q3: 设置后怎么查看相应的带播放签名的播放地址 ？
+
+在`直播流管理`>`实时直播`页面下，可以看到带时间戳防盗链播放鉴权的地址。播放地址鉴权有效时间是1分钟，每隔55秒会自动刷新一次，也可以手动进行刷新鉴权。
+![带播放鉴权的播放地址](https://dn-odum9helk.qbox.me/FsuxzWtkYqBeWhg_TyHCNhZjGsX-)
+
+### Q4: 时间戳防盗链的播放鉴权，显示'定制化播放鉴权，请联系技术支持'是什么意思 ？
+
+有的客户会设置播放鉴权，是通过定制化手段（非 protal 设置）设置的。这类防盗链配置不遵循 portal 上的标准配置，所以进行变更设置或者获取播放鉴权，需要通过工单联系技术支持。
+
+### Q5: 时间戳防盗链的详细算法是怎样的,我在哪里可以了解到 ？
+
+[七牛直播云播放鉴权-时间戳防盗链](https://developer.qiniu.com/pili/kb/1735/seven-cattle-live-broadcast-authentication-of-cloud-a-timestamp-hotlinking-prevention)

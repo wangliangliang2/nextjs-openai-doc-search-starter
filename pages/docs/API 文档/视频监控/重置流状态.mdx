@@ -1,0 +1,37 @@
+# **描述**
+本接口用于重置视频流的状态为`离线`
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/resets`
+* 使用场景：流实际离线了(设备没有推流),由于异常原因,获取的流状态却是在线状态,此时可通过本接口重置流为`离线`状态。
+* 本接口不能被其他接口替代，只用于上面的异常情况使用
+
+**请求 body参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|streamIds|是|string数组|需要重置的流id列表
+
+# **响应参数**
+200 ok
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url 'qvs.qiniuapi.com/v1/namespaces/2akrarrzns76w/streams/resets' \
+  --header 'authorization: Qiniu xxxx:xxx'
+--data '{
+	"streamIds":["111", "222"]
+ }'
+```
+**响应示例**
+
+```
+{
+  "code": 200
+}
+```

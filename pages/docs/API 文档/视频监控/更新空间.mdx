@@ -1,0 +1,90 @@
+# **描述**
+本接口用于更新空间信息
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：PATCH
+* 接口路径：`/v1/namespaces/{namespaceId}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID|
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|operations|是|op数组|op集合，详见：*表一*
+
+*表一：* OP集合参数
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|operations.key|是|string|要修改的参数
+|operations.op|是|string|op操作(目前支持replace和delete)
+|operations.value|是|object|要修改的参数对应的value(当op为delete的时候可以忽略)
+
+*表二：* 可编辑参数说明
+
+|参数名称|字段类型|说明|
+|---|---|---|
+|name|string|空间名称
+|desc|string|空间描述	
+|callBack|string|回调地址
+|hlsLowLatency|boolean|HLS低延时开关
+|authMode|string|鉴权模式，noUrlAuth：不开启鉴权，expiryAuth：开启url过期鉴权
+|authExpire|integer|当鉴权模式为expiryAuth的鉴权过期时间
+|recordTemplateId|string|录制模版ID
+|snapshotTemplateId|string|截图模版ID
+|aiTemplateId|string|AI模版ID
+|recordTemplateApplyAll|boolean|空间模版是否应用到全局
+|snapshotTemplateApplyAll|boolean|截图模版是否应用到全局
+|aiTemplateApplyAll|boolean|ai模版是否应用到全局
+|onDemandPull|boolean|按需拉流开关
+|retryInterval|integer|空间接入类型为"主动拉流"时，拉流中断重连间隔
+|retryCount|integer|空间接入类型为"主动拉流"时，拉流中断重连次数
+|rtpAudio|boolean|是否开启音频
+|rtpAudioTranscode|boolean|是否开启音频转码
+
+# **响应参数**
+与创建空间接口响应内容一致，请参阅创建空间[响应参数](https://developer.qiniu.io/qvs/api/6726/create-namespace#3)
+# **示例**
+
+**请求示例**
+
+```
+curl --request PATCH \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrars3vpsxa \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{"operations":[{"key":"recordTemplateApplyAll","op":"replace","value":true}]
+}'
+```
+
+**响应示例**
+
+```
+{
+  "id": "2akrars3vpsxa",
+  "name": "test001238",
+  "domains": [
+    "qiniu.com"
+  ],
+  "accessType": "rtmp",
+  "urlMode": 1,
+  "hlsLowLatency": false,
+	""
+  "zone": "z0",
+  "createdAt": 1586764022,
+  "updatedAt": 1586780381,
+  "recordTemplateId": "2akrarrzr7rh5",
+  "recordTemplateApplyAll": true,
+  "snapshotTemplateApplyAll": false,
+  "disabled": false,
+	"onDemandPull": false,
+	"authMode": "expiryAuth",
+	"authExpire": 86400
+}
+```

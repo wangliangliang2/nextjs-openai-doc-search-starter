@@ -1,0 +1,81 @@
+您可以通过文件上传功能，来快速体验智能日志管理平台的各种功能，如日志实时输出、日志查询、统计报表、仪表盘、告警等。
+
+上传文件功能支持对原始日志配置解析规则来提取字段，目前提供[使用已有规则解析](/insight/manual/4885/existing-parsing-rules)、[使用正则表达式解析](/insight/manual/4884/regex-parsing)、[使用固定分隔符解析](/insight/manual/4886/fixed-delimiter-parsing)、[解析 JSON 格式日志](/insight/manual/4887/json-format-parsing)、[使用键值对方式解析](/insight/manual/4888/key-value-parsing)、[不解析直接上传](/insight/manual/4889/no-parsing-to-upload)几种字段提取方式。
+
+![](https://pandora-kibana.qiniu.com/upload/analysis_method.png)
+
+# **步骤 1:选择文件上传**
+
+进入[数据上传页面](https://portal.qiniu.com/insight/data)，开始上传本地文件(不超过 100 MB)到目的仓库中。
+
+`注意：`因为浏览器上传文件的限制，当需要**持续收集日志文件**或者有**大量日志文件需要批量发送**到服务端来的时候，请参考使用 [logkit-pro](/insight/manual/4738/logkit-pro-induction) 解决大规模日志上传的问题。
+
+1.选择仓库并上传文件。
+
+  - 选择新建仓库，上传日志到新仓库中需要对文件配置解析规则提取字段。
+  - 选择已有仓库，若仓库中有文件解析规则，可直接使用已有规则查看数据，或者重新配置字段提取规则。
+
+![](https://pandora-kibana.qiniu.com/fileupload/upload&repo.png)
+
+ - 对于已有解析规则的仓库，会同时展示仓库中的规则数量（目前一个仓库最多可绑定 5 个解析规则），鼠标点击可查看规则详情。
+ 
+ ![](https://pandora-kibana.qiniu.com/fileupload/rule.png)
+
+2.选择示例数据：在日志列表选择一条日志作为示例数据进行解析，并选择对日志读取模式：`单行`或者`多行`。
+
+![](https://pandora-kibana.qiniu.com/fileupload/example_data.png)
+
+# **步骤 2：配置解析规则提取字段**
+
+3.对示例数据选择解析方法并提取字段。
+
+以正则表达式解析为例：
+
+选择解析方式为正则表达式，通过鼠标在示例数据上划取想要抽取的字段，并对字段设置名称和类型。字段提取好之后，系统会自动生成正则表达式，并尝应用生成的正则表达式试对全部原始文件进行解析。您可以通过匹配数量查看设置的提取规则是否匹配全部日志，根据匹配结果对提取规则做调整。
+
+![正则表达式数据抽取](https://pandora-kibana.qiniu.com/fileupload/regex.png)
+
+如果您想查看原始日志，在字段信息展示栏的原始日志列，鼠标滑上去即可。
+
+![](https://pandora-kibana.qiniu.com/fileupload/raw.png)
+
+**注意：**当选择字段类型为 date 时，对于比较复杂的时间格式(涉及时区，中文等格式)可以自己填写匹配格式字段。
+时间格式的详细填写规则如下：
+
+|匹配符 |含义|对应示例|
+| :------: | :------: | :------: |
+|yy,YY,yyyy,YYYY | 年    |08,08,2008,2008|
+|M,MM,MMM,MMMM     | 月 |1,01,Jan,January|
+|EEE,EEEE  | 星期   | Wed,Wednesday|
+|d,dd      | 日    |1,01|
+|h,hh,H,HH | 时    |3,03(12小时制),9,19(24小时制)|
+|m,mm      | 分    |4,04|
+|s,ss      | 秒    |5,05|
+|S,SS,SSS  | 毫秒  |6,66,666|
+|Z,ZZ,ZZZ  |时区   |(+0800,+08),+08:00,MST （不含冒号的用Z，带有冒号的用ZZ，时区缩写用ZZZ）|
+|a         |上、下午|AM,PM|
+
+注: 匹配符不能用作分隔符
+
+
+# **步骤 3:将解析规则和数据入库**
+
+5.填写规则名称（如果是新建仓库，需要填写工作流名称）保存解析规则并将数据入库。
+
+* 保存解析规则，这样解析规则可复用，下次您创建实时仓库可直接将已有规则绑定到仓库，并用这些规则解析数据。
+
+
+
+* 将此规则设置为默认解析规则，在仓库有多个解析规则的情况下，默认解析规则优先级最高。
+
+此时仓库已经绑定好了刚刚创建好的解析规则，您可以去解析规则列表可以查看所有解析规则及其详情。
+
+![](https://pandora-kibana.qiniu.com/fileupload/save.png)
+
+# **步骤 4:查看实时日志验证上传是否成功**
+
+选择实时仓库，输入过滤条件，点击`搜索`即可实时输出上传的全部日志内容。
+ 
+![](https://pandora-kibana.qiniu.com/fileupload/search.png)
+
+除了上传单个文件以外，智能日志平台还支持[批量上传文件](/insight/manual/4891/batch-file-upload)，通过 [API 上传文件](/insight/manual/4892/api-to-upload)。

@@ -1,0 +1,150 @@
+Grok Parser 是一个类似于 Logstash Grok Parser 一样的解析配置方式，其本质是按照正则表达式匹配解析日志。
+
+![](https://dn-odum9helk.qbox.me/FtU1H4pKc2wQhE7UbQSfirfghV3h)
+
+
+# **基础配置信息**
+
+  * 匹配日志的 grok 表达式(`grok_patterns`):用于匹配日志的 grok 表达式，多个用逗号分隔。填写解析日志的`grok pattern`名称，包括一些[logkit Pro 自身内置的 patterns](https://github.com/qiniu/logkit/blob/develop/grok_patterns/logkit-patterns)以及自定义的 pattern 名称，以及社区的常见 grok pattern，如[logstash 的内置 pattern](https://github.com/logstash-plugins/logstash-patterns-core/blob/master/patterns/grok-patterns)以及常见的[grok 库 pattern](https://github.com/vjeantet/grok/tree/master/patterns)
+    * 填写方式是 %{QINIU_LOG_FORMAT},%{COMMON_LOG_FORMAT}，以百分号和花括号包裹 pattern 名称，多个 pattern 名称以逗号分隔。
+    * 实际匹配过程中会按顺序依次去 parse 文本内容，以第一个匹配的 pattern 解析文本内容。
+    * 需要注意的是，每多一个 pattern，解析时都会多解析一个，直到成功为止，所以 pattern 的数量多有可能降低解析的速度，在数据量大的情况下，建议一个 pattern 解决数据解析问题。
+  
+  * 自定义grok表达式(`grok_custom_patterns`):用户自定义的 grok pattern 内容，需符合 logkit-pro 自定义 pattern 的写法，按行分隔，参见[自定义 pattern 的写法和用法说明](/insight/manual/4759/grok-parser#4)。
+
+  Grok Parser 中解析出的字段就是 grok 表达式中命名的字段，还包括 labels 中定义的标签名，可以在 sender 中选择需要发送的字段和标签。
+
+# **高级选项**
+
+  * 自定义 grok 表达式文件路径(`grok_custom_pattern_files`):v用户自定义的一些 grok pattern 文件，当自定义 pattern 太长太多，建议用文件功能。 
+  > 注意：如果修改 pattern 文件，需要更新 Runner 才能生效,c
+
+  * 时区偏移量(`timezone_offset`): 解析出的时区信息默认为 UTC 时区，使用 `timezone_offset` 可以修改时区偏移量，默认偏移量为 0,写法为"+08"、"08"、"8" 均表示比读取时间加8小时，"-08"，"-8",表示比读取的时间减 8 小时。若实际为东八区时间，读取为 UTC 时间，则实际多读取了 8 小时，需要写"-8"，修正回 CST 中国北京时间。
+  * `disable_record_errdata` 默认为`false`，解析失败的数据会默认出现在"pandora_stash"字段，该选项可以禁止记录解析失败的数据。
+  * `keep_raw_data` 默认为`false`，配置此选项之后会保留原始数据在`raw_data`字段下。
+  
+# **划词自动生成grok匹配**
+
+选择 grok 解析后，默认是选中到`智能划词`的选框，您只要点击那个输入框，就会进入到智能划词页面，如下图所示。
+
+![](https://dn-odum9helk.qbox.me/FpyHA9rcgCnv56ktIrFXztvzpzWC)
+
+## **划词说明**
+
+1. **只划数据中变化的部分**，尤其注意对于`空格`、`括号`等特殊符号，如果他们是日志中固定的格式，那么就不要划到。
+2. **选择符合场景的grok变量**，您在划的时候，我们会给出一些备选项，鼠标放到每个备选项上都能看到中午说明，请选择符合实际数据场景的备选项，这样会尽可能增加解析成功率。
+3. **注重性能，尽量使用NOTSPACE**，由于grok底层是转变为正则表达式，越是涵盖场景多的grok变量，其性能可能越差，反倒是如 `NOTSPACE`(非空格) 这种匹配极其简单的变量，其性能很高，`所以在您划词时如果能确定数据为非空格，且与数据紧挨着的就是空白符`，那么就果断选择`NOTSPACE`
+
+## **划词中自定义中间变量**
+
+如果您是一个grok高手，可能会用到自己写的grok变量，那么您可以将自己写的grok变量与划词结合使用，如下图所示。
+
+![](https://dn-odum9helk.qbox.me/FoMQBFymFjLInwRfViExB5yOLXlA)
+
+在图中，我先点击 `+` 号，增加一个填写中间变量的输入框，然后我编写了一个中间变量 `MYPATTERN`, 内容是 `[1-9]+`, 表示数字 `1~9` 的组合，然后在下面中使用这个变量，具体的写法可以参考下面`自定义 pattern`中的介绍。
+
+# **自定义 pattern**
+
+当划词出现的结果不满足您的需求时，可以采用自定义的方式解决问题：
+
+
+  * logkit-pro 的 grok pattern 其格式符合 `%{<捕获语法>[:<字段名>][:<字段类型>]}`，其中中括号的内容可以省略。
+  * logkit-pro 的 grok pattern 是 logstash grok pattern 的增强版，除了完全兼容[logstash grok pattern](https://www.elastic.co/guide/en/logstash/current/plugins-filters-grok.html#_grok_basics)规则以外，还增加了`字段类型`。你可以在[logstash grok](https://www.elastic.co/guide/en/logstash/current/plugins-filters-grok.html)文档中找到详细的 grok 介绍.
+* 捕获语法:是一个正则表达式的名字，比如内置了 `USERNAME [a-zA-Z0-9._-]+`, 那么此时 `USERNAME` 就是一个捕获语法。所以，在使用自定义的正则表达式之前，你需要先为你的正则命名，然后把这个名字当作捕获语法填写patterns 中，当然，不推荐自己写正则，建议首选内置的捕获语法。
+* 字段名:按照捕获语法对应的正则表达式解析出的字段，其字段名称以此命名，该项可以不填，但是没有字段名的 grok pattern 不解析，无法被 logkit sender 使用，但可以作为一个中间捕获语法与别的捕获语法共同组合一个新的捕获语法。
+* 字段类型: 可以不填，默认为 `string`。logkit-pro 支持以下类型。
+		* `string` 默认的类型
+		* `long` 整型
+		* `float` 浮点型
+  * 验证自定义 pattern 的正确性：[http://grokdebug.herokuapp.com](http://grokdebug.herokuapp.com), 这个网站可以 debug 你的 grok pattern。
+
+### **如何调试您的 grok pettern[grokdebug用法]**
+
+  1. 访问地址：[http://grokdebug.herokuapp.com](http://grokdebug.herokuapp.com)
+  2. 如下图所示，填写各类信息：
+  
+![](https://pandora-kibana.qiniu.com/grok.png)
+
+一条示例日志：
+
+```
+[04/Jun/2016:12:41:45 +0100] 1.25 200 192.168.1.1 5.432µs 101
+```
+
+最终使用的grok pattern
+
+```
+%{TEST_LOG_A}
+```
+
+基础的grok pattern 构成
+
+```
+# Test A log line:
+#   [04/Jun/2016:12:41:45 +0100] 1.25 200 192.168.1.1 5.432µs 101
+DURATION %{NUMBER}[nuµm]?s
+RESPONSE_CODE %{NUMBER:response_code}
+RESPONSE_TIME %{DURATION:response_time}
+TEST_LOG_A \[%{HTTPDATE:timestamp:date}\] %{NUMBER:myfloat:float} %{RESPONSE_CODE} %{IPORHOST:clientip} %{RESPONSE_TIME} %{NUMBER:myint:long}
+
+# Test B log line:
+#   [04/06/2016--12:41:45] 1.25 mystring dropme nomodifier
+TEST_TIMESTAMP %{MONTHDAY}/%{MONTHNUM}/%{YEAR}--%{TIME}
+TEST_LOG_B \[%{TEST_TIMESTAMP:timestamp:date}\] %{NUMBER:myfloat:float} %{WORD:mystring:string} %{WORD:dropme:drop} %{WORD:nomodifier}
+
+```
+
+将 grok pattern debug 调试完成后的配置落实到logkit Pro 的 grok 解析中，有以下两种方式：
+
+1. 将`基础的grok pattern` 构成里面的 grok pattern 填写到本地文件中，假设存储路径为 /home/user/logkit/grok_pattern。 
+> 注意，若修改这个 /home/user/logkit/grok_pattern 配置文件，需要更新 runner 才能生效。
+3.  将`最终使用的 grok pattern`里面的模式串，填写到 grok parser 的 grok_patterns 配置项："grok_patterns":"%{TEST_LOG_A}"
+
+## **如何使用 grok parser 解析 nginx/apache 日志**
+
+使用 grok parser 解析 nginx/apache 日志的过程，实际上就是利用 grok pattern(正则表达式)去匹配您的 nginx 日志，对于像 nginx/apache 日志这样的成熟日志内容，日志的所有组成部分均已经有非常成熟的 grok pattern 可以使用，下面我们先介绍下用于解析 nginx/apache 日志时常用的几个内置在 logkit Pro 的 grok pattern。
+
+常用 grok pattern介绍
+
+1. `NOTSPACE` 匹配所有非空格的内容，这个是性能较高且最为常用的一个 pattern，比如你的日志内容是 `abc efg`，那么你只要写两个 NOTSPACE 的组合 Pattern 即可，如 `%{NOTSPACE:field1} %{NOTSPACE:field2}`。
+2. `QUOTEDSTRING` 匹配所有被双引号括起来的字符串内容，跟 NOTSAPCE 类似，会包含双引号一起解析出来，如 `"abc" - "efx sx"` 这样一串日志，写一个组合 `Pattern%{QUOTEDSTRING:field1} - %{QUOTEDSTRING:field2}`，field2 就包含数据"efx sx"，这个同样性能较高，好处是不怕有空格等其他特殊字符，缺点是解析的内容包含了双引号本身，如果要转换成 long 等类型需要去掉引号。
+3. `DATA` 匹配所有字符，这个 pattern 需要结合一些特殊的语境使用，如双引号等特殊字符。举例来说 `"abc" - "efx sx"`，这样一串日志，可以写一个组合 `Pattern "%{DATA:field1}" - "%{DATA:field2}"`，这个就起到了 QUOTEDSTRING 的效果，另外数据中不会包含双引号。
+4. `HTTPDATE` 匹配常见的 HTTP 日期类型，类似 nginx 和 Apache 生产的 timestamp 都可以用这个 Pattern 解析。如`[30/Sep/2017:10:50:53 +0800]`，就可以写一个组合 Pattern `[%{HTTPDATE:ts:date}]`，中括号里面包含 HTTPDATE 这个 Pattern，就把时间字符串匹配出来了。
+5. `NUMBER` 匹配数字类型，包括整数和浮点数，利用这个 Pattern 就可以把 nginx 里面的如响应时间这样的数据解析出来。如`"10.10.111.117:8888" [200] "0.002"`，就可以写 `"%{NOTSPACE:ip}" [%{NUMBER:status:long}] "%{NUMBER:resptime:float}"` 来解析出 status 状态码以及 resptime 响应时间。
+
+基本上，上述这些基础的 grok Pattern 组合起来，就可以解决几乎所有 nginx 的日志解析，但有时候会遇到一些特殊情况，如某个字段可能存在也可能不存在，比如如下两行日志，我们都希望解析。
+
+1. POST 中包含HTTP协议信息
+
+```
+"POST /resouce/abc HTTP/1.1"
+```
+
+2. GET 中不包含协议信息
+
+```
+"GET /resouce/abc"
+```
+此时就需要编写一种组合场景，表达或的逻辑，此时可以在 Pattern 组合中融入正则表达式的组概念，如下串即可解析：
+
+```
+"%{WORD:verb} %{NOTSPACE:request}\s*(?: HTTP/%{NUMBER:httpversion}|)"
+```
+其中括号就是正则表达式的组，组里面还可以包含组，每个组通过"?"问号开头表示可以存在0次或1次，":"冒号后表达匹配的内容。
+
+在 nginx 日志中常常还会出现内容为空的情况，为空时 nginx 字段填充-横杠，此时也可以用类似的方法写或。 如这两种数据 0.123 以及 -，如果把"-"当成正常的数字去解析，就会出错，所以需要去掉没有数字的情况，如：
+
+```
+(?:%{NUMBER:bytes}|-)
+```
+最后，假设我们遇到一种不太规则的 nginx 日志写法，如：
+
+```
+110.220.330.550 - - [12/Oct/2017:14:16:50 +0800] "POST /v2/repos/xsxsxs/data HTTP/1.1" 200 729 2 "-" "Faraday v0.13.1" "-" 127.9.2.1:80 www.qiniu.com xsxsxsxsx122dxsxs 0.019
+```
+我们就可以用上面描述的方法拼接出如下的串：
+
+```
+NGINX_LOG %{NOTSPACE:client_ip} %{USER:ident} %{USER:auth} \[%{HTTPDATE:ts:date}\] "(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:http_version:float})?|%{DATA})" %{NUMBER:resp_code} (?:%{NUMBER:resp_bytes:long}|-) (?:%{NUMBER:resp_body_bytes:long}|-) "(?:%{NOTSPACE:referrer}|-)" %{QUOTEDSTRING:agent} %{QUOTEDSTRING:forward_for} %{NOTSPACE:upstream_addr} (%{HOSTNAME:host}|-) (%{NOTSPACE:reqid}) %{NUMBER:resp_time:float}
+```
+最后，你可以在 logkit Pro 的 grok parser 功能页面上调试一下。

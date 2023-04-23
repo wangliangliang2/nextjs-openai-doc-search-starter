@@ -1,0 +1,25 @@
+# **描述**
+本接口用于创建域名相关信息, 仅适用于空间模式为`静态地址`的空间。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：DELETE
+* 接口路径：`/v1/namespaces/{namespaceId}/domains/{domain}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|domain|是|string|要删除的域名
+
+
+# **响应参数**
+
+```
+{
+  "code": 200
+}
+```
+
+

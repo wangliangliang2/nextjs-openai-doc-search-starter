@@ -1,0 +1,35 @@
+自定义数据存储支持用户自定义数据存储表及表结构的动态调整操作。通过自定义数据存储，用户只需要在app目录中添加一个json配置文件，就可以在上传app时自动完成创建或更新表的行为。同时Pandora也提供[数据存储API接口](https://developer.qiniu.com/express/8353/kv-store)及[数据存储python sdk](https://developer.qiniu.com/express/7264/kv-storage)，方便用户通过调用接口完成自定义数据存储表的增删改查操作。
+
+下面以[模版应用](https://pandora-kibana.qiniu.com/sample_app.tar.gz)为例说明如何进行自定义数据存储开发。
+
+### 配置自定义数据存储的配置项
+
+在app包的resources目录下创建storage/demo.json文件，文件中定义了数据表的表结构具体信息，具体配置如下，可以根据需求进行修改：
+``` 
+{
+    "tableSchemas":[
+        {
+            "tableName":"<table_name>",       // 必填，数据表名称，无默认值
+            "fields":[                        // 必填，数据表字段定义，无默认值
+                {
+                    "name":"<field_name>",    // 字段名
+                    "type":"<field_type>",    // 字段类型，varchar，int，bigint，timestamp，float，double，text，longtext，mediumtext
+                    "length":<field_length>,  // 字段长度，仅在varchar时生效
+                },
+                ...
+            ],
+            "indices":[["<field_name>"]]      // 可选，数据表索引（创建表时生效），默认为空
+        },
+        ....
+    ],
+    "filename":"<export_file_name>"           //  必填，导出app时resource/storage目录下的json文件名称          
+}
+```
+
+### 打包并安装APP
+将应用项目打包，生成demo.tar.gz，去pandora 2.0的“应用管理”界面上传APP应用包。
+
+上传app后，会根据demo.json文件中的配置自动创建数据表。
+
+### 调整表结构
+上传app后如果需要调整表结构，直接在resource/storage/demo.json文件中修改相应的结构信息后，重新打包上传即可，或使用数据存储API接口或数据存储python sdk进行增删改查操作。

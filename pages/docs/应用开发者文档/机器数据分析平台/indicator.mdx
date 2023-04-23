@@ -1,0 +1,30 @@
+`<indicator>`元素定义雷达图的指示器。
+
+### 父元素
+
+在`<chart>`元素下，只有当 type 属性指定如下值时，可以使用`<indicator>`元素。
+
+* `<chart type="radar-bucket">`
+*` <chart type="radar-metric">`
+
+### 子元素
+
+|子元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<name>`|指示器名称|无|
+|`<display-name>`|指示器展示名称	|0|
+|`<max>`|指示器最大值|无|
+|`<min>`|指示器最小值|0|
+|`<type>`|指示器类型|'default'|
+
+示例
+
+```
+<indicator>
+  <name>PingFang SC</name>
+  <display-name>#C1C7D0</display-name>
+  <max>64</max>
+  <min>10</min>
+  <type>default</type>
+</indicator>
+```

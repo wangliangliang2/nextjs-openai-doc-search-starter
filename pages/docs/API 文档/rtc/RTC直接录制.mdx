@@ -1,0 +1,415 @@
+# RTC直接录制
+七牛提供实时音视频录制功能，您可以根据业务需要使用七牛的录制功能，录制功能可以将您需要录制的音视频流录制成文件，然后落到存储内，供您后续进行回放等其他用途。
+
+有了录制功能，你可以将语音聊天、视频聊天以及直播的内容储存下来，提供给更多的人在方便的时间观看。举个例子，实时在线监考系统需要判断学生是否存在作弊等违规操作，您可以通过录制回放查看学生是否违规。
+
+如果您使用七牛存储功能，可与技术支持联系如何开通存储空间保证录制功能正常使用
+
+单流录制、多路流录制具体API可参考：
+## 1.接口说明
+
+### 1.1创建任务
+#### HOST: rtc.qiniuapi.com
+#### 请求地址: POST /v4/apps/{appid}/rooms/{roomid}/jobs
+
+#### 输入参数: Job对象，请参考2.1
+
+#### 返回值: 
+
+当HTTP返回码为200时，表明请求成功，同时会返回任务ID：
+
+``` json
+{"status":"OK","id":"basic-ulwelrjl12"}
+```
+
+当HTTP码非200时，表明请求失败：
+
+``` json
+{"error":"invalid input"}
+```
+
+#### 使用样例:
+如下参数转推录制一个用户的视频，适用于单流录制
+``` json
+{
+  "type": "simple",
+  "inputs": [
+      {
+            "userId": "testuser"
+      }
+  ], 
+  "outputs": [
+       {
+            "type": "rtmp", 
+            "url": "rtmp://qiniu.com/stream"
+       }
+   ]
+
+}  
+```
+
+如下参数创建输出分辨率为720p只有一个用户的视频，同时设置背景及水印，适用于多路流录制
+``` json
+{
+  "type": "basic",
+  "inputs": [
+    {
+      "userId": "user-a",
+      "position": {
+        "z": 1,
+        "x": 0,
+        "y": 0,
+        "w": 1080,
+        "h": 720
+      }
+    },
+    {
+      "kind": "image",
+      "url": "http://qiniu.com/background.png",
+      "position": {
+        "z": 0,
+        "x": 0,
+        "y": 0,
+        "w": 1080,
+        "h": 720
+      }
+    },
+    {
+      "kind": "image",
+      "url": "http://qiniu.com/watermark.png",
+      "position": {
+        "z": 65535,
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 72
+      }
+    }
+  ],
+  "config": {
+    "height": 720,
+    "width": 1080,
+    "fps": 25,
+    "kbps": 2000
+  },
+  "outputs": [
+    {
+      "type": "rtmp",
+      "url": "rtmp://qiniu.com/stream"
+    }
+  ]
+}
+```
+
+### 1.2更新任务
+#### HOST: rtc.qiniuapi.com
+#### 请求地址: POST /v4/apps/{appid}/rooms/{roomid}/jobs/update
+
+#### 输入参数: Job对象，请参考2.1
+
+#### 返回值: 
+
+当HTTP返回码为200时，表明请求成功，同时会返回任务ID：
+``` json
+{"status":"OK","id":"basic-ulwelrjl12"}
+```
+
+当HTTP码非200时，表明请求失败：
+``` json
+{"error":"invalid input"}
+```
+
+#### 使用样例:
+以下参数将上面任务更新为两个用户并列显示的视频
+``` json
+{
+    "id": "basic-ulwelrjl12", // 更新需要传递之前返回的任务ID
+    "type": "basic",
+    "inputs": [
+        {
+            "userId": "user-a",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "w": 540,
+                "h": 720,
+                "z": 0
+            }
+        },
+        {
+            "userId": "user-b",
+            "position": {
+                "x": 540,
+                "y": 0,
+                "w": 540,
+                "h": 720,
+                "z": 0
+            }
+        }
+    ],
+    "config": {
+        "height": 720,
+        "width": 1080,
+        "fps": 25,
+        "kbps": 2000
+    },
+    "outputs": [
+        {
+            "type": "rtmp",
+            "url": "rtmp://qiniu.com/stream"
+        }
+    ]
+}
+```
+
+### 1.3 删除任务
+#### HOST: rtc.qiniuapi.com
+#### 请求地址: POST /v4/apps/{appid}/rooms/{roomid}/jobs/stop
+
+#### 输入参数:
+``` json
+{"id":"basic-ulwelrjl12"}
+```
+
+#### 返回值: 
+
+当HTTP返回码为200时，表明请求成功，同时会返回任务ID：
+``` json
+{"status":"OK","id":"basic-ulwelrjl12"}
+```
+
+当HTTP码非200时，表明请求失败：
+``` json
+{"error":"invalid input"}
+``` 
+### 1.4 获取回放链接
+#### HOST: pri-segmenter.qiniuapi.com
+#### 请求地址: POST /v1/saveas
+#### 输入参数: Job对象，请参考2.2
+
+### 返回值: 
+``` json
+{"url":"http://riuyam2cf.test-bkt.clouddn.com/rtc_test.m3u8","duration":589,"targetUrl":"http://riuyam2cf.hd-bkt.clouddn.com/rtc_test.m3u8","persistentId":"1233004770","start":1665561202,"end":1665561264,"err":""}
+```
+
+#### 使用样例:
+如下参数是获取流名为rtc-test的回放链接请求
+``` json
+{
+    "fname": "rtc-test",
+    "start": 1665284420,
+    "end": 1665284508, 
+    "format": "m3u8",
+    "expireDays": 2,
+    "persistentDeleteAfterDays": 2,
+    "domain": "rtc.test.record.com"   
+}
+```
+
+## 2.参数说明
+
+### 2.1 Job对象
+|名称|类型|是否可选|描述|备注|
+|-|-|-|-|-|-|
+|type|String|必填|固定填写: basic/simple|basic为合流任务，simple为转推任务|
+|inputs|Input数组 |必填|数组，用于指明输入媒体信息|请参考2.1.1 input对象|
+|outputs|Output数组|必填|用于指明输出信息，目前只支持单个RTMP类型输出，更多输出功能开发中。|请参考2.1.2 output对象|
+|config|Config对象|可选 simple下不需要|配置项|请参考2.1.3 config对象|
+
+
+#### 2.1.1 input对象
+
+Job为simple的时候，只支持一个input对象，且input对象只支持设置userId参数
+
+|名称|类型|是否可选|可用type|描述|
+|-|-|-|-|-|
+| kind |String|可选|basic|默认为media类型，可选值为image/media，当为media时userId必填，当为image时imageUrl必填|
+| userId |String|根据kind决定是否必填|basic/simple|用户加入房间适用用户名|
+| tag |String|可选|basic|当用户同时发布多路音视频是用于区分不同的输入,请详细参考3.3 Input和Tag说明|
+|url|String|根据kind决定是否必填|basic|图片地址|
+| position |Position对象|可选|basic|当任务类型为basic，并且需要对多路视频进行合并操作时必填，指明视频位置|
+| stretchMode |String|必填|basic||
+
+#### 2.1.2 output对象
+
+|名称|类型|是否可选|描述|备注|
+|-|-|-|-|-|-|
+|type|String|必填|请填写：rtmp||
+|url|String|必填|指明输出地址，例如：rtmp://pri-segmenter.qiniuapi.com:2004/\<appid\>/\<streamName\>?domain=\<domain get from qiniu\>| domain为配置录制时候生成的域名，类似 rtc-publish.xxxx-live.cloudvdn.com，跟绑定存储空间上的cdn域名无关。|
+
+#### 2.1.3 Config对象
+
+|名称|类型|是否可选|描述|备注|
+|-|-|-|-|-|-|
+| audioOnly |bool|可选|是否仅做音频合流，当audioOnly为true时，fps，height，width，kbps参数均无意义，可不填。||
+|fps|int|如果audioOnly不为true则必填|指定输出帧率||
+| kbps |int|如果audioOnly不为true则必填|指定输出码率||
+| height |int|如果audioOnly不为true则必填|指定输出高度|必须为2的倍数|
+| width |int|如果audioOnly不为true则必填|指定输出宽度|必须为2的倍数|
+| stretchMode |string|可选|整个任务的stretchMode默认值|
+|fps|bool|可选|是否保留用户最后一帧，默认为false||
+
+#### 2.1.4 Position对象
+
+|名称|类型|是否可选|描述|备注|
+|-|-|-|-|-|-|
+|x|int|必填|||
+|y|int|必填|||
+|z|int|可选|0~65535||
+|w|int|必填|必须为2的倍数||
+|h|int|必填|必须为2的倍数||
+
+### 2.2 回放链接对象
+
+|名称|类型|是否可选|描述|备注|
+|-|-|-|-|-|-|
+|streamName|String|必填|流名|推流url中的流名|
+|fname|String|必填|指定生成m3u8文件名|回放文件名|
+|start|Int|选填|用于指定生成回放的起始时间|与end参数搭配使用，如果不传，默认会生成推流起止的m3u8文件|
+|end|Int|选填|用于指定生成回放的截止时间|参考start参数描述|
+|format|String|必填|用于指定生成回放的文件格式|目前仅支持m3u8文件格式|
+|expireDays|Int|必填|用于指定ts和m3u8文件的生命周期|-1表示不修改ts文件生命周期且m3u8生命周期由PersistentDeleteAfterDays决定|
+|persistentDeleteAfterDays|Int|必填|生成文件的生命周期|m3u8文件只有当ExpireDays为-1时生效,0表示永不过期|
+|domain|String|必填|用于推流时附带在推流url中，鉴权使用|开通录制功能后，可以联系技术支持获取指定的domain|
+
+
+
+## 3.补充说明
+
+### 3.1 Basic和Simple区别
+- Basic为合流，支持将多路音视频合成一路。
+- Simple为转推，只支持输入一个用户的一路音频+视频，并且不支持更新。
+
+### 3.2 StretchMode拉伸模式
+取值范围如下:
+- aspectFill: 默认值, 视频通过保持长宽比来填充视图的大小。视频的某些部分可能被剪切。
+- aspectFit: 通过保持宽高比(可能显示黑色边框)，视频被缩放以适应视图的大小。
+- scaleToFit: 视频被缩放以填充视图的大小，而不需要保持长宽比
+
+当config中传递其他部分不传时，均使用config中的stretchMode作为拉伸模式。
+
+### 3.3 原水印背景图功能
+- 背景图：在inputs内指定kind为image，position中z指定为0即可。
+- 水印：在inputs内指定kind为image，position中z指定为65535即可。
+
+### 3.4 Input及tag说明
+
+七牛实时音视频服务在发布track时支持设置自定义Tag,参考:https://developer.qiniu.com/rtc/11434/UniappQNScreenVideoTrackConfig。Tag的主要功能是用于区分一个用户发布的多路音视频，建议使用方式如下：
+- 如果每个用户只会发布一路音视频，建议不要设置tag，这样在输入input时tag留空即可。
+- 如果每个用户会发布一路视频，多路音频，也建议不要设置tag，这样在输入input时留空即可。
+- 如果存在每个用户发布多个音视频的情况，需要涉及tag，请务必在合流时设置相同tag才可以正确识别。
+
+每个Input可以代表N路音频+最多1路视频，详细举例：
+
+#### 3.4.1 用户只发布一路音视频，并且没有设置tag：
+``` json
+[{
+        "userId": "user-a",
+        "position": {
+            "z": 1,
+            "x": 0,
+            "y": 0,
+            "w": 1080,
+            "h": 720
+        }
+    }] // 只需要一个input对象。
+
+```
+
+#### 3.4.2 用户发布一路音视频，分别设置tag为video和audio：
+``` json
+[{
+        "userId": "user-a",
+        "tag":"video",
+        "position": {
+            "z": 1,
+            "x": 0,
+            "y": 0,
+            "w": 1080,
+            "h": 720
+        }
+    },
+    {
+        "userId": "user-a",
+        "tag":"audio"
+    }] // 需要为不同的tag独立指定input对象，音频不需要设置position信息
+```
+
+#### 3.4.3 用户发布两个视频，设置tag为空和screen，同时发布一个音频tag为空。
+``` json
+[{
+        "userId": "user-a",
+        "tag":"screen",
+        "position": {
+            "z": 1,
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 720
+        }
+    }, // 代表tag为screen的视频输入。
+    {
+        "userId": "user-a",
+        "position": {
+            "z": 1,
+            "x": 540,
+            "y": 0,
+            "w": 540,
+            "h": 720
+        }
+    } // 代表tag为空的视频和音频
+]
+```
+
+#### 3.4.4 用户发布两个视频，设置tag为camera和screen，同时发布一个音频tag为camera
+``` json
+[{
+        "userId": "user-a",
+        "tag":"screen",
+        "position": {
+            "z": 1,
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 720
+        }
+    }, // 代表tag为screen的视频输入。
+    {
+        "userId": "user-a",
+        "tag":"camera",
+        "position": {
+            "z": 1,
+            "x": 540,
+            "y": 0,
+            "w": 540,
+            "h": 720
+        }
+    } // 代表tag为camera的视频和音频
+]
+```
+
+同时需要注意不可预期行为
+
+#### 3.4.5 用户发布两个视频，均未设置tag或者设置为相同tag。
+``` json
+[{
+        "userId": "user-a",
+        "position": {
+            "z": 1,
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 720
+        }
+    } // 具体哪个视频会参与合流不可预期，但是只会有一个参与。
+]
+
+```
+
+
+
+
+
+
+
+

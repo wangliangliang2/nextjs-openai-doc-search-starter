@@ -1,0 +1,18 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `DELETE` /v1/vm/vpc/:vpc_id
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+vpc_id    | string  | path  | 是 | 专有网络 ID
+region_id | string  | query \| body | 是 | 地域 ID
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID

@@ -1,0 +1,15 @@
+# 请求说明
+
+## 域名
+请求域名为 api.qiniu.com
+
+## 鉴权
+IAM 接口鉴权同七牛其他服务一样，使用 Authorization 头鉴权，用于验证请求合法性的认证信息。该头部应严格按照[管理凭证](https://developer.qiniu.com/kodo/manual/1201/access-token)进行填充，否则会返回 401 错误码。例如 `Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1 ...` 或 `Authorization: UpToken QNJi_bYJlmO5LeY08FfoNj9w_r...`。
+
+## 接口规格
+请参考 [IAM swagger API](https://app.swaggerhub.com/apis/Qin4/iam-sdk/1.0.0)
+
+## 示例请求
+``` curl
+curl https://api.qiniu.com/iam/v1/users -H "Authorization: Qbox j853F3bLkWl59I5BOkWm6q1Z1 ..."
+```

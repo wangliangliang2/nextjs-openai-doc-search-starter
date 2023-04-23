@@ -1,0 +1,767 @@
+# 访问域名
+
+```
+Host: fusion.qiniuapi.com
+```
+
+# 认证授权
+
+```
+Authorization: QBox <access_token>
+```
+
+access_token 详细描述请查阅[这里](https://developer.qiniu.com/kodo/manual/6671/historical-document-management-certificate)。
+<a id="statuscode"></a>
+# 自定义状态码
+
+| HTTP 状态码 | 含义             | 说明      |
+| -------- | -------------- | ------- |
+| 200      | success        | 成功      |
+| 400054   | invalid domain | 域名不合法   |
+| 400331   | invalid params | 请求参数错误  |
+| 500000   | internal error | 服务端内部错误 |
+
+# 区域运营商流量查询
+
+接口地址
+
+```
+/v1/dcdn/loganalyze/traffic
+```
+请求语法
+
+```
+POST /v1/dcdn/loganalyze/traffic HTTP/1.1
+Authorization:<access_token>
+Content-Type: application/json
+
+{
+  "domains": [<domain1>, <domain2>, <domain3>, ......],
+  "freq": <freq>,
+  "regions": [<region1>, <region2>, <region3>, ......],
+  "isp": <isp>,
+  "startDate": <startDate>,
+  "endDate": <endDate>
+}
+```
+| 参数      | 类型   | 说明                                                         |
+| --------- | ------ | ------------------------------------------------------------ |
+| domainN   | string | 域名列表，总数不超过100条                                    |
+| freq      | string | 粒度，可选项为 5min、1hour、1day                             |
+| regionN   | string | 区域，选项见 <a href="#region">Region 参数列表</a> |
+| isp       | string | ISP运营商，比如all(所有 ISP)，telecom(电信)，unicom(联通)，mobile(中国移动)，drpeng(鹏博士)，tietong(铁通)，cernet(教育网) |
+| startDate | string | 开始时间，格式为：2006-01-02。起止最大间隔为31天             |
+| endDate   | string | 结束时间，格式为：2006-01-02。起止最大间隔为31天             |
+
+返回包
+
+```
+200 OK
+
+{
+  "code": <code>,
+  "error": <error>,
+  "data": {
+     "points": [<point1>, <point2>, <point3>, ......],
+     "value": [<value1>, <value2>, <value3>, ......]
+  }
+}
+```
+
+| 参数         | 类型   | 说明                                |
+| ------------ | ------ | ----------------------------------- |
+| code         | int    | <a href="#statuscode">自定义状态码</a>       |
+| error        | string | 自定义错误描述                      |
+| pointN       | string | 时间点，形如 2006-01-02-15-04       |
+| valueN       | long   | 在 pointN 时间点的流量              |
+
+注：如果同时查询中国和上海的数据，结果是两者的累加。
+
+# 区域运营商带宽查询
+
+接口地址
+
+```
+/v1/dcdn/loganalyze/bandwidth
+```
+请求语法
+
+```
+POST /v1/dcdn/loganalyze/bandwidth HTTP/1.1
+Authorization:<access_token>
+Content-Type: application/json
+
+{
+  "domains": [<domain1>, <domain2>, <domain3>, ......],
+  "freq": <freq>,
+  "regions": [<region1>, <region2>, <region3>, ......],
+  "isp": <isp>,
+  "startDate": <startDate>,
+  "endDate": <endDate>
+}
+```
+| 参数      | 类型   | 说明                                                         |
+| --------- | ------ | ------------------------------------------------------------ |
+| domainN   | string | 域名列表，总数不超过100条                                    |
+| freq      | string | 粒度，可选项为 5min、1hour、1day                             |
+| regionN   | string | 区域，选项见 <a href="#region">Region 参数列表</a> |
+| isp       | string | ISP运营商，比如all(所有 ISP)，telecom(电信)，unicom(联通)，mobile(中国移动)，drpeng(鹏博士)，tietong(铁通)，cernet(教育网) |
+| startDate | string | 开始时间，格式为：2006-01-02。起止最大间隔为31天             |
+| endDate   | string | 结束时间，格式为：2006-01-02。起止最大间隔为31天             |
+
+返回包
+
+```
+200 OK
+
+{
+  "code": <code>,
+  "error": <error>,
+  "data": {
+     "points": [<point1>, <point2>, <point3>, ......],
+     "value": [<value1>, <value2>, <value3>, ......]
+  },
+  "stats": {
+    "peak": {
+      "time": <peakTime>,
+      "value": <peakValue>
+    },
+    "peak95": {
+      "time": <peak95Time>,
+      "value": <peak95Value>
+    },
+    "peak95Average": <peak95Average>,
+    "peakAverage": <peakAverage>
+  }
+}
+```
+
+| 参数         | 类型   | 说明                                |
+| ------------ | ------ | ----------------------------------- |
+| code         | int    | <a href="#statuscode">自定义状态码</a>       |
+| error        | string | 自定义错误描述                      |
+| pointN       | string | 时间点，形如 2006-01-02-15-04       |
+| valueN       | long   | 在 pointN 时间点的带宽              |
+| peakTime     | string | 峰值的时间点，形如 2006-01-02-15-04 |
+| peakValue    | long   | 峰值带宽                            |
+| peak95Time   | string | 95峰的时间点，形如 2006-01-02-15-04 |
+| peak95Value  | long   | 95峰带宽                            |
+| peakAverage   | long   | 各天峰值的平均值                    |
+| peak95Average | long   | 各天95峰的平均值                    |
+
+注：如果同时查询中国和上海的数据，结果是两者的累加。
+
+
+#  批量查询状态码
+
+接口地址
+
+```
+/v1/dcdn/loganalyze/statuscode
+```
+
+请求语法
+
+```
+POST /v1/dcdn/loganalyze/statuscode HTTP/1.1
+Authorization:<access_token>
+Content-Type: application/json
+
+{
+    "domains": [<domain1>, <domain2>, <domain3>, ......],
+    "freq": <freq>,
+    "startDate": <startDate>,
+    "endDate": <endDate>
+}
+```
+
+请求内容
+
+| 参数        | 类型     | 说明                             |
+| --------- | ------ | ------------------------------ |
+| domainN   | string | 域名列表，总数不超过100条                 |
+| freq      | string | 粒度，可选项为 5min、1hour、1day        |
+| startDate | string | 开始时间，格式为：2006-01-02。起止最大间隔为31天 |
+| endDate   | string | 结束时间，格式为：2006-01-02。起止最大间隔为31天 |
+
+响应内容
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+   "data" : {
+      "codes" : {
+         <statusCode> : [<codeCount1>, <codeCount2>, <codeCount3>, ......]
+      },
+      "points" : [<point1>, <point2>, <point3>, ......]
+   },
+   "error" : <error>,
+   "code" : <code>
+}
+```
+
+| 参数         | 类型     | 说明                      |
+| ---------- | ------ | ----------------------- |
+| code       | int    | <a href="#statuscode">自定义状态码</a>       |
+| error      | string | 自定义错误描述                 |
+| pointN     | string | 时间点，形如 2006-01-02-15-04 |
+| statusCode | string | 状态码                     |
+| codeCountN | long   | 状态码在 pointN 时间点的个数      |
+
+# 批量查询命中率
+
+接口地址
+
+```
+/v1/dcdn/loganalyze/hitmiss
+```
+
+请求语法
+
+```
+POST /v1/dcdn/loganalyze/hitmiss HTTP/1.1
+Authorization:<access_token>
+Content-Type: application/json
+
+{
+    "domains": [<domain1>, <domain2>, <domain3>, ......],
+    "freq": <freq>,
+    "startDate": <startDate>,
+    "endDate": <endDate>
+}
+```
+
+请求内容
+
+| 参数        | 类型     | 说明                             |
+| --------- | ------ | ------------------------------ |
+| domainN   | string | 域名列表，总数不超过100条                 |
+| freq      | string | 粒度，可选项为 5min、1hour、1day        |
+| startDate | string | 开始时间，格式为：2006-01-02。起止最大间隔为31天 |
+| endDate   | string | 结束时间，格式为：2006-01-02。起止最大间隔为31天 |
+
+
+响应内容
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+   "data" : {
+      "points" : [<point1>, <point2>, <point3>, ......],
+      "hit" : [<hitCount1>, <hitCount2>, <hitCount3>, ......],
+      "miss" : [<missCount1>, <missCount2>, <missCount3>, ......],
+      "trafficHit" : [<trafficHitCount1>, <trafficHitCount2>, <trafficHitCount3>, ......],
+      "trafficMiss" : [<trafficMissCount1>, <trafficMissCount2>, <trafficMissCount3>, ......]
+   },
+   "error" : <error>,
+   "code" : <code>
+}
+```
+
+| 参数                | 类型     | 说明                       |
+| ----------------- | ------ | ------------------------ |
+| code              | int    | <a href="#statuscode">自定义状态码</a>        |
+| error             | string | 自定义错误描述                  |
+| pointN            | string | 时间点，形如 2006-01-02-15-04  |
+| hitCountN         | long   | pointN 时间点的命中次数          |
+| missCountN        | long   | pointN 时间点的未命中次数         |
+| trafficHitCountN  | long   | pointN 时间点的命中流量，单位 Byte  |
+| trafficMissCountN | long   | pointN 时间点的未命中流量，单位 Byte |
+
+# 批量查询请求次数
+
+接口地址
+
+```
+/v1/dcdn/loganalyze/reqcount
+```
+
+请求语法
+
+```
+POST /v1/dcdn/loganalyze/reqcount HTTP/1.1
+Authorization:<access_token>
+Content-Type: application/json
+
+{
+    "domains": [<domain1>, <domain2>, <domain3>, ......],
+    "freq": <freq>,
+    "region": <region>,
+    "startDate": <startDate>,
+    "endDate": <endDate>
+}
+```
+
+请求内容
+
+| 参数        | 类型     | 说明                                       |
+| --------- | ------ | ---------------------------------------- |
+| domainN   | string | 域名列表，总数不超过100条                           |
+| freq      | string | 粒度，可选项为 5min、1hour、1day                  |
+| region    | string | 区域，可选项见 <a href="#region">Region 参数列表</a> |
+| startDate | string | 开始时间，格式为：2006-01-02。起止最大间隔为31天           |
+| endDate   | string | 结束时间，格式为：2006-01-02。起止最大间隔为31天           |
+
+响应内容
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+   "data" : {
+      "reqCount" : [<reqCount1>, <reqCount2>, <reqCount3>, ......],
+      "points" : [<point1>, <point2>, <point3>, ......]
+   },
+   "error" : "success",
+   "code" : 0
+}
+```
+
+| 参数        | 类型     | 说明                      |
+| --------- | ------ | ----------------------- |
+| code      | int    | <a href="#statuscode">自定义状态码</a>       |
+| error     | string | 自定义错误描述                 |
+| pointN    | string | 时间点，形如 2006-01-02-15-04 |
+| reqCountN | long   | pointN 时间点的请求次数         |
+
+# 批量查询 ISP 请求次数
+
+接口地址
+
+```
+/v1/dcdn/loganalyze/ispreqcount
+```
+
+请求语法
+
+```
+POST /v1/dcdn/loganalyze/ispreqcount HTTP/1.1
+Authorization:<access_token>
+Content-Type: application/json
+
+{
+    "domains": [<domain1>, <domain2>, <domain3>, ......],
+    "freq": <freq>,
+    "region": <region>,
+    "startDate": <startDate>,
+    "endDate": <endDate>
+}
+```
+
+请求内容
+
+| 参数        | 类型     | 说明                                       |
+| --------- | ------ | ---------------------------------------- |
+| domainN   | string | 域名列表，总数不超过100条                           |
+| freq      | string | 粒度，可选项为 5min、1hour、1day                  |
+| region    | string | 区域，可选项见 <a href="#region">Region 参数列表</a> |
+| startDate | string | 开始时间，格式为：2006-01-02。起止最大间隔为31天           |
+| endDate   | string | 结束时间，格式为：2006-01-02。起止最大间隔为31天           |
+
+响应内容
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+   "data" : {
+      "ispReq" : {
+          <isp>: [<reqCount1>, <reqCount2>, <reqCount3>, ......]
+      },
+      "points" : [<point1>, <point2>, <point3>, ......]
+   },
+   "error" : "success",
+   "code" : 0
+}
+```
+
+| 参数        | 类型     | 说明                                       |
+| --------- | ------ | ---------------------------------------- |
+| code      | int    | <a href="#statuscode">自定义状态码</a>                        |
+| error     | string | 自定义错误描述                                  |
+| pointN    | string | 时间点，形如 2006-01-02-15-04                  |
+| isp       | string | ISP 运营商，包括  telecom（电信）、unicom（联通）、 mobile（移动）、drpeng（鹏博士）、tietong（铁通）、cernet（教育网）、others（其他） |
+| reqCountN | long   | pointN 时间点的请求次数                          |
+
+# 批量查询 ISP 流量占比
+
+接口地址
+
+```
+/v1/dcdn/loganalyze/isptraffic
+```
+
+请求语法
+
+```
+POST /v1/dcdn/loganalyze/isptraffic HTTP/1.1
+Authorization:<access_token>
+Content-Type: application/json
+
+{
+  "domains": [<domain1>, <domain2>, <domain3>, ......],
+  "regions": [<region1>, <region2>, <region3>, ......],
+  "startDate": <startDate>,
+  "endDate": <endDate>
+}
+```
+
+| 参数      | 类型   | 说明                                                         |
+| --------- | ------ | ------------------------------------------------------------ |
+| domainN   | string | 域名列表，总数不超过100条                                    |
+| regionN   | string | 区域，选项见 <a href="#region">Region 参数列表</a> |
+| startDate | string | 开始时间，格式为：2006-01-02。起止最大间隔为31天             |
+| endDate   | string | 结束时间，格式为：2006-01-02。起止最大间隔为31天             |
+
+返回包
+
+```
+200 OK
+
+{
+  "code": <code>,
+  "error": <error>,
+  "data": {
+     "isp1": <value1>,
+     "isp2": <value2>
+  }
+}
+```
+
+| 参数   | 类型   | 说明                                 |
+| ------ | ------ | ------------------------------------ |
+| code   | int    | <a href="#statuscode">自定义状态码</a>        |
+| error  | string | 自定义错误描述                       |
+| ispN   | string | 运营商                               |
+| valueN | float | 运营商 ispN 对应的流量占总流量的比例 |
+
+注：如果同时查询中国和上海的数据，会出现重复计算。
+# 批量请求访问次数 Top IP
+
+接口地址
+
+```
+/v1/dcdn/loganalyze/topcountip
+```
+
+请求语法
+
+```
+POST /v1/dcdn/loganalyze/topcountip HTTP/1.1
+Authorization:<access_token>
+Content-Type: application/json
+
+{
+    "domains": [<domain1>, <domain2>, <domain3>, ......],
+    "region": <region>,
+    "startDate": <startDate>,
+    "endDate": <endDate>
+}
+```
+
+请求内容
+
+| 参数        | 类型     | 说明                                       |
+| --------- | ------ | ---------------------------------------- |
+| domainN   | string | 域名列表，总数不超过100条                           |
+| region    | string | 区域，可选项见 <a href="#region">Region 参数列表</a> |
+| startDate | string | 开始时间，格式为：2006-01-02。起止最大间隔为31天           |
+| endDate   | string | 结束时间，格式为：2006-01-02。起止最大间隔为31天           |
+
+响应内容
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+   "data" : {
+      "count" : [<count1>, <count2>, <count3>, ......],
+      "ips": [<ip1>, <ip2>, <ip3>, ......]
+   },
+   "error" : "success",
+   "code" : 0
+}
+```
+
+| 参数     | 类型     | 说明                     |
+| ------ | ------ | ---------------------- |
+| code   | int    | <a href="#statuscode">自定义状态码</a>      |
+| error  | string | 自定义错误描述                |
+| ipN    | string | IP                     |
+| countN | long   | ipN 在查询时间区间内的访问次数，降序排列 |
+
+# 批量请求访问流量 Top IP
+
+接口地址
+
+```
+/v1/dcdn/loganalyze/toptrafficip
+```
+
+请求语法
+
+```
+POST /v1/dcdn/loganalyze/toptrafficip HTTP/1.1
+Authorization:<access_token>
+Content-Type: application/json
+
+{
+    "domains": [<domain1>, <domain2>, <domain3>, ......],
+    "region": <region>,
+    "startDate": <startDate>,
+    "endDate": <endDate>
+}
+```
+
+请求内容
+
+| 参数        | 类型     | 说明                                       |
+| --------- | ------ | ---------------------------------------- |
+| domainN   | string | 域名列表，总数不超过100条                           |
+| region    | string | 区域，可选项见 <a href="#region">Region 参数列表</a> |
+| startDate | string | 开始时间，格式为：2006-01-02。起止最大间隔为31天           |
+| endDate   | string | 结束时间，格式为：2006-01-02。起止最大间隔为31天           |
+
+响应内容
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+   "data" : {
+      "traffic" : [<traffic1>, <traffic2>, <traffic3>, ......],
+      "ips": [<ip1>, <ip2>, <ip3>, ......]
+   },
+   "error" : "success",
+   "code" : 0
+}
+```
+
+| 参数       | 类型     | 说明                              |
+| -------- | ------ | ------------------------------- |
+| code     | int    | 0 表示数据返回成功, 1 表示没有数据，2 表示其他未知错误 |
+| error    | string | 自定义错误描述                         |
+| ipN      | string | IP                              |
+| trafficN | long   | ipN 在查询时间区间内的访问流量，单位 Byte。降序排列  |
+
+# 批量请求访问次数 Top URL
+
+接口地址
+
+```
+/v1/dcdn/loganalyze/topcounturl
+```
+
+请求语法
+
+```
+POST /v1/dcdn/loganalyze/topcounturl HTTP/1.1
+Authorization:<access_token>
+Content-Type: application/json
+
+{
+    "domains": [<domain1>, <domain2>, <domain3>, ......],
+    "region": <region>,
+    "startDate": <startDate>,
+    "endDate": <endDate>
+}
+```
+
+请求内容
+
+| 参数        | 类型     | 说明                                       |
+| --------- | ------ | ---------------------------------------- |
+| domainN   | string | 域名列表，总数不超过100条                           |
+| region    | string | 区域，可选项见 <a href="#region">Region 参数列表</a> |
+| startDate | string | 开始时间，格式为：2006-01-02。起止最大间隔为31天           |
+| endDate   | string | 结束时间，格式为：2006-01-02。起止最大间隔为31天           |
+
+
+响应内容
+
+```
+{
+   "data" : {
+      "count" : [<count1>, <count2>, <count3>, ......],
+      "urls": [<url1>, <url2>, <url3>, ......]
+   },
+   "error" : "success",
+   "code" : 0
+}
+```
+
+| 参数     | 类型     | 说明                      |
+| ------ | ------ | ----------------------- |
+| code   | int    | <a href="#statuscode">自定义状态码</a>       |
+| error  | string | 自定义错误描述                 |
+| urlN   | string | URL，去查询参数               |
+| countN | long   | urlN 在查询时间区间内的访问次数，降序排列 |
+
+# 批量请求访问流量 Top URL
+
+接口地址
+
+```
+/v1/dcdn/loganalyze/toptrafficurl
+```
+
+请求语法
+
+```
+POST /v1/dcdn/loganalyze/toptrafficurl HTTP/1.1
+Authorization:<access_token>
+Content-Type: application/json
+
+{
+    "domains": [<domain1>, <domain2>, <domain3>, ......],
+    "region": <region>,
+    "startDate": <startDate>,
+    "endDate": <endDate>
+}
+```
+
+请求内容
+
+| 参数        | 类型     | 说明                                       |
+| --------- | ------ | ---------------------------------------- |
+| domainN   | string | 域名列表，总数不超过100条                           |
+| region    | string | 区域，可选项见 <a href="#region">Region 参数列表</a> |
+| startDate | string | 开始时间，格式为：2006-01-02。起止最大间隔为31天           |
+| endDate   | string | 结束时间，格式为：2006-01-02。起止最大间隔为31天           |
+
+
+响应内容
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+   "data" : {
+      "traffic" : [<traffic1>, <traffic2>, <traffic3>, ......],
+      "urls": [<url1>, <url2>, <url3>, ......]
+   },
+   "error" : "success",
+   "code" : 0
+}
+```
+
+| 参数       | 类型     | 说明                              |
+| -------- | ------ | ------------------------------- |
+| code     | int    | <a href="#statuscode">自定义状态码</a>               |
+| error    | string | 自定义错误描述                         |
+| urlN     | string | URL，去查询参数                       |
+| trafficN | long   | urlN 在查询时间区间内的访问流量，单位 Byte。降序排列 |
+
+
+
+
+
+# 批量查询 UniqueVisitor
+
+接口地址
+
+```
+/v1/dcdn/loganalyze/uniquevisitor
+```
+
+请求语法
+
+```
+POST /v1/dcdn/loganalyze/uniquevisitor HTTP/1.1
+Authorization:<access_token>
+Content-Type: application/json
+
+{
+    "domains": [<domain1>, <domain2>, <domain3>, ......],
+    "freq": <freq>,
+    "startDate": <startDate>,
+    "endDate": <endDate>
+}
+```
+
+请求内容
+
+| 参数        | 类型     | 说明                             |
+| --------- | ------ | ------------------------------ |
+| domainN   | string | 域名列表，总数不超过100条                 |
+| freq      | string | 粒度，可选项为 1hour、1day             |
+| startDate | string | 开始时间，格式为：2006-01-02。起止最大间隔为31天 |
+| endDate   | string | 结束时间，格式为：2006-01-02。起止最大间隔为31天 |
+
+
+响应内容
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+   "data" : {
+      "uvCount" : [<uvCount1>, <uvCount2>, <uvCount3>, ......],
+      "points" : [<point1>, <point2>, <point3>, ......]
+   },
+   "error" : <error>,
+   "code" : <code>
+}
+```
+
+| 参数       | 类型     | 说明                           |
+| -------- | ------ | ---------------------------- |
+| code     | int    | <a href="#statuscode">自定义状态码</a>            |
+| error    | string | 自定义错误描述                      |
+| pointN   | string | 时间点，形如 2006-01-02-15-04      |
+| uvCountN | string | pointN 时间点的 UniqueVisitor 个数 |
+
+
+<a id="region"></a>
+# Region 参数列表
+
+| 参数           | 说明   |
+| ------------ | ---- |
+| global       | 全球   |
+| oversea      | 海外   |
+| china        | 中国   |
+| shandong     | 山东   |
+| jiangsu      | 江苏   |
+| zhejiang     | 浙江   |
+| anhui        | 安徽   |
+| shanghai     | 上海   |
+| fujian       | 福建   |
+| jiangxi      | 江西   |
+| guangdong    | 广东   |
+| guangxi      | 广西   |
+| hainan       | 海南   |
+| henan        | 河南   |
+| hunan        | 湖南   |
+| hubei        | 湖北   |
+| beijing      | 北京   |
+| tianjin      | 天津   |
+| hebei        | 河北   |
+| shanxi       | 山西   |
+| neimenggu    | 内蒙古  |
+| ningxia      | 宁夏   |
+| qinghai      | 青海   |
+| gansu        | 甘肃   |
+| shaanxi      | 陕西   |
+| sichuan      | 四川   |
+| guizhou      | 贵州   |
+| xinjiang     | 新疆   |
+| yunnan       | 云南   |
+| chongqing    | 重庆   |
+| xizang       | 西藏   |
+| liaoning     | 辽宁   |
+| jilin        | 吉林   |
+| heilongjiang | 黑龙江  |
+| hongkong     | 香港   |
+| macau        | 澳门   |
+| taiwan       | 台湾   |
+| unknown      | 未知地区 |

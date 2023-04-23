@@ -1,0 +1,36 @@
+ **电脑做wifi热点，手机连上后电脑上使用wireshark抓包**
+
+**方法如下：**
+
+1、使用电脑作为无线热点，使用的共享无线的软件可以有很多种(这里使用的是猎豹免费wifi)；
+
+2、开启猎豹免费wifi后将手机连入，并找到对应的手机IP，这里是192.168.191.2
+
+![blob.png](https://oi2ix6x26.qnssl.com/attachments/download/896466/001579dabd6c646409937aa9abc5572/?filename=blob.png)
+
+![blob.png](https://oi2ix6x26.qnssl.com/attachments/download/896560/001579db56edfdcc590ca34dcc60c73/?filename=blob.png) 
+
+3、查找对应的热点的网卡。打开控制面板=》网络和Internet=》网络和共享中心，查找到无线对应的网卡，例如下图：
+
+![blob.png](https://oi2ix6x26.qnssl.com/attachments/download/896475/001579dac6668d343aa365586f100ec/?filename=blob.png)
+
+4、开启wireshark，找到对应的网卡并点击开始抓包
+
+![blob.png](https://oi2ix6x26.qnssl.com/attachments/download/896546/001579db4fb1466d3b1d7b31c564554/?filename=blob.png)
+
+5、点击捕获=》捕获过滤器，会弹出一个窗口，之后选择HTTP TCP port(80)，这个过滤条件。或者直接在应用显示过滤器中敲入http来过滤出http协议的数据包。
+
+![blob.png](https://oi2ix6x26.qnssl.com/attachments/download/896547/001579db50c79517ddd838456ecc2f7/?filename=blob.png)
+
+![blob.png](https://oi2ix6x26.qnssl.com/attachments/download/896548/001579db51434686f0f072f3c37e4b3/?filename=blob.png)
+
+6、找到您手机IP对应的HTTP包，点击Hypertext Transfer Protocol查看详细信息； ![blob.png](https://oi2ix6x26.qnssl.com/attachments/download/896552/001579db52416f00caffce231fbb733/?filename=blob.png)
+
+7、显示详细信息后下拉，并将下图中的1和2的信息提供给我们，这边来帮您排查。
+
+![blob.png](https://oi2ix6x26.qnssl.com/attachments/download/896554/001579db53e2e88a6be2f9c040b678a/?filename=blob.png)
+
+8、或者将wireshark抓包信息导出提供我们，选择一个需要的导出的数据包文件，选中完成之后，进行点击菜单中的“file”的菜单，下拉中进行选择为export specified packets的选项。
+
+导出可以参考这个详细文档：
+http://jingyan.baidu.com/article/1612d500bbafa3e20e1eee92.html

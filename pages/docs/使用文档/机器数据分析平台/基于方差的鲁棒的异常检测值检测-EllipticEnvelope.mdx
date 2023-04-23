@@ -1,0 +1,18 @@
+这是一种基于方差的鲁棒的异常检测值方法。该算法假设正常样本都符合高斯分布，并学习一个二维的椭圆分布。它根据数据做一个鲁棒的协方差估计，得到一组适合用来描述当前数据集的均值和方差，然后学习到一个包围中心样本点并且忽略离群点的椭圆，实现区分正常点和离群点的目的。
+
+**语法：**
+```
+...| fit EllipticEnvelope assume_centered=<bool> support_fraction=<float> contamination=<int> random_state=<int> <feature_field_1> <feature_field_2> [into model_name]... 
+```
+
+
+**参数说明：**
+
+- assume_centered，用来假设数据是否已经“居中”，即均值为0。如不提供，默认为False。
+
+- support_fraction，用来指定用来计算的数据比例，必须要在(0,1)之间。如不提供，默认为[n_sample + n_features+1]/2。
+
+- contamination，用来指定训练集中异常数据的比例，必须要在(0,0.5]之间。如不提供，默认为0.1。
+
+- random_state为随机数种子，用来控制样本自助抽样的随机性和特征抽样的随机性。如果给定特定值，重新跑模型的时候，可以得出同样的结果。
+

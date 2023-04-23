@@ -1,0 +1,13 @@
+用 mean_absolute_error 可以计算真实值和预测值的 MAE 值。
+
+**语法：**
+
+```
+...|score mean_absolute_error multioutput=<raw_values(default) | uniform_average> <actual_field__1> ... <actual_field_n> against <predicted_field_1> ... <predicted_field_n>
+```
+
+**参数说明：**
+
+- multioutput 用来指定若干单个变量损失以何种方式被平均
+  - multioutput=raw_values（默认值）,分别返回各维度得分。在 multi-class 的场景，输出每一个 actual_field 的 field 和每一个 predicted_field 的 field 相互比较的得分。
+  - multioutput=uniform_average, 各输出维度得分的平均

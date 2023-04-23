@@ -1,0 +1,44 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文主要介绍如何通过 SDK 获取本地和远端用户在通话过程中的音量，进而判断用户是否在讲话。</p>
+<blockquote>
+<p>实现方式是通过周期性调用 SDK 接口获取本地及远端音频 Track 的音量值，再通过音量值来判断用户是否在讲话</p>
+</blockquote>
+
+# 监听本地音量
+<p>SDK 提供了 <a href="/rtc/api/8854/QNLocalAudioTrack-iOS#getVolumeLevel">QNLocalAudioTrack.getVolumeLevel</a> 接口用于获取本地音频 Track 的音量。</p>
+<p>以麦克风 Track 为例，可以通过如下方式实现对本地采集音量的感知：</p>
+<pre><code class="language-objc"><span class="hljs-built_in">NSTimer</span> *timer = [<span class="hljs-built_in">NSTimer</span> scheduledTimerWithTimeInterval:kGetVolumeLevelInterval target:<span class="hljs-keyword">self</span> selector:<span class="hljs-keyword">@selector</span>(updateAudioTrackVolume) userInfo:<span class="hljs-literal">nil</span> repeats:<span class="hljs-literal">YES</span>];
+<span></span>
+<span></span>- (<span class="hljs-keyword">void</span>)updateAudioTrackVolume {
+<span></span>    <span class="hljs-keyword">float</span> localVolumeLevel = [<span class="hljs-keyword">self</span>.microphoneAudioTrack getVolumeLevel];
+<span></span>    <span class="hljs-keyword">if</span> (localVolume &gt;= <span class="hljs-number">0.1</span>f) {
+<span></span>        <span class="hljs-comment">// 本地用户正在讲话</span>
+<span></span>    }
+<span></span>}
+<span></span></code></pre>
+<p>其中，<code>kGetVolumeLevelInterval</code> 为获取音量值的时间间隔，可根据您的场景自行定义其大小</p>
+
+# 监听远端音量
+<p>SDK 提供了 <a href="/rtc/api/8859/QNRemoteAudioTrack-iOS#getVolumeLevel">QNRemoteAudioTrack.getVolumeLevel</a> 接口用于获取远端音频 Track 的音量。</p>
+<p>可以通过如下方式实现对远端音频 Track 音量的感知：</p>
+<pre><code class="language-objc"><span class="hljs-built_in">NSTimer</span> *timer = [<span class="hljs-built_in">NSTimer</span> scheduledTimerWithTimeInterval:kGetVolumeLevelInterval target:<span class="hljs-keyword">self</span> selector:<span class="hljs-keyword">@selector</span>(updateAudioTrackVolume) userInfo:<span class="hljs-literal">nil</span> repeats:<span class="hljs-literal">YES</span>];
+<span></span>
+<span></span>- (<span class="hljs-keyword">void</span>)updateAudioTrackVolume {
+<span></span>    <span class="hljs-keyword">float</span> remoteVolumeLevel = [<span class="hljs-keyword">self</span>.remoteAudioTrack getVolumeLevel];
+<span></span>    <span class="hljs-keyword">if</span> (remoteVolume &gt;= <span class="hljs-number">0.1</span>f) {
+<span></span>        <span class="hljs-comment">// 远端用户正在讲话</span>
+<span></span>    }
+<span></span>}
+<span></span></code></pre>
+<p>其中，<code>kGetVolumeLevelInterval</code> 为获取音量值的时间间隔，可根据您的场景自行定义其大小</p>
+
+# 注意事项
+<ol>
+<li>在安静的环境下，<strong>获取到 0.0x 大小的数值可能为环境音的音量，是预期的现象</strong>，可根据需求自行决定判断用户是否讲话的音量阈值</li>
+<li>本地音量获取的数值会受到 <a href="/rtc/api/8854/QNLocalAudioTrack-iOS#setVolume">QNLocalAudioTrack.setVolume</a> 接口的影响，在确定讲话阈值的时候需要搭配使用</li>
+<li>获取音量接口为主动接口，需要您启动一个定时器，进行周期性的音量获取</li>
+</ol>
+
+# 示例代码
+<p>上述已经简单介绍了通话音量的监听方式，相对应的示例代码可参考 <a href="https://github.com/pili-engineering/QNRTC-iOS/blob/master/QNRTC-API-Examples/Api-Examples-iOS/Module/Audio/MicrophoneAudio/MicrophoneAudioExample.m">API-Examples-iOS</a>。</p></div></div>

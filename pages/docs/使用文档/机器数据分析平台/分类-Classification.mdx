@@ -1,0 +1,22 @@
+**使用场景及限制：**
+
+- 建议在测试数据集上运行，通过比较目标变量的真实数据和预测数据，用来评估分类模型的预测效果。
+- 支持 1-1，1-n，n-n 的比较，多用于评估比较不同分类模型在同一数据集上的预测效果。
+- 数据必须为 int 或者 str，不支持 float。
+- 模糊搜索（ \*）只能在 1-n 的情况下使用。
+
+**通用语法：**
+
+```
+..| score <scoring-method-name> [options] <actual_field_1> ... <actual_field_n> against <predicted_field_1> ... <predicted_field_n>
+```
+
+以下算法评估方式可以用来评估分类模型的预测效果。
+
+- [准确性 - Accuracy](/express/manual/11079/accuracy-accuracy)
+- [混淆矩阵 - Confusion Matrix](/express/manual/11080/the-confusion-matrix-confusion-matrix)
+- [精確率 - Precision](/express/manual/11081/accurate-rate-precision)
+- [召回率 - Recall](/express/manual/11082/the-recall-rate-recall)
+- [F-1 值 - F1-score](/express/manual/11083/f-1-value-f1-score)
+- [精确率-召回率-Fn 值-支持率 - Precision-Recall-FScore-Support](/express/manual/11084/accurate-rate-the-recall-rate-f-value-support-precision-recall-fscore-support)
+- [AUC 值 - ROC-AUC-Score](/express/manual/11085/auc-value-roc-auc-score)

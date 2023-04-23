@@ -1,0 +1,57 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                音源混音控制器的回调监听函数，可以通过 <a href='/rtc/api/8667/QNMicrophoneAudioTrack#createAudioSourceMixer'>QNMicrophoneAudioTrack.createAudioSourceMixer</a> 创建 <a href='/rtc/api/12212/QNAudioSourceMixer'>QNAudioSourceMixer</a> 时传入，回调函数均通过 UI 线程回调。</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onError`)'>onError</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onError">
+onError</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">void onError(int errorCode, String errorMessage)</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音源混音发生错误时会触发此回调</p>
+    </div>
+    <table class="rtc-doc-code-table">
+        <thead>
+            <tr>
+                <th>code</th>
+                <th>describe</th>
+                <th>message</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>ERROR_AUDIO_MIXING_RESAMPLE_CREATE_FAILED</td>
+                    <td>重采样模块创建失败</td>
+                    <td>请重新尝试混音操作</td>
+                </tr>
+        </tbody>
+    </table>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            errorCode: int
+        </div>
+                <p>混音异常时对应的错误码</p>
+    </li>
+    <li>
+        <div>
+            errorMessage: int
+        </div>
+                <p>混音异常时对应的错误信息</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>

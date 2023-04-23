@@ -1,0 +1,336 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                音源混音类，提供了控制 PCM 裸数据混音的一系列方法。</section>
+            <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>1. 当前仅支持基于 <a href='8855/QNMicrophoneAudioTrack-iOS'>QNMicrophoneAudioTrack</a> 的音源混音操作</p>
+        <p>2. 注意调用的时机，加入房间并且成功发布后混音才会生效</p>
+        <p>3. 通过 <a href='8855/QNMicrophoneAudioTrack-iOS#createAudioSourceMixer'>QNMicrophoneAudioTrack.createAudioSourceMixer</a> 创建 <a href='12270/QNAudioSourceMixer-iOS'>QNAudioSourceMixer</a> 实例对象</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createAudioSourceWithSourceID[1/3]`)'>createAudioSourceWithSourceID[1/3]</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createAudioSourceWithSourceID[2/3]`)'>createAudioSourceWithSourceID[2/3]</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#createAudioSourceWithSourceID[3/3]`)'>createAudioSourceWithSourceID[3/3]</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#destroyAudioSourceWithSourceID`)'>destroyAudioSourceWithSourceID</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setPublishEnabled`)'>setPublishEnabled</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isPublishEnabled`)'>isPublishEnabled</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setVolume`)'>setVolume</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getVolume`)'>getVolume</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setAllSourcesVolume`)'>setAllSourcesVolume</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#pushAudioBuffer`)'>pushAudioBuffer</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createAudioSourceWithSourceID[1/3]">
+createAudioSourceWithSourceID[1/3]</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (<a href='12273/QNAudioSource-iOS'>QNAudioSource</a> *)createAudioSourceWithSourceID:(int)sourceID</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建音源混音配置类实例，默认小端、关闭阻塞模式</p>
+    </div>
+<section class="rtc-doc-panel rtc-doc-describe-note">
+    <blockquote class="blockquote-warning">
+    <p>每一路参与混音的音源都需要对应一个 <a href='12273/QNAudioSource-iOS'>QNAudioSource</a> 实例</p>
+    <p>音源 ID 作为音源标识符，请务必保证唯一</p>
+    </blockquote>
+</section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            sourceID: int
+        </div>
+                <p>音源文件唯一标识符</p>
+    </li>
+    <li>
+        <div>
+            filePath: NSString
+        </div>
+                <p>文件路径</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='12273/QNAudioSource-iOS'>QNAudioSource</a> 实例</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createAudioSourceWithSourceID[2/3]">
+createAudioSourceWithSourceID[2/3]</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (<a href='12273/QNAudioSource-iOS'>QNAudioSource</a> *)createAudioSourceWithSourceID:(int)sourceID blockingMode:(BOOL)blockingMode;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建音源混音配置类实例，默认小端</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>当外部送入 PCM 数据进行混音时，可以使用：</p>
+        <p>1. 阻塞模式，此时外部数据可以持续送入 SDK，当 SDK 缓存的待混音数据过多时，会阻塞 <a href='12270/QNAudioSourceMixer-iOS#pushAudioBuffer'>QNAudioSourceMixer.pushAudioBuffer</a> 接口，直到缓存数据被 SDK 混音使用，</p>
+        <p>2. 非阻塞模式，此时外部数据需要按每次送入音频数据的时长，按这个时长的间隔来依次送入；也可以使用播放器的回调来送入 SDK；如果送入过快，则 SDK 会丢弃过多的数据。</p>
+        </blockquote>
+    </section>
+<section class="rtc-doc-panel rtc-doc-describe-note">
+    <blockquote class="blockquote-warning">
+    <p>每一路参与混音的音源都需要对应一个 <a href='12273/QNAudioSource-iOS'>QNAudioSource</a> 实例</p>
+    <p>音源 ID 作为音源标识符，请务必保证唯一</p>
+    </blockquote>
+</section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            sourceID: int
+        </div>
+                <p>音源文件唯一标识符</p>
+    </li>
+    <li>
+        <div>
+            blockingMode: BOOL
+        </div>
+                <p>阻塞模式</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='12273/QNAudioSource-iOS'>QNAudioSource</a> 实例</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="createAudioSourceWithSourceID[3/3]">
+createAudioSourceWithSourceID[3/3]</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (<a href='12273/QNAudioSource-iOS'>QNAudioSource</a> *)createAudioSourceWithSourceID:(int)sourceID  bigEndian:(BOOL)bigEndian blockingMode:(BOOL)blockingMode;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>创建音源混音配置类实例</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>当外部送入 PCM 数据进行混音时，可以使用：</p>
+        <p>1. 阻塞模式，此时外部数据可以持续送入 SDK，当 SDK 缓存的待混音数据过多时，会阻塞 <a href='12270/QNAudioSourceMixer-iOS#pushAudioBuffer'>QNAudioSourceMixer.pushAudioBuffer</a> 接口，直到缓存数据被 SDK 混音使用，</p>
+        <p>2. 非阻塞模式，此时外部数据需要按每次送入音频数据的时长，按这个时长的间隔来依次送入；也可以使用播放器的回调来送入 SDK；如果送入过快，则 SDK 会丢弃过多的数据。</p>
+        </blockquote>
+    </section>
+<section class="rtc-doc-panel rtc-doc-describe-note">
+    <blockquote class="blockquote-warning">
+    <p>每一路参与混音的音源都需要对应一个 <a href='12273/QNAudioSource-iOS'>QNAudioSource</a> 实例</p>
+    <p>音源 ID 作为音源标识符，请务必保证唯一</p>
+    </blockquote>
+</section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            sourceID: int
+        </div>
+                <p>音源文件唯一标识符</p>
+    </li>
+    <li>
+        <div>
+            bigEndian: BOOL
+        </div>
+                <p>是否是大端</p>
+    </li>
+    <li>
+        <div>
+            blockingMode: BOOL
+        </div>
+                <p>阻塞模式</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span><a href='12273/QNAudioSource-iOS'>QNAudioSource</a> 实例</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="destroyAudioSourceWithSourceID">
+destroyAudioSourceWithSourceID</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)destroyAudioSourceWithSourceID:(int)sourceID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>销毁音源类</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            sourceID: int
+        </div>
+                <p>音源唯一标识符</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setPublishEnabled">
+setPublishEnabled</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)setPublishEnabled:(BOOL)publishEnabled sourceID:(int)sourceID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置某音源音频是否发布到远端</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            publishEnabled: BOOL
+        </div>
+                <p>是否发布到远端</p>
+    </li>
+    <li>
+        <div>
+            sourceID: int
+        </div>
+                <p>音源唯一标识符</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isPublishEnabled">
+isPublishEnabled</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (BOOL)isPublishEnabled:(int)sourceID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取某音源音频是否发布到远端</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            sourceID: int
+        </div>
+                <p>音源唯一标识符</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>BOOL</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setVolume">
+setVolume</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)setVolume:(float)volume sourceID:(int)sourceID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置某音源音量，音量范围 0～1.0</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            volume: float
+        </div>
+                <p>音量大小</p>
+    </li>
+    <li>
+        <div>
+            sourceID: int
+        </div>
+                <p>音源唯一标识符</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getVolume">
+getVolume</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (float)getVolume:(int)sourceID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取某音源音量</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            sourceID: int
+        </div>
+                <p>音源唯一标识符</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>float，范围 0～1.0</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setAllSourcesVolume">
+setAllSourcesVolume</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)setAllSourcesVolume:(float)volume;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置所有音源的音量，范围 0～1.0</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            volume: float
+        </div>
+                <p>音量大小</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="pushAudioBuffer">
+pushAudioBuffer</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)pushAudioBuffer:(AudioBuffer *)audioBuffer asbd:(AudioStreamBasicDescription *)asbd sourceID:(int)sourceID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>导入音频数据</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            sourceID: int
+        </div>
+                <p>音源唯一标识符</p>
+    </li>
+    <li>
+        <div>
+            audioBuffer: AudioBuffer
+        </div>
+                <p>音频数据</p>
+    </li>
+    <li>
+        <div>
+            asbd: AudioStreamBasicDescription
+        </div>
+                <p>音频数据格式</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

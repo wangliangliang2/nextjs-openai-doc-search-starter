@@ -1,0 +1,12 @@
+## 使用场景
+私网连接（PrivateLink）能够实现专有网络VPC与七牛云上的服务建立安全稳定的私有连接，配置灵活，可满足不同的应用场景。
+**场景一：将VPC内的云服务共享给其他VPC**
+您可以使用私网连接服务把一个VPC内的负载均衡（SLB）服务共享给另外一个VPC，实现跨VPC私网访问SLB服务。
+
+如下图所示，要实现在VPC1中私网访问VPC2中部署的SLB服务，您需要将SLB作为服务资源加入到终端节点服务中，然后在VPC1中创建连接该服务的终端节点，实现通过终端节点私网访问SLB服务。
+![image.png](https://dn-odum9helk.qbox.me/FkjuNX9fWJu6PXsUVDg7aUoUy5nQ)
+**场景二：将VPC内的云服务共享给本地数据中心**
+您可以使用私网连接服务把一个VPC内的SLB服务共享给本地数据中心，实现云下私网访问云上SLB服务。
+
+如下图所示，要实现在本地数据中心私网访问VPC2中部署的SLB服务，您需要先将VPC2内的SLB服务共享给VPC1，然后通过专线、VPN网关将本地数据中心与VPC1连接起来，实现本地数据中心私网访问云上SLB服务。
+![image.png](https://dn-odum9helk.qbox.me/FhzFTPMzkltkcUtH7JplRlPxP0Sa)

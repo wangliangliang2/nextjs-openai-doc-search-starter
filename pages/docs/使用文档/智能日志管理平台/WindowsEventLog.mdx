@@ -1,0 +1,37 @@
+WinLog Reader支持收集windows下的系统日志数据。
+
+# 具体的配置信息如下：
+
+![](https://dn-odum9helk.qbox.me/FjfqlvVtKScPjWp3-f82AmDpddEC)
+
+* logkit-pro默认提供的收集类别有应用程序(`Application`),安全(`Security`),系统(`System`)。
+* 其他需要收集的事件日志可以在`自定义`文本框中填写需要收集的事件名称。支持填写多个事件名，中间用`,`分隔。
+
+
+# 事件对应在windows机器上的查看方式
+
+
+如果需要查询当前机器所有的日志事件有以下两种方式：
+
+* 进入路径`C:\Windows\System32\winevt\Logs`下，打开其中任意一个日志文件，可以看到如下页面：
+
+  ![](https://dn-odum9helk.qbox.me/Ft0rjzt-KOTThYSuHPVEwSeBnSdM)
+	
+	左边展开相应的标签页之后可以看到当前标签页下的事件日志分类。
+	logkit-pro默认提供的应用程序(`Application`), 安全(`Security`), 系统(`System`)分别对应`Windows日志`标签下的`应用程序`、`安全`和`系统`。
+
+# 查看自定义事件名称
+
+自定义事件名的查看可以通过先选择左侧的一个日志事件类别，而后选择一条具体的日志记录，在`下方`的显示窗中选择上方的`详细信息`, 选择`友好视图`，展开`System`标签。
+其中的`Channel`的值即为需要填入的日志事件名称。
+
+具体页面如下：
+	![](https://dn-odum9helk.qbox.me/Fi1aQ1ePKjVqOdTIDLWtwBiYU5WS)
+	
+
+# 命令行查看windows事件日志的方式
+
+* 打开windows的`运行`界面，输入`cmd`，进入命令行界面之后输入`PowerShell.exe Get-EventLog *`，即可看到当前机器上所有的日志事件信息，`Log`的字段即为需要填入的日志事件名称。
+ 
+具体界面如下：
+  ![](https://dn-odum9helk.qbox.me/FmDkJ8m9ud08SSxyRfWk4N6m51So)

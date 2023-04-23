@@ -1,0 +1,144 @@
+# 更新跨房扩展信息
+
+更新跨房连麦会话的扩展信息。
+
+## 路径
+
+POST /server/relay/{relay_id}/extends
+
+路径参数
+
+| 参数     | 类型   | 必填 | 说明       | 举例      |
+| :------- | :----- | :--- | :--------- | :-------- |
+| relay_id | string | 是   | 跨房会话ID | relay_123 |
+
+请求头
+
+| 参数          | 说明      | 举例 |
+| :------------ | :-------- | :--- |
+| Authorization | 鉴权token |      |
+
+Body 参数
+
+```json
+{
+    "extends": {
+        "ext-key":"ext-value"
+    }
+}
+```
+
+返回结果
+
+```json
+{
+    "request_id":"xxxxx", //请求ID
+    "code": 0,            //错误码：0，成功；其他，失败
+    "message": "success"  //code 非0 时，错误原因描述
+}
+```
+
+客户端sdk PK监听会收到扩展字段变更回调 回调方法为：
+
+```kotlin
+QPKServiceListener.onPKExtensionChange(QExtension extension)
+```
+## PK回调
+
+在pk开始和结束时会进行回调通知，回调地址需要配置在配置文件中
+
+```yaml
+callback:
+  addr: https://niucube-api.qiniu.com/v1/live/callback
+```
+
+| 字段名 | 类型   | 示例                                           | 说明                                                         |
+| :----- | :----- | :--------------------------------------------- | :----------------------------------------------------------- |
+| addr   | string | https://niucube-api.qiniu.com/v1/live/callback | 配置低代码服务的回调地址,该地址由业务服务来实现. 低代码服务会将状态信息，通过回调的方式，通知给业务服务 |
+
+### PK开始回调
+
+```json
+{
+    "type": "pk_started",
+    "body": { // pk的RelaySession
+        "ID": 6, // 序号，无业务含义
+        "sid": "1630474797764845568", // PK 会话ID
+        "init_user_id": "user_092002", // 发起方主播ID
+        "init_room_id": "1630471052524003328", // 发起方直播间ID
+        "recv_user_id": "user_092002", // 接收方主播ID
+        "recv_room_id": "1630471052524086565", // 接收方直播间ID
+        "extends": { // 扩展数据，kv结构
+        },
+        "status": 1, // PK 会话状态
+        "start_at": null, // 开始时间 (十位时间戳)
+        "stop_at": null, // 结束时间 (十位时间戳)
+        "created_at": 1677570459, // 创建时间 (十位时间戳)
+        "updated_at": 1677570459 // 更新时间 (十位时间戳)
+    }
+}
+```
+
+<table>
+	<tr>
+		<td><b>字段名</b></td>
+		<td><b>类型</b></td>
+    <td><b>示例</b></td>
+    <td><b>说明</b></td>
+	</tr>
+	<tr>
+		<td rowspan="7">status</td>
+		<td rowspan="7">number</td>
+    <td>0</td>
+    <td>等待接收方同意</td>
+	</tr>
+	<tr>
+		<td>1</td>
+    <td>接收方已同意</td>
+	</tr>
+  <tr>
+		<td>2</td>
+    <td>发起方已经完成跨房，等待对方完成</td>
+	</tr>
+  <tr>
+		<td>3</td>
+    <td>接收方已经完成跨房，等待对方完成</td>
+	</tr>
+  <tr>
+		<td>4</td>
+    <td>两方都完成跨房</td>
+	</tr>
+  <tr>
+		<td>5</td>
+    <td>接收方拒绝</td>
+	</tr>
+  <tr>
+		<td>6</td>
+    <td>结束</td>
+	</tr>
+</table>
+
+### PK结束回调
+
+```json
+{
+    "type": "pk_stopped",
+    "body": { // pk的RelaySession
+        "ID": 6, // 序号，无业务含义
+        "sid": "1630474797764845568", // PK 会话ID
+        "init_user_id": "user_092002", // 发起方主播ID
+        "init_room_id": "1630471052524003328", // 发起方直播间ID
+        "recv_user_id": "user_092002", // 接收方主播ID
+        "recv_room_id": "1630471052524086565", // 接收方直播间ID
+        "extends": { // 扩展数据，kv结构
+        },
+        "status": 1, // PK 会话状态
+        "start_at": null, // 开始时间 (十位时间戳)
+        "stop_at": null, // 结束时间 (十位时间戳)
+        "created_at": 1677570459, // 创建时间 (十位时间戳)
+        "updated_at": 1677570459 // 更新时间 (十位时间戳)
+    }
+}
+```
+
+

@@ -1,0 +1,1188 @@
+## 类 BMXGroupManager ##
+
+ *  java.lang.Object
+ *   *  im.floo.floolib.BMXGroupManager
+
+ *  --------------------
+    
+      
+    
+    
+        public class BMXGroupManager
+        extends java.lang.Object
+    
+    群组管理器
+
+ *   *  ### 构造器概要 ###
+        
+        <table>  <span>构造器</span><span>&nbsp;</span>  
+         <tbody> 
+          <tr> 
+           <th>构造器和说明</th> 
+          </tr> 
+          <tr> 
+           <td><code><span><a rel="nofollow">BMXGroupManager</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroupService</a>&nbsp;service)</code>&nbsp;</td> 
+          </tr> 
+         </tbody> 
+        </table>
+    
+     *  ### 方法概要 ###
+        
+        <table>  <span><span>所有方法</span><span>&nbsp;</span></span><span><span><a rel="nofollow">实例方法</a></span><span>&nbsp;</span></span><span><span><a rel="nofollow">具体方法</a></span><span>&nbsp;</span></span>  
+         <tbody> 
+          <tr> 
+           <th>限定符和类型</th> 
+           <th>方法和说明</th> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">acceptApplication</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, long&nbsp;applicantId, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              接受入群申请 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">acceptInvitation</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, long&nbsp;inviter, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              接受入群邀请 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">addAdmins</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, ListOfLongLong&nbsp;admins, java.lang.String&nbsp;message, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              添加管理员 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">addGroupListener</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroupServiceListener</a>&nbsp;listener)</code> 
+            <div>
+              添加群组变化监听者 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">addMembers</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, ListOfLongLong&nbsp;members, java.lang.String&nbsp;message, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              添加群成员 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">banMembers</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, ListOfLongLong&nbsp;members, long&nbsp;duration, java.lang.String&nbsp;reason, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              禁言 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">blockMembers</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, ListOfLongLong&nbsp;members, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              添加黑名单 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">changeSharedFileName</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, <a title="im.floo.floolib中的类" rel="nofollow">BMXGroup.SharedFile</a>&nbsp;sharedFile, java.lang.String&nbsp;name, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              修改群共享文件名称 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">create</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroupService.CreateGroupOptions</a>&nbsp;options, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              创建群 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">declineApplication</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, long&nbsp;applicantId, java.lang.String&nbsp;reason, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              拒绝入群申请 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">declineInvitation</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, long&nbsp;inviter, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              拒绝入群邀请 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">deleteAnnouncement</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, long&nbsp;announcementId, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              删除群公告 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">destroy</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              销毁群 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">downloadAvatar</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, FileProgressListener&nbsp;listener, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              下载群头像 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">downloadSharedFile</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, <a title="im.floo.floolib中的类" rel="nofollow">BMXGroup.SharedFile</a>&nbsp;sharedFile, FileProgressListener&nbsp;listener, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              下载群共享文件 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">editAnnouncement</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, java.lang.String&nbsp;title, java.lang.String&nbsp;content, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              设置群公告 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">getAdmins</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, boolean&nbsp;forceRefresh, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              获取Admins列表，如果设置了forceRefresh则从服务器拉取 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">getAnnouncementList</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, boolean&nbsp;forceRefresh, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              获取群公告列表 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">getApplicationList</a></span>(BMXGroupList&nbsp;list, java.lang.String&nbsp;cursor, int&nbsp;pageSize, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              分页获取群组申请列表 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">getBannedMembers</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              获取禁言列表 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">getBlockList</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, boolean&nbsp;forceRefresh, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              获取黑名单 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">getGroupList</a></span>(boolean&nbsp;forceRefresh, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              获取群组列表，如果设置了forceRefresh则从服务器拉取 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">getGroupList</a></span>(ListOfLongLong&nbsp;groupIdList, boolean&nbsp;forceRefresh, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              获取传入群组id的群组信息列表，如果设置了forceRefresh则从服务器拉取 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">getGroupList</a></span>(long&nbsp;groupId, boolean&nbsp;forceUpdate, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              获取群信息，如果设置了forceRefresh则从服务器拉取 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">getInfo</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              获取群详情，从服务端拉取最新信息 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">getInvitationList</a></span>(java.lang.String&nbsp;cursor, int&nbsp;pageSize, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              分页获取群组邀请列表 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">getLatestAnnouncement</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, boolean&nbsp;forceRefresh, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              获取最新的群公告 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">getMembers</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, boolean&nbsp;forceRefresh, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              获取群成员列表，如果设置了forceRefresh则从服务器拉取，最多拉取1000人 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">getSharedFilesList</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, boolean&nbsp;forceRefresh, &lt;any&gt;&nbsp;callBack)</code> 
+            <div>
+              获取群共享文件列表 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">join</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, java.lang.String&nbsp;message, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              加入一个群，根据群设置可能需要管理员批准 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">leave</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              退出群 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">muteMessage</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, <a title="im.floo.floolib中的枚举" rel="nofollow">BMXGroup.MsgMuteMode</a>&nbsp;mode, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              设置是否屏蔽群消息 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">removeAdmins</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, ListOfLongLong&nbsp;admins, java.lang.String&nbsp;reason, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              删除管理员 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">removeGroupListener</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroupServiceListener</a>&nbsp;listener)</code> 
+            <div>
+              移除群组变化监听者 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">removeMembers</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, ListOfLongLong&nbsp;members, java.lang.String&nbsp;reason, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              删除群成员 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">removeSharedFile</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, <a title="im.floo.floolib中的类" rel="nofollow">BMXGroup.SharedFile</a>&nbsp;sharedFile, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              移除群共享文件 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">setAvatar</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, java.lang.String&nbsp;avatarPath, FileProgressListener&nbsp;listener, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              设置群头像 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">setDescription</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, java.lang.String&nbsp;description, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              设置群描述信息 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">setEnableReadAck</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, boolean&nbsp;enable, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              设置是否开启群消息已读功能 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">setExtension</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, java.lang.String&nbsp;extension, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              设置群扩展信息 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">setInviteMode</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, <a title="im.floo.floolib中的枚举" rel="nofollow">BMXGroup.InviteMode</a>&nbsp;mode, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              设置邀请模式 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">setJoinAuthMode</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, <a title="im.floo.floolib中的枚举" rel="nofollow">BMXGroup.JoinAuthMode</a>&nbsp;mode, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              设置入群审批模式 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">setMsgPushMode</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, <a title="im.floo.floolib中的枚举" rel="nofollow">BMXGroup.MsgPushMode</a>&nbsp;mode, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              设置群消息通知模式 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">setMyNickname</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, java.lang.String&nbsp;nickname, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              设置在群里的昵称 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">setName</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, java.lang.String&nbsp;name, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              设置群名称 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">transferOwner</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, long&nbsp;newOwnerId, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              转移群主 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">unbanMembers</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, ListOfLongLong&nbsp;members, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              解除禁言 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">unblockMembers</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, ListOfLongLong&nbsp;members, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              从黑名单删除 
+            </div> </td> 
+          </tr> 
+          <tr> 
+           <td><code>void</code></td> 
+           <td><code><span><a rel="nofollow">uploadSharedFile</a></span>(<a title="im.floo.floolib中的类" rel="nofollow">BMXGroup</a>&nbsp;group, java.lang.String&nbsp;filePath, java.lang.String&nbsp;displayName, java.lang.String&nbsp;extensionName, FileProgressListener&nbsp;listener, BMXCallBack&nbsp;callBack)</code> 
+            <div>
+              添加群共享文件 
+            </div> </td> 
+          </tr> 
+         </tbody> 
+        </table>
+        
+         *  ### 从类继承的方法 java.lang.Object ###
+            
+            `clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait`
+
+ *   *  ### 构造器详细资料 ###
+        
+         *  #### BMXGroupManager ####
+            
+                public BMXGroupManager(BMXGroupService service)
+    
+     *  ### 方法详细资料 ###
+        
+         *  #### getGroupList ####
+            
+                public void getGroupList(boolean forceRefresh,
+                                         <any> callBack)
+            
+            获取群组列表，如果设置了forceRefresh则从服务器拉取
+            
+            参数:
+            
+            `forceRefresh` \- 设置为true强制从服务器获取，本地获取失败的情况sdk会自动从服务器获取
+            
+            `callBack` \- BMXErrorCode,群组id列表
+        
+         *  #### getGroupList ####
+            
+                public void getGroupList(ListOfLongLong groupIdList,
+                                         boolean forceRefresh,
+                                         <any> callBack)
+            
+            获取传入群组id的群组信息列表，如果设置了forceRefresh则从服务器拉取
+            
+            参数:
+            
+            `groupIdList` \- 群组id列表
+            
+            `forceRefresh` \- 设置为true强制从服务器获取，本地获取失败的情况sdk会自动从服务器获取
+            
+            `callBack` \- BMXErrorCode,群组详细信息列表
+        
+         *  #### getGroupList ####
+            
+                public void getGroupList(long groupId,
+                                         boolean forceUpdate,
+                                         <any> callBack)
+            
+            获取群信息，如果设置了forceRefresh则从服务器拉取
+            
+            参数:
+            
+            `groupId` \- 要搜索的群组id
+            
+            `forceUpdate` \- 设置为true强制从服务器获取，本地获取失败的情况sdk会自动从服务器获取
+            
+            `callBack` \- BMXErrorCode,搜索返回的群组信息
+        
+         *  #### getInvitationList ####
+            
+                public void getInvitationList(java.lang.String cursor,
+                                              int pageSize,
+                                              <any> callBack)
+            
+            分页获取群组邀请列表
+            
+            参数:
+            
+            `cursor` \- 分页获取的起始cursor，第一次传入为空，后续传入上次操作返回的result中的cursor
+            
+            `pageSize` \- 分页大小
+            
+            `callBack` \- BMXErrorCode,分页获取的群组邀请列表
+        
+         *  #### getApplicationList ####
+            
+                public void getApplicationList(BMXGroupList list,
+                                               java.lang.String cursor,
+                                               int pageSize,
+                                               <any> callBack)
+            
+            分页获取群组申请列表
+            
+            参数:
+            
+            `list` \- 需要获取群组申请列表信息的群组id列表
+            
+            `cursor` \- 分页获取的起始cursor，第一次传入为空，后续传入上次操作返回的result中的cursor
+            
+            `pageSize` \- 分页大小
+            
+            `callBack` \- BMXErrorCode,分页获取的群组申请列表
+        
+         *  #### create ####
+            
+                public void create(BMXGroupService.CreateGroupOptions options,
+                                   <any> callBack)
+            
+            创建群
+            
+            参数:
+            
+            `options` \- 创建群组时传入的参数选项
+            
+            `callBack` \- BMXErrorCode,创建好的群
+        
+         *  #### destroy ####
+            
+                public void destroy(BMXGroup group,
+                                    BMXCallBack callBack)
+            
+            销毁群
+            
+            参数:
+            
+            `callBack` \- BMXErrorCode，要销毁的群组
+        
+         *  #### join ####
+            
+                public void join(BMXGroup group,
+                                 java.lang.String message,
+                                 BMXCallBack callBack)
+            
+            加入一个群，根据群设置可能需要管理员批准
+            
+            参数:
+            
+            `group` \- 要加入的群组
+            
+            `message` \- 申请入群的信息
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### leave ####
+            
+                public void leave(BMXGroup group,
+                                  BMXCallBack callBack)
+            
+            退出群
+            
+            参数:
+            
+            `group` \- 要退出的群组
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### getInfo ####
+            
+                public void getInfo(BMXGroup group,
+                                    <any> callBack)
+            
+            获取群详情，从服务端拉取最新信息
+            
+            参数:
+            
+            `callBack` \- BMXErrorCode,要获取群组最新信息的群组
+        
+         *  #### getMembers ####
+            
+                public void getMembers(BMXGroup group,
+                                       boolean forceRefresh,
+                                       <any> callBack)
+            
+            获取群成员列表，如果设置了forceRefresh则从服务器拉取，最多拉取1000人
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `forceRefresh` \- 设置为true强制从服务器获取，本地获取失败的情况sdk会自动从服务器获取
+            
+            `callBack` \- BMXErrorCode,群成员列表
+        
+         *  #### addMembers ####
+            
+                public void addMembers(BMXGroup group,
+                                       ListOfLongLong members,
+                                       java.lang.String message,
+                                       BMXCallBack callBack)
+            
+            添加群成员
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `members` \- 要添加进群的成员id列表
+            
+            `message` \- 添加成员原因信息
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### removeMembers ####
+            
+                public void removeMembers(BMXGroup group,
+                                          ListOfLongLong members,
+                                          java.lang.String reason,
+                                          BMXCallBack callBack)
+            
+            删除群成员
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `members` \- 要删除的群组成员id列表
+            
+            `reason` \- 删除的原因
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### addAdmins ####
+            
+                public void addAdmins(BMXGroup group,
+                                      ListOfLongLong admins,
+                                      java.lang.String message,
+                                      BMXCallBack callBack)
+            
+            添加管理员
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `admins` \- 要添加为管理员的成员id列表
+            
+            `message` \- 添加为管理员的原因
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### removeAdmins ####
+            
+                public void removeAdmins(BMXGroup group,
+                                         ListOfLongLong admins,
+                                         java.lang.String reason,
+                                         BMXCallBack callBack)
+            
+            删除管理员
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `admins` \- 要从管理员移除的成员id列表
+            
+            `reason` \- 要移除管理员的原因
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### getAdmins ####
+            
+                public void getAdmins(BMXGroup group,
+                                      boolean forceRefresh,
+                                      <any> callBack)
+            
+            获取Admins列表，如果设置了forceRefresh则从服务器拉取
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `forceRefresh` \- 设置为true强制从服务器获取，本地获取失败的情况sdk会自动从服务器获取
+            
+            `callBack` \- BMXErrorCode,群管理员列表
+        
+         *  #### blockMembers ####
+            
+                public void blockMembers(BMXGroup group,
+                                         ListOfLongLong members,
+                                         BMXCallBack callBack)
+            
+            添加黑名单
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `members` \- 要加入黑名单的群成员id列表
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### unblockMembers ####
+            
+                public void unblockMembers(BMXGroup group,
+                                           ListOfLongLong members,
+                                           BMXCallBack callBack)
+            
+            从黑名单删除
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `members` \- 从黑名单移除的用户id列表
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### getBlockList ####
+            
+                public void getBlockList(BMXGroup group,
+                                         boolean forceRefresh,
+                                         <any> callBack)
+            
+            获取黑名单
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `forceRefresh` \- 设置为true强制从服务器获取，本地获取失败的情况sdk会自动从服务器获取
+            
+            `callBack` \- BMXErrorCode,群黑名单列表
+        
+         *  #### banMembers ####
+            
+                public void banMembers(BMXGroup group,
+                                       ListOfLongLong members,
+                                       long duration,
+                                       java.lang.String reason,
+                                       BMXCallBack callBack)
+            
+            禁言
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `members` \- 被禁言的群成员id列表
+            
+            `duration` \- 禁言时长
+            
+            `reason` \- 禁言原因
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### unbanMembers ####
+            
+                public void unbanMembers(BMXGroup group,
+                                         ListOfLongLong members,
+                                         BMXCallBack callBack)
+            
+            解除禁言
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `members` \- 被解除禁言的群成员id列表
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### getBannedMembers ####
+            
+                public void getBannedMembers(BMXGroup group,
+                                             <any> callBack)
+            
+            获取禁言列表
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `callBack` \- BMXErrorCode 群禁言列表
+        
+         *  #### muteMessage ####
+            
+                public void muteMessage(BMXGroup group,
+                                        BMXGroup.MsgMuteMode mode,
+                                        BMXCallBack callBack)
+            
+            设置是否屏蔽群消息
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `mode` \- 群屏蔽的模式
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### acceptApplication ####
+            
+                public void acceptApplication(BMXGroup group,
+                                              long applicantId,
+                                              BMXCallBack callBack)
+            
+            接受入群申请
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `applicantId` \- 申请进群的用户id
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### declineApplication ####
+            
+                public void declineApplication(BMXGroup group,
+                                               long applicantId,
+                                               java.lang.String reason,
+                                               BMXCallBack callBack)
+            
+            拒绝入群申请
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `applicantId` \- 申请进群的用户id
+            
+            `reason` \- 拒绝的原因
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### acceptInvitation ####
+            
+                public void acceptInvitation(BMXGroup group,
+                                             long inviter,
+                                             BMXCallBack callBack)
+            
+            接受入群邀请
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `inviter` \- 邀请者id
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### declineInvitation ####
+            
+                public void declineInvitation(BMXGroup group,
+                                              long inviter,
+                                              BMXCallBack callBack)
+            
+            拒绝入群邀请
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `inviter` \- 邀请者id
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### transferOwner ####
+            
+                public void transferOwner(BMXGroup group,
+                                          long newOwnerId,
+                                          BMXCallBack callBack)
+            
+            转移群主
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `newOwnerId` \- 转让为新群主的用户id
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### uploadSharedFile ####
+            
+                public void uploadSharedFile(BMXGroup group,
+                                             java.lang.String filePath,
+                                             java.lang.String displayName,
+                                             java.lang.String extensionName,
+                                             FileProgressListener listener,
+                                             BMXCallBack callBack)
+            
+            添加群共享文件
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `filePath` \- 文件的本地路径
+            
+            `displayName` \- 文件的展示名
+            
+            `extensionName` \- 文件的扩展名
+            
+            `listener` \- 上传回调函数
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### removeSharedFile ####
+            
+                public void removeSharedFile(BMXGroup group,
+                                             BMXGroup.SharedFile sharedFile,
+                                             BMXCallBack callBack)
+            
+            移除群共享文件
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `sharedFile` \- 删除的群共享文件
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### downloadSharedFile ####
+            
+                public void downloadSharedFile(BMXGroup group,
+                                               BMXGroup.SharedFile sharedFile,
+                                               FileProgressListener listener,
+                                               BMXCallBack callBack)
+            
+            下载群共享文件
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `sharedFile` \- 下载的群共享文件
+            
+            `listener` \- 下载回调函数
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### getSharedFilesList ####
+            
+                public void getSharedFilesList(BMXGroup group,
+                                               boolean forceRefresh,
+                                               <any> callBack)
+            
+            获取群共享文件列表
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `forceRefresh` \- 设置为true强制从服务器获取，本地获取失败的情况sdk会自动从服务器获取
+            
+            `callBack` \- BMXErrorCode 群共享文件列表
+        
+         *  #### changeSharedFileName ####
+            
+                public void changeSharedFileName(BMXGroup group,
+                                                 BMXGroup.SharedFile sharedFile,
+                                                 java.lang.String name,
+                                                 BMXCallBack callBack)
+            
+            修改群共享文件名称
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `sharedFile` \- 进行更改的群共享文件
+            
+            `name` \- 修改的群共享文件名称
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### getLatestAnnouncement ####
+            
+                public void getLatestAnnouncement(BMXGroup group,
+                                                  boolean forceRefresh,
+                                                  <any> callBack)
+            
+            获取最新的群公告
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `forceRefresh` \- 设置为true强制从服务器获取，本地获取失败的情况sdk会自动从服务器获取
+            
+            `callBack` \- BMXErrorCode 最新的群组公告
+        
+         *  #### getAnnouncementList ####
+            
+                public void getAnnouncementList(BMXGroup group,
+                                                boolean forceRefresh,
+                                                <any> callBack)
+            
+            获取群公告列表
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `forceRefresh` \- 设置为true强制从服务器获取，本地获取失败的情况sdk会自动从服务器获取
+            
+            `callBack` \- BMXErrorCode, 群公告列表
+        
+         *  #### editAnnouncement ####
+            
+                public void editAnnouncement(BMXGroup group,
+                                             java.lang.String title,
+                                             java.lang.String content,
+                                             BMXCallBack callBack)
+            
+            设置群公告
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `title` \- 群公告的标题
+            
+            `content` \- 群公告的内容
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### deleteAnnouncement ####
+            
+                public void deleteAnnouncement(BMXGroup group,
+                                               long announcementId,
+                                               BMXCallBack callBack)
+            
+            删除群公告
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `announcementId` \- 删除的群公告id
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### setName ####
+            
+                public void setName(BMXGroup group,
+                                    java.lang.String name,
+                                    BMXCallBack callBack)
+            
+            设置群名称
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `name` \- 群组名称
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### setDescription ####
+            
+                public void setDescription(BMXGroup group,
+                                           java.lang.String description,
+                                           BMXCallBack callBack)
+            
+            设置群描述信息
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `description` \- 群组描述
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### setExtension ####
+            
+                public void setExtension(BMXGroup group,
+                                         java.lang.String extension,
+                                         BMXCallBack callBack)
+            
+            设置群扩展信息
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `extension` \- 群组的扩展信息
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### setMyNickname ####
+            
+                public void setMyNickname(BMXGroup group,
+                                          java.lang.String nickname,
+                                          BMXCallBack callBack)
+            
+            设置在群里的昵称
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `nickname` \- 用户在群组内的昵称
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### setMsgPushMode ####
+            
+                public void setMsgPushMode(BMXGroup group,
+                                           BMXGroup.MsgPushMode mode,
+                                           BMXCallBack callBack)
+            
+            设置群消息通知模式
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `mode` \- 群消息通知模式
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### setJoinAuthMode ####
+            
+                public void setJoinAuthMode(BMXGroup group,
+                                            BMXGroup.JoinAuthMode mode,
+                                            BMXCallBack callBack)
+            
+            设置入群审批模式
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `mode` \- 入群审批模式
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### setInviteMode ####
+            
+                public void setInviteMode(BMXGroup group,
+                                          BMXGroup.InviteMode mode,
+                                          BMXCallBack callBack)
+            
+            设置邀请模式
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `mode` \- 群组的邀请模式
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### setAvatar ####
+            
+                public void setAvatar(BMXGroup group,
+                                      java.lang.String avatarPath,
+                                      FileProgressListener listener,
+                                      BMXCallBack callBack)
+            
+            设置群头像
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `avatarPath` \- 群头像文件的本地路径
+            
+            `listener` \- 上传回调函数
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### downloadAvatar ####
+            
+                public void downloadAvatar(BMXGroup group,
+                                           FileProgressListener listener,
+                                           BMXCallBack callBack)
+            
+            下载群头像
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `listener` \- 下载回调函数
+            
+            `callBack` \- BMXErrorCode
+        
+         *  #### addGroupListener ####
+            
+                public void addGroupListener(BMXGroupServiceListener listener)
+            
+            添加群组变化监听者
+            
+            参数:
+            
+            `listener` \- 群组变化监听者
+        
+         *  #### removeGroupListener ####
+            
+                public void removeGroupListener(BMXGroupServiceListener listener)
+            
+            移除群组变化监听者
+            
+            参数:
+            
+            `listener` \- 群组变化监听者
+        
+         *  #### setEnableReadAck ####
+            
+                public void setEnableReadAck(BMXGroup group,
+                                             boolean enable,
+                                             BMXCallBack callBack)
+            
+            设置是否开启群消息已读功能
+            
+            参数:
+            
+            `group` \- 进行操作的群组
+            
+            `enable` \- 是否开启
+            
+            `callBack` \- BMXErrorCode

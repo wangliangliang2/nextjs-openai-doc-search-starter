@@ -1,0 +1,59 @@
+很多用户有需求将阿里云对象存储（OSS）中的文件同步到七牛云对象存储空间（KODO）中，对此，七牛云提供了相应的 [qshell工具](/kodo/tools/qshell) 帮助用户，下面以一个具体的案例讲解操作步骤：
+
+首先需要下载七牛云提供的 [qshell工具](/kodo/tools/qshell)。大致流程是使用 qshell 工具的  [alilistbucket](https://github.com/qiniu/qshell/blob/master/docs/alilistbucket.md) 命令获取一份包含阿里云对象存储中文件的文件列表，然后再使用 qshell 工具的  [batchfetch](https://github.com/qiniu/qshell/blob/master/docs/batchfetch.md) 命令批量抓取文件列表中的文件到七牛云存储空间中。 
+
+# 本案例中的参数
+## 七牛云对象存储参数
+*	AccessKey/SecretKey：[获取](https://portal.qiniu.com/user/key)
+* Bucket：`qiniu-test-bucket`
+
+## 阿里云对象存储参数
+* DataCenter：`oss-cn-shanghai.aliyuncs.com`
+* Bucket：`ali-qiniu`
+* AccessKeyId、AccessKeySecret：[获取](https://ak-console.aliyun.com/#/accesskey)
+* ListBucketResultFile：`alitoqiniu.txt`
+
+
+
+# 1、获取阿里对象存储的文件列表
+1.使用 `qshell account <AK> <SK> name` 设置或显示当前用户的 AccessKey 和 SecretKey ，name为在本地自定义的用户名，可以填写您的七牛云账户邮箱。  
+2.使用 qshell 里面的 [alilistbucket](https://github.com/qiniu/qshell/blob/master/docs/alilistbucket.md) 命令 列举出阿里云 OSS 中的文件的文件列表   
+  
+此例中的 OSS 文件列表如下：  
+![](https://dn-odum9helk.qbox.me/document/how-to-ali-cloud-oss-files-on-migration-to-seven-niuyun-storage-01.png)
+
+
+    qshell alilistbucket <DataCenter> <Bucket> <AccessKeyId> <AccessKeySecret> [Prefix] <ListBucketResultFile>
+
+其中`DataCenter` `Bucket` `AccessKeyId` `AccessKeySecret`要和 OSS 里面相对应，更详细的说明：[点我查看](https://github.com/qiniu/qshell/blob/master/docs/batchfetch.md)。   
+
+
+qshell 运行的命令如下：
+
+    qshell alilistbucket oss-cn-shanghai.aliyuncs.com alitoqiniu xxx xxx alitoqiniu.txt
+
+如果不写`Prefix`则列举出所有的文件，后面的`alitoqiniu.txt`也可以写成绝对路径。   
+运行后可以看到本地`alitoqiniu.txt`里面的文件如下：   
+![](https://dn-odum9helk.qbox.me/document/how-to-ali-cloud-oss-files-on-migration-to-seven-niuyun-storage-02.png)
+ 
+ 
+# 2、抓取阿里云对象存储文件到七牛存储空间
+
+1.使用  [batchfetch](https://github.com/qiniu/qshell/blob/master/docs/batchfetch.md) 命令将这个文件里面的文件批量抓取到七牛云存储空间中，但是 `batchfetch` 抓取的是可访问的文件的外链，所以在这之前还需要对上面的 `alitoqiniu.txt` 进行处理，需要拼接为可访问的文件外链的形式。   
+这一步可以使用 linux 下 awk 文本处理工具进行拼接，这里直接给出命令如下：
+
+    cat alitoqiniu.txt | awk '{print "http://ali-qiniu.oss-cn-shanghai.aliyuncs.com/"$1}' >batchfetchurls.txt
+
+再次`cat batchfetchurls.txt`里面的文件列表如下：   
+![](https://dn-odum9helk.qbox.me/document/how-to-ali-cloud-oss-files-on-migration-to-seven-niuyun-storage-03.png)
+ 
+2.使用 `batchfetch` 命令进行同步，这里直接给出同步命令：
+
+    qshell batchfetch qiniu-test-bucket -i batchfetchurls.txt
+
+运行结果如下：
+![](https://dn-odum9helk.qbox.me/document/how-to-ali-cloud-oss-files-on-migration-to-seven-niuyun-storage-04.png)
+
+至此即同步成功，可以看到七牛云存储空间里面也有相关的文件了：   
+![](https://dn-odum9helk.qbox.me/document/how-to-ali-cloud-oss-files-on-migration-to-seven-niuyun-storage-05.png)
+

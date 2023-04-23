@@ -1,0 +1,434 @@
+本文档以开发键值表格图表APP为例，介绍在 Pandora 2.0 应用平台开发自定义可视化App的最佳实践。
+
+开发步骤
+
+1.下载可视化App模板。
+
+2.确认app目录及文件结构。如下所示：，在本教程中`appname`为`kv_table_app`, `visualization_name`为`kvTable`。
+
+```
+kv_table_app <appname>
+├── app.json
+├── appserver
+│   └── static
+│       └── visualizations
+│          └── kvTable <visualization_name>
+│               |── src
+│               |   |── <visualization_source.js>
+│               |   |── <visualization_source.css>
+│               |   |── package.json
+│               |   └── webpack.config.js
+│               |   └── tsconfig.json
+│               |── visualization.js
+│               |── visualization.css
+│               |── form.xml
+│               └── icon.png
+├── default
+│   ├── visualization.json
+│   ├── nav.xml
+│   └── views
+│       └── chart.xml
+└── static
+    └─── icon.png
+```
+
+3.配置开发环境
+
+* node
+* yarn （可以使用 npm 代替）
+
+4.配置应用相关信息
+
+* 修改 `app.json`文件，定义应用的描述信息，参考[配置可视化应用描述](/express/extend/6702/visualization_app_develop)。
+
+* 增加`static/icon.png`作为该应用的图标。
+
+ ```
+{
+  "name": "kv_table_app",
+  "title": "键值表格",
+  "description": "键值表格支持以键值的形式展示数据，能够将数据信息以表格的形式清晰地展示，仅支持两列数据的展示",
+  "categories": [
+    "visualization"
+  ],
+  "version": "0.1.0",
+  "platformVersion": ">=0.6.0",
+  "authors": [
+    "pandora"
+  ],
+  "type": "visualization",
+  "icon": "static/icon.png",
+  "docsLink": "https://developer.qiniu.com/express",
+  "contents": [],
+  "preview": []
+}
+```
+
+5.注册图表
+
+修改`default/visualization.json`，注册可视化图表相关信息。其中 name 字段的值必须和App目录中`visualization_name`文件夹名称保持一致。如下：
+
+```
+[
+  {
+    "name": "kvTable",
+    "label": "键值表格",
+    "group": "table",
+    "groupLabel": "数据表",
+    "description": "键值表格"
+  }
+]
+```
+
+6.创建可视化图表逻辑。
+
+可视化图表逻辑定义在 `appserver/static/visualizations/kvTable`目录下，其中`src`文件夹下为源码文件及编译脚本，外层目录为编译结果及其他配置信息。
+
+* 安装应用相关依赖。
+
+ 在`appserver/static/visualizations/kvTable/src`目录下执行 
+ ```
+ yarn install
+ ```
+ 此步骤会生成一个`/node_modules`的子目录
+
+* 安装键值表格开发依赖。本教程需安装react依赖，如下：
+
+ ```
+ yarn add react@^16.12.0 react-dom@^16.12.0 antd@3.24.3 lodash@^4.17.15 uuid@^7.0.2
+ ```
+
+* 可视化逻辑开发
+
+在`src/visualiation.tsx`文件中添加相关的可视化逻辑，`src/visualiation.tsx`文件中定义了可视化图表的开发框架。
+
+框架中包括：
+
+自定义Class：继承自 @qn-pandora/visualization-sdk 中的`VisualizationBase`，并需要重载其中的`updateView`方法。该方法由两个参数，第一个参数为当前图表数据，第二个参数为当前图表属性配置。
+
+您可根据实际情况重载`VisualizationBase`的其他生命周期方法。
+
+如下是此案例的可视化逻辑：
+
+```
+import React from 'react'
+import ReactDom from 'react-dom'
+import { VisualizationBase, IDataset } from '@qn-pandora/visualization-sdk'
+import Table from 'antd/lib/table'
+import * as _ from 'lodash'
+import { v4 as uuid } from 'uuid'
+
+enum ColumnAlign {
+  Left = 'left',
+  Center = 'center',
+  Right = 'right'
+}
+interface IColumn {
+  align: ColumnAlign
+  fontFamily: string
+  fontSize: number
+  fontColor: string
+  backColor: string
+  width?: number
+}
+interface IStyleConfig {
+  shiowFields?: string[]
+  column1?: IColumn
+  column2?: IColumn
+  row?: {
+    oddColor?: string
+    evenColor?: string
+  }
+}
+
+const EvenRowClassName = 'even-row'
+const OddRowClassName = 'odd-row'
+const ColumnOneClassName = 'column-one'
+const ColumnTwoClassName = 'column-two'
+
+function formatStyle(
+  style: Record<string, Record<string, string>>,
+  className: string
+) {
+  return Object.keys(style)
+    .map(key => {
+      return `.${className} .${key} {${Object.entries(style[key]).reduce(
+        (styleString, [propName, propValue]) => {
+          return `${styleString}${propName}:${propValue} !important;`
+        },
+        ''
+      )}}`
+    })
+    .join('')
+}
+
+export default class VisualizationStore extends VisualizationBase {
+  className = `kv-table-${uuid()}`
+  getInitialDataParams() {
+    return {
+      outputMode: 'json' as any,
+      count: 10000
+    }
+  }
+
+  getStyle(config: IStyleConfig) {
+    const { row, column1, column2 } = config
+    let style: Record<string, Record<string, string>> = {
+      [ColumnOneClassName]: {
+        'font-size': `${_.get(column1, 'fontSize') || 12}px`,
+        'font-family': _.get(column1, 'fontFamily') || '',
+        color: _.get(column1, 'fontColor') || '',
+        'background-color': _.get(column1, 'backColor') || ''
+      },
+      [ColumnTwoClassName]: {
+        'font-size': `${_.get(column2, 'fontSize') || 12}px`,
+        'font-family': _.get(column2, 'fontFamily') || '',
+        color: _.get(column2, 'fontColor') || '',
+        'background-color': _.get(column2, 'backColor') || ''
+      }
+    }
+    if (row) {
+      const { evenColor, oddColor } = row
+      style = {
+        ...style,
+        [EvenRowClassName]: {
+          'background-color': evenColor || ''
+        },
+        [OddRowClassName]: {
+          'background-color': oddColor || ''
+        },
+        [`${EvenRowClassName} .${ColumnOneClassName}`]: {
+          'background-color': evenColor || ''
+        },
+        [`${EvenRowClassName} .${ColumnTwoClassName}`]: {
+          'background-color': evenColor || ''
+        },
+        [`${OddRowClassName} .${ColumnOneClassName}`]: {
+          'background-color': oddColor || ''
+        },
+        [`${OddRowClassName} .${ColumnTwoClassName}`]: {
+          'background-color': oddColor || ''
+        }
+      }
+    }
+    return style
+  }
+
+  getColumns(config: IStyleConfig) {
+    const { column1, column2 } = config
+    return [
+      {
+        title: 'field',
+        dataIndex: 'field',
+        key: 'field',
+        width: `${_.get(column1, 'width')}%`,
+        className: ColumnOneClassName,
+        align: _.get(column1, 'align') || 'left',
+        render: (field: string) => {
+          return field
+        }
+      },
+      {
+        title: 'value',
+        dataIndex: 'value',
+        key: 'value',
+        className: ColumnTwoClassName,
+        align: _.get(column2, 'align') || 'left',
+        ellipsis: true,
+        render: (field: string) => {
+          return field || '-'
+        }
+      }
+    ]
+  }
+
+  updateView(dataset: IDataset, config: IStyleConfig) {
+    const { shiowFields: columns } = config
+    const { rows } = dataset
+    const lastData = rows.length ? rows[rows.length - 1] : {}
+    const dataSource = (columns || []).map(column => {
+      return {
+        field: column,
+        value: _.get(lastData, column) || ''
+      }
+    })
+    ReactDom.render(
+      <div className={this.className}>
+        <style>{formatStyle(this.getStyle(config), this.className)}</style>
+        <Table
+          className="kv-table"
+          dataSource={dataSource}
+          columns={this.getColumns(config) as any}
+          showHeader={false}
+          bordered
+          rowClassName={(_rocord, index) =>
+            index % 2 ? EvenRowClassName : OddRowClassName
+          }
+          pagination={(columns || []).length < 10 ? false : { pageSize: 10 }}
+        />
+      </div>,
+      this.element
+    )
+  }
+}
+```
+
+7.定义图表样式
+可在`src/visualiation.css`文件中添加自定义css。
+
+```
+.kv-table {
+  border-top: solid 1px #ebecf0;
+  border-left: solid 1px #ebecf0;
+  width: 100%;
+}
+.kv-table tr {
+  width: 100%;
+}
+```
+
+在`src/visualiation.tsx`中引用该css文件。
+```
+import './visualization.css'
+```
+
+8.安装依赖
+
+```
+yarn add -D antd lodash react react-dom uuid @types/react @types/react-dom @types/lodash
+```
+
+9.编译源码文件
+
+在src目录下执行
+```
+yarn build
+```
+生成目标代码，执行完成后，外层目录的`visualization.js`和`visualiation.css`将自动更新。
+
+10.定义图表样式配置表单，即使用者可用来配置图表的配置项，比如展示字段、字体、列宽等。
+
+打开`form.xml`文件，添加表单内容。表单支持的元素详见[文档](/express/extend/6718/custom_chart_configuration_api)。
+```
+<form>
+  <collapse defaultActiveKey="none" accordion="true">
+    <panel panelKey="general" title="常规">
+      <input type="multiselect" field="shiowFields">
+        <label>展示字段</label>
+        <dataset>fields</dataset>
+      </input>
+    </panel>
+    <panel panelKey="column1" title="第一列配置">
+      <input type="number" field="column1.width">
+        <label>宽度(百分比)</label>
+      </input>
+      <input type="dropdown" field="column1.align">
+        <label>对齐方式</label>
+        <initial-value>left</initial-value>
+        <choice value="left">向左</choice>
+        <choice value="center">居中</choice>
+        <choice value="right">向右</choice>
+      </input>
+      <input type="dropdown" field="column1.fontFamily">
+        <label>字体</label>
+        <initial-value>PingFang SC</initial-value>
+        <choice value="PingFang SC">PingFang SC</choice>
+        <choice value="Alright Sans LP">Alright Sans LP</choice>
+        <choice value="Avenir Next">Avenir Next</choice>
+        <choice value="Helvetica Neue">Helvetica Neue</choice>
+        <choice value="Helvetica">Helvetica</choice>
+        <choice value="Arial">Arial</choice>
+        <choice value="Source Han Sans SC">Source Han Sans SC</choice>
+        <choice value="Hiragino Sans GB">Hiragino Sans GB</choice>
+        <choice value="WenQuanYi MicroHei">WenQuanYi MicroHei</choice>
+        <choice value="sans-serif">sans-serif</choice>
+        <choice value="tahoma">tahoma</choice>
+        <choice value="Microsoft">微软雅黑</choice>
+        <choice value="SimSun">宋体</choice>
+        <choice value="SimHei">黑体</choice>
+        <choice value="LiSu">隶书</choice>
+        <choice value="YouYuan">幼圆</choice>
+      </input>
+      <input type="number" field="column1.fontSize">
+        <label>字号</label>
+        <initial-value>12</initial-value>
+      </input>
+      <input type="color" field="column1.fontColor">
+        <label>字体颜色</label>
+        <initial-value>#42526E</initial-value>
+      </input>
+      <input type="color" field="column1.backColor">
+        <label>背景色</label>
+        <initial-value>#ffffff</initial-value>
+      </input>
+    </panel>
+    <panel panelKey="column2" title="第二列配置">
+      <input type="dropdown" field="column2.align">
+        <label>对齐方式</label>
+        <initial-value>left</initial-value>
+        <choice value="left">left</choice>
+        <choice value="center">
+          <Center></Center>
+        </choice>
+        <choice value="right">Right</choice>
+      </input>
+      <input type="dropdown" field="column2.fontFamily">
+        <label>字体</label>
+        <initial-value>PingFang SC</initial-value>
+        <choice value="PingFang SC">PingFang SC</choice>
+        <choice value="Alright Sans LP">Alright Sans LP</choice>
+        <choice value="Avenir Next">Avenir Next</choice>
+        <choice value="Helvetica Neue">Helvetica Neue</choice>
+        <choice value="Helvetica">Helvetica</choice>
+        <choice value="Arial">Arial</choice>
+        <choice value="Source Han Sans SC">Source Han Sans SC</choice>
+        <choice value="Hiragino Sans GB">Hiragino Sans GB</choice>
+        <choice value="WenQuanYi MicroHei">WenQuanYi MicroHei</choice>
+        <choice value="sans-serif">sans-serif</choice>
+        <choice value="tahoma">tahoma</choice>
+        <choice value="Microsoft">微软雅黑</choice>
+        <choice value="SimSun">宋体</choice>
+        <choice value="SimHei">黑体</choice>
+        <choice value="LiSu">隶书</choice>
+        <choice value="YouYuan">幼圆</choice>
+      </input>
+      <input type="number" field="column2.fontSize">
+        <label>字号</label>
+        <initial-value>12</initial-value>
+      </input>
+      <input type="color" field="column2.fontColor">
+        <label>字体颜色</label>
+        <initial-value>#42526E</initial-value>
+      </input>
+      <input type="color" field="column2.backColor">
+        <label>背景色</label>
+        <initial-value>#ffffff</initial-value>
+      </input>
+    </panel>
+    <panel panelKey="row" title="行配置">
+      <input type="color" field="row.oddColor">
+        <label>奇数行背景色</label>
+        <initial-value></initial-value>
+      </input>
+      <input type="color" field="row.evenColor">
+        <label>偶数行背景色</label>
+        <initial-value></initial-value>
+      </input>
+    </panel>
+  </collapse>
+</form>
+```
+
+11.上传应用至平台。
+
+开发完成后，打包应用，打包之前建议删除`node_modules`文件夹来减少应用包体积。将打包好的包上传至Pandora2.0 应用平台，除了在应用平台新增一个键值表格App，可视化分析将增加一个键值表格图表类型。
+
+![](http://pw7x36qrk.bkt.clouddn.com/kv_app.png)
+
+
+12.验证
+
+将键值表格图保存到仪表盘，导出为xml的方式导出。将对应的xml内容复制到`default/views/chart.xml`，重新上传应用，即可看到键值表格图app展示效果。
+![](http://pw7x36qrk.bkt.clouddn.com/kv_app_example.png)
+
+

@@ -1,0 +1,21 @@
+# 非永久保存   
+登录后  https://portal.qiniu.com/  ，在直播空间设置里面开启
+
+![](https://dn-odum9helk.qbox.me/FkMsdXHFjIOov0W-CmyYROB07nSA?imageView/0/h/250)
+
+
+访问格式：可以通过```http://<domain>/<hub>/<title>.jpg?<时间戳>```的形式进行访问<br/>
+ domain为刚才创建的域名<br/>
+ hub为直播空间名<br/>
+ title为流名称<br/>
+时间戳由于资源访问走 CDN 加速，会存在 CDN 缓存，加上 ?<时间戳> 可以穿透 CDN 直接回源拉取到最新的资源
+
+# 永久保存的
+请求参考下面：
+https://developer.qiniu.com/pili/api/2520/save-the-live-capture
+
+这个是每次请求才会去生成直播封面的这个是主动请求
+
+存储的对应的空间是直播对应的存储空间
+
+![](https://dn-odum9helk.qbox.me/e37d3df46a5e02ae270072710aecd130)

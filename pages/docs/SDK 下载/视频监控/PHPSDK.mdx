@@ -1,0 +1,149 @@
+# **简介**
+
+此SDK主要帮助您快速接入七牛云的视频监控平台
+
+
+此 SDK ( version: 7.x.x ) 适用于**PHP >= 5.3.0**。
+
+- [PHP SDK 下载地址](https://github.com/qiniu/php-sdk/releases)
+- [PHP SDK 源码地址](https://github.com/qiniu/php-sdk)
+
+此 SDK 包含了如下几个功能：
+
+- 创建空间示例。 
+
+
+<a id="install"></a>
+# 安装
+
+支持以下3种安装 SDK 的方法，推荐通过[Composer](https://getcomposer.org/)安装 SDK。
+
+- 使用 Composer 安装
+
+[Composer](http://getcomposer.org/)是 PHP 依赖管理工具。你可以在自己的项目中声明所依赖的外部工具库，Composer 会自动帮你安装这些依赖的库文件。
+
+&ensp;&ensp;&ensp;1. 安装 Composer 
+
+  ```
+    curl -sS https://getcomposer.org/installer | php
+  ```
+
+&ensp;&ensp;&ensp;2. 运行 Composer 命令安装最新稳定版本的 SDK：
+
+  ``` 
+    php composer.phar require qiniu/php-sdk
+  ```
+
+&ensp;&ensp;&ensp;3. Require Composer 生成的 autoloader：
+
+  ```
+    <?php
+     require 'vendor/autoload.php';
+  ```
+
+如果需要更详细的关于 Composer 的使用说明，你可以访问[Composer官方网站](http://getcomposer.org/)，或对应的[中文网站](http://www.phpcomposer.com/)。
+
+<a id="install-composer-pkg"></a>
+- 直接下载 Composer 安装包
+
+    鉴于某些原因，国内的用户使用 Composer 下载依赖库比较慢，开发者也可以直接下载我们准备好的符合 Composer 规范的[vendor 压缩包](http://qupfile.cloudvdn.com/vendor.zip)并在本地解压。解压后的内容和使用 Composer 方式获取到的内容完全一致，之后的使用方式也一致。
+
+<a id="src-pkg"></a>
+- 下载源代码包
+
+    直接下载源代码压缩包并解压是另一种 SDK 的安装方法。不过因为有版本更新的维护问题，这种安装方法并不推荐，仅作为万一 Composer 安装有问题的情况下的一种备选。并且，源码中也包含 SDK 的 [autoloader](https://github.com/qiniu/php-sdk/blob/master/autoload.php)。
+
+    下载[源代码包](https://github.com/qiniu/php-sdk/releases)后，解压到您的项目中。 然后在您的项目中引入 autoloader：
+ 
+    ```
+    require 'path_to_sdk/autoload.php';
+    ```
+
+<a id="usage"></a>
+# 基本使用方法
+
+安装好 SDK 后，接下来介绍如何使用 SDK。在使用 SDK 之前，
+
+1. <span id="Null">点击[注册](https://portal.qiniu.com/signup)</span>开通<span id="Productname">七牛</span>开发者帐号
+2. 如果已有账号，直接登录<span id="Productname">七牛</span>开发者后台，<span id="Null">点击[这里](https://portal.qiniu.com/user/key)</span>查看 Access Key 和 Secret Key
+
+
+<a id="usage-integration"></a>
+##  引入SDK
+无论你是通过哪种方式安装的 SDK，只需要一句简单的 **require** 语句将安装好的SDK包含到你的项目中。请参考如下表格，找到适合你的安装方式，将SDK引入到你的项目中。请用你项目中的实际路径替换 **path_to_sdk**。
+
+安装方式     |  引入SDK
+:---------- | :------------
+Composer 安装 | require 'path_to_sdk/vendor/autoload.php';
+下载Composer安装包 | require 'path_to_sdk/vendor/autoload.php';
+下载源码安装包 | require 'path_to_sdk/autoload.php';
+
+<a id="usage-examples"></a>
+## SDK结构
+可以直接查看我们的[SDK目录](https://github.com/qiniu/php-sdk/tree/master/src/Qiniu)，即可大致了解我们 SDK 的结构。
+
+* 最外层包含：配置文件， 鉴权和一些公共的函数。 
+* HTTP 目录主要包含了一些对 http 进行封装的类，这块你可以不用关心。
+* Storage 目录对应七牛kodo产品的相关API
+* Cdn 目录主要包含了七牛CDN产品的相关API
+* Qvs目前没有集成进来，`客户可在该目录下，自行新建Qvs`,放置Qvs产品的相关API。[对应的API文档](https://developer.qiniu.com/qvs/6706/summary-of-the-api)
+
+为了帮助您更好的了解和使用我们的sdk，我们还提供了各种[使用示例](https://github.com/qiniu/php-sdk/tree/master/examples)。 如果使用中遇到问题，可以通过[Github](https://github.com/qiniu/php-sdk/issues/new)<span id="Null">或者我们的[工单](http://support.qiniu.com/)</span>进行反馈。下面我们对一些关键点进行简单的介绍，方便您快速入门。
+
+<a id="usage-auth"></a>
+## 鉴权类
+在使用SDK的过程中鉴权是很重要的一块，所有的API请求都需要鉴权，鉴权逻辑是通用的。 PHP SDK 中的 Auth 类封装了所有的鉴权方式。
+所以在使用 PHP SDK 时基本都会先对鉴权类进行初始化：
+
+```php
+<?php
+require 'path_to_sdk/vendor/autoload.php';
+use Qiniu\Auth;
+  // 用于签名的公钥和私钥
+$accessKey = 'Access_Key';
+$secretKey = 'Secret_Key';
+
+  // 初始化签权对象
+$auth = new Auth($accessKey, $secretKey);
+```
+# 创建空间[API](https://developer.qiniu.com/qvs/6726/create-namespace)
+### 示例
+```php
+<?php
+require_once __DIR__ . 'path_to_sdk/autoload.php';
+use \Qiniu\Auth;
+use Qiniu\Http\Client;
+ 
+$accessKey = '';
+$secretKey = '';
+ 
+$auth = new Auth($accessKey, $secretKey);
+ 
+$url = "http://qvs.qiniuapi.com/v1/namespaces";
+ 
+
+$host = "qvs.qiniuapi.com";
+
+$method = "POST";
+$contentType = "application/json"; 
+// 重要的事情说3遍
+// 如果是Get请求(http body为空)，contentType请设置为application/x-www-form-urlencoded, 或者null
+// 如果是Get请求(http body为空)，contentType请设置为application/x-www-form-urlencoded, 或者null
+// 如果是Get请求(http body为空)，contentType请设置为application/x-www-form-urlencoded, 或者null
+ 
+$body = '{}';
+ 
+//Qiniu Token
+$headers = $auth->authorizationV2($url, $method, $body, $contentType);
+ 
+ 
+//QBox Token
+//$headers = $auth->authorization($url, $body, $contentType);
+ 
+$headers['Content-Type'] = $contentType;
+$headers['Host'] = $host;
+ 
+$response = Client::post($url, $body, $headers);
+ 
+var_dump($response);
+```

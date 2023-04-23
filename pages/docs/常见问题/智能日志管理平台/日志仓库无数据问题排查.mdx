@@ -1,0 +1,17 @@
+> 问题描述：通过工作流接收数据，经过计算后将数据导出到日志仓库，日志仓库无数据
+
+1.首先查看一下您的工作流是否处于正常运行状态。
+ 
+ ![](https://pandora-kibana.qiniu.com/qa_workflow/workflow_.png)
+ 
+ 2.若工作流处于已启动状态，进入工作流工作界面查看运行日志，确认计算节点和导出节点是否正常运行：
+
+![](https://pandora-kibana.qiniu.com/qa_workflow/exe_log.png)
+
+ 3.数据导出到日志仓库会稍有延迟，请稍作等待。
+ 
+ 4.请检查您的数据源节点是否有数据进来。
+
+**注意：** 如果您的计算和导出节点是在数据源节点接收数据之后创建的，而数据源节点没有新数据进来，那么需要在创建计算节点和导出节点时，在高级功能选择数据起始位置为最老。
+
+![](https://pandora-kibana.qiniu.com/qa_workflow/old_data.png)

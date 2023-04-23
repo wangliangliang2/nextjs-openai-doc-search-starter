@@ -1,0 +1,10 @@
+通过 API 直接将数据文本置于请求体中，可以在服务端进行数据解析、字段提取和数据入库。
+
+```
+POST /v2/stream/{REPO_NAME}/data
+Content-Type: text/plain
+
+[2017-12-21 05:36:26,917][WARN ][cluster.routing.allocation.decider] [Master Mold] high disk watermark [90%] exceeded on [gXIMYOjpQ0SmV-vvUpnaKw][Master Mold][/Users/jason/Development/elasticsearch-2.3.3/data/elasticsearch/nodes/0] free: 1.8gb[1.6%], shards will be relocated away from this node
+```
+
+详情请参考[数据推送API文档](https://developer.qiniu.com/insight/api/4749/data-push-api)

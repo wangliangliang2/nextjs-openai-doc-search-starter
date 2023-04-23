@@ -1,0 +1,44 @@
+本接口用于修改时间戳防盗链配置
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/domains/{domain}/playsecurity`
+
+# **请求参数**
+**路径参数**
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+namespaceId|是|string|空间名称ID
+domain|是|string|域名
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+open|是|boolean|时间戳防盗链开关
+expireAfter|是|integer|防盗链过期时长（单位：秒）
+primary|是|string|主KEY
+secondary|是|string|备用KEY
+
+**请求示例**
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/3nm4x0vyz7xlu/domains/qvs-live-webrtc1.vs.qnlinking.com/playsecurity \
+  --header 'authorization: Qiniu your_authorization_token' \
+  --header 'content-type: application/json' \
+  --data '{"open":true,"expireAfter":3600,"primary":"your_primary_key","secondary":"your_sencondary_key"}'
+```
+
+**响应示例**
+```
+{"code":200}
+```
+
+
+
+
+
+
+
+
+

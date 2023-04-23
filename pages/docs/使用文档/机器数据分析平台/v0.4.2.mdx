@@ -1,0 +1,27 @@
+**新功能**
+
+* POST /api/v1/data 接口增加认证。点此了解[打点API](/express/api/6658/post-data)和[Token认证](/express/manual/6352/access_control)。
+
+**Bug修复**
+
+* SPL 命令相关：
+
+	* eval命令的if函数返回结果不正确。
+	
+	* bin命令对包含负数值的数据范围分桶结果不正确；bins参数为1，2，3，4时分桶结果不稳定。
+	
+	* stats命令的distinct函数不支持参数为空。
+	
+	* eval中使用单引号括住字符串作为字段名未能捕获报错。
+	
+* APP 平台相关：
+
+  * 包含富文本、关系图、桑基图类型图表的仪表盘导出的 XML 格式文件在app中引用时渲染失败。
+
+  * 删除app中的sourcetype，再以覆盖方式导入相同的app，提示sourcetype存在导致app导入失败。
+	
+ * 时间选择器类型的input元素中，initial-value子元素不生效。
+	
+ * APP中查看不了报错图表的搜索条件。
+	
+ * 导出仪表盘为xml文件行为中，仪表盘title中的模板变量未被$variable替换。

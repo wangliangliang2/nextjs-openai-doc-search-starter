@@ -1,0 +1,127 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `GET` /api/rio/v1/compute/monitor/server/:id
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id   | string  | header | 是 | 地域 ID
+id              | string  | query | 是 | 云主机 ID
+disk_id         | string  | query | 否 | 磁盘 ID
+start_time      | integer | query | 是 | 开始时间：时间戳，毫秒
+end_time        | string  | query | 是 | 结束时间：时间戳，毫秒
+period          | integer | query | 是 | 监控间隔：<ul><li>`300` : 5 分钟</li><li>`600` : 10 分钟</li><li>`900` : 15 分钟</li><li>`3600` : 1 小时</li><li>`86400` : 24 小时</li></ul> 
+method          | string  | query | 是 | 数据处理方式：<ul><li>`max` : 最大值</li><li>`average` : 平均值</li></ul> 
+targets         | []string  | query | 是 | 监控维度：<ul><li>`cpu`：CPU 使用率，单位：百分比，%</li><li>`net_in_bytes`：接收宽带，单位：Byte/s</li><li>`net_in_packets`：接收数据包数，单位：个/s</li><li>`net_in_errs`：设备驱动器检测到的接收错误包数量，单位：个/s</li><li>`net_out_bytes`：发送宽带，单位：Byte/s</li><li>`net_out_packets`：发送数据包数，单位：个/s</li><li>`net_out_errs`：设备驱动器检测到的发送错误包数量，单位：个/s</li><li>`iops_read`：磁盘 I/O读操作，单位：次/s</li><li>`iops_write`：磁盘 I/O写操作，单位：次/s</li><li>`bps_read`：磁盘 读带宽，单位：Byte/s</li><li>`bps_write`：磁盘 写带宽，单位：Byte/s</li></ul>
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+data | MonitorMap | 监控数据
+
+## MonitorMap 监控数据
+名称 | 类型 |  描述
+----- | ----- | -----
+cpu              | []MonitorData | CPU 使用率，单位：百分比，%
+net_in_bytes     | []MonitorData | 接收宽带，单位：Byte/s
+net_in_packets   | []MonitorData | 接收数据包数，单位：个/s
+net_in_errs      | []MonitorData | 设备驱动器检测到的接收错误包数量，单位：个/s
+net_out_bytes    | []MonitorData | 发送宽带，单位：Byte/s
+net_out_packets  | []MonitorData | 发送数据包数，单位：个/s
+net_out_errs     | []MonitorData | 设备驱动器检测到的发送错误包数量，单位：个/s
+iops_read        | []MonitorData | 磁盘 I/O读操作，单位：次/s
+iops_write       | []MonitorData | 磁盘 I/O写操作，单位：次/s
+bps_read         | []MonitorData | 磁盘 读带宽，单位：Byte/s
+bps_write        | []MonitorData | 磁盘 写带宽，单位：Byte/s
+
+### MonitorData 监控指标数据
+名称 | 类型 |  描述
+----- | ----- | -----
+timestamp | integer | 监控时间节点：时间戳，毫秒
+datapoint | float   | 监控数值
+
+## 请求值示例
+```json
+```
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEsn8hQ4mD8sW",
+    "data":{
+        "cpu":[
+            {
+                "timestamp":1642419300000,
+                "datapoint":4.48219754009
+            },
+            {
+                "timestamp":1642419600000,
+                "datapoint":6.374444530540001
+            }
+        ],
+        "net_in_bytes":[
+            {
+                "timestamp":1642419600000,
+                "datapoint":0
+            },
+            {
+                "timestamp":1642419900000,
+                "datapoint":0
+            }
+        ],
+        "net_in_errs":[
+            {
+                "timestamp":1642419600000,
+                "datapoint":0
+            },
+            {
+                "timestamp":1642419900000,
+                "datapoint":0
+            }
+        ],
+        "net_in_packets":[
+            {
+                "timestamp":1642419600000,
+                "datapoint":0
+            },
+            {
+                "timestamp":1642419900000,
+                "datapoint":0
+            }
+        ],
+        "net_out_bytes":[
+            {
+                "timestamp":1642419600000,
+                "datapoint":0
+            },
+            {
+                "timestamp":1642419900000,
+                "datapoint":0
+            }
+        ],
+        "net_out_errs":[
+            {
+                "timestamp":1642419600000,
+                "datapoint":0
+            },
+            {
+                "timestamp":1642419900000,
+                "datapoint":0
+            }
+        ],
+        "net_out_packets":[
+            {
+                "timestamp":1642419600000,
+                "datapoint":0
+            },
+            {
+                "timestamp":1642419900000,
+                "datapoint":0
+            }
+        ]
+    }
+}
+```

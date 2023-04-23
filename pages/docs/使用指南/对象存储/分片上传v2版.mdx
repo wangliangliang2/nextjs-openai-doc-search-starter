@@ -1,0 +1,15 @@
+分片上传（ Multipart Upload ），可以将要上传的文件分成多个数据块（ 又称之为 Part ）来分别上传，上传完成之后再调用接口将这些 Part 组合成一个 Object。
+
+与分片上传相关的 API 有：[初始化 ( initiateMultipartUpload )](/kodo/api/6365/initialize-multipartupload)、[分块上传数据 ( uploadPart ) ](/kodo/api/6366/upload-part)、[完成文件上传 ( completeMultipartUpload ) ](/kodo/api/6368/complete-multipart-upload)、[终止上传 （ abortMultipartUpload ）](/kodo/api/6367/abort-multipart-upload)、[列举已上传分片 ( listParts )](/kodo/api/6858/listparts)。一个完整的分片上传流程可用下图表示：
+
+![分片上传流程](https://dn-odum9helk.qbox.me/FkgOf1P2fRCJrYMCwTBxDNBGLpwh)
+
+其中的关键点如下：
+
+* Part 大小要求，除最后一个 Part 外，每个 Part 大小在 1MB - 1GB 之间。
+* 每个 Multipart Upload 任务，最多 10000 个 Part， 编号 PartNumber 在 1 - 10000 （含）之间。
+* 要上传的文件切分成 Part 之后，实现并发上传。具体的并发个数并不是越多速度越快，要结合自身情况考虑。网络情况较好时，建议增大 Part 大小。反之，减小 Part 大小。
+* 在所有 Part 上传完成后，通过调用 completeMultipartUpload 将这些上传完成的 Part 信息严格的按编号 PartNumber 顺序（编号可以不连续，但必须是升序）组装出一个逻辑资源的元信息，从而完成整个资源的分片上传过程。
+
+
+如要更准确的理解这个基本流程，可以通过阅读 SDK 源代码。所有 SDK 的源代码都公开托管在[Github](http://github.com/qiniu)上。

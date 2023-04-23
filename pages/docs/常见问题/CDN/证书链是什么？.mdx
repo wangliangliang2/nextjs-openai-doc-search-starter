@@ -1,0 +1,7 @@
+* 完整的证书内容一般分为3级，服务端证书-中间证书-根证书，即 end-user certificates， intermediates Certificates 和 root Certificates。
+	* end-user ：用来加密传输数据的公钥的证书，是https中使用的证书。开发者牛小七把证书部署在qiniu.com 的服务器上。
+	* intermediates：CA用来认证公钥持有者身份的证书，即确认https使用的end-user证书是属于qiniu.com的证书。
+	* root：用来认证intermediates证书是合法证书的证书。
+
+* 简单来说，end-user证书上面几级证书都是为了保证end-user证书未被篡改，保证是CA签发的合法证书，进而保证end-user证书中的公钥未被篡改。我们使用end-user certificates来确保加密传输数据的公钥(public key)不被篡改，而又如何确保end-user certificates的合法性呢？这个认证过程跟公钥的认证过程类似，首先获取颁布end-user certificates的CA的证书，然后验证end-user certificates的signature。一般来说，root CAs不会直接颁布end-user certificates的，而是授权给多个二级CA，而二级CA又可以授权给多个三级CA，这些中间的CA就是intermediates CAs，它们才会颁布end-user certificates。
+* 七牛云证书管理，会在用户上传证书的时检测证书的完整性，证书链不完整会自动帮用户补全证书链，但无法保证补全的证书链100%是正确的。所以需要用户选择使用自传的证书还是系统补全后的证书。

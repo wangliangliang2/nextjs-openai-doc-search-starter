@@ -1,0 +1,94 @@
+指标饼图的种类和用法与分组饼图类似，区别是指标饼图的扇区由不同指标构成。
+指标饼图包含饼图（指标）、环图（指标）与玫瑰图（指标）。
+
+|图表名称|说明|使用场景|
+|-|-|-|
+|饼图（指标）|表示不同分类的占比情况，通过弧度大小来对比各种分类|呈现大于1个不超过9个分类的占比情况|
+|环图（指标）|本质是饼图将中间区域挖空|展示分类的占比情况，尤其在进行同种分类下不同指标的对比时，两个饼图直接进行比较是非常不直观的，两个环图间可以通过环状条长度进行简单的对比|
+|玫瑰图（指标）|在极坐标下绘制的柱状图，使用圆弧的半径长短表示数据的大小（数量的多少）|适用于分类较多的场景（10-30条数据）；由于半径和面积的关系是平方的关系，玫瑰图会将数据的比例大小夸大，尤其适合对比大小相近的数值；由于圆形有周期的特性，所以玫瑰图也适用于表示一个周期内的时间概念，比如星期、月份|
+
+### **样式配置说明**
+指标饼图的配置项由数据、图例、图表样式、颜色4部分组成（饼图、环图与玫瑰图仅环图存在不同的图表样式配置项，将单独说明，其余相同配置不再赘述。）
+#### **数据**
+数据用于选择饼图需要展示的字段相关信息
+
+|配置项|说明|
+|-|-|
+|统计指标|展示的字段，可以设置其单位和精度|
+
+#### **图例**
+图例用于说明各种颜色所代表的内容与数值
+
+|配置项|说明|
+|-|-|
+|图例位置|用于设置图例在图表的具体展示位置|
+|数值显示|显示的数值结果，可以设置展示具体数据与所占百分比，支持配置百分比小数位|
+
+#### **图表样式**
+图表的样式配置
+
+|配置项|说明|
+|-|-|
+|标签显示|用于标志图表内容，可设置标签的展示内容，支持显示字段名称，数值与所占百分比|
+|最大区域数量|限制分组数目，如果分组数目大于最大区域数量，剩余分组将归类于其他分组|
+|扇区间隔|用于设置各部分扇区的间距|
+
+环图样式配置在饼图样式配置基础上，有如下特性：
+
+|配置项|说明|
+|-|-|-|
+|环宽度|可设置环图的宽度大小|
+|轮播|可设置是否开启扇区轮播的动效|
+|标题|可设置是否在中间区域显示标题和标题样式|
+|数值|可设置是否在中间区域显示数值或数值所占百分比，支持修改数值样式与百分比小数位|
+
+#### **颜色**
+颜色用于设置展示的字段项的颜色
+
+|配置项|说明|
+|-|-|
+|字段项|选择要更改颜色的具体字段与对应扇区|
+|选择颜色模板|支持选择平台内置的主题颜色|
+|自定义颜色|支持选择色谱图中任意颜色|
+
+### **场景示例**
+#### **饼图**
+查询最近7天所有http状态码占比
+```
+repo="_internal"
+| eval successes = if(match(response.code, "^2.*"), 1, 0)
+| eval redirects = if(match(response.code, "^3.*"), 1, 0)
+| eval client_errors = if(match(response.code, "^4.*"), 1, 0)
+| eval server_errors = if(match(response.code, "^5.*"), 1, 0)
+| stats sum(successes) as successes, sum(client_errors) as client_errors, sum(redirects) as redirects, sum(server_errors) as server_errors
+```
+- 统计指标选择所有状态码类型：successes、client_errors、redirects、server_errors
+- 设置图例展示在饼图的上方，展示具体的值和百分比
+![image.png](https://dn-odum9helk.qbox.me/Ft7j2iTDyfHpsjuxaFKKBiUEdk4N)
+
+#### **环图**
+查询最近7天所有http状态码占比
+```
+repo="_internal"
+| eval successes = if(match(response.code, "^2.*"), 1, 0)
+| eval redirects = if(match(response.code, "^3.*"), 1, 0)
+| eval client_errors = if(match(response.code, "^4.*"), 1, 0)
+| eval server_errors = if(match(response.code, "^5.*"), 1, 0)
+| stats sum(successes) as successes, sum(client_errors) as client_errors, sum(redirects) as redirects, sum(server_errors) as server_errors
+```
+- 统计指标选择所有状态码类型：successes、client_errors、redirects、server_errors
+- 设置标签展示字段、数值、百分比，直接在换图的扇区显示其值和百分比
+![image.png](https://dn-odum9helk.qbox.me/FjlMQGM5GC8uUyJpa8jrtXpglNFA)
+
+#### **玫瑰图**
+查询最近7天所有操作的操作次数占比
+```
+repo="_internal"
+| stats count() as cnt by action.name
+| eval a=1
+| chart min(cnt) by a,action.name
+| fields -a
+```
+- 统计指标选择所有操作类型
+- 设置图例显示在上方，展示数值和百分比
+![image.png](https://dn-odum9helk.qbox.me/Fo5FFlh9f0dxJexuhVXM3B9BNFF1)

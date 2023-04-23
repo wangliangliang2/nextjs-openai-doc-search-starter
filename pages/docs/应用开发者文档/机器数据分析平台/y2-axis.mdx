@@ -1,0 +1,31 @@
+* `<y2-axis>`元素定义二维图表的叠加折线。相比`<y-axis>`， `<y2-axis>`新增两个子标签，其他子标签与`<y-axis>`一致，这里不再赘述。
+
+### 父元素
+ 
+在 `<chart>`元素下，只有当 type 属性指定如下值时，可以使用 `<y2-axis>`元素。
+
+* `<chart type="line">`
+* `<chart type="bar">`
+*	`<chart type="area">`
+
+### 子元素
+
+|子元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<y2-groups>`|叠加折线颜色分组的字段，在图表中表现为不同颜色的叠加折线|无|
+|`<show-symbol>`|叠加折线上每个数据点的显示，是否在数据点上标识符号|false|
+|`<showdata>`|叠加折线上每个数据点的显示， 是否在数据点上显示数值|false|
+
+示例：
+```
+<y2-axis>
+  <name>count</name>
+  <hide-name>false</hide-name>
+  <fields>[count, avg(host)]</field>
+  <unit>['none', 'percentunit']</unit>
+  <null-value-mode>0</null-value-mode>
+  <y2-groups>['host', '_time']</y2-groups>
+  <show-symbol>true</show-symbol>
+  <show-data>true</show-data>
+</y2-axis>
+```

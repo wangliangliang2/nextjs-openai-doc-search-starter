@@ -1,0 +1,43 @@
+# **描述**
+本接口用于控制设备的布防与撤防，如果要开启或关闭GB28181报警，需要请求此接口。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/devices/{deviceId}/guard`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|deviceId|是|string|设备Id
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|cmd|string|是|命令类型，布防:"SetGuard",撤防:"ResetGuard"
+|chId|否|string|设备为`平台`类型：指定需要启动的通道ID, 设备为`摄像头`类型，无需指定
+# **响应参数**
+200
+
+# **示例**
+
+**请求示例**
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarvzvyijd/devices/31011500991320000028/guard \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json'
+  --data '{
+	"cmd":"SetGuard"
+   }'
+```
+
+**响应示例**
+```
+{
+  "code": 200
+}
+```

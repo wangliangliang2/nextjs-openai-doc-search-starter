@@ -1,0 +1,53 @@
+# 接口描述
+
+修改域名证书配置，需要提前将证书配置到七牛 CDN 服务中，证书配置地址: https://portal.qiniu.com/certificate/ssl
+
+配置好证书后可以获得证书名称的参数，此时可以使用获得的证书名称请求执行修改域名证书配置
+
+# 请求参数
+
+```
+POST /v2/hubs/<hub>/domains/<domain>/cert
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+
+{
+    "certName":"<certName>"
+}
+```
+
+|      参数         |      类型          |  必填   |                  描述                      |
+| -------------------- | -------------------- | ----------- | ------------------------------------------ |
+|       Hub           |    string           | 是    |     直播空间名                                  |
+|    Domain           |    string           | 是   |      域名                                      |
+|  CertName           |    string           | 是    |   证书名称，需要将证书配置到七牛 CDN 服务中        |
+
+# 返回数据
+
+空
+
+# 示例
+
+请求体:
+
+```
+POST /v2/hubs/testhub/domains/pili-publish.test.cloudvdn.com/cert HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/json 
+
+{
+    "certName":"5f1e9dc7f9537d6b370xx010"
+}
+```
+
+返回体:
+
+```
+200 OK
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

@@ -1,0 +1,22 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `POST` /v1/vm/keypair/:name/attach
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+name      | string | path | 是 | 密钥对名称
+region_id | string | body | 是 | 地域 ID。
+instances | \[]object{} | body| 是 | 实例
+instances[n].instance_id | string | body| 是 | 实例 ID
+instances[n].region_id | string | body| 是 | 区域 ID
+password | string | body| 是 | 资源池 2 主机运行状态下绑定密钥需要输入密码
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID

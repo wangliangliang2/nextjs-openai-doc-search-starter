@@ -1,0 +1,121 @@
+compare用于实现两组聚合搜索数据集的对比，timeshift用于实现时间戳的偏移，compare timeshift结合用于对比一定时间范围内的数据计算结果，与往前偏移一段时间的同一时间范围内的计算结果，实现数据（统计结果或趋势）的同比或环比对比，例如：
+
+* 服务部署前后网站的性能指标变化；  
+* 通过特定关键字（例如内存异常）与历史数据比较，查找异常趋势，快速定位问题根因；
+* 比较网站的每日或每周活跃用户，提供业务洞察；
+
+对比方式：
+* 与过去（偏移一次）的单个时间段进行比较
+* 与过去（偏移多次）的多个时间段进行比较
+
+**语法**
+
+```
+compare <aggregate-expression> timeshift <timer_shift> [shift_number] [aggregate] [as field]
+```
+
+**参数说明**
+
+必填参数：
+
+`aggregate-expression`:
+
+* 描述：聚合统计算子表达式，如count() by host, sum(cpu)等，请参阅[ stats 算子](/stats)
+
+`timer_shift`:
+
+* 描述：数据搜索的偏移时间（时间数值+时间单位）, 例如 2d表示向前偏移2天，1w表示向前偏移1周，可以支持时间单位：s,m,h,d,w,M,y。
+
+例如，搜索时间范围为今天8点到12点，则下述spl会将今天8点到12点的计数结果count(epsProcessed)与昨天8点到12点的计算结果进行比较：
+
+```
+……| compare count(epsProcessed) by _time timeshift 1d
+```
+
+同时也支持填写相对或绝对的起始时间。例如，当前时间为12点，搜索时间范围为前4个小时，则start = "-1d"代表今天8点到12点的计数结果对比昨天12点到16点搜索时间范围的计数结果。
+
+```
+……| compare count(epsProcessed) by _time timeshift start = "-1d"
+```
+
+
+
+时间单位和相对或绝对的起始时间请参考[ search算子](/spl_search)
+
+可选参数：
+
+`shift_number`：数据搜索分析结果偏移对比的数量，不填写默认为1。注意：shift_number不可以大于7。
+
+例如,将今天的字段计数结果count(epsProcessed)在与之前7天的同时间段计算结果进行比较:
+
+```
+……| compare count(epsProcessed) by _time timeshift 1d 7
+```
+
+若使用start起始时间，则shift_number默认为1，无需填写，否则会报错。
+
+`aggregate`：聚合方式，不填写则默认不聚合，可输入 avg, min，max或者percentile.
+
+例如：表示跟往前偏移5个时间周期的数据的平均值进行对比。
+
+```
+……| compare sum(cpu) by _time timeshift 1d 5 avg
+```
+
+`as field`：将统计结果放入指定的新字段。
+
+```
+……| compare count() by host timeshift 1d 7 avg as weekly_average
+```
+
+聚合结果字段名默认显示为count、count_weekly_average_7d。
+
+针对不做聚合情况:
+
+```
+……| compare count() by host timeshift 1d 7 as weekly_average
+```
+
+聚合结果字段名默认显示为count 、count_weekly_average_1d、count_weekly_average_2d...
+
+
+**高级用法**
+
+```
+……| compare <comparison1>, <comparison2>
+```
+
+例如：
+
+```
+……| compare count() by host timeshift 12h, timeshift 1d 3 avg, timeshift 1w
+```
+
+**用法示例**
+
+比较_internal仓库各service中errorcode出现次数跟昨天同一时间段的对比。
+
+```
+repo="_internal" | compare count(errorcode) by service timeshift 1d as yesterday
+```
+
+比较_internal仓库各service中errorcode出现次数跟过去7个小时同一时间段的出现次数的最大值的对比。
+
+```
+repo="_internal" | compare  count(errorcode) by service timeshift 1h 7 max
+```
+
+比较rtc_roomd_charge仓库且appId="f8oy0nj9j"时，各直播房间（roomid）的用户数，跟过去7天同一时间段的对比。
+
+```
+repo="rtc_roomd_charge" AND appId="f8oy0nj9j" | compare distinct(userid) by roomId timeshift 1d 7
+```
+
+比较_frontend_error仓库，BadRequest数量按每小时分组，跟跟过去7天同一时间段的平均值对比，并计算变化率。
+
+```
+repo="_frontend_error" AND "BadRequest" | bin _time span=1h | compare count() by _time timeshift 1d 7 avg | eval rate=(count-count_avg_7d)/count_avg_7d
+```
+
+
+

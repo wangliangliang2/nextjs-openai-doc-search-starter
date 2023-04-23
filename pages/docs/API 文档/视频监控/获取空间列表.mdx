@@ -1,0 +1,105 @@
+# **描述**
+本接口用于获取空间列表
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces?offset=<offset>&line=<line>&sortBy=<SortBy>`
+* Get请求，通过`非SDK`方式调用的客户，http头部Content-Type`要么置空`, `要么不要携带`[公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|offset|否|integer|在全部namespace中的偏移量
+|line|否|integer|一次返回多少条, 默认最多1万个
+|sortBy|否|string|asc 表示升序, desc 表示降序, 默认按创建时间降序排列(可参与排序的字段有createdAt, updatedAt).asc:updatedAt表示更新时间从小到大排序, desc:updatedAt表示更新时间从大到小排序
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|items|空间数组|空间数组
+|items.id|string|空间ID
+|items.name|string|空间名称
+|items.domains|string数组|rtmp 静态接入的时候的域名
+|items.accessType|string|接入类型(四种之一 rtmp,gb28181,pull)
+|items.urlMode|integer|推拉流地址计算方式，1:static, 2:dynamic
+|items.zone|string|zone为服务区域, 可根据流媒体实时处理、视频录制、截图的存储需求选择对应的区域, 可选项为z0, z1, z2, cn-east-2, 默认为z0. z0表示华东, z1表示华北、z2表示华南, cn-east-2表示华东-浙江2区
+|items.desc|string|描述
+|items.callBack|string|回调地址
+|items.recordTemplateId|string|录制模版ID
+|items.snapshotTemplateId|string|截图模版ID
+|items.aiTemplateId|string|AI模版ID
+|items.recordTemplateName|string|录制模版名称
+|items.snapshotTemplateName|string|截图模版名称
+|items.aiTemplateName|string|AI模版名称
+|items.recordTemplateApplyAll|boolean|空间模版是否应用到全局
+|items.snapshotTemplateApplyAll|boolean|截图模版是否应用到全局
+|items.aiTemplateApplyAll|boolean|AI模版是否应用到全局
+|items.disabled|boolean|空间是否被禁用
+|items.createdAt|integer|空间创建时间
+|items.updatedAt|integer|空间更新时间
+|items.streamCount|integer|空间中流的数量
+|items.onlineStreamCount|integer|空间中在线流数量
+|items.disabledStreamCount|integer|空间中禁用流数量
+|retryInterval|integer|accessType为"pull",即主动拉流时，代表拉流中断重连间隔
+|retryTime|integer|accessType为"pull",即主动拉流时，代表拉流中断重连次数
+|rtpAudio|boolean|是否开启音频
+|rtpAudioTranscode|boolean|是否开启音频转码
+|total|integer|空间总共数
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/namespaces \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "items":[
+	  {
+      "id": "d102sni9zryu",
+      "name": "test001",
+      "domains": null,
+      "accessType": "rtmp",
+      "urlMode": 2,
+      "zone": "z0",
+      "createdAt": 1584511799,
+      "updatedAt": 1584511799,
+      "disabledStreamCount": 2,
+      "recordTemplateApplyAll": false,
+      "snapshotTemplateApplyAll": false,
+      "aiTemplateApplyAll": false,
+      "disabled": false,
+      "streamCount":2,
+      "onlineStreamCount":1,
+      "disabledStreamCount":1
+    },
+    {
+      "id": "2akrarqr133ds",
+      "name": "test002",
+      "desc": "test",
+      "domains": null,
+      "accessType": "gb28181",
+      "urlMode": 0,
+      "zone": "z0",
+      "createdAt": 1583810197,
+      "updatedAt": 1583811193,
+      "recordTemplateApplyAll": false,
+      "snapshotTemplateApplyAll": false,
+      "aiTemplateApplyAll": false,
+      "disabled": false,
+      "streamCount":2,
+      "onlineStreamCount":1,
+      "disabledStreamCount":1
+    }
+  ],
+  "total": 2
+}
+```

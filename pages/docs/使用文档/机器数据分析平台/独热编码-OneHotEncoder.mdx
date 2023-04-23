@@ -1,0 +1,25 @@
+独热编码是一种将对分类变量数值化的手段，它将变量的N个状态拆分成N个互斥的0-1变量。可以输入多个分类变量，则OneHotEncoder算子将返回各个分类变量的独热编码。
+
+
+语法：
+
+```
+..｜fit OneHotEncoder drop=<first | if_binary | None(default)> handle_unknown=<raise (default) | retrain | ignore> <feature_field_1> <feature_field_2> [into model_name]...
+```
+
+
+
+参数说明：
+
++ drop参数，用来指定是否要在某些情况下删除列：
+
+  + drop=first，删除每一组独热变量中的第一列变量（通常用于防止线性回归出现多重共线性的问题）。
+
+  + drop=if_binary，如果某个分类变量只有两个取值，则删除第一列变量。
+
+  + drop=None(默认值)，不删除列。
+
+- handle_unknown参数，用来指定如何处理在训练过程中没见过的数据，例如：原始数据中只有北京和上海，模型会将北京转换成01，上海转换成10，该参数用来处理如何处理在原始数据中未见过的数据，比如，深圳。默认值为raise。
+  + handle_unknown=raise（默认值），即一旦遇到未见过的数据，就终止程序并报错。
+  + handle_unknown=retrain，即每次遇到未见过的数据，都重新训练模型。
+  + handle_unknown=ignore，忽略该数据并返回原始数据。

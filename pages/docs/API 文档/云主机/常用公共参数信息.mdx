@@ -1,0 +1,7 @@
+# 付费参数
+| 名称 | 类型 | <center>描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| cost_charge_type | string | 付费类型，PrePaid: 预付费, PostPaid: 后付费 |
+| cost_charge_mode | string | 计费方式，不同产品的计费方式有不同，具体如下:<br>PayByBandwidth: 按照弹性 IP 带宽计费<br>PayByTraffic: 按照弹性 IP 流量计费<br>PayByDisk: 按磁盘使用计费<br>PayByInstance: 按主机规格使用计费<br>PayBySlbSpec: 按 SLB 实例规格计费<br>PayByRedis: 按 Redis 实例规格计费<br>PayByMongo: 按 Mongo 实例规格计费<br>PayByVRouterInterface: 按 VRouterInterface 实例规格计费<br>PayBy95: 按增强型95计费<br>PayByRds: 按 RDS 实例规格计费<br>PayByVpn: 按 vpn 规格计费<br>PayByNATGatewaySpec: 按高速通道规格计费<br>PayByNewBgpIp: 安全产品新 BGP<br>PayByBgpIp: 安全产品高防<br>PayByWaf: 安全产品 WAF<br>PayByPolarDB: 按 PolarDB 节点规格计费 |
+| cost_period_unit | int | 付费周期，取值: Hour, Day, Month, Year, 预付费只能取 Month, Year, 后付费只能取 Hour (常用), Day |
+| cost_period | string | 付费周期长度 |

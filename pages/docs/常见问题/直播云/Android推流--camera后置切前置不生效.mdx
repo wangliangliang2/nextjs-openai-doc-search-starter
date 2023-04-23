@@ -1,0 +1,15 @@
+七牛android端推流的摄像头id (CAMERA_FACING_ID) 目前一共有三种模式：  
+
+
+CAMERA_FACING_ID.CAMERA_FACING_FRONT  ==>  前置摄像头  
+
+
+CAMERA_FACING_ID.CAMERA_FACING_BACK     ==>  后置摄像头  
+ 
+CAMERA_FACING_ID.CAMERA_FACING_3RD        ==> 后置副摄像头，即双摄像头的副摄像头
+
+目前开发者会遇到某些机型，后置摄像头切换之前不成功的情况，这一类问题确认下来是  
+
+**该机型只有后置摄像头（需要前置的话，直接翻转摄像头）  **  
+eg. 华为荣耀7i   
+所以可以针对这类机型，在调用camera切换的API的时候，给予用户一个提示信息即可。  

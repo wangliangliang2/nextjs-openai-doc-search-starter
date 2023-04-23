@@ -1,0 +1,30 @@
+# 主动提交刷新缓存请求
+提交刷新请求的方法有三种：
+
+1. 在 [七牛开发者中心](https://portal.qiniu.com) 左侧产品列表中找到 CDN ，进去后点击 [刷新预取](https://portal.qiniu.com/domain/refresh) 。  
+按要求填写需要刷新的  URL，点击提交即可。  
+![](https://dn-odum9helk.qbox.me/FrkJDjRPNk5NS09XJxM2Z7BixBI-)
+2. 工具刷新  
+使用七牛云提供的 [qshell](/kodo/tools/1302) 命令行工具，参考使用文档，先设置密钥，然后执行  [cdnrefresh](https://github.com/qiniu/qshell/blob/master/docs/cdnrefresh.md) 命令来刷新缓存。
+3. 通过API 接口提交刷新请求：  
+七牛各服务端的 [SDK](https://developer.qiniu.com/sdk#official-sdk) 都提供了刷新缓存的方法。  
+另附：[刷新接口文档](https://developer.qiniu.com/fusion/api/1229/cache-refresh)  
+
+**注：**如果使用了 **镜像存储** ，不能直接刷新，需要参考 [镜像存储刷新缓存方法](/fusion/kb/4215)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;提交刷新请求后 **10 分钟** 左右，刷新全网生效。  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;刷新 **https** 域名下的链接，会同时刷新 **http** 和 **https**，占用两次刷新额度。
+
+# 通过携带随机 URL 参数刷新  
+## 实现方法：  
+例如，如果 http://dn-odum9helk.qbox.me/resource/gogopher.jpg 这个图片资源没有更新，可以在该 URL 后面加上问号随机参数的形式来让 CDN 强制刷新：http://dn-odum9helk.qbox.me/resource/gogopher.jpg?v=1234567 ，CDN 拿到这个 URL 后会强制回源站中取回最新的资源。  
+## 实现原理：  
+如果域名没有开启忽略 URL 参数，那么在 CDN 节点上，对于：  
+http://dn-odum9helk.qbox.me/resource/gogopher.jpg  
+http://dn-odum9helk.qbox.me/resource/gogopher.jpg?v=1  
+http://dn-odum9helk.qbox.me/resource/gogopher.jpg?v=2  
+这三个 URL 是独立缓存的。所以，如果携带之前没用过的参数访问，CDN 会强制回源站中取回最新的资源。  
+## 注意事项：  
+1. 关闭忽略 URL 缓存的域名，才可以使用这种方法刷新。  
+![](https://dn-odum9helk.qbox.me/FrxsUkwOt1hqHl6ztT7GNFN_9NS3)
+2. 若使用 http://dn-odum9helk.qbox.me/resource/gogopher.jpg?v=1 访问一次，不会刷新 http://dn-odum9helk.qbox.me/resource/gogopher.jpg 的缓存。所以如果要保证访问到最新的资源，需要携带之前没有使用过的参数。  
+3. 此方法适用于需要频繁更新的文件，为保证参数不重，可以在每次更新文件后，携带的参数 +1 ，或者取 unix 时间戳来作为参数。

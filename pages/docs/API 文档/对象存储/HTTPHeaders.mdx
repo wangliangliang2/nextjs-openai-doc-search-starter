@@ -1,0 +1,13 @@
+| HTTP header | 描述 | 类型 |
+| -------------- | ------------- | ------------- |
+| Authorization | 用于验证请求合法性的认证信息。该头部应严格按照[管理凭证](/kodo/manual/1201/access-token)或[上传凭证](/kodo/manual/1208/upload-token)格式进行填充，否则会返回 401 错误码。例如`Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1 ...`或`Authorization: UpToken QNJi_bYJlmO5LeY08FfoNj9w_r...`。 | 请求头 |
+| Content-Length | 请求或响应内容长度，单位`字节`。例如`Content-Length: 299`。 | 请求头、响应头 |
+| Content-Type | 请求或响应内容的 MIME 类型。例如`Content-Type: application/json`。| 请求头、响应头 |
+| Host | 上传服务器域名。例如`Host: rsf-z0.qiniuapi.com`。 | 请求头 |
+| Connection | 标明客户端与服务器之间的通信状态。例如`Connection: keep-alive`。| 请求头、响应头 |
+| Date | 服务器端响应时间。例如`Date: Wed, 22 Nov 2017 01:52:39 GMT`。| 响应头 |
+| X-Qiniu-Date | 生成请求的时间，ISO 8601 格式 UTC  时间，形如 `yyyyMMddTHHmmssZ`，例如 `20060102T150405Z`。如果请求中的 X-Qiniu-Date 时间和七牛服务器的当前时间差 15 分钟以上，服务器将拒绝该请求，并返回 HTTP 403 错误。该 header 需要包含在 Authorization 中，详情见 [管理凭证](/kodo/manual/1201/access-token)|请求头|
+| Etag | Etag 是 Object 被创建时用于标识 Object 内容的。ETag 值反映 Object 内容是否发生变化，ETag 返回值根据不同请求的情况选择。例如`ETag: "lrMxbjcfPyC7F1siA6tF78B1IMAq"`。| 响应头 |
+| Server | 生成响应的服务器名称。例如`Server: nginx`。| 响应头 |
+|X-Reqid     | 上传请求的唯一 ID。通过该 ID 可快速定位用户请求的相关日志。在联系技术支持时提供该 ID 可快速解决问题。例如`X-Reqid: BlcAAAFP_Hx-RfkU`。| 响应头|
+|X-Log       | 用于快速定位问题的参考信息。例如`X-Log: RSF:102;RSF:103;ZONEPROXY:105`。| 响应头 |

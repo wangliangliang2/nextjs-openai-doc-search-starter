@@ -1,0 +1,179 @@
+# 案例二：鸢尾花品种预测
+
+## **背景介绍**
+
+___数据来源___
+
+该数据集是由Fisher在1936年整理的一个经典数据集，在统计学习和机器学习领域都经常被用作示例。Iris数据集内包含 3 类共 150 条记录，每条记录都有4项特征，可以通过这4个特征预测鸢尾花卉属于中三类中的哪一品种。
+
+数据集下载链接：http://pw7x36qrk.bkt.clouddn.com/iris_data.csv
+
+___字段含义___
+
+| 特征变量名称      | 特征变量含义    |
+| :---:        | :---: |
+| sepal_length      | 花萼长度   |
+| sepal_width   | 花萼宽度  |
+| petal_length      | 花瓣长度   |
+| petal_width   | 花瓣宽度  |
+
+
+
+| 目标变量名称      | 目标变量含义    |
+| :---:        | :---: |
+| 0     | Iris setosa（山鸢尾）   |
+| 1   | Iris versicolor（杂色鸢尾）  |
+| 2   | Iris virginica（维吉尼亚鸢尾）   |
+
+
+
+## **数据预处理**
+
+___数据质量检查___
+
+在做数据处理之前，我们可以先检查一下数据质量，计算每个字段的统计信息（包含最大值，最小值，平均数，计数，空值数量等），确保没有数据异常的情况存在。
+```
+repo="iris"
+| eval sepal_width_null=if(isNull(sepal_width), 1, 0)
+| eval sepal_length_null=if(isNull(sepal_length), 1, 0)
+| eval petal_width_null=if(isNull(petal_width), 1, 0)
+| eval petal_length_null=if(isNull(petal_length), 1, 0)
+| eval target_null=if(isNull(target), 1, 0)
+| stats count(sepal_length), avg(sepal_length), max(sepal_length), min(sepal_length), stdev(sepal_length), sum(sepal_length_null),count(sepal_width), avg(sepal_width), max(sepal_width), min(sepal_width), stdev(sepal_width), sum(sepal_width_null),count(petal_length), avg(petal_length), max(petal_length), min(petal_length), stdev(petal_length), sum(petal_length_null),count(petal_width), avg(petal_width), max(petal_width), min(petal_width), stdev(petal_width), sum(petal_width_null), count(target), avg(target), max(target), min(target), stdev(target), sum(target_null)
+```
+举例：花萼长度
+由图可见，花萼长度皆为正浮点，且没有空值，符合预期。
+![Sepal_Length_Stats_Summary.png](https://i.loli.net/2020/10/27/QUuKYlGwb8EMxqe.png)
+
+
+同时，在分类问题的场景下，我们可以重点看一下目标变量的统计信息，确认有几个类别以及各个类别的数值分布是否均衡。
+由图可见，每一个类别都包含50个数据，十分均衡，不需要额外处理。
+
+![Iris_Class_Cnt at 6.35.31 PM.png](https://i.loli.net/2020/10/27/O2K7YSyJ4FbhTcN.png)
+
+
+
+___数据清洗___
+
+
+经过验证，该数据集中所有字段都不存在空值，且数据符合预期，不需要额外的数据清洗工程。
+
+
+___特征选择___
+
+
+由于该数据集只包含4个字段，我们选择使用所有字段，不做进一步的筛选。
+
+
+
+## **建模**
+
+___模型选择___
+
+因为预测值（鸢尾花的种类）为离散性数据，且问题的目的是判断某样本数据属于哪一种类型，我们可以选择使用__分类模型__来拟合数据。其中我们将采用准确率和训练速度都很突出的一种算法，__随机森林（Random Forest）__。
+
+___拆分数据集___
+
+为了保证模型的质量评估不受其训练数据的影响，我们需要把鸢尾花数据集分成训练和测试两个子集。在这个过程中，数据也会被重排列，以消除数据集中由于顺序而产生的偏差。__默认训练集和测试集的比例为75:25__。
+
+我们通过随机数重新排列这150条数据，并选出其中113条数据为训练集，剩下37条数据为测试集。
+
+
+举例：产生训练集SPL：
+```
+repo="iris"
+| eval temp = random()
+| sort by temp
+| limit 113
+```
+
+另存为数据集：
+![Iris_Dataset.png](https://i.loli.net/2020/10/27/9BwMI63pRkFcXWy.png)
+
+
+___训练模型___
+
+在机器学习APP内，我们选定作为训练的子集之后，用fit算子训练线性回归模型, 并将该模型保存到模型库。同时，会产出该模型在训练集上的预测结果：
+
+```
+| from dataset: iris_train
+| fit RandomForestClassifier target from sepal_length sepal_width petal_length petal_width into irisRF
+```
+![iris_train.png](https://i.loli.net/2020/10/28/hF9QbkqVu8GXNyD.png)
+
+## **预测结果**
+
+___模型预测___
+
+
+在机器学习APP内，我们可以用apply算子将刚刚保存的irisRF模型应用到目标测试库，并产生该模型在测试集上的预测结果：
+```
+| from dataset: iris_test
+| apply irisRF
+```
+
+![iris_test.png](https://i.loli.net/2020/10/28/K9m7Z156rYDagGf.png)
+
+___模型效果评估（准确性）___
+
+
+我们可以通过计算预测的准确性来评估模型的训练效果。
+由下图可见，该模型在训练集和测试集上的准确率都非常高：一方面是因为随机森林模型的准确性，另一方面也是因为数据本身的质量高而且数量小。
+
+
+训练集
+```
+| from dataset: iris_train
+| apply irisRF
+| eval match = if(target = 'predicted(target)',1,0)
+| stats count(match) as tot, sum(match) as sum
+| eval accuracy = sum/tot
+```
+
+![iris_train_accuracy.png](https://dn-odum9helk.qbox.me/FqqLiiHUjXJ9BRij2JAWrcn3-bhS)
+
+
+测试集
+```
+| from dataset: iris_test
+| apply irisRF
+| eval match = if(target = 'predicted(target)',1,0)
+| stats count(match) as tot, sum(match) as sum
+| eval accuracy = sum/tot
+```
+
+![iris_test_accuracy.png](https://dn-odum9helk.qbox.me/FlFPVtNG3o2XcUgzxLr-z2ByDKGM)
+
+
+___模型效果评估（可视化）___
+
+
+同时，我们可以通过产出混淆矩阵的可视化方法来评估模型的训练效果。其中，在对角线上的数据量越多，证明判断准确的数据越多。
+
+训练集
+```
+| from dataset: iris_train
+| apply irisRF as predicted_target
+| eval predicted_0 = if(predicted_target=0,1,0)
+| eval predicted_1 = if(predicted_target=1,1,0)
+| eval predicted_2 = if(predicted_target=2,1,0)
+| stats sum(predicted_1) as predicted_1, sum(predicted_2) as predicted_2, sum(predicted_0) as predicted_0 by target
+| eval label = case(target=1, "actual_1",target=2,"actual_2",target=0,"actual_0","na")
+| fields label, predicted_1, predicted_2, predicted_0
+```
+
+![iris_train_CM.png](https://dn-odum9helk.qbox.me/FkaX891cQl2bnd1JKVuYZ_Ludert)
+
+测试集
+```
+| from dataset: iris_test
+| apply irisRF as predicted_target
+| eval predicted_0 = if(predicted_target=0,1,0)
+| eval predicted_1 = if(predicted_target=1,1,0)
+| eval predicted_2 = if(predicted_target=2,1,0)
+| stats sum(predicted_1) as predicted_1, sum(predicted_2) as predicted_2, sum(predicted_0) as predicted_0 by target
+| eval label = case(target=1, "actual_1",target=2,"actual_2",target=0,"actual_0","na")
+| fields label, predicted_1, predicted_2, predicted_0
+```
+
+![iris_test_CM.png](https://dn-odum9helk.qbox.me/FnncX0evNwovqN3OA0Xs6O3UL6F_)

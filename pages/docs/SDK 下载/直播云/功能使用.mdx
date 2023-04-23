@@ -1,0 +1,708 @@
+当你要深入理解 SDK 的一些参数及有定制化需求时，可以从高级功能部分中查询阅读，以下小节无前后依赖。
+
+<a id="1"></a>
+# 1 音视频采集和编码配置
+
+`PLMediaStreamingKit` 中通过不同的 configuration 设置不同的采集或编码配置信息，对应的有：
+
+- `PLVideoCaptureConfiguration` 视频采集配置
+- `PLAudioCaptureConfiguration` 音频采集配置
+- `PLVideoStreamingConfiguration` 视频编码配置
+- `PLAudioStreamingConfiguration` 音频编码配置
+
+可以通过如下途径来设置 configuration：
+
+- 在 `PLMediaStreamingSession` init 时传递对应的 configuration
+- 在推流前、推流中、推流结束后调用 `- (void)reloadVideoStreamingConfiguration:(PLVideoStreamingConfiguration *)videoStreamingConfiguration;` 重置视频编码配置
+- 对于视频采集配置，可以直接设置 PLMediaStreamingSession 相关的属性；
+
+需要注意的是，通过 reload 方法重置 configuration 时，需要确保传递的 configuration 与当前 session 已经持有的不是一个对象。
+
+<a id="1.1"></a>
+## 1.1 视频采集参数
+
+1.自定义视频采集参数
+
+当前的 `PLVideoCaptureConfiguration` 中可自行设定的参数有
+
+- videoFrameRate
+  - 即 FPS，每一秒所包含的视频帧数
+- sessionPreset
+  - 即采集时的画幅分辨率大小
+- previewMirrorFrontFacing
+  - 是否在使用前置摄像头采集的时候镜像预览画面
+- previewMirrorRearFacing
+  - 是否在使用后置摄像头采集的时候镜像预览画面
+- streamMirrorFrontFacing
+  - 是否在使用前置摄像头采集的时候镜像编码画面
+- streamMirrorRearFacing
+  - 是否在使用后置摄像头采集的时候镜像编码画面
+- position
+  - 开启 PLMediaStreamingSession 的时候默认使用前置还是后置摄像头
+- videoOrientation
+  - 开启 PLMediaStreamingSession 的时候默认使用哪个旋转方向
+
+需要注意的是指定分辨率的 `sessionPreset` 例如 `AVCaptureSessionPreset1920x1080` 并非所有机型的所有摄像头均支持，在设置相应的采集分辨率之前请务必保证做过充分的机型适配测试，避免在某些机型使用该机型摄像头不支持的 `sessionPreset`。另外，如果使用只指定采集质量的 `sessionPreset`，例如 `AVCaptureSessionPresetMedium`，那系统会根据当前摄像头的支持情况使用相应质量等级的分辨率进行采集。
+
+<a id="1.2"></a>
+## 1.2 音频采集参数
+
+#### 自定义音频采集参数
+
+当前的 `PLAudioCaptureConfiguration` 中可自行设定的参数有
+
+- channelsPerFrame
+  - 采集时的声道数，默认为 1，并非所有采集设备都支持多声道数据的采集，可以通过检查 [AVAudioSession sharedInstance].maximumInputNumberOfChannels 得到当前采集设备支持的最大声道数。
+
+- acousticEchoCancellationEnable
+  - 回声消除开关，默认为 NO。普通直播用到回声消除的场景不多，当用户开启返听功能，并且使用外放时，可打开这个开关，防止产生尖锐的啸叫声。
+
+<a id="1.3"></a>
+## 1.3 视频编码参数
+
+当不确定视频编码具体的参数该如何设定时，你可以选择 SDK 内置的几种视频编码质量。
+
+### Quality 的对比
+
+
+| Quality | VideoSize | FPS | ProfileLevel | Video BitRate(Kbps)|
+|---|---|---|---|---|
+|kPLVideoStreamingQualityLow1|272x480|24|Baseline AutoLevel|128|
+|kPLVideoStreamingQualityLow2|272x480|24|Baseline AutoLevel|256|
+|kPLVideoStreamingQualityLow3|272x480|24|Baseline AutoLevel|512|
+|kPLVideoStreamingQualityMedium1|368x640|24|High AutoLevel|512|
+|kPLVideoStreamingQualityMedium2|368x640|24|High AutoLevel|768|
+|kPLVideoStreamingQualityMedium3|368x640|24|High AutoLevel|1024|
+|kPLVideoStreamingQualityHigh1|720x1280|24|High AutoLevel|1024|
+|kPLVideoStreamingQualityHigh2|720x1280|24|High AutoLevel|1280|
+|kPLVideoStreamingQualityHigh3|720x1280|24|High AutoLevel|1536|
+
+### 自定义编码参数
+
+当前的 `PLVideoStreamingConfiguration` 中可自行设定的参数有
+
+- videoProfileLevel
+  - H.264 编码时对应的 profile level 影响编码压缩算法的复杂度和编码耗能。设置的越高压缩率越高，算法复杂度越高，相应的可能带来发热量更大的情况
+- videoSize
+  - 编码的分辨率，对于采集到的图像，编码前会按照这个分辨率来做拉伸或者裁剪
+- expectedSourceVideoFrameRate
+  - 预期视频的编码帧率，这个数值对编码器的来说并不是直接限定了 fps, 而是给编码器一个预期的视频帧率，最终编码的视频帧率，是由实际输入的数据决定的
+- videoMaxKeyframeInterval
+  - 两个关键帧的帧间隔，一般设置为 FPS 的三倍
+- averageVideoBitRate
+  - 平均的编码码率，设定后编码时的码率并不会是恒定不变，静物较低，动态物体会相应升高
+- videoEncoderType
+  - H.264 编码器类型，默认采用 `PLH264EncoderType_AVFoundation` 编码方式，在 iOS 8 及以上的系统可采用 `PLH264EncoderType_VideoToolbox`，编码效率更高
+
+`PLMediaStreamingKit` 为了防止编码参数设定失败而导致编码失败，出现推流无视频的情况，依据 videoProfileLevel 限定了其他参数的范围，该限定范围针对 Quality 生成的配置同样有效。参见以下表格：
+
+| ProfileLevel | Max VideoSize | Max FPS | Max Video BitRate(Mbps) |
+|---|---|---|---|
+| Baseline 30 | (720, 480) | 30 | 10 |
+| Baseline 31 | (1280, 720) | 30 | 14 |
+| Baseline 41 | (1920, 1080) | 30 | 50 |
+| Main 30 | (720, 480) | 30 | 10 |
+| Main 31 | (1280, 720) | 30 | 14 |
+| Main 32 | (1280, 1024) | 30 | 20 |
+| Main 41 | (1920, 1080) | 30 | 50 |
+| High 40 | (1920, 1080) | 30 | 25 |
+| High 41 | (1920, 1080) | 30 | 62.5 |
+
+### 码率、fps、分辨对清晰度及流畅度的影响
+
+对于码率（BitRate）、FPS（frame per second）、分辨率（VideoSize）三者的关系，有必要在这里做一些说明，以便你根据自己产品的需要可以有的放矢的调节各个参数。
+
+一个视频流个人的感受一般来说会有卡顿、模糊等消极的情况，虽然我们都不愿意接受消极情况的出现，但是在 UGC 甚至 PGC 的直播场景中，都不可避免的要面对。因为直播推流实时性很强烈，所以为了保证这一实时性，在网络带宽不足或者上行速度不佳的情况下，都需要做出选择。
+
+要么选择更好的流程度但牺牲清晰度（模糊），要么选择更好的清晰度但牺牲流畅度（卡顿），这一层的选择大多由产品决定。
+
+一般来说，当选定了一个分辨率后，推流过程中就不会对分辨率做变更，但可以对码率和 FPS 做出调节，从而达到上述两种情况的选择。
+
+| 效果 | 码率 | FPS |
+|---|---|---|
+| 流畅度 | 负相关 | 正相关 |
+| 清晰度 | 正相关 | 负相关 |
+
+通过这个关联，我们就可以容易的知道该如何从技术层面做出调整。在追求更好的流畅度时，我们可以适当降低码率，如果 FPS 已经较高（如 30）时，可以维持 FPS 不变更，如果此时因为码率太低而画面无法接受，可以再适当调低 FPS；在追求更清晰的画质时，可以提高码率，FPS 调节至 24 左右人眼大多还会识别为流畅，如果可以接受有轻微卡顿，那么可以将 FPS 设置的更低，比如 20 甚至 15。
+
+总之，这三者之间一起构建其了画面清晰和视频流畅的感觉，但最终参数是否能满意需要自己不断调整和调优，从而满足产品层面的需求。
+
+<a id="1.4"></a>
+## 1.4 音频编码参数
+
+相比于视频繁杂的参数，当前 `PLAudioStreamingConfiguration` 可配置的参数较为简单，目前提供音频码率和编码器的配置，音频编码可选择 AAC-LC 或者 HE-AAC。
+
+各 Quality 的对比：
+
+| Quality | Audio BitRate(Kbps) |
+|---|---|
+|kPLAudioStreamingQualityHigh1|64|
+|kPLAudioStreamingQualityHigh2|96|
+|kPLAudioStreamingQualityHigh3|128|
+
+<a id="1.5"></a>
+## 1.5 切换视频配置
+
+为了满足推流中因网络变更，网络拥塞等情况下对码率、FPS 等参数的调节，`PLMediaStreamingSession` 提供了重置编码参数的方法，因为在重置编码器时会重新发送编码参数信息，可能触发播放器重置解码器或者清除缓存的操作（依据播放器自身行为而定），所以推流中切换编码参数时，观看短可能出现短暂（但视觉可感知）的卡顿。因此建议不要频繁的切换编码参数，避免因此带来的播放端体验问题。
+
+- 在推流前、推流中、推流结束后调用 `- (void)reloadVideoStreamingConfiguration:(PLVideoStreamingConfiguration *)videoStreamingConfiguration;` 来重置 configuration
+
+需要注意的是，通过 reload 方法重置 configuration 时，需要确保传递的 configuration 与当前 session 已经持有的不是一个对象。
+
+<a id="1.6"></a>
+## 1.6 建议编码参数
+
+提示：以下为建议值，可根据产品需求自行更改调节。
+
+UGC 场景，因为主播方所在的网络环境参差不齐，所以不易将码率设置的过高，此处我们给出建议设定
+
+- WiFi: video Medium2 或者自定义编码参数时设定码率为 600~800Kbps
+- 3G/4G: video Medium1 或者自定义编码参数时设定码率为 400~600Kbps
+
+PGC 场景，因为主播方所在网络一般都会有较高的要求，并且主播网络质量大多可以保障带宽充足，此处我们给出建议设定
+
+- WiFi: video High1 或者自定义编码参数时设定码率为 1000~1200Kbps
+- 3G/4G: video Medium2 或者自定义编码参数时设定码率为 600~800Kbps
+
+对于 PGC 中的 3G/4G 场景，假定 PGC 时会配备较好的外置热点保证上行带宽充足。
+
+<a id="1.7"></a>
+## 1.7 如何只推音频
+
+当你只需要推送音频时，并不需要额外的增加代码，只需要在创建 `PLMediaStreamingSession` 时，只传入 `PLAudioStreamingConfiguration` 和 `PLAudioCaptureConfiguration` 对象即可，这样 `PLMediaStreamingSession` 就不会在内部创建视频采集和编码的相关内容，推流时也只会发音频配置信息和音频数据。
+
+<a id="1.8"></a>
+## 1.8 返听
+
+`返听`又被称之为`耳返`，指声音通过主播的麦克风被录入之后，立即从主播的耳机中播出来。返听功能如果搭配音效功能一起使用，可以让主播听到经音效处理后（如加入混响效果）的自己的声音，会有一种独特感觉。
+
+返听功能可通过 `PLMediaStreamingSession` 的 `playback` 属性进行开启或关闭。注意，只有在推流进行时，返听功能才会起作用。因为只有开始推流之后，SDK 才会打开麦克风并开始录音。
+
+此外，建议通过业务逻辑禁止主播在没有插上耳机的情况下使用返听功能。虽然 SDK 允许用户即便没有插入耳机却照样可以开启返听，但那并不意味着我们建议你这么做。因为在 iPhone 没有接入耳机的时候开启返听，iPhone 的麦克风录入的声音会从 iPhone 的扬声器中立即播放出来，从而再次被麦克风录入，如此反复几秒后将变成尖锐的电流音。想象一下你在 KTV 把话筒凑到音响附近后听到的令人不快的刺耳声音吧。因此，我们强烈建议开发者在业务逻辑层进行判定，当主播开启返听功能时，如果拔掉耳机, 请将 `playback` 属性设为 `NO` 以关闭返听功能。
+
+<a id="1.9"></a>
+## 1.9 音效
+
+SDK 内置的音效模块会对主播通过麦克风录入的声音进行处理，从而让人听起来有不一样的感觉。例如加入 “回声” 音效后，主播的声音听起来就好像置身于空旷的讲堂一般；加入 “混响” 音效后，主播的声音听起来则更浑厚有力。
+
+音效会影响`返听`功能，经过音效处理后的声音将被主播自己的耳机播放，音响产生的效果也会被推流出去，从而被观众听到。
+
+SDK 的音效功能是对 iOS 的 Audio Unit 进行的封装，使开发者可以抽身于 Audio Unit 复杂的 API 泥潭。音效的添加、修改、删除都可以通过操作下面这个属性进行：
+
+``` Objective-C
+@property (nonatomic, strong) NSArray<PLAudioEffectConfiguration *> *audioEffectConfigurations;
+```
+ 
+这是一个由 `PLAudioEffectConfiguration` 对象构成的数组，每一个 `PLAudioEffectConfiguration` 对象对应一种音效。如果你需要同时开启多个音效，只需像如下示例把它们全部放在一个数组中即可：
+
+``` Objective-C
+mediaStreamingSession.audioEffectConfigurations = @[effect0, effect1, effect2, ...];
+```
+
+如果你想删除某个音效，只需要重新构造一个数组，令它唯独不包含那个你想要删除的音效,然后再重新赋值该属性即可。如果你想关闭音效功能，只需要设置一个空数组，或设置 nil 即可。注意，对音效的操作是立即生效的，不需要重启推流。
+
+构成数组的元素必须是 `PLAudioEffectConfiguration` 对象或它的子类的对象。SDK 提供了众多的配置对象供你选择,这些配置对象全部都是 `PLAudioEffectConfiguration` 的子类对象。每一种配置对象往往对应一种 `kAudioUnitType_Effect` 类型的 Audio Unit。如果你熟悉 Audio Unit，你会发现每一种 `kAudioUnitType_Effect` 的子类型，SDK 中都有一种配置类与之对应。
+例如，sub type 为 `kAudioUnitSubType_Reverb2` 的 Audio Unit 在 SDK 中对应的配置类为 `PLAudioEffectReverb2Configuration`。而 Reverb2 的所有可使用的属性都可以在 `PLAudioEffectReverb2Configuration` 的成员变量中找到。你可以通过
+
+``` Objective-C
+id effect = [PLAudioEffectReverb2Configuration defaultConfiguration];
+```
+
+来构造一个所有成员变量都取默认值的配置对象。然后，通过类似
+
+``` Objective-C
+...
+
+effect.gain = 0.8; 
+effect.decayTimeAt0Hz = 1.2; 
+
+...
+```
+
+来设置构造好的配置对象的属性。
+
+至此，你应该已经明白了如何构造任何你想要的音效配置了。
+
+- 首先,你需要查找 Apple 的 Audio Unit 的 API 文档,在所有 type 为
+kAudioUnitType\_Effect 的 Audio Unit 中挑选一个 sub type，作为你想要的音效，然后根据 sub type 的名字找到 SDK 中对应的配置类。例如，在之前的例子中，sub type 为 kAudioUnitSubType\_Reverb2，因此配置类的名字为 PLAudioEffectReverb2Configuration。
+- 之后调用 [PLAudioEffectXXXConfiguration defaultConfiguration] 来
+构造一个全部属性为默认值的配置对象。
+- 调整属性的值，来得到你想要的音效效果。
+- 重复之前的步骤，直到构造出所有你需要的音效配置对象，并全部装入一个
+数组。
+- 通过设置 mediaStreamingSession.audioEffectConfigurations =
+@[...]; 来让你之前准备的音效配置生效。
+
+除了与 Audio Unit 一一对应的音效配置类，我们还提供了预设的音效类，PLAudioEffectModeConfiguration。你可以通过如下三个方法获取三种预设混响音效配置
+
+``` Objective-C
+[PLAudioEffectModeConfiguration reverbLowLevelModeConfiguration];
+
+[PLAudioEffectModeConfiguration reverbMediumLevelModeConfiguration];
+
+[PLAudioEffectModeConfiguration reverbHeightLevelModeConfiguration];
+```
+
+mediaStreamingSession.audioEffectConfigurations 这个数组里的音效配置对象是有顺序的，这个顺序最终将和 Audio Unit 在 AUGraph 中的顺序保持一致。如果你不了解 Audio Unit 在 AUGraph 中的顺序对最终产生的音效有什么影响，其实也无妨，实际上你随意地将音频对象排列最终产生的效果用肉耳听起来差别也不大（若你有更高的追求，那么你需要理解这个顺序的意义）。
+
+<a id="1.10"></a>
+## 1.10 混音
+
+当前版本的 SDK 允许主播在推流的同时，播放本地音频文件。主播麦克风录入的声音，在经过音效处理(如果有)后，会与音频文件的内容混合，然后推流出去让观众听到。同时，如果主播开启了返听功能，亦可以从耳机听到音频文件播放出的声音。
+
+场景举例：直播中，主播唱歌，通过播放音频文件来获得伴奏。结合返听功能，主播可以从耳机听到伴奏音乐以及自己的唱出的歌声。同时观众最终听到的也是混合了伴奏的主播的歌声。
+
+要开启音频文件播放功能,首先需要构造播放器实例,通过如下方法构造
+
+``` Objective-C
+PLAudioPlayer *player = [mediaStreamingSession audioPlayerWithFilePath:@"audio file path"];
+```
+
+之后，所有与音频文件播放相关的功能就都基于 `player` 进行了。
+
+当你播放完音频文件之后，且不打算再使用该功能时，需要释放掉 player，可通过调用
+
+``` Objective-C
+[mediaStreamingSession closeCurrentAudio];
+```
+
+来释放之前获取的播放器实例。
+
+**注意：播放器使用完必须关闭，否则它将一直占用着资源（例如音频文件的句柄）。**
+
+每当音频文件播放完毕，会回调如下方法询问你是否把该音频文件重新播放一遍
+
+``` Objective-C
+- (BOOL)didAudioFilePlayingFinishedAndShouldAudioPlayerPlayAgain:(PLAudioPlayer *)audioPlayer
+```
+
+该方法可以让你知道音频文件什么时候播放完毕，同时通过返回一个 BOOL 值，来控制播放器的行为。例如，如果你想做单曲循环效果，可以如此实现该方法
+
+``` Objective-C
+- (BOOL)didAudioFilePlayingFinishedAndShouldAudioPlayerPlayAgain:(PLAudioPlayer *)audioPlayer {
+    return YES; 
+}
+```
+
+如果你想实现顺序播放效果，可以如此实现该方法
+
+``` Objective-C
+- (BOOL)didAudioFilePlayingFinishedAndShouldAudioPlayerPlayAgain:(PLAudioPlayer *)audioPlayer {
+    audioPlayer.audioFilePath = @"/path/to/next/audio/file/name.mp3";
+    return YES; 
+}
+```
+
+<a id="1.11"></a>
+## 1.11 SRT 协议 
+
+SDK 默认采用 rtmp 协议推流，如果你想实现 SRT 协议推流，仅需两步即可开启 SRT 协议推流，其他步骤无需改变
+- 开启 SRT 协议支持：
+
+``` Objective-C
+@property (nonatomic, assign) PLProtocolModel  protocolModel
+```
+- 获取符合标准的 SRT 推流地址：
+
+     SRT 协议推流地址需符合官方标准，详情可参考 [access-control](https://github.com/Haivision/srt/blob/master/docs/features/access-control.md#general-syntax)，示例如下：
+
+```objective-c
+srt://pili-publish.qnsdk.com?streamid=#!::h=sdk-live/xxx,m=publish
+```
+
+其中，h 对应您七牛云直播空间下的 *空间名/streamID*
+<a id="2"></a>
+# 2 DNS 优化
+
+在大陆一些地区或特别的运营商线路，存在较为普遍的 DNS 劫持问题，而这对于依赖 DNS 解析 rtmp 流地址的 `PLMediaStreamingKit` 来说是很糟糕的情况，为了解决这一问题，我们引入了 `HappyDNS` 这个库，以便可以实现 httpDNS，localDNS 等方式解决这类问题。
+
+<a id="2.1"></a>
+## 2.1 HappyDNS
+
+你可以[点击这里](https://github.com/qiniu/happy-dns-objc) 跳转到 `HappyDNS` 的 GitHub 主页，在那里查看更详细的介绍和使用。
+
+默认情况下，你所创建的 `PLMediaStreamingSession` 对象，内部持有一个 `HappyDNS` 对应的 manager 对象，来负责处理 DNS 解析。
+
+如果你期望按照不同的规则来做 DNS 解析，那么你可以在创建 `PLMediaStreamingSession` 前，创建好自己的 `QNDnsManager` 对象，我们在 `PLMediaStreamingSession` 中提供了一个 init 方法满足这类需求，你可以传递自己的 `QNDnsManager` 对象给 `PLMediaStreamingSession`，从而定制化 DNS 解析。
+
+<a id="3"></a>
+# 3 流状态获取
+
+在 `PLMediaStreamingKit` 中，通过反馈 `PLMediaStreamingSession` 的状态来反馈流的状态。我们定义了几种状态，确保 `PLMediaStreamingSession` 对象在有限的几个状态间切换，并可以较好的反应流的状态。
+
+| 状态名 | 含义 |
+|---|---|
+| PLStreamStateUnknow | 初始化时指定的状态，不会有任何状态会跳转到这一状态 |
+| PLStreamStateConnecting | RTMP 流链接中的状态 |
+| PLStreamStateConnected | RTMP 已连接成功时的状态 |
+| PLStreamStateDisconnecting | RTMP 正常断开时，正在断开的状态 |
+| PLStreamStateDisconnected | RTMP 正常断开时，已断开的状态 |
+| PLStreamStateAutoReconnecting | 正在等待自动重连状态 | 
+| PLStreamStateError | 因非正常原因导致 RTMP 流断开，如包发送失败、流校验失败等 |
+
+<a id="3.1"></a>
+## 3.1 state 状态回调
+
+state 状态对应的 Delegate 回调方法是
+
+``` Objective-C
+- (void)mediaStreamingSession:(PLMediaStreamingSession *)session streamStateDidChange:(PLStreamState)state;
+```
+
+只有在正常连接，正常断开的情况下跳转的状态才会触发这一回调。所谓正常连接是指通过调用 `-startStreamingWithFeedback:` 方法使得流连接的各种状态，而所谓正常断开是指调用 `-stopStreaming` 方法使得流断开的各种状态。所以只有以下四种状态会触发这一回调方法。
+
+- PLStreamStateConnecting
+- PLStreamStateConnected
+- PLStreamStateDisconnecting
+- PLStreamStateDisconnected
+
+<a id="3.2"></a>
+## 3.2 error 状态回调
+
+error 状态对应的 Delegate 回调方法是
+
+``` Objective-C
+- (void)mediaStreamingSession:(PLMediaStreamingSession *)session didDisconnectWithError:(NSError *)error;
+```
+
+除了调用 `-stopStreaming` 之外的所有导致流断开的情况，都被归属于非正常断开的情况，此时就会触发该回调。对于错误的处理，我们不建议触发了一次 error 后就停掉，最好可以在此时尝试有限次数的重连，详见[重连](#5.4.1)小节。
+
+<a id="3.3"></a>
+## 3.3 status 状态回调
+
+除了 state 作为流本身状态的切换，我们还提供了流实时情况的反馈接口
+
+``` Objective-C
+- (void)mediaStreamingSession:(PLMediaStreamingSession *)session streamStatusDidUpdate:(PLStreamStatus *)status;
+```
+
+默认情况下，该回调每隔 3s 调用一次，每次包含了这 3s 内音视频的 fps 和总共的码率（注意单位是 kbps）。你可以通过 `PLMediaStreamingSession` 的 statusUpdateInterval 属性来读取或更改这个回调的间隔。
+
+<a id="3.4"></a>
+## 3.4 产品层面的反馈
+
+status 的状态回调可以很好的反应发送情况，及网络是否流畅，是否拥塞。所以此处可以作为产品层面对弱网情况决策的一个入口。
+
+一般的，当 status.videoFPS 比预设的 FPS 明显小时（小于等于 20%），并且维持几秒都是如此，那么就可以判定为当前主播所在的网络为弱网环境，可以给主播视觉上的提示，或者主动降低编码配置，甚至直接断掉主播的流，这些都由具体的产品需求而定，而此处只是给出一个入口的提示和建议。
+
+<a id="4"></a>
+# 4 网络异常处理
+
+直播中，网络异常的情况比我们能意料到的可能会多不少，常见的情况一般有
+
+- 网络环境切换，比如 3G/4G 与 Wi-Fi 环境切换
+- 网络不可达，网络断开属于这一类
+- 带宽不足，可能触发发送失败
+- 上行链路不佳，直接影响流发送速度
+
+作为开发者我们不能乐观的认为只要是 Wi-Fi 网就是好的，因为即便是 Wi-Fi 也有可能因为运营商上行限制，共享网络带宽等因素导致以上网络异常情况的出现。
+
+为何在直播中要面对这么多的网络异常情况，而在其他上传/下载中很少遇到的，这是因为直播对实时性的要求使得它不得面对这一情况，即无论网络是否抖动，是否能一直良好，直播都要尽可能是可持续，可观看的状态。
+
+<a id="4.1"></a>
+## 4.1 重连
+
+`PLMediaStreamingSession` 内置了自动重连功能，但默认处于关闭状态。之所以默认关闭，一方面是考虑到 App 的业务逻辑场景多样而负责，对于直播重连的次数、时机、间隔都会有不同的需求，此时让开发者自己来决定是否重连，以及尝试重连的次数会更加合理；另一方面是兼容旧版本业务层面可能已实现的自动重连逻辑。
+
+如果你想直接使用内置的自动重连功能，可通过将 `PLMediaStreamingSession` 的 `autoReconnectEnable` 属性设置为 `YES` 来开启，并需要注意如下几点：
+
+- 自动重连次数上限目前设定为 3 次，重连的等待时间会由首次的 0~2s 之间逐步递增到第三次的 4~6s 之间
+- 等待重连期间，`streamState` 处于 `PLStreamStateAutoReconnecting` 状态，业务层可根据该状态来更新用户界面
+- 网络异常的 error Delegate 回调只有在达到最大重连次数后还未连接成功时才会被触发
+
+若你想自己实现自动重连逻辑，可以利用以下网络异常所触发的 error Delegate 回调接口来添加相应的逻辑：
+
+``` Objective-C
+- (void)mediaStreamingSession:(PLMediaStreamingSession *)session didDisconnectWithError:(NSError *)error;
+```
+
+你可以在这个方法内通过重新调用 `-startStreamingWithFeedback:` 方法来尝试重连。此处建议不要立即重连，而是采用重连间隔加倍的方式，比如共尝试 3 次重连，第一次等待 0.5s, 第二次等待 1s, 第三次等待 2s，这样的方式主要考虑到弱网时网络带宽的缓解需要时间，而加倍重连可以更容易在网络恢复的时候连接，而非在网络已经拥塞时还不断做无用功的重连。
+
+`PLMediaStreamingSession` 内置了网络切换监测功能，但默认处于关闭状态。开启后，网络在 WWAN(3G/4G) 和 Wi-Fi 之间相互切换时，我们提供了一个回调 `connectionChangeActionCallback` 属性，它的函数签名如下
+
+``` Objective-C
+typedef BOOL(^ConnectionChangeActionCallback)(PLNetworkStateTransition transition);
+```
+
+该回调函数传入参数为当前网络的切换状态 `PLNetworkStateTransition`。 返回值为布尔值，YES表示在某种切换状态下允许推流自动重启，NO则代表该状态下不应自动重启。例如在 `PLNetworkStateTransitionWWANToWiFi` 状态，即网络从 3G/4G 切换到 Wi-Fi 后，基于节省流量等需求考虑，你可能需要进行一次快速的重连，使得数据可以通过 Wi-Fi 网络发送，此时返回 `YES` 即可。反之，如果推流过程中 Wi-Fi 断掉切换到 3G/4G，此时在未征得用户同意使用移动流量推流时，可返回 `NO` 不自动重启推流。以下为参考逻辑
+
+``` Objective-C
+session.connectionChangeActionCallback = ^(PLNetworkStateTransition transition) {
+        switch (transition) {
+            case PLNetworkStateTransitionWWANToWiFi:
+                return YES;
+                
+            case PLNetworkStateTransitionWiFiToWWAN:
+                return NO;
+                
+            default:
+                break;
+        }
+        
+        return NO;
+    };
+```
+
+如果该属性未被初始化赋值，则 SDK 内部出于节省用户移动网络流量的目的，会默认在 Wi-Fi 切换到 3G/4G 时断开推流。此时，你可以自行监听网络状态，调用 `-restartStreamingWithFeedback:` 方法来快速重连。
+
+<a id="4.2"></a>
+## 4.2 弱网优化
+
+移动直播过程中存在着各种各样的网络挑战。由于无线网络相对于有线网络，可靠性较低，会经常遇到信号覆盖不佳导致的高丢包、高延时等问题，特别是在用网高峰期，由于带宽有限，网络拥塞的情况时有发生。自 [v2.1.3](https://github.com/pili-engineering/PLMediaStreamingKit/releases/tag/v2.1.3) 起，`PLMediaStreamingKit` 内置了一套弱网优化方案，可以满足以下两个诉求：
+
+- 能动态地适应网络质量，即在质量不佳的网络下，能够自动下调视频编码的输出码率和帧率，而当网络质量恢复稳定时，输出码率和帧率也应得到相应回升，并能在调节过程中使得码率与帧率变化相对平稳。
+- 在直播端网络质量稳定时，确保编码器输出的码率和帧率恒定在一个期望的最高值，以提供良好的清晰度和流畅度。
+
+这套弱网优化方案包含两个工作模块：
+
+- 自适应码率模块，能够在期望码率与设定的最低码率间做出调节，适应网络抖动引发的数据带宽变化。
+- 动态帧率模块，能够在期望帧率与一个最低帧率间做出调节，动态调整输出的视频数据量。
+
+这两个模块可并行工作，可以单独开启或关闭，开发者可根据自己的业务场景来决定该方案的应用形态。一般情况下，如果开发者想使用该解决方案，建议将两个调节模块都开启，可达到我们测试的最佳效果。利用码率与帧率调整相互配合作用，一方面有效控制网络波动情况下的音视频数据发送量，缓解网络拥塞，同时又能给播放端带来流畅的观看体验；另一方面在网络质量恢复时能够确保音视频的码率帧率是以设定的最优质量配置进行推流，并且能使不同码率帧率配置切换时以一种更为平滑的方式进行，不会给观看端带来画质波动的突兀感。
+
+自适应码率调节可以通过 `PLMediaStreamingSession` 的如下接口开启:
+
+``` Objective-C
+- (void)enableAdaptiveBitrateControlWithMinVideoBitRate:(NSUInteger)minVideoBitRate;
+```
+其关闭接口为:
+
+``` Objective-C
+- (void)disableAdaptiveBitrateControl;
+```
+
+开启该机制时，需设置允许向下调节的最低码率（注意其单位为 bps，如设置最低为 200 Kbps，应传入参数值为 200*1024），以便使自动调整后的码率不会低于该范围。该机制根据网络吞吐量及 TCP 发送时间来调节推流的码率，在网络带宽变小导致发送缓冲区数据持续增长时，SDK 内部将适当降低推流码率，若情况得不到改善，则会重复该过程直至平均码率降至用户设置的最低值；反之，当一段时间内网络带宽充裕，SDK 将适当增加推流码率，直至达到预设的推流码率。
+
+动态帧率的开关为 `PLMediaStreamingSession` 的 `dynamicFrameEnable` 属性，开启后，自动调整的最大帧率不会超过预设在 `videoStreamingConfiguration` 配置中的 `expectedSourceVideoFrameRate`，最低不会小于 10 FPS。
+
+默认情况下，这两个模块处于关闭状态，是为了兼容旧版本中开发者可能已自行实现的弱网调节机制。若开发者想使用我们的内置方案，请确保您自定义的机制已被关闭。
+
+<a id="5"></a>
+# 5 水印和美颜
+
+<a id="5.1"></a>
+## 5.1 水印
+
+`PLMediaStreamingKit` 支持内置水印功能，你可以根据自己的需要添加水印或移除水印，并且能够自由设置水印的大小和位置。需要注意的是水印功能对预览和直播流均生效。
+
+添加水印
+
+```Objective-C
+-(void)setWaterMarkWithImage:(UIImage *)wateMarkImage position:(CGPoint)position;
+```
+
+该方法将为直播流添加一个水印，水印的大小由 `wateMarkImage` 的大小决定，位置由 position 决定，需要注意的是这些值都是以采集数据的像素点为单位的。例如我们使用 `AVCaptureSessionPreset1280x720` 进行采集，同时 `wateMarkImage.size` 为 `(100, 100)` 对应的 `origin` 为 `(200, 300)`，那么水印的位置将在大小为 `1280x720` 的采集画幅中位于 `(200, 300)` 的位置，大小为 `(100, 100)`。
+
+移除水印
+
+```Objective-C
+-(void)clearWaterMark;
+```
+该方法用于移除已添加的水印
+
+<a id="5.2"></a>
+## 5.2 美颜
+
+'PLMediaStreamingSession' 支持内置美颜功能，你可以根据自己的需要选择开关美颜功能，并且能够自由调节包括美颜，美白，红润等在内的参数。需要注意的是水印功能对预览和直播流均生效。
+
+按照默认参数开启或关闭美颜
+
+```Objective-C
+-(void)setBeautifyModeOn:(BOOL)beautifyModeOn;
+```
+
+设置美颜程度，范围为 0 ~ 1
+
+```Objective-C
+-(void)setBeautify:(CGFloat)beautify;
+```
+
+设置美白程度，范围为 0 ~ 1
+
+```Objective-C
+-(void)setWhiten:(CGFloat)whiten;
+```
+
+设置红润程度，范围为 0 ~ 1
+
+```Objective-C
+-(void)setRedden:(CGFloat)redden;
+```
+
+<a id="6"></a>
+# 6 录屏推流
+
+`PLStreamingKit` 支持 iOS 10 新增的录屏推流 ([`ReplayKit Live`](https://developer.apple.com/reference/replaykit)) 功能，开发者可通过构建 [App Extension](https://developer.apple.com/app-extensions) 来调用推流 API 实现实时游戏直播等功能。需要注意的是，实时直播需要游戏或 App 本身实现对 `ReplayKit` 的支持。
+
+<a id="6.1"></a>
+## 6.1 创建 Broadcast Upload Extension
+
+在原有直播 App 中添加一个类型为 `Broadcast Upload Extension` 的新 Target，如图所示：
+
+![](https://dn-odum9helk.qbox.me/c20d1a8ed4c50312a23610900f32bf6d)
+
+Xcode 会额外自动创建一个类型为 `Broadcast UI Extension` 的 Target，用于显示调用 `Broadcast Upload Extension` 的用户界面。
+
+<a id="6.2"></a>
+## 6.2 添加推流管理类
+
+创建推流 API 调用管理类，添加头文件引用：
+
+``` objectivec
+#import <PLMediaStreamingKit/PLStreamingKit.h>
+```
+
+头文件参考
+
+``` objectivec
+#import <Foundation/Foundation.h>
+
+#import <PLMediaStreamingKit/PLStreamingKit.h>
+
+@interface BroadcastManager : NSObject
+
+@property (nonatomic, strong) PLStreamingSession *session;
+
++ (instancetype)sharedBroadcastManager;
+- (PLStreamState)streamState;
+- (void)pushVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer;
+- (void)pushAudioSampleBuffer:(CMSampleBufferRef)sampleBuffer withChannelID:(const NSString *)channelID;
+
+@end
+```
+类实现参考
+
+``` objectivec
+@interface BroadcastManager ()<PLStreamingSessionDelegate>
+
+@end
+
+@implementation BroadcastManager
+
+static BroadcastManager *_instance;
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+        [PLStreamingEnv initEnv];
+        
+        PLVideoStreamingConfiguration *videoConfiguration = [[PLVideoStreamingConfiguration alloc] initWithVideoSize:CGSizeMake(1280, 720) expectedSourceVideoFrameRate:24 videoMaxKeyframeInterval:24*3 averageVideoBitRate:1000*1024 videoProfileLevel:AVVideoProfileLevelH264High41];
+        PLAudioStreamingConfiguration *audioConfiguration = [PLAudioStreamingConfiguration defaultConfiguration];
+        audioConfiguration.inputAudioChannelDescriptions = @[kPLAudioChannelApp, kPLAudioChannelMic];
+        
+        self.session = [[PLStreamingSession alloc] initWithVideoStreamingConfiguration:videoConfiguration
+                                                           audioStreamingConfiguration:audioConfiguration
+                                                                                stream:nil];
+        self.session.delegate = self;
+        #warning 以下 pushURL 需替换为一个真实的流地址
+        NSString *pushURL = nil;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self.session startWithPushURL:[NSURL URLWithString:pushURL] feedback:^(PLStreamStartStateFeedback feedback) {
+                if (PLStreamStartStateSuccess == feedback) {
+                    NSLog(@"connect success");
+                } else {
+                    NSLog(@"connect failed");
+                }
+            }];
+        });
+    }
+    return self;
+}
+
++ (void)initialize
+{
+    _instance = [[BroadcastManager alloc] init];
+}
+
+- (PLStreamState)streamState
+{
+    return self.session.streamState;
+}
+
+- (void)pushVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer
+{
+    [self.session pushVideoSampleBuffer:sampleBuffer];
+}
+
+- (void)pushAudioSampleBuffer:(CMSampleBufferRef)sampleBuffer withChannelID:(const NSString *)channelID
+{
+    [self.session pushAudioSampleBuffer:sampleBuffer withChannelID:channelID completion:nil];
+}
+
++ (instancetype)sharedBroadcastManager
+{
+    return _instance;
+}
+
+// 实现其他必要的协议方法
+
+- (void)streamingSession:(PLStreamingSession *)session didDisconnectWithError:(NSError *)error
+{
+    NSLog(@"error : %@", error);
+}
+
+- (void)streamingSession:(PLStreamingSession *)session streamStatusDidUpdate:(PLStreamStatus *)status
+{
+    NSLog(@"%@", status);
+}
+
+@end
+
+```
+
+注意 `PLAudioStreamingConfiguration` 实例生成时必需注册音频流来源
+
+```objectivec
+audioConfiguration.inputAudioChannelDescriptions = @[kPLAudioChannelApp, kPLAudioChannelMic];
+```
+
+其中 `kPLAudioChannelApp` 对应于 `RPSampleBufferTypeAudioApp`，是 ReplayKit Live 回调的 app 音频数据，`kPLAudioChannelMic` 对应于 `RPSampleBufferTypeAudioMic`，是 ReplayKit Live 回调的 mic 音频数据。之所以需要显示声明，是为了在 PLStreamingKit 在音频编码前将两路音频流进行混音。
+
+在自动生成的 `SampleHandler.m` 中实现 `RPBroadcastSampleHandler` 协议部分方法如下：
+
+```objectivec
+- (void)processSampleBuffer:(CMSampleBufferRef)sampleBuffer withType:(RPSampleBufferType)sampleBufferType {
+    if ([BroadcastManager sharedBroadcastManager].streamState == PLStreamStateConnected) {
+        switch (sampleBufferType) {
+            case RPSampleBufferTypeVideo:
+                // Handle video sample buffer
+                [[BroadcastManager sharedBroadcastManager] pushVideoSampleBuffer:sampleBuffer];
+                break;
+            case RPSampleBufferTypeAudioApp:
+                // Handle audio sample buffer for app audio
+                [[BroadcastManager sharedBroadcastManager] pushAudioSampleBuffer:sampleBuffer withChannelID:kPLAudioChannelApp];
+                break;
+            case RPSampleBufferTypeAudioMic:
+                // Handle audio sample buffer for mic audio
+                [[BroadcastManager sharedBroadcastManager] pushAudioSampleBuffer:sampleBuffer withChannelID:kPLAudioChannelMic];
+                break;
+                
+            default:
+                break;
+        }
+    }
+}
+```
+<a id="6.3"></a>
+## 6.3 一些注意点
+
+如果你使用 CocoaPods 管理依赖库，可能会在编译 broadcast extension target 时遇到 link error，此时请检查 Podfile 里是否为 broadcast extension target 添加相应的依赖；或者可检查以下工程设置是否更改：
+
+![](https://dn-odum9helk.qbox.me/458417f6cc57f3a87f6413a7853e33be)
+
+
+<a id="7"></a>
+# 7 后台推图片
+App 一旦切到后台，摄像头的采集功能会被系统暂停掉，观众会看到主播的画面会卡住，此时如果能推送一张图片告诉观众主播进入后台了，将带来更好的观看体验。具体实现方法如下：开发者需要自行监听 App 进入后台/前台的通知，当App 进入后台时，使用 PLMediaStreamingSession 的如下接口
+
+```Objective-C
+- (void)setPushImage:(nullable UIImage *)image;
+```
+设置一张推流图片，PLMediaStreamingSession 会持续为您推送该图片，当 App 返回前台不再需要推送图片时，重新调用以上接口并传入 nil 即可。
+
+# 8 QUIC 推流
+QUIC 是基于 UDP 开发的可靠传输协议，在弱网下拥有更好的推流效果，相比于 TCP 拥有更低的延迟，可抵抗更高的丢包率。可通过下面接口开启/关闭 QUIC 推流：
+
+```Objective-C
+@property (nonatomic, assign, getter=isQuicEnable) BOOL quicEnable;
+```

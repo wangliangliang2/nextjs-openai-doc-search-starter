@@ -1,0 +1,58 @@
+# **简介**
+音视频分段(segment)，用于按时长或时间点对原视频分段，不改变原音/视频的编码格式、分辨率、码率等，将原音/视频切成多个较小的文件。
+
+**注意**：如果原音视频文件的编码格式无法封装到目标封装格式，那么会返回错误。
+
+
+# **接口规格**
+
+`segment/<Format>/segtime/<SegmentTime>/pattern/<Pattern>`
+
+|          参数名称          |  类别  |  必填  | 说明                                       |
+| :--------------------: | :--: | :--: | ---------------------------------------- |
+|`<Format>`        | A/V  |  是   | 指定分段文件的封装格式，不改变原音/视频的编码情况下可以改变封装格式，如 h264+aac 编码的 mp4文件可以分段为h264+aac 编码的 mkv 小文件。|
+|`/segtime/<SegmentTime>` | A/V  |  否   | 自定义分段后每一小段音/视频流的播放时长。单位为秒，最小值为5，默认值为5。 |
+|`/pattern/<Pattern>`   | A/V  |  是   | 自定义分段后每一小段音/视频流的文件名称。采用 [URL安全的 Base64 编码](https://developer.qiniu.com/kodo/manual/1231/appendix#urlsafe-base64)，例如 qiniu-$(count) 经过编码后为 cWluaXUtJChjb3VudCk=，pattern/cWluaXUtJChjb3VudCk= 将生成 qiniu-000000、qiniu-0000001、……、qiniu-xxxxxx 这样的小段音/视频文件，其中 $(count)是必须存在的六位占位符数字串。 |
+
+# **示例**
+
+用户可以根据需要自定义命令，例如：
+
+`segment/mp4/segtime/10/pattern/cWluaXUtJChjb3VudCk=` 命令的调用将对原音/视频以10秒左右的时间进行分段，最后将生成 qiniu-000000.mp4、qiniu-0000001.mp4、……、qiniu-xxxxxx.mp4 这样的小段音/视频文件。
+
+## **响应内容**
+
+如果请求成功，返回类似如下内容的 JSON 字符串
+
+```json
+"result": [
+    {
+        "index": 0,
+        "segment_end_time": "10.857422",
+        "segment_filename": "qiniu-000000",
+        "segment_start_time": "0.000000"
+    },
+    {
+        "index": 1,
+        "segment_end_time": "21.177422",
+        "segment_filename": "qiniu-000001",
+        "segment_start_time": "10.857422"
+    },
+    {
+        "index": 2,
+        "segment_end_time": "21.857422",
+        "segment_filename": "qiniu-000002",
+        "segment_start_time": "21.177422"
+    }
+]
+```
+
+# **操作方式**
+
+可以通过 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 的方式来调用：
+- `资源上传时自动触发`：可以在上传时指定[persistentOps](/kodo/manual/put-policy#put-policy-persistent-ops-explanation)参数
+- `对已有资源手动手动触发`：调用[pfop]()命令
+
+# **服务价格**
+
+音视频分段服务涉及转封装但不涉及转码，所以其价格与音视频转封装相同。

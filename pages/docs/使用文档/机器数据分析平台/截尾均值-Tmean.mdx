@@ -1,0 +1,16 @@
+用tmean计算去除两端的一部分值之后，剩余数据的平均值。
+
+**语法：**
+
+```
+... |score tmean lower_limit=<float|None> upper_limit=<float|None> <a_field_1> ... <a_field_n>
+```
+
+**参数说明：**
+
+- lower_limit, 用来指定需要包含的数据的下界，默认为 None，即不设限。
+- upper_limit, 用来指定需要包含的数据的上界，默认为 None，即不设限。
+
+**使用场景：**
+
+- 支持模糊搜索（ \*）。

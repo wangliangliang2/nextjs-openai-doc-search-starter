@@ -1,0 +1,17 @@
+对象存储 Kodo 支持您通过配置文件客户端缓存 maxAge 实现在规定的时效内使客户端缓存更新的效果。
+<br>
+
+
+# **说明**
+- 通过配置空间属性中 maxAge 实现对缓存的控制，达到配置 HTTP header 中 Cache-Control:max-age 的目的，更多相关概念请参考[文件客户端缓存](/kodo/development_guidelines/8605/dev-file-the-client-cache)。
+- 对空间该属性的修改将作用在空间内新上传的文件上。
+<br>
+
+# **操作步骤**
+
+1. 登录 Kodo 控制台界面进入[空间管理](https://portal.qiniu.com/kodo/bucket)界面
+2. 单击**目标空间名称**进入空间概览，单击**空间设置**进入空间设置界面；或单击目标空间栏**设置**，快速链接至空间设置界面
+3. 找到文件客户端缓存栏，输入**自定义缓存时间**，如图1
+图1:
+![截屏2021-08-09 下午4.25.40.png](https://dn-odum9helk.qbox.me/FmzHnIIN49Ws3Z1ISOipLN9oEWUl)
+4. 单击**确定**，完成设置

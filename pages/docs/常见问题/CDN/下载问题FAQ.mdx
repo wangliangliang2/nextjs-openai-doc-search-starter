@@ -1,0 +1,46 @@
+| Q1：下载失败，响应非 200 状态码，我应该怎么处理？|
+| ---- |
+| 参考文档：[通过 http 状态码，判断下载失败原因](https://developer.qiniu.com/fusion/kb/3885/through-the-http-status-code-download-failure-reason) |
+
+<br>
+
+| Q2：怎样实现视频链接只能播放，不能下载？|
+| ---- |
+| 播放其实就是一种形式的下载，所以只能播放不能下载是实现不了的，但我们可以用一些方式去避免别人下载：  <br>方法 1 ：可以开启域名 [时间戳防盗链](https://developer.qiniu.com/fusion/kb/1670/timestamp-hotlinking-prevention) ，使得视频链接只在一段时间内可以访问。<br>方法 2 ：用网页播放器播放视频，可以隐藏掉播放链接。虽然链接可以通过抓包获得，但是此方法可以屏蔽掉大部分的小白用户。  |
+
+<br>
+
+| Q3：如何打包下载多个文件？|
+| ---- |
+| 无法通过一次请求，下载多个文件，但是可以用 [mkzip](https://developer.qiniu.com/dora/manual/1667/mkzip) 命令，在云端将多个文件打包，然后直接下载该 zip 文件。 |
+
+<br>
+
+| Q4：下载速度太慢，如何解决？|
+| ---- |
+| 下载速度慢一般有以下几种情况：  <br>1.使用七牛测试域名。七牛的测试域名有单 IP 访问次数和带宽的限制，更换自定义的 CDN 加速域名，可以解决。[观看视频教程](http://songfeifeids.qiniuts.com/spjc/3.mp4)。<br>2.用户本地的 DNS 设置有问题，跟本地出口 IP 不属同省同运营商，可以用 [这个页面](http://tools.cloudxns.net/Index/Diag) 检测，并根据检测结果修改 DNS。<br>3.创建域名时使用场景选择有误，比如将网页平台的域名用作视频点播。这种情况需要给七牛提交工单，修改域名使用场景。<br>4.客户网络下行带宽较差，可以参考 [网络测试](https://developer.qiniu.com/fusion/kb/1324/mobile-terminal-network-test-tool-android-ios) 检查客户网络情况。<br>5.如果确认客户网络正常，主要是未击中CDN缓存的资源加载慢，可以对相关资源做下 【文件预取】（[控制台预取文件](https://developer.qiniu.com/fusion/manual/3845/refresh-the-prefetch-fusion)，[文件预取API](https://developer.qiniu.com/fusion/api/1227/file-prefetching)) 操作；同时针对不同类型的文件设置核实的[缓存策略](https://developer.qiniu.com/fusion/manual/4944/cache-configuration)。 |
+
+<br>
+
+| Q5：上传前文件的大小和下载的文件大小不一致是什么原因？|
+| ---- |
+| 首先 [刷新 CDN 缓存](https://developer.qiniu.com/fusion/kb/1325/refresh-the-cache-and-the-effect-of-time) ，刷新 10 分钟后，可通过 [检查文件 md5](https://developer.qiniu.com/fusion/kb/3644/refresh-the-cache-fails-consistency-method-validation-file) 的方式，来看文件和原文件是否一致。|
+
+<br>
+
+| Q6：为什么浏览器访问文件不是预览，而是直接下载？|
+| ---- |
+| 浏览器会判断文件是否是自己支持预览的格式，如果文件直接下载，说明该浏览器不支持该文件格式。比如 webp 格式的图片，只有 chrome 浏览器支持，其他浏览器不支持。 |
+
+<br>
+
+| Q7：如何实现数据迁移？|
+| ---- |
+|同一账号、不同区域的数据迁移，可以通过 [跨区域同步功能迁移数据](https://developer.qiniu.com/kodo/manual/1700/cross-regional-synchronization) 操作。<br>其他情况，可以使用 [qshell](https://developer.qiniu.com/kodo/tools/1302/qshell) 工具。先用 qdownload 命令批量下载到本地，再用 qupload 批量上传到另一空间。 |
+
+<br>
+
+| Q8：如何禁止访问某个文件？|
+| ---- |
+| 如果文件是存储在【七牛存储空间】的，您可以调用 [修改文件状态](https://developer.qiniu.com/kodo/api/4173/modify-the-file-status) 接口将对应文件禁用来实现。<br> **注意：**<br>文件状态禁用后，如需全网生效，需要刷新下CDN缓存（[七牛控制台刷新CDN缓存](https://developer.qiniu.com/fusion/manual/3845/refresh-the-prefetch-fusion)，[调用API接口刷新CDN缓存](https://developer.qiniu.com/fusion/api/1229/cache-refresh)）。 |
+

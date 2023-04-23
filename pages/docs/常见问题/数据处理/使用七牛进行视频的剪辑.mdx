@@ -1,0 +1,56 @@
+七牛提供了很丰富的一视频处理功能， 比如视频转码， 截图， 水印，旋转， 切片等， 这篇简单介绍下[视频剪辑](http://developer.qiniu.com/docs/v6/api/reference/fop/av/avthumb.html)的简单操作。 
+
+比如我的七牛空间中有一个 MP4 文件：[http://dn-odum9helk.qbox.me/wangjiawei/1.mp4](http://dn-odum9helk.qbox.me/wangjiawei/1.mp4) 。 我们先来看下这个 MP4 的[视频信息](http://dn-odum9helk.qbox.me/wangjiawei/1.mp4?avinfo), 我们可以看到一个视频的时长信息`"duration": "239.285333"`表示 239 秒。现在我们打算做这样的截取`从第一分钟开始，截取时长为一分钟`。 我们来看下我们的[音视频处理接口](http://developer.qiniu.com/docs/v6/api/reference/fop/av/avthumb.html), 其中有两个参数：
+
+| 参数名称 | 类别 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `<Format>` | A/V | 是 | 目标视频的格式（比如 flv、mp4 等），参考 [支持转换的视频格式] |
+| `/ss/<SeekStart>` | A/V |   | 指定视频截取的开始时间，单位：秒。用于视频截取，从一段视频中截取一段视频。 |
+| `/t/<Duration>` | V |   | 指定视频截取的长度，单位：秒。用于视频截取，从一段视频中截取一段视频。 |
+
+可以用来做视频剪辑。
+
+- 根据需求我们可以将开始时间 `ss` 设置为 `60`, 剪辑时长一分钟，可以将 `t` 设置为 `60`， 这样我们的处理规则就是：`avthumb/mp4/ss/60/t/60`。
+
+- 然后使用我们的 [PFOP](http://developer.qiniu.com/docs/v6/api/reference/fop/pfop/pfop.html) 即可以将视频截取出来。
+
+- 但是这样处理后的文件名是不规则的， 如果你想指定处理后的文件名可以参考我们的 [saveas 接口](http://developer.qiniu.com/docs/v6/api/reference/fop/saveas.html) 。 比如我们想处理后保存在空间`rwxf`, 文件名保存成`processed.mp4`。
+
+    1. 我们首先需要对 `rwxf:processed.mp4` 进行[urlsafebase64编码](http://developer.qiniu.com/docs/v6/api/overview/appendix.html)后得到 `cnd4Zjpwcm9jZXNzZWQubXA0`。
+    2. 这样我们的处理命令就变成了：`avthumb/mp4/ss/60/t/60|saveas/cnd4Zjpwcm9jZXNzZWQubXA0`。
+
+- 进行 PFOP 处理后，如果想要查询处理的状态可以通过[持久化状态查询](http://developer.qiniu.com/docs/v6/api/reference/fop/pfop/prefop.html)接口来进行查询。
+
+下面我们给一个简单的 php demo：
+
+    <?php
+    require_once __DIR__. '/../autoload.php';
+    
+    use Qiniu\Auth;
+	use Qiniu\Processing\PersistentFop;
+    
+    $accessKey = '<your_ak>';
+    $secretKey = '<your_sk>';
+    $auth = new Auth($accessKey, $secretKey);
+    $config = new \Qiniu\Config();
+
+    $bucket = 'rwxf';
+    $key = '1.mp4';   
+    $pipeline = 'abc'; //队列名称，使用独立队列可以加快处理速度。  
+    $pfop = new PersistentFop($auth, $config);
+    $savedkey = 'processed.mp4';
+    $entry = \Qiniu\base64_urlSafeEncode("$bucket:$savedkey");
+    $fops = "avthumb/mp4/ss/60/t/60|saveas/$entry";
+    list($id, $err) = $pfop->execute($bucket, $key, $fops);
+    echo "\n====> pfop avthumb result: \n";
+    if ($err != null) 
+    {            
+         var_dump($err);
+    } 
+    else 
+    {            
+         echo "PersistentFop Id: $id\n";
+    }
+
+以上代码要配合我们的 [phpsdk](https://github.com/qiniu/php-sdk) 才可以运行。
+

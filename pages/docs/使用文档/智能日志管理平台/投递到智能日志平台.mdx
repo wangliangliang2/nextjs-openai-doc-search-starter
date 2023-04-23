@@ -1,0 +1,42 @@
+不管是从 [logkit-pro](/insight/manual/4738/logkit-pro-induction) 还是[文件上传](/insight/manual/4882/file-upload)发送数据到工作流，都会自动创建一个消息队列节点以及自动将数据导出到一个日志分析节点，帮您把数据导出到日志仓库。
+
+![](https://pandora-kibana.qiniu.com/workflow/export_t0_logdb.png)
+
+如果您手动创建日志导出节点，需要填写以下参数信息：
+
+**填写参数**
+
+|参数|必填|说明|
+|:---|:---|:---|
+| 名称 |是|导出节点名称|
+| 仓库名称 |是|数据导出的日志仓库名称，可以选择已有仓库或者创建新仓库|
+| 数据存储时限 |是|导出的数据存储在日志仓库的时间限制|
+| IP 解析 |否|将 ip 字段解析为对应的国家、省市、运营商信息 |
+| 数据起始位置 |否|从最早还是最新数据开始导出|
+| 丢弃无效数据 |否|是否忽略无效数据|
+
+**日志分析导出节点支持 ip 解析**
+
+日志分析导出节点支持 ip 类型字段解析，如果您的消息队列中有 ip 类型的字段，可以开启 ip 字段解析，将 ip 字段解析为对应的国家、省市、运营商信息。
+
+![](https://pandora-kibana.qiniu.com/ip/workflow_ip.png)
+
+`注意：`如果您希望导出在您创建导出节点之前的发送过来数据，需要选择`数据起始位置为最老`。
+
+同理，ip 解析只对开启 ip 解析功能之后发送到导出节点的数据生效。
+
+## **数据投递到智能日志平台操作演示**
+
+**1.前提：通过 logkit-pro 或文件上传发送数据到工作流**
+
+**2.到[工作流](https://portal.qiniu.com/pandora/dags)对数据解析 ip 类型字段并导出**
+
+在消息队列节点上鼠标右键创建一个日志分析导出节点，在参数填写模块开启 ip 字段解析。
+
+![](https://pandora-kibana.qiniu.com/workflow/export_logdb.gif)
+
+**3.到[智能日志平台](https://portal.qiniu.com/insight/logdb/overview)搜索导出后的数据**
+
+对于在工作流中开启了 ip 解析功能的导出仓库，搜索仓库的日志：可以看到，除了原始 ip 字段以外，新增了ip_country、ip_region、ip_city 字段。
+
+![](https://pandora-kibana.qiniu.com/ip/searh_ip.png)

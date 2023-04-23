@@ -1,0 +1,28 @@
+对象存储 Kodo 控制台静态页面设置功能，支持您设置默认首页和 404 页面。
+- 您可以把指定空间（Bucket）中指定文件（Object）设置为默认首页，并且通过访问空间的访问域名来访问该页。
+- 您还可以通过设置 404 页面，自定义您的配置 HTTP 请求时的 404 页面；并可将其托管到 Kodo 的存储空间（Bucket），使用 Bucket 的访问域名访问这个网站。
+
+<br>
+
+# **说明**
+- 默认首页：默认关闭该功能。设置开启后，空间根目录及子目录中的 index.html（或 index.htm）文件将会作为默认首页进行展示。
+- 默认 404 错误页面：通过浏览器访问空间内文件出现 404 错误时，Kodo 返回给用户的错误页面。设置的页面须保存在当前空间内，即若您选择上传文件作为自定义页面，该文件将被命名为 errno-404 并上传保存至当前空间内。
+- 使用访问静态网站时的默认首页功能和自定义 404 页面功能，需要在当前空间绑定您的自定义域名（即您网站的域名），绑定自定义域名请参考[域名管理](/kodo/development_guidelines/8527/kodo-domain-name-management)。
+- 更多内容请参考[静态页面管理](/kodo/development_guidelines/8604/a-static-page-management)。
+
+
+<br>
+
+# **操作步骤**
+
+1. 登录Kodo控制台界面进入[空间管理](https://portal.qiniu.com/kodo/bucket)界面
+2. 单击**目标空间名称**进入空间概览，单击**空间设置**进入空间设置界面；或单击目标空间栏**设置**，快速链接至空间设置界面
+3. 在静态页面设置栏，如图1，单击**设置**，进入图2:静态页面设置界面
+图1:
+![image.png](https://dn-odum9helk.qbox.me/FgTmJuS0zDUWHsG2o7f-FI60dh6X)
+4. 如图2 为默认的静态页面设置界面。如图3，单击**开启**设置默认首页，选择**自定义** 404 页面后上传指定文件
+图2: 默认静态页面设置
+![image.png](https://dn-odum9helk.qbox.me/FhWO7k53TzlKSZaP903l8CNaEs5w)
+图3:
+![image.png](https://dn-odum9helk.qbox.me/Fo-NMLoHoTwNjtzyvR0-GJn8o4yu)
+5. 单击**确定**提交并完成静态页面设置

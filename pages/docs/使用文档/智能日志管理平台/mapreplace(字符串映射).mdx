@@ -1,0 +1,71 @@
+`mapreplace` 是一个基于映射关系的整体替换。
+
+如对于数据有一套映射关系，希望将某个字段(假设为field1)中，所有值为 `"123"` 的数据映射(替换)为 `"abc"`, 将值为 `"234"` 的数据映射(替换)为 `"xyz"`
+
+此时我们可以定义一个 `maprepalce` 来实现这样的需求，配置如下：
+
+```
+{
+	"type":"mapreplace",
+	"key":"field1",
+	"map":"123 abc, 234 xyz",
+	"map_file":"",
+	"new":"mynewkey"
+}
+```
+
+如果字段较多，也可以通过文件的形式，在 `map_file` 字段填写文件路径。
+
+如我们编写一个文件 `data.json`，文件内容如下：
+
+```
+{
+	"123":"abc",
+	"234":"xyz"
+}
+```
+注意到文件需要符合 json 格式，且 key 和 value 的类型均为 string 。
+
+然后将配置修改如下即可：
+
+```
+{
+	"type":"mapreplace",
+	"key":"field1",
+	"map":"",
+	"map_file":"data.json"
+}
+```
+
+* `key` 字段支持多级嵌套，多级间用`.`符号连接，如`abc.xyz`，表示 data["abc"]["xyz"]中的数据。
+* `map` 字段表示变化的方式，新旧字符串中间用空格隔开，多个用英文逗号(`,`)分隔。
+* `map_file` 字段表示文件路径，文件需要符合json格式，且json的 key 和 value 的类型均为 string 
+* `new` 如果原来的字段希望保留，就在这边填写新的字段名称，转换后字段就会出现在这里。
+
+一份带有mapreplace Transformer的完整配置类似如下：
+
+
+```
+{
+		"name":"test2.csv",
+		"reader":{
+			"log_path":"./tests/logdir",
+			"mode":"dir"
+		},
+		"parser":{
+			"name":"jsonps",
+			"type":"json"
+		},
+		"transforms":[{
+	  		"type":"mapreplace",
+			"key":"field1",
+			"map":"123 abc, 234 xyz",
+			"map_file":""
+		}],
+		"senders":[{
+			"name":"file_sender",
+			"sender_type":"file",
+			"file_send_path":"./test2/test2_csv_file.txt"
+		}]
+	}
+```

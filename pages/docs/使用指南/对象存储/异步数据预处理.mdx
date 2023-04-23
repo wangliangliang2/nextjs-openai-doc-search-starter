@@ -1,0 +1,3 @@
+在生成[上传凭证](/kodo/manual/1208/upload-token)时，开发者可以通过在[上传策略 (PutPolicy)](/kodo/manual/1206/put-policy)中指定 persistentOps 和 persistentNotifyUrl 字段来设置异步数据处理动作。当资源上传完成后，设置的异步数据处理动作就会被以异步方式启动。<span id="Productname">七牛云存储</span>立刻将响应内容返回给客户端，并不会等待数据处理动作完成。
+
+关于数据处理结果持久化相关的详细内容，请<span id="Wait">参考[持久化数据处理](/dora/manual/1291/persistent-data-processing-pfop)中的相关描述。</span>

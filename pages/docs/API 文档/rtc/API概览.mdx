@@ -1,0 +1,369 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-home" id="rtc-doc">
+        <section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                QNRTC-Uniapp 是七牛推出的一款适用于 uniapp 的音视频通话 SDK，提供了包括音视频通话、静音、发布、订阅等多种功能，基于此 SDK，您可以很方便地在 HBuilderX 上开发出一款基于实时音视频的原生应用。</section>
+                    <div class="rtc-doc-home-block-wrap">QNRTC</div>
+            <div class="rtc-doc-home-block-desc rtc-doc-comment rtc-doc-describe rtc-doc-block-desc">
+                <p><a href='11415/UniappQNRTC'>QNRTC</a> 提供 SDK 的入口方法，可以通过它进行 SDK 的初始化。其核心方法如下：</p>
+            </div>
+                                    <p class="rtc-doc-table-title">初始化与反初始化</p>
+        <table class="rtc-doc-table">
+            <thead>
+                <tr>
+                    <th>方法</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href='11415/UniappQNRTC#configRTC'>configRTC</a></td>
+                    <td>初始化 SDK</td>
+                </tr>
+                <tr>
+                    <td><a href='11415/UniappQNRTC#deinit'>deinit</a></td>
+                    <td>反初始化 SDK</td>
+                </tr>
+            </tbody>
+        </table>
+            <p class="rtc-doc-table-title">创建 Track</p>
+        <table class="rtc-doc-table">
+            <thead>
+                <tr>
+                    <th>方法</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href='11415/UniappQNRTC#createMicrophoneAudioTrack'>createMicrophoneAudioTrack</a></td>
+                    <td>创建麦克风音频轨道</td>
+                </tr>
+                <tr>
+                    <td><a href='11415/UniappQNRTC#createCameraVideoTrack'>createCameraVideoTrack</a></td>
+                    <td>创建摄像头视频轨道</td>
+                </tr>
+                <tr>
+                    <td><a href='11415/UniappQNRTC#createScreenVideoTrack'>createScreenVideoTrack</a></td>
+                    <td>创建屏幕采集的视频轨道</td>
+                </tr>
+            </tbody>
+        </table>
+            <p class="rtc-doc-table-title">音频播放路由</p>
+        <table class="rtc-doc-table">
+            <thead>
+                <tr>
+                    <th>方法</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href='11415/UniappQNRTC#setAudioRouteToSpeakerphone'>setAudioRouteToSpeakerphone</a></td>
+                    <td>设置默认音频播放路由为扬声器</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="rtc-doc-home-block-wrap">QNRTCClient</div>
+            <div class="rtc-doc-home-block-desc rtc-doc-comment rtc-doc-describe rtc-doc-block-desc">
+                <p><a href='11402/UniappQNRTCClient'>QNRTCClient</a> 提供和房间相关的一系列的方法，通过它我们可以实现加入房间，在房间内发布或者订阅相应的音视频轨道等操作。核心方法如下：</p>
+            </div>
+                                    <p class="rtc-doc-table-title">核心方法</p>
+        <table class="rtc-doc-table">
+            <thead>
+                <tr>
+                    <th>方法</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href='11402/UniappQNRTCClient#join'>join</a></td>
+                    <td>加入房间</td>
+                </tr>
+                <tr>
+                    <td><a href='11402/UniappQNRTCClient#leave'>leave</a></td>
+                    <td>离开房间</td>
+                </tr>
+                <tr>
+                    <td><a href='11402/UniappQNRTCClient#publish'>publish</a></td>
+                    <td>发布本地的音视频轨道</td>
+                </tr>
+                <tr>
+                    <td><a href='11402/UniappQNRTCClient#unpublish'>unpublish</a></td>
+                    <td>取消发布本地的音视频轨道</td>
+                </tr>
+                <tr>
+                    <td><a href='11402/UniappQNRTCClient#subscribe'>subscribe</a></td>
+                    <td>订阅远端用户发布的音视频轨道</td>
+                </tr>
+                <tr>
+                    <td><a href='11402/UniappQNRTCClient#unsubscribe'>unsubscribe</a></td>
+                    <td>取消订阅远端用户发布的音视频轨道</td>
+                </tr>
+            </tbody>
+        </table>
+            <p class="rtc-doc-table-title">转推 CDN</p>
+        <table class="rtc-doc-table">
+            <thead>
+                <tr>
+                    <th>方法</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href='11402/UniappQNRTCClient#startLiveStreamingWithDirect'>startLiveStreamingWithDirect</a></td>
+                    <td>开启单路转推</td>
+                </tr>
+                <tr>
+                    <td><a href='11402/UniappQNRTCClient#stopLiveStreamingWithDirect'>stopLiveStreamingWithDirect</a></td>
+                    <td>停止单路转推</td>
+                </tr>
+                <tr>
+                    <td><a href='11402/UniappQNRTCClient#startLiveStreamingWithTranscoding'>startLiveStreamingWithTranscoding</a></td>
+                    <td>开启合流转推</td>
+                </tr>
+                <tr>
+                    <td><a href='11402/UniappQNRTCClient#stopLiveStreamingWithTranscoding'>stopLiveStreamingWithTranscoding</a></td>
+                    <td>停止合流转推</td>
+                </tr>
+                <tr>
+                    <td><a href='11402/UniappQNRTCClient#setTranscodingLiveStreamingTracks'>setTranscodingLiveStreamingTracks</a></td>
+                    <td>新增、更新合流转推的 Tracks</td>
+                </tr>
+                <tr>
+                    <td><a href='11402/UniappQNRTCClient#removeTranscodingLiveStreamingTracks'>removeTranscodingLiveStreamingTracks</a></td>
+                    <td>删除合流转推的 Tracks</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="rtc-doc-home-block-wrap">QNLocalTrack</div>
+            <div class="rtc-doc-home-block-desc rtc-doc-comment rtc-doc-describe rtc-doc-block-desc">
+                <p>QNLocalTrack 是本地创建的一个音视或者视频轨道，可以通过 QNRTC 来创建各种类型的音视频轨道，例如麦克风采集的音频轨道，摄像头采集的视频轨道，或者屏幕采集的视频轨道等等，我们真正用到的是它所衍生的子类。</p>
+                <p>以 QNLocalTrack 为基类，向下衍生的子类如下：</p>
+            </div>
+            <section class="rtc-doc-panel rtc-doc-section-hierarchy">
+        <div class="rtc-doc-title rtc-doc-title-hierarchy">Hierarchy</div>
+            <ul>
+                <li>
+                    <a href='11386/UniappQNLocalTrack'>QNLocalTrack</a>                    <ul>
+        <li>
+           <a href='11401/UniappQNLocalVideoTrack'>QNLocalVideoTrack</a>
+               <ul>
+        <li>
+           <a href='11433/UniappQNCameraVideoTrack'>QNCameraVideoTrack</a>
+        </li>
+        <li>
+           <a href='11421/UniappQNScreenVideoTrack'>QNScreenVideoTrack</a>
+        </li>
+</ul>
+        </li>
+        <li>
+           <a href='11417/UniappQNLocalAudioTrack'>QNLocalAudioTrack</a>
+               <ul>
+        <li>
+           <a href='11388/UniappQNMicrophoneAudioTrack'>QNMicrophoneAudioTrack</a>
+        </li>
+</ul>
+        </li>
+</ul>
+                </li>
+            </ul>
+    </section>
+                        <section id="本地音频轨道">
+                <div class="rtc-doc-home-title">本地音频轨道</div>
+                <ul class="rtc-doc-home-element-wrap">
+                    <li class="rtc-doc-home-element-item">
+                                                        <table class="rtc-doc-table">
+            <thead>
+                <tr>
+                    <th>本地音频轨道</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href='11388/UniappQNMicrophoneAudioTrack'>QNMicrophoneAudioTrack</a></td>
+                    <td>以麦克风采集到的音频数据为数据源创建的音频轨道，提供了音量控制，播放，数据回调等接口，通过 QNRTC.createMicrophoneAudioTrack 创建。</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="rtc-doc-table">
+            <thead>
+                <tr>
+                    <th>本地视频轨道</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href='11433/UniappQNCameraVideoTrack'>QNCameraVideoTrack</a></td>
+                    <td>以摄像头采集到的视频数据为数据源创建的视频轨道，提供了包括摄像头采集，渲染播放，前后摄像头切换，开启闪光灯，设置曝光度等一系列操作摄像头的方法。通过 QNRTC.createCameraVideoTrack 创建。</td>
+                </tr>
+                <tr>
+                    <td><a href='11421/UniappQNScreenVideoTrack'>QNScreenVideoTrack</a></td>
+                    <td>以屏幕采集到的视频数据为数据源创建的视频轨道，提供屏幕录制的权限申请等一些列方法，通过 QNRTC.createScreenVideoTrack 创建。</td>
+                </tr>
+            </tbody>
+        </table>
+                    </li>
+                </ul>
+        </section>
+        <div class="rtc-doc-home-block-wrap">QNRemoteTrack</div>
+            <div class="rtc-doc-home-block-desc rtc-doc-comment rtc-doc-describe rtc-doc-block-desc">
+                <p>QNRemoteTrack 是远端用户创建的音视频轨道，本地用户可以通过房间中的事件回调获取。其衍生的子类如下：</p>
+            </div>
+            <section class="rtc-doc-panel rtc-doc-section-hierarchy">
+        <div class="rtc-doc-title rtc-doc-title-hierarchy">Hierarchy</div>
+            <ul>
+                <li>
+                    <a href='11397/UniappQNRemoteTrack'>QNRemoteTrack</a>                    <ul>
+        <li>
+           <a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a>
+        </li>
+        <li>
+           <a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a>
+        </li>
+</ul>
+                </li>
+            </ul>
+    </section>
+                        <section id="">
+                <div class="rtc-doc-home-title"></div>
+                <ul class="rtc-doc-home-element-wrap">
+                    <li class="rtc-doc-home-element-item">
+                                                        <table class="rtc-doc-table">
+            <thead>
+                <tr>
+                    <th>远端音视频轨道</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href='11412/UniappQNRemoteAudioTrack'>QNRemoteAudioTrack</a></td>
+                    <td>远端用户发布的音频轨道，当可以通过该类来调节播放的音量大小，并且还提供了回调音频数据等方法。</td>
+                </tr>
+                <tr>
+                    <td><a href='11380/UniappQNRemoteVideoTrack'>QNRemoteVideoTrack</a></td>
+                    <td>远端用户发布的视频轨道，当可以通过该类来把远端视频画面渲染到视图中，并且还提供了回调视频数据等方法。</td>
+                </tr>
+            </tbody>
+        </table>
+                    </li>
+                </ul>
+        </section>
+        <div class="rtc-doc-home-block-wrap">QNRTCClinetEvent</div>
+            <div class="rtc-doc-home-block-desc rtc-doc-comment rtc-doc-describe rtc-doc-block-desc">
+                <p>房间内支持的事件，例如：</p>
+            </div>
+                    <pre class="rtc-doc-example"><code>client.<span class="hljs-keyword">on</span>(<span class="hljs-string">&#x27;onAudioSubscribed&#x27;</span>, (<span class="hljs-keyword">params</span>) =&gt; {
+    console.log(<span class="hljs-string">&#x27;onAudioSubscribed&#x27;</span>, <span class="hljs-keyword">params</span>)
+})</code></pre>
+                <section id="">
+                <div class="rtc-doc-home-title"></div>
+                <ul class="rtc-doc-home-element-wrap">
+                    <li class="rtc-doc-home-element-item">
+                                                        <table class="rtc-doc-table">
+            <thead>
+                <tr>
+                    <th>事件</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onAudioSubscribed'>onAudioSubscribed</a></td>
+                    <td>订阅 audio Track 成功</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onVideoSubscribed'>onVideoSubscribed</a></td>
+                    <td>订阅 video Track 成功</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onConnectionStateChanged'>onConnectionStateChanged</a></td>
+                    <td>房间状态改变</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onErrorLiveStreaming'>onErrorLiveStreaming</a></td>
+                    <td>转推任务出错</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onMessageReceived'>onMessageReceived</a></td>
+                    <td>收到自定义消息</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onStartLiveStreaming'>onStartLiveStreaming</a></td>
+                    <td>转推任务成功</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onStoppedLiveStreaming'>onStoppedLiveStreaming</a></td>
+                    <td>转推任务成功</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onUpdatedLiveStreaming'>onUpdatedLiveStreaming</a></td>
+                    <td>转推任务合流布局更新</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onUserJoined'>onUserJoined</a></td>
+                    <td>远端用户加入房间</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onUserLeft'>onUserLeft</a></td>
+                    <td>远端用户离开房间</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onUserPublished'>onUserPublished</a></td>
+                    <td>远端 Track 发布</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onUserReconnected'>onUserReconnected</a></td>
+                    <td>远端用户重连成功</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onUserReconnecting'>onUserReconnecting</a></td>
+                    <td>远端用户进入重连</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent#onUserUnpublished'>onUserUnpublished</a></td>
+                    <td>远端 Track 取消发布</td>
+                </tr>
+            </tbody>
+        </table>
+                    </li>
+                </ul>
+        </section>
+        <div class="rtc-doc-home-block-wrap">事件监听</div>
+            <div class="rtc-doc-home-block-desc rtc-doc-comment rtc-doc-describe rtc-doc-block-desc">
+                <p>SDK 支持丰富的事件监听接口，不同场景下的事件监听接口定义如下：</p>
+            </div>
+                                <section id="">
+                <div class="rtc-doc-home-title"></div>
+                <ul class="rtc-doc-home-element-wrap">
+                    <li class="rtc-doc-home-element-item">
+                                                        <table class="rtc-doc-table">
+            <thead>
+                <tr>
+                    <th>方法</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href='11413/UniappQNRTCEngineEvent'>QNRTCEngineEvent</a></td>
+                    <td>核心回调接口，定义了设备相关的回调事件，如音频路由改变等。</td>
+                </tr>
+                <tr>
+                    <td><a href='11404/UniappQNRTCClinetEvent'>QNRTCClinetEvent</a></td>
+                    <td>核心回调接口，定义了房间相关的回调事件，包括房间连接状态、用户加入离开状态等。</td>
+                </tr>
+                <tr>
+                    <td><a href='11409/UniappQNRTCTrackEvent'>QNRTCTrackEvent</a></td>
+                    <td>Track 回调接口，定义了静默状态改变、大小流切换等事件。</td>
+                </tr>
+            </tbody>
+        </table>
+                    </li>
+                </ul>
+        </section>
+</div>

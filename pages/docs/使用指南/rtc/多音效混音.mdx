@@ -1,0 +1,82 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文主要介绍连麦过程中添加多重音效混音的使用场景。</p>
+<blockquote>
+<ul>
+<li>音效混音支持本地文件和在线文件，支持的音频格式为：aac、mp3、mp4、ogg、opus、wav、m4a、flac</li>
+<li>请尽量使用本地音乐文件，避免因为网络资源的异常导致的混音卡顿等情况</li>
+</ul>
+</blockquote>
+<p>使用方式如下：</p>
+
+# 创建 QNAudioEffectMixer
+<p>SDK 当前仅支持基于 <a href="/rtc/api/11210/QNMicrophoneAudioTrack-Linux">QNMicrophoneAudioTrack</a> 的多重音效混音功能，可以通过 <a href="/rtc/api/11210/QNMicrophoneAudioTrack-Linux#CreateAudioEffectMixer">QNMicrophoneAudioTrack.CreateAudioEffectMixer</a> 接口来创建 <a href="/rtc/api/11987/QNAudioEffectMixer-Linux">QNAudioEffectMixer</a> 对象</p>
+<pre><code class="language-cpp">QNAudioEffectMixer* audio_effect_mixer = microphone_audio_track.<span class="hljs-built_in">CreateAudioEffectMixer</span>(listener);
+<span></span></code></pre>
+<p>其中，<a href="/rtc/api/11988/QNAudioEffectMixerListener-Linux">QNAudioEffectMixerListener</a> 为音效混音监听器，监听回调定义如下：</p>
+<pre><code class="language-cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">QINIU_EXPORT_DLL</span> QNAudioEffectMixerListener {
+<span></span> <span class="hljs-keyword">public</span>:
+<span></span>  <span class="hljs-comment">/**
+<span></span>   * 错误回调
+<span></span>   *
+<span></span>   * @param error_code    错误码
+<span></span>   * @param error_message 错误信息
+<span></span>   */</span>
+<span></span>  <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">OnAudioEffectMixerError</span><span class="hljs-params">(<span class="hljs-type">int</span> error_code,
+<span></span>                                       <span class="hljs-keyword">const</span> std::string& error_message)</span> </span>= <span class="hljs-number">0</span>;
+<span></span>    
+<span></span>  <span class="hljs-comment">/**
+<span></span>   * 某音效播放完成的回调
+<span></span>   *
+<span></span>   * @param effect_id 音效 id
+<span></span>   */</span>
+<span></span>  <span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">OnAudioEffectFinished</span><span class="hljs-params">(<span class="hljs-type">int</span> effect_id)</span> </span>= <span class="hljs-number">0</span>;
+<span></span> <span class="hljs-keyword">protected</span>:
+<span></span>  ~<span class="hljs-built_in">QNAudioEffectMixerListener</span>(){};
+<span></span>};
+<span></span></code></pre>
+<p>其中，混音场景下的错误码可参考<a href="/rtc/development_guidelines/11369/error-code-linux">混音相关错误码</a></p>
+
+# 创建 QNAudioEffect
+<p><a href="/rtc/api/11986/QNAudioEffect-Linux">QNAudioEffect</a> 为音效文件的配置类，可通过 <a href="/rtc/api/11987/QNAudioEffectMixer-Linux#CreateAudioEffect">QNAudioEffectMixer.CreateAudioEffect</a> 接口进行创建，每一个音效文件都需对应一个 <a href="/rtc/api/11986/QNAudioEffect-Linux">QNAudioEffect</a> 实例，使用代码参考如下：</p>
+<pre><code class="language-cpp">string file_path = <span class="hljs-string">&quot;../effect.mp3&quot;</span>;
+<span></span>QNAudioEffect* audio_effect = audio_effect_mixer-&gt;<span class="hljs-built_in">CreateAudioEffect</span>(effect_id, file_path);
+<span></span></code></pre>
+<p><strong>其中，effect_id 为音效文件的唯一标识符，可自行生成并维护，该标识符为控制一系列音效混音操作的依据，需保证唯一。</strong></p>
+
+# 混音控制
+<p>在创建了 <a href="/rtc/api/11987/QNAudioEffectMixer-Linux">QNAudioEffectMixer</a> 音效混音控制器实例和 <a href="/rtc/api/11986/QNAudioEffect-Linux">QNAudioEffect</a> 音效文件实例后，可以通过如下接口进行音效混音操作的控制。</p>
+<p>使用代码参考如下：</p>
+<pre><code class="language-cpp"><span class="hljs-comment">// 开始指定音效混音</span>
+<span></span>audio_effect_mixer-&gt;<span class="hljs-built_in">Start</span>(audio_effect.<span class="hljs-built_in">GetID</span>());
+<span></span><span class="hljs-comment">// 停止指定音效混音</span>
+<span></span>audio_effect_mixer-&gt;<span class="hljs-built_in">Stop</span>(audio_effect.<span class="hljs-built_in">GetID</span>());
+<span></span><span class="hljs-comment">// 恢复指定音效混音</span>
+<span></span>audio_effect_mixer-&gt;<span class="hljs-built_in">Resume</span>(audio_effect.<span class="hljs-built_in">GetID</span>());
+<span></span><span class="hljs-comment">// 暂停指定音效混音</span>
+<span></span>audio_effect_mixer-&gt;<span class="hljs-built_in">Pause</span>(audio_effect.<span class="hljs-built_in">GetID</span>());
+<span></span><span class="hljs-comment">// 停止所有正在混音的音效</span>
+<span></span>audio_effect_mixer-&gt;<span class="hljs-built_in">StopAll</span>();
+<span></span><span class="hljs-comment">// 暂停所有正在混音的音效</span>
+<span></span>audio_effect_mixer-&gt;<span class="hljs-built_in">PauseAll</span>();
+<span></span><span class="hljs-comment">// 恢复所有已经暂停混音的音效</span>
+<span></span>audio_effect_mixer-&gt;<span class="hljs-built_in">ResumeAll</span>();
+<span></span></code></pre>
+<p>上述为混音基本流程的控制，更多控制方式请参考 <a href="/rtc/api/11987/QNAudioEffectMixer-Linux">QNAudioEffectMixer</a>。</p>
+
+# 音量控制
+<p>混音场景下，主要包含两种音量设置：<strong>麦克风混音音量</strong>、<strong>音效混音音量</strong>。音量的设置方式参考如下：</p>
+<ul>
+<li><strong>麦克风混音音量</strong>：可以通过 <a href="/rtc/api/11210/QNMicrophoneAudioTrack-Linux#SetVolume">QNMicrophoneAudioTrack->SetVolume</a> 接口进行配置。</li>
+<li><strong>音效混音音量</strong>：可以通过 <a href="/rtc/api/11987/QNAudioEffectMixer-Linux#SetVolume">QNAudioEffectMixer.SetVolume</a> 和 <a href="/rtc/api/11987/QNAudioEffectMixer-Linux#SetAllEffectsVolume">QNAudioEffectMixer.SetAllEffectsVolume</a> 接口分别对指定音效和所有音效进行音量配置。</li>
+</ul>
+<p>参考代码如下：</p>
+<pre><code class="language-cpp">microphone_audio_track.<span class="hljs-built_in">SetVolume</span>(<span class="hljs-number">0.5f</span>);                  <span class="hljs-comment">// 设置麦克风采集(混音)音量</span>
+<span></span>audio_effect_mixer-&gt;<span class="hljs-built_in">SetVolume</span>(audio_effect.<span class="hljs-built_in">GetID</span>(), <span class="hljs-number">0.5f</span>); <span class="hljs-comment">// 设置指定音效的混音音量</span>
+<span></span>audio_effect_mixer-&gt;<span class="hljs-built_in">SetAllEffectsVolume</span>(<span class="hljs-number">0.5f</span>);            <span class="hljs-comment">// 设置所有音效的混音音量</span>
+<span></span></code></pre>
+
+# 注意事项
+<ol>
+<li><strong>混音</strong>功能会将混音音频与当前已发布的音频 Track 数据混合并推送出去，若当前的音频 Track 尚未发布，则混音操作将失效。</li>
+</ol></div></div>

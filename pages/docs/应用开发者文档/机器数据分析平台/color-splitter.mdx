@@ -1,0 +1,30 @@
+`<color-splitter>`元素定义数据的颜色和数值范围的对应关系。
+
+### 父元素
+
+在`<chart>`元素下，只有当 type 属性指定如下值时，可以使用 `<color-splitter>`元素。
+
+* `<chart type="single-value">`
+* `<chart type="single-gauge">`
+*	`<chart type="single-percent">`
+* `<chart type="grid-table>`
+* `<type="tree-table">`
+
+### 子元素
+
+|子元素|说明|默认值|
+|:--:|:--:|:--:|
+|`<color-palette>`|设置表列元素的颜色取值，详细见`<color-palette>`|无|
+|`<scale>`|当 `<color-palette>`的 type 为 list 时，通过`<scale>`标签定义在`<color-palette>`里设置的颜色分别对应的数值范围，scale 可以是用逗号隔开的字符串，也可以是数值数组，当首位元素不填代表-∞，当末位元素不填代表+-∞。e.g. 1,4,5 代表两个范围段(1, 4],(4, 5]; ,4, 代表(-∞, 4],(4, +∞]; [-3, 4, 9]代表(-3, 4],(4, 9]|无|
+
+示例：
+
+```
+<color-splitter>
+  <color-palette type="list">['red', 'yellow']</color-palette>
+  <scale>2,5,6</scale>
+</color-splitter>
+```
+
+该例子表示当数值范围为 (2, 5]时字体颜色为red，数值范围为(5,6]时，字体颜色为yellow。
+

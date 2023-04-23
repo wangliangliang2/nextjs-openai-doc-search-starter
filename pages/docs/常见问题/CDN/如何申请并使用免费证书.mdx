@@ -1,0 +1,80 @@
+
+## 如何申请并使用免费证书
+
+- 本文档介绍如何申请并使用七牛免费证书，主要步骤有：
+
+    * 1.证书申请
+    * 2.免费证书使用
+        - 2.1创建https加速域名时使用
+        - 2.2http升级为https时使用
+
+- 免费证书使用说明: 提供下载，在我的证书处下载
+
+### 申请七牛免费证书
+
+- 1.登录七牛控制台，选择 SSL 证书服务，购买证书
+
+<img src="https://dn-odum9helk.qbox.me/FghkadV_01a0sYEFNlzMKoNAsv38" width="800"/>  
+
+- 2.选择 TrustAsia 免费证书
+
+<img src="https://dn-odum9helk.qbox.me/FqD_HxbssJ53gt9obz44Dz5gwiEY" width="800"/> 
+
+- 3.点击「核对信息并支付」，补全域名信息
+
+<img src="https://dn-odum9helk.qbox.me/FiLUAxh94_A_42ejf-PiwcAzA5Zb" width="800"/>  
+<img src="https://dn-odum9helk.qbox.me/FgOkBdEND6rHXbChZ0iV2zCepxBh" width="800"/>   
+
+- 4.选择验证方式，如果域名托管商 CNAME  解析和 TXT 有冲突，请选择文件验证
+
+<img src="https://dn-odum9helk.qbox.me/Fp5v284icnpRRzhhaEB0AUsBVQiY" width="800"/>  
+
+- 5.查看证书详情，根据选择的验证方式进行验证
+
+<img src="https://dn-odum9helk.qbox.me/FoGagBwywRqW7ky0WGC_kjYDwIyW" width="800"/> 
+<img src="https://dn-odum9helk.qbox.me/FhtGUFgwPSe139H6sQEg50giUCz8" width="800"/>  
+
+- 6.1 **选择dns验证** 需要到域名服务商 进行 TXT 解析
+
+<img src="https://dn-odum9helk.qbox.me/4A0C3418-9116-41D6-A2C6-6EFA0C693918.png" width="800"/>  
+
+- 6.2 使用dig命令查看TXT解析
+
+<img src="https://dn-odum9helk.qbox.me/5FB9C228-C3C6-498B-807D-DF01AC570E5F.png" width="800"/>  
+
+- 7.1 **选择文件验证** 需要到 xuzhuo.support2technical.me 对应站点下上传文本文件，文件名为 `.well-known/pki-validation/fileauth.txt`， 文本文件内容为：`2018082806105747stl44uj6z707i7iqsv3b42v4cqkc1v86k4d7ujonr85yfvn7`
+
+```
+已绑定域名 xuzhuo.support2technical.me（通用名称)
+域名所有权验证
+验证类型：FILE
+验证文件路径：/.well-known/pki-validation/fileauth.txt
+验证文件值：2018082806105747stl44uj6z707i7iqsv3b42v4cqkc1v86k4d7ujonr85yfvn7
+
+```
+
+<img src="https://dn-odum9helk.qbox.me/64B6CEB6-A6AE-4CA2-90E1-53ABF6FDF811.png" width="800"/>  
+
+- 7.2 文件验证校验, 访问 `http://xuzhuo.support2technical.me/.well-known/pki-validation/fileauth.txt`， 返回文本值为：`2018082806105747stl44uj6z707i7iqsv3b42v4cqkc1v86k4d7ujonr85yfvn7`
+
+
+<img src="https://dn-odum9helk.qbox.me/FjPXbMpw3Rw0bQQj4ueApXWfpbrZ" width="800"/>  
+
+- 8.**注意：如果DNS验证中的 txt记录 与 cname记录 冲突导致无法验证成功的话，请重新申请订单更换为文件验证的方式**
+
+- 9.查看证书验证状态，当订单状态为已签发时，可以到我的证书处查看证书
+
+<img src="https://dn-odum9helk.qbox.me/D2DFBCE8-0F2E-4304-A246-F9852637A50A.png" width="800"/>   
+
+### 使用免费证书
+
+- 1.创建加速域名时选择对应的证书
+
+<img src="https://dn-odum9helk.qbox.me/E12F6A56-773A-4F75-94D7-970D89178069.png" width="800"/>   
+
+- 2.已经创建的域名，升级https时选择对应的证书
+
+<img src="https://dn-odum9helk.qbox.me/FlpoJVY1YyXuURXWtHofEw05-Bwj" width="800"/>   
+
+<img src="https://dn-odum9helk.qbox.me/FrXEQetxxOlZ8BJGRGxHCjnlCUJx" width="800"/>  
+注：修改域名的https配置时，如果下拉框中没有可绑定的证书，请检查证书包含的域名和需要绑定的域名是否完全一致。

@@ -1,0 +1,228 @@
+&nbsp; &nbsp; &nbsp; &nbsp;为了提高使用React框架开发自定义组件的效率，<font color=#E96900>create-pandora-app</font>脚手架提供了<font color=#E96900>view-component-react</font>模版。本文将介绍如何使用react框架在Pandora 2.0平台高效的开发自定义组件。
+# 一、使用<font color=#E96900>create-pandora-app</font>创建应用模版
+##### 1.生成项目
+``` bash
+$ npx create-pandora-app repo-manager -t view-component-react
+```
+![cpa_react.png](https://dn-odum9helk.qbox.me/FnRTo5X4EFflLPuc_e5Ep0bGzHmF)
+
+##### 创建过程中相关参数
+- <font color=#E96900>appName</font> 应用的标识符，名称规则：大小字符、数字、中划线、下划线，且第一个字符必须是字符
+- <font color=#E96900>Description</font> 应用的描述
+- <font color=#E96900>pandora server URL</font> 开发调试时所使用的 pandora 环境的地址。
+- <font color=#E96900>pandora account username pandora</font> 环境的用户名
+- <font color=#E96900>pandora account password pandora </font>环境的密码
+- <font color=#E96900>Select a package manager</font> 选择包管理工具 <font color=#E96900>npm</font> or <font color=#E96900>yarn</font>
+- <font color=#E96900>Select your purpose</font>
+  -  **纯组件**：将src/modules下的每个文件夹作为入口，每个文件夹都会打包出一个js
+  -  **单页应用**：将src/app.tsx作为入口，只会打包出一个js，通常用来构造含有路由的完整的单页应用 
+##### App 目录结构
+&nbsp; &nbsp; &nbsp; &nbsp;自定义组件 app 整体目录结构如下：
+```
+repo-manager
+├── app.json
+├── appserver
+│   └── static
+│       ├── css
+│       └── js
+├── default
+│   ├── nav.xml
+│   └── views
+│       └── views.xml
+├── README.md
+├── resources
+│   ├── extractions
+│   └── sourcetypes
+├── static
+│   └── icon.png
+└── webapp
+    ├── bin
+    │   └── package
+    ├── configs
+    │   ├── env.js
+    │   ├── paths.js
+    │   ├── webpack.common.conf.js
+    │   ├── webpack.dev.conf.js
+    │   ├── webpack.dll.conf.js
+    │   └── webpack.prod.conf.js
+    ├── package.json
+    ├── src
+    │   ├── app.tsx
+    │   ├── global
+    │   │   └── styles
+    │   │       └── style.less
+    │   ├── modules
+    │   │   ├── Dashboard
+    │   │   │   └── index.tsx
+    │   │   └── Overview
+    │   │       └── index.tsx
+    │   └── platform.tsx
+    ├── tsconfig.json
+    └── types
+        └── index.d.ts
+```
+ 其中 webapp 目录为开发目录，在该目录下可进行组件相关逻辑的编写和调试。
+##### 2.进入项目目录
+``` bash
+$ cd repo-manager/webapp 
+```
+##### 3.初始化项目
+``` bash
+$ yarn install
+```
+# 二. 开发自定义组件逻辑
+本示例将使用 React 开发框架
+Pandora 平台为您提供了以下 SDK 和组件库(仅针对 react 提供)方便您快速构建自己的应用，具体请参考[APP开发工具库](/express/extend/11034/app-development-tool-library)
+- App-Sdk
+- Pandora-Component(仅 react 可用)
+
+##### 1.添加业务逻辑
+完成自定义业务逻辑，本示例使用 react 创建 RepoList 组件。
+示例代码如下：
+新增 <font color=#E96900>src/modules/RepoList/index.tsx</font> 文件，编写仓库列表组件逻辑，其代码如下：
+``` /**
+ * src/modules/RepoList/index.tsx
+ */
+import React from 'react'
+import 'antd/dist/antd.css'
+import { Table } from 'antd'
+import { RepoManager, IRepo } from '@qn-pandora/app-sdk'
+
+const columns = [
+  {
+    title: '仓库名称',
+    dataIndex: 'name',
+    key: 'name'
+  },
+  {
+    title: '当前数据量',
+    dataIndex: 'bytes',
+    key: 'bytes'
+  },
+  {
+    title: '数据条数',
+    dataIndex: 'docTotal',
+    key: 'docTotal'
+  },
+  {
+    title: '存储时限',
+    dataIndex: 'retention',
+    key: 'retention'
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+    key: 'createTime'
+  },
+  {
+    title: '更新时间',
+    dataIndex: 'updateTime',
+    key: 'updateTime'
+  }
+]
+
+export default class RepoList extends React.Component<{}, { repos: IRepo[] }> {
+  repoManager: RepoManager
+  state = {
+    repos: []
+  }
+
+  get dataSource() {
+    return this.state.repos.map((repo: IRepo) => ({
+      ...repo,
+      key: repo.name
+    }))
+  }
+
+  constructor(props: {}) {
+    super(props)
+    const fetchAll = false // false by default
+    const pageSize = 20 // 10 by default
+
+    // 创建@qn-pandora/app-sdk提供的RepoManager的实例
+    this.repoManager = new RepoManager(fetchAll, pageSize)
+  }
+
+  render() {
+    return <Table columns={columns} dataSource={this.dataSource} />
+  }
+
+  componentDidMount() {
+    // 使用@qn-pandora/app-sdk提供的RepoManager获取仓库列表
+    this.repoManager.listRepos().then(repos => {
+      this.setState({ repos })
+    })
+  }
+}
+```
+##### 2.接入自定义React组件插件机制
+自定义React组件必须默认导出一个React组件。
+添加 <font color=#E96900>/repolist</font> 路由，渲染上面的 <font color=#E96900>RepoList</font> 组件，示例代码如下：
+``` typescript
+/**
+ * src/app.tsx
+ */
+import React, { Component } from 'react'
+import { Menu } from 'antd'
+import { Redirect, Route, Switch, BrowserRouter, Link } from 'react-router-dom'
+import './global/styles/style.less'
+import Overview from './modules/Overview'
+import Dashboard from './modules/Dashboard'
+import RepoList from './modules/RepoList'
+
+interface IAppProps {
+  context: {
+    appName: string
+    basePath: string
+  }
+}
+
+export default class App extends Component<IAppProps, {}> {
+  render() {
+    const {
+      context: { basePath }
+    } = this.props
+    return (
+      <BrowserRouter basename={basePath}>
+        <Menu mode="horizontal" defaultSelectedKeys={['overview']}>
+          <Menu.Item key="overview">
+            <Link to="overview">overview</Link>
+          </Menu.Item>
+          <Menu.Item key="dashboard">
+            <Link to="dashboard">dashboard</Link>
+          </Menu.Item>
+        </Menu>
+        <Switch>
+          <Route exact path="/">
+            <Redirect to="/overview" />
+          </Route>
+          <Route path="/overview">
+            <Overview />
+          </Route>
+          <Route path="/dashboard">
+            <Dashboard />
+          </Route>
+          <Route path="/repolist">
+            <RepoList />
+          </Route>
+        </Switch>
+      </BrowserRouter>
+    )
+  }
+}
+```
+##### 3.查看效果与调试
+- 启动项目
+``` bash
+$ yarn start
+```
+- 查看效果
+访问 <font color=#E96900>http://localhost:8000</font> ，效果如下：
+![repo_manager_react.png](https://dn-odum9helk.qbox.me/Fmx8LnxKrTnoC-Jm7RZNTulkoEE0)
+# 三. 打包生成应用 
+##### 1.打包应用
+运行以下命令，会生成 <font color=#E96900>repo-manager.tar.gz</font> 
+``` 
+$ yarn run package
+```
+##### 2.导入 Pandora 平台查看效果

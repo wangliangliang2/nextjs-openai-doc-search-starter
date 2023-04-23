@@ -1,0 +1,56 @@
+本文介绍副本集节点实例的使用流程，帮助您快速掌握创建MongoDB实例、对实例进行基本设置及连接数据库的操作。
+
+
+# **步骤**
+![](https://dn-odum9helk.qbox.me/FlZRx27gXnCip3xTrazWAwUobFtW)
+
+# **1.创建实例**
+您可以通过七牛云 MongoDB 管理控制台创建副本集节点实例。
+
+在MongoDB管理控制台上创建副本集实例。选择副本集（包年包月）或副本集（按量付费），然后节点数选择**副本集**。
+
+
+
+
+# **2.设置密码**
+如果您在创建实例时没有立即设置密码、需要修改旧密码或忘记密码，您可以通过重置密码来重新设置数据库的密码。
+
+# **3.设置白名单**
+创建MongoDB副本集实例后，您需要设置实例的白名单，以允许外部设备访问该实例。默认的白名单只包含默认的IP地址（127.0.0.1），表示任何设备均无法访问该实例。
+
+设置为0.0.0.0/0或空表示对访问的IP来源不作任何限制，此时MongoDB数据库将面临高安全风险，请谨慎使用。
+
+# **4.申请公网连接地址**
+MongoDB副本集实例支持申请公网连接地址，适用于通过公网连接实例的场景。
+
+| 地址类型 | 说明 |  
+|-|-|
+| 内网连接地址 | 专有网络是一种隔离的网络环境<br>MongoDB实例默认提供内网连接地址，通过专有网络连接MongoDB实例可以获取更高的安全性和性能。 |  
+| 公网连接地址 | 由于通过公网连接实例存在一定的安全风险，MongoDB实例默认未提供公网连接地址。<br>如果您要使用七牛云以外的设备（例如本地设备）连接MongoDB实例，您可以手动申请公网连接地址。 |  
+
+<table><tr><td bgcolor=#F0F8FF>**说明**：<font color='gray'> 如果您需要通过申请的公网地址来连接实例，您还需要将连接实例的终端所在的公网IP地址加入到实例的白名单中。 </font></td></tr></table>
+
+
+# **5. 连接Mongo实例**
+Mongo Shell是MongoDB数据库自带的数据库管理工具，您可以在本地或QVM 上安装Mongo Shell工具，然后通过Mongo Shell连接MongoDB副本集实例。
+
+
+为保障鉴权成功，请安装与MongoDB实例版本相对应的Mongo Shell版本。安装步骤请参见官方文档[Install MongoDB](https://docs.mongodb.com/manual/installation/?spm=a2c4g.11186623.2.11.33121758BaKyQa)（请根据您的客户端版本在页面左上角选择版本号）。
+
+已将客户端的IP地址加入到MongoDB实例的白名单中，在安装有Mongo Shell的本地服务器或 QVM 中执行如下命令连接数据库。
+```
+mongo --host <host:port> -u <username> -p --authenticationDatabase <database>
+```
+
+说明：
+1. < host:port>：Primary节点的连接地址，包含域名和端口号信息。
+2. < username>：MongoDB实例的数据库账号，初始账号为root。不建议在生产环境中直接使用root账号连接数据库。您可
+根据业务需求创建用户并分配权限，详情请参见使用DMS管理MongoDB实例的账号。
+3. < database>：鉴权数据库名，即数据库账号所属的数据库。当数据库账号为root时，对应的数据库为admin。
+
+
+当命令行提示Enter password:时，输入数据库账号对应的密码并按回车键确认。
+
+<table><tr><td bgcolor=#F0F8FF>**说明**：<font color='gray'> 云数据库MongoDB版完全兼容MongoDB协议，您还可以通过各类程序连接数据库。 </font></td></tr></table>
+
+

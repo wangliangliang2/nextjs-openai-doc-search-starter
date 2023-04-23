@@ -1,0 +1,96 @@
+logkit-pro支持直接采集windows下的文本数据和wineventlog信息或者通过wmi采集windows的系统信息。文本数据的收集使用的是file reader，wineventlog信息的收集使用的是wineventlog reader，而通过wmi收集windows系统信息则是使用wmi reader。***wineventlog reader需要将agent部署在需要采集eventlog的机器上，而wmi reader则支持远程访问的方式读取系统信息***
+
+# 前期准备
+
+从[这里](https://developer.qiniu.com/insight/manual/4682/logkit-pro-install)下载最新版的logkit-pro，因为wmi与wineventlog都是windows下的组件，所以请下载`windows版本的logkit-pro`。
+![](https://dn-odum9helk.qbox.me/FnbETEJlasZ64v6xBo_rBCG2QS7J)
+
+具体logkit-pro的安装可以参考[logkit-pro安装指南](/insight/manual/4682/logkit-pro-install)。
+安装完成后登录logkit-pro，在`数据收集`板块中选择`添加收集器->日志收集`,在添加收集器的页面能够看到如下结果，则证明安装无误，可以使用logkit进行数据收集的操作。
+
+![](https://dn-odum9helk.qbox.me/Fuy-NnbmmvjGldrm8DjwJrK4bcWX)
+
+# 使用file reader收集windows下的数据
+
+在数据收集的页面看到左侧的这五个收集器是用于收集文件类型的数据的。
+
+![](https://dn-odum9helk.qbox.me/FhTo4dC1Vaxt-IK4RA_rbX2GYMJ1)
+
+具体每个收集器的使用方法和用途可以参考[文件数据源](https://developer.qiniu.com/insight/manual/4751/file-reader)
+
+这里我们选择`file模式`读取文件数据,并在配置栏中填写相应配置。这里我们获取的是`C盘下名为test.txt`文本文件中的数据。
+
+![](https://dn-odum9helk.qbox.me/FgyvdwuR2lkqdLEmtGIxNzGjm0v9)
+
+点击右侧的获取数据可以在右侧的文本框中看到尝试获得数据。
+
+后续配置相应需要的`解析器（可选）`,`转换器（可选）`,`发送目的地`，即可完成windows下文本数据的收集。我们可以看到系统日志已经被源源不断的发送到配置的目的地了。
+
+![](https://dn-odum9helk.qbox.me/FqjrNjSqSIn9IFWlGX9reoLz9nkx)
+
+# 使用wineventlog reader收集windows系统日志
+
+进入windows系统日志的收集界面，能看到如下所示的界面：
+![](https://dn-odum9helk.qbox.me/Fsr1Cig98EV2Nl86J22Xa9DaC5XM)
+
+如图中所示，logkit-pro默认提供的收集类别有应用程序(`Application`),安全(`Security`),系统(`System`)。
+其他需要收集的事件日志可以在`自定义`文本框中填写需要收集的事件名称。支持填写多个事件名，中间用`,`分隔。
+配置完成后点击右侧的获取数据，可以尝试获取当前配置下的数据。若配置无误，在右侧文本框中可以看到尝试获取的数据。
+
+![](https://dn-odum9helk.qbox.me/FvLuHY_U3jqg6i9Oiwq9w6Hl5KkR)
+
+后续配置相应需要的`解析器（可选）`,`转换器（可选）`,`发送目的地`，即可完成windows下系统日志的收集。我们可以看到系统日志已经被源源不断的发送到配置的目的地了。
+
+![](https://dn-odum9helk.qbox.me/FoU-on6q5Z6AxD56YP9vkkwzEs0I)
+
+这里我们将数据发送到七牛的大数据平台进行分析，发送后可以在智能日志平台中看到相应的数据信息。
+
+![](https://dn-odum9helk.qbox.me/FrChkjKHdEVy9G_Z-qhs0IUgicxC)
+
+还可以在搜索框中输入相应的搜索条件进行信息的快速搜索和筛选。
+
+![](https://dn-odum9helk.qbox.me/FuLWcW743Dd6O1nURTkLqtbkV60v)
+
+同时还可以利用日志平台的仪表盘进行数据的可视化分析。以下是我们制作的数据图表。
+
+![](https://dn-odum9helk.qbox.me/FlHg5INr-9uLjUMpl8UpFIvLZ9-Y)
+
+详细的收集操作和配置可以参考[Windows Eventlog数据源](https://developer.qiniu.com/insight/manual/5038/winlog-data-source)
+
+# 使用wmi reader收集windows系统信息
+
+进入通过WMI读取windows系统信息页面，能看到如下所示界面：
+![](https://dn-odum9helk.qbox.me/FvvbrNUVL05QZGdsi4SjxRuOgfkf)
+
+如图中所示，相应配置项的含义：
+ *  `是否远程连接wmi(isremote)`：默认为`false`，连接本地，当为`true`时，可以远程连接windows服务器。
+ *  `连接wmi的地址(address)`:此选项只在连接远程windows服务器的时候需要填写。
+ *  `命名空间(namespace)`:默认为`root/cimv2`，通过wmi获取windows系统信息时连接的命名空间。
+ *  `实例名(instance)`:默认查询的实例为`Win32_NTLogEvent`,目前支持的查询实例有`Win32_NTLogEvent`,`Win32_Process`。前者用于获取windows相关的审计日志，后者用于获取windows上当前的进程信息。
+ *  `用户名(user)`:当选择远程连接wmi时，必填，远程连接wmi时，登录windows的用户名。
+ *  `密码(passowrd)`:当选择远程连接wmi时，必填，远程连接wmi时，登录windows的密码。
+
+配置完成后点击右侧的获取数据，可以尝试获取当前配置下的数据。若配置无误，在右侧文本框中可以看到尝试获取的数据。`(目前提供了Win32_Process和Win32_NTLogEvent两个实例的收集，其中Win32_NTLogEvent实例可能由于数据较多，尝试获取数据的时候会加载较长的时间)`
+
+![](https://dn-odum9helk.qbox.me/FvXuACqEurMvlbVWqE_DMylmunBC)
+
+后续配置相应需要的`解析器（可选）`,`转换器（可选）`,`发送目的地`，即可完成windows下系统日志的收集。我们可以看到系统日志已经被源源不断的发送到配置的目的地了。
+
+![](https://dn-odum9helk.qbox.me/Fo-YKyfS5y2XOf2cKVyXedBxGFOg)
+
+详细的收集操作和配置可以参考[wmi数据源](https://developer.qiniu.com/insight/manual/5058/reading-windows-from-the-wmi-interface-system-information)
+
+# windows系统审计项的配置
+
+由于默认情况下 Windows 的审计未设或者设置项很少，因此需增加相应的审计项目。
+* 打开运行界面，执行secpol.msc。
+![](https://dn-odum9helk.qbox.me/FmRAU01okwSuxggx7HY3JSjwk5Ig)
+* 在`本地策略`,`高级审核策略配置`条目下配置相应需要审核的条目信息。
+![](https://dn-odum9helk.qbox.me/Fu-eTEPuFlMQc-B8wt9h0QdIKe5I)
+
+配置成功之后的相关审核项即可在wmi reader中通过`Win32_NTLogEvent`实例来收集。
+
+***注意：若配置了和防火墙有关的审核项，日志量会增长至少 10 倍，请谨慎配置。***
+
+
+

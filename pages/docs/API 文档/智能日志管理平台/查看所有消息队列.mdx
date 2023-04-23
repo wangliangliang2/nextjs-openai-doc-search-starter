@@ -1,0 +1,28 @@
+**请求语法**
+
+```
+GET /v2/repos
+Authorization: Pandora <auth>
+```
+
+**响应报文** 
+
+```
+Content-Type: application/json
+{
+    "repos": [
+      {
+        "name": <RepoName>,
+        "region": <Region>,
+        "derivedFrom": <TransformName>
+      },
+      ...
+    ]
+}
+```
+
+**响应内容**
+
+|参数|类型|必填|说明|
+|:---|:---|:---:|:---|
+|derivedFrom|string|-|表示这个消息队列是由哪个transform生成的</br>如果此项为空,说明该消息队列是由用户自行创建的|

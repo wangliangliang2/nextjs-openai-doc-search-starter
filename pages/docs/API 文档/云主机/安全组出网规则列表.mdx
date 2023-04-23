@@ -1,0 +1,85 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `GET` /v1/vm/sgr/:security_group_id/egress
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+security_group_id | string  | path  | 是 | 安全组 ID
+region_id         | string  | query | 是 | 地域 ID
+page              | integer | query | 否 | 页码。默认：1
+size              | integer | query | 否 | 分页大小，最大100。默认20
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID
+page       | integer | 页码
+size       | integer | 分页大小
+total      | integer | 安全组总量
+data       | \[]PermissionType | 安全组权限规则
+
+
+### PermissionType
+
+名称 | 类型 | 描述 
+----- | ----- | -----
+security_group_rule_id     | string | 安全组权限规则 ID
+ip_protocol                | string | IP 协议, 传输层协议。不区分大小写。取值范围：`icmp`, `gre`, `tcp`, `udp`, `all`
+port_range                 | string | 端口范围
+source_cidr_ip             | string | 源IP地址段，用于入方向授权
+source_group_id            | string | 源安全组，用于入方向授权
+source_group_name          | string | 源端安全组名称
+source_group_owner_account | string | 源安全组所属账户 ID
+dest_cidr_ip               | string | 目标IP地址段，用于出方向授权
+dest_group_id              | string | 目标安全组，用于出方向授权
+dest_group_name            | string | 目的端安全组名称
+dest_group_owner_account   | string | 目标安全组所属账户ID
+policy                     | string | 授权策略: `accept`, `drop`
+nic_type                   | string | 网络类型: `internet`, `intranet`
+priority                   | string | 规则优先级
+direction                  | string | 授权方向: `ingress`, `egress`, `all`
+description                | string | 安全组描述信息
+create_time                | string | 创建时间
+ipv6_source_cidr_ip        | string | 源 IPv6 地址段
+ipv6_dest_cidr_ip          | string | 目的 IPv6 地址段
+source_port_range          | string | 源端端口范围
+
+
+## 返回值示例
+```json
+{
+  "data": [
+    {
+      "security_group_rule_id": "953d74c8-95ab-48e8-a550",
+      "ip_protocol": "ALL",
+      "port_range": "-1/-1",
+      "source_cidr_ip": "",
+      "source_group_id": "",
+      "source_group_name": "",
+      "source_group_owner_account": "",
+      "dest_cidr_ip": "",
+      "dest_group_id": "",
+      "dest_group_name": "",
+      "dest_group_owner_account": "",
+      "policy": "Accept",
+      "nic_type": "intranet",
+      "priority": 100,
+      "direction": "egress",
+      "description": "",
+      "create_time": "2020-12-01T07:04:54Z",
+      "ipv6_source_cidr_ip": "",
+      "ipv6_dest_cidr_ip": "",
+      "source_port_range": ""
+    }
+  ],
+  "page": 1,
+  "size": 10,
+  "total": 1,
+  "request_id": "ScKvEUa8plwinlMW"
+}
+```

@@ -1,0 +1,56 @@
+
+自 2016 年开始七牛对外开源了日志收集工具 `logkit`，为社区提供了一款功能强大、性能优良的日志采集工具。我们不断迭代开源logkit的同时，也接收到大量客户的需求，深刻意识到大家对agent集群式管理的强烈渴望。
+
+为此我们发布了[logkit-pro](https://developer.qiniu.com/insight/manual/4738/logkit-pro-induction)，基于社区版`logkit`内核，辅以集群管理，加上了更多客户需要的收集、解析、转换、发送、监控等功能，对于将数据发送到七牛的客户，同样免费提供使用。
+
+我们诚挚欢迎您将收集agent从开源 `logkit` 迁移到我们的专业版 `logkit-pro`, 迁移后，您可以直接登录七牛的 [logkit-pro 网站](https://logkit-pro.qiniu.com)管理您的集群，分发您的收集任务，亦或是看到您现有收集任务的发送状态。
+
+
+# **步骤**
+
+## 一、下载logkit-pro安装包
+
+
+进入 [logkit-pro](https://developer.qiniu.com/insight/manual/4682/logkit-pro-install#3) 下载安装页面，采用手动下载安装的方式，将对应系统安装包下载到本地。
+
+
+## 二、替换二进制包和前端文件
+
+1. 将安装包中的二进制文件 `logkit-pro` 替换您原先的 `logkit` 二进制文件，（您也可以直接将 `logkit-pro` 命名为` logkit`,为了表述清晰，我依旧采用logkit-pro的名字区别于logkit，实际命名并不影响迁移）
+2. 将安装包中的 `public` 文件夹直接替换原来的 `public` 文件夹。
+
+## 二、修改配置文件
+
+logkit-pro 兼容所有开源 logkit 收集器(runner)配置，但是 logkit-pro 本身的配置与开源logkit的配置有所不同。
+
+关于 logkit-pro 配置文件说明的详细文档可以参考：https://developer.qiniu.com/insight/manual/4828/logkit-pro-configuration
+
+此处迁移您主要需要关注如下几个选项：
+
+1. `"connect_to_server": true,` 这个选项表示agent是否连到服务端统一管理，写为 `false` 依旧是单机运行，跟 logkit 的使用方式相同，通过本地单机运行，无法使用集群式管理（仅推荐在排查收集问题时使用）。
+
+2. `"ak": "","sk": "",`  请填写您七牛账号的ak、sk。
+
+3. `"max_procs": 1,`  最大cpu使用数量，此配置根据您之前使用的配置修改，即根据原来 logkit.conf 里的这个项填写。盲目填写为 `1` 可能会导致 logkit 来不及收集机器上的大量日志。
+
+4. `"confs_path": ["confs*"],`  这个也是兼容logkit老配置的监听目录，按原来的写法写在这里即可。
+
+5. `"disable_web": true`  关闭本地的logkit-pro web端口，如果原来对 status 接口有依赖的，请保持这个选项是开启的，即  `"disable_web": false`。 默认情况下可以关闭，统一用七牛logkit-pro服务端管理即可。
+
+6. `"pprof_host": ":3002"` `runtime`里面还有个pprof端口，是用来排查问题的端口，建议开启，去掉该选项可以关闭这个端口。
+
+7. 其他如data/upload, auth.conf等配置文件默认都不需要载入，不存在会自动创建一个默认的，无需担心。
+
+在上述配置都修改完毕后，拿我们修改后的 `logkit.conf` 替换原来的 `logkit.conf` 即可。
+
+## 三、其他注意事项
+
+迁移过程本身比较简单，完成上述两步后重启logkit-pro即可。但是若之前的配置有遗留问题，则需要修正，我们建议采用灰度流程，先发布一台，观察情况，防止有其他不兼容情况发生。一些注意事项如下：
+
+1. 同一台机器的不同配置，runner名称不能重复。如下图所示，同一台机器不同的配置如果name字段相同，更新后同名的其他收集器会起不来。原来如果这么写，也会导致数据发送出现一些冲突等隐患，建议趁这次迁移统一修改。
+
+![](https://dn-odum9helk.qbox.me/FlQbzdTqutq2rhpuKCi8pcr9-Rhh)
+
+2. logkit-pro的功能较多，其中还涉及到一些机器监控、性能数据收集，如果要使用全功能，需要使用root权限
+
+其他问题，欢迎随时联系我们。

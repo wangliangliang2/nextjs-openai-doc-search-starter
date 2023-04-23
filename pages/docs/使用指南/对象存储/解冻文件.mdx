@@ -1,0 +1,26 @@
+如果您需要访问归档、深度归档存储类型的文件，必须先对文件进行解冻操作。
+<br>
+
+
+# **说明**
+- 归档存储解冻需要约 5 分钟，深度归档存储解冻需要约 12 小时，解冻成功后，文件变为解冻状态。解冻完成后也可选择修改文档存储类型，详情请见[修改文件存储类型](/kodo/development_guidelines/8572/modify-the-file-storage-type)。
+- 根据解冻文件的大小，实际解冻时间可能会有变化，请以实际解冻时间为准。
+- 关于对象存储 Kodo 所支持的其他存储类型，详情请见[存储类型](/kodo/product_introduction/3956/kodo-category)。
+- 解冻文件会产生数据取回费用，详情请见[计量项与计费项](/kodo/buying_guide/6379/metering-and-billing)。
+<br>
+
+# **操作步骤**
+1. 登录 Kodo 控制台进入[空间管理](https://portal.qiniu.com/kodo/bucket)界面，在空间列表中
+2. 单击**目标空间名称**进入空间概览，后单击**文件管理**进入文件管理界面；或单击目标空间栏**文件**，快速链接至文件管理界面
+3. 文件管理界面下方显示了当前空间的文件列表，如图1:文件列表
+图1:
+![image.png](https://dn-odum9helk.qbox.me/FnJuWsXmupO7rwU0_HL023uaDHkl)
+4. 找到您希望解冻的文件，鼠标移至该目标文件栏的**更多**，以获取下拉菜单
+5. 单击**解冻**，右侧将出现如图2的解冻文件界面。
+图2-1:解冻归档存储文件
+![image.png](https://dn-odum9helk.qbox.me/FgREPf4kQx-solki_hNrpPN1ZtgF)
+图2-2:解冻深度归档存储文件
+![image.png](https://dn-odum9helk.qbox.me/FkaksZeba-e2CCQTRM9M0ESIUCj2)
+
+6. 设置您预计需要的解冻天数，单击**确定**，完成解冻。
+*注：文件默认解冻 1 天；可以设置解冻有效期最多 7 天，之后文件又回到冷冻状态。*

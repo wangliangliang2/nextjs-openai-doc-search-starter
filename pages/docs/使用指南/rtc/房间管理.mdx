@@ -1,0 +1,103 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p><strong>房间</strong>是对音视频对话空间的抽象，用于隔离不同的通话过程，保障数据的安全及独立。同一房间内的用户可以互相接收对方的音视频数据。本部分介绍如何进行房间管理，获取房间信息、用户信息以及如何实现踢人等常见功能。</p>
+<blockquote>
+<ul>
+<li>加入、离开房间代表一次音视频通话的开始和结束，一次会话仅需调用一次加入、离开的操作即可，无需重复调用。加入房间后对于音视频数据的发送和接收，可参考发布和订阅相关流程。</li>
+<li>加入房间需要携带相应的 <a href="/rtc/9909/the-rtc-basic-concept#room_token">RoomToken</a>，<a href="/rtc/9909/the-rtc-basic-concept#room_token">RoomToken</a> 需通过您的服务端生成，签算方式可参考 <a href="/rtc/8813/roomToken">RoomToken 签发服务</a>。</li>
+</ul>
+</blockquote>
+
+# 房间的生命周期
+<ul>
+<li>当用户加入的房间不存在时，七牛后台服务会自动创建对应的房间。</li>
+<li>若房间内的所有用户都已离开，那么房间维持空状态 10s 后将会自动关闭。</li>
+<li>若房间为服务端创建，且创建后无用户进入，那么房间维持空状态 30s 后将会自动关闭。</li>
+<li>若房间内的用户由于断网等原因，30s 未向七牛后台服务通信，则该用户将被视为退出房间。</li>
+</ul>
+
+# 加入房间
+<p>本地调用 <a href="/rtc/11402/UniappQNRTCClient#join">QNRTCClient.join</a> 通过 roomToken 加入房间。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> token = <span class="hljs-string">&quot;...&quot;</span>
+<span></span><span class="hljs-keyword">const</span> userData = <span class="hljs-string">&quot;...&quot;</span>
+<span></span>client.<span class="hljs-title function_">join</span>(token, userData)
+<span></span></code></pre>
+<blockquote>
+<p>1.请确保在 <code>QNConnectionState.DISCONNECTED</code> 状态下调用该接口加入房间，否则接口调用无效<br></br>
+2.加入房间时根据业务需求，每个用户可通过 <code>userData</code> 携带自定义数据</p>
+</blockquote>
+<p>关于 roomToken 的签算规则，可查阅 <a href="/rtc/8813/roomToken">RoomToken 的签算文档</a>。</p>
+<p><strong>本地用户收到的回调：</strong></p>
+<p>调用 <a href="/rtc/11402/UniappQNRTCClient#join">QNRTCClient.join</a> 接口后，会触发 <a href="/rtc/11404/UniappQNRTCClinetEvent#connectionStateChanged">onConnectionStateChanged</a> 监听回调房间状态改变的通知</p>
+<ul>
+<li>若加入房间成功，会回调 <a href="/rtc/11407/UniappQNConnectionState#CONNECTED">QNConnectionState.CONNECTED</a> 状态。</li>
+<li>若加入房间失败，会回调 <a href="/rtc/11407/UniappQNConnectionState#DISCONNECTED">QNConnectionState.DISCONNECTED</a> 状态，同时可以通过 <a href="/rtc/11387/UniappQNConnectionDisconnectedInfo">QNConnectionDisconnectedInfo</a> 获取失败的原因以及对应的错误码</li>
+</ul>
+<p><strong>远端用户收到的回调：</strong></p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;onUserJoined&quot;</span>, <span class="hljs-function">(<span class="hljs-params">remoteUserID, userData</span>) =&gt;</span> {
+<span></span>    <span class="hljs-comment">// ...</span>
+<span></span>})
+<span></span></code></pre>
+
+# 离开房间
+<p>本地调用 <a href="">QNRTCClient.leave</a> 退出房间。本地退出房间成功后，会触发如下回调：</p>
+<p><strong>本地用户收到的回调：</strong></p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;onConnectionStateChanged&quot;</span>, <span class="hljs-function">(<span class="hljs-params">info, state</span>) =&gt;</span> {
+<span></span>    <span class="hljs-comment">// 当房间状态改变时会触发此回调，成功离开房间后，回调状态为 QNConnectionState.DISCONNECTED，QNConnectionDisconnectedInfo 回调 Reason 为 LEAVE</span>
+<span></span>    <span class="hljs-comment">// ...</span>
+<span></span>})
+<span></span></code></pre>
+<p><strong>远端用户收到的回调：</strong></p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;onUserLeft&quot;</span>, <span class="hljs-function">(<span class="hljs-params">remoteUserID</span>) =&gt;</span> {
+<span></span>    <span class="hljs-comment">// ...</span>
+<span></span>})
+<span></span></code></pre>
+
+# 房间信息
+<h3 id="获取房间内远端用户信息"><a href="#%E8%8E%B7%E5%8F%96%E6%88%BF%E9%97%B4%E5%86%85%E8%BF%9C%E7%AB%AF%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>获取房间内远端用户信息</h3>
+<p>本地可调用 <a href="/rtc/11402/UniappQNRTCClient#getRemoteUsers">QNRTCClient.getRemoteUser</a> 接口获取音视频通话房间中的所有远端用户。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> users = client.<span class="hljs-title function_">getRemoteUser</span>()
+<span></span></code></pre>
+<h3 id="获取房间状态信息"><a href="#%E8%8E%B7%E5%8F%96%E6%88%BF%E9%97%B4%E7%8A%B6%E6%80%81%E4%BF%A1%E6%81%AF" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>获取房间状态信息</h3>
+<p>本地可以调用 <a href="/rtc/11402/UniappQNRTCClient#getConnectionState">QNRTCClient.getConnectionState</a> 接口获取音视频通话的房间状态信息。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> state = client.<span class="hljs-title function_">getConnectionState</span>()
+<span></span></code></pre>
+<p>其中 <strong>QNConnectionState</strong> 包含如下状态：</p>
+<pre><code class="language-typescript"><span class="hljs-built_in">enum</span> QNConnectionState {
+<span></span>    <span class="hljs-comment">// 未链接状态, SDK 出现无法恢复错误时也进入该状态</span>
+<span></span>    <span class="hljs-variable constant_">DISCONNECTED</span>,
+<span></span>    <span class="hljs-comment">// 正在连接状态, 加入房间时首先进入该状态，表示开始连接房间服务</span>
+<span></span>    <span class="hljs-variable constant_">CONNECTING</span>,
+<span></span>    <span class="hljs-comment">// 连接成功状态，在完成和房间服务连接后进入该状态</span>
+<span></span>    <span class="hljs-variable constant_">CONNECTED</span>,
+<span></span>    <span class="hljs-comment">// 正在重连状态，当和房间的已有连接由于网络中断、网络异常等原因断开，SDK 进行周期性重连时进入该状态</span>
+<span></span>    <span class="hljs-variable constant_">RECONNECTING</span>,
+<span></span>    <span class="hljs-comment">// 重连成功状态，当从 RECONNECTING 状态，重新和房间服务建立连接后进入该状态</span>
+<span></span>    <span class="hljs-variable constant_">RECONNECTED</span>
+<span></span>}
+<span></span></code></pre>
+
+# 踢人
+<h3 id="客户端踢人"><a href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%B8%A2%E4%BA%BA" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>客户端踢人</h3>
+<p>客户端 SDK 未提供踢人的接口，但是踢人操作可以通过自定义消息来实现。实现步骤可参考如下：</p>
+<p>1.业务侧协商定义好踢人消息的格式规范
+2.踢人方在执行踢人操作时，向指定用户发送协商好的踢人消息
+3.被踢方接收到踢人消息后，主动离开当前房间</p>
+<p>示例代码参考如下：</p>
+<p><strong>踢人方：</strong></p>
+<p>踢人方发送协商好的踢人消息：</p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">sendMessage</span>(<span class="hljs-string">&quot;kickOut&quot;</span>, [<span class="hljs-string">&quot;user1&quot;</span>], <span class="hljs-string">&quot;message1&quot;</span>);
+<span></span></code></pre>
+<p>其中，自定义消息的使用方式可以参考 <a href="/rtc/11402/UniappQNRTCClient#sendMessage">QNRTCClient.sendMessage</a>。</p>
+<p><strong>被踢方：</strong></p>
+<p>被踢方监听 <a href="/rtc/11404/UniappQNRTCClinetEvent#onMessageReceived">onMessageReceived</a> 回调接口来接收踢人消息，并在收到消息后主动离开房间：</p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;onMessageReceived&quot;</span>, <span class="hljs-function">(<span class="hljs-params">info</span>) =&gt;</span> {
+<span></span>    <span class="hljs-keyword">if</span>(info.<span class="hljs-property">message</span> === <span class="hljs-string">&quot;kickOut&quot;</span>) {
+<span></span>        <span class="hljs-comment">// 离开房间</span>
+<span></span>    }
+<span></span>})
+<span></span>}
+<span></span></code></pre>
+<h3 id="服务端踢人"><a href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%B8%A2%E4%BA%BA" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>服务端踢人</h3>
+<p>服务端提供了踢人的接口，详情可参考服务端文档，当服务端执行踢人操作后，会触发被踢方 <a href="/rtc/11404/UniappQNRTCClinetEvent#onConnectionStateChanged">onConnectionStateChanged</a> 回调。</p>
+<p>其中，被服务端踢出房间的场景下回调的状态为 <a href="/rtc/11407/UniappQNConnectionState#DISCONNECTED">QNConnectionState.DISCONNECTED</a>，同时 <a href="/rtc/11398/UniappQNConnectionDisconnectedReason#KICKED_OUT">QNConnectionDisconnectedReason</a> 为 <strong>KICKED_OUT</strong>。</p></div></div>

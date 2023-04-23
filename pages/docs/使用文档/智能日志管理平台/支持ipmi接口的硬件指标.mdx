@@ -1,0 +1,15 @@
+ipmi监控主要用于本地/远程监控各类支持ipmi接口的硬件指标。(`主要基于ipmitool`)
+
+ipmi监控配置界面如下：
+![](https://dn-odum9helk.qbox.me/FqpAYSV24lp77kZVVTGCdENu79Qm)
+
+支持的接口有
+1. `ipmitool 接口(interface)`: 支持 open, lan, lanplus，默认为 open
+目前支持收集的指标有:
+1. `是否收集 sensor 信息`(sensor_enable)。
+2. `是否收集 mc 信息，包括 guid, info, getenables, watchdog get`(mc_enable)。
+3. `是否收集 chassis 信息，包括 status, restart_cause, identify`(chassis_enable)。
+如需使用远程连接功能，需要填写以下信息：
+1. `ipmitool 远程机器ip`(host)。
+2. `ipmitool用户名`(username)。
+3. `ipmitool密码`(password)。

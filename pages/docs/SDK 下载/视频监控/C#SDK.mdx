@@ -1,0 +1,129 @@
+[NuGet release](https://www.nuget.org/packages/Qiniu/7.3.0)
+
+此 C# SDK 适用于.NET Framework 2.0+, 基于七牛云API参考手册构建。
+
+<a id="usage-examples"></a>
+## SDK结构
+可以直接查看我们的[SDK目录](https://github.com/qiniu/csharp-sdk/tree/master/src/Qiniu)，即可大致了解我们 SDK 的结构。
+
+* 最外层包含：配置文件， 鉴权和一些公共的函数。 
+* HTTP 目录主要包含了一些对 http 进行封装的类。
+* Storage 目录对应七牛云存储产品(kodo)的相关API
+* Cdn 目录主要包含了七牛CDN产品的相关API
+* Qvs目前没有集成进来，`客户可在该目录下，新建Qvs`,放置Qvs产品的相关API。[对应的API文档](https://developer.qiniu.com/qvs/6706/summary-of-the-api)
+
+<a id="opensource"></a>
+# 开源
+
+- [c# SDK 项目地址](https://github.com/qiniu/csharp-sdk)
+- [c# SDK 发布地址](https://github.com/qiniu/csharp-sdk/releases)
+- [c# SDK 历史文档](https://developer.qiniu.io/kodo/sdk/1237/csharp)
+
+# 安装
+
+- <a href="#qiniu-sdk-dll">直接添加DLL引用</a>
+- <a href="#qiniu-sdk-nuget">包管理器(NuGet)方式安装</a>
+- <a href="#qiniu-sdk-src">从源码编译</a>
+
+<a id="qiniu-sdk-dll"></a>
+**直接添加DLL引用**
+
+您可以在[这里](https://github.com/qiniu/csharp-sdk/releases)找到所有的Release，选择您需要的版本下载，解压后将*.dll文件添加至项目引用。需要注意的是，此SDK依赖[Json.NET](http://www.newtonsoft.com/json)，可以添加对应版本Newtonsoft.Json.dll引用或者使用NuGet来安装它：
+
+```
+Install-Package Newtonsoft.Json
+```
+
+<a id="qiniu-sdk-nuget"></a>
+
+**包管理器(NuGet)方式安装**
+
+或者从NuGet来安装，以Visual Studio 2013/2015为例(如果您的Visual Studio没有安装NuGet，请先[安装](http://docs.nuget.org/docs/start-here/installing-nuget))。打开NuGet程序包管理器搜索Qiniu.Shared或者在控制台中键入以下命令：
+
+```
+Install-Package Qiniu
+```
+
+<a id="qiniu-sdk-src"></a>
+**从源码编译**
+
+当然，您也可以直接从源码编译
+
+```
+git clone https://github.com/qiniu/csharp-sdk
+```
+
+# 鉴权
+
+七牛 c# SDK 的所有的功能，都需要合法的授权。授权凭证的签算需要七牛账号下的一对有效的`Access Key`和`Secret Key`，这对密钥可以通过如下步骤获得：
+
+1. 点击[注册🔗](https://portal.qiniu.com/signup)开通七牛开发者帐号
+2. 如果已有账号，直接登录七牛开发者后台，点击[这里🔗](https://portal.qiniu.com/user/key)查看 Access Key 和 Secret Key
+
+# 示例
+```c#
+using System;
+using Qiniu.Util;
+using Qiniu.Http;
+using System.Text;
+using System.Security.Cryptography;
+
+
+
+
+namespace QvsDemo.Business.Admin
+{
+    public class QvsBiz
+
+    {
+        public static void Main()
+        {
+
+            string ak = "xxxxxxxx";   // 替换成实际的ak
+            string sk = "xxxxxxxxx"; // 替换成实际的sk
+            Mac mac = new Mac(ak, sk);
+            string body = "{\"data\":{ \"name\":\"test\"},\"params\":{ \"groups\":[\"ylxue_face_group_id2020\"]}}"; // 根据实际的API, 替换成实际的http body
+            HttpManager http = new HttpManager();    
+            string url = "http://qvs.qiniuapi.com/v1/namespaces/xxxxxxx/streams";  // 替换成实际的url,此处以[API创建流](https://developer.qiniu.com/qvs/6734/create-flow)为例
+            Uri uri = new Uri(url);
+            string contentType = "application/json"; 
+            // 如果http body为空时(例如Get请求), contentType设为application/x-www-form-urlencoded或者为空
+           //  如果http body为空时(例如Get请求), contentType设为application/x-www-form-urlencoded或者为空
+           //  如果http body为空时(例如Get请求), contentType设为application/x-www-form-urlencoded或者为空
+ 
+            string token = qiniutoken(mac, uri, body, contentType, "POST"); // 最后一个参数，根据实际请求替换
+            HttpResult ret = http.PostJson(url, body, token);
+            Console.WriteLine(ret.Text);
+
+        }
+        public static string qiniutoken(Mac mac, Uri url, String body, String contentType, String method)
+        {
+
+            // input path and host and rawquery
+            string path = url.AbsolutePath;
+            string host = url.Host;
+            string rawquery = url.Query;
+            var data = new System.Text.StringBuilder();
+            data.AppendFormat("{0} {1}", method, path);
+            if (rawquery != String.Empty)
+                data.AppendFormat("{0}", rawquery);
+            data.AppendFormat("\nHost: {0}", host);
+            if (contentType != String.Empty)
+                data.AppendFormat("\nContent-Type: {0}", contentType);
+            data.Append("\n\n");
+
+            if (contentType != String.Empty && contentType != "application/octet-stream")
+                data.Append(body);
+            String sdata = data.ToString();
+            Console.WriteLine(sdata);
+            HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(mac.SecretKey));
+            byte[] digest = hmac.ComputeHash(Encoding.UTF8.GetBytes(sdata));
+            string qiniuToken = String.Format("Qiniu {0}:{1}", mac.AccessKey, Base64.UrlSafeBase64Encode(digest));
+            //string qiniuToken = String.Format("Qiniu {0}:{1}", mac.AccessKey, System.Convert.ToBase64String(digest).Replace("/", "+").Replace("+", "-"));
+            Console.WriteLine(qiniuToken);
+            return qiniuToken;
+        }
+
+    }
+}
+```

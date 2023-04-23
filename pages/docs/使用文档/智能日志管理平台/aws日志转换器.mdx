@@ -1,0 +1,8 @@
+AWS 日志转换可以转换 AWS 日志格式,目前支持 s3 access log, elb access log, cloudfront access log
+![](https://dn-odum9helk.qbox.me/FobYGhfP4S_AOWfkF93_kn0jzxHx)
+
+* 要进行Transform变化的键(`key`): 必填。支持多级嵌套，多级间用 . 符号连接，如 abc.xyz，表示 data["abc"]["xyz"]中的数据。
+
+* 新的字段名(`new`): 新的字段名称。
+
+* 禁止记录aws日志类型(`category`)：支持 s3 access log, elb access log, cloudfront access log。

@@ -1,0 +1,38 @@
+HTTPS 是指超文本传输安全协议（Hypertext Transfer Protocol Secure，缩写：HTTPS，常称为HTTP over TLS，HTTP over SSL或HTTP Secure）是一种通过计算机网络进行安全通信的传输协议。HTTPS经由HTTP进行通信，但利用SSL/TLS来加密数据包。HTTPS开发的主要目的，是提供对网站服务器的身份认证，保护交换数据的隐私与完整性。配置 HTTPS 时，需要您提供域名对应的证书，实现全网数据加密传输功能。您可以登录**七牛开发者平台**选择**DCDN控制台**，进行HTTPS的配置。
+<br/>
+# 操作说明
+登录**七牛开发者平台**后，进入**DCDN控制台**，选择【域名管理】，点击【配置】。
+
+<img src="https://dn-odum9helk.qbox.me/FkoWzzj8HeSDrTkiCnfY99AjqN7x" width=600></img>
+
+进入域名配置界面，**HTTPS配置**模块下点击【修改配置】。
+<img src="https://dn-odum9helk.qbox.me/FobdThhjRYJaztKe0cxRHxqOR9iE" width=600></img>
+
+### 1. 开启 HTTPS
+
+如需启用**HTTPS服务**时，选择【HTTPS】即可，开启后需要选择对应的证书。
+<img src="https://dn-odum9helk.qbox.me/FtkGv9etD1UoLPRKLmzBkfoF_E93" width=600></img>
+
+### 2. 更换证书
+
+如已经完成了证书的上传，选择对应的证书即可
+<img src="https://dn-odum9helk.qbox.me/Fi0DOyOW9_S_BpbtM-bw3FTT2PWs" width=600></img>
+
+注意：
+- 证书筛选框只显示对应域名可用的所有证书，证书剩余有效期必须大于7天。
+- 如未上传证书或此域名当前无可用证书，点击**七牛云证书服务**进入SSL证书服务控制台进行自有证书上传或购买证书操作。
+
+<img src="https://dn-odum9helk.qbox.me/FrpmZdfGistDJQF5w8VSpfjMlmsn" width=600></img>
+
+
+### 3. 强制HTTPS
+
+如果您的加速域名开启了HTTPS配置，您可以设置【强制HTTPS】，开启后即使用户发起 HTTP 请求，也会强制跳转为 HTTPS 请求进行访问。此项默认为关闭状态，此时同时支持HTTP和HTTPS方式的请求。
+
+<img src="https://dn-odum9helk.qbox.me/FmvlUt7NHN76RqBIsqFH_Tr4nJ7X" width=600></img>
+
+
+### 4. 开启HTTP/2
+
+如果您的加速域名开启了HTTPS配置，您可以设置【开启HTTP/2】，HTTP/2可以兼容HTTP/1.1的访问，优化网络延迟，提升网络速度，优化用户的网络使用体验。目前，Chrome、 Firefox、Safari 等主流浏览器已经支持 HTTP/2协议。
+<img src="https://dn-odum9helk.qbox.me/FrQ3PYJ6c9ET3q_fZ-SdMz3s5Umh" width=600></img>

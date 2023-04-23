@@ -1,0 +1,40 @@
+刷新分为刷新文件、刷新目录两种方式，刷新文件是以文件为单位将缓存在CDN节点上对应的资源进行清除。刷新目录是以目录为单位，将目录下的所有缓存在CDN节点上的文件进行清除。文件预取是以文件为单位进行资源预热。
+
+动态加速每次请求都会回源，因此该场景下不提供刷新预取服务。
+
+<br/>
+
+# 操作说明
+登录**七牛开发者平台**后，进入**CDN控制台**，选择【刷新预取】，进入配置界面：
+
+![刷新预取.jpeg](https://dn-odum9helk.qbox.me/FnMH3lvpNJGRkb7OSu7q9ZUfRQO0)
+
+### 文件刷新
+
+选择【文件刷新】后，在输入框中输入需要刷新的URL；输入时，多个 URL 请用回车换行分隔，每个 URL 应当以 `http://` 或 `https:// `开头， 例如 `http://www.example.com/index.html`；提交后，您可以在页面中看到今日剩余的文件刷新量。
+
+![文件刷新.jpeg](https://dn-odum9helk.qbox.me/FsjHuqL6CSo_IecSBdNGJQHkcJYZ)
+
+**注：文件刷新每天限额 500 个，单次提交文件刷新最多20个。**
+
+### 目录刷新
+
+选择【目录刷新】后，在输入框中输入需要刷新的目录，目录必须以 `「/」` 结尾例如：`http://www.example.com/`；提交后，您可以在页面中看到今日剩余的目录刷新量。
+
+![目录刷新.jpeg](https://dn-odum9helk.qbox.me/FmGRfLXqdeIYcaZ0Pq8CCp8SG8kW)
+
+**注：目录刷新每天限额 10 个。**
+
+### 文件预取
+
+选择【文件预取】后，输入框中输入需要预取的文件路径，提交后，您可以在页面中看到今日剩余的目录刷新量。；每个 URL 应当以 `http://` 或 `https:// `开头， 例如 `http://www.example.com/index.html`。
+
+![文件预取.jpeg](https://dn-odum9helk.qbox.me/FvejdwpSh5cyTABXjvPWv2Q_m5Ll)
+
+**注：文件预取每天限额 100 个。**
+
+### 操作记录
+
+选择【操作记录】可以查询最近14天左右提交的刷新或预取的操作记录，可以查询具体的URL，以及提交时间、操作类型、状态信息，状态信息包含：正在处理、成功、失败三种类型。
+
+![操作记录.jpeg](https://dn-odum9helk.qbox.me/FnYNqqPR0_mjt3fEa1AraGGYshlx)

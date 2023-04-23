@@ -1,0 +1,70 @@
+完整的App需配置以下内容，使app以视图的形式展示分析数据：
+
+* [来源类型和提取规则](/express/extend/6555/app-knowledge)：一个应用的数据通常为一种或者多种类型的日志，系统正确的识别并解析日志是后续业务和场景化展示的前提。您需要将应用相关的来源类型和解析规则添加到应用的配置文件，以便在创建应用的搜索和仪表盘时能使用配置文件中的来源类型和解析规则。
+
+* [视图页面](/express/extend/6556/views)：配置xml视图页面（您希望的数据展示形式）来展示您的分析数据。
+
+* [导航栏](/express/extend/6557/nav)：如果您的应用中包含多个视图页面，需配置导航栏指定每个页面的入口。
+
+本节介绍如何添加导航栏，指定用户访问应用程序中的仪表盘、搜索等内容的入口。
+
+示例：
+
+![](http://pw7x36qrk.bkt.clouddn.com/navigation.png)
+
+
+
+
+应用程序的导航结构在 `[appname] >> default >> nav.xml`文件中定义，文件结构如下：
+
+```
+{
+  "defaultActiveKey": "search/issue_open",   // 当前选中导航项
+  "navs": [  // 所有的导航项
+    {
+      "key": "overview",      // 导航项的唯一标识符
+      "name": "概览",          // 导航项名称
+      "asset": "overview.xml"  // 导航项对应视图文件
+    },
+    {
+      "key": "detail",
+      "name": "详情",
+			"asset": "detail.xml" 
+    },
+    {
+      "key": "search",
+      "name": "搜索",
+      "children": [
+        {
+          "key": "issue_open",
+          "name": "24小时内新建 Issue",
+          "asset": "issue_opened_in_last_24_hours.xml"
+        },
+        {
+          "key": "pull_request_open",
+          "name": "24小时内新建 Pull Request",
+          "asset": "pull_requests_opened_in_last_24_hours.xml"
+        },
+                {
+          "key": "still_pull_request_open",
+          "name": "未关闭 Pull Request",
+          "asset": "still_opened_pull_requests.xml"
+        }
+      ]
+    }
+  ]
+}
+```
+
+对应的渲染结果如下：
+
+![](https://dn-odum9helk.qbox.me/Fv8TtkLWKsk60z3L2503A2uz04ml)
+
+**字段说明**
+- defaultActiveKey: 当前处于激活的导航项，其取值是包含父子项的路径，如上例中的: `search/issue_open`。
+- navs: 所有的导航项，每一个导航项包含以下字段。
+ - key: 导航项的标识符。
+ - name: 导航项的显示名称。
+ - asset: 导航项对应的视图 XML 文件。（不应与children字段同时存在）
+ - children: 当前导航项的子导航项，结构与navs相同。（不应与asset字段同时存在）
+

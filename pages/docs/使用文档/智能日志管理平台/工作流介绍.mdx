@@ -1,0 +1,62 @@
+工作流（Pipeline）是一个数据接收、计算、导出工具，把业务流程映射到页面上，在这里您的数据业务得到可视化，方便您更直观地来进行数据分析管理。
+
+![](https://pandora-kibana.qiniu.com/workflow/workflow_demo.png)
+
+它的操作方式类似于思维脑图，直接在组件上右键，或者先拖拽组件到工作界面，再在组件之间连线。
+
+![](https://pandora-kibana.qiniu.com/workflow/export_to_logdb1.png)
+
+您可以通过访问七牛资源主页的`大数据工作流引擎`进入工作流管理界面。或者直接访问 [https://portal.qiniu.com/pandora/dags](https://portal.qiniu.com/pandora/dags)。
+
+在工作流首页，点击`创建工作流`创建工作流任务，对数据进行计算导出。
+
+![](https://pandora-kibana.qiniu.com/pipeline_firstpage.png)
+
+工作流提供 3 种类型的组件：[数据源](/insight/manual/4689/the-data-source)、[计算](/insight/manual/4690/data-calculation)和[导出](/insight/manual/4668/data-delivery)帮助您打通数据业务。
+
+工作流还支持几种管理组件，如定时器、告警，在您创建批量计算任务的时候可以通过`定时器`工具设置任务定时启动/循环启动。详情请阅读[管理组件](/insight/manual/4691/management-component)。
+
+![](https://pandora-kibana.qiniu.com/workflow_interface2.png)
+
+在界面右上角您可以看到功能按钮：`更新&启动`、`更新`、`退出`。当您业务逻辑还没整理好的时候,但是想保存现有的操作，您可以点击`更新`来保存您当前所做的操作，这样做可以大大节省您的工作量。
+
+`注意1：`在工作流任务里，计算组件不是必须，数据可以直接通过`导出`组件投递到日志分析平台。
+
+`注意2：`在工作流任务里，流式计算的数据源类型只能是消息队列，批量计算的数据源只能是对象存储或者 CDN 日志。数据源详情请阅读[数据源组件](/insight/manual/4689/the-data-source)。
+
+**工作流支持的数据类型**
+
+|类型|解释|数据样例|
+|:--|:--|:--|
+|date|日期类型，默认展示格式为 `RFC3339`，可自定义格式|`2017-01-01T15:00:25Z07:00`|
+|string|字符串类型|"qiniu.com"|
+|ip| IP 类型|"221.12.12.194"|
+|long|64 位整数|1024|
+|float|单精度 64 位浮点|322.00|
+|jsonstring|符合 json 格式的字符串|{"name":"JSON","address":"杭州市西湖区","age":25}|
+|boolean|布尔类型，值为 `true` 或 `false` |false|
+
+**对数据进行流式计算并导出到智能日志平台操作演示**
+
+![](https://pandora-kibana.qiniu.com/workflow/realtime_cal.gif)
+
+`注意：`这里我们是从 logkit-pro 发送数据到智能日志平台，会自动创建一个工作流，工作流中包含数据源节点以及日志导出节点。
+
+更新工作流任务后，到[智能日志平台日志仓库](https://portal.qiniu.com/insight/logdb/overview)，搜索我们刚刚计算后的数据：
+
+![](https://pandora-kibana.qiniu.com/workflow/realtime_cal.png)
+
+符合预期。
+
+您还可以将数据导出到对象存储服务、HTTP 地址，导出指南请阅读：
+
+* [导出到智能日志平台](/insight/manual/5120/delivery-to-the-intelligent-logging-platform)
+
+* [导出到对象存储](/insight/manual/5121/delivery-to-the-object-storage-service)。
+
+* [导出到 HTTP 地址](/insight/manual/5122/delivery-to-the-http-address)
+
+
+
+
+

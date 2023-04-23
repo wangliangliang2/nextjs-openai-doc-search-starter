@@ -1,0 +1,82 @@
+<a id="overview"></a>
+# 概述
+
+快速入门介绍了如何通过七牛开发者平台快速创建直播空间、直播流及获取推流播放地址等操作，一站式完成直播业务的基本推流及播放。本文档适用于通过七牛开发者平台管理直播业务的用户。
+
+快速入门使用流程如下：
+
+![image.png](https://dn-odum9helk.qbox.me/FnY-ntR1-7dKkJd_ATf3hNsKOlNW)
+
+本流程中使用OBS进行推流，实际业务中通过SDK的方式进行推流和播放，可参考SDK文档：[推流SDK](https://developer.qiniu.com/pili/5028/push-the-sdk-download-experience)和[播放SDK](https://developer.qiniu.com/pili/4262/player-sdk-introduction-and-demo-download)。
+
+<a id="console-login"></a>
+# 登录七牛开发者平台
+
+1. 访问[七牛官网](http://www.qiniu.com/)，点击右上角的 **登录**，进入[七牛开发者平台](https://portal.qiniu.com/create)；
+![image.png](https://dn-odum9helk.qbox.me/FpHjIXDKWjyZ9xjQDTcb_oKYpIgt)
+2. 输入账号登录七牛开发者平台，若尚未注册，单击[注册](https://portal.qiniu.com/signup)，进行七牛帐号注册。
+![image.png](https://dn-odum9helk.qbox.me/FlRWnB6zClwbAl4XB-b6r6dQjtR5)
+
+<a id="open-apply"></a>
+# 实名认证
+
+1. 登录控制台后进入[实名认证页面](https://portal.qiniu.com/identity/choice)；
+![image.png](https://dn-odum9helk.qbox.me/FqkNxVa29m3WTk0fGozJm8uSrqbL)
+2. 选择对应的认证类型进行认证，根据需要填写认证信息，提交认证后公司会尽快对您的账号进行认证。
+3. 未认证的用户无法进行直播空间，点击直播空间会自动跳转至认证页面，因此请您先进行实名认证，审核通过后即可使用直播云。
+<a id="bucket-create"></a>
+# 创建直播空间
+1. 在[七牛开发者平台首页](https://portal.qiniu.com/home)定位到 **资源管理 > 直播空间** 资源卡片；
+![image.png](https://dn-odum9helk.qbox.me/FkjcHcu-caXemFVGVeJYs8MuC2Tz)
+2. 点击新增直播空间，进入[创建直播空间](https://portal.qiniu.com/hub/create)页面，并填写直播空间基本信息，分别输入直播空间名称和直播域名，系统会自动为您生成直播服务使用的推流域名及播放域名；
+![image.png](https://dn-odum9helk.qbox.me/FhD-6BozA9KNTmul34LFS1eAuZ1s)
+备注：直播域名需要进行ICP备案和公安备案，如不明确公安备案流程，请点击[帮助文档](https://developer.qiniu.com/af/kb/3987/how-to-make-website-and-inquires-the-police-put-on-record-information)协助您进行备案。
+3. 点击下一步，进入存储空间配置页，进行存储空间及存储过期时间配置；若没有存储空间，点击“新建存储空间”进行存储空间的设置；
+![image.png](https://dn-odum9helk.qbox.me/FpIeB0rKJ6OfTwLNoc3V1tczYN1E)
+4. 点击下一步，进入高级设置，配置直播封面、直播中断超时、直播鉴权、[时间戳防盗链](https://developer.qiniu.com/pili/kb/4161/timestamp-anti-daolian-about-broadcast-domain)等，完成后即可创建直播空间
+![image.png](https://dn-odum9helk.qbox.me/Ftwb1o6Ynbz_b8NoLZ1KDsIqRWO8)
+
+
+<a id="cname-domain"></a>
+# CNAME直播域名
+![image.png](https://dn-odum9helk.qbox.me/Fgj1yrvxOeE5KsqaM7sikdS-FeY5)
+1. 进入直播空间首页，查看直播域名信息及状态；
+2. 鼠标定位至各域名 “未配置CANME” 状态，查看域名 CNAME 信息；
+3. 根据直播域名及 CNAME 信息，到域名所归属的 DNS 管理平台配置 CNAME；
+4. CNAME 配置成功后，域名状态自动更改为 “可用” 状态；
+![image.png](https://dn-odum9helk.qbox.me/Fhm2byBwY8CcfAAQ_ctPGKW1nd_k)
+
+<a id="streaming-create"></a>
+# 创建直播流
+1. 在直播空间首页，点击直播流管理，进入直播流管理界面；
+![image.png](https://dn-odum9helk.qbox.me/FpbkxBUVnkHyCRMdxZqfnOa2RSrJ)
+2. 点击添加流，进入创建直播流界面；填写直播流名称，点击确定创建，进行直播流的创建。
+![image.png](https://dn-odum9helk.qbox.me/Flg5SNclvTWjPFphHx9FexcjoXbm)
+
+<a id="address-access"></a>
+# 获取推流地址和播放地址
+1. 在直播流管理——>所有流中，点击刚才创建的流；可以查看对于播放类型的播放地址
+![image.png](https://dn-odum9helk.qbox.me/Fh88tcOseAduosVaFG3ghnxZeF0_)
+2. 点击流属性，查看当前直播流的详细信息；
+3. 定位到 “推流地址” ，获取RTMP推流地址和SRT推流地址。
+![image.png](https://dn-odum9helk.qbox.me/FvFOuPyHHRbKEuFRJVlOlMXzK9kR)
+
+<a id="obs-streaming"></a>
+# OBS推流
+1. 打开 OBS 推流软件，在设置——>串流中进行串流配置；
+![串流配置](https://dn-odum9helk.qbox.me/Fs-J0h6lLF64a5nk_a4Ib0atMbE7)
+2. **串流类型** 选择自定义流媒体服务器，将获取到的推流地址分别填入 **URL** 和 **流密钥**，如图：
+![串流类型](https://dn-odum9helk.qbox.me/FocNCygXNgHUUhUuTfSbVpxrBfVN)
+3. 若推流地址为无校验鉴权，则流密钥处只需要输入流名称即可，如图：
+![无校验鉴权](https://dn-odum9helk.qbox.me/FiYBnOD6O6VADRswXGphRX1xjM5B)
+4. 点击 **开始串流**，进行推流；
+![推流](https://dn-odum9helk.qbox.me/FtKwsJwIum6t4OpYCMCfKs3DNWx4)
+5. 在直播流管理——>活跃流——>直播信息中可查看当前推流的状态和信息。
+
+
+<a id="play"></a>
+# 播放
+1. 在直播流管理——>活跃流——>直播信息中点击直播预览按钮，可进行当前直播的播放；
+![image.png](https://dn-odum9helk.qbox.me/FucVFxy4LUaKyvqfWXX0Rf7j4wSP)
+2. 可通过点击关闭预览关闭播放器，下拉页面可以查看直播流的当前在线人数，实时码率和帧率等信息。
+

@@ -1,0 +1,74 @@
+# **简介**
+
+视频采样缩略图接口(vsample)用于从视频文件中截取多帧画面并按指定大小缩放成图片。  
+
+<a id="video-sample-specification"></a>
+# **接口规格**
+
+
+```
+vsample/<Format>
+       /ss/<StartTime>
+       /t/<Duration>
+       /s/<Resolution>
+       /rotate/<Degree>
+       /interval/<Interval>
+       /pattern/<Pattern>
+```
+
+| 参数名称                                                 | 必填 | 说明                                                         |
+| :------------------------------------------------------- | :--- | :----------------------------------------------------------- |
+| <a id="video-sample-format"></a>`<Format>`               | 是   | 输出的目标截图格式，支持`jpg`、`png`等。                     |
+| <a id="video-sample-starttime"></a>`/ss/<StartTime>`     |      | 指定截取视频的开始时刻，单位：秒,精度为 100ms，例如 `/ss/1.1`；默认从片头开始。 |
+| <a id="video-sample-duration"></a>`/t/<Duration>`        |      | 采样总时长，单位：秒,精度为 100ms，例如 `t/1.1`；默认表示到片尾结束。 |
+| <a id="video-sample-resolution"></a>`/s/<Resolution>`    |      | 0. 指定截图分辨率，格式为宽 x 高 ，长边取值范围[20,3840]的整数，短边取值范围[20,2160]的整数。<br>1. 宽、高都为空时，则和原视频保持一致<br>2. 宽为空，高不为空，则按高的值对原视频等比例缩放<br>3. 宽不为空，高为空时，则按宽的值对原视频等比例缩放<br>4. 宽、高都不为空时，则根据宽、高来缩放 |
+| <a id="video-sample-rotate"></a>`/rotate/<Degree>`       |      | 指定顺时针旋转的度数，可取值为`90`、`180`、`270`、`auto`。<br>默认为不旋转。 |
+| <a id="video-sample-interval"></a>`/interval/<Interval>` |      | 指定采样间隔，单元：秒。<br>默认为5秒,精度为 100ms，例如`/interval/0.1` |
+| <a id="video-sample-pattern"></a>`/pattern/<Pattern>`    | 是   | 指定各张截图的资源名格式，支持如下魔法变量：<br> `$(count)` ：六个占位符的数字串，不足位的填充前导零即`%06d`，如 `000001`。<br>**注意：**需要对设定值做[URL安全的Base64编码](/kodo/manual/appendix#urlsafe-base64)。 |
+
+**备注**：建议截帧频率是视频帧率的整数倍。
+
+# **操作方式**
+
+- **API方式**：可以通过 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 的方式来调用：
+  -  `资源上传时自动触发`：可以在上传时指定[persistentOps](/kodo/manual/put-policy#put-policy-persistent-ops-explanation)参数
+  - `对已有资源手动手动触发`：调用[pfop]()命令
+
+- **控制台方式**：您可以使用[智能多媒体平台](https://portal.qiniu.com/dora/media-gate)，可视化创建任务，使用详情请参考 [任务](https://developer.qiniu.com/dora/6488/task-01)。
+
+
+# **示例**
+
+取视频第7秒到第607秒之间，以5秒为间隔的截图（即第7秒、第12秒、第17秒……依此类推），图片格式为jpg，宽度为480px，高度为360px，文件命名模板为`vframe-$(count)`：
+
+[资源上传时自动触发]()：上传的`token`中指定`persistentOps`
+
+```
+{
+"scope":                "qiniu-ts-demo:thinking-in-go.mp4",
+"deadline":             1390528576,
+"persistentOps":        "vsample/jpg/ss/7/t/600/s/480x360/pattern/dmZyYW1lLSQoY291bnQp",
+"persistentNotifyUrl":  "http://fake.com/qiniu/notify"
+}
+```
+
+[对已有资源手动触发]()：
+
+```
+POST /pfop/ HTTP/1.1
+Host: api.qiniu.com  
+Content-Type: application/x-www-form-urlencoded  
+Authorization: QBox <AccessToken>  
+
+bucket=qiniu-ts-demo&key=thinking-in-go.mp4&fops=vsample%2Fjpg%2Fss%2F7%2Ft%2F600%2Fs%2F480x360%2Fpattern%2FdmZyYW1lLSQoY291bnQp
+```
+
+**注意**：视频帧缩略图(vframe)不仅支持 `持久化处理` 的异步处理方式，而且支持`同步处理`方式。
+
+以 Python Sdk 为例，具体可以看下[音视频转码的示例](/dora/api/audio-and-video-transcoding-avthumb)。需要在音视频转码的示例的基础修改数据处理命令 `fops` ，将其修改为：
+
+```
+fops = vsample%2Fjpg%2Fss%2F7%2Ft%2F600%2Fs%2F480x360%2Fpattern%2FdmZyYW1lLSQoY291bnQp
+```
+**注意**:
+其他语言 Sdk 可在[官方 Sdks ](/sdk)下载，可以通过查看 Sdk 使用指南中`触发持久化`，`预转持久化`使用。

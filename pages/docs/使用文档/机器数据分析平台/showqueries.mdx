@@ -1,0 +1,60 @@
+`show queries` 算子可展示指定搜索时间范围内的SPL查询详情，例如查询语句、耗时等统计信息，但不包括查询的具体结果。
+
+## 语法
+
+```spl
+show queries [<query-id-list>] [state=<string>] [analyze=<string>] 
+```
+
+## 参数说明
+可选参数：
+- `query-id-list`：`<string>`类型，过滤指定查询号的查询详情，多个值用空格分隔。默认值为空，表示不指定查询号过滤条件。
+
+- `state=<string>`：过滤指定查询状态的查询详情。`state`取值可以为`RUNNING|COMPLETED|FAILED|CANCELED`。默认值为空，表示不指定执行状态过滤条件。
+
+- `analyze=<string>`：`analyze` 参数描述以哪一种查询类型视角观测查询执行详情, 具体参考 [analyze 指令](https://developer.qiniu.io/express/10768/spl2_analyze) 中 `type` 参数的说明。`analyze="query|stage|task|driver|exec"`，默认值为`"query"`。
+
+
+> ### 使用说明
+> 引用show queries 可以展示一定时间范围内的历史查询详情。可以保存的历史查询数量取决于配置文件：
+> - `phoenix.matrix.query_info_cache.heap_size_mb`: 内存中保存的历史记录空间阀值，默认 256Mb
+> - `phoenix.matrix.query_info_cache.disk_size_mb`: 磁盘上保存的历史记录空间阀值，默认 1GB; 超过该阀值后，旧的数据将会淘汰
+> show queries 返回结果中各个字段的含义参考算子[analyze](https://developer.qiniu.io/express/10768/spl2_analyze)
+
+## 示例
+
+### 1. 查看最近执行的查询
+在搜索界面中指定所需搜索的时间范围，例如前 30 分钟，然后输入SPL命令:
+
+```spl
+show queries
+```
+返回如下：
+
+|queryId|state|error|createTime|startTime|elapsedTime|planningTime|schedulingTime|query|totalStages|runningTasks |completedTasks|failedTasks|canceledTasks|totalTasks|totalDrivers|totalSplits|
+|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|n2vcbn4Bg3iN3mkB6GtH@oGvcbn4Bg3iN3mkB6Gvc|COMPLETED| |1642537478365|1642537478467|395|1|10|show tasks|2|0|2|0|0|2|2|1|
+|l2vabn4Bg3iN3mkBwWuS@mGvabn4Bg3iN3mkBwWuU|COMPLETED| |1642537337238|1642537337265|185|118|8|show rest "/api/v1/devops/repos?pageSize=1000" jsonpath="repos"  &#124; eval docs = toLong(docs) &#124; sort by docs|2|0|2|0|0|2|2|1|
+|i2vVbn4Bg3iN3mkBhWsf@jGvVbn4Bg3iN3mkBhWsf|COMPLETED| |1642536994080|1642536994094|109|94|6|show rest "/api/v1/devops/repos?pageSize=1000" jsonpath="repos"  &#124; eval docs = toNumber(docs) &#124; sort by docs|2|0|2|0|0|2|2|1|
+
+### 2. 查看指定 queryId 的查询状态与统计信息
+
+```spl
+show queries "JxnCZn4BZV7X5Z4Wun3R@KBnCZn4BZV7X5Z4Wun3R"
+```
+
+```spl
+show queries "JxnCZn4BZV7X5Z4Wun3R@KBnCZn4BZV7X5Z4Wun3R" analyze="task"
+```
+
+### 3. 查看执行失败的 queries
+
+```spl
+show queries state="FAILED"
+| fields queryId, query, createTime, error
+```
+
+## 相关算子
+
+* [analyze](https://developer.qiniu.io/express/10768/spl2_analyze)
+* [show tasks](https://developer.qiniu.io/express/10781/show-tasks)

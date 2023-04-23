@@ -1,0 +1,27 @@
+**请求语法**
+
+```
+POST /v5/repo/<RepoName>/analyzer
+Authorization: Pandora <auth>
+Content-Type: application/json
+[
+    {
+        "key":"<KEY>",
+        "analyzer":{
+            "analyzerName":"<AnalyzerName>",
+            "options":{
+                 "type":"<TYPE>",
+                 "stopwords":["word1","word2"...],
+                 "pattern":"PATTERN"
+            }
+            
+        }
+    }
+]
+```
+
+返回包：
+
+```
+200 OK
+```

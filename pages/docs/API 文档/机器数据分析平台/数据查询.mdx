@@ -1,0 +1,548 @@
+# 1. 接口清单
+
+SPL 查询接口是 Pandora 2.0 非常重要的接口，通过输入SPL的方式获取搜索或者分析结果。以下是搜索接口的清单：
+
+1. 创建搜索任务接口：`/api/v1/jobs`
+2. 获得搜索任务元信息接口：`/api/v1/jobs/<JobId>`
+3. 搜索事件接口events：`/api/v1/jobs/<JobId>/events`
+4. 搜索时间柱接口timeline：`/api/v1/jobs/<JobId>/timeline`
+5. 字段汇总统计接口summary：`/api/v1/jobs/<JobId>/summary`
+6. SPL 可视化结果接口：`/api/v1/jobs/<JobId>/results`
+7. SPL 搜索结果的字段类型信息：`/api/v1/mapping?startTime=<StartTime>&endTime=<EndTime>&query=<SPLQuery>`
+8. 同步搜索查询接口：`/api/v1/jobs/sync`
+
+
+> 诸如：`chart`, `timechart`, `stats`, `top`, `rare` 当SPL语句中包含以上算子时，前端会自动以可视化图表的形式呈现结果。
+
+搜索的逻辑一般如下：
+
+1. 创建搜索任务，获取任务id
+2. 根据任务id 查询搜索任务信息，获得任务的执行状态、执行时间，得知任务类型是搜索（isResult=false）还是SPL计算（isResult=true）
+3. 持续轮询相应的计算任务结果接口，获得计算结果
+	3.1. 如果是搜索类型任务，轮询获得`events`，`timeline`，`summary` 的接口结果
+	3.2. 如果是SPL计算类型任务，轮询获得`results` 的接口结果
+
+
+> 注意：搜索接口的请求格式是json格式，所以请求Header中必须添加 'Content-Type: application/json' 
+
+# 2. 接口描述
+
+## 2.1 创建搜索任务
+
+请求路径：`/api/v1/jobs`
+
+请求方法：`POST`
+
+请求体示例：
+
+``` json
+{
+    "app": "search",
+    "source": "dashboard",
+    "query": "search2 repo=\"test_cpu\" \n| stats avg(cpu)",
+    "endTime": 1654499289796,
+    "mode": "smart",
+    "preview": false,
+    "collectSize": -1,
+    "timeout": 1000
+}
+```
+
+请求体字段解释：
+
+| 字段名        | 是否必填 | 字段解释                                                     | 默认值                              |
+| ------------- | -------- | ------------------------------------------------------------ | ----------------------------------- |
+| `query`       | 是       | 查询SPL语句，请参考 [SPL参考手册](https://developer.qiniu.com/express/manual/6010/spl_manual) | 无                                  |
+| `startTime`   | 否       | 查询起始时间，格式为毫秒精度时间戳，startTime为闭区间        | 最早的数据时间                      |
+| `endTime`     | 否       | 查询截止时间，格式为毫秒精度时间戳，endTime为开区间          | 当前时间                            |
+| `preview`     | 是       | 是否提前返回数据                                             | 当算子中有 export 时, preview=false |
+| `collectSize` | 是       | 用于限制返回数据数量                                         | 1000                                |
+| `mode`        | 否       | 检索模式，详见下 | 极速模式                            |
+| `app`         | 否       | 可选，搜索来源应用 APP，用来对搜索任务做分类管理，默认为search | search                                  |
+| `source`      | 否       | 可选，搜索任务类型，用来对搜索任务做分类管理，如 dashboard, search 等 | other                                  |
+| `timeout`     | 否       | 可选，搜索超时时间，如果在这个时间内任务会直接返回结果，如果超时则需要轮询获得结果 | 0，不等待结果，直接进入轮询                    |
+
+
+
+`smart` : **智能模式**，不对各字段的字段值做统计分析
+`/api/v1/jobs` -> 
+* `/api/v1/jobs/<JobId>`
+* `/api/v1/jobs/<JobId>/events`
+* `/api/v1/jobs/<JobId>/timeline`
+* `/api/v1/jobs/<JobId>/summary` 
+* `/api/v1/jobs/<JobId>/results`
+	
+
+`fast`: **极速模式**：不对各字段的字段值做统计分析；同时做字段裁剪，只提取SPL用到的字段
+`/api/v1/jobs` -> 
+* `/api/v1/jobs/<JobId>`
+* `/api/v1/jobs/<JobId>/results`
+
+
+`detailed`: **详细模式**，对各字段的字段值做统计分析；同时提取所有字段，启动字段发现
+`/api/v1/jobs` -> 
+* `/api/v1/jobs/<JobId>`
+* `/api/v1/jobs/<JobId>/events`
+* `/api/v1/jobs/<JobId>/timeline`
+* `/api/v1/jobs/<JobId>/summary`
+* `/api/v1/jobs/<JobId>/results`
+
+ 
+
+响应体示例：
+
+``` json
+{
+    "id": "M3TXN4EBxmNCFMJWq9OC",
+    "meta": {
+        "process": 1,
+        "duration": 161,
+        "scanSize": 1,
+        "resultSize": 1,
+        "eventSize": 0,
+        "isResult": true
+    },
+    "result": {
+        "fields": [
+            {
+                "name": "avg(cpu)"
+            }
+        ],
+        "rows": [
+            [
+                0.5499999999999999
+            ]
+        ]
+    }
+}
+```
+
+响应体字段释义：
+
+| 字段名 | 是否必填 | 字段解释 | 
+| --------     | -------- | -------- | 
+| `id`         | 是      | 搜索任务id  | 
+| `meta`       | 否      | 当设置了timeout后，会存在此字段，标识搜索任务结果状态，具体格式参考 `2.2 获得搜索任务元信息 `  | 
+| `result`     | 否      | 如果在timeout 设置的超时时间内计算出results接口结果，则直接返回结果，具体格式参考 `2.6 SPL 计算结果` | 
+
+
+
+
+## 2.2 获得搜索任务元信息 
+
+
+请求路径：`/api/v1/jobs/<JobId>` 
+
+**注意**：`<JobId>` 为创建搜索任务返回结果中的id字段值
+
+请求方法：`GET`
+
+响应体示例：
+
+``` json
+{
+    "process":1,
+    "duration":17771,
+    "eventSize":703919,
+    "isResult":false,
+    "isExport":false,
+    "resultSize":1000,
+    "scanSize":1000
+}
+```
+
+
+响应体字段示例：
+
+
+| 字段名       | 是否必填 | 字段解释                                                     |
+| ------------ | -------- | ------------------------------------------------------------ |
+| `process`    | 是       | 搜索状态，0代表搜索进行中，1代表搜索结束                     |
+| `duration`   | 是       | 搜索持续时间，毫秒单位                                       |
+| `eventSize`  | 是       | 返回命中结果总数                                             |
+| `isResult`   | 是       | 是否SPL transform命令，一般为统计命令结果，如果为true，则应该轮询获得 results 接口结果 |
+| `isExport`   | 是       | 是否SPL export命令，一般为导出结果，如果为true，则应该轮询等待导出结果 |
+| `resultSize` | 是       | 可视化结果数量                                                     |
+| `scanSize`   | 是       | 搜索过程中扫描到的数据条数                                   |
+
+
+
+
+**注意**：当process 不为1的时候，持续去轮询相应的结果接口，获得最终搜索结果。
+
+## 2.3 搜索事件 events 
+
+
+请求路径：`/api/v1/jobs/<JobId>/events?rawLenLimit=<true|false>&pageNo=<num>&pageSize=<num>` 
+
+**注意**：
+
+1. `<JobId>` 为创建搜索任务返回结果中的id字段值
+2. `rawLenLimit` 限制返回原始数据长度，避免返回过长数据，导致无法正常页面展示，默认不限制返回原始数据长度
+3. `pageSize`  pageSize 当前页返回数据数量
+4. `pageNo`    pageNo   页数
+请求方法：`GET`
+
+
+响应体示例：
+
+``` json
+{
+    "total":1000,
+    "rows":[
+        Object{...},
+        Object{...},
+        Object{...},
+        Object{...},
+        Object{...},
+        Object{...},
+        Object{...},
+        Object{...},
+        Object{...},
+        Object{...}
+    ]
+}
+```
+
+| 字段名 | 字段解释 | 
+| -------- | -------- | 
+| `rows`     | 对象数组，每个对象代表一条数据  | 
+| `total`    | 后台检索到的总的数据条数（受`collectSize`的限制）|
+
+其中，JSON Object的示例如下：
+
+``` json
+{
+    "_raw":Object{...},
+    "_indexTime":Object{...},
+    "_time":Object{...},
+    "host":Object{...},
+    "origin":Object{...},
+    "repo":Object{...},
+    "sourcetype":Object{...},
+    "process":Object{...},
+    "Key":Object{...},
+    "bytes":Object{...},
+    "encoding":Object{...},
+    "ip":Object{...},
+    "token":Object{...}
+}
+```
+其中，`_raw`的值形如：
+``` json
+{
+    "_raw":{
+        "value":"20:58:17 [http-nio-8081-exec-48] Receiving from 111.86.157.205 /initMobileApp(Key=xxxxxxyyyyyyyyyyzzzzzzzzz,token=null,bytes=198,encoding=gzip",
+        "tokens":Array[24]
+    }
+```
+`_raw.value`：原始日志文本；
+`_raw.tokens`：原始日志文本的分词结果。每个`token`对象形如（标明每个词的开始、结尾以及是否高亮）：
+```json
+{
+    "startOffset":3,
+    "endOffset":5,
+    "highlight":false
+}
+```
+
+
+`_indexTime`, `_time`, `host`, `origin`, `repo`, `sourcetype` 均属于Pandora 2.0**系统内置字段**，每条数据均会包含这6个字段。每个系统内置字段所对应的JSON Object形式相同，以`_time`为例：
+``` json
+{
+    "value":1590497897000,
+    "highlight":false
+}
+```
+
+| 字段名 | 字段解释 | 
+| -------- | -------- | 
+| `_indexTime`     |  写入系统的时间，也即数据入库的时间  | 
+| `_time`          |  从`_raw.value`中提取出的时间     |
+| `host`           |  主机名（默认为`upload`）         |
+| `origin`         |  数据来源（如果是通过文件上传的方式上传日志，那么默认为上传日志文件的文件名） |
+| `repo`           |  数据仓库名                      |
+| `sourcetype`     |  来源类型名称（来源类型，定义了一组规则，指定如何从文本中提取时间信息作为`_time`以及如何将文本字节流划分成一个个带有`_time`的事件） |
+
+
+`process`, `Key`, `bytes`, `encoding`, `ip`, `token` 属于**数据字段**，它们是从原始日志`_raw.value`中，通过字段提取规则，提取出来的字段。
+
+对于上述的例子，原始的文本如下所示：
+```sh 
+20:58:17 [http-nio-8081-exec-48] Receiving from 111.86.157.205 /initMobileApp(Key=xxxxxxyyyyyyyyyyzzzzzzzzz,token=null,bytes=198,encoding=gzip
+```
+
+其中，系统将`http-nio-8081-exec-48`识别为`process`字段，因此有：
+``` json
+{
+    "value":"http-nio-8081-exec-48",
+    "highlight":false
+}
+```
+
+系统将`111.86.157.205`识别为`ip`字段，因此有：
+``` json
+{
+    "value":"111.85.157.215",
+    "highlight":false
+}
+```
+
+
+
+## 2.4 搜索时间柱 timeline
+
+请求路径：`/api/v1/jobs/<JobId>/timeline`
+
+**注意**：`<JobId>` 为创建搜索任务返回结果中的id字段值
+
+请求方法：`GET`
+
+响应体示例：
+
+``` json
+{
+    "buckets": [
+        {
+            "key": 1578893348510,
+            "value": 0
+        }
+    ]
+}
+```
+
+
+响应体释义：
+
+
+| 字段名 | 是否必填 | 字段解释 | 
+| -------- | -------- | -------- | 
+| `buckets`     | 是      |  对象数组，每个对象代表一个时间柱数据 | 
+| `buckets.key`     | 是      | 时间柱的时间，毫秒精度时间戳  | 
+| `buckets.value`     | 是      | 该时间的统计计数数量  | 
+
+
+
+## 2.5 字段汇总统计 summary
+
+请求路径：`/api/v1/jobs/<JobId>/summary`
+
+**注意**：`<JobId>` 为创建搜索任务返回结果中的id字段值
+
+请求方法：`GET`
+
+响应体示例：
+
+``` json
+{
+    "uid": {
+        "distinct": 1,
+        "max": "1.0",
+        "min": "1.0",
+        "avg": 1.0,
+        "count": 4,
+        "buckets": {
+            "1": 4
+        }
+    },
+    "host": {
+        "distinct": 1,
+        "count": 4,
+        "buckets": {
+            "upload": 4
+        }
+    },
+    "origin": {
+        "distinct": 1,
+        "count": 4,
+        "buckets": {
+            "a.txt": 4
+        }
+    },
+    "repo": {
+        "distinct": 1,
+        "count": 4,
+        "buckets": {
+            "atxt": 4
+        }
+    },
+    "sourcetype": {
+        "distinct": 1,
+        "count": 4,
+        "buckets": {
+            "aa": 4
+        }
+    }
+}
+```
+
+
+响应体释义：
+
+**注意**：响应体是key-value对，key为数据字段名，value为字段的统计信息。
+
+| 字段名 | 是否必填 | 字段解释 | 
+| -------- | -------- | -------- | 
+| `字段.distinct`     | 是      |  字段的值去重计数 | 
+| `字段.count`     | 是      | 非null字段值的计数  | 
+| `字段.max`     | 否      | 数值字段返回结果，字段最大值  | 
+| `字段.min`     | 否      | 数值字段返回结果，字段最小值  | 
+| `字段.avg`     | 否      | 数值字段返回结果，字段平均值  | 
+| `字段.buckets`     | 是      | 该字段Top 10的字段值，以及其出现频次  | 
+
+
+
+
+## 2.6 SPL 计算结果
+
+
+请求路径：`/api/v1/jobs/<JobId>/results`
+
+**注意**：`<JobId>` 为创建搜索任务返回结果中的id字段值
+
+请求方法：`GET`
+
+响应体示例：
+
+
+``` json
+{
+    "fields": [
+        {
+            "flag": "bucket",
+            "bucketIndex": 0,
+            "name": "sourcetype"
+        },
+        {
+            "flag": "metric",
+            "name": "count"
+        }
+    ],
+    "rows": [
+        [
+            "aa",
+            4
+        ]
+    ]
+}
+```
+
+
+响应体释义：
+
+| 字段名 | 是否必填 | 字段解释 | 
+| -------- | -------- | -------- | 
+| `fields`     | 是      |  返回数据中的字段列表 | 
+| `rows`     | 是      | 数组，返回所有计算结果 | 
+| `fields.flag`     | 否      | 字段的类型，bucket 代表是分组字段，metric 代表是统计值  | 
+| `fields.bucketIndex`    | 否      | 字段序号，在rows数组中对应的是哪个序号  | 
+| `fields.name`     | 否      | 字段值  | 
+
+
+## 2.7 SPL 搜索结果的字段类型信息
+
+请求路径：`/api/v1/mapping?startTime=<StartTime>&endTime=<EndTime>&query=<SPLQuery>`
+
+请求方法：`GET`
+
+注意：该接口并不真正运行搜索任务，只是推测返回数据的字段类型信息
+
+请求体字段解释：
+
+| 字段名        | 是否必填 | 字段解释                                                     | 默认值                              |
+| ------------- | -------- | ------------------------------------------------------------ | ----------------------------------- |
+| `query`       | 是       | 查询SPL语句，请参考 [SPL参考手册](https://developer.qiniu.com/express/manual/6010/spl_manual) | 无                                  |
+| `startTime`   | 否       | 查询起始时间，格式为毫秒精度时间戳，startTime为闭区间        | 最早的数据时间                      |
+| `endTime`     | 否       | 查询截止时间，格式为毫秒精度时间戳，endTime为开区间          | 当前时间                            |
+
+
+响应体示例：
+
+```json
+{
+    "mapping": {
+        "_time": {
+            "type": "time"
+        },
+        "repo": {
+            "type": "string"
+        },
+        "origin": {
+            "type": "string"
+        },
+        "_indexTime": {
+            "type": "time"
+        },
+        "sourcetype": {
+            "type": "string"
+        },
+        "host": {
+            "type": "string"
+        },
+        "_raw": {
+            "type": "string"
+        }
+    }
+}
+```
+
+字段说明
+
+| 字段名        | 是否必填 | 字段解释                                                     | 
+| ------------- | -------- | ------------------------------------------------------------ | 
+| `mapping`       | 是       |   mapping 是一个 map 类型，key 为每个字段，mapping.<字段>.type 代表每个字段的类型，当前系统支持 `long`, `double`, `time`, `string` 四种类型。其中 `time` 为13位时间戳整数，代表时间类型  | 
+
+
+
+## 2.8 同步搜索查询接口
+
+
+请求路径：`/api/v1/jobs/sync`
+
+请求方法：`POST`
+
+解释：该接口是 `/api/v1/jobs`  接口对应的同步搜索接口。此接口会创等待搜索运行成功后同步返回给客户端，而不需要客户端对任务进行轮询搜索。
+
+**注意**：建议仅在搜索体量较小的时候使用此接口，大数据量搜索情况下使用2.1中提供的异步接口
+
+请求体示例：
+
+```json
+{
+    "query":"* | stats count() by sourcetype",
+    "startTime":1578918430156,
+    "endTime":1578919155378
+}
+```
+
+响应体示例：
+
+
+``` json
+{
+    "fields": [
+        {
+            "name": "sourcetype"
+        },
+        {
+            "name": "count"
+        }
+    ],
+    "rows": [
+        [
+            "aa",
+            4
+        ]
+    ]
+}
+```
+
+
+响应体释义：
+
+| 字段名 | 是否必填 | 字段解释 | 
+| -------- | -------- | -------- | 
+| `fields`     | 是      |  返回数据中的字段列表 | 
+| `rows`     | 是      | 数组，返回所有计算结果 | 
+| `fields.name`     | 否      | 字段值  | 
+

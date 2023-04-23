@@ -1,0 +1,421 @@
+**QAPP**，是一款面向开发者的容器应用平台。提供了新的命令行工具 qappctl，通过使用该命令行工具，开发者能够创建、部署、维护、管理容器应用服务。
+
+# 下载
+
+- [Linux 64bits](https://dn-devtools.qbox.me/qappctl-linux-amd64-0.2.3)
+- [Mac OS 64bits ](https://dn-devtools.qbox.me/qappctl-darwin-amd64-0.2.3)
+
+
+
+# 获取帮助
+
+### 查看 qappctl 帮助信息
+
+用法：
+
+```
+qappctl help
+或
+qappctl -h
+或
+qappctl --help
+```
+
+### 查看子命令帮助
+
+用法：
+
+```
+qappctl help <subcommand>
+或
+qappctl <subcommand> -h
+或
+qappctl <subcommand> --help
+```
+
+参数说明：
+
+| 参数名称   | 说明     | 类型   | 必填 |
+| ---------- | -------- | ------ | ---- |
+| subcommand | 子命令名 | string | 是   |
+
+# **login**
+
+使用 qappctl 开发容器应用，需要先使用七牛账号的Access Key 和Secret Key登录。如何获取 Access Key 和 Secret Key，请查阅[这里](https://portal.qiniu.com/user/key)。用法：
+
+```
+qappctl login -u <access key> -p <secret key>
+```
+
+标志说明：
+
+| 名称       | 说明           | 类型   | 必填 |
+| ---------- | -------------- | ------ | ---- |
+| -u 或 --ak | 填写Access Key | string | 是   |
+| -p 或 --sk | 填写Secret Key | string | 是   |
+
+# **logout**
+
+退出当前登录，用法：
+
+```
+qappctl logout
+```
+
+# **register**
+
+创建一个应用，用法：
+
+```
+qappctl register <app> [-d <description>]
+```
+
+参数、标志说明：
+
+| 名称                | 说明           | 类型   | 必填 |
+| ------------------- | -------------- | ------ | ---- |
+| ufop                | 应用名称       | string | 是   |
+| -d 或 --description | 设置应用的描述 | string | 否   |
+
+# **unregister**
+
+注销一个应用，用法：
+
+```
+qappctl unregister <app>
+```
+
+# **list**
+
+查看所有已经创建的应用，用法：
+
+```
+qappctl list
+```
+
+# **push**
+
+上传本地可运行的 docker image到应用镜像仓库（需要本地有docker环境） 
+
+### 注意
+
+目前不支持 windows 平台，用法：
+
+```
+qappctl push <image>
+```
+
+参数说明：
+
+| 名称  | 说明   | 类型   | 必填 |
+| ----- | ------ | ------ | ---- |
+| image | 镜像名 | string | 是   |
+
+**注意：** 本地运行Docker版本需为[1.12.0](https://github.com/docker/docker/blob/master/CHANGELOG.md#1120-2016-07-28)及以上
+
+# **pull**
+
+拉取镜像仓库的镜像到本地，用法：
+
+```
+qappctl pull <image>
+```
+
+参数说明：
+
+| 名称  | 说明   | 类型   | 必填 |
+| ----- | ------ | ------ | ---- |
+| image | 镜像名 | string | 是   |
+
+# **images**
+
+查看当前用户已经上传的 docker image，用法：
+
+```
+qappctl images
+```
+
+# **release**
+
+查看或者创建一个发布版本
+
+## list
+
+查看发布版本信息
+
+```
+qappctl release list <app>
+```
+
+## mkconfig
+
+快速创建版本模版配置文件
+
+```
+qappctl release mkconfig --path/-p <path>
+```
+
+#### 参数说明
+
+| 名称       | 说明         | 类型   | 必填 |
+| ---------- | ------------ | ------ | ---- |
+| --path或-p | 模版文件目录 | string | 是   |
+
+#### 配置文件参数说明
+
+| 名称               | 说明                                                         | 类型   | 必填 |
+| ------------------ | ------------------------------------------------------------ | ------ | ---- |
+| name: release-name | 版本名称                                                     | string | 是   |
+| image: you-app:1.0 | 使用的 image，需要带上 tag, 使用 qappctl images 命令获取可用 image 列表 | string | 是   |
+| desc               | 描述信息                                                     | string | 否   |
+| flavor: C1M1       | 运行实例的机器配置，不同的配置单实例价格不一样，使用 qappctl flavor 命令获取可用的配置列表 | string | 是   |
+| port               | 设置端口号，port范围：1-65535，不能设置为30000。             | string | 否   |
+| health_check       | 0.设置健康检查必须要设置port。<br />1.path : string, 健康检查url，平台会向该url发送GET请求，并根据返回的http status code是否是200来判断该应用是否健康;<br />2.timeout : int, 调用健康检查的时间间隔，单位为秒。 | string | 否   |
+| env                | app 启动的时候附加的环境变量<br />key: string, 环境变量名;<br />value: string, 环境变量值。 | string | 否   |
+| log_file_paths     | OPTIONAL 用户日志路径，会采集该路径下的用户日志，系统也会对该目录下的已采集日志进行自动回收。 | string | 否   |
+
+## create
+
+从模版文件 dora.yaml 创建release
+
+```
+qappctl release create <app> --config/-c <path>
+```
+
+参数说明：
+
+| 名称         | 说明         | 类型   | 必填 |
+| ------------ | ------------ | ------ | ---- |
+| app          | 应用名称     | string | 是   |
+| --config或-c | 模版文件目录 | string | 是   |
+
+# **deploy**
+
+创建、查看或调整实例数
+
+## create
+
+```
+qappctl deploy create <app> --release <release_name> --region <region> --expect_replicas <num>
+```
+
+参数说明：
+
+| 名称                  | 说明                  | 类型   | 必填 |
+| --------------------- | --------------------- | ------ | ---- |
+| app                   | 应用名称              | string | 是   |
+| --release或-r         | release 名称          | string | 是   |
+| --region              | deploy 区域           | string | 是   |
+| --expect_replicas或-e | 期望实例数量(不能为0) | int    | 是   |
+
+## delete
+
+删除deployment
+
+```
+qappctl deploy delete <app> --id <id> --region <region>
+```
+
+参数说明：
+
+| 名称     | 说明          | 类型   | 必填 |
+| -------- | ------------- | ------ | ---- |
+| app      | 应用名称      | string | 是   |
+| --id或-i | deployment id | string | 是   |
+| --region | deploy 区域   | string | 是   |
+
+## get
+
+查看 deployment 
+
+```
+qappctl deploy get <app> --id <id> --region <region>
+```
+
+参数说明：
+
+| 名称     | 说明          | 类型   | 必填 |
+| -------- | ------------- | ------ | ---- |
+| app      | 应用名称      | string | 是   |
+| --id或-i | deployment id | string | 是   |
+
+## list
+
+列举 deployment 
+
+```
+qappctl deploy list <app> --region <region>
+```
+
+参数说明：
+
+| 名称     | 说明        | 类型   | 必填 |
+| -------- | ----------- | ------ | ---- |
+| app      | 应用名称    | string | 是   |
+| --region | deploy 区域 | string | 是   |
+
+## update
+
+更新实例数，用法：
+
+```
+qappctl deploy update <app> --id <deployment_id> --expect_replicas <num> --region <region>
+```
+
+参数说明：
+
+| 名称                  | 说明                  | 类型   | 必填 |
+| --------------------- | --------------------- | ------ | ---- |
+| app                   | 应用名称              | string | 是   |
+| --id或-i              | deployment id         | string | 是   |
+| --expect_replicas或-e | 期望实例数量(不能为0) | int    | 是   |
+| --region              | deploy 区域           | string | 是   |
+
+# **flavor**
+
+查看资源可选配置，用法：
+
+```
+qappctl flavor
+```
+
+# **region**
+
+查看可选实例部署的区域，用法：
+
+```
+qappctl region
+```
+
+# **instance**
+
+查看运行中的实例，用法：
+
+```
+qappctl instance list <app> --deploy <deploymentID> --region <region>
+```
+
+参数说明：
+
+| 名称        | 说明              | 类型   | 必填 |
+| ----------- | ----------------- | ------ | ---- |
+| app         | 应用名称          | string | 是   |
+| -d/--deploy | deploy ID         | string | 否   |
+| -a/--all    | 列举所有 instance | bool   | 否   |
+| --region    | deploy 区域       | string | 是   |
+
+# **attach**
+
+登陆运行中的实例, 需要容器中有 `/bin/bash`
+
+```
+qappctl attach <app> --region <region> --instance <instanceID>
+```
+
+参数说明：
+
+| 名称       | 说明          | 类型   | 必填 |
+| ---------- | ------------- | ------ | ---- |
+| app        | 应用名称      | string | 是   |
+| r/region   | instance 区域 | string | 是   |
+| i/instance | instance id   | string | 是   |
+
+### 登陆 快速入门
+```
+qappctl deploy list <app>  // 获取 deployID
+qappctl instance list <app> -d <deployID> // 获取 instanceID, region
+appctl attach <app> -r <region> -i <instanceID> //登陆
+```
+# **entry**
+
+管理或查看服务入口
+
+## delete
+
+关闭服务入口，用法：
+
+```
+qappctl entry delete <app> -id <id>
+```
+
+参数说明：
+
+| 名称     | 说明          | 类型   | 必填 |
+| -------- | ------------- | ------ | ---- |
+| app      | 应用名称      | string | 是   |
+| --id或-i | deployment id | string | 是   |
+
+## get
+
+获取某应用服务入口状态，用法：
+
+```
+qappctl entry get <app>
+```
+
+参数说明：
+
+| 名称 | 说明     | 类型   | 必填 |
+| ---- | -------- | ------ | ---- |
+| app  | 应用名称 | string | 是   |
+
+## list
+
+获取所有应用服务入口状态，用法：
+
+```
+qappctl entry list
+```
+
+# **log**
+
+查看实例日志
+
+```
+qappctl log <app> --from <from> --to <to> --region <region> --release <release>
+```
+
+参数说明：
+
+| 名称          | 说明                   | 类型   | 必填 |
+| ------------- | ---------------------- | ------ | ---- |
+| app           | 应用名称               | string | 是   |
+| --from或-f    | 设置运行日志的开始时间 | string | 是   |
+| --to或-t      | 设置运行日志的结束时间 | string | 是   |
+| --region      | deploy 区域            | string | 是   |
+| --release或-r | release 名称           | string | 是   |
+
+## recent 
+查看实例近5分钟的日志
+
+```
+qappctl log recent <app> --region <region> --release <release>
+```
+
+参数说明：
+
+| 名称          | 说明         | 类型   | 必填 |
+| ------------- | ------------ | ------ | ---- |
+| app           | 应用名称     | string | 是   |
+| --region      | deploy 区域  | string | 是   |
+| --release或-r | release 名称 | string | 是   |
+
+
+
+### std 
+查看标准输出/标准错误 
+
+```
+qappctl log std <app> --region <region> --id <instanceID> --tail <num>
+```
+
+参数说明：
+
+| 名称               | 说明               | 类型   | 必填 |
+| :----------------- | :----------------- | :----- | :--- |
+| app                | 自定义数据处理名称 | string | 是   |
+| -r / --region      | instance 区域      | string | 是   |
+| -i / --instance_id | instance id        | string | 是   |
+| -t / --tail        | 最新几条输出       | int    | 否   |
+| -l / --limit_byte  | 最大输出字节数     | int    | 否   |
+

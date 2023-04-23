@@ -1,0 +1,114 @@
+七牛云存储 Jenkins 插件，支持将构建产生的文件保存到七牛，以及从七牛云下载已保存的构建文件到本地，不再占用本地的存储资源。
+
+Github [代码地址](https://github.com/jenkinsci/qiniu-plugin)
+
+# 安装
+## 从官方插件列表安装（推荐）
+
+* 点击 Manage Jenkins 进入管理界面。
+* 点击 Manage Plugins进入插件管理界面。
+* 选择 Available Tab，搜索查找到 **Qiniu** 插件（This plugin upload is to archive build artifacts to Qiniu）。
+* 点击 Install without restart 或 Download now and install after restart，安装插件。
+
+![](https://dn-odum9helk.qbox.me/Fu-E2lYEBCEj7qp-iFdYC4AfLuQ-)
+
+注意：如果之前手动安装过 Qiniu 插件，想从官方插件列表中安装最新版本的插件，需要先将手动安装的插件卸载。
+
+* 进入 Manage Plugins 插件管理界面后，选择 Installed Tab，搜索查找到已安装的 **Qiniu** 插件。
+* 点击 Uninstall 卸载插件，再按上述步骤安装即可。
+
+![](https://dn-odum9helk.qbox.me/Fr-xbe2zdlIOUV01TCYxFABvNVC0)
+
+## 手动安装
+
+点击下载 [Qiniu Jenkins Plugin](https://kodo-toolbox.qiniu.com/qiniu-jenkins-v1.0.1.hpi) 。
+
+* 点击 Manage Jenkins 进入管理界面。
+* 点击 Manage Plugins进入插件管理界面。
+* 选择 Advanced Tab，在Upload Plugin 设置页选择下载好的七牛云存储插件。
+* 点击 Upload 上传。
+
+![](https://dn-odum9helk.qbox.me/FhoH9tc39LW-4e44V8pTv5XylP4z)
+
+# 全局配置
+
+插件安装好以后，需要先做 Jenkins 的全局配置。
+* 点击 Manage Jenkins 进入管理界面。
+* 点击 Configure System 进入配置界面。
+* 点击 Artifact Management for Builds 按钮，选择 Qiniu Artifact Manager。
+* 在出现的 Qiniu Artifact Manager 配置栏中，依次填写 Access Key，Secret Key 和 Bucket Name，注意 Bucket Name 必须是七牛账户中已有的存储空间名称。
+
+![](https://dn-odum9helk.qbox.me/FmyBL69l3RVy739aMhq0XTW2mmWK)
+
+* 可以点击旁边的 Advanced 按钮，将出现更多配置项，这里的配置项都是可选的。
+	* Archive as infrequent storage object：是否以低频存储的方式存储文件，推荐使用低频存储类型。不勾选时，以标准存储类型存储。
+	* Delete Artifacts ：build 删除时是否删除已保存的文件，默认删除。可以取消勾选，删除 build 的时候保留已保存的云端文件。
+	* Object Name Prefix：在存储空间中的对象名称前缀。如果有多套 Jenkins 系统，可以不同前缀路径来区分。
+	* Bucket Download Domain：存储空间绑定的下载域名。如果不填，则从存储空间中选择一个下载域名。但如果在存储空间中没有绑定任何下载域名，则该项必填。
+	* Use HTTPs Protocol：是否使用 HTTPS 传输协议，默认使用 HTTP 传输协议。
+	* 如果是需要保存到私有云存储中，则必须配置Qiniu UP Domain，Qiniu Uc Domain，Qiniu Rs/Rsf Domain，Qiniu API Domain ；保存到公有云存储时，忽略这些Domain配置。
+* 点击 Save 按钮保存。
+
+![企业微信截图_e9afdc24-cad8-4db1-8d85-d1955850372c.png](https://dn-odum9helk.qbox.me/FkO-cZGEC2ANK5jwD08ROpdltsXU)
+
+# 部署
+全局配置，设置好了统一的存储空间及七牛云存储账号的AK/SK，然后就可以针对不同的项目来部署、配置构建结果保存的具体规则。
+
+## **普通部署**
+
+在 Job 配置界面中，添加 Archive the artifacts to Qiniu 的设置。
+
+* 点击 Post-build Actions 下拉框里的 Archive the artifacts to Qiniu 选项，添加一个配置框。
+* 在 Files to archive 里输入要保存的构建结果路径，可以使用通配符;只需要输入当前 workspace 下的相对路径即可。
+* 可以点击旁边的 Advanced 按钮，将出现更多配置项，这里的配置项都是可选的。
+	* Excludes：排除的文件路径匹配规则。表示要从构建结果中排除一部分文件，依然可以使用通配符。
+	* Do not fail build if archiving returns nothing：即使没有匹配到任何文件，也不导致保存失败；表示允许保存空的文件。
+	* Archive artifacts only if build is successful：表示仅当构建成功才会保存。
+	* Use default excludes：使用默认的排除规则。表示自动将 SCM 软件用的配置文件或数据文件排除，不予保存。
+	* Treat include and exclude patterns as case sensitive：文件路径匹配规则是否对大小写敏感。勾选，表示要保存的结果路径为大小写敏感。
+* 点击 Save 按钮保存。
+
+![9afdc24-cad8-4db1-8d85-d1955850372c.png](https://dn-odum9helk.qbox.me/FkO-cZGEC2ANK5jwD08ROpdltsXU)
+
+**注意：**
+为保证文件名称唯一性，保存文件的命名规则为：`<Object Name Prefix>/<Project Full Name>/<Build Number>/<File Path>`
+
+## **Pipeline部署**
+
+在 Pipeline 配置界面中，可以使用 archiveArtifactsToQiniu 指令将构建产生的文件保存到七牛云存储。
+
+脚本示例如下：
+```
+node {
+   stage('Build') {
+      sh '''
+rm -rf **
+mkdir -p {aa,bb,cc}/{dd,ee,ff}
+for file in {aa,bb,cc}/{dd,ee,ff}/{gg,hh,ii}
+do
+  dd if=/dev/urandom of="$file" count=1024 bs=1
+done
+      '''
+   }
+   stage('Results') {
+      archiveArtifactsToQiniu allowEmptyArchive: false, caseSensitive: false, excludeFilesGlob: '', includeFilesGlob: '**', onlyIfSuccessful: false, useDefaultExcludes: false
+   }
+}
+
+```
+
+参数说明如下：
+
+|参数名称|参数类型|描述|备注|
+|---------|----|---------|----|
+|includeFilesGlob|字符串|要保存的构建结果路径，支持使用通配符|必填，保存所有文件，填写 `**`|
+|excludeFilesGlob|字符串|要从构建结果中排除、不做保存的文件，支持使用通配符|必填，不排除任何文件，填写 `''`|
+|allowEmptyArchive |布尔值|允许保存空的文件|必填|
+|onlyIfSuccessful |布尔值|仅当构建成功才将产生的文件保存|必填，且需设置为true；设置为false不生效|
+|useDefaultExcludes |布尔值|使用默认的排除规则，自动将 SCM 软件用的配置文件或数据文件排除，不予保存|可选 |
+|caseSensitive |布尔值|要保存的结果路径大小写敏感|可选 |
+
+# 下载
+保存到七牛云存储的构建结果文件，可以在每次构建页面中看到，点击即可从七牛云存储下载构建输出的文件到本地。
+
+![](https://dn-odum9helk.qbox.me/FpAFPLt-psFIpWbXgnwq7ssLfJLT)

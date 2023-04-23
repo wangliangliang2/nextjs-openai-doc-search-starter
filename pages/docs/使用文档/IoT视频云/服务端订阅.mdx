@@ -1,0 +1,39 @@
+# **什么是服务端订阅**
+用户的服务端可以直接订阅应用下自定义Topic，配置服务端订阅成功后，IoT视频云平台会将应用下所有设备的已订阅类型的消息转发至您的服务端。
+
+# **协议说明**
+服务端订阅提供的是通过MQTT协议进行消息推送的，配置完服务端订阅后，IoT视频云平台会将应用下所有已订阅类型的消息，通过MQTT推送至您的服务端。
+
+# **接入说明**
+
+MQTT客户端接入IoT视频云平台的连接地址和连接认证参数说明如下：
+* 接入域名：mqtt.qnlinking.com
+* userName：以url.Query格式的"ak=<ak\>&type=1&timestamp=<timestamp\>"作为mqtt的userName
+参数说明：
+
+|参数|说明|
+|---|---|
+|ak|用户账号对应的密钥对中的AccessKey，[密钥获取](https://portal.qiniu.com/user/key)|
+|type|用户接入类型，默认为1|
+|timestamp|签算使用的时间戳，取当前签算操作时的时间戳即可|
+
+* password：使用userName计算HMAC-SHA1得到签名sign信息，对sign进行[base64编码](https://developer.qiniu.com/kodo/manual/1231/appendix)，编码后的字符串作为mqtt的password
+* ClientId：ak作为mqtt的ClientId
+* keepAlive：keepAlive的时间为60秒
+
+说明：
+（1）userName 中的 timestamp 过期时间为15分钟(每次重新连接这个timestamp 必须刷新)。
+（2）异常导致的重新链接时 username 里的timestamp必须重新刷新, 重连成功之后之前sub的Topic必须重新sub。
+（3）上述base64编码均采用url安全的base64编码。
+	
+
+# **共享订阅**
+共享订阅 (Shared Subscription) 是指在多订阅者间采用分组负载平衡方式派发消息, 实现方式为所有以 $share/<group\>/ 开头的的 Topic 会以 group 来分组进行消息的负载均衡派发。当需要使用共享订阅时，需要在对应的设备Topic前添加$share/<group\>/
+例如：
+设备Topic为udf/linking/v1/3nm4x087b30o3/SVBDLTA1RDY=/status/
+共享订阅使用的Topic为$share/group1/udf/linking/v1/3nm4x087b30o3/SVBDLTA1RDY=/status/
+	
+如果4个客户端均订阅了$share/group1/udf/linking/v1/3nm4x087b30o3/SVBDLTA1RDY=/status/，所有发送到 Topic:udf/linking/v1/3nm4x087b30o3/SVBDLTA1RDY=/status/ 的消息会被同时派发到分组 group1 ，但是分组中每次都只会有一个客户端收到消息。
+
+
+

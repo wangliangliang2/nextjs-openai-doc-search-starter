@@ -1,0 +1,1807 @@
+<a id="1"></a>
+# 1 概述
+PLShortVideoKit 是七牛推出的一款适用于 iOS 平台的短视频 SDK，提供了包括美颜、滤镜、水印、断点录制、分段回删、视频编辑、混音特效、MV 特效、本地/云端存储在内的多种功能，支持高度定制以及二次开发。
+
+## 1.1 下载地址
+- [iOS Demo 以及 SDK 下载地址](https://github.com/pili-engineering/PLShortVideoKit)
+
+<a id="2"></a>
+# 2. 功能列表
+短视频 SDK 主要区分精简版、基础版、进阶版、专业版 4 个版本，不同版本的功能[请参考](https://developer.qiniu.com/pili/sdk/3731/short-video)
+
+
+<a id="3"></a>
+# 3 阅读对象
+
+本文档为技术文档，需要阅读者：
+
+- 具有基本的 iOS 开发能力
+- 准备接入七牛云存储
+
+<a id="4"></a>
+# 4 总体设计
+<a id="4.1"></a>
+
+## 4.1 基本规则
+
+为了方便理解和使用，对于 SDK 的接口设计，我们遵循了如下的原则：
+
+- 每一个接口类，均以 `PLS` 开头
+- 简单的配置，通过 `NSDictionary` 来设置
+- 复杂的配置类，以 `PLSXXXConfiguration` 命名
+- 所有的回调代理，以 `PLSXXXXDelegate` 命名
+
+<a id="4.2"></a>
+
+## 4.2 核心接口
+
+核心的接口类说明如下：
+
+| 接口类名                 | 功能        | 备注              |
+| ----------------------- | --------- | --------------- |
+| PLShortVideoRecorder    | 负责视频的拍摄   | 音视频采集、美颜、编码、封包等 |
+| PLShortVideoEditor   	   | 负责视频内容的编辑 | 添加滤镜、水印、文字特效等   |
+| PLSAVAssetExportSession | 负责视频的拼接、导出 | 视频导出等     |
+| PLShortVideoTranscoder  | 负责视频的转码 | 视频转码，获取视频信息等     |
+| PLShortVideoUploader    | 负责视频的上传   | 视频文件的上传         |
+| PLSTransitionMaker    | 负责文字动画生成视频文件 |  文字转 mp4 |
+| PLSMultiVideoMixer    | 负责将多个视频文件合并 |  多视频合并 |
+| PLSVideoMixRecorder    | 负责素材视频合拍 |  视频编辑 |
+| PLSImageVideoComposer    | 负责图片、GIF 图和视频混排 |  视频编辑 |
+
+<a id="4.3"></a>
+
+## 4.3 视频拍摄接口类
+
+拍摄功能相关的类说明如下：
+
+| 接口名                         | 功能        | 备注           |
+| --------------------------- | --------- | ------------ |
+| PLShortVideoRecorder        | 视频拍摄的核心接口 | 核心接口         |
+| PLSVideoConfiguration       | 配置摄像头参数   | 预览分辨率，前后摄像头等 |
+| PLSAudioConfiguration       | 配置麦克风参数   | 通道，采样率等      |
+| PLSFilter                   | 内置滤镜对象    | 滤镜名称，缩略图等    |
+| PLShortVideoRecorderDelegate| 视频拍摄回调 | 包括原始数据回调及拍摄回调等   |
+
+
+<a id="4.4"></a>
+
+## 4.4 视频编辑接口类
+
+### 4.4.1 视频内容编辑接口类
+视频编辑功能相关的类说明如下：
+
+| 接口名                   | 功能        | 备注           |
+| --------------------- | --------- | ------------ |
+| PLShortVideoEditor    | 视频编辑的核心接口 | 核心接口         |
+| PLSEditSettings       | 配置视频编辑参数  | 源文件、音效、水印设置等  |
+| PLSAVAssetExportSession| 导出视频接口    | 根据设置的相应参数导出视频 |
+| PLSGifComposer | 制作 GIF 图接口 | 根据视频帧／图片数组合成 GIF图 |
+| PLSMovieComposer | 多个视频拼接接口 | 将多个视频拼接为1个视频 |
+| PLSReverserEffect | 时光倒流特效接口 | 将视频倒序 |
+
+### 4.4.2 视频转码接口类
+| 接口名                 | 功能          | 备注   |
+| ------------------- | ----------- | ---- |
+| PLSAVAssetExportSession | 视频导出的核心接口 | 核心接口 |
+| PLShortVideoTranscoder | 视频转码的核心接口 | 核心接口 |
+
+<a id="4.5"></a>
+
+## 4.5 视频上传接口类
+
+视频上传功能相关的类说明如下：
+
+| 接口名                      | 功能        | 备注        |
+| ------------------------ | --------- | --------- |
+| PLShortVideoUploader     | 视频上传的核心接口 | 核心接口      |
+| PLSUploaderConfiguration | 配置上传参数    | 上传视频空间 token 等 |
+| PLShortVideoUploaderDelegate | 上传进度及结果回调    | 回调上传进度及结果    |
+
+
+<a id="5"></a>
+# 5 开发准备
+
+<a id="5.1"></a>
+## 5.1 设备以及系统要求
+
+- 设备要求：iPhone 5 及以上
+- 系统要求：iOS 8 及以上
+
+## 5.2 开发环境配置
+
+- Xcode 开发工具。App Store [下载地址](https://itunes.apple.com/us/app/xcode/id497799835?ls=1&mt=12)
+- 安装 CocoaPods。[了解 CocoaPods 使用方法](https://cocoapods.org/)
+
+<a id="5.3"></a>
+## 5.3 导入 SDK
+
+[CocoaPods](https://cocoapods.org/) 是针对 Objective-C 的依赖管理工具，它能够将使用类似 PLShortVideoKit 的第三方库的安装过程变得非常简单和自动化，你能够用下面的命令来安装它：
+
+```bash
+$ sudo gem install cocoapods
+```
+
+### 5.3.1 Podfile
+
+为了使用 CoacoaPods 集成 PLShortVideoKit 到你的 Xcode 工程当中，你需要编写你的 `Podfile`
+
+#### 专业版安装
+
+如果你购买的是七牛专业版本的短视频 SDK，请按如下方式填写Podfile：
+
+```ruby
+target 'TargetName' do
+pod 'PLShortVideoKit'
+end
+```
+
+#### 进阶版安装
+
+如果你购买的是七牛进阶版本的短视频 SDK，请按如下方式填写Podfile：
+
+```ruby
+target 'TargetName' do
+pod 'PLShortVideoKit', :podspec => 'https://raw.githubusercontent.com/pili-engineering/PLShortVideoKit/master/PLShortVideoKit-Advanced.podspec'
+end
+```
+
+#### 基础版安装
+
+如果你购买的是七牛基础版本的短视频 SDK，请按如下方式填写Podfile：
+
+```ruby
+target 'TargetName' do
+pod 'PLShortVideoKit', :podspec => 'https://raw.githubusercontent.com/pili-engineering/PLShortVideoKit/master/PLShortVideoKit-Basic.podspec'
+end
+```
+
+#### 精简版安装
+
+如果你购买的是七牛精简版本的短视频 SDK，请按如下方式填写Podfile：
+
+```ruby
+target 'TargetName' do
+pod 'PLShortVideoKit', :podspec => 'https://raw.githubusercontent.com/pili-engineering/PLShortVideoKit/master/PLShortVideoKit-Smart.podspec'
+end
+```
+
+### 5.3.2 运行 pod
+
+Podfile填写完成后，运行如下命令安装SDK：
+
+```ruby
+$ pod install
+```
+
+**注意：在使用了七牛的推流或连麦 SDK 的工程中，集成该短视频 SDK 会出现美颜库导致的符号冲突问题 duplicate symbol _OBJC_CLASS_ MuseProcessor，原因是两个SDK都引入了基础美颜库libMuseProcessor。解决方法是在引入短视频SDK时使用PLShortVideoKit/ex-libMuseProcessor的subspec，替代PLShortVideoKit，以基础版为例：**
+
+```ruby
+target 'TargetName' do
+pod 'PLShortVideoKit/ex-libMuseProcessor', :podspec => 'https://raw.githubusercontent.com/pili-engineering/PLShortVideoKit/master/PLShortVideoKit-Basic.podspec'
+end
+```
+<a id="5.4"></a>
+## 5.4 添加权限说明
+我们需要在 Info.plist 文件中添加相应权限的说明，否则程序在 iOS 10 系统上会出现崩溃。需要添加如下权限：
+
+- 麦克风权限：Privacy - Microphone Usage Description 是否允许 App 使用麦克风
+- 相机权限： Privacy - Camera Usage Description 是否允许 App 使用相机
+- 相册权限： Privacy - Photo Library Usage Description 是否允许 App 访问媒体资料库
+
+
+<a id="6"></a>
+# 6 快速开始
+
+<a id="6.1"></a>
+## 6.1 视频拍摄
+
+### 6.1.1 创建音视频的采集和编码配置对象
+
+当前使用默认配置，之后可以深入研究按照自己的需求作更改
+
+``` Objective-C
+PLSVideoConfiguration *videoConfiguration = [PLSVideoConfiguration defaultConfiguration];
+PLSAudioConfiguration *audioConfiguration = [PLSAudioConfiguration defaultConfiguration];
+```
+
+### 6.1.2 创建拍摄 recorder 对象
+
+``` Objective-C
+self.shortVideoRecorder = [[PLShortVideoRecorder alloc] initWithVideoConfiguration:videoConfiguration audioConfiguration:audioConfiguration];
+
+```
+
+### 6.1.3 添加摄像头预览视图
+将预览视图添加为当前视图的子视图
+
+```Objective-C
+[self.view addSubview:self.shortVideoRecorder.previewView];
+```
+
+### 6.1.4 开始采集
+
+在开始录制前需要开启采集，开启采集后才能看到摄像头预览
+
+```Objective-C
+[self.shortVideoRecorder startCaptureSession];
+```
+
+### 6.1.5 设置拍摄时长
+设置实际拍摄过程中的最大拍摄时长，最小拍摄时长
+
+``` Objective-C
+// 单位为秒
+self.shortVideoRecorder.maxDuration = 60.0f;
+self.shortVideoRecorder.minDuration = 2.0f; 
+```
+
+### 6.1.6 横屏拍摄
+设置是否根据设备的方向自动确定竖屏、横屏拍摄
+
+``` Objective-C
+// 默认为 NO，不启用自动确定
+self.shortVideoRecorder.adaptationRecording = YES;
+```
+
+**注意：当 adaptationRecording 为 YES 时，可通过 deviceOrientationBlock 的回调，来获取设备方向**
+
+### 6.1.7 倍速拍摄
+设置拍摄的快／慢速率，支持5种拍摄速率 PLSVideoRecoderRateTopSlow、PLSVideoRecoderRateSlow、PLSVideoRecoderRateNormal、PLSVideoRecoderRateFast、PLSVideoRecoderRateTopFast
+
+``` Objective-C
+// 默认为 PLSVideoRecoderRateNormal
+self.shortVideoRecorder.recoderRate = PLSVideoRecoderRateNormal;
+```
+**注意：录制的原始视频速率为Normal，调用PLSAVAssetExportSession合成后的视频才有倍速效果**
+
+### 6.1.8 背景音乐
+设置拍摄时的背景音乐
+
+``` Objective-C
+[self.shortVideoRecorder mixAudio:audioURL];
+```
+
+在退出当前拍摄页面进入下一页面前，需要执行下面的代码段对拍摄的视频进行处理
+
+``` Objective-C
+[self.shortVideoRecorder mixWithMusicVolume:0.3 videoVolume:0.8 completionHandler:^(AVMutableComposition * _Nullable composition, AVAudioMix * _Nullable audioMix, NSError * _Nullable error) {
+
+}];
+```
+**注意：需在completionHandler中使用AVAssetExportSession对原视频进行处理，否则无效，[点击此处查看示例代码](https://github.com/pili-engineering/PLShortVideoKit/blob/master/Example/PLShortVideoKitDemo/RecordViewController.m)**
+
+### 6.1.9 视频草稿
+
+加载视频草稿，即拍摄了一段视频保存到了草稿箱，在下次拍摄时，可以从草稿箱读取视频继续拍摄或编辑。
+
+``` Objective-C
+[self.shortVideoRecorder insertVideo:draftVideoURL];
+```
+
+### 6.1.10 截图
+
+在预览时，可以截取预览时的图像。
+
+``` Objective-C
+[self.shortVideoRecorder getScreenShotWithCompletionHandler:^(UIImage * _Nullable image) {
+
+}
+```
+
+### 6.1.11 开始拍摄
+
+- 录制的视频的存放地址由 SDK 内部自动生成
+
+``` Objective-C
+[self.shortVideoRecorder startRecording];
+```
+
+- customFileURL 录制的视频的存放地址，该参数可以在外部设置，录制的视频会保存到该位置
+
+``` Objective-C
+[self.shortVideoRecorder startRecording:customFileURL];
+```
+
+### 6.1.12 停止拍摄
+
+``` Objective-C
+[self.shortVideoRecorder stopRecording];
+```
+
+### 6.1.12 停止采集
+
+``` Objective-C
+[self.shortVideoRecorder stopCaptureSession];
+```
+
+
+<a id="6.2"></a>
+## 6.2 编辑预览
+
+编辑类 `PLShortVideoEditor` 支持渲染音视频、水印、滤镜、背景音乐、MV 特效等功能。
+
+### 6.2.1 视频数据回调
+通过 `PLShortVideoEditor` 的 Delegate  回调方法来处理播放时的视频数据，可以动态改变滤镜效果，pixelBuffer 格式为 kCVPixelFormatType_32BGRA
+
+```Objective-C
+- (CVPixelBufferRef)shortVideoEditor:(PLShortVideoEditor *)editor didGetOriginPixelBuffer:(CVPixelBufferRef)pixelBuffer;
+```
+
+### 6.2.2 水印
+可以根据需要添加水印或移除水印，并且能够自由设置水印的大小和位置。
+
+- 添加静态水印
+
+```Objective-C
+- (void)setWaterMarkWithImage:(UIImage *)waterMarkImage position:(CGPoint)position size:(CGSize)size waterMarkType:(PLSWaterMarkType)type alpha:(CGFloat)alpha rotateDegree:(CGFloat)degree;
+```
+
+- 添加 GIF 水印
+
+```Objective-C
+- (void)setGifWaterMarkWithData:(NSData *)gifData position:(CGPoint)position size:(CGSize)size alpha:(CGFloat)alpha rotateDegree:(CGFloat)degree;
+```
+
+- 移除水印
+
+```Objective-C
+- (void)clearWaterMark;
+```
+该方法用于移除已添加的水印
+
+### 6.2.3 滤镜
+
+- 添加、移除滤镜。
+
+```Objective-C
+/**
+ *  @param colorImagePath 当前使用的滤镜的颜色表图的路径
+ *  当 colorImagePath 为 nil 时，表示移除滤镜。
+ */
+- (void)addFilter:(NSString *)colorImagePath;
+```
+
+### 6.2.4 背景音乐
+
+- 添加背景音乐
+
+```Objective-C
+/**
+ *  @param musicURL 当前使用的背景音乐的地址
+ *  @param timeRange 当前使用的背景音乐的有效时间区域(start, duration)。
+ *                   如果想使用整段音乐，可以将其设置为 kCMTimeRangeZero 
+ *                   或者 (kCMTimeZero, duration)。
+ *  @param volume 当前使用的背景音乐的音量
+ */
+- (void)addMusic:(NSURL *)musicURL timeRange:(CMTimeRange)timeRange volume:(NSNumber *)volume;
+```
+
+- 更新背景音乐
+
+```Objective-C
+/**
+ *  @param timeRange 使用 kCMTimeRangeZero 时，表示不更新背景音乐的播放时间区域
+ *  @param volume 使用 nil 时，表示不更新背景音乐的音量
+ *  只更新 timeRange 时，[xxxObj updateMusic:timeRange volume:nil]
+ *  只更新 volume    时，[xxxObj updateMusic:kCMTimeRangeZero volume:volume] 
+ */
+- (void)updateMusic:(CMTimeRange)timeRange volume:(NSNumber *)volume;
+```
+
+### 6.2.5 MV 特效
+
+- 添加、移除 MV 特效。
+
+```Objective-C
+/**
+ *  @param colorURL 彩色层视频的地址
+ *  @param alphaURL 被彩色层当作透明层的视频的地址
+ *  目前支持添加一层 MV 图层。当 colorURL = nil 和 alphaURL = nil 时，表示移除 MV 图层。 
+ */
+- (void)addMVLayerWithColor:(NSURL *)colorURL alpha:(NSURL *)alphaURL;
+```
+
+### 6.2.6 时光倒流特效
+`PLSReverserEffect` 支持时光倒流特效。
+
+- 初始化 PLSReverserEffect 时光倒流对象
+
+```Objective-C
+- (instancetype)initWithAsset:(AVAsset *)asset;
+```
+
+- 执行时光倒流
+
+```Objective-C
+- (void)startReversing;
+```
+
+- 取消时光倒流
+
+```Objective-C
+- (void)cancelReversing;
+```
+
+- 时光倒流完成的 Block
+
+```Objective-C
+@property (copy, nonatomic) void(^completionBlock)(NSURL *url);
+```
+
+- 时光倒流失败的 Block
+
+```Objective-C
+@property (copy, nonatomic) void(^failureBlock)(NSError *error);
+```
+
+- 时光倒流进度的 Block
+
+可在该 Block 中刷新时光倒流进度条 UI。
+
+```Objective-C
+@property (copy, nonatomic) void(^processingBlock)(float progress);
+```
+
+### 6.2.6 倍速特效
+`PLShortVideoAsset` 支持倍速特效。
+
+### 6.2.7 视频旋转
+
+调用编辑类 `PLShortVideoEditor`的如下接口，可在编辑时预览旋转效果
+
+```Objective-C
+- (PLSPreviewOrientation)rotateVideoLayer;
+```
+
+```Objective-C
+- (void)resetVideoLayerOrientation;
+```
+
+### 6.2.8 文字特效、视频贴纸、视频涂鸦
+
+`PLSStickerView` 支持文字特效、视频贴纸、视频涂鸦效果。
+
+*注意：涂鸦由于从 v1.11.0 版本起更新了使用方法，需要用户在 App 层自行实现涂鸦绘画的功能，最后将生成的 image 同文字、贴纸特效一样，传入 sdk 配置即可。具体实现，可参考我们 demo 的涂鸦功能实现*
+
+<a id="6.3"></a>
+## 6.3 视频合成
+
+`PLSAVAssetExportSession` 支持视频合成功能。
+ 
+### 6.3.1 初始化视频合成对象
+
+```Objective-C
+self.exportSession = [[PLSAVAssetExportSession alloc] initWithAsset:asset];
+```
+
+### 6.3.2 设置视频合成参数
+
+所有的合成参数都放在 PLSAVAssetExportSession 的 outputSettings 中，下面将分为五步讲述 outputSettings 的参数设置：
+
+```Objective-C
+// ============ step 1: 初始化导出参数 ==============
+
+// 总的导出参数字典对象
+self.outputSettings = [[NSMutableDictionary alloc] init];
+
+// 原视频参数字典对象
+self.movieSettings = [[NSMutableDictionary alloc] init];
+
+// 水印参数数组对象
+self.watermarkSettingsArray = [[NSMutableArray alloc] init];
+
+// 贴纸参数数组对象
+self.stickerSettingsArray = [[NSMutableArray alloc] init];
+
+// 混音参数数组对象
+self.audioSettingsArray = [[NSMutableArray alloc] init];
+
+// 将各个参数应用到总的导出参数中
+self.outputSettings[PLSMovieSettingsKey] = self.movieSettings;
+self.outputSettings[PLSWatermarkSettingsKey] = self.watermarkSettingsArray;
+self.outputSettings[PLSStickerSettingsKey] = self.stickerSettingsArray;
+self.outputSettings[PLSAudioSettingsKey] = self.audioSettingsArray;
+
+```
+#### 6.3.2.1 视频基本信息设置 
+
+PLSMovieSettingsKey 是视频合成必须要有的参数，里面存放的是原视频的基本信息：
+         
+```Objective-C   
+// ============ step 2: 设置视频的基本信息，必须设置 ==============
+
+AVAsset *asset = [AVAsset assetWithURL:url];
+self.movieSettings[PLSURLKey] = url;
+self.movieSettings[PLSAssetKey] = asset;
+// 设置视频的时间段，可以通过 PLSStartTimeKey 和 PLSDurationKey 对视频进行剪切
+self.movieSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:0.f];
+self.movieSettings[PLSDurationKey] = [NSNumber numberWithFloat:CMTimeGetSeconds(asset.duration)];
+// 设置原视频的音量值，比如添加了背景音乐，不再需要原视频音频，可以设置为 0 来去掉原视频音频。有效范围 0 ~ 1
+self.movieSettings[PLSVolumeKey] = [NSNumber numberWithFloat:1.0f];
+
+```
+#### 6.3.2.2 水印设置
+
+`PLSAVAssetExportSession` 支持视频合成时添加水印功能，你可以根据自己的需要添加水印或移除水印，并且能够自由设置水印的大小、位置、水印透明度和水印作用的时间段，支持设置多个水印分别作用于不同时间段。
+
+视频合成时水印设置：
+
+```Objective-C
+
+// ============ step 3: 设置水印信息，如果不需要水印可以不设置 ==============
+
+// 可以设置多个水印，如果不同水印的作用时间出现了重合，则同一时刻只有一个水印会被显示
+int waterwarkCount = n;
+
+for (int i = 0; i < waterwarkCount; i ++) {
+    NSMutableDictionary *watermarkDic = [[NSMutableDictionary alloc] init];
+    // 设置水印图片
+    watermarkDic[PLSURLKey] = [NSURL fileURLWithPath:@"url path"];
+    // 设置水印的宽高，如果不设置，默认为水印图片的宽高
+    watermarkDic[PLSSizeKey] = [NSValue valueWithCGSize:CGSizeMake(width, height)];
+    // 设置水印的左上角位置
+    watermarkDic[PLSPointKey] = [NSValue valueWithCGPoint:CGPointMake(x, y)];
+    // 设置水印的开始时间
+    watermarkDic[PLSStartTimeKey] = [NSNumber numberWithFloat:startTimeInVideo];
+    // 设置水印的显示时长
+    watermarkDic[PLSDurationKey] = [NSNumber numberWithFloat:waterMarkShowDuration];
+    // 设置水印的 alpha，如果不设置，默认为 1
+    watermarkDic[PLSAlphaKey] = [NSNumber numberWithFloat:watermarkAlpha];
+    // 设置水印的类型: PLSWaterMarkTypeStatic 对应静态水印，PLSWaterMarkTypeGif 对应 GIF 动态水印
+    watermarkDic[PLSTypeKey] = [NSNumber numberWithInteger:PLSWaterMarkType];
+    // 设置水印的旋转角度，如果有角度，会绕着水印中心点旋转
+    watermarkDic[PLSRotationKey] = [NSNumber numberWithFloat:watermarkRotate];
+        
+    [self.watermarkSettingsArray addObject:watermarkDic];
+}
+
+```
+
+#### 6.3.2.3 多重音乐
+
+`PLSAVAssetExportSession` 支持视频合成时添加多个音乐做混音，并支持截取音乐中的片段加入到源视频素材中。
+
+视频合成时设置多重混音：
+
+```Objective-C
+// ============ step 4: 设置多音频混音信息，如果不需要混音处理可以不设置 ==============
+
+// 设置混音的个数
+// audioCount = 0 ~ n;
+
+for (int i = 0; i < audioCount; i++) {
+            
+	NSMutableDictionary *audioDic = [[NSMutableDictionary alloc] init];
+	
+   // 设置音频的地址        
+	audioDic[PLSURLKey] = [NSURL fileURLWithPath:@"audio path"];
+	// 设置音频的起始时间和音频的使用时长 PLSStartTimeKey 和 PLSDurationKey 决定音频的使用时间段，即就是对音频进行选取
+	audioDic[PLSStartTimeKey] = [NSNumber numberWithFloat:audioStartTime];
+	audioDic[PLSDurationKey] = [NSNumber numberWithFloat:audioDuration];
+	// 设置音频的音量 0 ~ 1
+	audioDic[PLSVolumeKey] = [NSNumber numberWithFloat:audioVolume];
+	// 设置音频在混音中的开始播放时间 和 时长，PLSLocationStartTimeKey 和 PLSLocationDurationKey 一起决定了音频的作用时间段
+	audioDic[PLSLocationStartTimeKey] = [NSNumber numberWithFloat:locationStartTime];
+	audioDic[PLSLocationDurationKey] = [NSNumber numberWithFloat:locationDuration];
+            
+	[self.audioSettingsArray addObject:audioDic];
+}
+
+```
+#### 6.3.2.4 设置贴纸
+PLSAVAssetExportSession 支持设置多个贴纸，支持静态贴纸和 GIF 动态贴纸，支持设置每个贴纸的作用时间段，下面以代码的形式讲述静态贴纸 和 GIF 动态贴纸的设置方式:
+
+```Objective-C
+// ============ step 5: 设置贴纸信息，如果不需要贴纸可以不设置 ==============
+
+for (int i = 0; i < [self.timelineView getAllAddedItems].count; i++) {
+    PLSTimeLineItem *item = [self.timelineView getAllAddedItems][i];
+    
+    NSMutableDictionary *stickerSettings = [[NSMutableDictionary alloc] init];
+    PLSStickerView *stickerView = (PLSStickerView *)item.target;
+    
+    CGAffineTransform transform = stickerView.transform;
+    CGFloat widthScale = sqrt(transform.a * transform.a + transform.c * transform.c);
+    CGFloat heightScale = sqrt(transform.b * transform.b + transform.d * transform.d);
+    CGSize viewSize = CGSizeMake(stickerView.bounds.size.width * widthScale, stickerView.bounds.size.height * heightScale);
+    CGPoint viewCenter =  CGPointMake(stickerView.frame.origin.x + stickerView.frame.size.width / 2, stickerView.frame.origin.y + stickerView.frame.size.height / 2);
+    CGPoint viewPoint = CGPointMake(viewCenter.x - viewSize.width / 2, viewCenter.y - viewSize.height / 2);
+    
+    stickerSettings[PLSSizeKey] = [NSValue valueWithCGSize:viewSize];
+    stickerSettings[PLSPointKey] = [NSValue valueWithCGPoint:viewPoint];
+    
+    CGFloat rotation = atan2f(transform.b, transform.a);
+    rotation = rotation * (180 / M_PI);
+    // 设置贴纸的旋转角度
+    stickerSettings[PLSRotationKey] = [NSNumber numberWithFloat:rotation];
+    // 设置贴纸的开始作用时间
+    stickerSettings[PLSStartTimeKey] = [NSNumber numberWithFloat:item.startTime];
+    // 设置贴纸的作用时长
+    stickerSettings[PLSDurationKey] = [NSNumber numberWithFloat:(item.endTime - item.startTime)];
+    // 设置贴纸预览的时候，预览背景 view 的宽高 和 视频最终导出时的视频宽高，SDK 内部需要这两个参数来计算贴纸在视频中的位置和大小
+    stickerSettings[PLSVideoPreviewSizeKey] = [NSValue valueWithCGSize:self.stickerOverlayView.frame.size];
+    stickerSettings[PLSVideoOutputSizeKey] = [NSValue valueWithCGSize:self.videoSize];
+    
+    if (StickerType_GIFAnimation == stickerView.type) {
+        
+        // 如果贴纸是 GIF 类型，PLSStickerKey 的 value 必须是下列三种中的某一种:
+        int type = arc4random() % 3;
+        if (0 == type) {
+            // value = GIF URL
+            stickerSettings[PLSStickerKey] = stickerView.stickerURL;
+        } else if (1 == type) {
+            // value = GIF path
+            stickerSettings[PLSStickerKey] = stickerView.stickerURL.path;
+        } else if (2 == type) {
+            // value = GIF data
+            stickerSettings[PLSStickerKey] = [NSData dataWithContentsOfFile:stickerView.stickerURL.path];
+        }
+        
+    } else {
+#if 0
+        // v2.0.0 及之前的版本添加静态贴纸的方式, 传入的是 stickerView。如果传入的是 stickerView，添加了滤镜或者特效，这些效果会作用到贴纸上。如果不希望贴纸被滤镜和特效作用，则需要使用新的添加贴纸的方式
+        stickerView.hidden = NO;
+        stickerSettings[PLSStickerKey] = stickerView;
+#else
+        //  ===== 新的静态贴纸添加方式，v2.1.0 之后生效，建议所有用户换成新的添加贴纸方式 ======
+        if (StickerType_Sticker == stickerView.type) {
+            
+            int type = arc4random() % 4;
+            if (0 == type) {
+                // value = image URL
+                stickerSettings[PLSStickerKey] = stickerView.stickerURL;
+            } else if (1 == type) {
+                // value = image path
+                stickerSettings[PLSStickerKey] = stickerView.stickerURL.path;
+            } else if (2 == type) {
+                // value = image data
+                // 如果贴纸含 alpha 通道，使用 UIImageJPEGRepresentation(stickerView.image, 1) 得到的是没有 alpha 的图片，建议使用 UIImagePNGRepresentation(stickerView.image) 来获取 data
+                stickerSettings[PLSStickerKey] = UIImagePNGRepresentation(stickerView.image);
+            } else {
+                // value = image
+                stickerSettings[PLSStickerKey] = stickerView.image;
+            }
+        } else if (StickerType_SubTitle == stickerView.type) {
+            // 文字贴纸
+            stickerView.hidden = NO;
+            stickerSettings[PLSStickerKey] = [self convertViewToImage:stickerView];
+        }
+#endif
+    }
+    [self.stickerSettingsArray addObject:stickerSettings];
+}
+
+```
+#### 注意，贴纸在编辑时候的预览是由上层做的，七牛短视频 SDK 并不提供贴纸编辑时候的预览。开发者可以参考七牛短视频 PLShortVideoKitDemo [EditViewController.m](https://github.com/pili-engineering/PLShortVideoKit/blob/master/Example/PLShortVideoKitDemo/EditViewController.m) 中贴纸编辑预览实现方式
+
+#### 6.3.2.5 设置合成参数
+```Objective-C
+self.exportSession.outputSettings = outputSettings;
+```
+
+### 6.3.3 启动视频合成
+
+```Objective-C
+[self.exportSession exportAsynchronously];
+```
+
+### 6.3.4 合成回调
+通过反馈 `PLSAVAssetExportSession ` 的 Delegate 或 Block 回调来反馈合成的状态。
+
+- 输出合成视频文件的视频数据，用来做滤镜处理
+ 
+```Objective-C
+- (CVPixelBufferRef __nonnull)assetExportSession:(PLSAVAssetExportSession *__nonnull)assetExportSession didOutputPixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer;
+```
+
+- 输出合成视频文件的进度的 Block 回调，progress从 0 到 1
+ 
+```Objective-C
+@property (copy, nonatomic) void(^ _Nullable processingBlock)(float progress);
+```
+
+- 合成视频完成的 Block 回调
+
+```Objective-C
+@property (copy, nonatomic) void(^ _Nullable completionBlock)(NSURL * _Nullable url);
+```
+
+- 合成视频失败的 Block 回调
+
+```Objective-C
+@property (copy, nonatomic) void(^ _Nullable failureBlock)(NSError* _Nullable error);
+```
+
+
+<a id="6.4"></a>
+## 6.4 视频转码
+
+`PLShortVideoTranscoder` 支持视频本地转码和视频裁剪，减少视频体积。
+
+### 6.4.1 初始化转码对象
+
+```Objective-C
+self.shortVideoTranscoder = [[PLShortVideoTranscoder alloc] initWithURL:self.url];
+```
+
+- 转码时旋转视频画面，支持正立、左旋、倒立、右旋。
+```Objective-C
+self.shortVideoTranscoder.rotateOrientation = self.rotateOrientation;
+```
+
+
+### 6.4.2 启动转码
+
+```Objective-C
+[self.shortVideoTranscoder startTranscoding];
+```
+
+### 6.4.3 取消转码
+
+```Objective-C
+[self.shortVideoTranscoder cancelTranscoding];
+```
+
+### 6.4.4 转码回调
+
+- 转码完成的 Block 回调
+
+```Objective-C
+@property (copy, nonatomic) void(^completionBlock)(NSURL *url);
+```
+
+- 转码失败的 Block 回调
+
+```Objective-C
+@property (copy, nonatomic) void(^failureBlock)(NSError* error);
+```
+- 反馈转码进度的 Block
+
+```Objective-C
+@property (copy, nonatomic) void(^processingBlock)(float progress);
+```
+
+
+<a id="6.5"></a>
+## 6.5 视频帧／图片生成 GIF 动图
+从 v1.3.0 开始，`PLSGifComposer` 支持选取视频帧／图片数组生成 GIF 动图。该功能使得 SDK 可以满足自主设计 GIF 的应用场景，需要使用该功能时，通过以下接口
+
+```Objective-C
+- (instancetype)initWithImagesArray:(NSArray *)imagesArray;
+```
+
+来初始化 `PLSGifComposer` 对象，并为参数 `composerArray` 传入视频帧／图片数组即可。
+
+### 6.5.1 设置 GIF 帧间隔
+
+```Objective-C
+// Gif 动图每帧间隔设置，默认 0.1f
+@property (assign, nonatomic) CGFloat interval;
+```
+
+### 6.5.2 生成 GIF 图
+通过以下接口
+
+```Objective-C
+- (void)composeGif;
+```
+
+### 6.5.3 取消生成 GIF 图
+
+```Objective-C
+- (void)cancelComposeGif;
+```
+
+来生成 GIF 图，合成结果的回调见 `completionBlock`、`failureBlock`。
+
+### 6.5.4 展示 GIF 图
+
+通过以下接口
+
+```Objective-C
+- (void)loadGifWithFrame:(CGRect)frame superView:(UIView *)superView repeatCount:(NSInteger)repeatCount;
+```
+
+来展示 GIF 图，传入要展示的 GIF 图的 frame，`superView` 要加载的父视图以及 `repeatCount` 重复次数。
+
+
+<a id="6.6"></a>
+## 6.6 多个视频拼接
+从 v1.4.0 开始，`PLSMovieComposer` 支持拼接多个视频为1个视频。
+
+### 6.6.1 初始化视频拼接对象
+
+初始化视频拼接对象的方式有以下2种
+
+```Objective-C
+self.movieComposer = [[PLSMovieComposer alloc] initWithUrls:self.urls];
+```
+
+```Objective-C
+self.movieComposer = [[PLSMovieComposer alloc] initWithAssets:self.assets];
+```
+
+设置拼接后的视频的分辨率
+
+```Objective-C
+self.movieComposer.videoSize = CGSizeMake(480, 854);
+```
+
+### 6.6.2 设置视频拼接的 Block 回调
+
+拼接成功的 Block 回调
+
+```Objective-C
+[self.movieComposer setCompletionBlock:^(NSURL *url) {
+    NSLog(@"movieComposer ur: %@", url);
+}];
+```
+
+拼接失败的 Block 回调
+
+```Objective-C
+[self.movieComposer setFailureBlock:^(NSError *error) {
+    NSLog(@"movieComposer failed");
+}];
+```
+
+拼接进度的 Block 回调
+
+```Objective-C
+[self.movieComposer setProcessingBlock:^(float progress){
+    NSLog(@"movieComposer progress: %f", progress);
+}];
+```
+
+### 6.6.3 启动视频拼接
+
+```Objective-C
+[self.movieComposer startComposing];
+```
+
+### 6.6.4 停止视频拼接
+
+在拼接视频过程中，若想停止该操作，可调用如下方法
+
+```Objective-C
+[self.movieComposer stopComposing];
+```
+
+
+<a id="6.7"></a>
+## 6.7 图片合成视频
+
+`PLSImageToMovieComposer ` 支持多张图片合成视频。
+
+
+
+<a id="6.8"></a>
+## 6.8 多视频合并
+
+`PLSMultiVideoMixer` 支持将多个视频合并为一个视频。支持设置每一个视频的位置、大小、开始播放时间等。
+
+### 6.8.1 初始化多视频合并对象
+
+```Objective-C
+PLSMultiVideoMixer *multiVideoMixer = [[PLSMultiVideoMixer alloc] init];
+multiVideoMixer.videoSize = CGSizeMake{720, 640};
+```
+
+### 6.8.2 添加视频对象
+
+```Objective-C
+PLSMixMediaItem *mediaItem1 = [[PLSMixMediaItem alloc] init];
+mediaItem1.mediaURL = [NSURL fileURLWithPath:@"a video file path"];
+mediaItem1.VideoFrame = CGRectMake{0, 0, 360, 640};
+
+PLSMixMediaItem *mediaItem2 = [[PLSMixMediaItem alloc] init];
+mediaItem2.mediaURL = [NSURL fileURLWithPath:@"a video file path"];
+mediaItem2.VideoFrame = CGRectMake{360, 0, 360, 640};
+
+[multiVideoMixer addMedia:mediaItem1];
+[multiVideoMixer addMedia:mediaItem2];
+```
+
+### 6.8.3 视频合并实时效果预览
+`PLSMultiVideoMixer` 添加视频对象之后，可以获取 AVPlayerItem 实例，使用 AVPlayer播放预览
+
+```Objective-C
+AVPlayerItem *playerItem = [multiVideoMixer getPlayerItem];
+```
+
+### 6.8.4 导出合并视频
+
+```Objective-C
+[multiVideoMixer startExport];
+```
+
+### 6.8.5 导出视频的block回调
+
+导出合并视频成功的 block 回调
+
+```Objective-C
+[mulitVideoMixer setCompletionBlock:^(NSURL * _Nonnull url) {
+      
+ }];
+```
+
+导出合并视频失败的 block 回调
+
+```Objective-C
+[mulitVideoMixer setFailureBlock:^(NSError * _Nonnull error) { 
+
+}];
+```
+
+导出合并视频进度的 block 回调
+    
+```Objective-C
+[mulitVideoMixer setProcessingBlock:^(float progress) {
+        
+}];
+```
+
+
+<a id="6.9"></a>
+## 6.9 素材视频合拍
+
+`PLSVideoMixRecorder` 支持和一个素材视频合拍为一个视频。相机采集视频和素材视频在合并视频中的位置可以自由定义，支持素材音频和麦克风采集音频混音。该类的接口和 `PLShortVideoRecorder` 的接口很相似，可以参考 `PLShortVideoRecorder` 来使用素材视频合并。
+
+
+### 6.9.1 创建合拍音视频的采集和编码配置对象
+
+当前使用默认配置，之后可以深入研究按照自己的需求作更改
+
+``` Objective-C
+PLSVideoMixConfiguration *videoConfiguration = [PLSVideoMixConfiguration defaultConfiguration];
+PLSAudioMixConfiguration *audioConfiguration = [PLSAudioMixConfiguration defaultConfiguration];
+```
+
+### 6.9.2 创建拍摄 recorder 对象
+
+``` Objective-C
+PLSVideoMixRecorder *videoMixRecorder = [[PLSVideoMixRecorder alloc] initWithVideoConfiguration:videoConfiguration audioConfiguration:audioConfiguration];
+videoMixRecorder.mergeVideoURL = [NSURL fileURLWithPath:@"a file path"];
+```
+
+### 6.9.3 添加合拍视频数据预览视图
+
+```Objective-C
+[self.view addSubview: videoMixRecorder.previewView];
+```
+
+### 6.9.4 打开合拍视频预览
+
+```Objective-C
+[videoMixRecorder startCaptureSession];
+```
+
+### 6.9.5 开始拍摄
+
+合拍开始后，如果素材视频有音频流，将会进行素材音频的播放。素材音频的播放会影响到麦克风的音频采集，虽然麦克风采集可以选择回音消除，但是效果肯定比不上戴耳机好，建议如果要进行音频合并，带上耳机进行合拍
+
+``` Objective-C
+[videoMixRecorder startRecording];
+```
+或者使用
+
+``` Objective-C
+[videoMixRecorder startRecording:customFileURL];
+```
+
+### 6.9.6 停止合拍
+
+``` Objective-C
+[videoMixRecorder stopRecording];
+```
+
+### 6.9.7 停止预览
+
+``` Objective-C
+[self.shortVideoRecorder stopCaptureSession];
+```
+
+
+<a id="6.10"></a>
+## 6.10 视频上传
+
+`PLShortVideoUploader` 支持视频上传到云端，接口灵活。
+
+### 6.10.1 配置上传参数
+客户端在上传前，需要先从服务端获取上传凭证，即 token
+
+```Objective-C
+PLSUploaderConfiguration * uploadConfig = [[PLSUploaderConfiguration alloc] initWithToken:kUploadToken videoKey:key https:YES recorder:nil];
+
+```
+
+### 6.10.2 创建上传对象
+
+```Objective-C
+self.shortVideoUploader = [[PLShortVideoUploader alloc] initWithConfiguration:uploadConfig];
+```
+
+### 6.10.3 上传视频
+
+```Objective-C
+[self.shortVideoUploader uploadVideoFile:filePath];
+```
+
+### 6.10.4 取消上传
+
+```Objective-C
+[self.shortVideoUploader cancelUploadVidoFile];
+```
+
+### 6.10.5 上传回调
+
+通过 `PLShortVideoUploader` 的 Delegate 回调方法来反馈视频上传的状态。
+
+- 上传进度回调
+
+```Objective-C
+- (void)shortVideoUploader:(PLShortVideoUploader * _Nonnull)uploader uploadKey:(NSString * _Nullable)uploadKey uploadPercent:(float)uploadPercent;
+```
+
+- 上传结果回调
+
+```Objective-C
+- (void)shortVideoUploader:(PLShortVideoUploader * _Nonnull)uploader completeInfo:(PLSUploaderResponseInfo * _Nonnull)info uploadKey:(NSString * _Nonnull)uploadKey resp:(NSDictionary * _Nullable)resp;
+```
+<a id="6.10"></a>
+
+<a id="6.11"></a>
+## 6.11 图片、GIF 图和视频混排
+
+`PLSImageVideoComposer` 支持多个图片、GIF 图和视频进行混排，并支持设置转场动画、图片生成视频时长、添加背景音乐等功能
+
+
+### 6.11.1 创建混排对象
+
+很多参数都有默认值，这里为了演示，对多数参数进行了自定义值设置
+
+``` Objective-C
+self.imageVideoComposer = [[PLSImageVideoComposer alloc] init];
+self.imageVideoComposer.videoFramerate = 30;
+self.imageVideoComposer.videoSize = CGSizeMake(544, 960);
+self.imageVideoComposer.bitrate = 1500 * 1000;
+self.imageVideoComposer.disableTransition = NO;
+```
+
+### 6.11.2 设置混排的图片、GIF 图和视频资源
+
+``` Objective-C
+NSMutableArray *mediaItems = [[NSMutableArray alloc] init];
+
+PLSComposeMediaItem *imageMedia = [[PLSComposeMediaItem alloc] init];
+imageMedia.mediaType = PLSMediaTypeAudio;
+imageMedia.image = [UIImage imageNamed:@"A Image Name"];
+imageMedia.imageDuration = 3.0;
+
+PLSComposeMediaItem *gifMedia = [[PLSComposeMediaItem alloc] init];
+gifMedia.mediaType = PLSMediaTypeGIF;
+gifMedia.gifImageData = [[NSFileManager defaultManager] contentsAtPath:@"A GIF PATH"];
+gifMedia.loopCount = 2;
+
+PLSComposeMediaItem *videoMedia = [[PLSComposeMediaItem alloc] init];
+videoMedia.mediaType = PLSMediaTypeVideo;
+videoMedia.url = [NSURL fileURLWithPath:@"A Video Path"];
+
+...
+
+[mediaItems addObject: imageMedia];
+[mediaItems addObject: gifMedia];
+[mediaItems addObject: videoMedia];
+
+self.imageVideoComposer.mediaArrays = mediaItems;
+
+```
+
+### 6.11.3 设置各个回调 block
+
+```Objective-C
+[self.imageVideoComposer setProcessingBlock:^(float progress) {
+	NSLog(@"process = %f", progress);
+}];
+
+[self.imageVideoComposer setCompletionBlock:^(NSURL * _Nonnull url) {
+	NSLog(@"completion");        
+}];
+    
+[self.imageVideoComposer setFailureBlock:^(NSError * _Nonnull error) {
+	NSLog(@"failure"); 
+}];
+```
+
+### 6.11.4 导出混排的视频
+
+```Objective-C
+[self.imageVideoComposer startComposing];
+```
+启动导出混排视频之后，导出的进度等信息通过上一节设置的 block 返回
+
+### 6.11.5 取消导出混排的视频
+
+``` Objective-C
+[self.imageVideoComposer stopComposing];
+```
+<a id="6.11"></a>
+
+<a id="7"></a>
+# 7 功能使用
+
+当你要深入理解 SDK 的一些参数及有定制化需求时，可以从高级功能部分中查询阅读，以下小节无前后依赖。
+
+<a id="7.1"></a>
+## 7.1 音视频采集和编码配置
+
+`PLShortVideoRecorder` 中通过不同的 configuration 设置不同的采集或编码配置信息，对应的有：
+
+- `PLSVideoConfiguration` 视频采集、编码配置
+- `PLSAudioConfiguration` 音频采集、编码配置
+
+可以通过如下途径来设置 configuration：
+
+- 在 `PLShortVideoRecorder` init 时传递对应的 configuration
+- 在拍摄前、拍摄结束后调用下面的方法重置视频采集、编码配置
+
+`- (void)reloadvideoConfiguration:(PLSVideoConfiguration *__nonnull)videoConfiguration;` 
+
+- 对于视频采集配置，可以直接设置 PLShortVideoRecorder 相关的属性；
+
+需要注意的是，通过 reload 方法重置 configuration 时，需要确保传递的 configuration 与当前 session 已经持有的不是一个对象。
+
+### 7.1.1 视频采集参数
+
+当前的 `PLSVideoConfiguration` 中可自行设定的参数有
+
+- videoFrameRate
+  - 即 FPS，每一秒所包含的视频帧数
+- sessionPreset
+  - 即采集时的画幅分辨率大小
+- previewMirrorFrontFacing
+  - 是否在使用前置摄像头采集的时候镜像预览画面
+- previewMirrorRearFacing
+  - 是否在使用后置摄像头采集的时候镜像预览画面
+- streamMirrorFrontFacing
+  - 是否在使用前置摄像头采集的时候镜像编码画面
+- streamMirrorRearFacing
+  - 是否在使用后置摄像头采集的时候镜像编码画面
+- position
+  - 开启 PLShortVideoSession 的时候默认使用前置还是后置摄像头
+- videoOrientation
+  - 开启 PLShortVideoSession 的时候默认使用哪个旋转方向
+
+需要注意的是指定分辨率的 `sessionPreset` 例如 `AVCaptureSessionPreset1920x1080` 并非所有机型的所有摄像头均支持，在设置相应的采集分辨率之前请务必保证做过充分的机型适配测试，避免在某些机型使用该机型摄像头不支持的 `sessionPreset`。另外，如果使用只指定采集质量的 `sessionPreset`，例如 `AVCaptureSessionPresetMedium`，那系统会根据当前摄像头的支持情况使用相应质量等级的分辨率进行采集。
+
+### 7.1.2 音频采集参数
+
+当前的 `PLSAudioConfiguration` 中可自行设定的参数有
+
+- numberOfChannels
+  - 采集时的声道数，默认为 1，并非所有采集设备都支持多声道数据的采集，可以通过检查 [AVAudioSession sharedInstance].maximumInputNumberOfChannels 得到当前采集设备支持的最大声道数。
+
+### 7.1.3 视频编码参数
+
+当前的 `PLSVideoConfiguration` 中可自行设定的参数有
+
+- videoProfileLevel
+  - H.264 编码时对应的 profile level 影响编码压缩算法的复杂度和编码耗能。设置的越高压缩率越高，算法复杂度越高，相应的可能带来发热量更大的情况。如果对于视频编码有额外的需求并且知晓该参数带来的影响可以自行更改。默认情况下使用 AVVideoProfileLevelH264HighAutoLevel。
+
+- videoSize
+  - 编码的分辨率，对于采集到的图像，编码前会按照这个分辨率来做拉伸或者裁剪
+- expectedSourceVideoFrameRate
+  - 预期视频的编码帧率，这个数值对编码器的来说并不是直接限定了 fps, 而是给编码器一个预期的视频帧率，最终编码的视频帧率，是由实际输入的数据决定的
+- videoMaxKeyframeInterval
+  - 两个关键帧的帧间隔，一般设置为 FPS 的三倍
+- averageVideoBitRate
+  - 平均的编码码率，设定后编码时的码率并不会是恒定不变，静物较低，动态物体会相应升高
+
+### 7.1.4 音频编码参数
+
+相比于视频繁杂的参数，当前 `PLSAudioConfiguration` 可配置的参数较为简单，目前提供音频码率和编码器的配置，音频编码默认为 AAC-LC。
+
+各 Quality 的对比：
+
+| Quality | Audio BitRate(Kbps) |
+|---|---|
+|QualityHigh1|64|
+|QualityHigh2|96|
+|QualityHigh3|128|
+
+<a id="7.1.5"></a>
+### 7.1.5 切换视频配置
+
+为了满足拍摄过程中，拍摄不同分辨率的视频等情况下对码率、FPS 等参数的调节，`PLShortVideoSession` 提供了重置采集、编码参数的方法。
+
+- 在拍摄前、拍摄结束后调用下面的方法来重置 configuration
+
+`- (void)reloadvideoConfiguration:(PLSVideoConfiguration *__nonnull)videoConfiguration;` 
+
+需要注意的是，通过 reload 方法重置 configuration 时，需要确保传递的 configuration 与当前 session 已经持有的不是一个对象。
+
+<a id="7.2"></a>
+## 7.2 视频拍摄状态回调
+
+在 `PLShortVideoKit` 中，通过反馈 `PLShortVideoRecorder` 的 Delegate  回调方法来反馈拍摄的状态。
+
+- 获取到摄像头原数据时的回调, 便于开发者做滤镜等处理，需要注意的是这个回调在 camera 数据的输出线程，请不要做过于耗时的操作，否则可能会导致帧率下降
+ 
+``` Objective-C
+- (CVPixelBufferRef __nonnull)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder cameraSourceDidGetPixelBuffer:(CVPixelBufferRef __nonnull)pixelBuffer;
+```
+
+- 开始录制一段视频时
+
+``` Objective-C
+- (void)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder didStartRecordingToOutputFileAtURL:(NSURL *__nonnull)fileURL;
+```
+
+- 正在录制的过程中。在完成该段视频录制前会一直回调，可用来更新所有视频段加起来的总时长 totalDuration UI。
+
+``` Objective-C
+- (void)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder didRecordingToOutputFileAtURL:(NSURL *__nonnull)fileURL fileDuration:(CGFloat)fileDuration totalDuration:(CGFloat)totalDuration;
+```
+
+- 删除了某一段视频
+ 
+``` Objective-C
+- (void)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder didDeleteFileAtURL:(NSURL *__nonnull)fileURL fileDuration:(CGFloat)fileDuration totalDuration:(CGFloat)totalDuration;
+```
+
+- 完成一段视频的录制时
+
+``` Objective-C
+- (void)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder didFinishRecordingToOutputFileAtURL:(NSURL *__nonnull)fileURL fileDuration:(CGFloat)fileDuration totalDuration:(CGFloat)totalDuration;
+```
+
+- 在达到指定的视频录制时间 maxDuration 后，如果再调用 `[PLShortVideoRecorder startRecording]`，那么会立即执行该回调。该回调功能是用于页面跳转
+
+``` Objective-C
+- (void)shortVideoRecorder:(PLShortVideoRecorder *__nonnull)recorder didFinishRecordingMaxDuration:(CGFloat)maxDuration;
+```
+
+<a id="7.3"></a>
+## 7.3 水印、美颜和内置滤镜
+
+### 7.3.1 水印
+
+`PLShortVideoRecorder` 支持内置水印功能，你可以根据自己的需要添加水印或移除水印，并且能够自由设置水印的大小和位置。
+
+- 拍摄时添加水印
+
+```Objective-C
+-(void)setWaterMarkWithImage:(UIImage *__nonnull)waterMarkImage position:(CGPoint)position;
+```
+
+该方法将为视频拍摄时添加一个水印，水印的大小由 `waterMarkImage` 的大小决定，位置由 position 决定，需要注意的是这些值都是以采集数据的像素点为单位的。例如我们使用 `AVCaptureSessionPreset1280x720` 进行采集，同时 `wateMarkImage.size` 为 `(100, 100)` 对应的 `origin` 为 `(200, 300)`，那么水印的位置将在大小为 `1280x720` 的采集画幅中位于 `(200, 300)` 的位置，大小为 `(100, 100)`。
+
+- 移除水印
+
+```Objective-C
+-(void)clearWaterMark;
+```
+该方法用于移除已添加的水印
+
+### 7.3.2 美颜
+
+'PLShortVideoRecorder' 支持内置美颜功能，你可以根据自己的需要选择开关美颜功能，并且能够自由调节包括美颜，美白，红润等在内的参数。
+
+- 按照默认参数开启或关闭美颜
+
+```Objective-C
+-(void)setBeautifyModeOn:(BOOL)beautifyModeOn;
+```
+
+- 设置美颜程度，范围为 0 ~ 1
+
+```Objective-C
+-(void)setBeautify:(CGFloat)beautify;
+```
+
+- 设置美白程度，范围为 0 ~ 1
+
+```Objective-C
+-(void)setWhiten:(CGFloat)whiten;
+```
+
+- 设置红润程度，范围为 0 ~ 1
+
+```Objective-C
+-(void)setRedden:(CGFloat)redden;
+```
+
+### 7.3.3 录制时内置滤镜
+
+'PLShortVideoRecorder' 支持录制时启用内置滤镜功能，能够自由调节多种滤镜效果。
+
+按照默认参数开启或关闭录制时内置滤镜，选择需要的滤镜效果。
+
+```Objective-C
+@property (strong, nonatomic) PLSFilter *currentFilter;
+@property (assign, nonatomic) NSInteger filterIndex;
+```
+
+## 7.4 外部导入音视频数据
+从 v1.2.0 开始，`PLShortVideoRecorder` 支持外部导入音视频数据存成 mp4。该功能使得 SDK 可以满足更多的应用场景，如在 App 的视图和摄像头数据之间切换等。需要使用该功能时，通过以下接口
+
+```Objective-C
+- (nonnull instancetype)initWithVideoConfiguration:(PLSVideoConfiguration *__nonnull)videoConfiguration 
+                                audioConfiguration:(PLSAudioConfiguration *__nonnull)audioConfiguration 
+                                    captureEnabled:(BOOL)captureEnabled;
+```
+
+来初始化 `PLShortVideoRecorder` 对象，并为参数 `captureEnabled` 传入 NO 即可。
+
+### 7.4.1 导入音频数据
+通过以下接口
+
+```Objective-C
+- (void)writeSampleBuffer:(CMSampleBufferRef _Nonnull)sampleBuffer;
+```
+
+来导入音频数据。注意，如果初始化 `PLShortVideoRecorder` 时参数 `captureEnabled` 为 YES 时，将使用 SDK 内部采集的音频数据，该接口将不起作用。
+
+### 7.4.2 导入视频数据
+通过以下接口
+
+```Objective-C
+- (void)writePixelBuffer:(CVPixelBufferRef _Nonnull)pixelBuffer timeStamp:(CMTime)timeStamp;
+```
+
+来导入视频数据。注意，如果初始化 `PLShortVideoRecorder` 时参数 `captureEnabled` 为 YES 时，将使用 SDK 内部采集的视频数据，该接口将不起作用。另外，导入视频数据的频率应该与 `PLSVideoConfiguration` 中设置帧率一致，否则将出现音画不同步。
+
+### 7.4.3 录制 App 视图
+开发者可以通过定时（比如每隔 50ms）给 App 中的 `UIView` 截图，并将其生成 `CVPixelBufferRef` 后通过上述导入视频数据接口导入到 SDK 中存成 mp4 文件，如果上述的 `UIView` 是 `UIApplication` 的 `keyWindow`，其效果便相当于给 App 录屏了。将 `UIView` 截图并生成 `CVPixelBufferRef` 可参考如下方法：
+
+```Objective-C
+- (CVPixelBufferRef)createCVPixelBufferWithView:(UIView *)view {
+    UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.opaque, 0.0);
+    [view drawViewHierarchyInRect:view.bounds afterScreenUpdates:NO];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSNumber numberWithBool:YES], kCVPixelBufferCGImageCompatibilityKey,
+                             [NSNumber numberWithBool:YES], kCVPixelBufferCGBitmapContextCompatibilityKey,
+                             @{}, kCVPixelBufferIOSurfacePropertiesKey,
+                             nil];
+    
+    CVPixelBufferRef pxbuffer = NULL;
+    
+    CGFloat frameWidth = CGImageGetWidth([image CGImage]);
+    CGFloat frameHeight = CGImageGetHeight([image CGImage]);
+    
+    CVReturn status = CVPixelBufferCreate(kCFAllocatorDefault,
+                                          frameWidth,
+                                          frameHeight,
+                                          kCVPixelFormatType_32BGRA,
+                                          (__bridge CFDictionaryRef) options,
+                                          &pxbuffer);
+    
+    if (status != kCVReturnSuccess) {
+        return NULL;
+    }
+    
+    CVPixelBufferLockBaseAddress(pxbuffer, 0);
+    void *pxdata = CVPixelBufferGetBaseAddress(pxbuffer);
+    CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
+    
+    CGContextRef context = CGBitmapContextCreate(pxdata,
+                                                 frameWidth,
+                                                 frameHeight,
+                                                 8,
+                                                 CVPixelBufferGetBytesPerRow(pxbuffer),
+                                                 rgbColorSpace,
+                                                 kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+    
+    CGContextConcatCTM(context, CGAffineTransformIdentity);
+    CGContextDrawImage(context, CGRectMake(0,
+                                           0,
+                                           frameWidth,
+                                           frameHeight),
+                       [image CGImage]);
+    CGColorSpaceRelease(rgbColorSpace);
+    CGContextRelease(context);
+    
+    CVPixelBufferUnlockBaseAddress(pxbuffer, 0);
+    
+    return pxbuffer;
+}
+```
+## 7.5 文字动画导出为视频文件
+从 1.10.0 开始，`PLSTransitionMaker` 用于将 文字动画 和 图片动画 转换为视频文件。支持文字内容、文字字体、文字位置编辑以及图片动画的编辑，`PLSTextSetting` 为文字编辑对象、`PLSImageSetting` 为图片编辑对象。`PLSPositionTransition`、 `PLSRotateTransition`、`PLSScaleTransition`、`PLSFadeTranstion` 分别为 SDK 提供的四种动画特效：位置特效、旋转特效、缩放特效和隐藏/显示特效，通过四种特效的组合，能满足绝大多数的开发者需求
+
+### 7.5.1 文字对象添加
+开发者可以通过
+
+```Objective-C
+- (NSInteger)addText:(PLSTextSetting *)textSetting;
+- (void)updateTextWithResourceID:(NSInteger)resourceID newTextSetting:(PLSTextSetting *)textSetting;
+```
+
+添加文字对象或者更新文字对象，addText 返回添加的文字对象 ID，更新的时候，传入要更新文字对象 ID 和新的文字对象
+
+### 7.5.2 图片对象添加
+开发者可以通过
+
+```Objective-C
+- (NSInteger)addImage:(PLSImageSetting *)imageSetting;
+- (void)updateImageWithResourceID:(NSInteger)resourceID newImageSetting:(PLSImageSetting *)imageSetting;
+```
+
+添加图片对象或者更新图片对象，addImage 返回添加的图片对象 ID，更新的时候，传入要更新图片对象 ID 和新的文字对象
+
+### 7.5.3 文字或图片动画添加
+开发者可以通过
+
+```Objective-C
+- (void)addTransition:(PLSTransition *)transition resourceID:(NSInteger)resourceID;
+```
+
+来文字和图片的动画效果
+
+### 7.5.4 动画效果预览
+'PLSTransitionMaker' 内部根据开发者设置的文字、图片、动画，实时生成视频预览效果，开发者可以通过
+
+```Objective-C
+- (void)play;
+- (void)transitionMakerPreviewEnd:(PLSTransitionMaker *)transitionMaker;
+```
+来预览和接收预览结束的回调
+
+### 7.5.5 导出为视频文件
+开发者可以通过
+
+```Objective-C
+- (void)startMaking;
+```
+
+来启动导出视频文件
+
+### 7.5.6 导出视频文件回调
+开发者可以通过
+
+```Objective-C
+- (void)transitionMaker:(PLSTransitionMaker *)transitionMaker exportMediaSucceed:(NSURL *)outURL;
+- (void)transitionMaker:(PLSTransitionMaker *)transitionMaker exportMediaFailed:(NSError *)error;
+```
+
+来接收导出视频文件成功和失败的回调
+
+<a id="8"></a>
+# 8 历史记录
+- 3.2.5
+  - 修复鉴权异常 crash
+  - 修复 PLShortVideoEditor 添加 bgm，loop 为 no 时 bgm 超过设定 duration 不停止
+  - 修复 PLSAVAssetExportSession 设置音频码率无效
+
+- 3.2.4
+  - 更新上传库 Qiniu v8.2.0
+  - 修复超高清视频色差
+  - 修复旋转预览显示异常
+  
+- 3.2.3
+  - 修复鉴权偶现 crash 的问题
+  - 修复同时 pod 导入百度地图 SDK 内置美颜会 crash 的问题
+
+- 3.2.2
+  - 修复后置切前置第一帧画面镜像的问题
+  - 修复转码有色差的问题
+  - 修复横屏拍摄时内存泄漏的问题
+	
+- 3.2.1
+  - 修复一些音轨不正常的视频导出失败的问题
+  - 修复无法打开闪光灯的问题
+  - 修复 4k 编辑 crash 的问题
+  - 支持单独开关音频、视频采集
+
+- 3.2.0
+  - 修复录制音画不同步问题
+  - 修复导出时偶现崩溃
+  - 修正导出视频的方向
+  - 新增录制时蓝牙耳机的支持
+  - 新增 11 种视频转场效果
+  - 新增导出视频时支持设置 gop size
+  - 升级上传 SDK
+
+- 3.1.1
+   - 修复 iOS 13.0 下，图片合成视频无转场动画的问题
+   - 修复某些机型下，导出视频产生内存溢出的问题
+   - 修复首次更新至 v3.1.0 偶现运行拍摄或编辑发生 crash 的问题
+   - 修复 PLSImageVideoComposer 设置视频 timeRange 后合成首帧错误的问题
+   - 新增对拍摄、编辑和转码的 H265 编码支持
+
+- 3.1.0
+   - 新增可设置 PLSImageVideoComposer 无转场动画
+   - 新增设置使用 PLSComposeMediaItem 为视频时，可自定义视频的取用范围
+
+- 3.0.0   
+   - 修复合拍分多段录制后，视频声音断断续续的问题
+   - 修复部分图片和视频混排添加转场动画合成偶现失败的问题
+   - 修复 PLSImageToMovieComposer 设置转场时间没有效果的问题
+
+- 2.2.0
+	- 支持合拍分层
+	- 修复视频编辑添加背景音乐或者多重混音后，不暂停状态下 seek 播放卡死的问题
+
+- 2.1.0
+	- 支持 GIF 动态贴纸功能
+	- 支持设置静态贴纸不被滤镜效果渲染
+	- 优化合拍内存使用量
+	- 修复 PLSGifComposer 获取视频图片，当获取图片数量是 1 的时候获取失败的问题
+	- 修复使用 swift 调用 PLSComposeItem，PLSComposeItem init 方法不执行的问题
+	- 修复视频录制，在启用根据设备方向自动调整横竖屏录制时，横屏模式下录制偶现生成的视频文件是竖屏的问题
+	- 修复对时长较长的视频进行转码失败的问题
+
+- 2.0.0
+	- 视频编辑 PLShortVideoEditor 在暂停的时候改变 fillMode，支持即时效果刷新
+	- 视频拍摄 PLShortVideoRecorder 添加新的相机切换接口，支持设置相机切换完成回调
+	- 优化视频编辑 PLShortVideoEditor 对 1080P 及以上视频进行编辑, 在 iOS 12 系统上内存占用较大的问题
+	- 修复视频拍摄 PLShortVideoRecorder 添加背景音乐的时候，自适应横屏拍摄失效的问题
+	- 修复视频编辑 PLShortVideoEditor 原视频设置为非循环播放，背景音乐仍然循环播放的问题
+	- 修复视频编辑 PLShortVideoEditor 使用 initWithPlayerItem: 方法初始化 crash 的问题
+	- 修复视频编辑 PLShortVideoEditor 的 timeRange 设置为 kCMTimeRangeZero 时，设置背景音乐不生效的问题
+	- 修复视频导出 AVAssetExportSession 不设置 PLSAudioSettingsKey，音量设置无效的问题
+	- 修复视频导出 AVAssetExportSession 添加 MV 的时候，存在内存泄漏的问题
+	- 修复视频导出 AVAssetExportSession 完成进度回调可能会从 99% 到 0 的问题 
+
+- 1.16.1
+	- SDK 去掉对 i386 模拟器的支持
+	- 添加 SDK 授权状态查询接口
+	- 修复时光倒流特效处理声道数大于 2 的视频导出失败的问题
+	- 修复视频编辑添加 MV 特效，预览的时候 MV 滞后视频播放 1s 左右问题
+	- 修复对无音频通道的视频添加 MV 特效，AVAssetExportSession 导出时 crash 的问题
+	- 修复 AVAssetExportSession 导出视频通道比音频通道时长短的视频时结尾处出现黑帧的问题
+	- 修复 AVAssetExportSession 添加贴纸起始时间是 0 的时候，第一帧视频没有贴纸效果的问题
+	- 修复 PLShortVideoRecorder 截帧小概率 crash 的问题 
+
+- 1.16.0
+	- 添加图片、GIF 图和视频混排功能
+	- 视频导出类 PLSAVAssetExportSession 支持设置导出视频的音频码率和声道数
+	- 视频切割类 PLSRangeMovieExport 支持设置导出视频的码率、宽高以及视频的填充模式
+	- 视频录制时音频编码采样率支持 16000Hz
+	- 多个视频文件拼接增加视频优先（PLSComposerPriorityTypeVideo）和音频优先（PLSComposerPriorityTypeAudio）模式
+	- 修复视频录制当设置背景音乐起始位置不是 0 的时候，删除已经录制的片段导致背景音乐起始位置变为 0 的问题
+	- 修复视频录制当设置的录制视频宽高之比和采集视频的宽高之比不相等时，录制视频画面剪裁位置不对的问题
+	- 修复视频导出类 PLSAVAssetExportSession 导出视频可能会丢失最开始几帧视频的问题
+	- 修复 1080P 的视频在 iPhone 5 上执行时光倒流失败的问题
+	- 修复 PLSEditPlayer 播放部分视频结束的时候播放画面黑屏的问题
+
+- 1.15.0
+	- 支持 GIF 水印
+	- 支持设置水印作用时间段、水印透明度和水印旋转角度
+	- 视频录制类 PLShortVideoRecorder 支持 AVCaptureSession 属性
+	- 视频导出类 PLSAVAssetExportSession 支持设置导出视频帧率
+	- 优化贴纸显示和隐藏动画时长的问题
+	- 修复视频导出类 PLSAVAssetExportSession 导出非 16 整数倍分辨率时，生成的视频有黑边的问题
+	- 修复素材合拍内存泄漏的问题
+	- 修复 GIF 制作类 PLSGifComposer 在 iOS 10 及以上版本生成的 GIF 图片循环次数始终是 1 次的问题
+	- 修复视频导出类 PLSAVAssetExportSession 当同时设置视频旋转和添加 MV 时，导出的视频 MV 显示位置错乱的问题
+
+
+- 1.14.0
+	- 增加时光倒流特效是否移除音频接口
+	- 增加设置水印大小接口
+	- 多个视频拼接，支持音视频同步优先模式和播放流畅优先模式
+	- 支持 MV 特效选择 MV 素材时间段
+	- 支持 MV 特效循环添加
+	- MV 特效支持 MV 素材帧率和被编辑视频帧率不相等的场景
+	- 优化图片转视频当图片数量过多造成内存溢出的问题
+	- 优化 1080P 视频时光倒流特效内存溢出的问题
+	- 修复使用七牛上传 SDK Qiniu v7.2.4 及以上版本导致短视频上传崩溃的问题
+	- 修复 PLSAVAssetExportSession 的音频参数使用 NSDictionary 崩溃的问题
+
+
+- 1.13.1
+   - 优化拍摄页面使用 UIImagePickerController 打开系统相机之后再返回拍摄页面导致预览画面不能铺满屏幕的问题
+   - 优化首次启动短视频录制出现的已录制视频时长回调顺序不对的问题
+   - 优化短视频编辑 PLShortVideoEditor 更新背景音乐的 timeRange 之后，首次播放时背景音乐起始部分重复播放的问题
+   - 修复 Swift 开发环境下调用视频拍摄接口时，实现正在录制中的回调 shortVideoRecorder: didRecordingToOutputFileAtURL: fileDuration: totalDuration: 导致 Crash 的问题
+
+- 1.13.0
+   - 支持设置视频转码帧率
+   - 支持视频转码时裁剪视频像素区域
+   - 优化素材视频合拍音频数据回调格式，由 CMSampleBufferRef 修改为 AudioBufferlist
+   - 优化图片转视频模块生成的视频时长不精准的问题
+   - 优化 pod install 或 update PLShortVideoKit 时进度缓慢的问题
+   - 修复 PLSEditPlayer 在 iOS 9.0 以下无法播放的问题
+   - 修复 PLSMovieComposer 拼接 16 个以上视频失败的问题
+   - 修复 SDK 无法处理 5.1 声道的视频的问题
+   - 修复素材合拍，素材视频没有音频轨道时合拍失败的问题
+
+- 1.11.1
+   - 优化视频拍摄效果，手动对焦的同时自动调整曝光位置
+   - 优化对 4K 视频的处理
+   - 优化短视频录制时 App 从后台回到前台自动开启录制的问题
+   - 优化 PLSEditPlayer seek 逻辑，能达到帧级别的 seek
+   - 优化 PLSEditPlayer 频繁添加背景音乐逻辑
+   - 优化对某些特殊视频进行编辑，首帧解码失败导致播放画面黑屏的问题
+   - 修复对某些特殊视频进行剪裁崩溃的问题
+   - 修复从手机系统相册导入视频进行编辑，部分视频方向不正确的问题
+   - 修复 PLSGLProgram 类名重复的问题
+   - 修复 PLShortVideoEditor 添加多音效首次预览的时候，播放时间点不对的问题
+   - 修复素材合拍 App 从后台回到前台无法继续录制的问题
+   - 修复 PLSAssetExportSession 在没有设置 PLSAudioSettingsKey 时视频剪裁不生效的问题
+
+- 1.11.0
+	- 支持摄像头与素材视频合拍功能
+	- 支持多个视频进行任意布局的拼图合并
+	- 支持对图片、GIF 进行录制
+	- 支持图片旋转动画录制
+	- 支持视频录制阶段从指定位置播放背景音乐
+	- 支持视频编辑阶段按指定时间段预览添加的贴图、文字、涂鸦
+	- 支持视频编辑阶段添加多个背景音效功能
+	- 支持视频编辑阶段背景音乐循环播放和仅播放一次
+	- 支持视频转码自定义码率
+	- 支持视频转码自定义输出视频地址
+	- 支持视频导出自定义码率
+	- 支持视频导出自定义输出视频地址
+	- 修复视频录制阶段开启横竖屏检测后横屏拍摄出现的首帧画面闪烁的问题
+	- 修复视频编辑阶段裁剪背景音乐后若背景音乐总时长为0时导致程序出现死循环的问题
+	- 修复视频编辑阶段裁剪背景音乐后循环播放到第二次时背景音乐停止播放的问题
+	- 修复视频编辑阶段截取视频再执行倍速效果后视频后半部分没有倍速效果的问题
+	- 修复少数机型上 GIF 制作失败的问题
+	- 修复多个视频拼接导出偶现失败的问题
+	- 修复视频切割导出偶现失败的问题
+	- 修复 H.265 视频转码之后首帧黑屏的问题
+
+- 1.10.0
+    - 支持文字动画转换为视频文件
+    - 支持多个视频同时进行切割编辑
+    - 对能直接 H.265 硬解码的机型支持导入 H.265 格式视频文件进行转码
+    - 支持在视频任意位置插入文字转场视频编辑
+    - 支持 PLSUploaderConfiguration  上传 params 设置
+    - 支持倍速录制视频时以对应的倍速播放背景音乐
+    - 优化 PLSEditPlayer 在暂停的时候 seek 时预览画面刷新逻辑
+    - 修复录制时播放背景音乐，并在录制结束后再次合成背景音乐导致有两重背景音乐声音的问题
+    - 修复多张图片合成视频时设置图片持续时间导致的最后一张图片没有被合入视频的问题
+    - 更新人脸贴纸库解决了使用人脸贴纸库后反复进出录制页面导致的崩溃问题
+        
+- 1.9.0
+	- 支持抖音特效
+	- 支持拍摄时截取图片
+	- 支持编辑类 PLShortVideoEditor 和视频导出类 PLSAVAssetExportSession 回调出视频的时间戳
+	- 修复快速开始和停止视频录制导致偶现文件写入报错的问题
+	- 修复编辑时添加背景音乐导致视频没有从剪切的起始位置处播放的问题
+	- 修复编辑类 PLShortVideoEditor 的回调不执行的问题
+	- 修复 1:1 比例的视频添加涂鸦、文字、图片后导出的视频出现倒立的问题
+	- 修复添加 MV 特效导出视频后原视频和背景音乐的音量大小不生效的问题
+	- 修复添加 MV 特效后只能固定输出某个视频分辨率的问题。
+	- 修复同时快速切换摄像头和滤镜偶现的 Crash 问题
+	- 修复在拒绝麦克风权限情形下添加背景音乐录制视频后进入编辑时 Crash 的问题
+	- 修复在拒绝相机权限情形下录制结束后进入编辑时 Crash 的问题
+	- 修复在拒绝相机和麦克风权限情形下视频录制结束后进行视频导出操作没有回调 Error 信息的问题
+	- 修复倍速拍摄后在编辑时不同倍速视频段衔接处会出现视频帧闪烁的问题
+
+- 1.8.0
+	- 支持视频拍摄时自定义视频存放地址
+	- 支持转码时旋转视频
+	- 支持日志系统
+	- 修复 MV 特效在某种特定情形下预览不生效的问题
+	- 优化图片合成视频的效果
+	- 修复横屏拍摄时前几帧画面偏暗的问题
+
+- 1.7.0
+	- 支持文字特效
+	- 支持视频涂鸦
+	- 支持视频贴纸
+	- 支持图片合成视频
+	- 支持视频草稿
+	- 支持拍摄时录制背景音乐
+	- 支持编辑时旋转视频
+	- 支持编辑时使用视频首帧作为滤镜封面图
+	- 修复编辑时音乐时长小于视频时长时音乐不随视频循环播放的问题
+
+- 1.6.0
+	- 支持配音功能
+	- 支持编辑时对视频进行变速处理
+	- 支持 AR 特效拍摄
+	- 支持摄像头对焦位置的回调
+	- 修复横竖屏自动切换的拍摄模式下设备方向检测不精准的问题
+	- 修复视频拍摄时使用前置 AVCaptureSessionPreset1920x1080 预览黑屏的问题
+	- 修复频繁切换 1:1 与全屏录制模型出现的预览黑屏问题
+	- 修复录屏偶现 Crash 的问题
+	- 修复视频转码偶现 Crash 的问题
+	- 修复多个视频拼接使用视频拼接模块后生成的视频体积变大的问题
+	- 修复背景音乐与视频时长相同时导出的视频无声音的问题
+	- 修复 iPhone 5 设备上将视频转码成 1080P 后快速执行视频导出偶现 Crash 的问题
+
+- 1.5.0
+	- 支持 MV 特效
+	- 支持时光倒流特效
+	- 更新视频文件的存储目录
+
+- 1.4.1
+	- 修复 iOS 11 系统上添加滤镜导致预览卡住的问题
+	- 修复拍摄时对焦动画引发的内存泄漏问题
+	- 更新上传依赖库 Qiniu 去适配 iOS 11 系统
+
+- 1.4.0
+	- 支持倍速拍摄
+	- 支持多视频拼接
+	- 增加取消 GIF 合成接口
+
+- 1.3.0
+	- 支持横屏拍摄
+	- 支持合成 GIF 动图 
+	- 修复录制时频繁切换滤镜导致预览卡住的问题
+	- 修复快速执行开始和停止录制导致的 crash 问题
+
+- 1.2.1
+	- 修复首次安装后第一次录制无法预览和采集的问题
+	- 修复被裁减的视频执行静音导出后起始时间内未静音的问题
+	- 更新滤镜封面图
+
+- 1.2.0
+    - 支持录屏
+    - 支持手动对焦动画
+    - 修复偶现视频合成失败问题
+    - 修复剪辑的视频导出后时长少零点几秒的问题
+
+- 1.1.1
+	- 支持视频转码修正视频方向
+	- 修复无音频轨视频合成失败问题
+
+- 1.1.0
+	- 支持视频转码
+	- 支持断点续传
+	- 支持裁剪背景音乐
+
+- 1.0.4
+	- 支持录制时启用内置滤镜
+	- 优化 mp4 文件大小
+	- 支持视频上传到云端
+
+- 1.0.3
+	- 支持背景音乐
+
+- 1.0.2
+	- 选取相册中的单个视频并编辑
+	- 优化 1:1 录制，捕捉摄像头的中心画面
+
+- 1.0.1
+	- 优化水印效果
+	- 修复音频采集回调中的数据类型
+	- 修复 iOS 8.1 上拍摄视频时预览视图卡住的问题
+
+- 1.0.0
+	- 支持 H.264、AAC 硬编码
+	- 支持断点拍摄
+	- 支持回删视频
+	- 支持视频水印
+	- 内置实时美颜
+	- 内置几十种专业级滤镜
+	- 支持第三方美颜和滤镜
+	- 支持自定义录制时长
+	- 支持分辨率码率配置
+	- 支持 1:1 录制
+ 
+
+<a id="9"></a>
+# 9 FAQ
+
+### 9.1 SDK 是否收费，哪里可以下载 ？
+
+本短视频 SDK 需授权方可使用，可通过 400-808-9176 转 2 号线联系七牛商务咨询，或者 [通过工单](https://support.qiniu.com/?ref=developer.qiniu.com) 联系七牛的技术支持。
+
+### 9.2 我可以体验下 demo 吗 ？
+
+可以，请到 App Store 搜索：`PLShortVideo`
+
+### 9.3 是否支持人脸特效、动态贴纸等 ？
+
+支持，该功能属于高级收费功能，需要联系商务获取资源
+
+### 9.4 是否支持抖音特效？
+
+支持，该功能属于高级收费功能，需要联系商务获取 appkey 和资源文件。具体使用可参看 [demo](https://github.com/pili-engineering/PLShortVideoKit)
+
+### 9.5 是否支持视频播放 ？
+
+生成和上传的 mp4 文件，可以用系统的播放器播放，如果需要更高级的播放功能，推荐使用七牛的  [PLPlayerKit](https://github.com/pili-engineering/PLPlayerKit)  播放 SDK
+
+### 9.6 导出的视频支持哪些格式 ？
+
+支持 mp4 和 mov 格式。

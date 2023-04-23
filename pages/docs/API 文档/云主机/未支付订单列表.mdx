@@ -1,0 +1,185 @@
+# 请求路径
+> `GET` /v1/order/unpaid_orders
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述
+----- | ----- | ----- | ----- | -----
+resource_type | string | query | 是 | 资源类型
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string  | 请求 ID
+data | \[]OrderInfo | 订单信息集合
+
+### OrderInfo
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>status</td>
+      <td>string</td>
+      <td>
+        <p>订单状态</p>
+        <ul>
+          <li><code>new</code>: 新建状态</li>
+          <li><code>paid</code>: 已经支付状态</li>
+          <li><code>canceled</code>: 被取消状态</li>
+          <li><code>complete</code>: 订单下所有子订单都已经完成</li>
+          <li><code>refund</code>: 用户订单执行了退款</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>create_time</td>
+      <td>string</td>
+      <td>
+        <p>订单创建时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>complete_time</td>
+      <td>string</td>
+      <td>
+        <p>订单完成时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>cancel_time</td>
+      <td>string</td>
+      <td>
+        <p>订单取消时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>pay_time</td>
+      <td>string</td>
+      <td>
+        <p>订单支付时间</p>
+      </td>
+    </tr>
+    <tr>
+      <td>order</td>
+      <td>object{}</td>
+      <td>订单信息</td>
+    </tr>
+    <tr>
+      <td>order.bo_order</td>
+      <td>OrderDetail</td>
+      <td>订单详情信息</td>
+    </tr>
+    <tr>
+      <td>order.order_tag</td>
+      <td>string</td>
+      <td>订单标签</td>
+    </tr>
+    <tr>
+      <td>resource_order_infos</td>
+      <td>[]Resources</td>
+      <td>订单资源信息</td>
+    </tr>
+  </tbody>
+</table>
+
+### OrderDetail
+名称 | 类型 | 描述 
+----- | ----- | -----
+id           | integer | ID
+order        | string  | 订单号
+fee          | float   | 订单原价
+c_fee        | float   | 订单实际价格
+create_time  | string  | 创建时间
+update_time  | string  | 更新时间
+pay_time     | string  | 支付时间
+expired_time | string  | 订单过期时间
+status       | integer | 订单状态 1: 未支付 2: 已支付 3:作废, 4: 垫付，5: 后付费
+
+### Resources
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>order_type</td>
+      <td>string</td>
+      <td>
+        <p>订单类型</p>
+        <ul>
+          <li><code>create</code>: 新建</li>
+          <li><code>renew</code>: 续费</li>
+          <li><code>auto_renew</code>: 自动续费</li>
+          <li><code>to_prepaid</code>: 按需转包月</li>
+          <li><code>upgrade</code>: 升级</li>
+          <li><code>replace_system_disk</code>: 更换系统盘</li>
+          <li><code>to_prepaid_disk</code>: 按需磁盘转包月</li>
+          <li><code>renew_with_spec</code>: 续费变配</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>resource_type</td>
+      <td>string</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>resource_type</td>
+      <td>string</td>
+      <td>资源类型</td>
+    </tr>
+    <tr>
+      <td>resource_id</td>
+      <td>string</td>
+      <td>资源 ID</td>
+    </tr>
+    <tr>
+      <td>region</td>
+      <td>string</td>
+      <td>地域</td>
+    </tr>
+    <tr>
+      <td>price</td>
+      <td>float</td>
+      <td>金额</td>
+    </tr>
+    <tr>
+      <td>status</td>
+      <td>string</td>
+      <td>
+        <p>状态</p>
+        <ul>
+          <li><code>non_executable</code>: 不可执行状态</li>
+          <li><code>executable</code>: 可执行状态</li>
+          <li><code>processing</code>: 正在执行中</li>
+          <li><code>success</code>: 执行成功</li>
+          <li><code>failed</code>: 执行失败</li>
+          <li><code>fail_over</code>: 失败次数过多</li>
+          <li><code>cancelled</code>: 被取消</li>
+          <li><code>refunded</code>: 已退款</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>life_start_time</td>
+      <td>string</td>
+      <td>计费周期</td>
+    </tr>
+    <tr>
+      <td>life_expire_time</td>
+      <td>string</td>
+      <td>计费周期</td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,53 @@
+
+1. [什么是IAM](#tutorial)
+2. [什么是IAM用户](#tutorial1)
+3. [IAM功能特点](#tutorial2)
+4. [如何创建和使用直播云IAM](#tutorial3)
+#  <span id="tutorial">什么是IAM</span>
+IAM是七牛云提供的管理用户身份与资源访问权限的服务。
+IAM允许七牛云账号下创建并管理多个用户，并允许给单个用户或一组用户分配不同的权限策略，从而实现不同用户拥有不同资源访问权限的目的。
+# <span id="tutorial1">什么是IAM用户</span>
+IAM用户是IAM的一种实体身份类型，有确定的身份ID和身份凭证，它通常与某个确定的人或应用程序一一对应。
+一个七牛云账号下可以创建多个IAM用户，对应企业内的员工、系统或应用程序。
+IAM用户不拥有资源，不能独立计量计费，由所属七牛云账号统一控制和付费。
+IAM用户归属于七牛云账号，只能在所属七牛云账号的空间下可见，而不是独立的七牛云账号。
+IAM用户必须在获得七牛云账号的授权后才能登录控制台或使用API操作七牛云账号下的资源。
+#  <span id="tutorial2">IAM功能特点</span>
+IAM拥有以下几个功能特点：
+1. 管理控制所有IAM用户及其密钥
+2. 管理控制每个IAM用户能够访问的资源权限
+3. 管理控制直播云/对象存储/cdn的权限策略
+4. 管理控制IAM用户组及其权限
+#  <span id="tutorial3">如何创建和使用直播云IAM账号</span>
+### 操作步骤
+##### 1. 进入IAM管理页面
+使用七牛云账号登录portal控制台，进入[访问管理](https://portal.qiniu.com/iam/overview)页面，如下图
+![image.png](https://dn-odum9helk.qbox.me/Fi0moMeB6de29enV7NVklGQ-icVC)
+##### 2. 创建直播云策略
+点击策略管理-创建策略按钮，进入创建策略页面
+![image.png](https://dn-odum9helk.qbox.me/FoUFDcAu7UeSreX_i4ugAgip_1Ti)
+输入策略名，备注信息，选择服务选择直播云，如下图
+![image.png](https://dn-odum9helk.qbox.me/FoUFDcAu7UeSreX_i4ugAgip_1Ti)
+点击下一步进入选择操作页面，这配置栏中将开关打开
+如果要只读功能的权限，则将查询直播空间信息/查询域名信息/查询直播流信息和查询直播数据统计信息的功能配置开启，其他功能关闭即可。
+如果需要全部的读写权限，则将功能的配置全部开启。可以根据实际需要进行配置。
+![141628065217_.pic_hd_副本.png](https://dn-odum9helk.qbox.me/FjPnGmhOiKyyW3GX4JbolDQ-VBy-)
+点击下一步进入关联资源页面，点击关联按钮，可以关联所有直播空间或者关联某几个特定的直播空间。
+所有直播空间：指改用户下所有的直播空间这个策略均可以查看或者管控
+指定直播空间：指可以指定某几个直播空间中这个策略中允许查看或者管控
+前缀匹配直播空间：当直播空间太多时，可以匹配前缀的直播空间给这个策略进行查看或管控
+![image.png](https://dn-odum9helk.qbox.me/FiQfI9mkaA49wu1CyuENYer1ZNZH)
+点击保存，完成后，即是绑定这个策略的IAM用户，登录控制台后，可以对这些空间进行管理操作。
+##### 3. 创建IAM用户
+点击用户管理-创建用户，进入创建用户页面
+![image.png](https://dn-odum9helk.qbox.me/FnBO3AaOzKlm2lQtqa13Ek66-Hb5)
+填入用户名和密码后，点击创建即可完成IAM用户的创建.
+创建完成后，在用户管理页面，找到对应的用户名，点击授权，进入策略授权页面
+![image.png](https://dn-odum9helk.qbox.me/FjZz8joob6UoKPEQJdaiwfXj7M01)
+将之前创建的策略名称选中有移入已选择策略，点击保存，即给这个用户授权了此策略
+
+##### 4. IAM用户登录
+在访问管理的概览页面下，复制用户登录链接.
+![image.png](https://dn-odum9helk.qbox.me/FqAGr0QJCOF12nIM5S8NATxlWfLZ)
+浏览器打开这个链接，填写创建好的IAM用户名和密码，即可登录控制台，进入直播空间进行管理操作
+![image.png](https://dn-odum9helk.qbox.me/FmXTbWQACB5ZzAPeDJ0_sZjll-fS)

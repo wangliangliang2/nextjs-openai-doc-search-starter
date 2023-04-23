@@ -1,0 +1,36 @@
+**使用场景**
+
+连续数据不限于定义的单独值，而是可以占用连续范围内的任何值。在任何两个连续数据值之间，可能有无限多个其他值。比如身高、体重、温度、价格等等。当需要预测单个连续指标的时候，我们常用回归预测（Regression）的方法。
+
+
+**通用语法**
+
+```
+|fit <algo_name> [options] <target_field> from <feature_field_1> <feature_field_2> [into model_name]... 
+```
+
+**通用参数说明：**
++ <algo_name> 必填，用来指定训练模型采用的算法名称。
++ [options]可选，为算法的内置参数，根据提供的算法变化。
++ <target_field> 必填，且只能是一个字段，用来指定建模使用的目标字段，给定的target_field值必须存在于数据集中。target_field的数据必须为连续数据（只能是int或者float）。
++ <feature_field> 必填，可以是一个或者多个字段，用来指定建模使用的特征字段，给定的feature_field值必须存在于数据集中。
++ [into model_name]可选，用来将fit训练出来的模型保存成model_name以便下次调用。
++ 数据集必须不为空。
+
+
+以下算法可以用来预测连续型指标：
+
+- [线性回归 - Linear Regression](/express/manual/11047/linear-regression-and-linear-regression)
+- [决策树 - Decision Tree Regressor](/express/manual/11048/the-decision-tree-decision-tree-regressor)
+- [随机森林 - Random Forest Regressor](/express/manual/11049/random-forests-the-random-forest-regressor)
+- [Gradient Boosting回归树 - GBDT Regressor](/express/manual/11050/gradient-boosting-regression-tree-gbdt-regressor)
+- [XGBoost回归树 - XGBoost Regressor](/express/manual/11051/xgboost-regression-tree-xgboost-regressor)
+- [弹性网络 - ElasticNet](/express/manual/11052/elasticnet-elastic-network)
+- [核岭回归 - KernelRidge](/express/manual/11053/kernelridge-kernel-ridge-regression)
+- [Lasso回归 - Lasso](/express/manual/11054/lasso-lasso-regression)
+- [岭回归 - Ridge](/express/manual/11055/ridge-ridge-regression)
+- [随机梯度下降回归 - SGDRegressor](/express/manual/11056/stochastic-gradient-descent-sgdregressor-handover)
+- [多层感知机回归 - MLPRegressor](/express/manual/11057/multilayer-perceptron-regression-mlpregressor)
+- [支持向量回归 - SVR](/express/manual/11058/support-vector-regression-svr)
+
+

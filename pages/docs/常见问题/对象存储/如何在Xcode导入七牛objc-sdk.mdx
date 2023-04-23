@@ -1,0 +1,58 @@
+## 一、 使用 pod 包管理工具导入（推荐方式）。
+
+在项目跟目录创建 PodFile 文件，输入：
+
+    platform :ios, "8.0" # 第一行指定平台和版本
+    pod 'AFNetworking', '~> 3.0'
+    pod "Qiniu", :git => 'https://github.com/qiniu/objc-sdk.git', :branch => 'AFNetworking-3.x'
+    pod 'HappyDNS', '~> 0.2'
+
+项目跟目录下执行 `pod install` ，成功后使用 xcode 打开新生成的 `Project.xcworkspace` 文件。   
+参考：  
+[http://www.yeolar.com/note/2015/01/02/cocoapods/](http://www.yeolar.com/note/2015/01/02/cocoapods/)   
+[http://guides.cocoapods.org/using/getting-started.html](http://guides.cocoapods.org/using/getting-started.html)
+
+## 二、直接复制源码到项目
+
+源码地址： [https://github.com/qiniu/objc-sdk](https://github.com/qiniu/objc-sdk)
+
+- 右键，选择添加文件到项目
+
+![image](https://camo.githubusercontent.com/f6ac1d17dde8e0338a58e48f5c5901f37b1d2c94/687474703a2f2f3737666c76632e636f6d322e7a302e676c622e71696e697563646e2e636f6d2f6f626a635f746f5f6164642e6a70673f696d61676556696577322f322f)
+
+- 选择文件`Added folders` 选择 `Create groups` 
+
+
+![image](https://camo.githubusercontent.com/7f6e875424aa2dc3adc95af11a10575774ea409e/687474703a2f2f3737666c76632e636f6d322e7a302e676c622e71696e697563646e2e636f6d2f6f626a635f735f6164642e6a70673f696d61676556696577322f322f)  
+  
+完成后： 
+
+![image](https://camo.githubusercontent.com/ff1555dcf8ff14ce4489c00f357e8e86bc120166/687474703a2f2f3737666c76632e636f6d322e7a302e676c622e71696e697563646e2e636f6d2f6f626a635f706167652e6a70673f696d61676556696577322f322f)  
+  
+在 `Build Phases` --- `Compile Sources` 中已自动添加了`*.m`文件 
+
+![image](https://camo.githubusercontent.com/b16f8797be465d521531d20355d8154f053aaa18/687474703a2f2f3737666c76632e636f6d322e7a302e676c622e71696e697563646e2e636f6d2f6f626a635f636f6d70696c652e706e673f696d61676556696577322f322f)
+
+## 导入依赖（源码导入参考）
+
+7.0.12 后依赖 `HappyDNS`: [https://github.com/qiniu/happy-dns-objc](https://github.com/qiniu/happy-dns-objc) 以上面相同方式导入`HappyDNS`的源码。
+
+至此，可正常编译、运行项目。   
+  
+**注意** ：
+
+- 若报 `Undefined symbols for architecture x86_64: "_crc32", referenced from:` ，项目中需导入 `libz.dylib`。(`Build Phases` ---`Link Binary With Libraries`)
+
+- 若报`"_res_9_ninit", referenced from: _setup_dns_server in QNResolver.o` 等，  
+1. 项目中需导入 `libresolv.dylib`或`libresolv.9.dylib`。(`Build Phases` --- `Link Binary With Libraries`)；  
+2. 或 (`Build Settings` --- `Linking` --- `Other Linker Flags`) 添加 `-lresolv` 选项
+
+- 报 `Thread 1: EXC_BAD_ACCESS(code=1,address=0x180f4beb8)`类似错误，将 `QN` 打头的都设置 `arc` (`Build Phases` --- `Compile Sources`)  
+ ![image](https://camo.githubusercontent.com/6212bc5ad5e6e5e3afc862c53cf6d81139a6a623/687474703a2f2f3737666c76632e636f6d322e7a302e676c622e71696e697563646e2e636f6d2f6f626a635f6172632e6a7067)
+
+## 链接错误
+
+有客户导入sdk后会报链接错误 (linker command failed with exit code 1)，可以下载下这个打包好的文件，解压后直接导入工程使用
+
+[点击下载zip](http://dn-odum9helk.qbox.me/QiniuStorageLibrary.zip)
+

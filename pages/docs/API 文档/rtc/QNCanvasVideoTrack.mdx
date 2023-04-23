@@ -1,0 +1,405 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                画布 Track，数据源支持 url、ArrayBuffer 或者 File 对象</section>
+                <section class="rtc-doc-panel rtc-doc-section-hierarchy">
+        <div class="rtc-doc-title rtc-doc-title-hierarchy">Hierarchy</div>
+            <ul>
+                <li>
+                    EventEmitter                    <ul>
+        <li>
+           <a href='9076/WebQNTrack'>QNTrack</a>
+               <ul>
+        <li>
+           <a href='9085/WebQNLocalTrack'>QNLocalTrack</a>
+               <ul>
+        <li>
+           <a href='9061/WebQNLocalVideoTrack'>QNLocalVideoTrack</a>
+               <ul>
+        <li>
+           <a href='9068/WebQNCameraVideoTrack'>QNCameraVideoTrack</a>
+        </li>
+        <li>
+           <a href='9092/WebQNScreenVideoTrack'>QNScreenVideoTrack</a>
+        </li>
+        <li>
+           QNCanvasVideoTrack
+        </li>
+        <li>
+           <a href='9088/WebQNCustomVideoTrack'>QNCustomVideoTrack</a>
+        </li>
+</ul>
+        </li>
+        <li>
+           <a href='9089/WebQNLocalAudioTrack'>QNLocalAudioTrack</a>
+               <ul>
+        <li>
+           <a href='9064/WebQNMicrophoneAudioTrack'>QNMicrophoneAudioTrack</a>
+        </li>
+        <li>
+           <a href='9069/WebQNBufferSourceAudioTrack'>QNBufferSourceAudioTrack</a>
+        </li>
+        <li>
+           <a href='9091/WebQNCustomAudioTrack'>QNCustomAudioTrack</a>
+        </li>
+</ul>
+        </li>
+</ul>
+        </li>
+        <li>
+           <a href='9082/WebQNRemoteTrack'>QNRemoteTrack</a>
+               <ul>
+        <li>
+           <a href='9060/WebQNRemoteVideoTrack'>QNRemoteVideoTrack</a>
+        </li>
+        <li>
+           <a href='9087/WebQNRemoteAudioTrack'>QNRemoteAudioTrack</a>
+        </li>
+</ul>
+        </li>
+</ul>
+        </li>
+</ul>
+                </li>
+            </ul>
+    </section>
+<div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Properties</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#trackID`)'>trackID</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#userID`)'>userID</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#tag`)'>tag</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#mediaElement`)'>mediaElement</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isMultiProfileEnabled`)'>isMultiProfileEnabled</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">Event</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#ended`)'>ended</a></li>
+        </ul>
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#play`)'>play</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isAudio`)'>isAudio</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isVideo`)'>isVideo</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#isMuted`)'>isMuted</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getMediaStreamTrack`)'>getMediaStreamTrack</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setMuted`)'>setMuted</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#destroy`)'>destroy</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getLowStreamConfig`)'>getLowStreamConfig</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getCurrentFrameData`)'>getCurrentFrameData</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#getStats`)'>getStats</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#setOptimizationMode`)'>setOptimizationMode</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#updateSources`)'>updateSources</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Properties</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="trackID">
+trackID</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">trackID?: string</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>Track ID</p>
+        <p>对于本地 Track，当且仅当 Track 发布后才可获取到有效的 TrackID；对于远端 Track，可随时获取到有效的 TrackID。</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="userID">
+userID</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">userID?: string</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>用户 ID</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="tag">
+tag</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">tag?: string</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>自定义 tag 文本</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="mediaElement">
+mediaElement</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">mediaElement: HTMLVideoElement | HTMLAudioElement | undefined</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>当前播放元素，当调用 <a href='#play'>play</a> 方法后，可以通过该属性获取播放的媒体元素</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isMultiProfileEnabled">
+isMultiProfileEnabled</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">isMultiProfileEnabled: boolean</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>是否开启大小流</p>
+    </div>
+<section class="rtc-doc-panel rtc-doc-describe-note">
+    <blockquote class="blockquote-warning">
+    <p>废弃，请使用 <a href='9061/WebQNLocalVideoTrack#getLowStreamConfig'>getLowStreamConfig</a> 替代。</p>
+    </blockquote>
+</section>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">Event</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="ended">
+ended</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">(): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>Track 断开</p>
+    </div>
+    <pre class="rtc-doc-example"><code>track.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;ended&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;ended&#x27;</span>)
+})</code></pre>
+</li>
+</ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="play">
+play</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">public play(container: HTMLElement, config?: QNPlayerConfig): Promise&lt;void&gt;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>播放当前 track</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            container: HTMLElement
+        </div>
+                <p>挂载的 html 容器，SDK 会在该容器下创建 audio 或 video 元素来播放 track</p>
+    </li>
+    <li>
+        <div>
+            <span class="rtc-doc-parameters-flag">Optional</span> 
+            config: <a href='10141/WebQNPlayerConfig'>QNPlayerConfig</a>
+        </div>
+                <p>播放配置信息</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isAudio">
+isAudio</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">isAudio(): boolean</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>是否是音频</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isVideo">
+isVideo</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">isVideo(): boolean</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>是否是视频</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="isMuted">
+isMuted</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">isMuted(): boolean</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>是否 mute（静音）</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getMediaStreamTrack">
+getMediaStreamTrack</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getMediaStreamTrack(): MediaStreamTrack | undefined</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取浏览器原生的 MediaStreamTrack 对象</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>MediaStreamTrack | undefined</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setMuted">
+setMuted</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">setMuted(isMuted: boolean): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置是否静默该 track，静默后，SDK 将会发送静默帧数据</p>
+        <p>当静默状态改变后，远端订阅 track 将会收到 <a href='9082/WebQNRemoteTrack#mute-state-changed'>mute-state-changed</a> 事件。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            isMuted: boolean
+        </div>
+                <p>是否 mute</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="destroy">
+destroy</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">destroy(): void</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>销毁当前流</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getLowStreamConfig">
+getLowStreamConfig</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getLowStreamConfig(): <a href='10582/WebQNLowStreamConfig'>QNLowStreamConfig</a> | undefined</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取小流配置</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>大小流使用方法可参考<a href='10566/video-size-flow-web-new'>视频大小流使用指南</a>。</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-returns-title">Returns <span><a href='10582/WebQNLowStreamConfig'>QNLowStreamConfig</a> | undefined</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getCurrentFrameData">
+getCurrentFrameData</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getCurrentFrameData(): string</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>截取当前视频流画面</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>string</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="getStats">
+getStats</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">getStats(): <a href='9051/WebQNLocalVideoTrackStats'>QNLocalVideoTrackStats</a>[]</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>获取流状态数据</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span><a href='9051/WebQNLocalVideoTrackStats'>QNLocalVideoTrackStats</a></span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="setOptimizationMode">
+setOptimizationMode</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">setOptimizationMode(mode: <a href='9079/WebQNVideoOptimizationMode'>QNVideoOptimizationMode</a>): boolean</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>设置传输优化模式</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            mode: <a href='9079/WebQNVideoOptimizationMode'>QNVideoOptimizationMode</a>
+        </div>
+                <p>视频优化模式</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>boolean</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="updateSources">
+updateSources</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">updateSources(sources: QNCanvasVideoTrackSource[]): Promise&lt;void&gt;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>更新画布内容</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            sources: <a href='10269/WebQNCanvasVideoTrackSource'>QNCanvasVideoTrackSource</a>
+        </div>
+                <p></p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>Promise&lt;void&gt;</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

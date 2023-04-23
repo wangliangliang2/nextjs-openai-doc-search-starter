@@ -1,0 +1,326 @@
+# QNIMConversation Class Reference
+
+Inherits from | NSObject
+---|---
+Declared in | QNIMConversation.h
+
+### `  conversationId`
+
+会话Id
+
+`@property (nonatomic, assign, readonly) long long conversationId`
+
+#### Discussion
+
+会话Id
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `  type`
+
+会话类型
+
+`@property (nonatomic, assign, readonly) QNIMConversationType type`
+
+#### Discussion
+
+会话类型
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `  lastMessage`
+
+最新消息
+
+`@property (nonatomic, strong, readonly) QNIMMessageObject *lastMessage`
+
+#### Discussion
+
+最新消息
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `  unreadNumber`
+
+未读消息数量
+
+`@property (nonatomic, assign, readonly) NSInteger unreadNumber`
+
+#### Discussion
+
+未读消息数量
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `  messageCount`
+
+会话中所有消息数量
+
+`@property (nonatomic, assign, readonly) NSInteger messageCount`
+
+#### Discussion
+
+会话中所有消息数量
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `  isMuteNotication`
+
+是否提醒用户消息,不提醒的情况下会话总未读数不会统计该会话计数。
+
+`@property (nonatomic, assign) BOOL isMuteNotication`
+
+#### Discussion
+
+是否提醒用户消息,不提醒的情况下会话总未读数不会统计该会话计数。
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `  extensionJson`
+
+扩展信息
+
+`@property (nonatomic, copy) NSString *extensionJson`
+
+#### Discussion
+
+扩展信息
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `  editMessage`
+
+编辑消息
+
+`@property (nonatomic, copy) NSString *editMessage`
+
+#### Discussion
+
+编辑消息
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `- setMessagePlayedStatus:status:completion:`
+
+设置消息播放状态（只对语音/视频消息有效）
+
+`- (void)setMessagePlayedStatus:(QNIMMessageObject *) _message_ status:(bool)
+_status_ completion:(void ( ^ ) ( QNIMMessageObject *aMessage , QNIMError *error
+)) _aCompletionBlock_`
+
+#### Parameters
+
+| message          | message  |
+| ---------------- | -------- |
+| status           | 播放状态 |
+| aCompletionBlock | Result   |
+
+#### Discussion
+
+设置消息播放状态（只对语音/视频消息有效）
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `- setMessageReadStatus:status:completion:`
+
+设置消息未读状态，更新未读消息数, 本地
+
+`- (void)setMessageReadStatus:(QNIMMessageObject *) _message_ status:(BOOL)
+_status_ completion:(void ( ^ ) ( QNIMError *error )) _aCompletionBlock_`
+
+#### Parameters
+
+| message          | message  |
+| ---------------- | -------- |
+| status           | 是否已读 |
+| aCompletionBlock | Result   |
+
+#### Discussion
+
+设置消息未读状态，更新未读消息数, 本地
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `- setAllMessagesReadCompletion:`
+
+把所有消息设置为已读，更新未读消息数
+
+`- (void)setAllMessagesReadCompletion:(void ( ^ ) ( QNIMError *error ))
+_aCompletionBlock_`
+
+#### Discussion
+
+把所有消息设置为已读，更新未读消息数
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `- updateMessageExtension:completion:`
+
+更新一条数据库存储消息的扩展字段信息
+
+`- (void)updateMessageExtension:(QNIMMessageObject *) _message_
+completion:(void ( ^ ) ( QNIMError *error )) _aCompletionBlock_`
+
+#### Parameters
+
+| message          | 需要更改扩展信息的消息此时msg部分已经更新扩展字椴信息 |
+| ---------------- | ----------------------------------------------------- |
+| aCompletionBlock | 更新结果                                              |
+
+#### Discussion
+
+更新一条数据库存储消息的扩展字段信息
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `- insertMessage:completion:`
+
+插入一条消息
+
+`- (void)insertMessage:(QNIMMessageObject *) _msg_ completion:(void ( ^ ) (
+QNIMError *error )) _aCompletionBlock_`
+
+#### Parameters
+
+| msg              | Message |
+| ---------------- | ------- |
+| aCompletionBlock | Result  |
+
+#### Discussion
+
+插入一条消息
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `- loadMessage:completion:`
+
+读取一条消息
+
+`- (void)loadMessage:(long long) _msgId_ completion:(void ( ^ ) (
+QNIMMessageObject *message )) _aCompletionBlock_`
+
+#### Parameters
+
+| msgId            | msgId  |
+| ---------------- | ------ |
+| aCompletionBlock | Result |
+
+  
+
+#### Discussion
+
+读取一条消息
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `- removeAllMessagescompletion:`
+
+删除会话中的所有消息
+
+`- (void)removeAllMessagescompletion:(void ( ^ ) ( QNIMError *error ))
+_aCompletionBlock_`
+
+#### Parameters
+
+| aCompletionBlock | Result |
+| ---------------- | ------ |
+|                  |        |
+
+#### Discussion
+
+删除会话中的所有消息
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `- loadMessageFromMessageId:size:completion:`
+
+加载消息，从参考消息向前加载，如果不指定则从最新消息开始
+
+`- (void)loadMessageFromMessageId:(long long) _reMsgId_ size:(NSUInteger)
+_size_ completion:(void ( ^ ) ( NSArray *messageList , QNIMError *error ))
+_aCompletionBlock_`
+
+#### Parameters
+
+| reMsgId          | 参考消息Id          |
+| ---------------- | ------------------- |
+| Size             | size                |
+| aCompletionBlock | Result：MessageList |
+
+
+
+#### Discussion
+
+加载消息，从参考消息向前加载，如果不指定则从最新消息开始
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### `- searchMessagesByKeyWords:refTime:size:directionType:completion:`
+
+搜索消息，如果不指定则从最新消息开始
+
+`- (void)searchMessagesByKeyWords:(NSString *) _keywords_
+refTime:(NSTimeInterval) _refTime_ size:(NSUInteger) _size_
+directionType:(QNIMMessageDirection) _directionType_ completion:(void ( ^ ) (
+NSArray<QNIMMessageObject*> *messageList , QNIMError *error ))
+_aCompletionBlock_`
+
+#### Discussion
+
+搜索消息，如果不指定则从最新消息开始
+
+#### Declared In
+
+`QNIMConversation.h`
+
+### searchMessagesBycontentType:refTime:size:directionType:completion:
+
+按照类型搜索消息，如果不指定则从最新消息开始
+
+`- (void)searchMessagesBycontentType:(QNIMContentType) _contentType_
+refTime:(NSTimeInterval) _refTime_ size:(NSUInteger) _size_
+directionType:(QNIMMessageDirection) _directionType_ completion:(void ( ^ ) (
+NSArray<QNIMMessageObject*> *messageList , QNIMError *error ))
+_aCompletionBlock_`
+
+#### Discussion
+
+按照类型搜索消息，如果不指定则从最新消息开始
+
+#### Declared In
+
+`QNIMConversation.h`
+
+

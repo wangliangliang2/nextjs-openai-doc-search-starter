@@ -1,0 +1,370 @@
+# 七牛低延时直播接入指南
+步骤一： 提供拉流域名做低延迟配置[（提交工单）](https://support.qiniu.com/tickets/new/form?category=%E5%85%B6%E4%BB%96%E7%B1%BB%E5%92%A8%E8%AF%A2&description=%E4%B8%83%E7%89%9B%E4%BD%8E%E5%BB%B6%E6%97%B6%E7%9B%B4%E6%92%AD%E6%8E%A5%E5%85%A5%E6%B5%8B%E8%AF%95%E7%94%B3%E8%AF%B7&method=PC%20%E6%8E%A8%E6%B5%81&space=%E7%9B%B4%E6%92%AD%E4%BA%91&title=%E4%B8%83%E7%89%9B%E4%BD%8E%E5%BB%B6%E6%97%B6%E7%9B%B4%E6%92%AD)
+步骤二： 推流端推流（不能包含 B 帧）
+步骤三： 使用七牛的播放器拉流
+
+**服务 TIPS**
+1.低延时直播采用 RTC 相关技术，大部分浏览器原生支持 RTC 播放，适用性更强；播放延迟小于 1 秒，适用于大部分对延迟有要求的直播场景
+
+2.推流端推流直播流中不包含 B 帧【推流命令样例：./ffmpeg -re -i "/*/*/*/*.mp4" -c copy -c:v libx264 -bf 0 -f flv 'rtmp://pili-publish.marsyu.site/lb-test/20200125h265test?expire=1610992020&token=W9G5v8_h5k6mgwshHQ2l7zB6NC4='】，不符合要求的直播流可能会出现卡顿/画面撕裂等问题；若推流侧无法自行适配，可以使用我们的服务端转码功能，在播放 URL 流名称后面添加 `@zerolatency` 转码规格 (转码将增加 200-400ms 延时，对播放延时有极高要求的客户请适配低延时推流规格，[转码将收取额外费用](https://developer.qiniu.com/pili/kb/2653/on-live-streaming-real-time-transcoding-control-multi-rate-service-side-watermark))
+
+3.[<低延时 Web SDK>](https://developer.qiniu.com/pili/7730/geek-web-sdk) 需要浏览器支持 RTC 和 H264 解码，目前部分 Android 手机自带浏览器并未支持 RTC，在这种情况下，我们建议更换浏览器或直接使用移动端的 SDK [<低延时 iOS SDK>](https://developer.qiniu.com/pili/7732/geek-ios-sdk)[<低延时 Android SDK>](https://developer.qiniu.com/pili/7731/geek-android-sdk)
+
+4.低延时直播SDK仅能播放低延时直播类型的直播流，如果需要播放rtmp/flv/hls/或者mp4等视频流，请使用[标准播放器](https://developer.qiniu.com/pili/1211/ios-playback-end-the-sdk)进行播放
+
+5.使用七牛的 iOS 推流 SDK，按照如下设置即可保证直播流中不包含 B 帧：
+PLVideoStreamingConfiguration 的 videoProfileLevel 的设置选择 H264Baseline 类型
+videoProfileLevel:AVVideoProfileLevelH264BaselineAutoLevel
+# QNRTPlayerKit
+
+七牛低延时直播构建了全新的低延时直播互动体验，相比于传统的直播能力降低了延时、优化了协议与底层技术，目前对于微信内直播多业务场景提供了更为优渥的使用体验。支持千万级并发同时拥有毫秒级开播体验，打通了用户对于直播低延时性的核心诉求。
+
+## 功能特性
+
+- 支持 H.264 视频解码
+- 支持 Opus 音频解码
+- 支持 HeaderDoc 文档
+- 支持 ARMv7, ARM64, i386, x86_64 架构
+- 支持纯音频或纯视频播放
+- 支持自定义音视频处理
+- 支持苹果 ATS 安全标准
+
+## 系统要求
+
+- iOS Target : >= iOS 9
+- iOS Device : >= iPhone 5s
+
+## 安装方法
+
+[CocoaPods](https://cocoapods.org/) 是针对 Objective-C 的依赖管理工具，它能够将使用类似 QNRTPlayerKit 的第三方库的安装过程变得非常简单和自动化，你能够用下面的命令来安装它：
+
+```bash
+$ sudo gem install cocoapods
+```
+
+### Podfile
+
+为了使用 CoacoaPods 集成 QNRTPlayerKit 到你的 Xcode 工程当中，你需要编写你的 `Podfile`
+
+```ruby
+source 'https://github.com/CocoaPods/Specs.git'
+target 'TargetName' do
+pod 'QNRTPlayerKit'
+end
+```
+
+- 默认为真机版	
+- 若需要使用模拟器 + 真机版，则改用如下配置	
+
+```	
+pod "QNRTPlayerKit", :podspec => 'https://raw.githubusercontent.com/pili-engineering/QNRTPlayer-iOS/master/QNRTPlayerKit-Universal.podspec'	
+```	
+
+**注意：鉴于目前 iOS 上架，只支持动态库真机，请在 App 上架前，更换至真机版本**
+
+然后，运行如下的命令：
+
+```bash
+$ pod install
+```
+
+## 反馈及意见
+
+当你遇到任何问题时，可以通过在 GitHub 的 repo 提交 issues 来反馈问题，请尽可能的描述清楚遇到的问题，如果有错误信息也一同附带，并且在 Labels 中指明类型为 bug 或者其他。
+
+[通过这里查看已有的 issues 和提交 Bug。](https://github.com/pili-engineering/QNRTPlayer-iOS/issues)
+
+## API参考
+
+### QNRTPlayer
+
+`QNRTPlayer` 为建立音视频播放的核心类，包含播放、停止，静音等接口。
+#### 属性
+
+##### playState
+
+###### 定义
+```Objective-C
+@property (nonatomic, assign, readonly) QNRTPlayState playState;
+```
+###### 说明：播放的状态，当播放状态变更时会通过 `- (void)RTPlayer:(QNRTPlayer *)player playStateDidChange:(QNRTPlayState)playState;` 方法回调。
+
+
+##### delegate
+
+###### 定义
+```Objective-C
+@property (nonatomic, weak) id<QNRTPlayerDelegate> delegate;
+```
+###### 说明：状态回调的 delegate。
+
+
+##### isPlaying
+
+###### 定义
+```Objective-C
+@property (nonatomic, assign, readonly) BOOL isPlaying;
+```
+###### 说明：是否在播放状态
+
+
+##### playUrl
+
+###### 定义
+```Objective-C
+@property (nonatomic, copy, readonly) NSURL *playUrl;
+```
+###### 说明：播放的 URL   
+
+ 
+
+##### statisticInterval
+
+###### 定义
+```Objective-C
+@property (nonatomic, assign) NSUInteger statisticInterval;
+```
+###### 说明：统计信息回调的时间间隔，单位为秒。默认为 0，即默认不会回调统计信息。
+
+
+##### volume
+
+###### 定义
+```Objective-C
+@property (nonatomic, assign) double volume;
+```
+
+###### 说明：播放音量
+
+
+##### width
+
+###### 定义
+```Objective-C
+@property (nonatomic, assign, readonly) CGFloat width;
+```
+###### 说明：视频的宽
+
+
+##### height
+
+###### 定义
+```Objective-C
+@property (nonatomic, assign, readonly) CGFloat height;
+```
+###### 说明：视频的高
+
+
+##### playView
+
+###### 定义
+```Objective-C
+@property (nonatomic, strong) QNRTVideoView *playView;
+```
+###### 说明：渲染播放画面
+
+
+#### 方法
+
+##### playWithUrl:supportHttps:
+
+###### 定义
+
+```Objective-C
+- (void)playWithUrl:(NSURL *)url supportHttps:(BOOL)isSupport;
+```
+###### 参数
+
+|           参数名         |         描述             |
+|           ------        |        ------           | 
+| url        |  需要播放的 url ，目前支持rtmp、hls、hdl和webrtc (url 以 webrtc:// 开头) 协议  | 
+| isSupport        |  当前播放 URL 是否支持  SSL 证书，默认为 NO | 
+
+###### 说明：开始播放新的 url   
+###### 注意：   1. 当前 iOS 系统网络限制，默认不支持 http 带域名访问，需要支持 SSL，且 isSupport 为 YES，或者开启 ATS 支持 HTTP 带域名访问，即可正常播放。   2. 播放域名需在七牛配置并完成解析，如播放失败请联系我们处理。
+
+##### stop
+
+###### 定义
+
+```Objective-C
+- (void)stop;
+```
+
+###### 说明：停止播放
+
+
+##### muteAudio:
+
+###### 定义
+
+```Objective-C
+- (void)muteAudio:(BOOL)mute;
+```
+###### 参数
+
+|           参数名         |         描述             |
+|           ------        |        ------           | 
+| mute  |  是否需要静音  | 
+
+###### 说明：静音
+
+
+
+##### muteVideo:
+
+###### 定义
+
+```Objective-C
+- (void)muteVideo:(BOOL)mute;
+```
+
+###### 参数
+
+|           参数名         |         描述             |
+|           ------        |        ------           | 
+| mute  |  是否需要画面渲染  | 
+
+
+###### 说明：停止画面渲染
+
+
+##### enableFileLogging
+
+###### 定义
+```Objective-C
++ (void)enableFileLogging;
+```
+###### 说明：开启文件日志，建议在 App 启动时即开启，日志文件位于 App App Container/Library/Caches/Pili/RTLogs 目录下以 QNRTPlayer+当前时间命名的目录内
+>注意：文件日志功能主要用于排查问题，打开文件日志功能会对性能有一定影响，上线前请记得关闭文件日志功能！
+
+
+
+##### versionInfo
+
+###### 定义
+```Objective-C
++ (NSString *)versionInfo;
+```
+###### 说明：获取 SDK 的版本信息。
+
+
+### QNRTPlayerDelegate
+
+`QNRTPlayerDelegate` 在 QNRTPlayer 运行过程中的状态和事件回调
+
+#### 方法
+
+##### RTPlayer:didFailWithError:
+###### 定义
+```Objective-C
+- (void)RTPlayer:(QNRTPlayer *)player didFailWithError:(NSError *)error;
+```
+
+###### 参数
+
+|           参数名         |         描述             |
+|           ------        |        ------           | 
+| player                     |  QNRTPlayer 实例       | 
+| error           |  错误内容             |   
+
+###### 说明：运行过程中发生错误会通过该方法回调
+
+
+
+##### RTPlayer:playStateDidChange:
+
+###### 定义
+```Objective-C
+- (void)RTPlayer:(QNRTPlayer *)player playStateDidChange:(QNRTPlayState)playState;
+```
+
+
+###### 参数
+
+|           参数名         |         描述             |
+|           ------        |        ------           | 
+| player                     |  QNRTPlayer 实例       | 
+| playState                 |  playState 播放状态               | 
+
+###### 说明：在运行过程中，状态发生变化的回调
+
+
+
+##### RTPlayer:didGetStatistic:
+
+###### 定义
+```Objective-C
+- (void)RTPlayer:(QNRTPlayer *)player didGetStatistic:(NSDictionary *)statistic;
+```
+
+###### 参数
+
+|           参数名         |         描述             |
+|           ------        |        ------           | 
+| player                     |  QNRTPlayer 实例       | 
+| statistic                   |  统计信息 ，包括：音频码率，视频码率，视频帧率       | 
+
+
+###### 说明：统计信息回调，回调的时间间隔由 statisticInterval 参数决定，statisticInterval 默认为 0，即不回调统计信息。
+
+
+##### RTPlayer:trackDidReceived
+
+###### 定义
+```Objective-C
+- (void)RTPlayer:(QNRTPlayer *)player trackDidReceived:(QNRTSourceKind )kind;
+```
+
+###### 参数
+
+|           参数名         |         描述             |
+|           ------        |        ------           | 
+| player                     |  QNRTPlayer 实例       | 
+| kind                   |  数据类型  | 
+
+ 
+###### 说明：当前流媒体流收到数据 track。
+
+
+##### RTCEngine:firstSourceDidDecode:
+
+###### 定义
+```Objective-C
+- (void)RTPlayer:(QNRTPlayer *)player firstSourceDidDecode:(QNRTSourceKind )kind;
+```
+
+###### 参数
+
+|           参数名         |         描述             |
+|           ------        |        ------           | 
+| player                     |  QNRTPlayer 实例       | 
+| kind                   |  数据类型  | 
+ 
+###### 说明：音视频首帧解码后的回调。
+
+
+### QNRTErrorDomain
+
+`QNRTErrorDomain` 定义了播放过程中的错误信息,包括但不限于连接错误、鉴权失败等错误信息。
+
+|  QNRTCErrorDomain  |  错误码  |        功能         |
+|       ------        |     ---     |        ---        |
+| QNRTErrorNetworkError          | 20001 | 服务请求超时，或者域名解析错误等  | 
+| QNRTErrorAuthFailed        | 20002 | 请求服务鉴权失败 |
+| QNRTErrorPlayStreamNotExit  | 20003 | 播放流地址不存在 | 
+| QNRTErrorPlayRequestFailed | 20004 | 对应服务 invalid parameter / server error |
+| QNRTErrorDescriptionError          | 20005 | 内部sdp错误 |
+| QNRTErrorConnectFailed          | 20006 | 连接异常 |
+
+### QNRTVideoFillModeType
+
+`QNRTVideoFillModeType` 定义了视频填充模式。
+
+|  QNRTVideoFillModeType   |        功能         |
+|       ------        |       ---        |
+| QNRTVideoFillModeStretch        | 拉伸以填充整个视图  | 
+| QNRTVideoFillModePreserveAspectRatio        | 画面均匀缩放的同时保持宽高比，添加指定背景色的条形 |
+| QNRTVideoFillModePreserveAspectRatioAndFill  | 保持源图像的长宽比，放大其中心以填充视图 | 
+
+

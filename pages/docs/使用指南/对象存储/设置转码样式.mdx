@@ -1,0 +1,24 @@
+对象存储 Kodo 支持通过控制台提供一键式文件格式转码功能，方便您在空间（Bucket）内上传文件（Object）时做批量转码处理。
+<br>
+
+# **操作步骤**
+
+1. 登录 Kodo 控制台进入[空间管理](https://portal.qiniu.com/kodo/bucket)界面
+2. 单击**目标空间名称**进入空间概览，后单击**转码样式**进入如图1:转码样式列表
+图1:
+![截屏2021-08-11 下午3.16.17.png](https://dn-odum9helk.qbox.me/Fl3R7r6MiDrNtjHd2n6GJxcxcd_o)
+3. 单击 **+新建转码样式**，右侧弹出如图2界面
+图2:
+![截屏2021-08-11 下午3.19.23.png](https://dn-odum9helk.qbox.me/Fr8-T7Gf6zB-FfGPPuKOVilUqtiB)
+4. 在新建转码样式界面，按如下说明配置各项参数
+   |操作名称      |说明                   |规则描述|
+   |-------------|----------------------|-----------------------|
+   |转码配置名称|请自定义当前转码样式的名称|在当前空间下不可重复命名转码样式规则|
+   |转码命令	|请选择命令或自定义	| - 转码命令包含参数，详解请参考[存储空间的转码样式使用说明](/kodo/development_guidelines/8624/dev-transcoding-style)。<br> - 或选择 自定义，输入命令。|
+   |目标空间	|请选择转码后目标放置的空间	|可选择在同区域建立的任一空间|
+   |目标文件名	|请定义目标文件名称	|目标文件名支持[魔法变量](/kodo/development_guidelines/1235/vars)或自定义字符串。 魔法变量引用格式为 ${var}、$(var)，魔法变量仅支持 bucket、key、etag、fsize、mimeType、ext、endUser、fprefix、 keybase。|
+   |回调 URL	|请按需设置回调地址	|选填|
+   |私有队列	|请按需选择私有队列	| - 选填，不选择即归为系统默认队列 default.sys<br> - 选择私有队列，可参考 [队列](https://developer.qiniu.com/dora/6497/the-queue) 以 [创建私有队列](https://portal.qiniu.com/dora/mps/new)，更多队列详情请参考[关于七牛云的流媒体队列](https://developer.qiniu.com/dora/kb/2500/streaming-media-queue-about-seven-cows?category=kb#2)。
+5. 单击**确定**，完成转码样式规则创建。
+6. 转码样式规则保存成功后，您可以在如图1:转码样式列表中查看已设置的规则，也可以对规则进行 **复制、编辑**或**删除**。
+7. 您还可以在空间上传文件时，**单选或多选**当前已有的转码样式，直接进行转码。详情请参考[上传文件](/kodo/development_guidelines/8562/upload-a-file)。

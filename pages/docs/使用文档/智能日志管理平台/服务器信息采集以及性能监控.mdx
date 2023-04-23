@@ -1,0 +1,175 @@
+服务器监控是每个互联网厂商都重视并且想要尽可能做好的事情，从数据收集、数据处理、数据可视化最终再到实时监控告警，这一系列复杂的流程可能耗费企业大量的人力和时间，以至于某些时候因为其复杂性高无法达到预期的监控效果。而当事故发生时才发现，由于监控体系的不完善造成了很多不必要的损失，让我们追悔莫及。
+
+为了解决企业的此类烦恼，七牛智能日志管理平台推出了快速构建服务器性能监控报警的解决方案。通过七牛智能日志采集工具 `logkit-pro`，可以方便地采集大量服务器的海量性能指标数据，然后接入使用智能日志管理平台，通过可视化系统进行全方位监控。而整个部署和使用的流程，您完整体验的时间仅需几分钟。
+
+# **使用 logkit-pro 采集系统指标信息**
+
+## **前提：安装 logkit-pro**
+
+1.登录 [logkit-pro](http://logkit-pro.qiniu.com/)，进入机器管理页面，点击添加机器。
+
+![](https://pandora-kibana.qiniu.com/k8s/add_machine.png)
+
+2.手动安装：根据您机器的操作系统版本选择对应的命令，复制到命令行工具即可，如图所示：
+
+![](https://pandora-kibana.qiniu.com/k8s/addbyhand.png)
+
+![](https://pandora-kibana.qiniu.com/logkit/running.png)
+
+其他安装方式请阅读 [logkit-pro 安装](/insight/manual/4682/download-and-install) 。
+
+3. 安装完毕后，您可以在机器列表页面看到您安装的机器:
+
+![](https://dn-odum9helk.qbox.me/FpmPwc2L2arnlHd9OpBEXkJs0rbx)
+
+## **添加收集器获取机器信息**
+
+进入数据收集页面，点击**添加收集器**开始配置收集器。选择收集`系统监控信息`。
+
+![](https://pandora-kibana.qiniu.com/system_monitorchoose_metric.png)
+
+1.选择需要收集的系统指标。
+
+![](https://pandora-kibana.qiniu.com/system_monitormetric.png)
+
+指标说明如下：
+
+- [System Metric](/insight/manual/4896/the-system-monitoring):监控 load1、load5、load15、用户数、cpu 核数以及系统启动时间等。
+- [Processes Metric](/insight/manual/4897/the-processes-to-monitor): 监控处于各种状态的进程数量, 比如运行中/暂停/可中断/空闲的进程数量等。
+- [Netstat Metric](/insight/manual/4898/netstat-monitoring): 监控处于各种状态的网络连接数, 比如 Syn send/Syn Recv 等状态的网络连接数。
+- [Net Metric](/insight/manual/4899/net-monitor): 监控网络设备的状态，比如收发包的数量、收发包的字节数等。
+- [Mem Metric](/insight/manual/4900/the-memory-monitoring): 监控内存的实时状态。
+- [Swap Metric](/insight/manual/4901/swap-monitoring): 监控 swap 分区的状态，比如换入换出、使用率、空闲大小等。
+- [Cpu Metric](/insight/manual/4902/cpu-monitoring): 监控 cpu 的实时状态，包括用量，中断时间占比等。
+- [Kernel Metric](/insight/manual/4909/the-kernel-monitoring): 监控内核中断次数、上下文切换次数、fork 的进程数等。
+- [Disk Metric](/insight/manual/4903/disk-monitoring): 监控磁盘的使用情况， 包括磁盘用量、inode 使用情况等。
+- [Diskio Metric](/insight/manual/4904/diskio-monitoring): 监控磁盘读写状态， 包括读写次数、总用时等。
+- [Http Metric](/insight/manual/4905/http-monitoring): 监控某个或者某些 http 请求。
+- [Procstat Metric](/insight/manual/4906/procstat-monitoring): 监控某个或者某些进程的信息，包括 cpu，内存，磁盘 io，资源限制等。
+- [Ipmi Metric](/insight/manual/4908/ipmi-monitoring):监控各类支持 ipmi 接口的硬件指标。
+
+2.发送到智能日志分析平台。输入工作流（pipeline）名称和实时仓库名称(默认同时生成日志仓库，与实时仓库同名)，点击下一步。
+
+![](https://pandora-kibana.qiniu.com/system_monitor/sender.png)
+
+3.确认收集数据，填写收集器名称确认添加数据收集器。
+
+![](https://pandora-kibana.qiniu.com/system_monitor/confirm.png)
+
+4.分发收集器到当前机器：进入数据收集页面，找到刚刚配置的收集器。点击分发，将收集器分发到当前机器，这样收集器才能运行起来。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/distribute.png)
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/distribute2.png)
+
+5.查看收集器运行情况:进入数据收集页面，找到刚刚配置的收集器。点击`查看收集器运行信息`查看数据读取、发送情况。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/collector_info.png)
+
+![](https://pandora-kibana.qiniu.com/system_monitor/collector_detail2.png)
+
+# **在日志平台搜索系统指标数据**
+进入[智能日志分析平台日志搜索页面](https://portal.qiniu.com/insight/logdb/overview)，选择在 logkit Pro 发送时填写的仓库名称，输入搜索条件搜索日志内容。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/system_metric_log.png)
+# **配置报表监控系统性能**
+
+将日志结果标签切换到`可视化`tab，开始配置系统性能分析报表。
+
+1. 监控 CPU Usage 信息：CPU Usage 顾名思义，就是指 CPU 的使用率。
+
+   - 我们可以使用区域图查看系统中 `user`、`system` 等对于系统 CPU 资源的占用情况，当 CPU 使用率较高且整体运行平稳时，说明您的业务非常健康；若 CPU 的用量曲线波动较大，那就说明服务有可以优化的地方，或者在业务高峰时及时添加资源。选择图表类型为区域图，指标为 cpu_usage_user 的最大值以及 cpu_usage_system 的最大值，按照时间字段分组。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/cpu_usage.png)
+
+   - 监控单个 cpu 指标，选择图表类型为单值图，指标为 cpu_usage_syatem 的最大值。在样式设置里，选择显示方式为仪表盘，合理配置好分段数值，理想状况为 cpu 使用率过大时，仪表盘将显示为红色，提醒您此时 cpu 使用率过高，需要及时采取优化措施。
+
+![](https://pandora-kibana.qiniu.com/cup_usage_3.png)
+
+![](https://pandora-kibana.qiniu.com/cpu_usage4.png)
+
+CPU 是一种弹性资源，即使使用量达到 100% 也不会出现直接的服务崩溃，但是极有可能导致服务响应变得极慢，密切关注 CPU 用量，是运维必不可少的一环。
+
+点击`添加到仪表盘`，输入仪表盘名称和此图表名称，将图表加入指定仪表盘统一管理。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/add_to_dashboard.png)
+
+2.监控系统 load 值与进程
+
+   - 选择图表类型为折线图，指标为 system_load1（ 1 分钟平均 load 值）的最大值，system_load5（ 5 分钟平均 load 值）的最大值，system_load15（ 15 分钟平均 load 值）的最大值，按照时间字段分组查看不同的统计时间段中系统的负载情况。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/load.png)
+
+   - 选择图表类型为折线图，指标为 processes_running (正在运行的进程)的最大值，processes_sleeping (休眠中的进程)的最大值，processes_blocked (被阻塞的进程)的最大值，processes_zombies (僵尸进程)的最大值，按照时间字段分组，查看对应的进程数量， 如运行的进程数、在休眠中的进程数，并且可以看到值得关注的一些异常进程，如僵尸进程以及被阻塞的进程。当存在僵尸进程时说明存在服务异常，需要及时关注并处理。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/process.png)
+
+3.监控内存用量
+
+监控系统总内存(total)、已使用内存(used)、空闲内存(free)等信息，及时发现系统性能短板。另一方面要注意，当系统`free`的内存少或接近零，而 `cache` 部分的内存多时，说明这部分业务对内存缓存较为依赖，虽然服务仍然可以正常运行，但此时极有可能程序没法最大限度利用内存缓存, 导致性能出现了问题。
+
+选择图表类型为折线图，指标为 mem_free、mem_total、mem_used、mem_cached、mem_buffered 的最大值，按照时间字段分组。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/mem.png)
+
+4.监控网络连接情况：监控系统中处于各个状态的连接数量，比如SYN SENT、FIN WAIT 等， 利用这些数据可以及时发现请求的健康状态，常见的如出现大量的FIN WAIT、CLOST WAIT等状态的连接，说明出现了很多慢请求或连接有问题，需要排查，通常这一类指标可以结合打开文件句柄数一同查看。
+
+选择图表类型为折线图，指标为 netstat__tcp_time_wait（TIME_WAIT状态的网络链接数）、netstat__tcp_established（ESTABLISHED状态的网络链接数）、netstat__tcp_close_wait（CLOSE_WAIT状态的网络链接数）、netstat__tcp_fin_wait1（FIN_WAIT1状态的网络链接数）、netstat__tcp_syn_sent（SYN_SENT状态的网络链接数）的最大值，按照时间字段分组。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/netstat.png)
+
+5.监控网卡状态：网卡状态展示了包括网卡收发数据的速度、收发包的速度、丢包率以及出错频率等信息。
+
+   - 监控网卡发包数量和收包数量：选择图表类型为折线图，指标为 net__packets_recv 、net__packets_sent 的最大值，按照时间字段分组。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/net.png)
+
+   - 监控网卡收发包的速率：选择图表类型为折线图，指标为 net__bytes_sent_per_sec 、net__bytes_recv_per_sec 的最大值，按照时间字段分组。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/net_per_s.png)
+
+   - 监控网卡丢包情况：选择图表类型为折线图，指标为 net_drop_in(收 丢包数量) 、net_drop_out(发 丢包数量) 的最大值，按照时间字段分组。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/drops.png)
+
+7.监控交换分区状态
+
+  - 监控交换分区的换入换出状态：选择图表类型为折线图，指标为 swap_in 、swap_out 的最大值，按照时间字段分组。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/swap.png)
+
+  - 监控交换分区的使用情况：选择图表类型为折线图，指标为 swap_used 、swap_total 的最大值，按照时间字段分组。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/swap_used.png)
+
+8.监控磁盘用量：磁盘的重要性毋庸置疑，磁盘爆满可能会对服务产生毁灭性打击，无疑也是需要监控的重点。
+
+- 磁盘 IO:磁盘的读写总量、读写速率以及读写时间等，当磁盘 IO 过高时，也有可能存在性能问题，需要关注。
+
+以监控磁盘读写总用时为例：选择图表类型为折线图，指标为 diskio__read_time、diskio__write_time 的平均值，按照时间字段分组。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/disk_bytes.png)
+
+  - 磁盘使用情况：看到磁盘总空间与已使用空间，实时展现磁盘使用情况。
+  
+    选择图表类型为折线图，指标为 diskio_total 、diskio_used 的最大值，按照时间字段分组。
+		
+![](https://pandora-kibana.qiniu.com/metrics_monitor/disk_used.png)
+
+# **全局监控**
+
+进入[仪表盘列表](https://portal.qiniu.com/insight/dashboard)，找到刚刚创建的仪表盘。
+
+![](https://pandora-kibana.qiniu.com/system_dashboard.png)
+
+点击进入仪表盘对图表进行监控，同时可以对仪表盘以及仪表盘里的图表进行下钻以及编辑。关于仪表盘的操作，请阅读[仪表盘](/insight/manual/4867/the-dashboard)。
+
+在仪表盘以最直观的方式全局把控整个系统的运行状态，方便在基础资源不够时及时发现、及时处理。
+
+![](https://pandora-kibana.qiniu.com/metrics_monitor/system_monitor.png)
+
+
+
+
+
+

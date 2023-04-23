@@ -1,0 +1,13 @@
+# 七牛直播云 rtmp 和 flv 支持音视频分离
+有纯音频直播或者纯视频直播自由切换的功能，上行推流端或者主播推流包含音视频的直播，可以自由选择纯音频或者纯视频直播。
+## 使用方式
+### 只下发音频
+在 URL 中添加 `only-audio=1`，**目前支持 RTMP、FLV**  
+示例:  
+RTMP: `rtmp://pili-live-rtmp.qiniu.com/qiniu/test?only-audio=1`  
+FLV: `http://pili-live-hls.qiniu.com/qiniu/test.flv?only-audio=1`  
+### 只下发视频  
+在 URL 中添加 `only-video=1`，**目前支持 RTMP、FLV**  
+示例:  
+RTMP: `rtmp://pili-live-rtmp.qiniu.com/qiniu/test?only-video=1`  
+FLV: `http://pili-live-hls.qiniu.com/qiniu/test.flv?only-video=1`

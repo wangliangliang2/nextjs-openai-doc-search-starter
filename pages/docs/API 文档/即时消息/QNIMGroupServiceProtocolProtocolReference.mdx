@@ -1,0 +1,51 @@
+# QNIMGroupServiceProtocol Protocol Reference
+
+Conforms to | NSObject  
+---|---  
+Declared in | QNIMGroupServiceProtocol.h  
+  
+### `- groupLeft:reason:` required method
+
+退出了某群
+
+`- (void)groupLeft:(QNIMGroup *) _group_ reason:(NSString *) _reason_`
+
+#### Discussion
+
+退出了某群
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupMemberJoined:memberId:inviter:` required method
+
+加入新成员
+
+`- (void)groupMemberJoined:(QNIMGroup *) _group_ memberId:(NSInteger)
+_memberId_ inviter:(NSInteger) _inviter_`
+
+#### Discussion
+
+加入新成员
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+### `- groupMemberLeft:memberId:reason:` required method
+
+群成员退出
+
+`- (void)groupMemberLeft:(QNIMGroup *) _group_ memberId:(NSInteger) _memberId_
+reason:(NSString *) _reason_`
+
+#### Discussion
+
+群成员退出
+
+#### Declared In
+
+`QNIMGroupServiceProtocol.h`
+
+

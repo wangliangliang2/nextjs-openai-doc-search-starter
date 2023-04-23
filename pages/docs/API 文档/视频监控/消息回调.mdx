@@ -1,0 +1,264 @@
+# **功能介绍**
+直播流状态的实时变化、设备状态的实时变化，视频录制/截图成功的通知这类事件都在QVS内部管理，用户可使用QVS的状态回调服务及时获知这些信息。
+
+# **消息组织格式**
+使用状态回调服务，您需要在QVS后台配置可正常访问的状态回调URL，回调信息采用JSON格式进行组织，通过Http/Https POST协议传递。
+<br /> 
+
+## **流状态回调参数**：
+
+|参数名称|字段类型|说明|
+|---|---|---|
+|type|string|事件类型，流状态对应事件类型为"stream"
+|nsId|string|空间ID 
+|streamId|string|流ID <font color="red">当采用GBT28181接入，设备类型为“摄像头”时，流ID就是设备国标ID；设备类型为“平台”时，流ID就是“设备国标ID_通道ID”的形式，例31011500991180003166_34020000001310000001；当采用rtmp接入时，rtmp://xxx:2045/空间ID/流ID </font>
+|streamState|integer|0：离线，1：在线
+|timeSec|integer|对应10位时间戳
+|reqId|string|请求唯一标识 
+
+示例：
+```
+curl --request POST \
+  --url http://客户自己配置的回调地址 \
+  --header 'content-type: application/json' \
+  --data '{
+	"type": "stream",
+	"nsId": "d102sni9zryu",
+	"streamId": "31011500991320000137",
+	"streamState": 1,
+	"timeSec": 1606810185,
+	"reqId": "mjgBAHjcY6cbhkwW"
+}'
+```
+
+## **设备状态回调参数**:
+该回调只适用于采用GBT28181接入的空间。
+|参数名称|字段类型|说明|
+|---|---|---|
+|type|string|事件类型，流状态对应事件类型为"device"
+|nsId|string|空间ID 
+|gbid|string|国标ID
+|chGbid|string|通道ID<font color="red"> 设备类型为“摄像头”时，因为不存在通道，所以该字段为空</font>
+|deviceState|string|设备状态 "online"/"offline"
+|timeSec|integer|对应10位时间戳
+|reqId|string|请求唯一标识 
+
+示例：
+```
+curl --request POST \
+  --url http://客户自己配置的回调地址 \
+  --header 'content-type: application/json' \
+  --data '{
+	"type": "device",
+	"nsId": "d102sni9zryu",
+	"gbid": "54020000001110000001",
+	"chGbid": "31011500991320000096",
+	"deviceState": "online"
+	"timeSec": 1606810285,
+	"reqId": "9H4AAKscvcSXiUwW"
+}'
+```
+
+## **录制状态回调参数**:
+|参数名称|字段类型|说明|
+|---|---|---|
+|type|string|事件类型，流状态对应事件类型为"record"
+|nsId|string|空间ID 
+|streamId|string|流ID 
+|start|bigint/uint64|录制开始时间，<font color="red">毫秒时间戳（例如：1607311044166）</font>
+|end|bigint/uint64|录制结束时间，<font color="red"> 毫秒时间戳</font>	
+|duration|integer|录制时长	
+|fname|string|录制文件名
+|recordType|integer|1：实时录制，2：按需录制
+|code|integer|状态码0成功，1等待处理，2正在处理，3处理失败
+|errmsg|string|错误信息
+|timeSec|integer|对应10位时间戳
+|reqId|string|请求唯一标识 
+|processId|string|客户自定义ID,录制完毕，平台重新把该ID回调给客户
+
+示例：
+```
+curl --request POST \
+  --url http://客户自己配置的回调地址 \
+  --header 'content-type: application/json' \
+  --data '{
+	"type": "record",
+	"nsId": "2akras1jotpfe",
+	"streamId": "teststream",
+	"start": 1607310997732,
+	"end": 1607311044166,
+	"duration": 46434,
+	"fname": "record/2akras1jotpfe/teststream/1607310997732-1607311044166-44478.mp4"
+	"recordType": 1,
+	"code": 0,
+	"errmsg": "",
+	"timeSec": 1607311045,
+	"reqId": "5AMAADto6DDhUE4W"
+}'
+```
+
+## **截图状态回调参数**:
+|参数名称|字段类型|说明|
+|---|---|---|
+|type|string|事件类型，流状态对应事件类型为"snap"
+|nsId|string|空间ID 
+|streamId|string|流ID 
+|snapItems|对象数组|截图结果集
+|code|integer|状态码0成功，1等待处理，2正在处理，3处理失败
+|errmsg|string|错误信息
+|timeSec|integer|对应10位时间戳，回调的时间
+|reqId|string|请求唯一标识 
+
+snapItem对象参数
+|参数名称|字段类型|说明|
+|---|---|---|
+|fname|string|截图结果的外链资源名|
+|code | int |状态码0成功，1等待处理，2正在处理，3处理失败|
+|error | string | 如果处理失败，该字段会给出失败的详细原因 |
+示例：
+```
+curl --request POST \
+  --url http://客户自己配置的回调地址 \
+  --header 'content-type: application/json' \
+  --data '{
+	"type": "snap",
+	"nsId": "2akras1jotpfe",
+	"streamId": "teststream",
+	"snapItems": [{
+            "fname": "snapshot/jpg/2akras1jotpfe/teststream/1607311542082.jpg",
+            "code": 0,
+            "error": ""
+        }]
+	"code": 0,
+	"errmsg": "",
+	"timeSec": 1607311552,
+	"reqId": "TxcAAAmEzkBWUU4W"
+}'
+```
+
+## **国标报警回调参数**:
+|参数名称|字段类型|说明|
+|---|---|---|
+|type|string|事件类型，取值"alarm"
+|nsId|string|空间ID 
+|gbid|string|国标ID
+|chGbid|string|通道ID
+|deviceState|string|设备状态 "online"/"offline"
+|timeSec|integer|报警时间，单位秒
+|alarmMethod|integer|报警方式：1为电话报警， 2为设备报警， 3为短信报警， 4为GPS报警， 5为视频报警， 6为设备故障报警， 7其他报警
+|alarmType|integer|报警类型，详见`报警类型说明`
+|alarmPriority|integer|报警级别。 取值：1（一级警情），2（二级警情），3（三级警情），4（四级警情）
+|reqId|string|请求唯一标识 
+
+
+### **报警类型说明**
+- 报警方式（alarmMethod）为2时，
+不携带alarmType为默认的报警设备报警；
+携带alarmType取值及对应报警类型：1-视频丢失报警； 2-设备防拆报警； 3-存储设备磁盘满报警； 4-设备高温报警； 5-设备低温报警。
+- 报警方式（alarmMethod）为5时，
+取值如下：1-人工视频报警； 2-运动目标检测报警； 3-遗留物检测报警； 4-物体移除检测报警； 5-绊线检测报警；6-入侵检测报警； 7-逆行检测报警； 8-徘徊检测报警； 9-流量统计报警； 10-密度检测报警； 11-视频异常检测报警； 12-快速移动报警。
+- 报警方式（alarmMethod）为6时，
+取值如下： 1-存储设备磁盘故障报警； 2-存储设备风扇故障报警。
+
+示例：
+```
+curl --request POST \
+  --url http://客户自己配置的回调地址 \
+  --header 'content-type: application/json' \
+  --data '{
+	"type": "alarm",
+	"nsId": "2akras1jotpfe",
+	"gbid": "54020000001110000001",
+        "chGbid": "31011500991320000096",
+	"deviceState":"online",
+        "alarmMethod":5,
+        "alarmType":2,
+        "alarmPriority":1,
+	"timeSec": 1607311552,
+	"reqId": "TxcAAAmEzkBWUU4W"
+}'
+```
+
+## **本地录像下载回调参数**:
+
+| 参数名称        | 字段类型 | 说明                                           |
+| --------------- | -------- | ---------------------------------------------- |
+| type            | string   | 事件类型，本地录像下载对应事件类型为"download" |
+| nsId            | string   | 空间ID                                         |
+| gbId            | string   | 国标ID                                         |
+| chGbid          | string   | 通道ID                                         |
+| start           | integer  | 录像开始时间，单位(秒)                         |
+| end             | integer  | 录像结束时间，单位(秒)                         |
+| httpDownloadUrl | string   | 录像下载http地址                               |
+| httpsDownloadUrl | string   | 录像下载https地址                              |
+| timeSec         | integer  | 对应10位时间戳                                 |
+| reqId           | string   | 请求唯一标识                                   |
+
+示例：
+
+```
+curl --request POST \
+  --url http://客户自己配置的回调地址 \
+  --header 'content-type: application/json' \
+  --data '{
+	"type": "download",
+	"nsId": "2akrarvzvyijd",
+	"gbId": "31011500991180003239",
+	"chGBid": "34020000001310000034",
+	"start": 1636851600,
+	"end": 1636851620,
+	"httpDownloadUrl": "http://236809372.cloudvdn.com/api/v1/gb28181?action=download&id=31011500991180003239_34020000001310000034_history_1636851600_1636851620&app=2xenzw72izhqy&ip=14.29.108.156",
+	"httpsDownloadAddr":"https://236809372.cloudvdn.com/api/v1/gb28181?action=download&id=31011500991180003239_34020000001310000034_history_1636851600_1636851620&app=2xenzw72izhqy&ip=14.29.108.156",
+	"timeSec": 1607311045,
+	"reqId": "5AMAADto6DDhUE4W"
+}'
+```
+
+## **AI分析结构化数据回调参数**:
+|参数名称|字段类型|说明|
+|---|---|---|
+|type|string|事件类型，AI分析结构化数据对应事件类型为"ai"
+|nsId|string|空间ID 
+|streamId|string|流ID 
+|structuredDataItems|对象数组|截图结果集
+|code|integer|状态码0成功，1等待处理，2正在处理，3处理失败
+|errmsg|string|错误信息
+|timeSec|integer|对应10位时间戳，回调的时间
+|reqId|string|请求唯一标识 
+
+structuredDataItem对象参数
+|参数名称|字段类型|说明|
+|---|---|---|
+|algorithm|int|使用的算法类型，1安全帽检测，2人脸识别|
+|frameName|string|截帧的外链资源名|
+|structuredData|object|结构化数据|
+|timeStamp|int|截帧时间戳|
+|error|string|如果处理失败，该字段会给出失败的详细原因|
+示例：
+```
+curl --request POST \
+  --url http://客户自己配置的回调地址 \
+  --header 'content-type: application/json' \
+  --data '{
+	"type": "ai",
+	"nsId": "2akras1jotpfe",
+	"streamId": "teststream",
+	"structuredDataItems": [{
+            "algorithm": 1,
+            "frameName": "AiSourceFile/2akras1jotpfe/teststream/2akras1jotpfe_teststream_2022-11-30 15:39:17.jpg",
+            "structuredData": {
+                "details":[{
+                    "bbox":[773,217,807,261], //检测框在图⽚中的位置[left, top, right, bottom]
+                    "label":"王二", 
+                    "landmark":[777,788,779,783,790,232,230,241,251,249] //面部关键特征点
+                }],
+                "imageLabel":["王二"]
+            },
+            "error": ""
+        }]
+	"code": 0,
+	"errmsg": "",
+	"timeSec": 1607311552,
+	"reqId": "TxcAAAmEzkBWUU4W"
+}'
+```

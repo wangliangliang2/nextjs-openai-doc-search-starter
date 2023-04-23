@@ -1,0 +1,65 @@
+# 接口简介
+
+基于用户行为日志分析，对服务申请人进行信用风险评估，实时返回后付费风险评分及建议策略，有效识别逃单、恶意退款、无法履约等风险用户，在消费金融、网约车等先享后付场景有较好的识别效果。
+
+### 使用限制
+
+- 使用前请联系技术支持开通使用权限
+
+# 请求参数
+
+**请求URL**: `https://ap-gate-z0.qiniuapi.com/riskplus/v1/risk/apply2`
+
+**请求方式**: POST
+
+**请求 Header**:
+
+| 字段          | 取值                                                         |
+| :------------ | :----------------------------------------------------------- |
+| Content-Type  | application/json                                             |
+| Authorization | Qiniu \<AccessKey>:\<Sign> </br>注意: 用户请根据 AccessKey 和 SuccessKey 生成鉴权，以便进行身份验证。\<Sign> 的取值请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken) |
+
+**请求 Body**:
+
+| 字段          | 类型   | 是否必选 | 说明                         |
+| :------------ | :----- | :------- | :--------------------------- |
+| mobile        | string | Y        | 用户手机号码（明文、MD5加密）         |
+| cert_no       | string | N        | 用户证件号码（明文、MD5加密）         |
+| user_name     | string | N        | 用户姓名                     |
+| user_id       | string | N        | 用户账户ID                   |
+| order_id      | string | N        | 业务订单ID                   |
+| business_type | string | N        | 业务类型（区分客户自身场景） |
+| ip            | string | N        | 用户IP地址                   |
+| imei          | string | N        | 设备imei                     |
+| mac           | string | N        | 设备mac                      |
+
+# 返回参数
+
+| 字段                               | 类型   | 说明                                                         |
+| :--------------------------------- | :----- | :----------------------------------------------------------- |
+| code                               | int    | 返回状态码                                                   |
+| message                            | string | 状态码对应错误信息。见下面表格                               |
+| result.security_result             | string | 风险决策结果，枚举值为：reject[拒绝]，validate[待定]，accept[通过]。 |
+| result.model_details[0].scene_code | string | 场景编码，值一般为`ANFPAC`                                   |
+| result.model_details[0].score      | float  | 评分                                                         |
+
+# 错误码
+
+| message                | 说明               |
+| :--------------------- | :----------------- |
+| OK                     | 成功               |
+| MISSING_PARAMETER      | 请求参数缺失       |
+| SERVICE_EXCEPTION      | 风险识别异常       |
+| OVER_RATE_LIMIT        | 请求频次超过限制   |
+| CUSTOMER_INVALID       | 客户ID非法         |
+| PROPERTY_INVALID       | 必填事件属性缺失   |
+| PROPERTY_VALUE_INVALID | 必填属性的值不合法 |
+
+# 价格
+| 使用量（月）                | 价格  （ 元/次）  |
+| :--------------------- | :----------------- |
+| 0 < 使用量 ≤ 1,000,000	           | 0.96  |
+| 1,000,000 < 使用量 ≤ 5,000,000   | 0.77  |
+| 5,000,000 < 使用量 ≤ 15,000,000   | 0.67  |
+| 15,000,000 < 使用量 ≤ 30,000,000  | 0.57  |
+| 30,000,000 < 使用量 ≤ 不限         | 0.48  |

@@ -1,0 +1,22 @@
+曼-惠特尼 U 检验，又称“曼-惠特尼秩和检验”，属于非参数检验方法。它假设两个样本分别来自除了总体均值以外完全相同的两个总体，目的是检验这两个总体的均值是否有显著的差别。是 T 检验的非参数检验版本。
+
+**语法：**
+
+```
+...| score mannwhitneyu use_continuity=<true(default)|false> alternative=<less|two-sided(default)|greater> alpha=<float> <a_field> against <b_field>
+```
+
+**参数说明：**
+
+- use_continuity，用来指定是否考虑连续性校正，默认为 true。
+- alternative，用来定义假设的检验方式。
+  - less，双侧检验。
+  - two-sided，左边单侧检验。
+  - greater，右边单侧检测。
+- alpha，用来指定显著性水平，即在零假设为真时拒绝零假设的概率，默认是 0.05。
+
+**使用场景：**
+
+- 只支持 1-1 的比较。
+- 不支持模糊搜索（ \*）。
+- 曼-惠特尼 U 检验的 H0 假设：两个总体的均值之间没有显著差别；H1 假设：两个总体的均值之间存在显著差别

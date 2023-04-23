@@ -1,0 +1,51 @@
+交互式搜索让用户可以在搜索界面通过交互式添加过滤器的方式进行快速数据查询，无需手动输入SPL，进一步降低搜索使用门槛。
+1. 入口
+(1)主入口：在应用菜单找到并进入"搜索与仪表盘"APP
+![image.png](https://dn-odum9helk.qbox.me/FqF5z2uOU_zduX-gZtV62xEWknYc)
+![image.png](https://dn-odum9helk.qbox.me/FnTCeWQFLKLp0vGakVrfGd5w6KRJ)
+（2）其他入口：若APP引用了搜索页面，也可使用交互式搜索，比如智能服务分析APP中的搜索页面：
+![image.png](https://dn-odum9helk.qbox.me/Fgg_t0YHki-Ky5mddxCz1axs9exn)
+2. 选择仓库
+指定搜素的仓库，为维持较好的搜索性能，建议单次不要选择过多仓库
+![image.png](https://dn-odum9helk.qbox.me/FnOf9lqSUodHZgDiVuiFZrLKzxkJ)
+3. 添加/编辑过滤器
+点击搜索框，可添加过滤器
+![image.png](https://dn-odum9helk.qbox.me/Ftvfoys65AOruLloRr1CJ1QH_Mtn)
+3.1 过滤器命名
+根据业务意义给过滤器命名，若不填，则默认取首个过滤条件为过滤器的名称
+![image.png](https://dn-odum9helk.qbox.me/FkD1N5vrPCIR9OjH-Ta7q6DcrTkD)
+3.2 添加过滤条件
+（1）选定字段，根据字段类型有不同的操作
+（2）任意字段，仅有“等于”、“不等于”两种操作类型
+![image.png](https://dn-odum9helk.qbox.me/Fman79lFF84fcDESXA8FlaooRYeq)
+3.3 SPL编辑
+一些复杂搜索条件可以使用SPL语句进行编辑，注意这里仅支持search类型搜索语句。
+![image.png](https://dn-odum9helk.qbox.me/Fg0BYE81Gs2rXylcroRxFoyFyUce)
+4.单个过滤器操作
+（1）仅启用当前过滤器：当前过滤器为启用状态，其他过滤器均为禁用状态
+（2）启用/禁用切换：过滤器启用/禁用状态的切换
+（3）取反：取当前过滤器的相反条件
+（4）编辑过滤器：进入当前过滤器的编辑状态
+（5）删除过滤器：删除当前过滤器
+![image.png](https://dn-odum9helk.qbox.me/FgEzJr5xoZwdPvdIybxQ46O8VjJT)
+5.批量操作
+（1）全部取反：所有过滤器都取相反条件
+（2）全部禁用：所有过滤器都切换为禁用状态
+（3）全部启用：所有过滤器都切换为启用状态
+![image.png](https://dn-odum9helk.qbox.me/Fm80ZzAS_HqGvGEVtnepgTK_usuv)
+6.搜索规则
+（1）满足所有过滤器：搜索结果需要满足所有过滤器的条件，相应的各个过滤器对应的搜索SPL条件之间用“AND”连接；
+（2）满足任一过滤器：搜索结果需要满足任意一个过滤器的条件，相应的各个过滤器对应的搜索SPL条件之间用“OR”连接
+![image.png](https://dn-odum9helk.qbox.me/FlSUoK0aYtUczJqnsydOZy-ze-rw)
+7.快捷加过滤器
+（1）在搜索结果中，单击任一数据，选择加入搜索，可在当前搜索中添加一个新的过滤器
+（2）在搜索结果中，单击任一数据，选择新的搜索，可打开一个新的搜素，并默认将点击的数据加为一个过滤器
+![image.png](https://dn-odum9helk.qbox.me/Fm0ji31gBMkqkhU1xdHdf1w8WLEe)
+8.保存报表
+对于常用的搜索，通过报表形式保存能更方便地使用，编辑好需要的过滤器后，点击保存报表，即可将当前搜索页面保存为报表
+![image.png](https://dn-odum9helk.qbox.me/Fran08GzXnNmdMI5dUwGahl3AIOA)
+9.打开报表
+点击打开报表，可快捷打开常用报表，进行快捷搜索。
+10.查看执行SPL
+点击可查看实际运行的SPL语句
+![image.png](https://dn-odum9helk.qbox.me/Fs8ONoIIHqVpgGTyrsbvSjcCdWsk)

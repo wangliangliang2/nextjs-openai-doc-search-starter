@@ -1,0 +1,195 @@
+依图直播语音审核 （`yitu-audio`）为实时音频流的内容审核场景提供色情/广告/涉政/违规等内容的识别，并且提供娇喘类声音的识别能力。
+
+本服务由`上海依图网络科技有限公司`（以下简称`依图科技`）提供。启用服务后，您提供的音频流在您主动请求的情况下被提供给依图科技以供其计算使用。服务价格请您参考具体的服务价格，您使用本服务产生的费用由七牛代收。启用服务则表示您知晓并同意以上内容。
+
+**注意**
+
+- 支持直播场景，支持`rtmp`、`hls`、`flv`三种协议形式。
+
+
+# 使用方式
+
+使用方式分成三步：
+
+1. 提交审核任务
+2. 接受回调结果
+3. 关闭审核任务
+
+## 一.提交审核任务
+
+请求地址：`https://yitu-audio.qiniuapi.com/v1/antispam/streamscan`
+请求方式：`POST`
+
+### 请求头
+
+| 字段          | 取值                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Content-Type  | application/json                                                                                                                     |
+| Authorization | `Qiniu <AccessKey>:<Sign>` <br> 注意: 用户请根据 AccessKey 和 SecretKey 后生成鉴权，以便进行身份验证，`<Sign>`的取值请参考七牛鉴权。 |
+
+### 请求参数
+
+请求参数以`json`形式组织，作为请求内容提交。内容如下：
+
+| 参数名称   | 类型        | 必填 | 说明                             |
+| ---------- | ----------- | ---- | -------------------------------- |
+| lang       | string      | 否   | 转写语言，默认`MANDARIN`         |
+| scene      | string      | 否   | 情景模式，默认`GENERAL_SCENE`    |
+| callback   | string      | 是   | 回调地址，支持`http`和`https`    |
+| data       | JSON object | 是   | 检测任务设置详情                 |
+| clientInfo | JSON object | 是   | 客户端详情，通过回调透传给客户。 |
+
+`data`结构体
+
+| 参数名称          | 类型   | 必填 | 说明                                                                                                   |
+| ----------------- | ------ | ---- | ------------------------------------------------------------------------------------------------------ |
+| audioUrl          | string | 是   | 音频流地址 <br> 音频流协议支持:`rtmp`、`hls(m3u8)`、`hdl(flv)`                                         |
+| audioId           | string | 是   | 用于标示唯一音频流                                                                                     |
+| returnAllText     | bool   | 否   | 默认`false`，不返回。开启后不命中的全量返回                                                            |
+| returnBeforeText  | bool   | 否   | 音频违规前一分钟文本。 <br> 默认`false`，不返回。 <br> `true`返回违规内容前 1 分钟文本，不违规时为空。 |
+| returnBeforeAudio | bool   | 否   | 音频违规前一分钟的音频。 <br> 默认`false`，不返回。 `ture`时返回违规内容 1 分钟音频，不违规时为空。    |
+
+`clientInfo`结构体
+
+| 参数名称 | 类型   | 必填 | 说明                                                 |
+| -------- | ------ | ---- | ---------------------------------------------------- |
+| userId   | string | 否   | 用户 ID，唯一标识一个用户， 建议传入 UID，便于回查。 |
+| roomId   | string | 否   | 房间 ID                                              |
+| userNick | string | 否   | 用户昵称                                             |
+| mac      | string | 否   | mac 地址                                             |
+| imei     | string | 否   | 硬件设备码                                           |
+| imsi     | string | 否   | 运营商设备码                                         |
+| umid     | string | 否   | 设备指纹                                             |
+| uip      | string | 否   | 用户 IP                                              |
+| deviceId | string | 否   | 设备 ID                                              |
+
+### 返回参数
+
+| 参数名称  | 类型   | 必填 | 说明                                             |
+| --------- | ------ | ---- | ------------------------------------------------ |
+| rtn       | int    | 是   | 请求处理结果的状态码，0 表示成功，否则表示异常。 |
+| message   | string | 是   | 请求处理结果的提示信息                           |
+| requestId | string | 是   | 请求的唯一标示符                                 |
+
+## 二.接受回调结果
+
+### 回调参数
+
+回调参数以`json`形式组织，作为请求内容提交。
+
+| 参数名称               | 类型        | 必填 | 说明                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------------- | ----------- | ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| rtn                    | int         | 是   | 请求处理结果的状态码，0 表示成功，否则表示异常                                                                                                                                                                                                                                                                                                                                                  |
+| message                | string      | 是   | 请求处理结果的提示信息                                                                                                                                                                                                                                                                                                                                                                          |
+| requestId              | string      | 是   | 请求的唯一标示符                                                                                                                                                                                                                                                                                                                                                                                |
+| scene                  | string      | 是   | 检测场景，和调用请求中的场景对应。                                                                                                                                                                                                                                                                                                                                                              |
+| result                 | string      | 是   | 取值: <br> • pass:内容不违规，建议放行 <br> • review:内容可能违规，建议进行人工审核 <br> • block:内容违规，建议隔离                                                                                                                                                                                                                                                                             |
+| audioText              | string      | 是   | 音频识别的全部文本内容。                                                                                                                                                                                                                                                                                                                                                                        |
+| audioId                | string      | 是   | 音频的唯一 ID，用来查询                                                                                                                                                                                                                                                                                                                                                                         |
+| startTime              | int         | 是   | 风险片段句子开始的时间，单位是毫秒。                                                                                                                                                                                                                                                                                                                                                            |
+| endTime                | int         | 是   | 风险片段句子结束的时间，单位是毫秒。                                                                                                                                                                                                                                                                                                                                                            |
+| details                | JSON Array  | 是   | 片段语音对应的详情。每一句文本对应一个元素，可能包含一个或者多个元素，每个元素的具体结构如下:                                                                                                                                                                                                                                                                                                   |
+| details[].score        | float       | 是   | 结果为该分类的概率，取值范围为[0.00-100.00]。值越高，表示越有可能属于该分类。分值仅供参考                                                                                                                                                                                                                                                                                                       |
+| details[].resultText   | string      | 是   | 风险片段语音转换成文本的结果。无人声时显示为空。                                                                                                                                                                                                                                                                                                                                                |
+| details[].label        | string      | 是   | 检测结果的分类<br>NORMAL :正常，对应 result 为 pass<br>NONHUMAN :无人声，对应 result 为 pass<br>SILENCE:0 电平的音频。对应 result 为 pass<br>POLITICS : 涉政 (包含政治敏感内容)<br>PORN :色情(包含淫秽内容)<br>MOAN : 娇喘(包含男女)<br>ABUSE :辱骂(包含低俗、侮辱内容)<br>CONTRABAND :违禁(包含国家法律法规禁止的物品信息 )<br>AD:广告(包含数字和字母)<br>CUSTOMIZED :自定义(用户自定义敏感词) |
+| details[].partAudioUrl | string      | 是   | 风险片段对应语音片段的临时访问地址。该地址有效时间 为 7 天，请及时转存。                                                                                                                                                                                                                                                                                                                        |
+| clientInfo             | JSON object | 否   | 数据进行透传。                                                                                                                                                                                                                                                                                                                                                                                  |
+| clientInfo.userId      | string      | 否   | 用户 ID，唯一标识一个用户。                                                                                                                                                                                                                                                                                                                                                                     |
+| clientInfo.roomId      | string      | 否   | 房间 ID                                                                                                                                                                                                                                                                                                                                                                                         |
+| clientInfo.userNick    | string      | 否   | 用户昵称。                                                                                                                                                                                                                                                                                                                                                                                      |
+| clientInfo.mac         | string      | 否   | mac 地址                                                                                                                                                                                                                                                                                                                                                                                        |
+| clientInfo.imei        | string      | 否   | 硬件设备码                                                                                                                                                                                                                                                                                                                                                                                      |
+| clientInfo.imsi        | string      | 否   | 运营商设备码                                                                                                                                                                                                                                                                                                                                                                                    |
+| clientInfo.umid        | string      | 否   | 设备指纹                                                                                                                                                                                                                                                                                                                                                                                        |
+| clientInfo.userIp      | string      | 否   | 用户 IP                                                                                                                                                                                                                                                                                                                                                                                         |
+| clientInfo.deviceId    | string      | 否   | 设备 ID                                                                                                                                                                                                                                                                                                                                                                                         |
+
+## 三.关闭审核任务
+
+请求地址：`https://yitu-audio.qiniuapi.com/v1/antispam/streamclose`
+请求方式：`POST`
+
+### 请求头
+
+| 字段          | 取值                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Content-Type  | application/json                                                                                                                     |
+| Authorization | `Qiniu <AccessKey>:<Sign>` <br> 注意: 用户请根据 AccessKey 和 SecretKey 后生成鉴权，以便进行身份验证，`<Sign>`的取值请参考七牛鉴权。 |
+
+### 请求参数
+
+请求参数以`json`形式组织，作为请求内容提交。内容如下：
+
+| 参数名称  | 类型   | 必填 | 说明                   |
+| --------- | ------ | ---- | ---------------------- |
+| requestId | string | 是   | 对应请求中的 requestId |
+
+### 返回参数
+
+| 参数名称  | 类型   | 必填 | 说明                                             |
+| --------- | ------ | ---- | ------------------------------------------------ |
+| rtn       | int    | 是   | 请求处理结果的状态码，0 表示成功，否则表示异常。 |
+| message   | string | 是   | 请求处理结果的提示信息                           |
+| requestId | string | 是   | 请求的唯一标示符                                 |
+
+## 错误码参考
+
+| rtn  | 说明                         | message                                           |
+| ---- | ---------------------------- | ------------------------------------------------- |
+| 0    | 服务正常                     | SAAS_SUCC                                         |
+| 1000 | 超时                         | SAAS_TIME_OUT                                     |
+| 1999 | 未知错误                     | SAAS_UNEXPECTED_ERROR                             |
+| 1101 | 无法解析请求中的 Json        | SAAS_JSON_CONFIG_HELPER_READ_ERROR                |
+| 1102 | 传入参数错误                 | SAAS_AUTHENTICATE_API_INVALID_PARAMETER_ERROR     |
+| 1103 | 输入中缺少某个域             | SAAS_JSON_CONFIG_HELPER_GIVEN_KEY_NOT_EXIST_ERROR |
+| 4201 | 不支持的语言模型参数         | SAAS_SPEECH_LANG_NOT_MEET_REQUIREMENT_ERROR       |
+| 4202 | 不支持的情景模式             | SAAS_SPEECH_SCENE_NOT_MEET_REQUIREMENT_ERROR      |
+| 4204 | 不支持的编码格式             | SAAS_SPEECH_AUE_NOT_MEET_REQUIREMENT_ERROR        |
+| 4205 | 语音片段数量超过限制         | SAAS_SPEECH_NUMSLICES_NUMBER_QUOTA_LIMIT_ERROR    |
+| 4209 | 语音片段缺失                 | SAAS_SPEECH_MISSING_SLICE_ERROR                   |
+| 4210 | 语音长度超过限制             | SAAS_SPEECH_AUDIO_LENGTH_TOO_LONG_ERROR           |
+| 4211 | 语音长度小于限制             | SAAS_SPEECH_AUDIO_LENGTH_TOO_SHORT_ERROR          |
+| 4212 | quota 用户超限               | SAAS_SPEECH_REQUEST_QUOTA_LIMIT_USER_ERROR        |
+| 4213 | quota 系统超限               | SAAS_SPEECH_REQUEST_QUOTA_LIMIT_SYSTEM_ERROR      |
+| 4214 | asr 识别错误                 | SAAS_SPEECH_ASR_RECOGNITION_ERROR                 |
+| 4215 | ratelimit 用户超限           | SAAS_SPEECH_REQUEST_RATE_LIMIT_USER_ERROR         |
+| 4216 | ratelimit 系统超限           | SAAS_SPEECH_REQUEST_RATE_LIMIT_SYSTEM_ERROR       |
+| 6101 | 服务器转写等待超时           | SAAS_SPEECH_RAGNAROS_EXECUTION_EXCEPTION          |
+| 6102 | 服务器转写繁忙               | SAAS_SPEECH_RECOGNIZE_QUEUE_FULL                  |
+| 6103 | 解析音频文件出错             | SAAS_SPEECH_FILE_INCORRECT                        |
+| 4301 | 无法解析的音频流             | SAAS_ANTISPAM_STREAM_DECODE_ERROR                 |
+| 4306 | 无可处理的音频流数据帧       | SAAS_ANTISPAM_STREAM_PROCESS_FRAME_NULL           |
+| 4303 | 文件在处理中                 | SAAS_ANTISPAM_AUDIO_STILL_PROCESSING_ERROR        |
+| 4304 | 当前操作/访问 无权限         | SAAS_ANTISPAM_PERMISSION_DENIED_ERROR             |
+| 4302 | requestId 不存在             | SAAS_ANTISPAM_REQUESTID_NOT_FOUND_ERROR           |
+| 4305 | 组 batch 超时                | SAAS_ANTISPAM_AUDIO_PROCESS_TIME_OUT              |
+| 4307 | 保存数据失败                 | SAAS_ANTISPAM_SAVE_INFO_FAILED                    |
+| 4308 | 删除数据失败                 | SAAS_ANTISPAM_DELETE_INFO_FAILED                  |
+| 4309 | 超出系统限制                 | SAAS_ANTISPAM_OUT_OF_THREAD_POOL                  |
+| 4310 | 超出路数限制                 | SAAS_ANTISPAM_CONNECTIONS_LIMIT_ERROR             |
+| 4311 | 文件不回调返回最后一片给内部 | SAAS_ANTISPAM_LAST_PIECE_OF_FILE                  |
+| 4312 | 重复流                       | SAAS_ANTISPAM_DUPLICATED_STREAM                   |
+
+# 计费说明
+
+**套餐包**
+
+| 套餐小时包（万小时） | 单价（元/小时） | 路数 |
+| -------------------- | --------------- | ---- |
+| 50                   | ￥ 0.65         | 100  |
+| 100                  | ￥ 0.5          | 250  |
+| 200                  | ￥ 0.4          | 500  |
+| 500                  | ￥ 0.35         | 1000 |
+| 1000                 | ￥ 0.3          | 2000 |
+| 3000                 | ￥ 0.2          | 6000 |
+
+**备注**
+
+1. 套餐有效期为一年
+2. 套餐超出部分单价按照计量付费价格计算
+
+**按量计费**
+
+| 每小时单价（元/小时） | 最大并发路数                          |
+| --------------------- | ------------------------------------- |
+| ¥1.0                  | 提前预估用量，若无预估数据默认 200 路 |

@@ -1,0 +1,31 @@
+### 1. 接口说明
+
+七牛云断点续传下载功能，其实是通过对标准的`HTTP`头部`Range`字段设置来实现的。具体设置方式请参考以下文档：
+
+[下载过程说明](/kodo/manual/1232/download-process#download-mechanism)
+
+### 2. Demo演示
+
+    liuhanlindemac:Downloads yishiyaonie$ curl -I -H "Range:bytes=1024-2048" http://liuhanlin-work.qiniudn.com/ceshimp4
+    HTTP/1.1 206 Partial Content
+    Date: Mon, 03 Aug 2015 03:29:49 GMT
+    Server: nginx/1.4.4
+    Content-Type: video/mp4
+    Content-Length: 1025
+    Accept-Ranges: bytes
+    Access-Control-Allow-Origin: *
+    Access-Control-Max-Age: 2592000
+    Cache-Control: public, max-age=31536000
+    Content-Disposition: inline; filename="ceshimp4"
+    Content-Range: bytes 1024-2048/36650496
+    Content-Transfer-Encoding: binary
+    ETag: "lrMxbjcfPyC7F1siA6tF78B1IMAq"
+    Last-Modified: Thu, 04 Jun 2015 06:37:13 GMT
+    X-Log: mc.g;IO:1
+    X-Reqid: QwIAAMDQ_OYl1vYT
+    X-Qiniu-Zone: 0
+    X-Via: 1.1 yangzhou150:8080 (Cdn Cache Server V2.0), 1.1 lsh200:10 (Cdn Cache Server V2.0)
+    Connection: keep-alive
+
+看一看下 “HTTP/1.1 206 Partial Content” 这个字段和 “Content-Length: 1025”。
+

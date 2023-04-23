@@ -1,0 +1,111 @@
+顺序消息（FIFO 消息）是消息队列 RocketMQ 提供的一种严格按照顺序来发布和消费的消息类型。本文提供使用Java SDK 收发顺序消息的示例代码供您参考。
+顺序消息分为两类：
+- 全局顺序：对于指定的一个 Topic，所有消息按照严格的先入先出（First In First Out，简称 FIFO）的顺序进行发布和消费。
+- 分区顺序：对于指定的一个 Topic，所有消息根据 Sharding Key 进行区块分区。 同一个分区内的消息按照严格的 FIFO 顺序进行发布和消费。Sharding Key 是顺序消息中用来区分不同分区的关键字段，和普通消息的 Key 是完全不同的概念。
+说明：对于新手用户，建议在正式收发消息前，阅读 Demo 工程来了解搭建消息队列 RocketMQ 工程的具体步骤。
+
+# 前提条件 
+您已完成以下操作：
+- 下载Java SDK。
+- 准备环境；
+- （可选）配置日志。
+
+# 发送顺序消息
+
+**说明：具体的示例代码，请以消息队列 RocketMQ 代码库为准。**
+全局顺序消息和分区顺序消息的发布方式基本一样，示例代码如下。
+```
+public class ProducerClient {
+    public static void main(String[] args) {
+        Properties properties = new Properties();
+        // 您在控制台创建的 Group ID
+        properties.put(PropertyKeyConst.GROUP_ID, "XXX");
+        // AccessKeyId 身份验证，在消息队列管理控制台创建
+        properties.put(PropertyKeyConst.AccessKey, "XXX");
+        // AccessKeySecret 身份验证，在消息队列管理控制台创建
+        properties.put(PropertyKeyConst.SecretKey, "XXX");
+        // 设置 TCP 接入域名，进入控制台的实例管理页面的“获取接入点信息”区域查看
+        properties.put(PropertyKeyConst.NAMESRV_ADDR,
+          "XXX");
+        OrderProducer producer = ONSFactory.createOrderProducer(properties);
+        // 在发送消息前，必须调用 start 方法来启动 Producer，只需调用一次即可
+        producer.start();
+        for (int i = 0; i < 1000; i++) {
+            String orderId = "biz_" + i % 10;
+            Message msg = new Message(//
+                    // Message 所属的 Topic
+                    "Order_global_topic",
+                    // Message Tag，可理解为 Gmail 中的标签，对消息进行再归类，方便 Consumer 指定过滤条件在消息队列 RocketMQ 的服务器过滤
+                    "TagA",
+                    // Message Body 可以是任何二进制形式的数据， 消息队列 RocketMQ 不做任何干预，需要 Producer 与 Consumer 协商好一致的序列化和反序列化方式
+                    "send order global msg".getBytes()
+            );
+            // 设置代表消息的业务关键属性，请尽可能全局唯一。
+            // 以方便您在无法正常收到消息情况下，可通过控制台查询消息并补发。
+            // 注意：不设置也不会影响消息正常收发
+            msg.setKey(orderId);
+            // 分区顺序消息中区分不同分区的关键字段，Sharding Key 与普通消息的 key 是完全不同的概念。
+            // 全局顺序消息，该字段可以设置为任意非空字符串。
+            String shardingKey = String.valueOf(orderId);
+            try {
+                SendResult sendResult = producer.send(msg, shardingKey);
+                // 发送消息，只要不抛异常就是成功
+                if (sendResult != null) {
+                    System.out.println(new Date() + " Send mq message success. Topic is:" + msg.getTopic() + " msgId is: " + sendResult.getMessageId());
+                }
+            }
+            catch (Exception e) {
+                // 消息发送失败，需要进行重试处理，可重新发送这条消息或持久化这条数据进行补偿处理
+                System.out.println(new Date() + " Send mq message failed. Topic is:" + msg.getTopic());
+                e.printStackTrace();
+            }
+        }
+        // 在应用退出前，销毁 Producer 对象
+        // 注意：如果不销毁也没有问题
+        producer.shutdown();
+    }
+}
+```
+# 订阅顺序消息
+全局顺序消息和分区顺序消息的订阅方式基本一样，示例代码如下。
+```
+public class ConsumerClient {
+    public static void main(String[] args) {
+        Properties properties = new Properties();
+        // 您在控制台创建的 Group ID
+        properties.put(PropertyKeyConst.GROUP_ID, "XXX");
+        // AccessKeyId 身份验证，在消息队列管理控制台创建
+        properties.put(PropertyKeyConst.AccessKey, "XXX");
+        // AccessKeySecret 身份验证，在消息队列管理控制台创建
+        properties.put(PropertyKeyConst.SecretKey, "XXX");
+        // 设置 TCP 接入域名，进入控制台的实例管理页面的“获取接入点信息”区域查看
+        properties.put(PropertyKeyConst.NAMESRV_ADDR,
+          "XXX");
+          // 顺序消息消费失败进行重试前的等待时间，单位(毫秒)，取值范围: 10 毫秒 ~ 1800 毫秒
+        properties.put(PropertyKeyConst.SuspendTimeMillis, "100"); 
+        // 消息消费失败时的最大重试次数
+        properties.put(PropertyKeyConst.MaxReconsumeTimes, "20"); 
+        // 在订阅消息前，必须调用 start 方法来启动 Consumer，只需调用一次即可。
+        OrderConsumer consumer = ONSFactory.createOrderedConsumer(properties);
+        consumer.subscribe(
+                // Message 所属的 Topic
+                "Jodie_Order_Topic",
+                // 订阅指定 Topic 下的 Tags：
+                // 1. * 表示订阅所有消息
+                // 2. TagA || TagB || TagC 表示订阅 TagA 或 TagB 或 TagC 的消息
+                "*",
+                new MessageOrderListener() {
+                    /**
+                     * 1. 消息消费处理失败或者处理出现异常，返回 OrderAction.Suspend<br>
+                     * 2. 消息处理成功，返回 OrderAction.Success
+                     */
+                    @Override
+                    public OrderAction consume(Message message, ConsumeOrderContext context) {
+                        System.out.println(message);
+                        return OrderAction.Success;
+                    }
+                });
+        consumer.start();
+    }
+}
+```

@@ -1,0 +1,62 @@
+# 简介
+&emsp;CDN 加速支持指定不同的回源方式对源站进行加速，本文列出了部分关于 CDN 回源配置您可能需要了解的问题。
+<font color=#4671D5><a href="#Q0">Q：回源示意图</a></font>
+<font color=#4671D5><a href="#Q1">Q：回源流程说明</a></font>
+<font color=#4671D5><a href="#Q2">Q：什么是回源 HOST ？</a></font>
+<font color=#4671D5><a href="#Q3">Q：回源 HOST 和源站域名有什么区别？</a></font>
+<font color=#4671D5><a href="#Q4">Q：如何填写测试资源？</a></font>
+<font color=#4671D5><a href="#Q5">Q：对网站 http://www.a.com/ 加速，回源配置应该如何填写？</a></font>
+<font color=#4671D5><a href="#Q6">Q：为什么加速域名和源站域名不能相同？</a></font>
+
+&emsp;
+&emsp;如果本文仍然无法解决您的问题，您也可以通过 **[工单系统](https://support.qiniu.com/tickets/new)** 将您的问题反馈给我们。
+
+
+
+
+-----
+<div id="Q0"></div>
+# Q：回源示意图
+![image](https://dn-odum9helk.qbox.me/Fr7B98mKHHsq_5cV-itCjUgJ4K8x)
+<div id="Q1"></div>
+# Q：回源流程说明
+## 1. 指定七牛云存储为源站
+ 
+ &emsp;CDN 回源时，将根据您配置的源站存储空间名称，回源到存储机房对应空间中。
+ 
+## 2. 指定源站域名回源
+ 
+ &emsp;CDN 回源时，先根据源站域名解析得到一个源站 IP ,然后向该 IP 发起请求，通过配置的回源 HOST 确定，需要访问该源站服务器上的哪一个站点。
+ 
+ &emsp;例如： 源站域名为 `www.a.com` ，回源 HOST 为 `www.b.com` 。
+* 回源时，先解析到 `www.a.com` 解析到的 IP, 并向该 IP 发起回源请求，请求时 HTTP 数据包的 HOST 头部值为您配置的回源 HOST `www.b.com` ，代表访问源站服务器上的站点 `www.b.com` 。
+ 
+## 3. 指定IP地址回源
+
+&emsp;CDN 回源时，向该 源站IP 发起请求，通过配置的回源 HOST 确定，需要访问该源站服务器上的哪一个站点。
+	
+&emsp;例如： 源站 IP 为 1.1.1.1 ，回源 HOST 为 `www.b.com` 。
+* 回源时，请求的是 1.1.1.1 对应的源站服务器上的站点 `www.b.com` 。
+
+<div id="Q2"></div>
+# Q：什么是 回源 HOST ？
+&emsp;参考 <font color=#4671D5><a href="#Q0">回源示意图</a></font>，当服务器源站存在多个不同站点时，CDN 将根据您的回源 HOST 域名，决定 CDN 将从哪一个站点中获取资源。
+<div id="Q3"></div>
+# Q：回源 HOST 和源站域名有什么区别？
+&emsp;参考 <font color=#4671D5><a href="#Q0">回源示意图</a></font>，源站域名将会通过 DNS 解析，获取到源站的 IP，解析后的回源流程和 IP 回源方式没有区别。
+
+* 源站域名：只决定回源的 IP ，不决定访问时的具体站点。
+* 回源 HOST ：决定了访问到该 IP 上的具体站点名称。
+
+<div id="Q4"></div>
+# Q：如何填写测试资源？
+&emsp;测试资源代表在您源站服务器上，回源 HOST 对应的站点中，一个可供访问的资源，将用于 CDN 在部分场景下的全链路访问性监测。
+<div id="Q5"></div>
+# Q：对网站 `http://www.a.com` 加速，回源配置应该如何填写？
+* 如果源站服务器 IP 固定，您可以使用IP地址回源，回源 HOST 填写 `www.a.com` 即可。
+* 如果源站服务器 IP 需要通过域名解析动态获取，您可以使用源站域名回源，回源 HOST 填写 `www.a.com` 即可。
+
+**`注意：`** 如果需要加速的域名为 HTTPS 域名，且源站强制 HTTP 访问时重定向到 HTTPS，您需要配置加速域名和回源协议为 HTTPS，或者关闭源站的重定向跳转。
+<div id="Q6"></div>
+# Q：为什么加速域名和源站域名不能相同？
+&emsp;一个域名最终只解析到一个位置，即解析到 CDN 加速节点后，将无法用于获取源站的 IP 信息，所以加速域名和源站域名无法配置为同一个域名。

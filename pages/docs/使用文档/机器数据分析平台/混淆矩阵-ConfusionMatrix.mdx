@@ -1,0 +1,13 @@
+用 confusion_matrix 可以计算真实值和预测值的混淆矩阵，其每一列代表预测值，每一行代表的是实际的类别。它可以非常容易的表明多个类别是否有混淆（也就是一个 class 被预测成另一个 class）。
+
+**语法：**
+
+```
+..| score confusion_matrix <actual_field> against <predicted_field>
+```
+
+**使用场景：**
+
+- 只支持 1-1 的比较。
+- 不支持模糊搜索（ \*）。
+- 不接受任何参数。

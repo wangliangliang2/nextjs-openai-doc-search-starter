@@ -1,0 +1,584 @@
+<style>
+    .rtc-doc{
+        font-family: PingFangSC-Light;
+        background:white!important;
+        color:black
+    }
+    .rtc-doc * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    .rtc-doc a {
+        font-style: italic;
+        font-weight: 400;
+        color: #00aae7;
+        word-break:break-all;
+        text-decoration: none;
+    }
+
+    .rtc-doc-panel {
+        background-color: #fff;
+        box-shadow: 0 0 4px rgb(0 0 0 / 25%);
+        padding-top:20px!important;
+        margin-top:0!important;
+        padding: 20px;
+        color: #707070;
+        font-size: 15px;
+        line-height: 26px;
+        letter-spacing: 0;
+        margin-bottom:20px;
+    }
+
+    .rtc-doc-panel a {
+        font-style: italic;
+        font-weight: 400;
+        color: #00aae7;
+        word-break:break-all;
+        text-decoration: none;
+    }
+</style>
+<style>
+    .rtc-doc-catalogue{
+        column-gap: 20px;
+        column-count: 3;
+        padding: 0;
+        list-style: none;
+        line-height: 1.5em;
+        margin: 20px 0 40px;
+    }
+    @media (min-width: 901px) and (max-width: 1024px) {
+        .rtc-doc-catalogue{
+            column-count: 2
+        }
+    }
+    
+    @media (max-width: 900px){
+        .rtc-doc-catalogue{
+            column-count: 1
+        }
+    }
+    
+    .rtc-doc-catalogue li{
+        list-style: none;
+        line-height: 40px;
+        cursor: pointer;
+        color: #00aae7
+    }
+    .rtc-doc-catalogue li a{
+        line-height:40px;
+        text-decoration:none
+    }
+ </style>
+<style>
+    .rtc-doc {
+            color: #707070;
+            font-size: 15px;
+        }
+        .rtc-doc hr {
+            margin:20px 0!important;
+        }
+        .rtc-doc p {
+            line-height: 26px;
+            margin-top: 20px!important;
+            margin-bottom: 20px!important;
+            padding-left:10px;
+        }
+        .rtc-doc a {
+            white-space: nowrap;
+            font-style:normal!important
+        }
+        .rtc-doc p code {
+            padding: 3px 5px;
+            white-space: pre;
+            color:#707070!important;
+            white-space: nowrap;
+            background: #f9f9fc;
+            border-radius: 4px;
+            line-height: 28px;
+            margin-left: 2px;
+            margin-right: 2px;
+        }
+        .rtc-doc h2 {
+            padding: 0 10px!important;
+            font-size: 20px!important;
+            margin: 0.8em 0;
+            font-weight: bold!important;
+            color:black!important;
+            font-weight: bold!important;
+        }
+
+        .rtc-doc h3 {
+            padding-top:0!important;
+            padding: 0 15px;
+            color: #222!important;
+            font-size: 18px!important;
+            font-weight: 400!important;
+            line-height: 25px!important;
+        }
+
+        .rtc-doc h4 {
+            padding-left: 20px;
+            padding-top:0!important;
+            line-height: 25px!important;
+            color: #707070!important;
+            font-size: 15px!important;
+            font-weight:bold!important;
+        }
+
+        .rtc-doc h5 {
+            padding-left: 20px;
+            padding-top:0!important;
+            line-height: 25px!important;
+            color: #707070!important;
+            font-size: 12px!important;
+            font-weight:bold!important;
+
+        }
+
+        .rtc-doc h2,h3,h4,h5 {
+            margin-top: 0.8em!important;
+            margin-bottom: 0.8em!important
+        }
+
+        .rtc-doc pre code.hljs{
+            display:block;
+            overflow-x:auto;
+            padding:1em;
+        }
+        .rtc-doc code.hljs{
+            padding:3px 5px
+        }
+        .rtc-doc .hljs{
+            background:#f0f0f0;color:#444
+        }
+        .rtc-doc .hljs-comment{
+            color:#888
+        }
+        .rtc-doc .hljs-punctuation,.hljs-tag{
+            color:#444a
+        }
+        .rtc-doc .hljs-tag .hljs-attr,.hljs-tag .hljs-name{
+            color:#444
+        }
+        .rtc-doc .hljs-attribute,.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-name,.hljs-selector-tag{
+            font-weight:700
+        }
+        .rtc-doc .hljs-deletion,.hljs-number,.hljs-quote,.hljs-selector-class,.hljs-selector-id,.hljs-string,.hljs-template-tag,.hljs-type{
+            color:#800
+        }
+        .rtc-doc .hljs-section,.hljs-title{
+            color:#800;font-weight:700
+        }
+        .rtc-doc .hljs-link,.hljs-operator,.hljs-regexp,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-symbol,.hljs-template-variable,.hljs-variable{
+            color:#bc6060
+        }
+        .rtc-doc .hljs-literal{
+            color:#78a960
+        }
+        .rtc-doc .hljs-addition,.hljs-built_in,.hljs-bullet,.hljs-code{
+            color:#397300
+        }
+        .rtc-doc .hljs-meta{
+            color:#1f7199
+        }
+        .rtc-doc .hljs-meta .hljs-string{
+            color:#4d99bf
+        }
+        .rtc-doc .hljs-emphasis{
+            font-style:italic
+        }
+        .rtc-doc .hljs-strong{
+            font-weight:700
+        }
+        .rtc-doc pre {
+            padding: 10px;
+            background: #f2f2f7;
+            margin-bottom: 20px;
+            line-height:25px;
+            font-size:15px;
+            overflow-x: scroll;
+            border:none!important
+        }
+        .rtc-doc pre ol li {
+            list-style:none!important;
+            border-left:none!important;
+            padding:0!important;
+            line-height:25px!important;
+            margin: 0!important
+        }
+        .rtc-doc pre ol {
+            margin:0!important;
+            padding: 0!important
+        }
+        .rtc-doc ol {
+            padding-left: 20px;
+            margin-left: 10px
+        }
+        .rtc-doc ul {
+            padding-left: 20px;
+            margin-left: 10px
+        }
+        .rtc-doc li {
+            color: #707070;
+            font-size: 15px;
+            line-height: 26px;
+            letter-spacing: 0;
+            padding: 5px 0;
+            /* list-style: none; */
+        }
+        .rtc-doc li ul {
+            padding-left: 0;
+            margin-left:18px;
+        }
+        .rtc-doc-example {
+            margin-bottom: 20px;
+            line-height:25px;
+            font-size:15px;
+        }
+        
+
+        .rtc-doc blockquote {
+            padding: 10px 20px 10px 20px;
+            margin: 20px 0;
+            font-size: 14px;
+            border-left: 5px solid rgba(135, 206, 250, 0.4);
+            background:rgba(135, 206, 250, 0.2)
+        }
+        .rtc-doc blockquote code {
+            background:rgba(135, 206, 250, 0.3)
+        }
+        .rtc-doc blockquote ol {
+            padding: 20px 0;
+        }
+        .rtc-doc blockquote li {
+            padding: 5px 0;
+        }
+
+        .rtc-doc img {
+            width: 100%
+        }
+        .rtc-doc table {
+            background-color: #fff!important;
+            box-shadow: 0 0 4px rgb(0 0 0 / 25%);
+            padding: 20px 0;
+            color: #707070;
+            border-spacing: 0;
+            font-size: 15px;
+            width: auto!important;
+            border: none!important;
+            overflow: auto;
+            table-layout: fixed;
+            display: table;
+            border-collapse: collapse;
+            line-height: 26px;
+            letter-spacing: 0;
+            margin-bottom:20px!important
+        }
+        .rtc-doc thead {
+            display: table-header-group;
+            vertical-align: middle;
+        }
+        .rtc-doc tbody {
+            display: table-header-group;
+            vertical-align: middle;
+        }
+        .rtc-doc th {
+            white-space: inherit;
+            border-top: none!important;
+            vertical-align:middle!important;
+            padding: 6px 13px!important;
+            border: 1px solid #dfdfdf;
+            border-bottom: 1px solid #dfdfdf!important;
+            color: #222;
+            font-size: 16px;
+            font-weight: 400;
+        }
+        .rtc-doc tbody tr:nth-of-type(odd) {
+            background-color: white!important
+        }
+        .rtc-doc td {
+            white-space: inherit;
+            padding: 5px 13px!important;
+            vertical-align:middle!important;
+            border-top:none!important;
+            border: 1px solid #dfdfdf;
+            font-size: 14px;
+            word-break: break-all;
+        }  
+</style>
+<div class="rtc-doc">
+    <div><p>这一部分服务是为了让您的业务后台能够自动地完成一些在控制台上需要完成的操作，比如创建应用，编辑应用等。
+对于这些服务，我们统一封装了 Restful 的接口方便给您调用，在调用各个接口之前，您还需要在 http headers 中添加鉴权头以识别您的权限。</p>
+<blockquote>
+<p>这些服务都可以通过服务端 SDK 来完成，以下都是介绍手动请求的情况。</p>
+</blockquote>
+<h2 id="http-请求鉴权"><a href="#http-%E8%AF%B7%E6%B1%82%E9%89%B4%E6%9D%83" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>HTTP 请求鉴权</h2>
+<p>Qiniu RTC Server API 通过 Qiniu Authorization 方式进行鉴权，每个房间管理 HTTP 请求头部需增加一个 Authorization 字段：</p>
+<pre><code className="language-bash"><span class="hljs-keyword">Authorization</span>: &quot;&lt;QiniuToken&gt;&quot;
+<span></span></code></pre>
+<p>QiniuToken 是管理凭证，用于鉴权。
+<br></br>
+使用七牛颁发的AccessKey和SecretKey，对本次 http 请求的信息进行签名，生成管理凭证。签名的原始数据包括 http 请求的 Method, Path, RawQuery, Content-Type 及 Body 等信息，这些信息的获取方法取决于具体所用的编程语言，建议参照七牛提供的 SDK 代码。 计算过程及伪代码如下：</p>
+<pre><code className="language-bash"><span class="hljs-comment">// 1.构造待签名的 Data</span>
+<span></span><span class="hljs-comment">// 添加 Method 和 Path</span>
+<span></span><span class="hljs-keyword">data</span> = <span class="hljs-string">&quot;&lt;Method&gt; &lt;Path&gt;&quot;</span>
+<span></span><span class="hljs-comment">// 添加 Query，如果Query不存在或者为空，则跳过此步</span>
+<span></span><span class="hljs-keyword">if</span> <span class="hljs-string">&quot;&lt;RawQuery&gt;&quot;</span> != <span class="hljs-string">&quot;&quot;</span> {
+<span></span>        <span class="hljs-keyword">data</span> += <span class="hljs-string">&quot;?&lt;RawQuery&gt;&quot;</span>
+<span></span>}
+<span></span><span class="hljs-comment">// 添加 Host</span>
+<span></span><span class="hljs-keyword">data</span> += <span class="hljs-string">&quot;\nHost: &lt;Host&gt;&quot;</span>
+<span></span><span class="hljs-comment">// 添加 Content-Type，如果Content-Type不存在或者为空，则跳过此步</span>
+<span></span><span class="hljs-keyword">if</span> <span class="hljs-string">&quot;&lt;Content-Type&gt;&quot;</span> != <span class="hljs-string">&quot;&quot;</span> {
+<span></span>        <span class="hljs-keyword">data</span> += <span class="hljs-string">&quot;\nContent-Type: &lt;Content-Type&gt;&quot;</span>
+<span></span>}
+<span></span><span class="hljs-comment">// 添加回车</span>
+<span></span><span class="hljs-keyword">data</span> += <span class="hljs-string">&quot;\n\n&quot;</span>
+<span></span><span class="hljs-comment">// 添加 Body， 如果Content-Length, Content-Type和Body任意一个不存在或者为空，则跳过此步；如果Content-Type为application/octet-stream，也跳过此步</span>
+<span></span>bodyOK := <span class="hljs-string">&quot;&lt;Content-Length&gt;&quot;</span> != <span class="hljs-string">&quot;&quot;</span> &amp;&amp; <span class="hljs-string">&quot;&lt;Body&gt;&quot;</span> != <span class="hljs-string">&quot;&quot;</span>
+<span></span>contentTypeOK := <span class="hljs-string">&quot;&lt;Content-Type&gt;&quot;</span> != <span class="hljs-string">&quot;&quot;</span> &amp;&amp; <span class="hljs-string">&quot;&lt;Content-Type&gt;&quot;</span> != <span class="hljs-string">&quot;application/octet-stream&quot;</span>
+<span></span><span class="hljs-keyword">if</span> bodyOK &amp;&amp; contentTypeOK {
+<span></span>        <span class="hljs-keyword">data</span> += <span class="hljs-string">&quot;&lt;Body&gt;&quot;</span>
+<span></span>}
+<span></span><span class="hljs-comment">// 2. 计算 HMAC-SHA1 签名，并对签名结果做 URL 安全的 Base64 编码</span>
+<span></span>sign = hmac_sha1(<span class="hljs-keyword">data</span>, <span class="hljs-string">&quot;Your_Secret_Key&quot;</span>)
+<span></span>encodedSign = urlsafe_base64_encode(sign)  
+<span></span><span class="hljs-comment">// 3. 将 Qiniu 标识与 AccessKey、encodedSign 拼接得到管理凭证</span>
+<span></span>&lt;QiniuToken&gt; = <span class="hljs-string">&quot;Qiniu &quot;</span> + <span class="hljs-string">&quot;Your_Access_Key&quot;</span> + <span class="hljs-string">&quot;:&quot;</span> + encodedSign
+<span></span></code></pre>
+<h2 id="createapp-创建一个应用"><a href="#createapp-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%BA%94%E7%94%A8" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>CreateApp 创建一个应用</h2>
+<p>在七牛云控制台页面打开实时音视频云可以看到 连麦应用列表，这里每个应用都应该和您的实际业务上的应用相对应，也就是我们这里说的 app。app 是您在七牛实时音视频云的业务配置集合。 一个 app 帐号下的连麦房间（频道）拥有独立的命名空间，并且这些房间的可配置功能选项遵从 app 的配置，例如人数限制、是否允许抢流、合流、旁路直播等。您可以创建多个不同的 app（最 多 10 个） ，以实现不同的配置需求。注意，不同 app 下面所属的同名房间并不互通（因为 app 相互独立）</p>
+<br></br>
+下面列举了操作和管理这些 app 的接口，如果您希望通过服务端 SDK 来调用，请具体参照各个 SDK 自己的文档。
+<pre><code className="language-bash">Host rtc.qiniuapi.com
+<span></span>POST /v3/apps
+<span></span><span class="hljs-section">Authorization: qiniu mac</span>
+<span></span><span class="hljs-section">Content-Type: application/json</span>
+<span></span>{
+<span></span>    <span class="hljs-string">&quot;hub&quot;</span>: <span class="hljs-string">&quot;&lt;Hub&gt;&quot;</span>,
+<span></span>    <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;&lt;Title&gt;&quot;</span>,
+<span></span>    <span class="hljs-string">&quot;maxUsers&quot;</span>: &lt;MaxUsers&gt;,
+<span></span>    <span class="hljs-string">&quot;noAutoKickUser&quot;</span>: &lt;NoAutoKickUser&gt;
+<span></span>}
+<span></span>
+<span></span></code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>参数</th><th>说明</th></tr></thead><tbody><tr><td>Hub</td><td>绑定的直播 hub，可选，使用此 hub 的资源进行推流等业务功能，hub 与 app 必须属于同一个七牛账户。</td></tr><tr><td>Title</td><td>app 的名称，可选，注意，Title 不是唯一标识，重复 create 动作将生成多个 app。</td></tr><tr><td>MaxUsers</td><td>int 类型，可选，连麦房间支持的最大在线人数。</td></tr><tr><td>NoAutoKickUser</td><td>bool 类型，可选，禁止自动踢人（抢流）。默认为 false ，即同一个身份的 client (app/room/user) ，新的连麦请求可以成功，旧连接被关闭。</td></tr></tbody></table>
+<pre><code className="language-json">200 OK 
+<span></span>{
+<span></span>    <span class="hljs-string">&quot;appId&quot;</span>: <span class="hljs-string">&quot;&lt;AppID&gt;&quot;</span>,
+<span></span>    <span class="hljs-string">&quot;hub&quot;</span>: <span class="hljs-string">&quot;&lt;Hub&gt;&quot;</span>,
+<span></span>    <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;&lt;Title&gt;&quot;</span>,
+<span></span>    <span class="hljs-string">&quot;maxUsers&quot;</span>: &lt;MaxUsers&gt;,
+<span></span>    <span class="hljs-string">&quot;noAutoKickUser&quot;</span>: &lt;NoAutoKickUser&gt;,
+<span></span>    <span class="hljs-string">&quot;createdAt&quot;</span>: &lt;CreatedAt&gt;,
+<span></span>    <span class="hljs-string">&quot;updatedAt&quot;</span>: &lt;UpdatedAt&gt;
+<span></span>}
+<span></span>616
+<span></span>{
+<span></span>    <span class="hljs-string">&quot;error&quot;</span>: <span class="hljs-string">&quot;hub not match&quot;</span>
+<span></span>}
+<span></span></code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>参数</th><th>说明</th></tr></thead><tbody><tr><td>AppID</td><td>app 的唯一标识。</td></tr><tr><td>Hub</td><td>绑定的直播 hub，使用此 hub 的资源进行推流等业务功能，hub 与 app 必须属于同一个七牛账户。</td></tr><tr><td>Title</td><td>app 的名称，注意，Title 不是唯一标识。</td></tr><tr><td>MaxUsers</td><td>int 类型，连麦房间支持的最大在线人数。</td></tr><tr><td>NoAutoKickUser</td><td>bool 类型，禁止自动踢人。</td></tr><tr><td>CreatedAt</td><td>time 类型，app 创建的时间。</td></tr><tr><td>UpdatedAt</td><td>time 类型，app 更新的时间。</td></tr></tbody></table>
+<h2 id="getapp-获取一个应用当前的配置信息"><a href="#getapp-%E8%8E%B7%E5%8F%96%E4%B8%80%E4%B8%AA%E5%BA%94%E7%94%A8%E5%BD%93%E5%89%8D%E7%9A%84%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>GetApp 获取一个应用当前的配置信息</h2>
+<pre><code className="language-bash">Host rtc.qiniuapi.com
+<span></span>GET /v3/apps/<span class="hljs-tag">&lt;<span class="hljs-name">AppID</span>&gt;</span> 
+<span></span>Authorization: <span class="hljs-tag">&lt;<span class="hljs-name">qiniu</span> <span class="hljs-attr">mac</span>&gt;</span>
+<span></span></code></pre>
+<pre><code className="language-json">200 OK 
+<span></span>{
+<span></span>    <span class="hljs-string">&quot;appId&quot;</span>: <span class="hljs-string">&quot;&lt;AppID&gt;&quot;</span>,
+<span></span>    <span class="hljs-string">&quot;hub&quot;</span>: <span class="hljs-string">&quot;&lt;Hub&gt;&quot;</span>,
+<span></span>    <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;&lt;Title&gt;&quot;</span>,
+<span></span>    <span class="hljs-string">&quot;maxUsers&quot;</span>: &lt;MaxUsers&gt;,
+<span></span>    <span class="hljs-string">&quot;noAutoKickUser&quot;</span>: &lt;NoAutoKickUser&gt;,
+<span></span>    <span class="hljs-string">&quot;mergePublishRtmp&quot;</span>: {
+<span></span>        <span class="hljs-string">&quot;enable&quot;</span>: &lt;Enable&gt;,
+<span></span>        <span class="hljs-string">&quot;audioOnly&quot;</span>: &lt;AudioOnly&gt;,
+<span></span>        <span class="hljs-string">&quot;height&quot;</span>: &lt;OutputHeight&gt;,
+<span></span>        <span class="hljs-string">&quot;width&quot;</span>: &lt;OutputHeight&gt;,
+<span></span>        <span class="hljs-string">&quot;fps&quot;</span>: &lt;OutputFps&gt;,
+<span></span>        <span class="hljs-string">&quot;kbps&quot;</span>: &lt;OutputKbps&gt;,
+<span></span>        <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;&lt;URL&gt;&quot;</span>,
+<span></span>        <span class="hljs-string">&quot;streamTitle&quot;</span>: <span class="hljs-string">&quot;&lt;StreamTitle&gt;&quot;</span>
+<span></span>    },
+<span></span>    <span class="hljs-string">&quot;createdAt&quot;</span>: &lt;CreatedAt&gt;,
+<span></span>    <span class="hljs-string">&quot;updatedAt&quot;</span>: &lt;UpdatedAt&gt;
+<span></span>}
+<span></span>612
+<span></span>{
+<span></span>    <span class="hljs-string">&quot;error&quot;</span>: <span class="hljs-string">&quot;app not found&quot;</span>
+<span></span>}
+<span></span></code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>参数</th><th>说明</th></tr></thead><tbody><tr><td>AppID</td><td>app 的唯一标识。</td></tr><tr><td>UID</td><td>客户的七牛帐号。</td></tr><tr><td>Hub</td><td>绑定的直播 hub，使用此 hub 的资源进行推流等业务功能，hub 与 app 必须属于同一个七牛账户。</td></tr><tr><td>Title</td><td>app 的名称，注意，Title 不是唯一标识。</td></tr><tr><td>MaxUsers</td><td>int 类型，连麦房间支持的最大在线人数。</td></tr><tr><td>NoAutoKickUser</td><td>bool 类型，禁止自动踢人。</td></tr><tr><td>MergePublishRtmp</td><td>连麦合流转推 RTMP 的配置。</td></tr><tr><td>CreatedAt</td><td>time 类型，app 创建的时间。</td></tr><tr><td>UpdatedAt</td><td>time 类型，app 更新的时间。</td></tr></tbody></table>
+<h2 id="deleteapp-删除应用"><a href="#deleteapp-%E5%88%A0%E9%99%A4%E5%BA%94%E7%94%A8" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>DeleteApp 删除应用</h2>
+<pre><code className="language-bash">Host rtc.qiniuapi.com
+<span></span>DELETE /v3/apps/<span class="hljs-tag">&lt;<span class="hljs-name">AppID</span>&gt;</span> 
+<span></span>Authorization: <span class="hljs-tag">&lt;<span class="hljs-name">qiniu</span> <span class="hljs-attr">mac</span>&gt;</span>
+<span></span></code></pre>
+<pre><code className="language-json">200 OK
+<span></span>612
+<span></span>{
+<span></span>    <span class="hljs-string">&quot;error&quot;</span>: <span class="hljs-string">&quot;app not found&quot;</span>
+<span></span>}
+<span></span></code></pre>
+<h2 id="updateapp-更新一个应用的配置信息"><a href="#updateapp-%E6%9B%B4%E6%96%B0%E4%B8%80%E4%B8%AA%E5%BA%94%E7%94%A8%E7%9A%84%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF" ariaHidden="true" tabIndex="-1"><span className="icon,icon-link"></span></a>UpdateApp 更新一个应用的配置信息</h2>
+<blockquote>
+<p>注意！调用这个接口后仅对调用后新创建的房间有效，已经存在的房间需要等待被关闭重新创建后生效</p>
+</blockquote>
+<pre><code className="language-bash">Host rtc<span class="hljs-selector-class">.qiniuapi</span><span class="hljs-selector-class">.com</span>
+<span></span>Post /v3/apps/&lt;AppID&gt;
+<span></span>Authorization: qiniu mac
+<span></span>{
+<span></span>    <span class="hljs-string">&quot;hub&quot;</span>: <span class="hljs-string">&quot;&lt;Hub&gt;&quot;</span>,
+<span></span>    <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;&lt;Title&gt;&quot;</span>,
+<span></span>    <span class="hljs-string">&quot;maxUsers&quot;</span>: &lt;MaxUsers&gt;,
+<span></span>    <span class="hljs-string">&quot;noAutoKickUser&quot;</span>: &lt;NoAutoKickUser&gt;,
+<span></span>    <span class="hljs-string">&quot;mergePublishRtmp&quot;</span>: {
+<span></span>        <span class="hljs-string">&quot;enable&quot;</span>: &lt;Enable&gt;,
+<span></span>        <span class="hljs-string">&quot;audioOnly&quot;</span>: &lt;AudioOnly&gt;,
+<span></span>        <span class="hljs-string">&quot;height&quot;</span>: &lt;OutputHeight&gt;,
+<span></span>        <span class="hljs-string">&quot;width&quot;</span>: &lt;OutputHeight&gt;,
+<span></span>        <span class="hljs-string">&quot;fps&quot;</span>: &lt;OutputFps&gt;,
+<span></span>        <span class="hljs-string">&quot;kbps&quot;</span>: &lt;OutputKbps&gt;,
+<span></span>        <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;&lt;URL&gt;&quot;</span>,
+<span></span>        <span class="hljs-string">&quot;streamTitle&quot;</span>: <span class="hljs-string">&quot;&lt;StreamTitle&gt;&quot;</span>
+<span></span>    }
+<span></span>}
+<span></span></code></pre>
+<pre><code className="language-json">200 OK 
+<span></span>{
+<span></span>    <span class="hljs-string">&quot;appId&quot;</span>: <span class="hljs-string">&quot;&lt;AppID&gt;&quot;</span>,
+<span></span>    <span class="hljs-string">&quot;hub&quot;</span>: <span class="hljs-string">&quot;&lt;Hub&gt;&quot;</span>,
+<span></span>    <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;&lt;Title&gt;&quot;</span>,
+<span></span>    <span class="hljs-string">&quot;maxUsers&quot;</span>: &lt;MaxUsers&gt;,
+<span></span>    <span class="hljs-string">&quot;noAutoKickUser&quot;</span>: &lt;NoAutoKickUser&gt;,
+<span></span>    <span class="hljs-string">&quot;mergePublishRtmp&quot;</span>: {
+<span></span>        <span class="hljs-string">&quot;enable&quot;</span>: &lt;Enable&gt;,
+<span></span>        <span class="hljs-string">&quot;audioOnly&quot;</span>: &lt;AudioOnly&gt;,
+<span></span>        <span class="hljs-string">&quot;height&quot;</span>: &lt;OutputHeight&gt;,
+<span></span>        <span class="hljs-string">&quot;width&quot;</span>: &lt;OutputHeight&gt;,
+<span></span>        <span class="hljs-string">&quot;fps&quot;</span>: &lt;OutputFps&gt;,
+<span></span>        <span class="hljs-string">&quot;kbps&quot;</span>: &lt;OutputKbps&gt;,
+<span></span>        <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;&lt;URL&gt;&quot;</span>,
+<span></span>        <span class="hljs-string">&quot;streamTitle&quot;</span>: <span class="hljs-string">&quot;&lt;StreamTitle&gt;&quot;</span>
+<span></span>    },
+<span></span>    <span class="hljs-string">&quot;createdAt&quot;</span>: &lt;CreatedAt&gt;,
+<span></span>    <span class="hljs-string">&quot;updatedAt&quot;</span>: &lt;UpdatedAt&gt;
+<span></span>}
+<span></span>612
+<span></span>{
+<span></span>    <span class="hljs-string">&quot;error&quot;</span>: <span class="hljs-string">&quot;app not found&quot;</span>
+<span></span>}
+<span></span>616
+<span></span>{
+<span></span>    <span class="hljs-string">&quot;error&quot;</span>: <span class="hljs-string">&quot;hub not match&quot;</span>
+<span></span>}
+<span></span></code></pre></div></div>

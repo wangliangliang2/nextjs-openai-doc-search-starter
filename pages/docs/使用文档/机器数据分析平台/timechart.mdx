@@ -1,0 +1,31 @@
+timechart 命令按照时序的方式聚合分析数据。
+
+**语法：**
+```
+timechart options <statsFunc> [by field][, fieldn]
+```
+
+**参数说明：**
+
+* `options`:
+  * `bins=<N>`:可选，分桶数量，默认100。
+  * `span=<N>`:可选，分桶的时间间隔，可为时间单位字符串或者正整数。例如 1s,1m，1h，支持毫秒(ms)，秒(s)，分钟(m)，小时(h)，天(d)，周(w)，月(M)，季度(q)，年(y)，当span为正整数时，其单位为毫秒。
+  * `align=<true|false>`: 可选，与bins搭配使用，表示是否将桶值对齐到数值5的倍数，默认值为false。
+* `statsFunc`: 必填，统计函数，[详见链接](/express/manual/6013/stats)。
+* `field`:可选，表示分组字段，支持多个字段。
+
+>注意：待分析数据必须带有时间字段(_time)，且当同时指定 span 参数和 bins 参数，优先使用 span 参数计算。
+
+**用法示例：**
+
+**时间分桶**
+
+返回每5分钟间隔内每个主机的平均cpu:
+```
+| timechart span=5m avg(cpu) as avg_cpu by host
+```
+
+返回每5分钟间隔内根据主机和用户分组的平均cpu:
+```
+| timechart span=5m avg(cpu) as avg_cpu by host,user
+```

@@ -1,0 +1,43 @@
+# 介绍
+
+转换器(Transformers) 是我们对于解析的一种补充，是一种在agent端做的边缘计算，可以充分利用agent端(边缘节点)的算力，对数据进行进一步加工变换，一方面可以减少数据冗余，另外一方面可以对数据进行不同形式的扩展和预处理。
+**该功能为可选项，即使数据不经过任何转换，也可以正常使用读取和发送。**
+
+# 原则
+
+* **失败不影响原来数据**：logkit-pro 的 Transformer作为数据收集的一种补充，如果数据转换失败，不会影响原来数据的结构，更不会影响原来数据的发送。
+* **管道式连续变换**：Transformer可以多个衔接到一起使用，类似Linux管道的功能，前一个Transformer对数据变换的结果作为下一个Transformer的输入。
+* **功能正交**： 一般情况下我们对可以通过多个Transformer拼接构成的功能，不会再新增一个Transformer。但是我们提供 [lua Transformer](/insight/manual/4931/lua-transformer) 您可以直接编写`lua`脚本完成您的变换需求。
+
+# 目录
+
+目前支持的Transformer有：
+
+1. `IP`(针对ip做运营商信息字段扩展): [IP transformer](/insight/manual/4786/ip-transformer)
+1. `UserAgent`(浏览器中的user agent信息解析，可以解析出包括设备、操作系统、版本号在内的多种信息): [UserAgent transformer](/insight/manual/4795/useragent-transformer)
+1. `arrayexpand`(将指定字段的数组展开并转换为键值对): [arrayexpand transformer](/insight/manual/4788/arrayexpand-transformer)
+1. `cloudtrail`(针对 AWS CloudTrail的数据做格式转换的Transformer，可以将CloudTrail的json格式中的 Records逐条变为数据): [cloudtrail transformer](/insight/manual/4784/cloudtrail-converter)
+1. `convert`(按照dsl将数据进行格式转换): [convert transformer](/insight/manual/4789/convert-transformer)
+1. `csv`(将一个符合指定的csv格式字符串转换为map[string]interface{}): [csv transformer](/insight/manual/4911/csv-transformer)
+1. `date`(将字段解析为时间并做一些转换): [date transformer](/insight/manual/4791/date-transformer)
+1. `discard`(将指定字段的数据抛弃，其他保留，与`pick Transformer`相反): [discard transformer](/insight/manual/4790/discard-transformer)
+1. `grok`(使用grok解析指定字符串为map[string]interface{}): [csv transformer](/insight/manual/4917/grok-transformer)
+1. `join`(将数组组合成字符串，数组里面的元素类型可以是任意类型): [join transformer](/insight/manual/4880/join-transformer)
+1. `json`(将一个符合json格式的字符串字段，反序列化为对应结构体类型): [json transformer](/insight/manual/4797/json-transformer)
+1. `k8stag`(对于运行在Kubernetes上的logkit，可以通过k8stag Transformer获得容器的具体信息，如podname, container id 等): [k8stag transformer](/insight/manual/4796/k8stag-transformer)
+1. `label`(添加一个带有固定值的字段到数据中，相当于加个标签): [label transformer](/insight/manual/4798/label-transformer)
+1. `lua`(通过自定义的lua脚本对数据进行转换): [lua transformer](/insight/manual/4931/lua-transformer)
+1. `mapreplace`(将字符串的值替换到对应映射的内容): [mapreplace transformer](/insight/manual/4811/mapreplace-transformer)
+1. `number2ip`(将整型数据/字符串转换为ip):[number2ip transformer](/insight/manual/4932/number2ip-transformer)
+1. `pandora_key_convert`(将不符合 pandora 字段类型的key字符转化为下划线): [pandora_key_convert transformer](/insight/manual/4778/pandora-key-convert-converter)
+1. `pick`(将指定字段的数据保留，其他抛弃，与`discard Transformer`相反): [pick transformer](/insight/manual/4808/pick-transformer)
+1. `regexmatch`(通过匹配正则表达式获取对应的标签和id):[regexmatch transformer](/insight/manual/4825/regexmatch-transformer)
+1. `rename`(将字段名称重命名，解决不同下游系统对字段名称中特殊字符不支持的问题): [rename transformer](/insight/manual/4800/rename-transformer)
+1. `replace`(针对字段做字符串替换): [replace transformer](/insight/manual/4792/replace-transformer)
+1. `script`(执行脚本文件并记录脚本执行结果): [script transformer](/insight/manual/4777/script-transformer)
+1. `split`(将指定字段的数据切分为字符串数组): [split transformer](/insight/manual/4803/split-transformer)
+1. `trim`(去掉字符串前后多余的字符): [trim transformer](/insight/manual/4793/trim-transformer)
+1. `urlparam`(将指定字段的数据按照url参数的格式转换为键值对): [urlparam transformer](/insight/manual/4779/urlparam-converter)
+1. `xml`(将一个符合xml格式的字符串字段，反序列化为对应map[string]interface{}结构体类型): [xml transformer](/insight/manual/4805/xml-transformer)
+2. `datamask`(对于日志数据中的每条记录，可以为每个字段配置已有的数据脱敏规则或者自定义脱敏规则):[datamask transformer](/insight/manual/4962/datamask-converter)
+

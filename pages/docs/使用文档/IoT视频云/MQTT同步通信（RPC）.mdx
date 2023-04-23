@@ -1,0 +1,82 @@
+本章主要是关于MQTT同步通信（RPC）使用介绍。
+
+# **RPC介绍**
+mqtt做为⼀个异步PUB/SUB协议在嵌⼊式设备中使⽤很⼴泛，主要⽤户数据上报和从服务端指令下发。这种模式⽆法满⾜IoT中的设备控制功能(需要同步返回设备数据)，Linking平台开发了⼀套基于mqtt的同步返回机制，对外提供http的API，⼿机端/应⽤服务端通过API即可同步返回设备端结果。
+
+# **RPC原理**
+
+![](https://dn-odum9helk.qbox.me/Fl9eX4Xd8dDBFmNljBpu5GteAwtJ)
+
+# **系统Topic**
+RPC通信相关的系统Topic如下：
+
+* linking/v1/${appid}/${device}/rpc/request/+/
+⽤于设备订阅RPC请求。设备操作权限：订阅
+
+* linking/v1/${appid}/${device}/rpc/response/reqId/ 
+⽤于设备响应RPC请求。设备操作权限：发布
+
+
+# **RPC接入**
+### **云端接入**
+服务端调用云端API Rpc接口向设备发送消息。接口调用方法如下：
+
+请求：
+```
+POST /v1/apps/<appId>/devices/<encodeDeviceName>/rpc  HTTP/1.1
+Host:linking.qiniuapi.com
+Content-Type:application/json
+Authorization:<QiniuToken>
+{ 
+"action": <int>, // 设备要执⾏的action， 必填
+"params": {}， // action对应的参数(json object), 云端直接投穿给设备
+"response": true/false //  是否需要等待客户端响应(默认为不等待响应)
+}
+```
+注：
+* content-length 最⼤为1KB
+* QiniuToken 构造请参见[请求鉴权](https://developer.qiniu.io/linking/api/5679/the-signature-in-the-header)
+
+响应：
+```
+200 {
+"id": "<id>", 
+"response": {
+"errorCode": <int>, // 端上返回的错误码
+"error": "<errorString>", // 端上返回的错误信息
+"value": {} // 执⾏成功时返回的内容 
+   }
+}
+```
+
+常见错误码：
+
+|错误码|描述|
+|---|---|
+|400|Invalid request, msg too big|
+|408|rpc timeout|
+|612|device not found|
+|619|device offline|
+
+### **设备端接入**
+
+设备端 RPC 通信相关接⼝定义在 qnlink_mqtt.h 中，操作方法如下：
+
+1. 获取 dak/dsk，通过 `qnlink_mqtt_init() `初始化操作，将 dak/dsk 和 连接服务地址作为参数 传递，默认连接服务地址为 tcp://mqtt.qnlinking.com:1883 
+2. 通过 `qnlink_mqtt_set_rpc_callback()` 注册 接收 RPC 消息的回调通知函数，其中回调函数原 型为：
+
+```
+/**
+* @brief 设置 RPC 消息回调函数 
+* @param[in] action_id action ID 
+* @param[in] action_params action 参数，NULL terminate string
+* @param[out] resp_errorCode 回复状态号
+* @param[out] resp_error 回复状态描述, 最⼤ 1024 字节
+* @param[out] resp_value 回复内容， 最⼤ 1024 字节
+*/
+typedef void (rpc_message_cb_t)(int action_id, const char* action_params,
+        int* resp_errorCode, char resp_error[1024], char resp_value[1024]);
+```
+
+3. 通过 `qnlink_mqtt_status() `确认是否与 服务端成功建⽴连接;
+4. 通过 qnlink_mqtt_cleanup() 断开与服务端连接;

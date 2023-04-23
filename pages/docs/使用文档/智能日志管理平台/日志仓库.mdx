@@ -1,0 +1,75 @@
+除了实时仓库以外，我们提供**日志仓库**来存储大量的日志，您需要分析的日志数据最终都会进入日志仓库。
+
+在日志仓库管理页面，您可以对日志仓库进行新增、导入、编辑、导出、授权、删除等操作。
+
+![](https://pandora-kibana.qiniu.com/repo/log_repo.png)
+
+## **新增日志仓库**
+
+点击日志仓库管理页面右上角的新增按钮：
+
+![](http://p9hhpzcmq.bkt.clouddn.com/repo_create.png)
+
+新增实时仓库，您需要填写日志仓库名称、日志存储时间、是否开启全文索引、仓库的数据字段及其类型。
+
+![](http://p9hhpzcmq.bkt.clouddn.com/repo_create1.png)
+
+**日志仓库命名规则**
+
+* 仓库名称命名规则： ^[a-z][a-z0-9_]{0，127}$，1-128个字符，支持小写字母、数字、下划线；
+必须以小写字母开头。
+
+**字段名称命名规则**
+
+* 字段名称命名规则：^[a-zA-Z_][a-zA-Z0-9_]{0,60}$，1-128个字符，支持小写字母、数字、下划线；
+必须以大小写字母或下划线开头。
+
+`注意：`_index, _type, _id, _uid, _size, _source, _all, _routing, _parent, _meta, _time, pandora_stash, pandora_pattern` 作为日志仓库的保留字段，请不要使用这些作为您的仓库和字段名。
+
+**日志仓库支持的字段类型**
+
+  - string(字符串)
+  - float(浮点数)
+  - long（整数）
+  - boolean(bool 类型)
+  - date（日期类型）
+  - ip
+  - geo_point
+  - object
+  
+其中 date 类型支持 RFC3339Nano 和 RFC3339Nano(Numeric time zone offsets format)，
+例：2006-01-02T15:04:05.999999999Z07:00 和 2006-01-02T15:04:05.999999999+08:00;geo_point 为经纬度坐标，如 [ -71.34, 41.12 ]
+
+**数据存储时限**
+
+指这个仓库内的每一条日志都会被存储指定的天数，超过这个时间的数据会被自动删除，当 存储时限 0 时，表示永久存储。
+
+**全文索引**
+
+使用全文索引使您在检索的时候直接输入文本即可搜索，关于全文索引详情请参考[索引术语](/insight/glossary/5103/the-index-way)。
+
+**分词规则**
+
+新增数据字段时，需要为字段指定分词规则，关于分词规则请参考[分词概念](/insight/glossary/5104/word-segmentation-way)。
+
+![](https://pandora-kibana.qiniu.com/repo/schema.png)
+
+**设置联合主键**
+
+支持对仓库设置联合主键，如：对此仓库设置联合主键为 timestamp 和 sensor，搜索日志时，选择时间字段为 timestamp，搜索结果将对指定时间范围内的全部日志根据 sensor 字段进行去重操作。
+
+![](https://pandora-kibana.qiniu.com/repo/primaryKey.png)
+
+## **编辑日志仓库**
+
+您可以修改仓库的数据存储时限、新增数据字段，但不能删除或修改已有字段，也不能修改仓库名称。
+
+## **授权仓库**
+
+点击`授权仓库`，您可以对其他账号授予当前仓库的`查看`权限。更多授权操作方式请阅读[权限管理](/insight/manual/4736/authorization)。
+
+![](https://pandora-kibana.qiniu.com/repo/authorization.png)
+
+日志仓库的导入、导出同[实时仓库导出导入](/insight/manual/4875/local-upload-log)，这里不再赘述。
+
+需要注意的是，日志仓库可以直接删除，但删除实时仓库首先需要去到实时仓库绑定的[工作流](https://portal.qiniu.com/pandora/dags)，删除与该实时仓库绑定的数据计算与导出任务。

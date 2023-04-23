@@ -1,0 +1,73 @@
+对象存储 Kodo 提供自动保存访问空间日志的功能。
+<br>
+
+# **具体说明**
+- 当天的日志 2 天后可下载
+- 支持存储空间开启和关闭日志记录
+- 支持在已开启日志记录的同一存储空间中存储日志，也可以另外创建新存储空间来存储日志。
+- 当空间开启访问日志记录功能后，Kodo 自动将访问这个空间的请求日志，按照固定的命名规则，每 10 分钟生成一个文件写入您指定的目标空间。
+<br>
+
+
+# **日志的命名规则**
+存储访问空间日志的文件命名规则示例如下：
+``` 
+_log/bucketname/YYYY-MM-DD-HH-mm/partN.gz
+```
+|字段名称|说明|
+|-|-|
+|_log	|固定字段|
+|bucketname	|用户指定的存储访问空间日志的空间名|
+|YYYY-MM-DD-HH-mm	|YYYY、MM、DD、HH 和 mm 分别是该日志文件被创建时的阿拉伯数字的年、月、日、小时、分钟|
+|partN.gz	|当日志文件很大时，会拆分成多个，第一个是 part0，第二个是 part1，以此类推|
+<br>
+
+# **日志文件格式**
+日志文件的组成字段举例说明，帮助您更好的分析日志。以下名称从左至右，以空格分隔。
+|字段名称|举例说明|
+|-|-|
+|Remote IP	|远端 IP 地址，比如 120.194.101.86。|
+|Remote Logname	|远程登录名，目前统一显示为 -。|
+|Remote User	|远程用户名，目前统一显示为 -。|
+|Time	|七牛云对象存储收到请求的时间，比如 [16/May/2013:00:00:00 +0800]。|
+|RequestTime	|七牛对象存储 Kodo 处理本次请求的时间（ms）。|
+|Request-URI	|用户请求的 URI，比如 “GET /group1/M00/28/9D/CvFRWFGSBvsEAAAAAAA|AAD0JyMI178.jpg?imageView/2/w/480 HTTP/1.1”。|
+|HTTP Status	|七牛对象存储 Kodo 返回的 HTTP 状态码，比如 200。|
+|SentBytes	|用户下载的流量，比如 37431。当没有字节传送时显示 -，而不是 0。|
+|Referer	|请求的 HTTP Referer，比如 "http://iovip.qiniuio.com"。没有时，显示 “-”。|
+|User-Agent	|HTTP 的 User-Agent 头，比如 “Dalvik/0.0.0 (Linux; U; Android 1.6.1.16-RT-20120926.152630; W806 Build/AliyunOs-2012)”。|
+|Request Host	|HTTP 请求的 Host，比如 "http://image.qiniu.com"。|
+|UID	|空间拥有者的 uid。|
+|Bucket	|空间拥有者的空间名。|
+|StorageClass	|对象存储类型，0 表示标准存储，1 表示低频存储，2 表示归档存储，3 表示深度归档存储。|
+|Sync Request	|是否是 CDN 回源请求，若来自 CDN，则为 qiniucdn；若不是则为-。|
+|Version	|目前固定值为 V2。|
+
+日志格式为：Remote IP - - [Time] RequestTime “Request-URI” HttpStatus SentBytes “Referer” User-Agent “Request Host” UID Bucket StorageClass V2
+一条完整的日志记录例子如下：
+``` 
+120.194.101.86 - - [16/May/2013:00:00:00 +0800] 20 "GET /group1/M00/28/9D/CvFRWFGSBvsEAAAAAAAAAD0JyMI178.
+
+jpg?imageView/2/w/480 HTTP/1.1" 200 37431 "-" "Dalvik/0.0.0 (Linux; U; Android 1.6.1.16-RT-20120926.
+
+152630; W806 Build/AliyunOs-2012)" "http://image.yourdream.cc" 10101010 Tbl 0 - V2
+```
+<br>
+
+
+
+
+
+# **补充说明**
+- 日志中的任何一个字段，都可能出现-，用于表示未知数据或对于当前请求该字段无效。
+- 根据需求，日志格式将来会在尾部（Version 字段除外），添加一些字段，请开发者开发日志处理工具时需考虑兼容性的问题。
+<br>
+
+
+
+# **操作方式**
+Kodo 支持通过控制台方式设置空间访问日志。
+|支持的操作方式|参考文档|
+|-|-|
+|控制台	|[设置空间日志](/kodo/development_guidelines/8546/set-the-space-log)|
+

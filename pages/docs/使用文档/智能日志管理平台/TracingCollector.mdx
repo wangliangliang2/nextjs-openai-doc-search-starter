@@ -1,0 +1,18 @@
+Tracing Collector，在[全链路追踪服务](/insight/manual/5054/all-link-track-profile)中作为数据收集器，接收异构 tracing 数据，需要与发送源 [pandora tracing](/insight/manual/5049/tracing-sender) 配合使用。
+
+使用指南请参考[全链路追踪-使用指南-接入 tracing 数据](/insight/manual/5119/access-data-tracing)
+
+Tracing Collector 支持采集 zipkin、pinpoint 和 jaeger 等开源 Tracing 方案的埋点数据；
+*  兼容 zipkin span 格式（v1:Thrift/JSON, v2:JSON), 通过 HTTP 接收
+*  兼容 jaeger span 格式（Thrift），通过 HTTP 接收
+*  兼容 pinpoint span 和 spanchunk 格式（Thrift），通过 UDP 接收
+
+### **配置信息**
+
+![](https://dn-odum9helk.qbox.me/FkoCvUqv-1HCe2jIkmIwzTQTRTB-)
+
+* `接收调用链数据类型(tracing_type)`: tracing 数据类型，支持 zipkin，jaeger 和 pinpoint；
+* `接收调用链数据版本(tracing_version)`: tracing 数据版本，zipkin 需要指定版本 `v1/v2`，jaeger 和 pinpoint 不填即可；
+* `监听的地址和端口(http_service_address)`: logkit 接收 tracing 数据开放的地址，如`:14268`
+* `监听地址前缀(http_service_path)`: logkit 开放的 httpserver 路由地址，如: `/api/traces`
+如上配置完成 tracing reader，接收 Tracing 打点的 Endpoint 示例为：`http://127.0.0.1:14268/api/traces`

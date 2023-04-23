@@ -1,0 +1,114 @@
+# 描述
+该接口用于查询指定设备的详细信息。
+
+# 请求
+**请求语法**
+方法一：
+```
+GET /v1/apps/<appid>/devices/<encodeDeviceName> HTTP/1.1
+Host: linking.qiniuapi.com
+Content-Type: application/x-www-form-urlencoded
+Authorization: <QiniuToken>
+```
+参数说明
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|appid|是|string|设备所属应用的appid，设备名称只能由 4-200 位英文字母和数字组成|
+|encodeDeviceName|是|string|设备名称进行[URL安全的Base64编码](https://developer.qiniu.com/kodo/manual/1231/appendix#1)后得到的字符串|
+
+
+方法二：适用于客户端通过dtoken方式访问。
+```
+GET /v1/device/resource/status?dtoken=<deviceAccessToken> HTTP/1.1
+Host: linking.qiniuapi.com
+```
+参数说明
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|dtoken|是|string|dtoken是用于访问Linking服务时的凭证。生成方式请参照[设备访问凭证](https://developer.qiniu.io/linking/api/5680/the-signature-in-the-url)|
+
+**请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+
+**请求元素**
+该请求操作的请求体为空。
+
+# 响应
+**响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](https://developer.qiniu.io/linking/api/5269/linking-http-headers)。
+**响应元素**
+
+```
+200 {
+  "device": "<deviceName>",
+  "loginAt": "<loginTimestamp>",
+  "remoteIp": "<remoteIp>",
+  "state": "<state>",
+  "segmentExpireDays": "<segmentExpireDays>", 
+  "activedAt": "<activedTimestamp>", 
+  "createdAt": "<createdTimestamp>", 
+  "updatedAt": "<updatedTimestamp>",
+  "type": "<Type> ",
+  "maxChannel": "<maxChannel>",
+  "channels":[{"channelid":"<Channelid>", "comment":"<comment>"}],
+  "meta": {} 
+}
+```
+
+|参数名称|说明|
+|---|---|
+|device|设备名称|
+|loginAt|设备是否在线，设备在线才会出现此字段|
+|remoteIp|登录IP，设备在线才会出现此字段|
+|state|设备禁用/启用，1表示被禁用, 0表示已启用|
+|segmentExpireDays|设备录制文件的生命周期天数<br>>0:自定义设置文件保存天数<br>0:不录制 <br> -1:永久<br> -2:继承app配置|
+|activedAt|设备首次激活时间|
+|createdAt|设备创建时间|
+|updatedAt|设备更新时间|
+|type|设备类型，0：设备, 1：网关|
+|maxChannel|网关设备最大channel数,当type为网关时才显示此项|
+|channels|频道信息，当type为网关时才显示此项，channelid：频道id，comment：频道备注信息|
+|meta|用户自定义的设备属性信息，(为空不返回)|
+
+
+
+# 示例
+
+**请求示例**
+
+```
+GET /v1/apps/test/devices/dGVzdGRldmljZTE= HTTP/1.1
+Host: linking.qiniuapi.com
+Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=
+Content-Type: application/x-www-form-urlencoded
+```
+**响应示例**
+
+```
+HTTP/1.1 200 OK
+Access-Control-Allow-Origi: *
+Connection: keep-alive
+Content-Length: 184
+Content-Type: application/json
+Date: Wed, 26 Sep 2018 11:42:10 GMT
+Server: nginx/1.8.0
+Vary: Accept-Encoding
+X-Reqid: 6SAAABDWHM1o8FcV
+X-Whom: cs1
+
+200 {
+  "device": "testdevice1",
+  "loginAt": 1537853919,
+  "state": 0,
+  "segmentExpireDays": 7,
+  "activedAt": 1537853919,
+  "createdAt": 1537853912,
+  "updatedAt": 1537853919
+}
+
+400  {
+    "error":  "bad request"
+}
+```

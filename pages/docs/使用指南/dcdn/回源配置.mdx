@@ -1,0 +1,37 @@
+您可以登录**七牛开发者平台**选择**DCDN控制台**,可以在控制台中查看域名的回源配置信息及进行相关配置修改。 
+<br/>
+# 操作说明
+登录**七牛开发者平台**后，进入**DCDN控制台**，选择【域名管理】，点击【配置】：
+<img src="https://dn-odum9helk.qbox.me/FiTRe4hLHg3kK6Q0D64rNUPDxoGQ" width=600></img>
+
+<img src="https://dn-odum9helk.qbox.me/FjnzzN1klAfCMzr1WRGQVwDxG620" width=600></img>
+
+
+进入域名配置界面，点击【修改配置】进行回源配置的修改。
+<img src="https://dn-odum9helk.qbox.me/FtP9cHxaLP-RZMOPIEXnhtp4Td1-" width=600></img>
+
+
+### 1. 基础配置 
+回源方式支持源站域名、IP地址两种模式：
+* 源站域名：设置指定域名作为DCDN回源的源站，源站的域名需要与加速域名不一致。
+* IP地址：设置IP作为CDN回源的源站，支持配置多个IP；回源采用轮询方式，首次选择配置的第一个IP进行回源，当发现某一源站IP异常时，将跳过此IP并进入惩罚时间，屏蔽5秒。
+
+<img src="https://dn-odum9helk.qbox.me/Fps-iNoSFRtt255sheCDZD4BvNT1" width=600></img>
+
+<img src="https://dn-odum9helk.qbox.me/Fr-xQOYbC7NRH46G8uyIeIXpll-k" width=600></img>
+
+
+### 2. 回源 HOST
+回源 HOST：是指 CDN 节点在回源过程中，在源站访问的站点域名，默认是加速域名。「源站域名」模式下，回源 HOST 支持指定加速域名、源站域名、自定义配置，「IP地址」模式下，回源HOST 支持指定加速域名、自定义配置。
+<img src="https://dn-odum9helk.qbox.me/Fth8tLAqJnuujGtkJ52E0VcAGGE7" width=600></img>
+
+<img src="https://dn-odum9helk.qbox.me/FnuncbGlnhKGcfy-0krDYjlP5XaJ" width=600></img>
+
+### 3. 回源协议
+回源协议：即请求回源的协议，默认为HTTP协议，当开启HTTPS配置时，支持选择回源协议HTTP、遵循请求协议、HTTPS三种模式。
+<img src="https://dn-odum9helk.qbox.me/FjgD1e9Hh52kCVHLa_lk6lLIrZKk" width=600></img>
+
+
+### 4. 回源验证 
+回源验证：保证源站的高可用，只有源站测试通过才能继续创建域名。
+<img src="https://dn-odum9helk.qbox.me/FoTm7-CU-cdVDbWiSMM_6zKGVR_k" width=600></img>

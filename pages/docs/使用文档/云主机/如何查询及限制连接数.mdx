@@ -1,0 +1,38 @@
+## **查询当前连接数**
+
+<a id="step05"></a>
+根据您购买的MongoDB实例规格不同，最大连接数也不同。
+<table><tr><td bgcolor=#F0F8FF>**说明：**最大连接数是指实例中每个节点的最大连接数，例如您购买了1核2G规格的三节点副本集实例，那么该实例的Primary节点和Secondary节点的最大连接数均为500，Hidden节点由于其架构特殊性，不对外提供服务。 </td></tr></table>
+
+<br>通过 Mongo Shell 连接实例，执行命令 `db.serverStatus().connections`
+```
+mgset-123456:PRIMARY> db.serverStatus().connections
+{
+"current" : 1,
+"available" : 999,
+"internal_current" : 10,
+"internal_available" : 990,
+"totalCreated" : 632
+}
+```
+
+<table><tr><td bgcolor=#F0F8FF>**说明：**您需要关注以下参数及对应的值。 
+1.  "current" ：当前已经建立的连接数。
+2.  "available" ：当前可用的连接数。</td></tr></table>
+
+
+<a id="step05"></a>
+## **查询当前连接来源**
+
+<a id="step05"></a>
+1. 通过 Mongo Shell 连接实例，切换至admin数据库。
+		use admin
+2. 执行命令
+		db.runCommand({currentOp: 1, $all: true})
+		mgset-123456:PRIMARY> db.runCommand({currentOp: 1, $all:[{"active" : true}]})         
+通过分析命令的输出结果，您可以查询每个连接对应的来源IP地址。从而得出各个终端跟MongoDB实例分别建立了多少连接。      
+
+<a id="step05"></a>
+## **如何限制终端的连接数**
+<a id="step05"></a>
+云数据库MongoDB支持通过 Connection String URI 登录数据库。通过 Connection String URI 登录数据库时，在URI末尾加上`&maxPoolSize=<integer>  `即可设置连接池的连接数。

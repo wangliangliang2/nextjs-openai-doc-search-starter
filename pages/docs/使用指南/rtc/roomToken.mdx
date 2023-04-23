@@ -1,0 +1,46 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div>
+
+
+## roomToken 签发服务
+
+
+在进入一个实时音视频房间之前，您需要通过自己七牛云账户的 AK/SK 签算出一个 roomToken。roomToken 是一个包含了一次连麦所需要的主要信息的 token，这些信息包括 七牛的账户标识、连麦的应用 ID(appId)、连麦的房间号 (roomName)、连麦的用户名(userId)、有效期等等。这个 token 通过自己七牛账户的私钥进行加密，因为涉及到私钥加密，所以您需要自己搭建一个业务服务来向您的实时音视频应用提供 roomToken。
+
+
+> RoomToken 的签算逻辑可以参考以下流程，当然，您也可以选择使用 服务端 SDK 来完成这些操作。
+
+
+生成 roomToken 作为一个基本功能，各个语言版本的服务端 SDK 都提供了生成它的方法，具体参见各个 SDK 的文档。这里说明一下手动生成 roomToken 的计算方法。
+
+
+
+
+``` bash
+// 1. 定义房间管理凭证，并对凭证字符做URL安全的Base64编码
+roomAccess = {
+    "appId": "<AppID>"
+    "roomName": "<RoomName>",
+    "userId": "<UserID>",
+    "expireAt": <ExpireAt>,
+    "permission": "<Permission>"
+}
+roomAccessString = json_to_string(roomAccess) 
+encodedRoomAccess = urlsafe_base64_encode(roomAccessString)
+// 2. 计算HMAC-SHA1签名，并对签名结果做URL安全的Base64编码
+sign = hmac_sha1(encodedRoomAccess, <SecretKey>)
+encodedSign = urlsafe_base64_encode(sign)
+// 3. 将AccessKey与以上两者拼接得到房间鉴权
+roomToken = "<AccessKey>" + ":" + encodedSign + ":" + encodedRoomAccess
+```
+
+
+| 参数         | 类型    |说明    |
+|------------|-----|-------|
+| AppID      | string |房间所属帐号的 app 。                                                             |
+| RoomName   | string | 房间名称，长度为3～64位。可包含大小写字母、数字、中划线(`-`)、下划线(`_`)，即满足正则表达式 `^[a-zA-Z0-9_-]{3,64}$`。              |
+| UserID     | string |请求加入房间的用户 ID。长度为3～50位，可包含大小写字母、数字、中划线(`-`)、下划线(`_`)，即满足正则表达式 `^[a-zA-Z0-9_-]{3,50}$`。            |
+| ExpireAt   | int |int64 类型，鉴权的有效时间，传入以秒为单位的 64 位 Unix 绝对时间，token 将在该时间后失效。                  |
+| Permission | string |该用户的房间管理权限，"admin" 或 "user"，默认为 "user" 。当权限角色为 "admin" 时，拥有将其他用户移除出房间等特权。 |
+

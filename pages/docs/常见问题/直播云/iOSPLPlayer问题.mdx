@@ -1,0 +1,20 @@
+2.4.1的播放器如果出现暂停或者设置播放界面大小无效，可以先通过下面的方法临时解决下，后续的版本中会对该问题进行修复，请见谅。
+
+1.调用 pause无效
+
+[\_player pause];
+
+[\_player.avplayer pause];
+
+2.设置播放界面大小没有效果
+
+UIView \*view = [\_player.playerView valueForKey:@"avPlayerView"];
+
+view.frame = frame;
+
+2.4.2的播放器ffmpeg在纯音频下seekto会卡主然后stop
+
+2.4.2播放flv视频的时候，暂停视频，然后退到后台，然后回来，然后切换成全屏（改变了view的frame），会出现黑屏的情况，
+在黑屏的情况下，重新播放就又好了。这个问题应该是渲染的问题。
+
+

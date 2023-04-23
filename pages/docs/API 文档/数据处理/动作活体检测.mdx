@@ -1,0 +1,301 @@
+# 接口说明
+
+七牛动作活体检测接口，基于深度神经网络的活体检测技术，通过人类自然微动作（注视、点头、摇头）分辨出活体并截取现场人脸照片，有效防止伪造照片、视频、人脸面具，抵御人脸伪造攻击。
+
+# 获取验证码
+
+## 请求
+
+### 请求地址
+
+| 名称        | 值                                                           |
+| :---------- | :----------------------------------------------------------- |
+| HTTP URL    | `https://face-actlive.qiniuapi.com/v2/actionliveness/sessioncode` |
+| HTTP Method | POST                                                         |
+
+### 请求头
+
+| 名称          | 必填 | 说明                                                         |
+| :------------ | :--- | :----------------------------------------------------------- |
+| Host          | 是   | 固定值face-actlive.qiniuapi.com                              |
+| Authorization | 是   | 该参数应严格按照[管理凭证格式](https://developer.qiniu.io/kodo/1201/access-token)进行填充，否则会返回 401 错误码。一个合法的 Authorization 值应类似于：Qiniu QNJi_bYJlmO5LeY08FfoNj9w_r7... |
+| Content-Type  | 是   | 固定值application/json                                       |
+
+### 请求参数
+
+| 字段            | 必填 | 类型   | 说明                                            |
+| :-------------- | :--- | :----- | :---------------------------------------------- |
+| min_code_length | 否   | number | 视频动作活体的验证码最小长度：最大3 最小1 默认1 |
+| max_code_length | 否   | number | 视频动作活体的验证码最大长度：最大3 最小1 默认3 |
+
+### 请求示例
+
+```plaintext
+POST /v2/actionliveness/sessioncode
+Host: face-actlive.qiniuapi.com
+Authorization: Qiniu token
+Content-Type: application/json
+
+{
+    "min_code_length": 1,
+    "max_code_length": 1
+}
+```
+
+## 响应
+
+### 响应头
+
+| 名称         | 必填 | 说明                   |
+| :----------- | :--- | :--------------------- |
+| Content-Type | 是   | 固定值application/json |
+
+### 响应参数
+
+| 字段        | 必填 | 类型                  | 说明     |
+| :---------- | :--- | :-------------------- | :------- |
+| error_code  | 否   | number                | 错误码   |
+| error_msg   | 否   | string                | 错误信息 |
+| serverlogid | 否   | number                | 请求ID   |
+| result      | 否   | Object session_result | 请求结果 |
+
+其中，*session_result* 参数
+
+| 字段       | 必填 | 类型   | 说明                                                         |
+| :--------- | :--- | :----- | :----------------------------------------------------------- |
+| session_id | 否   | string | 随机校验码会话id，有效期5分钟，请提示用户在五分钟内完成全部操作验证码使用过即失效，每次使用视频活体前请重新拉取验证码 |
+| code       | 否   | string | 随机验证码，数字形式，1~6位数字；返回数字表示的动作对应关系为：0:眨眼 4:抬头 5:低头 7:左右转头(不区分先后顺序，分别向左和向右转头) |
+
+### 响应示例
+
+```plaintext
+200 
+Content-Type: application/json
+
+{
+    "error_code": 0,
+    "error_msg": "SUCCESS",
+    "serverlogid": 1234567,
+    "result": {
+        "session_id": "S59faeeebb9111890355690",
+        "code": "0"
+    }
+}
+```
+
+# 动作活体检测
+
+## 请求
+
+### 请求地址
+
+| 名称        | 值                                                           |
+| :---------- | :----------------------------------------------------------- |
+| HTTP URL    | `https://face-actlive.qiniuapi.com/v2/actionliveness/verify` |
+| HTTP Method | POST                                                         |
+
+### 请求头
+
+| 名称          | 必填 | 说明                                                         |
+| :------------ | :--- | :----------------------------------------------------------- |
+| Host          | 是   | 固定值face-actlive.qiniuapi.com                              |
+| Authorization | 是   | 该参数应严格按照[管理凭证格式](https://developer.qiniu.io/kodo/1201/access-token)进行填充，否则会返回 401 错误码。一个合法的 Authorization 值应类似于：Qiniu QNJi_bYJlmO5LeY08FfoNj9w_r7... |
+| Content-Type  | 是   | 固定值application/json                                       |
+
+### 请求参数
+
+| 字段         | 必填 | 类型   | 说明                                                         |
+| :----------- | :--- | :----- | :----------------------------------------------------------- |
+| session_id   | 否   | string | 会话ID, 获取方式参考随机校验码接口                           |
+| video_base64 | 否   | string | base64 编码的视频数据（编码前建议先将视频进行转码，h.264编码，mp4封装）需要注意的是，视频的base64编码是不包含视频头的，如 data:video/mp4;base64,；建议视频长度控制在1s-10s之间，视频大小建议在2M以内（视频大小强制要求在20M以内，推荐使用等分辨率压缩，压缩分辨率建议不小于640*480） 视频大小分辨率建议限制在16~2032之间 |
+| face_field   | 否   | string | 需要使用合成图功能时, 此项传入spoofing;需要使用图片质量信息时，则传入quality;字段之间使用,号分隔，eg：spoofing,quality |
+
+### 请求示例
+
+```plaintext
+POST /v2/actionliveness/verify
+Host: face-actlive.qiniuapi.com
+Authorization: Qiniu token
+Content-Type: application/json
+
+{
+    "session_id": "S62b193a44a46c363371046",
+    "video_base64": "video_base64_value",
+    "type_identify": "voice",
+    "face_field": "spoofing,quality"
+}
+```
+
+## 响应
+
+### 响应头
+
+| 名称         | 必填 | 说明                   |
+| :----------- | :--- | :--------------------- |
+| Content-Type | 是   | 固定值application/json |
+
+### 响应参数
+
+| 字段        | 必填 | 类型                 | 说明     |
+| :---------- | :--- | :------------------- | :------- |
+| error_code  | 否   | number               | 错误码   |
+| error_msg   | 否   | string               | 错误信息 |
+| serverlogid | 否   | number               | 请求ID   |
+| result      | 否   | Object verify_result | 请求结果 |
+
+其中，*verify_result* 参数
+
+| 字段           | 必填 | 类型              | 说明                                                         |
+| :------------- | :--- | :---------------- | :----------------------------------------------------------- |
+| score          | 否   | number            | 活体检测的总体打分 范围[0,1]，分数越高则活体的概率越大       |
+| maxspoofing    | 否   | number            | 返回的1-8张图片中合成图检测得分的最大值 范围[0,1]，分数越高则概率越大 |
+| spoofing_score | 否   | number            | 返回的1-8张图片中合成图检测得分的中位数 范围[0,1]，分数越高则概率越大 |
+| thresholds     | 否   | Object thresholds | 阈值 按活体检测分数>阈值来判定活体检测是否通过(阈值视产品需求选择其中一个) |
+| action_verify  | 否   | string            | 动作识别结果 pass代表动作验证通过，fail代表动作验证未通过    |
+| best_image     | 否   | Object image      | 图片信息                                                     |
+| pic_list       | 否   | []Object image    | 返回1-8张抽取出来的图片信息                                  |
+
+其中，*thresholds* 参数
+
+| 字段     | 必填 | 类型   | 说明                 |
+| :------- | :--- | :----- | :------------------- |
+| frr_1e-4 | 否   | number | 万分之一误拒率的阈值 |
+| frr_1e-3 | 否   | number | 千分之一误拒率的阈值 |
+| frr_1e-2 | 否   | number | 百分之一误拒率的阈值 |
+
+其中，*image* 参数
+
+| 字段           | 必填 | 类型                | 说明                                      |
+| :------------- | :--- | :------------------ | :---------------------------------------- |
+| pic            | 否   | string              | base64编码后的图片信息                    |
+| liveness_score | 否   | number              | 此图片的活体分数，范围[0,1]               |
+| face_token     | 否   | string              | 人脸图片的唯一标识                        |
+| spoofing       | 否   | number              | 此图片的合成图分数，范围[0,1]             |
+| quality        | 否   | Object face_quality | 人脸质量信息。face_field包含quality时返回 |
+
+其中，*face_quality* 参数
+
+| 字段         | 必填 | 类型                          | 说明                                                         |
+| :----------- | :--- | :---------------------------- | :----------------------------------------------------------- |
+| occlusion    | 否   | Object face_quality_occlusion | 人脸各部分遮挡的概率，范围[0~1]，0表示完整，1表示不完整      |
+| blur         | 否   | number                        | 人脸模糊程度，范围[0~1]，0表示清晰，1表示模糊                |
+| illumination | 否   | number                        | 取值范围在[0~255], 表示脸部区域的光照程度 越大表示光照越好   |
+| completeness | 否   | number                        | 人脸完整度，0或1, 0为人脸溢出图像边界，1为人脸都在图像边界内 |
+
+其中，*face_quality_occlusion* 参数
+
+| 字段        | 必填 | 类型   | 说明                                  |
+| :---------- | :--- | :----- | :------------------------------------ |
+| left_eye    | 否   | number | 左眼遮挡比例，[0-1] ，1表示完全遮挡   |
+| right_eye   | 否   | number | 右眼遮挡比例，[0-1] ，1表示完全遮挡   |
+| nose        | 否   | number | 鼻子遮挡比例，[0-1] ，1表示完全遮挡   |
+| mouth       | 否   | number | 嘴遮挡比例，[0-1] ，1表示完全遮挡     |
+| left_cheek  | 否   | number | 左脸颊遮挡比例，[0-1] ，1表示完全遮挡 |
+| right_cheek | 否   | number | 右脸颊遮挡比例，[0-1] ，1表示完全遮挡 |
+| chin        | 否   | number | 下巴遮挡比例，[0-1] ，1表示完全遮挡   |
+
+
+### 响应示例
+
+```plaintext
+200 
+Content-Type: application/json
+
+{
+    "error_code": 0,
+    "error_msg": "SUCCESS",
+    "serverlogid": 587756642,
+    "result": {
+        "score": 0.18,
+        "maxspoofing": 0.0002082588035,
+        "spoofing_score": 0.00018671568975,
+        "action_verify": "fail",
+        "thresholds": {
+            "frr_1e-4": 0.05,
+            "frr_1e-3": 0.3,
+            "frr_1e-2": 0.9
+        },
+        "best_image": {
+            "pic": "图片base64值",
+            "face_token": "0839b921224816fb558b0a74ee6284fb",
+            "face_id": "0839b921224816fb558b0a74ee6284fb",
+            "liveness_score": 0.9634260269,
+            "spoofing": 0.0001962436945,
+            "quality": {
+                "occlusion": {
+                    "left_eye": 0,
+                    "right_eye": 0,
+                    "nose": 0,
+                    "mouth": 0,
+                    "left_cheek": 0,
+                    "right_cheek": 0,
+                    "chin_contour": 0
+                },
+                "blur": 0,
+                "illumination": 114,
+                "completeness": 1,
+                "angle": {
+                    "yaw": 1.59,
+                    "pitch": 0.26,
+                    "roll": -5.46
+                }
+            }
+        },
+        "pic_list": [
+            {
+                "pic": "gAQTGF2YzU4LjkyLjEwMAD",
+                "face_token": "0839b921224816fb558b0a74ee6284fb",
+                "face_id": "0839b921224816fb558b0a74ee6284fb",
+                "liveness_score": 0.9634260269,
+                "spoofing": 0.0001962436945,
+                "quality": {
+                    "occlusion": {
+                        "left_eye": 0,
+                        "right_eye": 0,
+                        "nose": 0,
+                        "mouth": 0,
+                        "left_cheek": 0,
+                        "right_cheek": 0,
+                        "chin_contour": 0
+                    },
+                    "blur": 0,
+                    "illumination": 114,
+                    "completeness": 1,
+                    "angle": {
+                        "yaw": 1.59,
+                        "pitch": 0.26,
+                        "roll": -5.46
+                    }
+                }
+            },
+            {
+                "pic": "gAQTGF2YzU4LjkyLjEwMAD",
+                "face_token": "f043b6c7d202cb25e8dfc24fccf37553",
+                "face_id": "f043b6c7d202cb25e8dfc24fccf37553",
+                "liveness_score": 0.9634260269,
+                "spoofing": 0.0001962436945,
+                "quality": {
+                    "occlusion": {
+                        "left_eye": 0,
+                        "right_eye": 0,
+                        "nose": 0,
+                        "mouth": 0,
+                        "left_cheek": 0,
+                        "right_cheek": 0,
+                        "chin_contour": 0
+                    },
+                    "blur": 0,
+                    "illumination": 114,
+                    "completeness": 1,
+                    "angle": {
+                        "yaw": 1.59,
+                        "pitch": 0.26,
+                        "roll": -5.46
+                    }
+                }
+            }
+        ]
+    }
+}
+```
+

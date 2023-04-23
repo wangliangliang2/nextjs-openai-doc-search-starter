@@ -1,0 +1,48 @@
+IP 转换器可以对 ip 字段进行数据的扩展，扩展出如下字段（其中使用服务端解析IP只能扩展出前四个字段，本地解析扩展出字段的精度则取决于本地IP库的详细程度）：
+
+```
+"Region": 区域信息    
+"City": 城市信息
+"Country": 国家信息
+"Isp": 运营商信息
+
+"CountryCode": 编码
+"Latitude","Longitude": 经纬度
+"DistrictCode": 街道
+```
+
+# 配置说明
+
+* 运行方式：选择本地，则在logkit本地解析，选择服务端则在发送到服务端后才转换。本地解析需要用户自己拥有IP库，服务端解析则统一使用七牛的IP库。若您拥有自己的IP库，可以使用本地解析，更为灵活，也可以按需解析出更详细的信息。
+
+* 要进行 Transform 变化的键(`key`)：支持多级嵌套，多级间用 *.* 符号连接，如 abc.xyz，表示 data["abc"]["xyz"]中的数据。
+
+* IP 数据库路径(`data_path`):你拥有的 ip 数据库文件路径，目前支持 `.dat`, `.datx`, `.mmdb` 三种格式。
+
+
+# 本地解析
+
+![](https://dn-odum9helk.qbox.me/FkBTONFdskQ7OK2VKGVu1QRXrcxo)
+
+
+# 服务端解析(需要在七牛工作流portal页面额外配置)
+
+![](https://dn-odum9helk.qbox.me/Fp9Ol055m0D0rS-Va567Y3tNyHUZ)
+
+> 注意：在logkit处配置服务端IP解析，只是将字段设置为IP类型，不会在网页上实时展示
+> 若要使得数据生效，需要等数据发送到实时仓库后进行额外配置才能生效，操作步骤见下一节。
+> 若原先使用本地解析（字段类型是string），是无法直接改为服务端解析的（字段类型是ip），会因为类型冲突导致数据发送不上去。
+> 因为工作流首先自动创建，然后再配置的IP转换生效，此时已经导出的部分数据会无法转换。
+
+
+## 在七牛工作流页面配置IP字段转换
+
+进入工作流页面： https://portal.qiniu.com/pandora/dags
+
+找到您的工作流，进入后，打开IP定位。
+
+![](https://dn-odum9helk.qbox.me/FuaEMTNfLus1q7x3Q66OuMKNfmu0)
+
+打开后如下所示，可以点击"齿轮"图标修改字段名称。
+
+![](https://dn-odum9helk.qbox.me/FnxPCr5-92Zkh-wHq3rWDv66ggNo)

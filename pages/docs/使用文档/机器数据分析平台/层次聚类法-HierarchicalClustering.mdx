@@ -1,0 +1,22 @@
+层次聚类法是聚类分析的一种，通过计算不同类别的相似度类创建一个有层次的嵌套的树。 在聚类树中，不同类别的原始数据点是树的最低层，树的顶层是一个聚类的根节点。**不支持模型保存**。
+
+**语法：**
+```
+...|fit HierarchicalClustering n_clusters=<int | None> linkage=<ward(default) | complete | average | single> affinity=<euclidean(default) ｜ l1 ｜ l2 | manhattan ｜ cosine> distance_threshold=<float | None> <feature_field_1> <feature_field_2>... 
+```
+
+**参数说明：**
+- n_clusters参数，用来指定形成的簇/中心点的数量。如不提供，默认值为2。与distance_threshold不能一起使用。
+- linkage参数，用来指定计算两个组合数据点间距离的方法
+	+ linkage=ward（默认值），将组合内各个数据点之间方差最小的组作为最终形成的组。
+	+ linkage=single，计算两个组合数据点中距离最近的两个数据点间的距离作为这两个组合数据点的距离
+	+ linkage=complete，计算两个组合数据点中距离最远的两个数据点间的距离作为这两个组合数据点的距离
+	+ linkage=average，计算两个组合数据点中的每个数据点与其他所有数据点的距离。将所有距离的均值作为两个组合数据点间的距离
+- affinity参数，用来指定计算linkage的方法。
+	+ affinity=euclidean，使用欧式距离
+	+ affinity=l1，使用曼哈顿距离（即affinity=manhattan)
+	+ affinity=l2，使用欧式距离（即affinity=euclidean）
+	+ affinity=manhattan，使用曼哈顿距离（即affinity=l1)
+	+ affinity=cosine，使用余弦相似度
+ - distance_threshold，用来指定距离阀值。两个组合数据点之间的距离大于阀值的情况下，这两个组合不会合并。与n_clusters不能一起使用。
+ - 如果提供distance_threshold且distance_threshold不为None，n_clusters必须为None或者不提供。反之亦然。

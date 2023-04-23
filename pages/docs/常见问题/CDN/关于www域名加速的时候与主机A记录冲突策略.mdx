@@ -1,0 +1,27 @@
+- 
+
+原理
+
+
+
+空间配置图
+
+## 原理
+
+首先明白下 一个域名（例 ：www.echohu.top） 若做了A 记录操作到ip 是不能在做cname的绑定到七牛  
+可以使用以下策略  
+www.echohu.top这个域名请求的资源会先从你指向的七牛的空间去获取资源，当七牛的空间不存在这个资源他会从镜像源test.echohu.top获取资源 而这个test.echohu.top有指向一个你的服务器ip 首先我们以echohu.top的域名为例 这是总体的图片
+
+&nbsp; ![](https://dn-odum9helk.qbox.me/Fo4b3I7KE4bLTFYp-jGztL3gNUll)
+
+## 空间配置图
+
+### www.echohu.top的域名指向一个七牛空间这个七牛的空间test-wjw
+
+![](https://dn-odum9helk.qbox.me/FhJZUDN-12nhtzVPxakrA9-2TP_y)
+
+### 七牛的的存储空间设置镜像源为test.echohu.top的域名
+
+![](https://dn-odum9helk.qbox.me/FsQeKLjezlkZislSGhUDLWGmxbMw)
+
+

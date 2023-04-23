@@ -1,0 +1,36 @@
+调用list接口
+https://developer.qiniu.com/kodo/api/1284/list，
+会返回空间内文件的相关信息，其中包括文件的大小fsize，对每个文件的fsize相加即可获得空间的当前存储总量
+
+![](https://dn-odum9helk.qbox.me/FnVnJeHQKCh4cL_ODOqR5OLJ8acU)
+
+以python代码为例：
+
+    # -*- coding: utf-8 -*-
+    from qiniu import Auth
+    from qiniu import BucketManager
+
+    access_key = ''
+    secret_key = ''
+
+    q = Auth(access_key, secret_key)
+    bucket = BucketManager(q)
+
+    bucket_name = ''
+    # 前缀
+    prefix = None
+    # 列举条目
+    limit = 200
+    # 列举出除'/'的所有文件以及以'/'为分隔的所有前缀
+    delimiter = None
+    # 标记
+    marker = None
+
+    total_fize = 0
+
+    ret, eof, info = bucket.list(bucket_name, prefix, marker, limit, delimiter)
+    for i in ret['items']:
+        print(i['fsize'])
+        total_fize += i['fsize']
+
+    print(total_fize)

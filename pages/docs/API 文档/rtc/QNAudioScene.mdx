@@ -1,0 +1,62 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                音频场景。可通过 <a href='/rtc/api/8686/QNRTCSetting#setAudioScene'>QNRTCSetting.setAudioScene</a> 在初始化时指定，也可通过 <a href='/rtc/api/8732/QNRTC#setAudioScene'>QNRTC.setAudioScene</a> 接口动态切换</section>
+            <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>1. 不同的使用场景，最佳音频处理模式不一样，可根据使用场景及不同音频场景的定义选择最佳的音频场景</p>
+        <p>2. 不同的音频场景，系统使用的音量类型是不一样的，详情可参考具体音频场景的定义</p>
+        <p>3. 佩戴蓝牙耳机的场景，将恒定使用通话模式，在蓝牙通话过程中修改的音频场景将会在蓝牙连接断开后生效</p>
+        <p>4. 佩戴有线耳机的场景，将恒定使用媒体模式，在通话过程中修改的音频场景将会在耳机拔出后生效</p>
+        </blockquote>
+    </section>
+    <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Properties</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#DEFAULT`)'>DEFAULT</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#VOICE_CHAT`)'>VOICE_CHAT</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#SOUND_EQUALIZE`)'>SOUND_EQUALIZE</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Properties</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="DEFAULT">DEFAULT</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">DEFAULT: QNAudioScene</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>默认音频场景</p>
+        <p>该场景会根据发布和订阅的情况自动切换音频模式，仅发布或仅订阅时，SDK 使用媒体模式；同时发布和订阅时，SDK 将自动切换到通话模式</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="VOICE_CHAT">VOICE_CHAT</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">VOICE_CHAT: QNAudioScene</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>清晰语聊场景</p>
+        <p>该场景恒定使用通话模式，调节的音量类型为通话音量，为了人声清晰，环境音和音乐声会有一定抑制，</p>
+    </div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="SOUND_EQUALIZE">SOUND_EQUALIZE</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">SOUND_EQUALIZE: QNAudioScene</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音质均衡场景</p>
+        <p>该场景恒定使用媒体模式，调节的音量类型为媒体音量，对环境音和音乐声的还原性更优</p>
+    </div>
+</li>
+</ul>
+</section>
+</div>

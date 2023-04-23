@@ -1,0 +1,161 @@
+# **描述**
+本接口用于查询视频流的录制记录
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}/recordhistories?start=<start>&end=<end>&marker=<marker>&line=<line>`
+* Get请求，通过`非SDK`方式调用的客户，http头部Content-Type`要么置空, 要么不要携带,要么设置为application/x-www-form-urlencoded`,否则鉴权会失败; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+* `如果需要https的视频回放地址，需请求https://qvs.qiniuapi.com`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|[流id规则](https://developer.qiniu.com/qvs/11878/use-the-stream-interface-is-required)
+|marker|否|string|如果查询的记录过多，本接口可能需要循环多次调用来获取全部记录。marker值表示当前的查询位置，第一次查询置空，后面可通过该接口返回参数获取，从而保证可以不间断获取全部记录。例如：总共要查200条记录，第一次查询了100条，第二次传入第一次返回的marker值继续查，又查询100条，第二次返回的marker为空，表示查询结束
+|line|否|integer|一次返回多少条, 最大值为`100`; 当超过100时，需要通过上面的`marker`循环读取，直到取出全部记录
+|start|是|integer|查询开始时间(unix时间戳，单位为秒)
+|end|是|integer|查询结束时间(unix时间戳，单位为秒)
+|format|否|string|录制视频格式
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|items|流数组|流数组
+|items.url|string|播放地址
+|items.type|string|类型参数，实时流录制/历史流录制
+|items.start|integer|录制开始时间(unix时间戳，单位为秒)
+|items.end|integer|录制结束时间(unix时间戳，单位为秒)
+|items.duration|integer|录制时长单位为秒
+|items.snap|string|录制封面图片地址
+|items.format|int|1表示m3u8文件，2表示flv文件，4表示mp4文件
+|items.file|string|对应云存储中的文件名
+|marker|string|下次查询的marker，如果为空说明记录查询完毕，如果不为空说明记录没有查完，需要重复调用此接口再次查询
+
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url 'qvs.qiniuapi.com/v1/namespaces/2akrarrzns76w/streams/t0/recordhistories?start=1587899020&end=1587968104' \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "items": [
+   {
+      "url": "http://prlghu509.test.bkt.clouddn.com/record/2akrarrzns76w/t0/1587898457113-1587899058364-601408.m3u8?pm3u8/0/expire/7200&e=1587975245&token=Ves3WTXC8XnEHT0I_vacEQQz-9jrJZxNExcmarzQ:RrS5TIARP3aBREpQJIKC0Rf3FAE",
+      "start": 1587898457,
+      "end": 1587899058,
+      "duration": 601,
+      "format": 1,
+      "snap": "http://prlghu509.test.bkt.clouddn.com/record/2akrarrzns76w/t0/1587898457113-1587899058364-601408.m3u8?pm3u8/0/expire/7200&vframe/jpg/offset/0&e=1587975245&token=Ves3WTXC8XnEHT0I_vacEQQz-9jrJZxNExcmarzQ:DW9iifbZWTCJkRSdRr_cXzWmGg8",
+      "file":"record/2akrarrzns76w/t0/1587898457113-1587899058364-601408.m3u8"
+    },
+    {
+      "url": "http://prlghu509.test.bkt.clouddn.com/record/2akrarrzns76w/t0/1587899050326-1587899651641-601127.m3u8?pm3u8/0/expire/7200&e=1587975245&token=Ves3WTXC8XnEHT0I_vacEQQz-9jrJZxNExcmarzQ:WGLFd8CCLDfStQvGagkI9wahMLk",
+      "start": 1587899050,
+      "end": 1587899651,
+      "duration": 601,
+      "format": 1,
+      "snap": "http://prlghu509.test.bkt.clouddn.com/record/2akrarrzns76w/t0/1587899050326-1587899651641-601127.m3u8?pm3u8/0/expire/7200&vframe/jpg/offset/0&e=1587975245&token=Ves3WTXC8XnEHT0I_vacEQQz-9jrJZxNExcmarzQ:D5hg2KmUrM6DP1Mp14tNtBAhK_w",
+      "file":"record/2akrarrzns76w/t0/1587899050326-1587899651641-601127.m3u8",
+      "type":"realTime"
+    },
+  ],
+  "marker": "eyJjIjowLCJrIjoicmVjb3JkLzJha3JhcnJ6bnM3NncvdDAvMTU4NzkxNjUxNTYyMC0xNTg3OTE3MTE3MTI1LTYwNDYzMS5tM3U4In0="
+}
+```
+
+在不使用[golang sdk](https://developer.qiniu.com/qvs/6924/qvs-go-sdk)的情况下，自行golang 发出http请求触发API代码示；其他接口可模仿此示例
+```
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+
+	"github.com/qiniu/go-sdk/v7/auth"
+)
+
+type Record struct {
+	Url      string `json:"url"`
+	Start    int    `json:"start"`
+	End      int    `json:"end"`
+	Duration int    `json:"duration"`
+	Format   int    `json:"format"`
+	Snap     string `json:"snap"`
+	File     string `json:"file"`
+	Type     string `json:"type"`
+}
+
+type Records struct {
+	Items  []Record `json:"items"`
+	Marker string   `json:"marker"`
+}
+
+func test_record_histories2() {
+	// 1.以下含有"xxxx"的6个参数，需要客户替换成实际的值
+	var (
+		YTFAccessKey = "xxxx" // 替换成自己 Qiniu 账号的 AccessKey.
+		YTFSecretKey = "xxxx" // 替换成自己 Qiniu 账号的 SecretKey.
+	)
+	mac := auth.New(YTFAccessKey, YTFSecretKey)
+
+	var namespaceId = "xxxx" // 替换成自己的空间ID
+	var streamId = "xxxx"     // 替换成自己想要测试的流ID
+
+	urlStr := fmt.Sprintf("%s", "http://qvs.qiniuapi.com/v1/namespaces/"+namespaceId+"/streams/"+streamId+"/recordhistories?start=xxxx&end=xxxx") // 替换start 和 end 时间戳，代表期望获取的时间区间范围
+	
+	req, reqErr := http.NewRequest("GET", urlStr, nil)
+	if reqErr != nil {
+		fmt.Println(reqErr.Error())
+		return
+	}
+	accessToken, signErr := mac.SignRequestV2(req)
+	if signErr != nil {
+		fmt.Println(signErr.Error())
+		return
+	}
+
+	req.Header.Set("Authorization", "Qiniu "+accessToken)
+	client := &http.Client{}
+	resp, respErr := client.Do(req)
+
+	if respErr != nil {
+		signErr = respErr
+		return
+	}
+	defer resp.Body.Close()
+
+	resData, ioErr := ioutil.ReadAll(resp.Body)
+	if ioErr != nil {
+		signErr = ioErr
+		return
+	}
+	svc1 := Records{}
+	if decodeErr := json.Unmarshal(resData, &svc1); decodeErr != nil {
+		signErr = fmt.Errorf("get response error, %s", decodeErr)
+		return
+	}
+	for _, v := range svc1.Items {
+		fmt.Println("recordVideoUrl:", v.Url)
+	}
+}
+
+
+func main() {
+	test_record_histories2()
+}
+
+
+```

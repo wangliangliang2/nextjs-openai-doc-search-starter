@@ -1,0 +1,164 @@
+Pandora 支持您开发自己的可视化类型app，在平台新增一种自定义图表类型来展示数据分析结果，可用于仪表盘、APP展示。
+
+开发可视化APP分为以下几步：
+
+* 1.下载可视化APP模板
+
+* 2.配置应用描述
+
+* 3.注册图表
+
+* 4.配置App视图、导航栏、数据
+
+* 5.开发可视化逻辑
+
+* 6.自定义图表样式配置表单
+
+* 7.生成安装包
+
+
+# 1. 下载可视化App模版
+
+Pandora 2.0 为您提供了可视化App的开发程序模版，包含了一个可视化应用的基本框架和内容，请点击[下载模版应用](http://pw7x36qrk.bkt.clouddn.com/visualization-demo.tar.gz)。
+
+**App目录结构**
+
+可视化App的目录结构与通用App目录结构基本一致，不同之处在于可视化APP多出：
+
+- `<appname>/appserver/static/visualizations`：用于开发自定义图表逻辑文件。
+- `<appname>/default/visualization.json`：用于注册图表文件。
+
+可视化app整体目录结构如下：
+
+![](http://pw7x36qrk.bkt.clouddn.com/viz-app-structure.png)
+
+
+
+# 2.配置应用描述
+
+应用描述包括您在创建应用时设置的基础信息，例如应用名称、描述、开发者等。每一个应用在其根目录下都必须包含一个app.json文件，该文件描述了应用的基本信息。
+
+可视化App的应用描述配置与[通用app](https://developer.qiniu.com/express/extend/6559/description)基本一致，区别在于:
+
+- `type`字段值为`visualization`。
+- 增加platformVersion字段，`platformVersion`的最低要求为`v0.6.0`，也就是说：`"platformVersion": ">=0.6.0"`。版本的语义化表示遵循[semver](https://semver.org/lang/zh-CN/)规范。
+- 
+可视化app的app.json结构如下：
+
+```
+json
+{
+  // [必选] 应用的标识符，名称规则：大小字符、数字、中划线、下划线，且第一个字符必须是字符。 
+  "name": "dns-insight",
+  // [必选] 应用的显示名称
+  "title": "DNS Insight",
+  // [必选] 应用的描述
+  "description": "DNS Insight应用用于可视化DNS流量、性能、以及其它DNS相关统计信息，并帮助查明错误和异常。",
+  // [必选] 应用的分类
+  "categories": ["IT Operations", "Security", "Fraud & Compliance"],
+  // [必选] 应用的版本
+  "version": "0.1.0",
+  // [必选] 应用依赖的平台版本，版本的语义化表示遵循semver规范
+  "platformVersion": ">=0.6.0",
+  // [必选] 应用的开发者
+  "authors": ["pandora"],
+  // [必选] 应用的类型
+  "type": "visualization",
+  // [必选] 应用的logo
+  "icon": "static/icon.png",
+  // [可选] 应用的帮助文档链接
+  "docsLink": "https://developer.qiniu.com/express",
+  // [可选] 应用的内容描述
+  "contents": [
+    {
+      "key": "overview",
+      "name": "DNS概览",
+      "description": "DNS Insight应用用于可视化DNS流量、性能、以及其它DNS相关统计信息，并帮助查明错误和异常。"
+    }, {
+      "key": "dns_tunneling",
+      "name": "DNS Tunneling",
+      "description": "展示DNS Tunneling状况。"
+    }
+  ],
+  // [可选] 应用的内容预览
+  "preview": [
+    {
+      "title": "DNS概览",
+      "image": "static/preview/overview.png"
+    }
+  ]
+}
+
+```
+# 3. 注册图表
+
+注册图表使您开发的可视化app不仅在应用平台可用，系统可视化模块将新增一个与可视化app同名的图表类型，您可以使用自己开发的图表类型在仪表盘中配置图表。
+注册图表逻辑在`<appname>/default/visualization.json` 文件中定义。一个可视化App可以注册多个图表，每一个图表由一个json文件描述，包含的字段下：
+
+| 属性        | 说明                                                         | 类型   | 必选 |
+| ----------- | ------------------------------------------------------------ | ------ | ---- |
+|name| 图表名称，与App目录结构中的`appserver/static/visualizations/<visualization_name>`路径下的`<visualization_name>`名称一致 | string | 是|
+| label       | 图表的显示名称 | string | 是  |
+| description | 图表描述| string |否   |
+| group       | 图表分组，每个图表都有归属组，如柱状图属于二维图表组| string | 否   |
+| groupLabel  | 图表分组显示名称 | string | 否   |
+
+示例：
+
+```json
+[
+  {
+    "name": "sankey",
+    "label": "桑基图",
+    "group": "custom",
+    "groupLabel": "自定义",
+    "description": "自定义桑基图"
+  },
+  {
+    "name": "flame-graph",
+    "label": "火焰图",
+    "group": "custom",
+    "groupLabel": "自定义",
+    "description": "自定义火焰图"
+  }
+]
+```
+
+# 4.配置App视图、导航栏、数据
+完整的App需配置以下内容，使app以视图的形式组织起来：
+
+* [来源类型和提取规则](/express/extend/6555/app-knowledge)：一个应用的数据通常为一种或者多种类型的日志，系统正确的识别并解析日志是后续业务和场景化展示的前提。您需要将应用相关的来源类型和解析规则添加到应用的配置文件，以便在创建应用的搜索和仪表盘时能使用配置文件中的来源类型和解析规则。
+
+* [视图页面](/express/extend/6556/views)：配置xml视图页面（您希望的数据展示形式）来展示您的分析数据。
+
+* [导航栏](/express/extend/6557/nav)：如果您的应用中包含多个视图页面，需配置导航栏指定每个页面的入口。
+
+
+此节提到的配置App视图、导航栏、数据方式与通用App一致，请点击链接查看。
+
+# 5.开发可视化逻辑
+
+当您把app的视图、导航、来源类型等都配置好之后，您需要考虑：如何构建图表逻辑，让您分析的数据以您想要的图表形式来呈现。
+
+那么您需要定义可视化逻辑代码。
+
+如图：想实现通过键值表格图来展示数据，您需要开发键值表格逻辑代码。
+![](http://pw7x36qrk.bkt.clouddn.com/kv_app_example.png)
+
+可视化的实现源码存放于`appserver/static/visualizations/<visualization_name>/src`目录下，该目录下包含一个标准的前端项目组织结构。该项目将编译以后的js和css文件输出成上层目录的`visualization.js`和`visualization.css`文件，Pandora 2.0平台会加载生成的`visualization.js`和`visualization.css`文件。详见[开发可视化逻辑](/express/extend/6717/custom_visualization)。
+
+# 6.自定义图表样式配置表单
+
+Pandora 2.0平台提供了常用的表单组件，支持通过xml的方式自定义图表属性的配置表单。
+比如，图表有了配置表单之后，您可以通过如下的样式配置设置图表的样式。
+
+![](http://pw7x36qrk.bkt.clouddn.com/chart_configuration.png)
+
+[点此](/express/extend/6718/custom_chart_configuration)了解详情。
+
+# 7.生成安装包
+
+将构建好的应用工程文件打成压缩包，以便导入安装和分发。可视化APP打包方式与通用App一致，参考[生成安装包](/express/extend/6560/generate-package)即可。
+
+>注意1：安装包的名称需满足：大小字符、数字、中划线、下划线，且第一个字符必须是字符。
+>注意2:压缩包目前支持 `.tar.gz` 格式。

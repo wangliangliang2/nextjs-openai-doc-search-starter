@@ -1,0 +1,21 @@
+### **新功能**
+
+- json 解析中支持以 n 开头并且不被引号包含的非 null/NULL 值 
+- 增加 accum 算子 
+- 字段加速支持搜索时索引加速 
+
+### **Bug 修复**
+
+- 修复 App 时间选择&操作栏无法使用 
+- 修复 App xml option 标签类型错误 
+- dashboard 编辑搜索条件未保存情况下弹出提示 
+- app 编辑退出时弹出提示
+- 仪表盘支持通过 url 传递模版变量值 
+- 修复 dashboard 导出 XML 时 Object 类型转换错误 
+- json 解析中修复数组中只有第一个元素为 null 时解析为空，其他解析为空字符串的问题 
+- 修复 table column color splitter 无法修改 
+- 修复 search 命令中含有过滤条件时做了多余搜索精简的问题 
+- 修复 event 列表持续刷新问题 
+- 修复 导出到仓库：自定义sourcetype时间解析错误 
+- 修复 rollover 由于超时时间过短无法正常运行的问题 
+- 修复search算子在有比较和in表达式时查询日志匹配条数出错的问题 

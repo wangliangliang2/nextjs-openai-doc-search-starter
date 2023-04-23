@@ -1,0 +1,19 @@
+### 两种鉴权方式
+
+#### 1. expiry 时间戳鉴权
+```
+rtmp://domain/hub/title?expire={自定义某个时间戳}&token={publishToken}
+```
+这种是在指定的时间戳内，可以推流。需要针对hub来设置此类鉴权，即hub内所有流都是expire鉴权。
+
+#### 2.none 鉴权
+```
+rtmp://<push_domain>/<hub>/<title>
+```
+这种鉴权方式称为无校验鉴权，不限时间也无校验
+
+
+### 概念
+- title: 流名，title 是 1-200 个字符，英文+数字组成，title 格式要求：^[a-zA-Z0-9_-]{4,100}$ ，title不能重复
+- publishSecurity： 鉴权方式，如上两种。
+- PublishSecurity 鉴权方式：即鉴权方式。决定了推流地址的有效性和合法性。是应用(Hub)的属性,可以在控制台应用属性中进行修改。推流时，使用`rtmp://<HubPublishDomain>/<StreamKey>?<鉴权方式中的publishKey或token>`这样带有鉴权参数的地址，可获得推流能力。包括四种鉴权方式，static 静态推流地址/expiry限时推流地址/dynamic动态推流地址/none无鉴权方式。

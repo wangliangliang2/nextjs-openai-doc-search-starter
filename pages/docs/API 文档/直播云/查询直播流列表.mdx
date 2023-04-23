@@ -1,0 +1,89 @@
+# 接口描述
+查询目标直播空间下的直播流列表，可以根据直播流在线状态和直播流名称进行筛选
+
+# 请求参数
+
+```
+GET /v2/hubs/<Hub>/streams?liveonly=<true>&prefix=<prefix>&limit=<limit>&marker=<marker>
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>  
+Content-Type: application/x-www-form-urlencoded 
+```
+
+| 名称 | 类型 | 是否必须 | 描述     |
+| ---- | ------ | -------- | ---------- |
+| hub  | string | 是   | 直播空间名 |
+| liveonly | bool   | 否      | 只返回当前在线的流，true 表示查询的是正在直播的流，不指定表示返回所有的流 |
+| prefix   | string | 否      | 流名称前缀匹配      |
+| limit    | int    | 否      | 返回值数量限制，取值范围0～5000 |
+| marker   | string | 否      | 游标，表示从该位置开始返回 |
+
+# 返回数据
+
+<html>
+ <head></head>
+ <body>
+  <table> 
+   <thead class="ant-table-thead"> 
+    <tr> 
+     <th key="name">名称</th>
+     <th key="type">类型</th>
+     <th key="desc">描述</th>
+    </tr> 
+   </thead>
+   <tbody classname="ant-table-tbody">
+    <tr key="0-0">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> items</span></td>
+     <td key="1"><span>object []</span></td>
+     <td key="2"><span style="white-space: pre-wrap">直播流列表</span></td>
+    </tr>
+    <tr key="0-0-0">
+     <td key="0"><span style="padding-left: 20px"><span style="color: #8c8a8a">├─</span> key</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">直播流名称</span></td>
+    </tr>
+    <tr key="0-1">
+     <td key="0"><span style="padding-left: 0px"><span style="color: #8c8a8a"></span> marker</span></td>
+     <td key="1"><span>string</span></td>
+     <td key="2"><span style="white-space: pre-wrap">游标，表示当前位置，若marker为空，表示遍历完成</span></td>
+    </tr> 
+   </tbody> 
+  </table>
+ </body>
+</html>
+
+# 示例
+
+请求体:
+
+```
+GET /v2/hubs/test/streams?limit=10&liveonly=true HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken> 
+Content-Type: application/x-www-form-urlencoded 
+```
+
+返回体:
+
+```
+200 OK
+
+{
+    "items": [
+        {
+            "key": "stream1"
+        }, 
+        {
+            "key": "stream2"
+        },
+        {
+            "key": "stream3"
+        }
+    ],
+    "marker": "" 
+}
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

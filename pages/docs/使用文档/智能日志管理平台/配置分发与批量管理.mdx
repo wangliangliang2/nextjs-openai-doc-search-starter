@@ -1,0 +1,128 @@
+
+# 配置批量分发
+
+对于一个已经配置完成的收集任务，点击分发按钮，可以看到两种批量分发方式。
+
+![](https://dn-odum9helk.qbox.me/FvwX6h8nzYwt46WuvS1IhnlfZ-z4)
+
+
+## 批量分发到多个机器
+
+点击分发按钮后，会弹出一个分发的选框，默认是分发到机器，在左侧选择希望分发到的机器，选择完毕后点击分发即可。
+
+分发任务发出后，无论agent之前是否已经在运行该收集器，都会重新以新的配置开始收集，所以修改收集器后重新分发一次，就能使得修改生效。
+
+> 重新分发并不会导致数据丢失，logkit-pro agent 会记录读取位置，新老配置更替时读取和发送照样能不重不漏。
+
+![分发到机器](https://dn-odum9helk.qbox.me/Fk_FrInPmMZqdDOXhEMLIs8b_G53)
+
+如图所示，我们的收集器之前已经分发到了 `zhonghuipingdeMacBook-pro.local` 这台机器，然后我们选择 `MacBookPro.local` 和 `WenzhengdeMacbook-Pro.local`, 点击确认后，这三台都会运行该收集任务。
+同时 `zhonghuipingdeMacBook-pro.local` 会以本次分发的新配置运行。
+
+
+## 批量分发到某些标签
+
+与分发到机器类似，分发到标签可以方便您对具有同一类标签的机器进行批量操作。具体如何对机器打标签，我们在本文随后进行介绍。
+
+![分发到标签](https://dn-odum9helk.qbox.me/Fj3t2KlacQhDg0SF4KX6tzDAONMd)
+
+如图所示，我们之前已经分发到了 `smartelf` 这个标签，所有打上 `smartelf` 标签的机器都已经在运行。
+
+然后我们这次加上 `oracle` 这个标签，再次分发。所有打上 `smartelf` 和 `oracle` 标签的机器都会执行该收集任务。
+
+若配置有编辑更新，再次分发，会以新的配置运行。
+
+若一台机器同时打上了 `oracle` 和 `smartelf` 两个标签，则对于同一个任务，只会执行一次。
+
+
+# 标签管理
+
+在机器列表中，您可能已经注意到有个 "+" 标记的图标，鼠标放上去可以看到添加标签。
+
+![添加标签](https://dn-odum9helk.qbox.me/FkJ7rFVkmkT5AJnOpfl1ytI4We3t)
+
+点击该按钮，可以看到将某个机器添加到标签的选项。
+
+![](https://dn-odum9helk.qbox.me/FiLcUNpNT69brBw3VE5EO2wkewd5)
+
+在该页面点击 <标签管理> 可以进入到添加标签的页面。
+
+![](https://dn-odum9helk.qbox.me/FrJ9lpON31IDco4ZbjwTgfMFTZew)
+
+该页面可以添加标签，并对标签的备注进行修改。
+
+
+# 其他批量操作
+
+在 <机器列表> 以及 <数据收集> 列表中，我们还支持一些批量操作。
+
+如图所示，通过勾选列表最左侧的复选框，可以进行批量的升级、添加标签、查看收集任务进行对比等操作。
+
+![](https://dn-odum9helk.qbox.me/FrIcNcA9gZPAqFGh6jojE-EBG4os)
+
+
+# 与Puppet、Ansible等运维工具结合进行配置分发
+
+上文介绍的配置批量分发都是使用 logkit-pro 系统实现，但是 logkit-pro 的 agent 本身也支持与成熟的运维工具想结合使用，即监听配置文件的修改，实时热更新。
+
+以下是一个简化版的 logkit-pro agent 配置。
+
+```
+{
+  "version": 1,
+  "service": {
+    "bind_host": ":3000",
+    "static_dir": "public/"
+  },
+  "service_url": {
+    "smart_elf": "https://logkit-pro.qiniu.com/"
+  },
+  "agent": {
+    "connect_to_server": false,
+    "ak": "",
+    "sk": ""
+  },
+  "runtime": {
+    "max_procs": 1,
+    "pprof_host": ":3002"
+  },
+  "security": {
+    "disable_auths": false,
+    "auths_file": "auths.conf"
+  },
+  "confs_path": ["/home/path/to/confs*"]
+}
+```
+
+可以看到 `confs_path` 参数，该参数指定了logkit-pro agent 监听的目录， 这个参数是以 json 数组的形式存在的，支持填写多个路径，同时也支持linux通配符。
+
+具体来说，我们可以创建一个文件夹，用于存放配置文件，如目录 `/home/path/to/confs/` 的文件夹，然后使用 `Puppet`、`Ansible` 等工具对写好的配置进行推送。
+
+推送的配置文件放入 `/home/path/to/confs/`，如
+
+```
+qboxserver@hostname:/home/path/to/confs/$: ls
+runner1.conf   runner2.conf
+```
+
+在文件新增或修改的时候，logkit-pro agent 会实时感知配置文件的变化，使得配置生效。
+
+* 七牛公司内部也采用类似的方法，通常服务在机器上遵循这样的路径 `/home/qboxserver/<服务名称>/_package/` ，我们会把收集任务的配置文件写到各自的服务中去，如创建一个文件夹 `/home/qboxserver/<服务名称>/_package/logkit-pro/`, 然后指定logkit-pro的配置文件监听此类文件夹 `"confs_path": ["/home/qboxserver/*/_package/logkit-pro/"]` ，这样所有服务上线后第一时间就可以采集日志，并且互不影响，不需要去操作 logkit-pro 本身。
+
+那么如何获得像 `runner1.conf` 、 `runner2.conf` 这样的配置文件呢？
+
+一方面，在配置收集器的最后一步可以看到：
+
+![](https://dn-odum9helk.qbox.me/FnTQUjl3qGut8MpN2H5g_jxrezKA)
+
+另一方面，可以在收集器列表中直接查看收集器配置：
+
+![](https://dn-odum9helk.qbox.me/FtQiL71otzf0MgFRoVi6Q6Z1PXI9)
+![](https://dn-odum9helk.qbox.me/FumZ_YTAj2bhxrru9RDTLKrYITjg)
+
+* **注意我们为了安全隐藏了七牛鉴权相关的配置，在实际配置时要添加**
+
+![](https://dn-odum9helk.qbox.me/FjFTkuJ5B524t2yDJ2UgLtIydP8C)
+
+当然，也可以利用服务端的分发功能，先分发一台，然后在 logkit-pro agent 所在机器的 `.logkitconfs` 文件夹下找到配置文件，再修改使用。
+

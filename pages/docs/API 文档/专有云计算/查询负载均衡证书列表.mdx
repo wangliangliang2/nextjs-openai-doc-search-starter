@@ -1,0 +1,46 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `GET` /api/rio/v1/network/loadbalancer_certificates
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id           | string | header| 是 | 地域 ID
+server_certificate_name	| string | query | 否 | 名称
+server_certificate_id	| string | query | 否 | 证书 ID
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+data		| []CertificateInfo    | 负载均衡证书信息
+
+## CertificateInfo 负载均衡证书信息
+名称 | 类型 |  描述
+----- | ----- | -----
+certificate_id		| string  	| 证书 ID
+certificate_name	| string 	| 证书名称
+fingerprint     	| string  	| 指纹
+expire_time         | integer  	| 过期时间
+create_time         | integer  	| 证书上传的时间
+common_name   		| string  	| 域名
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEujz9VdJz8kW",
+    "data":[
+        {
+            "certificate_id":"bd763f67-024d-49d6-b7f0-da563aa21704",
+            "certificate_name":"cert-ylIw4",
+            "fingerprint":"",
+            "expire_time":1658447999000,
+            "create_time":1642071448000,
+            "common_name":"qec.test.io"
+        }
+    ]
+}
+```

@@ -1,0 +1,64 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>interface com.qlive.avparam.QAudioFrameListener</p>
+                <p>音频帧监听</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onAudioFrameAvailable`)'>onAudioFrameAvailable</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onAudioFrameAvailable">onAudioFrameAvailable</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void onAudioFrameAvailable(ByteBuffer srcBuffer, int size, int bitsPerSample, int sampleRate, int numberOfChannels);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>音频帧回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            srcBuffer: ByteBuffer
+        </div>
+                <p>输入pcm数据</p>
+    </li>
+    <li>
+        <div>
+            size: int
+        </div>
+                <p>大小</p>
+    </li>
+    <li>
+        <div>
+            bitsPerSample: int
+        </div>
+                <p>位深</p>
+    </li>
+    <li>
+        <div>
+            sampleRate: int
+        </div>
+                <p>采样率</p>
+    </li>
+    <li>
+        <div>
+            numberOfChannels: int
+        </div>
+                <p>通道数</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

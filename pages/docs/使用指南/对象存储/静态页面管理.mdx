@@ -1,0 +1,35 @@
+静态网站是指网页都由静态内容构成，也涵盖客户端执行的脚本，如 JavaScript、Flash 等。
+您可以通过设置静态页面来将您的静态网站托管到对象存储Kodo的存储空间（Bucket），并使用空间的访问域名来访问这个网站。
+<br>
+
+# **具体说明**
+Kodo 当前支持配置如默认首页、404页面的静态网站：
+### **默认首页**
+- 当通过浏览器访问静态网站域名时，Kodo返 回给用户的网站首页（即网站的 `index.html`）。
+- 开启该功能后，当前空间根目录及子目录中的 `index.html`（或 `index.htm`）文件将会作为默认首页进行展示。
+### **默认404页**
+- 当通过浏览器访问空间内文件出现 404 错误时，Kodo 返回给用户的错误页面。
+- 设置的页面须保存在当前空间内，即若您选择上传文件作为自定义页面，该文件将默认名为 `errno-404` 并上传保存至当前空间内。
+
+**注：请确保您已为当前空间绑定了自定义域名，以成功通过自定义域名进行静态网页的预览访问。关于绑定自定义域名步骤，请参考[域名管理](/kodo/development_guidelines/8527/kodo-domain-name-management)。**
+
+<br>
+
+
+# **使用案例**
+
+当您已为当前空间绑定了自定义域名 `https://example.com` 并为该空间开启默认首页、配置404页面设置，即将名称为 `index.html` 的默认首页文件和名称为 `errno-404` 的默认404页面文件上传至当前空间根目录下时，则
+  - 当您访问 `https://example.com` 时，将返回 `https://example.com/index.html`。
+  - 当您访问 `https://example.com/Object` 时，如 Object 存在即返回该文件内容，若 Object 不存在即返回 `errno-404` 的文件内容。
+- 如您还将名称为 `index.html` 的默认首页文件上传至当前空间的子目录 `xyz/` 下时，则当您访问 `https://example.com/xyz` 时，将返回 `https://example.com/xyz/index.html`。
+     
+
+
+<br>
+
+# **操作方式**
+Kodo支持通过控制台方式进行相关静态网页的设置。
+|支持的操作方式|参考文档|
+|-|-|
+|控制台	|[设置静态页面](/kodo/development_guidelines/12269/set-a-static-page)|
+

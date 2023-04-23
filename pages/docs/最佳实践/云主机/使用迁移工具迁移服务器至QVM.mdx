@@ -1,0 +1,348 @@
+<a id="step01"></a>
+# **迁移工具** 
+
+迁云工具能将计算机磁盘中的操作系统、应用程序以及应用数据等迁移到虚拟环境或是虚拟磁盘分区。支持在线迁移物理机服务器、虚拟机、以及其他云平台的云主机至 QVM 管理控制台，实现统一部署资源的目的。
+
+迁云工具支持迁移下列 64 位的 Windows 和 Linux 操作系统，包括：
+
+| 操作系统 | 具体版本 |
+| ----------- | ------------ |
+| Windows | <li> Windows Server 2003 </li> <li> Windows Server 2008 </li> <li> Windows Server 2012 </li> <li> Windows Server 2016</li> |
+| Linux | <li> CentOS 5/6/7 </li> <li> Ubuntu 10/12/14/16 </li> <li> Debian 7/8/9 </li> <li> Red Hat 5/6/7</li> <li> SUSE 11.4/12.1/12.2 </li> <li> OpenSUSE 13.1 </li> <li> Gentoo 13.0 </li>
+
+迁云工具是免费工具，不收取额外的费用。但是，在迁云过程中会涉及少量费用：
+
+（1）迁云过程中，会创建快照以生成自定义镜像，该快照会按照实际占用容量收取少部分费用。
+
+（2）迁云过程中，系统默认在你的账户下创建一个云主机实例做中转站，该中转实例产生的资源耗费默认付费模式为按量付费。
+
+**迁云注意事项：**
+
+- 执行迁移任务时，可以通过加大可用带宽来提高迁移速度。
+
+- 迁云工具当前版本暂不支持迁移增量数据。对于源服务器上需要保持数据完整的业务，你可以选择一个业务空闲时段，暂时停止这些业务，再迁移数据。
+
+- 为避免迁云失败，请勿停止、重启或者释放中转实例。迁云完成后，该中转实例会自动释放。但迁云失败后，中转实例会保留在控制台，此时，需要你前往控制台手动[删除实例](/qvm/manual/qvm-instance#5)，以免造成不必要的扣费。
+
+- 每成功迁云一次，配置文件 client_data 会自动记录迁云成功后在 QVM 控制台创建的 QVM 实例的相关数据。再次迁云时，你需要使用初始下载的客户端配置文件。为避免迁云失败，尽量不修改配置文件 client_data。
+
+<a id="step011"></a>
+**迁移云工具下载：**
+
+- [Linux 64bits](http://p70nwjoid.bkt.clouddn.com/go2qvm_client1.5.1.5_linux_x86_64.zip)
+
+- [Linux 32bits](http://p70nwjoid.bkt.clouddn.com/go2qvm_client1.5.1.5_linux_i386.zip)
+
+- [Windows 64bits](http://p70nwjoid.bkt.clouddn.com/go2qvm_client1.5.1.5_windows_x86_64.zip)
+
+- [Windows 32bits](http://p70nwjoid.bkt.clouddn.com/go2qvm_client1.5.1.5_windows_i386.zip)
+
+迁云工具压缩包，解压后包含的文件列表如下：
+
+- Windows 服务器
+
+ - Rsync 文件夹：迁云所需要依赖的应用，除筛选机制文件 Rsync\etc\rsync_excludes_win.txt 外，其余文件请勿手动修改。
+ 
+ - client_data：迁云过程中的数据文件
+ 
+ - config.json：源服务器信息配置文件
+ 
+ - qvm_client.exe：迁云工具主程序
+ 
+- Linux 服务器
+
+ - client_check：辅助程序
+ 
+ - client_data：迁云过程中的数据文件
+ 
+ - config.json：源服务器信息配置文件
+ 
+ - rsync_excludes_linux.txt：筛选机制文件，设置不迁云的路径
+ 
+ - qvm_client：迁云工具主程序
+
+<br>
+
+<a id="step02"></a>
+# **Linux云主机迁移至QVM** 
+
+迁云前期准备：
+
+- 迁云之前，你需要确保待迁云的源服务器能够访问公网，便于传输数据至 QVM
+
+- 确保系统本地时间与实际时间一致，否则日志文件会提示 TimeStamp 异常
+
+- 确保待迁移的源服务器的安全组的出方向设置为全部允许
+
+- 确保系统已关闭 SELinux。你可以运行`setenforce 0`临时关闭 SELinux
+
+- 你需要以 root 身份运行迁云工具
+
+- 如果你的源服务器系统是 CentOS 5 或者 Debian 7 等内核版本比较低并且自带 GRUB 程序版本低于 1.99 时。你可以预先[安装 1.9 以上版本的系统引导程序 GRUB](/qvm/kb/linux-install-grub)
+
+- 确保你已经安装了 Rsync 库：
+
+ - CentOS：运行`yum install rsync –y` 
+ 
+ - Ubuntu：运行`apt-get install rsync –y`
+ 
+ - Debian：运行`apt-get install rsync –y`
+ 
+ - 其他发行版：参考发行版官网安装相关的文档
+
+<br>
+
+<a id="step021"></a>
+### **示例一: 迁移一台无数据盘的 Linux 服务器** 
+
+例如服务器配置信息为：
+
+- 操作系统: Ubuntu 14.04 x86_64
+
+- 系统盘：20 GB
+
+- 系统架构：64 位
+
+迁云目标为：
+
+- 目标地域：QVM 华北 2 地域 (cn-beijing)
+
+- 镜像名称：TEST_MIRROR_Migration_01
+
+- 系统盘设置：40 GB
+
+操作步骤：
+
+**1. **登录待迁云的服务器、虚拟机或者云主机
+
+**2. **将下载的迁云工具压缩包解压到指定的目录
+
+**3. **在控制台[创建 	PublicKey/SecretKey](https://portal.qiniu.com/qvm/system/keys)，用于输出到配置文件 config.json 里，对应的配置信息如下：
+
+```
+{
+    "public_key": "PublicKey",
+    "secret_key": "SecretKey",
+    "region_id": "cn-beijing",
+    "image_name": "TEST_MIRROR_Migration_01",
+    "system_disk_size": 40,
+    "platform": "Ubuntu",
+    "architecture": "x86_64",
+    "data_disks": [],
+    "bandwidth_limit": 0
+}
+```
+
+参数说明：
+
+|参数名 | 类型 | 是否必填 | 说明 |
+| ----------- | ------------ | ----------- | ----------- |
+| PublicKey/SecretKey | string | 是 | 访问云主机 QVM 密钥对，你可以创建多对访问密钥，且可随时启用、禁用或着删除已经生成的访问密钥对 |
+| region_id |  string |  是 |  你的服务器迁移入目标地域 ID，如 cn-beijing。关于目标地域 ID 的详细信息请参考文档[地域和可用区](/qvm/manual/region-zone) |
+| image_name |  string  | 是  | 为你的服务器镜像设定一个镜像名称，该名称不能与同一地域下现有镜像名重复。<li> 长度为 [2, 128] 个英文或中文字符，必须以大小字母或中文开头，可包含数字、点号`.`、下划线`_`或短横线`-`</li> <li> 镜像名称会显示在 QVM 控制台 </li> <li> 不能以 http:// 和 https:// 开头 </li>  |
+| system_disk_size |  int  | 是  |  为系统盘指定大小，单位为 GB。取值范围；[40, 500]。该参数取值需要大于源服务器系统盘实际占用大小，若源系统盘大小为 500 GB，实际占用 100 GB，那该参数取值只要大于 100 GB 即可 </li> |
+| platform |  string |  否 |  源服务器的操作系统。取值可以是：CentOS、Ubuntu、SUSE、OpenSUSE、Debian、RedHat 等。取值必须区分大小写，并保持空格一致。 |
+| architecture | string  |  否  | 系统架构。取值：<li> i386：32 位系统架构</li> <li> x86_64：64 位系统架构</li>  |
+| data_disks | array  | 否  | 数据盘列表，最多支持 16 块数据盘。该参数可以置为缩容数据盘的预期数值，单位为 GB，该值不能小于数据盘实际使用空间大小。  |
+| bandwidth_limit |  int |  否 | 数据传输的带宽上限限制，单位为 KB/s。默认值：0  |
+
+**6. **运行`chmod +x ./qvm_client`
+
+**7. **运行`./qvm_client`
+
+**8. **当出现`Goto Qvm Finished!`提示时，前往 QVM 控制台镜像详情页查看结果；当出现`Goto Qvm Not Finished!`提示时，检查日志文件[排查故障](/qvm/kb/qvm-migration-faq)。修复问题后，重新运行迁云工具，重新运行迁云工具即可恢复迁云工作，迁云工具会从上一次执行的进度中继续迁云，无需重头开始；当出现如下信息时：
+
+![下载最新](https://dn-odum9helk.qbox.me/FjGtkIOlN3gHwVesB4zQsFHARgUC)
+
+
+请前往下载中心[下载最新版本工具 >>](#step011)
+
+<br>
+
+<a id="step022"></a>
+### **示例二: 迁移一台带数据盘的 Linux 服务器** 
+
+如果你的 Linux 服务器在示例一的基础上加入了 3 块数据盘，源目录和数据盘大小分别为：
+
+- /mnt/disk1：100 GB
+
+- /mnt/disk2：150 GB
+
+- /mnt/disk3：200 GB
+
+那么你可以根据如下信息配置 config.json 文件：
+
+```
+{
+    "public_key": "PublicKey",
+    "secret_key": "SecretKey",
+    "region_id": "cn-beijing",
+    "image_name": "TEST_MIRROR_Migration_01",
+    "system_disk_size": 40,
+    "platform": "Ubuntu",
+    "architecture": "x86_64",
+    "data_disks":  [ {
+            "data_disk_index": 1,
+            "data_disk_size": 100,
+            "src_path": "/mnt/disk1"
+        }, {
+            "data_disk_index": 2,
+            "data_disk_size": 150,
+            "src_path": "/mnt/disk2"
+        }, {
+            "data_disk_index": 3,
+            "data_disk_size": 200,
+            "src_path": "/mnt/disk3"
+        }
+    ],
+    "bandwidth_limit": 0
+}
+```
+参数说明：
+
+|参数名 | 类型 | 是否必填 | 说明 |
+| ----------- | ------------ | ----------- | ----------- |
+| PublicKey/SecretKey | string | 是 | 访问云主机 QVM 密钥对，你可以创建多对访问密钥，且可随时启用、禁用或着删除已经生成的访问密钥对 |
+| region_id |  string |  是 |  你的服务器迁移入目标地域 ID，如 cn-beijing。关于目标地域 ID 的详细信息请参考文档[地域和可用区](/qvm/manual/region-zone) |
+| image_name |  string  | 是  | 为你的服务器镜像设定一个镜像名称，该名称不能与同一地域下现有镜像名重复。<li> 长度为 [2, 128] 个英文或中文字符，必须以大小字母或中文开头，可包含数字、点号`.`、下划线`_`或短横线`-`</li> <li> 镜像名称会显示在 QVM 控制台 </li> <li> 不能以 http:// 和 https:// 开头 </li>  |
+| system_disk_size |  int  | 是  |  为系统盘指定大小，单位为 GB。取值范围：[40, 500]。该参数取值需要大于源服务器系统盘实际占用大小，若源系统盘大小为 500 GB，实际占用 100 GB，那该参数取值只要大于 100 GB 即可 </li> |
+| platform |  string |  否 |  源服务器的操作系统。取值可以是：CentOS、Ubuntu、SUSE、OpenSUSE、Debian、RedHat 等。取值必须区分大小写，并保持空格一致。 |
+| architecture | string  |  否  | 系统架构。取值：<li> i386：32 位系统架构</li> <li> x86_64：64 位系统架构</li>  |
+| data_disks | array  | 否  | 数据盘列表，最多支持 16 块数据盘。该参数可以置为缩容数据盘的预期数值，单位为 GB，该值不能小于数据盘实际使用空间大小。  |
+| data_disk_index | int | 是 | 数据盘序号。取值范围：[1, 16]，初始值：1 |
+| data_disk_size | int | 是 |  数据盘大小。单位为 GB。取值范围：[20, 32768]，该参数取值需要大于源服务器数据盘实际占用大小，例如，源数据盘大小为 500 GB，实际占用 100 GB，那该参数取值只要大于 100 GB 即可。|
+| src_path | string | 是 |  数据盘源目录。Linux 指定目录，例如，/mnt/disk1、/mnt/disk2 或者 /mnt/disk3。**注意：**不能配置为根目录或者系统目录，例如，/bin、/boot、/dev、/etc、/lib、/lib64、/sbin、/usr 和 /var。迁移带数据盘的 Linux 服务器后，启动实例时默认不挂载数据盘。你可以在启动 QVM 实例后运行`ls /dev/vd`命令查看数据盘设备，根据实际需要手动挂载，并编辑`/etc/fstab`配置开机自动挂载。更多详情，请参考[Linux 格式化和挂载数据盘](/qvm/manual/qvm-linux-quickstart#linux-mount-format-disk) |
+| bandwidth_limit |  int |  否 | 数据传输的带宽上限限制，单位为 KB/s。默认值：0  |
+
+<br>
+
+<a id="step03"></a>
+# **Windows云主机/物理机迁移至QVM** 
+
+迁云前期准备：
+
+- 迁云之前，你需要确保待迁云的源服务器能够访问公网，便于传输数据至 QVM
+
+- 确保系统本地时间与实际时间一致，否则日志文件会提示 TimeStamp 异常
+
+- 确保待迁移的源服务器的安全组的出方向设置为全部允许
+
+<br>
+
+<a id="step031"></a>
+### **示例一: 迁移一台无数据盘的 Windows 服务器** 
+
+例如服务器配置信息为：
+
+- 操作系统: Windows Server 2012R2 Standard 64bit
+
+- 系统盘：40 GB
+
+- 系统架构：64 位
+
+迁云目标为：
+
+- 目标地域：QVM 华北 2 地域 (cn-beijing)
+
+- 镜像名称：TEST_MIRROR_Migration_02
+
+- 系统盘设置：50 GB
+
+操作步骤：
+
+**1. **登录待迁云的服务器、虚拟机或者云主机
+
+**2. **将下载的迁云工具压缩包解压到指定的目录
+
+**3. **在控制台[创建 	PublicKey/SecretKey](https://portal.qiniu.com/qvm/system/keys)，用于输出到配置文件 config.json 里，对应的配置信息如下：
+
+```
+{
+    "public_key": "PublicKey",
+    "secret_key": "SecretKey",
+    "region_id": "cn-beijing",
+    "image_name": "TEST_MIRROR_Migration_02",
+    "system_disk_size": 40,
+    "platform": "Windows Server 2012",
+    "architecture": "x86_64",
+    "data_disks": [],
+    "bandwidth_limit": 0
+}
+```
+
+参数说明：
+
+|参数名 | 类型 | 是否必填 | 说明 |
+| ----------- | ------------ | ----------- | ----------- |
+| PublicKey/SecretKey | string | 是 | 访问云主机 QVM 密钥对，你可以创建多对访问密钥，且可随时启用、禁用或着删除已经生成的访问密钥对 |
+| region_id |  string |  是 |  你的服务器迁移入目标地域 ID，如 cn-beijing。关于目标地域 ID 的详细信息请参考文档[地域和可用区](/qvm/manual/region-zone) |
+| image_name |  string  | 是  | 为你的服务器镜像设定一个镜像名称，该名称不能与同一地域下现有镜像名重复。<li> 长度为 [2, 128] 个英文或中文字符，必须以大小字母或中文开头，可包含数字、点号`.`、下划线`_`或短横线`-`</li> <li> 镜像名称会显示在 QVM 控制台 </li> <li> 不能以 http:// 和 https:// 开头 </li>  |
+| system_disk_size |  int  | 是  |  为系统盘指定大小，单位为 GB。取值范围：[40, 500]。该参数取值需要大于源服务器系统盘实际占用大小，若源系统盘大小为 500 GB，实际占用 100 GB，那该参数取值只要大于 100 GB 即可 |
+| platform |  string |  否 |  源服务器的操作系统。可以是：Windows Server 2003、Windows Server 2008、Windows Server 2012、Windows Server 2016 等。取值必须区分大小写，并保持空格一致。 |
+| architecture | string  |  否  | 系统架构。取值：<li> i386：32 位系统架构</li> <li> x86_64：64 位系统架构</li>  |
+| data_disks | array  | 否  | 数据盘列表，最多支持 16 块数据盘。该参数可以置为缩容数据盘的预期数值，单位为 GB，该值不能小于数据盘实际使用空间大小。  |
+| bandwidth_limit |  int |  否 | 数据传输的带宽上限限制，单位为 KB/s。默认值：0  |
+
+**6. **右击 qvm_client.exe，选择**以管理员身份运行**
+
+**7. **当出现`Goto Qvm Finished!`提示时，前往 QVM 控制台镜像详情页查看结果；当出现`Goto Qvm Not Finished!`提示时，检查日志文件[排查故障](/qvm/kb/qvm-migration-faq)。修复问题后，重新运行迁云工具，重新运行迁云工具即可恢复迁云工作，迁云工具会从上一次执行的进度中继续迁云，无需重头开始。当出现如下信息时：
+
+![下载最新](https://dn-odum9helk.qbox.me/FjGtkIOlN3gHwVesB4zQsFHARgUC)
+
+请前往下载中心[下载最新版本工具 >>](#step011)
+
+<br>
+
+<a id="step032"></a>
+### **示例二: 迁移一台带数据盘的 Windows 服务器** 
+
+如果你的 Windows 服务器在示例一的基础上加入了 3 块数据盘，源目录和数据盘大小分别为：
+
+- D：100 GB
+- E：150 GB
+- F：200 GB
+
+那么你可以根据如下信息配置 config.json 文件：
+
+```
+{
+    "public_key": "PublicKey",
+    "secret_key": "SecretKey",
+    "region_id": "cn-beijing",
+    "image_name": "TEST_MIRROR_Migration_02",
+    "system_disk_size": 40,
+    "platform": "Windows Server 2012",
+    "architecture": "x86_64",
+    "data_disks":  [ {
+            "data_disk_index": 1,
+            "data_disk_size": 100,
+            "src_path": "D:"
+        }, {
+            "data_disk_index": 2,
+            "data_disk_size": 150,
+            "src_path": "E:"
+        }, {
+            "data_disk_index": 3,
+            "data_disk_size": 200,
+            "src_path": "F:"
+        }
+    ],
+    "bandwidth_limit": 0
+}
+```
+
+参数说明：
+
+|参数名 | 类型 | 是否必填 | 说明 |
+| ----------- | ------------ | ----------- | ----------- |
+| PublicKey/SecretKey | string | 是 | 访问云主机 QVM 密钥对，你可以创建多对访问密钥，且可随时启用、禁用或着删除已经生成的访问密钥对 |
+| region_id |  string |  是 |  你的服务器迁移入目标地域 ID，如 cn-beijing。关于目标地域 ID 的详细信息请参考文档[地域和可用区](/qvm/manual/region-zone) |
+| image_name |  string  | 是  | 为你的服务器镜像设定一个镜像名称，该名称不能与同一地域下现有镜像名重复。<li> 长度为 [2, 128] 个英文或中文字符，必须以大小字母或中文开头，可包含数字、点号`.`、下划线`_`或短横线`-`</li> <li> 镜像名称会显示在 QVM 控制台 </li> <li> 不能以 http:// 和 https:// 开头 </li>  |
+| system_disk_size |  int  | 是  |  为系统盘指定大小，单位为 GB。取值范围： [40, 500]。该参数取值需要大于源服务器系统盘实际占用大小，若源系统盘大小为 500 GB，实际占用 100 GB，那该参数取值只要大于 100 GB 即可 |
+| platform |  string |  否 |  源服务器的操作系统。可以是：Windows Server 2003、Windows Server 2008、Windows Server 2012、Windows Server 2016 等。取值必须区分大小写，并保持空格一致。 |
+| architecture | string  |  否  | 系统架构。取值：<li> i386：32 位系统架构</li> <li> x86_64：64 位系统架构</li>  |
+| data_disks | array  | 否  | 数据盘列表，最多支持 16 块数据盘。该参数可以置为缩容数据盘的预期数值，单位为 GB，该值不能小于数据盘实际使用空间大小。  |
+| data_disk_index | int | 是 | 数据盘序号。取值范围：[1, 16]，初始值：1 |
+| data_disk_size | int | 是 |  数据盘大小。单位为 GB。取值范围：[20, 32768]，该参数取值需要大于源服务器数据盘实际占用大小，若源数据盘大小为 500 GB，实际占用 100 GB，那该参数取值只要大于 100 GB 即可。|
+| src_path | string | 是 |  数据盘源目录。Windows 指定盘符，例如，D、E、F |
+| bandwidth_limit |  int |  否 | 数据传输的带宽上限限制，单位为 KB/s。默认值：0  |

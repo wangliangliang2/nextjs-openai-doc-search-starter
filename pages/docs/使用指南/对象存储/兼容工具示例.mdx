@@ -1,0 +1,218 @@
+对大多数基于 AWS S3 开发的工具，进行如下改动即可访问七牛对象存储：
+
+1. 获取七牛账号的 AccessKey 和 SecretKey，在您使用的客户端和 SDK 中配置七牛的 AccessKey 和 SecretKey。
+2. 设置客户端连接的 Endpoint 为七牛对象存储 S3 的 [Endpoint](/kodo/manual/4088/s3-access-domainname)。
+
+只要涉及的接口实现了兼容，即可在工具中使用对应的功能，对接七牛对象存储。
+
+下面以一些工具为例，具体说明对接方式。
+<a id="golang-sdk"></a>
+# **AWS SDK for Golang**
+1 安装，可参考[官方文档](https://aws.amazon.com/cn/sdk-for-go/)
+```
+go get github.com/aws/aws-sdk-go
+```
+
+2 使用 AWS SDK for Golang 访问七牛云存储
+```
+package main
+ 
+import (
+    "github.com/aws/aws-sdk-go/aws"
+    "github.com/aws/aws-sdk-go/aws/credentials"
+    "github.com/aws/aws-sdk-go/aws/session"
+    "github.com/aws/aws-sdk-go/service/s3"
+)
+ 
+const (
+    s3endpoint = "<qiniu-s3-endpoint>"
+    s3region   = "cn-east-1"
+    s3accessKeyId = "<your-qiniu-access-key-id>"
+    s3SecretKeyId = "<your-qiniu-secret-key-id>"
+)
+ 
+func main() {
+    conf := &aws.Config{
+        Region:           aws.String(s3region),
+        Endpoint:         aws.String(s3endpoint),
+        Credentials:      credentials.NewStaticCredentials(s3accessKeyId, s3SecretKeyId, ""),
+    }
+ 
+    sess := session.Must(session.NewSessionWithOptions(session.Options{Config:*conf}))
+ 
+    svc := s3.New(sess)
+     
+    input := &s3.ListBucketsInput{}
+ 
+    result, err := svc.ListBuckets(input)
+    if err != nil {
+        panic(err.Error())
+    }
+ 
+    println(result.String())
+}
+```
+
+
+<a id="python-sdk"></a>
+# **AWS SDK for Python** 
+1 通过 pip 安装 boto3，安装说明可参考[官方文档](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
+```
+pip install boto3
+```
+2 使用 AWS SDK for Python 访问七牛对象存储
+```
+import boto3
+from botocore.client import Config
+ 
+ 
+# Config
+s3endpoint = '<qiniu-s3-endpoint>'
+s3region = 'cn-east-1'
+s3accessKeyId = '<your-qiniu-access-key-id>'
+s3SecretKeyId = '<your-qiniu-secret-key-id>'
+ 
+ 
+# Use S3 client
+s3client = boto3.client(
+        's3',
+        aws_access_key_id = s3accessKeyId,
+        aws_secret_access_key = s3SecretKeyId,
+        endpoint_url = s3endpoint,
+        region_name = s3region
+     )
+ 
+ 
+# List buckets
+buckets = s3client.list_buckets()
+ 
+# Output the bucket names
+for bucket in buckets['Buckets']:
+    print(bucket["Name"])
+ 
+ 
+# Use S3 resource
+s3resource = boto3.resource('s3',
+    endpoint_url = s3endpoint,
+    region_name = s3region,
+    aws_access_key_id = s3accessKeyId,
+    aws_secret_access_key = s3SecretKeyId
+    )
+ 
+ 
+# List buckets
+buckets = s3resource.buckets.all()
+ 
+# Output the bucket names
+for bucket in buckets:
+    print(bucket.name)
+```
+
+
+<br>
+
+<a id="java-sdk"></a>
+# **AWS SDK for Java**
+1 设置工具包，可参考[官方文档](https://docs.aws.amazon.com/zh_cn/sdk-for-java/v2/developer-guide/setup-install.html)（建议您使用最新版本的 java sdk）
+2 使用 AWS SDK for Java 访问七牛对象存储
+```
+import java.io.IOException;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.S3ClientOptions;
+import com.amazonaws.services.s3.model.Bucket;
+ 
+public class S3 {
+    public static void main(String[] args) throws IOException {
+        String s3endpoint = "<qiniu-s3-endpoint>";
+        String accessKeyId = "<your-qiniu-access-key-id>";
+        String accessKeySecret = "<your-qiniu-secret-key-id>";
+ 
+        AmazonS3 s3 = new AmazonS3Client(new BasicAWSCredentials(accessKeyId,accessKeySecret));
+        s3.setEndpoint(s3endpoint);
+ 
+        S3ClientOptions options = new S3ClientOptions();
+        options.withChunkedEncodingDisabled(true);
+        s3.setS3ClientOptions(options);
+ 
+        for (Bucket bucket : s3.listBuckets()) {
+            System.out.println(" - " + bucket.getName());
+        }
+ 
+    }
+ 
+}
+```
+<a id="js-sdk"></a>
+# **AWS SDK for JavaScript** 
+1 通过 pip 安装 @aws-sdk/client-s3，安装说明可参考[官方文档](https://www.npmjs.com/package/@aws-sdk/client-s3)
+```
+npm install @aws-sdk/client-s3
+yarn add @aws-sdk/client-s3
+```
+2 使用 AWS SDK for JavaScript 访问七牛对象存储
+```
+const { S3 } = require("@aws-sdk/client-s3");
+
+const s3Endpoint = '<qiniu-s3-endpoint>';
+const s3Region = '<qiniu-s3-region>';
+const s3AccessKeyId = '<your-qiniu-access-key-id>';
+const s3SecretKeyId = '<your-qiniu-secret-key-id>';
+
+const s3Client = new S3({ region: s3Region, endpoint: s3Endpoint, credentials: { accessKeyId: s3AccessKeyId, secretAccessKey: s3SecretKeyId } });
+
+const buckets = await s3Client.listBuckets({});
+for (const bucket of buckets.Buckets) {
+    console.log(bucket.Name);
+}
+```
+
+# **CloudBerry Explorer for Amazon S3**
+CloudBerry Explorer for Amazon S3 是 CloudBerry Lab 提供的 S3 图形化数据管理软件，支持数据从本地到云端的上传、下载、同步、删除等管理操作。通过一下配置方式，您也可以使用 CloudBerry Explorer for Amazon S3 管理您在七牛云存储的资源。
+
+1 下载安装 [CloudBerry Explorer for Amazon S3](https://www.cloudberrylab.com/explorer/amazon-s3.aspx)
+
+2 安装完成后打开，选择『S3 Compatible』进行云存储配置
+![](https://dn-odum9helk.qbox.me/FiRB9FqIePrtd0WZv37qWtF9xNnL)
+
+3 添加新的 S3 Compatible 的账号，Display name 可以填写 Qiniu，Service point 即七牛 S3 的[服务域名](/kodo/manual/4088/s3-access-domainname)，Access Key 和 Secret Key 填写七牛的 AK/SK，Signature version 选 4。点击 "Test Connection"，显示 “Connection Success” 表示连接成功。
+![](https://dn-odum9helk.qbox.me/FhVvtAo06emv9z5wdnSA8Ltw5W-I)
+
+4 现在就可以通过 CloudBerry Explorer for Amazon S3 实现 bucket 和文件的管理。
+
+注：CloudBerry Explorer for Amazon S3 对 S3 Compatible 和 Amazon S3 两种配置的云存储支持的功能本身就有区别，如生命周期、加密等均不支持。
+# **S3 Browser**
+
+S3 Browser 是一种易于使用和强大的 Amazon S3 免费客户端，通过图形化界面管理 Amazon S3。七牛云存储同样支持通过配置后使用 S3 Browser 进行文件上传、下载、bucket 管理等操作。
+
+1 下载安装[S3 Browser](https://s3browser.com/download.aspx)
+
+2 安装完成后打开，添加七牛云存储账号。Account Type 选择 “S3 Compatible Storage"，REST Endpoint 填写七牛 S3 的[服务域名](/kodo/manual/4088/s3-access-domainname)，Signature Version 选择 Signature V4，Access Key ID 和 Secret Access Key 填写七牛 AK/SK。
+![](https://dn-odum9helk.qbox.me/FoRkT4eCsRDRMTGsVPmpt6ZMVHaF)
+
+3 添加成功后可以看到 bucket 列表，现在就可以通过 S3 Browser 进行 bucket 和文件管理，具体支持的功能可参考兼容接口。
+![](https://dn-odum9helk.qbox.me/Fv3yaJi5hBnoa6_5oLS1UaiutaMO)
+
+# **S3FS**
+
+S3fs 是基于 FUSE 的文件系统，允许 Linux 和 Mac Os X 挂载 S3 的存储桶在本地文件系统，S3fs 能够保持对象原来的格式。现在您也可以通过 S3fs 工具挂载七牛云存储。
+
+1 按照官方文档安装 [s3fs](https://github.com/s3fs-fuse/s3fs-fuse)
+
+2 将七牛 AK/SK 写入密钥文件，比如 /root/.passwd-s3fs，并将密钥文件权限设为 600
+```
+echo AK:SK > /root/.passwd-s3fs
+chmod 600 /root/.passwd-s3fs
+```
+
+3 将已经存在的 bucket 挂载到本地目录，如 /mnt/s3fs，url 填写七牛 s3 的[服务域名](/kodo/manual/4088/s3-access-domainname)
+```
+s3fs bucketname /mnt/s3fs -o passwd_file=/root/.passwd-s3fs -o url=<endpoint> -o use_path_request_style
+```
+
+4 验证文件操作
+```
+echo 'Hello,world!' > test.txt
+cp -v test.txt /mnt/s3fs
+```

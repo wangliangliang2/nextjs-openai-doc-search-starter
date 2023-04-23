@@ -1,0 +1,37 @@
+`<set>` 用于设置或更新标记值，常用于表单联动
+
+### 父元素 {docsify-ignore-all}
+
+* `<change>`
+* `<condition>`
+
+### 示例
+
+```xml
+<dashboard>
+  <input type="text">
+    <label>该输入框输入值改变时会将变量 "text1" 的值设置为 "text1更新"</label>
+    <change>
+      <set token="text1">text1更新</set>
+    </change>
+  </input>
+  <text>该文本值会更新：$text1$</text>
+  <input type="text" token="text1">
+    <label>该输入框的值会被更新</label>
+  </input>
+</dashboard>
+```
+
+配合 `token` 支持多字段同步更新
+```xml
+<dashboard>
+  <input type="text" token="text1">
+    <label>with token</label>
+     <change>
+      <set token="text2">$text1$</set>
+     </change>
+  </input>
+  <text>该文本值会更新：$text2$</text>
+  <input type="text" token="text2" />
+</dashboard>
+```

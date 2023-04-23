@@ -1,0 +1,108 @@
+<a id="image-description"></a>
+# **描述** 
+
+七牛镜像存储服务可以帮助用户实现数据热迁移，迁移过程中并不影响原有业务系统的访问。镜像存储适用于迁移原有业务系统的已有数据。
+
+
+<br>
+
+<a id="image-requests"></a>
+# **请求**
+<a id="image-requests-syntax"></a>
+
+### **请求语法**
+```
+POST /image/<BucketName>/from/<EncodedSrcSiteUrl>/host/<EncodedHost> HTTP/1.1
+Host:           uc.qiniuapi.com
+Content-Type:   application/x-www-form-urlencoded
+X-Qiniu-Date: 20060102T150405Z
+Authorization:  Qiniu <AccessToken>
+```
+
+使用说明：
+- 取回动作仅在第一次访问资源不存在时发生
+
+- 取回动作是一个同步操作，源文件过大可能导致客户端等待超时
+
+- 取回动作失败时，会返回 HTTP 响应码
+
+- 源站同名资源的内容发生改变后，七牛云存储不会自动将新内容取回，用户需要删除空间中的资源，再[刷新预取](https://portal.qiniu.com/domain/refresh)才可以访问到更新后的资源
+
+- 多个客户端触发镜像回源时，资源的最终内容为最后一个成功执行的操作所存储的结果
+
+- 回源源站时，会携带固定的User-Agent信息：`<RegionID>-qiniu-imgstg-spider-1.0`，[Region(区域) ID列表](/kodo/1671/region-endpoint-fq)
+
+<br>
+
+<a id="image-request-parameters"></a>
+### **请求参数**
+
+| 参数名称 | 必填 | 说明 |
+| --- | --- | --- |
+| BucketName | 是 | 需要设定镜像源的目标空间名|
+| EncodedSrcSiteUrl | 是 | 镜像源的访问域名，必须设置为形如`http(s)://source.com`或`http(s)://114.114.114.114`的字符串。参数值必须做[URL 安全的 Base64 编码](/kodo/manual/1231/appendix#urlsafe-base64)。 |
+| EncodedHost | 否 | 回源时使用的`Host`头部值。参数值必须做[URL 安全的 Base64 编码](/kodo/manual/1231/appendix#urlsafe-base64)。可以填空字符串 `""` 或不包含 `/host/<EncodedHost>` 部分，表示不额外指定 host|
+
+<br>
+
+<a id="mkbucketv2-request-headers"></a>
+### **请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](/kodo/api/3924/common-request-headers)。
+
+<br>
+
+<a id="mkbucketv2-request-elements"></a>
+### **请求内容**
+该请求操作的请求体为空。
+
+<br>
+
+<a id="buckets-responses"></a>
+# **响应**
+
+### **响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](/kodo/api/3924/common-response-headers)。
+
+<br>
+<a id="buckets-response-elements"></a>
+
+### **响应内容**
+该请求操作的响应体为空。
+
+<br>
+
+<a id="buckets-special-errors"></a>
+### **响应状态码**
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误响应](/kodo/api/3928/error-responses)。
+
+<br>
+
+<a id="buckets-examples"></a>
+# **示例**
+
+<a id="buckets-request-examples"></a>
+### **请求示例**
+```
+POST /image/test02/from/aHR0cHM6Ly9zYXJhaC5xaW5pdWRlbW8uY29t HTTP/1.1
+Host: uc.qiniuapi.com
+User-Agent: Go-http-client/1.1
+X-Qiniu-Date: 20060102T150405Z
+Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:CCiHcTjKJDdseHBrldeYFywnxWo=
+Accept-Encoding: gzip
+```
+
+<br>
+
+<a id="buckets-response-examples"></a>
+### **响应示例**
+```
+HTTP/1.1 200 OK
+Content-Length: 2
+Connection: keep-alive
+Content-Type: application/json
+Date: Mon, 02 Jan 2006 15:04:05 GMT
+Server: nginx/1.4.4
+X-Reqid: WUQAAIqqrYab_9oU
+
+{}
+```

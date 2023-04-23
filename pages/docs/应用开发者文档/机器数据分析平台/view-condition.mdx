@@ -1,0 +1,119 @@
+`view-condition` 可以嵌套在任意包含子视图的视图元素中，根据 `show` 中的表达式返回值有条件地展示子视图
+
+### 属性
+
+|属性|说明|默认值|
+|:--:|:--:|:--:|
+|`show`|是否展示子视图，支持表达式|无|
+|`mode`|隐藏子视图的方式。`empty`: 清空子视图，包括子视图内部状态; `hidden`: 从视觉上隐藏子视图，但会保留子视图的状态|`empty`|
+|`display`|布局方式，可选值为`block`、`inline`、`inline-block`|`block`|
+|`style`|自定义HTML样式|无|
+
+### 示例
+
+* 使用表达式控制显示隐藏
+```xml
+<dashboard>
+  <row>
+    <col>
+      <input type="radio" token="text1">
+        <initial-value>hide</initial-value>
+        <choice value="show">显示文本1</choice>
+        <choice value="hide">隐藏文本1</choice>
+      </input>
+    </col>
+    <col>
+      <input type="radio" token="text">
+        <initial-value>a</initial-value>
+        <choice value="a">显示文本2</choice>
+        <choice value="b">显示文本3</choice>
+      </input>
+    </col>
+  </row>
+  <row>
+    <view-condition show="$text1$ === 'show'">
+      <col>
+        <text>文本1</text>
+      </col>
+    </view-condition>
+    <view-condition show="$text$ === 'a'">
+      <col>
+        <text>文本2</text>
+      </col>
+    </view-condition>
+  </row>
+  <view-condition show="$text$ === 'b'">
+    <row>
+      <text>文本3</text>
+    </row>
+  </view-condition>
+</dashboard>
+
+```
+
+* 保留子视图状态
+```xml
+<row type="flex">
+  <col span="24">
+    <input type="radio" token="radio">
+      <initial-value>one</initial-value>
+      <choice value="one">选项一</choice>
+      <choice value="two">选项二</choice>
+    </input>
+  </col>
+  <col span="24">
+    <view-condition show="$radio$ === 'one'" mode="hidden">
+      <input type="text" token="one">
+        <label>one</label>
+      </input>
+    </view-condition>
+  </col>
+  <col span="24">
+    <view-condition show="$radio$ === 'two'" mode="hidden">
+      <input type="text" token="two">
+        <label>two</label>
+      </input>
+    </view-condition>
+  </col>
+</row>
+```
+
+* 更改布局方式
+```xml
+<row type="flex">
+  <col span="24">
+    <input type="radio" token="radio">
+      <initial-value>two</initial-value>
+      <choice value="one">选项一</choice>
+      <choice value="two">选项二</choice>
+    </input>
+  </col>
+  <col span="24">
+    <view-condition show="$radio$ === 'one'">
+      <text>输入组件1会另起一行展示</text>
+      <view-condition show="$radio$ === 'one'">
+        <input type="text" token="one">
+          <label>输入组件1</label>
+        </input>
+      </view-condition>
+    </view-condition>
+  </col>
+  <col span="24">
+    <view-condition show="$radio$ === 'two'">
+      <text>输入组件2会在同一行展示</text>
+      <view-condition show="$radio$ === 'two'" display="inline-block">
+        <input type="text" token="two">
+          <label>输入组件2</label>
+        </input>
+      </view-condition>
+    </view-condition>
+  </col>
+</row>
+```
+
+* 自定义HTML样式
+```xml
+<view-condition show="true" style="font-size: 24px;">
+  <text>font-size: 24</text>
+</view-condition>
+```

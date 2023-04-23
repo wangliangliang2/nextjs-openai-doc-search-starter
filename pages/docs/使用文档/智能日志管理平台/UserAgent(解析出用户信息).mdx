@@ -1,0 +1,47 @@
+解析 User Agent 中的用户信息，可以解析得到的数据如下：
+
+  * UA_Family： 族信息，通常一个公司的一系列产品会形成一个族。
+  * UA_Major：大版本号
+  * UA_Minor: 小版本号
+  * UA_Patch：补丁版本
+  * UA_Device_Family：设备族信息
+  * UA_Device_Brand: 设备品牌
+  * UA_Device_Model: 设备类型
+  * UA_OS_Family: 操作系统族信息
+  * UA_OS_Patch: 操作系统补丁版本
+  * UA_OS_Major: 操作系统大版本号
+  * UA_OS_Minor: 操作系统小版本号
+  * UA_OS_PatchMinor: 操作系统补丁的小版本号
+ 
+![](https://dn-odum9helk.qbox.me/FjVn7C3p9XDnVpOuZzm_vqLkyC45)
+
+
+* 要进行 Transform 变化的键(`key`):支持多级嵌套，多级间用.符号连接，如 abc.xyz，表示 data["abc"]["xyz"]中的数据。
+
+* UserAgent 解析正则表达式文件路径(`regex_yml_path`)：默认可以不填，也可以填写你拥有的 useragent 正则表达式 yaml 文件。最新的文件可以在 [ua-parser/uap-core](https://github.com/ua-parser/uap-core) 上获取
+
+* 由于解析UA很耗CPU，我们把解析的类别分为3类，如果您不需要某些类别，可以勾选为`false`，节省CPU消耗
+
+* 在高级选项中，为了加速解析，我们会把UA解析的结果缓存在内存中，如果不填的UA字符串数据量大，会导致内存消耗过高，如果您的UA串出现重复的概率很低，或者较为稀疏，也可以勾选为`false`，节省内存。
+
+
+### **示例**：
+
+传入一个 useragent 字符串，假设为：
+
+```
+Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_3; en-us; Silk/1.1.0-80) AppleWebKit/533.16 (KHTML, like Gecko) Version/5.0 Safari/533.16 Silk-Accelerated=true
+```
+得到的数据为：
+
+```
+"ua":               "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_3; en-us; Silk/1.1.0-80) AppleWebKit/533.16 (KHTML, like Gecko) Version/5.0 Safari/533.16 Silk-Accelerated=true",
+	"UA_Family":        "Amazon Silk",
+	"UA_Major":         "1",
+	"UA_Minor":         "1",
+	"UA_Patch":         "0-80",
+	"UA_OS_Family":     "Android",
+	"UA_Device_Family": "Kindle",
+	"UA_Device_Brand":  "Amazon",
+	"UA_Device_Model":  "Kindle"
+```

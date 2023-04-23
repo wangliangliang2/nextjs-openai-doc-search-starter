@@ -1,0 +1,16 @@
+
+# **公共请求头**
+
+| 名称 | 类型 | 是否必填| 示例值 |  说明                                                |
+| :-: | :-: | :-:| :-:| - |
+|Host  <img width=200/>  |String |是<img width=600/>|qvs.qiniuapi.com|服务地址|
+|Authorization  |String|是|QiniuToken|验证请求合法性的认证信息。认证不通过时，会收到401错误码。格式为`Authorization: Qiniu xx:xx`。 建议使用服务端接入SDK，[java版本SDK](https://developer.qiniu.com/qvs/6923/qvs-java-sdk)或者其他版本，sdk已经封装了鉴权机制；如果客户自行计算该字段，可以参考[鉴权机制](https://developer.qiniu.io/qvs/6713/authentication)|
+|  Content-Type |String|否||一. http body为空时，例如Get请求, Content-Type有3种选择<br> 1. `不`携带Content-Type <br>2.设置为`空`<br> 3.设置为`application/x-www-form-urlencoded`; <br> 二. http body 不为空时，例如Post或者Patch等,Content-Type设置为application/json|
+
+# **公共响应头**
+|名称|说明|示例值|
+|---|---|---|
+| Content-Length  <img width=200/>| 请求或响应内容长度，单位`字节`。 | 例如 `Content-Length: 299`。|
+| Content-Type | 请求或响应内容的 MIME 类型。|例如 `Content-Type: application/json`。 |
+|X-Reqid | 上传请求的唯一 ID。通过该 ID 可快速定位用户请求的相关日志。在联系技术支持时提供该 ID 可快速解决问题。|例如 `X-Reqid: BlcAAAFP_Hx-RfkU`。|
+| Date | 服务器端响应时间。| 例如 `Date: Wed, 22 Nov 2017 01:52:39 GMT`。|

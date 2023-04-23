@@ -1,0 +1,132 @@
+您可以通过控制台QAPP为应用创建多个版本，提供逻辑隔断的运行环境，例如使用不同版本隔离开发、测试和生产环境等不同环境。
+
+> **说明**
+>
+> - 方便在不同区域进行实例部署。
+> - 方便隔离开发、测试和生产环境等不同环境。
+> - 应用版本不支持编辑修改，如果正在使用的应用版本不符合使用需求，建议创建新版本。
+
+本文介绍如何在控制台创建应用版本和管理应用版本。
+
+
+
+# **前提条件**
+
+- [新建应用](/qapp/development_guidelines/12312/create-an)：首先要创建一个应用 。
+
+- **制作上传镜像**：您需要将制作应用镜像，镜像制作过程以及将镜像上传的操作流程如下：
+
+  - 安装Docker
+
+  - 制作镜像
+
+  - 通过七牛提供的 [命令行工具 qappctl](/qapp/tools/12308/qappctl-command-line-tools) ，上传本地可运行的 docker image到应用镜像仓库。
+
+    ![img](https://dora-doc.qiniu.com/WX20221103-143859%402x.png)
+
+    > **示例**
+    >
+    > - dockerfile 文件内容如下：
+    >
+    >   ```
+    >   FROM ubuntu:20.04
+    >   RUN apt-get update
+    >   RUN apt install -y nginx
+    >   CMD /bin/bash
+    >   ```
+    >
+    >
+    > - 利用dockerfile生成镜像
+    >
+    >   ```
+    >   docker build -t < 镜像名（推荐使用应用名）>:<版本号> -f < dockerfile路径> 
+    >   ```
+    >
+    >
+    > - 检查镜像创建成功
+    >
+    >   ```
+    >   docker images | grep <镜像名>
+    >   ```
+    >
+    > - 上传镜像（QAPPctl 需要先 login）
+    >
+    >   ```
+    >   QAPPctl login -u <AccessKey> -p <SecretKey>(如果已经login可以跳过此步骤)
+    >   QAPPctl push <镜像名（推荐使用应用名）>:<版本号>
+    >   ```
+    >
+    >
+    > - 检查上传成功
+    >
+    >   ```
+    >   QAPPctl login -u <AccessKey> -p <SecretKey>(如果已经login可以跳过此步骤)
+    >   QAPPctl images | grep custom_image
+    >   ```
+    >
+
+
+
+# **发布新版本**
+
+1. 登录 [容器轻应用平台](https://portal.qiniu.com/dora/qapp)。
+
+2. 在左侧导航栏单击 **具体应用名称**，在顶部菜单栏选择 **版本列表**。
+
+3. 单击【发布新版本】按钮，进入 **创建版本页面**。
+
+   ![img](https://dora-doc.qiniu.com/WX20221103-103301%402x.png)
+
+4. 发布新版本的基础配置，参数说明如下：
+
+   | 参数名       | 描述                                                         |
+   | ------------ | ------------------------------------------------------------ |
+   | **版本名称** | 必填，版本号可包含小写字母、数字、中划线和 `.` ，最多20个字符，其中只有小写字母和数字可以用于第一位和最后一位。 |
+   | **选择镜像** | 必填，如果下拉列表没有可供选择的镜像，需要使用 [命令行工具 QAPPctl](/qapp/tools/12308/qappctl-command-line-tools) ，按照README.MD的步骤构建一个镜像，然后使用命令行工具 QAPPctl 推送到七牛容器轻应用平台镜像仓库。 |
+   | **资源配置** | 必填，例如C4M4，最终是按照实例运行时间进行收费，可参考具体[计费说明](/qapp/buying_guide/12305/billing-way01)。 |
+   | **监听端口** | 选填，端口范围：1-65535，且不能设置为30000。                 |
+
+5. **可选：**  按需设置以下高级选项。
+
+   ![img](https://dora-doc.qiniu.com/WX20221103-114008%402x.png)
+
+   | 高级配置项   | 参考文档                                                     |
+   | ------------ | ------------------------------------------------------------ |
+   | **容器入口** | 请参见 [设置启动命令](/qapp/development_guidelines/12316/how-to-configure-the-startup-command) |
+   | **存储**     | 请参见 [设置存储](/qapp/development_guidelines/12317/how-to-set-up-a-store) |
+   | **应用配置** | 请参见 [设置应用配置](/qapp/development_guidelines/12318/how-to-set-up-the-configuration) |
+   | **健康检查** | 请参见 [设置健康检查](/qapp/development_guidelines/12319/how-to-set-up-a-health-check) |
+   | **日志收集** | 请参见 [设置日志收集](/qapp/development_guidelines/12320/how-to-set-up-the-log-collection) |
+   | **环境变量** | 请参见 [设置环境变量](/qapp/development_guidelines/12321/how-to-set-the-environment-variables) |
+
+6. 单击 **保存**，则应用版本创建成功。
+7. 创建好应用版本，您可以对当前版本部署实例，具体操作见  [实例部署](/qapp/development_guidelines/12324/instance-deployment)。
+
+
+
+# **管理版本列表**
+
+一个应用可以创建多个版本，部署实例需要选择对应的版本，相当于为部署实例提供模板（模板提供运行镜像、资源规格、存储挂载、环境变量等配置信息）。
+
+1. 登录 [容器轻应用平台](https://portal.qiniu.com/dora/qapp)。
+
+2. 在左侧导航栏单击 **具体应用名称**，在顶部菜单栏选择 **版本列表**，版本列表如下所示。
+
+   ![img](https://dora-doc.qiniu.com/WX20221103-114416%402x.png)
+
+3. 在版本列表操作栏，选择具体版本，单击 **操作->部署实例**。
+
+   - 进入创建部署页面，下拉选择部署的区域和配置实例数。
+
+     ![img](https://dora-doc.qiniu.com/WX20221103-114700%402x.png)
+
+   - 单击 **保存** ，可在部署管理列表，查看部署ID记录。
+
+4. 在版本列表操作栏，选择具体版本，单击 **操作->复制**，可快速创建新版本。
+
+   - 进入发布新版本页面，会将版本配置信息全部复制过去，您可以按需修改配置信息。
+
+   - 重新命名版本名称，单击【保存】，新版本保存成功。
+
+5. 选择具体版本，单击 **版本名称** ，进入查看版本页面。
+

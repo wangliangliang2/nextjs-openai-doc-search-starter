@@ -1,0 +1,30 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `DELETE` /api/rio/v1/network/loadbalancer/:id
+
+# 说明
+如果删除的负载均衡下挂载了监听器、资源池等配置，将会一并删除
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id | string | header | 是 | 地域 ID
+id            | string | path   | 是 | 负载均衡 ID
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string  | 请求 ID
+
+## 请求值示例
+```json
+```
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEgzO4NVWyskW"
+}
+```

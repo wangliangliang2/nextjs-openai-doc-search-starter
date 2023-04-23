@@ -1,0 +1,109 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                <p>interface com.qlive.core.QClientLifeCycleListener</p>
+                <p>ui组件实现的房间生命周期</p>
+</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">方法</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onEntering`)'>onEntering</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onJoined`)'>onJoined</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onLeft`)'>onLeft</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#onDestroyed`)'>onDestroyed</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">方法</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onEntering">onEntering</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void onEntering(@NotNull()
+String liveId, @NotNull()
+QLiveUser user);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>进入回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            user: String
+        </div>
+                <p>进入房间的用户</p>
+    </li>
+    <li>
+        <div>
+            liveId: <a href='https://developer.qiniu.com/lowcode/api/12062/QLiveUser'>QLiveUser</a>
+        </div>
+                <p>房间ID</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onJoined">onJoined</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void onJoined(@NotNull()
+QLiveRoomInfo roomInfo, boolean isResumeUIFromFloating);</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>加入回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            isResumeUIFromFloating: <a href='https://developer.qiniu.com/lowcode/api/12061/QLiveRoomInfo'>QLiveRoomInfo</a>
+        </div>
+                <p>是不是从小窗恢复回来的并且是从销毁的activity -- 小窗模式并且销毁了activity(进入小窗并且返回上一个页面这种情况)，从新创建了一个恢复数据</p>
+    </li>
+    <li>
+        <div>
+            roomInfo: boolean
+        </div>
+                <p>房间信息</p>
+    </li>
+</ul>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onLeft">onLeft</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void onLeft();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>用户离开回调</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="onDestroyed">onDestroyed</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">
+void onDestroyed();</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>销毁</p>
+    </div>
+    <div class="rtc-doc-returns-title">Returns <span>void</span></div>
+</li>
+</ul>
+</section>
+</div>
+
+

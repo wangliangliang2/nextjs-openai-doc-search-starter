@@ -1,0 +1,133 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>CDN 转推可实现直播场景的功能，实时音视频场景下的直播主要包括三个部分：单路流直播、多路流合流直播以及两者结合可切换的直播场景。</p>
+<blockquote>
+<p>CDN 转推需要配置本地或者远端的音视频 Track，因此，调用转推接口前请务必保证已加入房间，且已发布或者订阅了相应的音视频 Track。</p>
+</blockquote>
+<p>下面将会对这三种场景的使用姿势进行分别说明。</p>
+
+# 设置监听
+<pre><code class="language-typescript"><span class="hljs-comment">// 合流转推出错的回调</span>
+<span></span>client.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;onErrorLiveStreaming&quot;</span>,<span class="hljs-function">(<span class="hljs-params">params</span>) =&gt;</span> {
+<span></span>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(params.<span class="hljs-property">streamID</span>, params.<span class="hljs-property">info</span>)
+<span></span>})
+<span></span><span class="hljs-comment">// 更新合流布局的回调</span>
+<span></span>client.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;onUpdatedLiveStreaming&quot;</span>,<span class="hljs-function">(<span class="hljs-params">params</span>) =&gt;</span> {
+<span></span>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(params.<span class="hljs-property">streamID</span>)
+<span></span>})
+<span></span><span class="hljs-comment">// 停止转推/合流转推任务的回调</span>
+<span></span>client.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;onStoppedLiveStreaming&quot;</span>,<span class="hljs-function">(<span class="hljs-params">params</span>) =&gt;</span> {
+<span></span>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(params.<span class="hljs-property">streamID</span>)
+<span></span>})
+<span></span><span class="hljs-comment">// 成功创建转推/合流转推任务的回调</span>
+<span></span>client.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;onStartLiveStreaming&quot;</span>,<span class="hljs-function">(<span class="hljs-params">params</span>) =&gt;</span> {
+<span></span>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(params.<span class="hljs-property">streamID</span>)
+<span></span>})
+<span></span></code></pre>
+<p>设置好监听事件后，便可以基于实际业务场景进行单路转推或者合流转推任务的创建和使用了。</p>
+
+# 单路流直播场景
+<p>单路流直播的场景，顾名思义，就是将一条音视频流直接转推到直播服务器，主要适用于<code>不包含连麦的秀场直播</code>、<code>连麦中需要将某一路流单独转推落存储</code>等场景。</p>
+<blockquote>
+<p>安卓不支持推远端 Track</p>
+</blockquote>
+<p>场景示意图如下：</p>
+<p><img src="http://docs.qnsdk.com/forward_job.jpg" alt="单路流直播"></img></p>
+<p>相关配置及创建转推任务的示例代码如下：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> <span class="hljs-attr">directLiveStreamingConfig</span>: QNDirectLiveStreamingConfig = {
+<span></span>    <span class="hljs-comment">// 设置 stream id，该 id 为合流任务的唯一标识符</span>
+<span></span>    <span class="hljs-attr">streamID</span>: roomName,
+<span></span>    <span class="hljs-comment">// 设置推流地址</span>
+<span></span>    <span class="hljs-attr">publishUrl</span>: <span class="hljs-string">&quot;publish url&quot;</span>,
+<span></span>    <span class="hljs-comment">// 设置单路流中的音频轨，仅支持一路音频的设置，重复设置会被覆盖</span>
+<span></span>    <span class="hljs-attr">audioTrack</span>: microphoneAudioTrack,
+<span></span>    <span class="hljs-comment">// 设置单路流中的视频轨，仅支持一路视频的设置，重复设置会被覆盖</span>
+<span></span>    <span class="hljs-attr">videoTrack</span>: cameraVideoTrack
+<span></span>}
+<span></span><span class="hljs-comment">// 开始进行单路转推</span>
+<span></span>rtcClient.<span class="hljs-title function_">startLiveStreamingWithDirect</span>(directLiveStreamingConfig);
+<span></span></code></pre>
+<p>单路转推任务创建成功后，会触发 <em><strong>QNRTCClientEvent.startLiveStreaming</strong></em> 回调接口。</p>
+<p>创建成功后，就可以通过相应的播放链接拉取直播流进行观看了。</p>
+<blockquote>
+<p>注意: QNDirectLiveStreamingConfig 仅支持配置一路视频轨和一路音频轨，重复设置将会被覆盖</p>
+</blockquote>
+<p>调用 QNRTCClient.stopLiveStreamingWithDirect 实现单路转推任务的停止：</p>
+<pre><code class="language-typescript">rtcClient.<span class="hljs-title function_">stopLiveStreamingWithDirect</span>(directLiveStreamingConfig);
+<span></span></code></pre>
+<p>单路转推任务创建成功后，会触发 <em><strong>QNRTCClientEvent.stoppedLiveStreaming</strong></em> 回调接口。</p>
+<p>停止转推成功后，相应的播放链接直播流就无法观看了。</p>
+
+# 多路流合流直播场景
+<p>多路流合流直播场景，主要适用于<strong>连麦互动直播</strong>、<strong>PK 直播</strong>以及<strong>单主播需要两路以上视频合流转推</strong>等场景。简单来说，就是对连麦各方的视频画面进行合流，然后转推。这种场景相较于纯直播场景的单路流转推会复杂一些。</p>
+<p>场景示意图如下：</p>
+<p><img src="http://docs.qnsdk.com/merge_job.jpg" alt="多路流合流直播"></img></p>
+<p>为了实现该场景，首先，需要了解下相关配置类及其作用：</p>
+<ul>
+<li><strong>QNTranscodingLiveStreamingConfig</strong> 用于配置合流的基本参数，包括任务 id、推流地址、合流的宽高、码率等信息。</li>
+<li><strong>QNTranscodingLiveStreamingTrack</strong> 用于配置参与 CDN 合流的每一路媒体 track 在合流画布中的位置、大小等信息。</li>
+</ul>
+<p>了解上述概念后，该场景的主要实现步骤如下：</p>
+<h3 id="创建-qntranscodinglivestreamingconfig"><a href="#%E5%88%9B%E5%BB%BA-qntranscodinglivestreamingconfig" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>创建 QNTranscodingLiveStreamingConfig</h3>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> <span class="hljs-attr">backgroundTranscodingLiveStreamingImage</span>: QNTranscodingLiveStreamingImage = {
+<span></span>    <span class="hljs-attr">x</span>: <span class="hljs-number">0</span>,
+<span></span>    <span class="hljs-attr">y</span>: <span class="hljs-number">0</span>,
+<span></span>    <span class="hljs-attr">w</span>: <span class="hljs-number">600</span>,
+<span></span>    <span class="hljs-attr">h</span>: <span class="hljs-number">480</span>,
+<span></span>    <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;background url&quot;</span>
+<span></span>}
+<span></span><span class="hljs-keyword">const</span> <span class="hljs-attr">watermarksTranscodingLiveStreamingImages</span>: QNTranscodingLiveStreamingImage[] = [{
+<span></span>    <span class="hljs-attr">x</span>: <span class="hljs-number">0</span>,
+<span></span>    <span class="hljs-attr">y</span>: <span class="hljs-number">0</span>,
+<span></span>    <span class="hljs-attr">w</span>: <span class="hljs-number">100</span>,
+<span></span>    <span class="hljs-attr">h</span>: <span class="hljs-number">100</span>,
+<span></span>    <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;watermark url&quot;</span>
+<span></span>}]
+<span></span><span class="hljs-keyword">const</span> transcodingLiveStreamingConfig = {
+<span></span>    <span class="hljs-attr">streamID</span>: <span class="hljs-string">&quot;mstreamid-1&quot;</span>, <span class="hljs-comment">// 设置 stream id，该 id 为合流任务的唯一标识符</span>
+<span></span>    <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;publish url&quot;</span>, <span class="hljs-comment">// 设置合流任务的推流地址</span>
+<span></span>    <span class="hljs-attr">width</span>: <span class="hljs-number">600</span>, <span class="hljs-comment">// 设置合流画布的宽度</span>
+<span></span>    <span class="hljs-attr">height</span>: <span class="hljs-number">480</span>, <span class="hljs-comment">// 设置合流画布的高度</span>
+<span></span>    <span class="hljs-attr">videoFrameRate</span>: <span class="hljs-number">20</span>, <span class="hljs-comment">// 设置合流任务的视频帧率</span>
+<span></span>    <span class="hljs-attr">bitrate</span>: <span class="hljs-number">1000</span>, <span class="hljs-comment">// 设置合流任务的码率，单位: kbps</span>
+<span></span>    <span class="hljs-attr">minBitrate</span>: <span class="hljs-number">1000</span>,  <span class="hljs-comment">// 最小码率</span>
+<span></span>    <span class="hljs-attr">maxBitrate</span>: <span class="hljs-number">1000</span>,  <span class="hljs-comment">// 最大码率</span>
+<span></span>    <span class="hljs-attr">renderMode</span>: QNRenderMode.<span class="hljs-property">ASPECT_FILL</span>, <span class="hljs-comment">// 设置合流任务的默认画面填充方式</span>
+<span></span>    <span class="hljs-attr">background</span>: backgroundTranscodingLiveStreamingImage, <span class="hljs-comment">// 设置合流画布背景图片的x轴y轴宽高和url信息，图片仅支持 HTTP</span>
+<span></span>    <span class="hljs-attr">watermarks</span>: watermarksTranscodingLiveStreamingImages <span class="hljs-comment">// 设置合流合流任务的水印的x轴y轴宽高和url信息</span>
+<span></span>}
+<span></span>
+<span></span><span class="hljs-title class_">Client</span>.<span class="hljs-title function_">startLiveStreamingWithTranscoding</span>(transcodingLiveStreamingConfig); <span class="hljs-comment">// 开始转推</span>
+<span></span></code></pre>
+<h3 id="设置合流布局"><a href="#%E8%AE%BE%E7%BD%AE%E5%90%88%E6%B5%81%E5%B8%83%E5%B1%80" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>设置合流布局</h3>
+<p>合流任务创建成功之后，就可以基于用户发布的 track 进行合流布局的配置了。操作示例代码如下：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> <span class="hljs-attr">transcodingLiveStreamingTracks</span>: QNTranscodingLiveStreamingTrack[] = [{
+<span></span>    <span class="hljs-attr">trackID</span>: <span class="hljs-string">&quot;xxx&quot;</span>, <span class="hljs-comment">// 设置待合流 track id</span>
+<span></span>    <span class="hljs-attr">x</span>: <span class="hljs-number">220</span>, <span class="hljs-comment">// 设置 track 画面在合流画面中位置的 x 轴坐标</span>
+<span></span>    <span class="hljs-attr">y</span>: <span class="hljs-number">220</span>, <span class="hljs-comment">// 设置 track 画面在合流画面中位置的 y 轴坐标</span>
+<span></span>    <span class="hljs-attr">width</span>: <span class="hljs-number">200</span>, <span class="hljs-comment">// 设置 track 画面在合流画面中位置宽度</span>
+<span></span>    <span class="hljs-attr">height</span>: <span class="hljs-number">200</span> <span class="hljs-comment">// 设置 track 画面在合流画面中位置高度</span>
+<span></span>    <span class="hljs-attr">zOrder</span>: <span class="hljs-number">100</span>, <span class="hljs-comment">// 设置 track 画面在合流画面中的 zOrder 层级</span>
+<span></span>    <span class="hljs-attr">renderMode</span>: QNRenderMode.<span class="hljs-property">ASPECT_FILL</span>, <span class="hljs-comment">// track 画面合流时的填充方式</span>
+<span></span>    <span class="hljs-attr">SEIEnabled</span>: <span class="hljs-literal">false</span> <span class="hljs-comment">// 是否发送 sei</span>
+<span></span>}]
+<span></span></code></pre>
+<p>通过上述代码创建 <strong>QNTranscodingLiveStreamingTrack</strong> ，就可以进行布局的配置了：</p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">setTranscodingLiveStreamingTracks</span>(<span class="hljs-string">&quot;mstreamid-1&quot;</span>, transcodingLiveStreamingTracks);
+<span></span></code></pre>
+<p>当期望取消某路合流布局时，可以通过如下调用实现：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">await</span> client.<span class="hljs-title function_">removeTranscodingLiveStreamingTracks</span>(<span class="hljs-string">&quot;mstreamid-1&quot;</span>, transcodingLiveStreamingTracks);
+<span></span></code></pre>
+<h3 id="停止合流直播"><a href="#%E5%81%9C%E6%AD%A2%E5%90%88%E6%B5%81%E7%9B%B4%E6%92%AD" ariaHidden="true" tabIndex="-1"><span class="icon,icon-link"></span></a>停止合流直播</h3>
+<p>可以通过如下方式实现合流转推任务的停止：</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">await</span> client.<span class="hljs-title function_">stopLiveStreamingWithTranscoding</span>(streamID);
+<span></span></code></pre>
+<p>合流转推任务停止成功后，会触发上述 <code>onStoppedLiveStreaming</code> 事件，</p>
+
+# 单路流、多路流合流二者切换的场景
+<p>单路流、多路流合流二者切换的场景，主要适用于<strong>有连麦需求的秀场直播</strong>等场景，能够满足主播在自己单路流直播和连麦两路流合流直播二者间切换的需求。对于该场景的实现，需要注意的问题是，在两种场景切换的过程中，如何保证观看端不会断流黑屏。</p>
+<p>为了避免切换过程中断流黑屏的问题，这里我们七牛直播云引入 <strong>serialnum</strong> 的概念，支持 <strong>serialnum</strong> 决定流的优先级，值越大，优先级越高，可以帮助更好的实现两路流的平滑切换：</p>
+<ol>
+<li><strong>QNDirectLiveStreamingConfig</strong> 和 <strong>QNTranscodingLiveStreamingConfig</strong> 两种任务场景推流地址需要保持一致，以避免播放端需要实现多余的切流操作</li>
+<li>由于上述完全一致的地址可能会导致抢流的现象出现，所以需要在推流地址后面加上 <strong>serialnum</strong> 的参数，如 "rtmp://domain/app/streamName?serialnum=xxx"，其中，<strong>serialnum</strong> 决定流的优先级，值越大，优先级越高，便不会出现抢流的现象。也基于此，合流任务必须使用自定义合流任务，以便自定义推流地址。</li>
+</ol></div></div>

@@ -1,0 +1,19 @@
+原图保护是对象存储 Kodo 针对媒体类源文件的保护措施，不支持直接通过 URL 访问原图，以防止您 Kodo 存储空间内允许匿名访问的图片文件被盗用。
+<br>
+
+
+# **说明**
+- 原图保护是一种空间属性，对整个存储空间内所有的资源生效。
+- 建议对于开启原图保护的空间只存储需要保护原图的图片文件，其他文件使用其他空间存放。
+- 开启后，空间内的文件无法直接通过 URL 进行访问，需要配合[样式分隔符](/kodo/development_guidelines/8558/set-the-picture-style)和[图片样式](https://developer.qiniu.com/dora/8264/the-picture-style)才能访问，更多详情请参考[原图保护](/kodo/development_guidelines/8616/dev-the-original-image-to-protect)。
+- 可在文件详情上查看该文件的原图保护定义信息，详情请见[查看文件信息](/kodo/development_guidelines/8566/view-the-file-information)。
+<br>
+
+# **操作步骤**
+
+1. 登录 Kodo 控制台进入[空间管理](https://portal.qiniu.com/kodo/bucket)界面
+2. 单击**目标空间名称**进入空间概览，单击**空间设置**进入空间设置界面；或单击目标空间栏**设置**，快速链接至空间设置界面
+3. 找到原图保护栏，如图1，单击**开启/关闭**，完成原图保护设置。
+图1:
+![image.png](https://dn-odum9helk.qbox.me/FvUAtb9LKrr2FdhBAwB9vZjDW8ix)
+*注：修改设置后，请及时刷新 CDN 缓存，以保证设置生效。请在当前原图保护栏单击 **[融合 CDN-刷新预取-刷新目录](https://portal.qiniu.com/cdn/refresh-prefetch)** 刷新 CDN 缓存，详情请见[七牛云 CDN 刷新预取](https://developer.qiniu.com/fusion/3845/refresh-the-prefetch-fusion)。*

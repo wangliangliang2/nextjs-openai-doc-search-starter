@@ -1,0 +1,104 @@
+<a id="initiateMultipartUpload-description"></a>
+# **描述** 
+
+使用 Multipart Upload 方式上传数据前，必须先调用 API 来获取一个全局唯一的 UploadId ，后续的块数据通过 uploadPart API 上传，整个文件完成 completeMultipartUpload API ，已经上传块的删除 abortMultipartUpload API 都依赖该 UploadId 。
+
+<br>
+
+<a id="initiateMultipartUpload-requests"></a>
+# **请求**
+<a id="initiateMultipartUpload-requests-syntax"></a>
+
+### **请求语法**
+
+```
+POST /buckets/<BucketName>/objects/<EncodedObjectName>/uploads HTTP/1.1
+Host: <UpHost>
+Authorization: UpToken <UploadToken>
+```
+使用说明：
+* 初始化 Multipart Upload 请求，并不会影响已存在的同名 Object 。
+* 同一个 Object 可以同时拥有不同的 UploadId 。
+
+
+<br>
+
+<a id="initiateMultipartUpload-request-parameters"></a>
+### **请求参数**
+
+| 参数名称 | 必填 | 说明 |
+| --- | --- | --- |
+| BucketName | 是 | 空间名称|
+| EncodedObjectName | 否 | 资源名，EncodedObjectName 需要经过 Base64 编码，如果表示不设置可以使用特殊字符 `~` 。具体可以参照：[URL 安全的 Base64 编码](/kodo/manual/1231/appendix#urlsafe-base64) |
+
+<br>
+
+<a id="initiateMultipartUpload-request-headers"></a>
+### **请求头**
+|头部名称       | 必填 | 说明|
+|------------- | --- | --------------------------------
+|Host           | 是   | 上传域名。<span id="Endpoint">对象存储支持的区域和对应区域上传域名列表见 [存储区域列表](/kodo/1671/region-endpoint-fq)</span>  |
+|Authorization  | 是   | 该参数应严格按照[上传凭证](/kodo/manual/1208/upload-token)格式进行填充，否则会返回 401 错误码。一个合法的 Authorization 值应类似于 Authorization: UpToken QNJi_bYJlmO5LeY08FfoNj9w_r... |
+
+<br>
+
+<a id="initiateMultipartUpload-request-elements"></a>
+### **请求内容**
+该请求操作的请求体为空。
+
+<br>
+
+<a id="initiateMultipartUpload-responses"></a>
+# **响应**
+
+<a id="initiateMultipartUpload-request-headers"></a>
+### **响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](/kodo/api/3924/common-response-headers)。
+
+<br>
+
+<a id="initiateMultipartUpload-response-elements"></a>
+### **响应内容**
+|名称  |类型|说明|
+|--------|----------------|-----|
+|uploadId|string|初始化文件生成的 id |
+|expireAt|int64| UploadId 的过期时间 Unix 时间戳，过期之后 UploadId 不可用，固定 7 天有效期|
+
+<br>
+
+<a id="initiateMultipartUpload-special-errors"></a>
+### **响应状态码**
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误响应](/kodo/api/3928/error-responses)。
+
+<br>
+
+<a id="initiateMultipartUpload-examples"></a>
+# **示例**
+<a id="initiateMultipartUpload-request-examples"></a>
+
+### **请求示例**
+```
+POST /buckets/myBucket/objects/bXlPYmplY3Q=/uploads HTTP/1.1
+Host: up.qiniup.com
+User-Agent: Go-http-client/1.1
+Authorization: UpToken j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:nP7NSSyGo4x3W_nJ8T9X1gJrgpk=
+```
+
+<br>
+
+<a id="initiateMultipartUpload-response-examples"></a>
+### **响应示例**
+```
+HTTP/1.1 200 OK
+Content-Length: 2
+Connection: keep-alive
+Content-Type: application/json
+Date: Wed, 18 Dec 2019 17:02:11 GMT
+Server: nginx
+X-Reqid: SFkAAAC8BDebTtsU
+
+{
+	 "uploadId": "5df9ea14834c512b2270234e",
+	 "expireAt": 1576659776
+}
+```

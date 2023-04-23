@@ -1,0 +1,26 @@
+Syslog Parser 是直接根据 [RFC3164](https://tools.ietf.org/html/rfc3164)/[RFC5424](https://tools.ietf.org/html/rfc5424) 规则解析 syslog 数据的解析器，使用该解析器请确保日志数据严格按照 RFC 协议规则配置，否则该解析器将无法正确解析。
+
+![](https://pandora-kibana.qiniu.com/syslog.png)
+
+RFC 3164 : [https://tools.ietf.org/html/rfc3164](https://tools.ietf.org/html/rfc3164) 样例日志如下：
+
+```
+<13>Feb  5 17:32:18 10.0.0.99 Use the BFG!
+```
+RFC 5424 : [https://tools.ietf.org/html/rfc5424](https://tools.ietf.org/html/rfc5424) 样例日志如下：
+
+```
+<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"] BOMAn application event log entry...
+```
+
+Syslog Parser 能够自动识别多行构成的同一条日志。
+
+* rfc 协议(`syslog_rfc`): 表示日志针对的 RFC 标准，选择 automic 可以识别，也可以直接填写 rfc3164 或者 rfc5424。
+
+* 禁止记录解析失败数据(`disable_record_errdata`)：默认为 false，解析失败的数据会默认出现在`pandora_stash`字段，该选项可以禁止记录解析失败的数据。
+
+* 保留原始数据（`keep_raw_data`):默认为`false`，配置此选项之后会保留原始数据在`raw_data`字段下。 
+
+### **高级选项**：
+
+* `timestamp`支持选择时区偏移量。

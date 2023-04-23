@@ -1,0 +1,72 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>本文主要介绍如何实现在房间发布、订阅媒体流。</p>
+<blockquote>
+<ul>
+<li><strong>发布</strong>是指将创建好的音视频 Track 对应的音视频数据推送到七牛实时音视频服务的操作，执行发布操作后，远端用户可以选择性的进行订阅观看。</li>
+<li><strong>订阅</strong>是指向七牛实时音视频服务请求拉取远端发布的音视频数据的操作。订阅后，本地即可实时的接收远端发布的音视频数据。</li>
+<li><strong>有别于 CDN 转推</strong>，发布和订阅的音视频数据是基于实时性更好的 RTP 协议在房间内传输的，若您想要实现 RTMP 直播流分发的场景，请在音视频 Track 发布后，参考 <a href="/rtc/11842/turn-the-cdn-push-uniapp">CDN 转推</a> 进行实现。</li>
+</ul>
+</blockquote>
+
+# 发布 Track
+<p>发布 <a href="/rtc/11390/UniappQNTrack">Track</a> 前，需要对 Track 进行配置和创建，详情请见音视频采集，对于已经创建好的 Track，可通过 <a href="/rtc/11402/UniappQNRTCClient#publish">QNRTCClient.publish</a> 接口向房间内进行发布。</p>
+<blockquote>
+<p>请确保在发布前已经成功加入房间，否则将发布失败。</p>
+</blockquote>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">publish</span>(tracksList, QNPublishResultCallback)
+<span></span></code></pre>
+<p>其中，<a href="/rtc/11557/UniappQNPublishResultCallback">QNPublishResultCallback</a> 回调了发布操作的结果通知：</p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">publish</span>(trackList[], <span class="hljs-function">(<span class="hljs-params">onPublished，error</span>) =&gt;</span> {
+<span></span>    <span class="hljs-keyword">if</span>(onPublished) {
+<span></span>        <span class="hljs-comment">// 发布成功</span>
+<span></span>    }<span class="hljs-keyword">else</span> {
+<span></span>        <span class="hljs-comment">// 发布失败</span>
+<span></span>    }
+<span></span>})
+<span></span></code></pre>
+<p>发布 Track 失败的错误码可参考 <a href="/rtc/9904/rtc-error-code-android#3">Android 发布 Track 相关错误码</a> 以及 <a href="/rtc/10084/rtc-error-code-iOS#2">iOS 发布 Track 相关错误码</a>。其中两个端错误 <strong>code</strong> 一致，错误信息可能有略微差异。</p>
+<p>发布 Track 成功后，远端用户会收到如下通知回调：</p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;onUserPublished&quot;</span>, <span class="hljs-function">(<span class="hljs-params">params</span>) =&gt;</span> {
+<span></span>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(params.<span class="hljs-property">remoteUserID</span>, params.<span class="hljs-property">trackList</span>)
+<span></span>})
+<span></span></code></pre>
+
+# 取消发布 Track
+<p>对于已发布的 track，可调用 <a href="/rtc/11402/UniappQNRTCClient#unpublish">QNRTCClient.unpublish</a> 接口取消发布。</p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">unpublish</span>(tracksList)
+<span></span></code></pre>
+<p>取消发布成功后，远端用户会收到如下通知回调：</p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;onUserUnpublished&quot;</span>, <span class="hljs-function">(<span class="hljs-params">params</span>) =&gt;</span> {
+<span></span>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(params.<span class="hljs-property">remoteUserID</span>, params.<span class="hljs-property">trackList</span>)
+<span></span>})
+<span></span></code></pre>
+
+# 订阅远端 Track
+<p>SDK 提供了自动订阅的功能，可通过 <a href="/rtc/11402/UniappQNRTCClient#setAutoSubscribe">QNRTCClient.setAutoSubscribe</a> 接口进行自动订阅功能的开启与关闭，默认为开启状态。</p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">setAutoSubscribe</span>(<span class="hljs-literal">false</span>)
+<span></span></code></pre>
+<p>在自动订阅功能关闭时，用户可以通过调用 <a href="/rtc/11402/UniappQNRTCClient#subscribe">QNRTCClient.subscribe</a> 接口订阅远端 Tracks。</p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">subscribe</span>(tracksList)
+<span></span></code></pre>
+<p>本地订阅远端用户媒体流成功后，会触如下回调：</p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;onAudioSubscribed&quot;</span>, <span class="hljs-function">() =&gt;</span> {
+<span></span>    <span class="hljs-comment">// 视频轨订阅成功触发该回调</span>
+<span></span>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">remoteAudioTrack</span> = params.<span class="hljs-property">trackList</span>
+<span></span>})
+<span></span>client.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;onVideoSubscribed&quot;</span>, <span class="hljs-function">() =&gt;</span> {
+<span></span>    <span class="hljs-comment">// 音频轨订阅成功触发该回调</span>
+<span></span>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">remoteVideoTrack</span> = params.<span class="hljs-property">trackList</span>
+<span></span>})
+<span></span></code></pre>
+<p>成功订阅远端视频后将获取到 <a href="/rtc/11397/UniappQNRemoteTrack">remoteTrack</a> 对象， 通过该对象传参给 <strong>QNRTC-UniPlugin-SurfaceView</strong> 组件，即可渲染远端视频流。</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">QNRTC-UniPlugin-SurfaceView</span> <span class="hljs-attr">:local</span>=<span class="hljs-string">&quot;1&quot;</span> <span class="hljs-attr">:identifyID</span>=<span class="hljs-string">&quot;remoteVideoTrack.identifyID&quot;</span> <span class="hljs-attr">:userID</span>=<span class="hljs-string">&quot;remoteVideoTrack.userID&quot;</span> <span class="hljs-attr">:trackID</span>=<span class="hljs-string">&quot;remoteVideoTrack.trackID&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">QNRTC-UniPlugin-SurfaceView</span>&gt;</span>
+<span></span></code></pre>
+<blockquote>
+<p>其中 local 为 1 代表该组件渲染远端 <strong>Track</strong>。</p>
+</blockquote>
+
+# 取消订阅远端 Track
+<p>调用 <a href="/rtc/11402/UniappQNRTCClient#unsubscribe">QNRTCClient.unsubscribe</a> 接口取消订阅远端 Tracks。</p>
+<pre><code class="language-typescript">client.<span class="hljs-title function_">unsubscribe</span>(tracksList)
+<span></span></code></pre></div></div>

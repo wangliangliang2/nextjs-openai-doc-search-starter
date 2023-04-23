@@ -1,0 +1,60 @@
+# **描述**
+本接口用于更新图像库信息。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：PATCH
+* 接口路径：`/v1/imagelibs/{libId}`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+| libId |是|string|库ID|
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|operations|是|op数组|op集合，详见：*表一*
+
+*表一：* OP集合参数
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|operations.key|是|string|要修改的参数
+|operations.op|是|string|op操作(目前支持replace和delete)
+|operations.value|是|object|要修改的参数对应的value(当op为delete的时候可以忽略)
+
+*表二：* 可编辑参数说明
+
+|参数名称|字段类型|说明|
+|---|---|---|---|
+|name|string|图像库名称
+|desc|string|图像库描述
+
+
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request PATCH \
+  --url http://qvs.qiniuapi.com/v1/imagelibs/d102sns2mwhd \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{"operations":[{"key":"name","op":"replace","value":"123"}]
+}'
+```
+
+**响应示例**
+
+```
+{
+  "id": "d102sns2mwhd",
+  "name": "123",
+  "desc": "hello",
+  "createdAt": 1585104103
+}
+```

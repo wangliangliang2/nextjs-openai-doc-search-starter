@@ -1,0 +1,448 @@
+本文介绍触发并完成了七牛增量审核后，回调地址可收到的回调信息，增量审核回调的使用须知等，帮助您正确地处理回调信息。
+
+# 使用限制须知
+* 支持不设置增量审核回调
+* 增量审核回调与自动封禁，至少需要开启一种
+* 若设置了回调，进行了一次增量审核，则触发一次回调
+* 若回调失败（回调地址响应5XX状态码），则会进行一定次数重试
+* 增量审核支持回调，存量审核不支持回调
+* 关于开启/修改增量审核回调，请参考：[开通增量审核](/censor/manual/5922/incremental-audit#3)、[查看修改配置](/censor/manual/5922/incremental-audit#4)
+
+# 新图片审核回调格式
+| 参数 | 类型 | 说明 |
+| :--- | :--- : | :--- |
+| `id` | string | 处理任务的persistentID，请参考：[persistent ID 的常见问题](/dora/kb/3643/how-to-acquire-persistent-id)。 |
+| `pipeline` | string | 处理队列名，请参考：[关于七牛的流媒体队列](/dora/kb/2500/streaming-media-queue-about-seven-cows)。 |
+| `code` | string | 状态码`0`成功，`1`等待处理，`2`正在处理，`3`处理失败，`4`通知提交失败。 |
+| `desc` | string | 与状态码相对应的详细描述。 |
+| `reqid` | string | 云处理请求的请求id，主要用于七牛技术人员的问题排查。 |
+| `inputBucket` | string | 处理源文件所在的空间名。 |
+| `inputKey` | string | 处理源文件的文件名。 |
+| `result.disable` | bool | 文件是否被禁用的标识，`true`表示文件已被禁用，`false`表示文件没有被禁用。如果用户在增量设置中开启了“自动禁用违规文件”，那么增量违规文件就会被自动禁用，此时该字段就显示为`true`。 |
+| `result.result.suggestion` | string | `suggestion`是针对文件级别的管控建议，取值包括：[“block”,”review”,”pass”]，请参考本文档后面的审核结果管控建议说明部分，查看管控建议详细说明。这个值主要取决于单个审核类型的管控建议值`result.result.scenes.op.suggestion`，如果单个审核类型中存在 `block`的值，那么文件级别的管控建议值一定是`block`；如果单个审核类型中不存在 `block`的值，但是存在`review`的值，那么文件级别的管控建议值一定是`review`；如果单个审核类型中都是 `normal`的值，那么文件级别的管控建议值一定是`normal`。|
+| `result.result.scenes.op.result` | json | `op`显示审核设置中勾选的审核类型，`pulp`是涉黄识别的检测结果、`terror`是暴恐识别的检测结果、`politician`是敏感人物识别的检测结果。|
+| `result.result.scenes.op.suggestion` | string | `suggestion`是各种审核类型的对应的管控建议，取值包括：[“block”,”review”,”pass”]，请参考本文档后面的审核结果管控建议说明部分，查看管控建议详细说明。 |
+| `op.result.label` | string | 图片所属的标签，一张图片只会有一个标签。 |
+| `op.result.score` | float | 图片所属标签的置信度。 |
+| `op.suggestion` | string | 图片的管控建议值，取值包括：[“block”,”review”,”pass”]。 |
+| `op.result.faces` | interface | `op`为`politician` 且 `op.result.label`非`normal` 时，显示详细检测人脸结果。其中`boundingBox`表示人脸矩形框信息，类型为map。`boundingBox.pst`表示人脸矩形框在图片中的位置坐标[左上，右上，右下，左下]，类型为list[4]。`boundingBox.score`表示人脸位置检测置信度，类型为float。 |
+
+```
+{
+    "id": "z0.5b8911ea38b9f324a5734c32", 
+    "pipeline": "0.default", 
+    "code": 0, 
+    "desc": "The fop was completed successfully", 
+    "reqid": "mH0AAOWK5yLQ708V", 
+    "inputBucket": "netback", 
+    "inputKey": "Image-2016-09-08-00-50-1632.jpg", 
+    "items": [
+        {
+            "cmd": "image-censor/v2/pulp/terror/politician|bucket-inspect/v2/true|notify-filter/true/http%3A%2F%2Fargus-ccp.xs.cg.dora-internal.qiniu.io%3A5001%2Fv1%2Fmsg%2Fpfop%2F1380827137%2Fe7db1a97-8cf8-4bb7-8664-7d5d8fb7bd53%2Fimage", 
+            "code": 0, 
+            "desc": "The fop was completed successfully", 
+            "result": {
+                "disable": true, 
+                "result": {
+                    "code": 200, 
+                    "message": "OK", 
+                    "scenes": {
+                        "politician": {
+                            "result": {
+                                "faces": [
+                                    {
+                                        "bounding_box": {
+                                            "pts": [
+                                                [
+                                                    277, 
+                                                    37
+                                                ], 
+                                                [
+                                                    340, 
+                                                    37
+                                                ], 
+                                                [
+                                                    340, 
+                                                    124
+                                                ], 
+                                                [
+                                                    277, 
+                                                    124
+                                                ]
+                                            ], 
+                                            "score": 0.99987173
+                                        }
+                                    }
+                                ], 
+                                "label": "face"
+                            }, 
+                            "suggestion": "pass"
+                        }, 
+                        "pulp": {
+                            "result": {
+                                "label": "pulp", 
+                                "score": 0.98557895
+                            }, 
+                            "suggestion": "block"
+                        }, 
+                        "terror": {
+                            "result": {
+                                "label": "normal", 
+                                "score": 0.96237665
+                            }, 
+                            "suggestion": "pass"
+                        }
+                    }, 
+                    "suggestion": "block"
+                }
+            }, 
+            "returnOld": 0
+        }
+    ]
+}
+```
+
+# 旧图片审核回调格式
+为了兼容老用户的使用，我们保留了旧的图片审核回调格式。
+```
+{
+    "id": "z0.5b6bb27938b9f324a587e7c8", 
+    "pipeline": "0.default", 
+    "code": 0, 
+    "desc": "The fop was completed successfully", 
+    "reqid": "InkAAF_K_UoOGUkV", 
+    "inputBucket": "netback", 
+    "inputKey": "pulp-2018-04-04T04-09-27-XZ498IU50WTbUB_u91bHyw==.jpg", 
+    "items": [
+        {
+            "cmd": "image-censor/pulp|bucket-inspect/v1/tpulp/0.6|notify-filter/true/http%3A%2F%2Fargus-ccp.xs.cg.dora-internal.qiniu.io%3A5001%2Fv1%2Fmsg%2Fpfop%2F1380827137%2F23c26dae-6856-4ca7-85bd-33a6fc22a5a8%2Fimage", 
+            "code": 0, 
+            "desc": "The fop was completed successfully", 
+            "result": {
+                "disable": false, 
+                "result": {
+                    "code": 0, 
+                    "message": "", 
+                    "result": {
+                        "details": [
+                            {
+                                "label": 2, 
+                                "review": false, 
+                                "score": 0.94214475, 
+                                "type": "pulp"
+                            }
+                        ], 
+                        "label": 0, 
+                        "review": false, 
+                        "score": 0.94214475
+                    }
+                }
+            }, 
+            "returnOld": 0
+        }
+    ]
+}
+```
+
+# 视频审核回调格式
+
+| 参数 | 类型 | 说明 |
+| :--- | :--- : | :--- |
+| `id` | string | 处理任务的persistentID，请参考：[persistent ID 的常见问题](/dora/kb/3643/how-to-acquire-persistent-id)。 |
+| `pipeline` | string | 处理队列名，请参考：[关于七牛的流媒体队列](/dora/kb/2500/streaming-media-queue-about-seven-cows)。 |
+| `code` | string | 状态码`0`成功，`1`等待处理，`2`正在处理，`3`处理失败，`4`通知提交失败。 |
+| `desc` | string | 与状态码相对应的详细描述。 |
+| `reqid` | string | 云处理请求的请求id，主要用于七牛技术人员的问题排查。 |
+| `inputBucket` | string | 处理源文件所在的空间名。 |
+| `inputKey` | string | 处理源文件的文件名。 |
+| `result.disable` | bool | 文件是否被禁用的标识，`true`表示文件已被禁用，`false`表示文件没有被禁用。如果用户在增量设置中开启了“自动禁用违规文件”，那么增量违规文件就会被自动禁用，此时该字段就显示为`true`。 |
+| `result.result.suggestion` | string | `suggestion`是针对文件级别的管控建议，取值包括：[“block”,”review”,”pass”]，请参考本文档后面的审核结果管控建议说明部分，查看管控建议详细说明。这个值主要取决于单个审核类型的管控建议值`result.result.scenes.op.suggestion`，如果单个审核类型中存在 `block`的值，那么文件级别的管控建议值一定是`block`；如果单个审核类型中不存在 `block`的值，但是存在`review`的值，那么文件级别的管控建议值一定是`review`；如果单个审核类型中都是 `normal`的值，那么文件级别的管控建议值一定是`normal`。|
+| `result.result.scenes.op.segments` | interface | `op`显示审核设置中勾选的审核类型，`pulp`是涉黄识别的检测结果、`terror`是暴恐识别的检测结果、`politician`是敏感人物识别的检测结果。|
+| `result.result.scenes.op.suggestion` | string | `suggestion`是各种审核类型的对应的管控建议，取值包括：[“block”,”review”,”pass”]，请参考本文档后面的审核结果管控建议说明部分，查看管控建议详细说明。|
+| `op.segments.cuts` | interface | 每种审核类型下的视频片段结果。例如`pulp.segments.cuts`表示`pulp`是涉黄识别的一个视频片段的审核结果。 |
+| `op.segments.offset_begin` | int | 视频片段起始的时间位置，单位为毫秒。 |
+| `op.segments.offset_end` | int | 视频片段结束的时间位置，单位为毫秒。 |
+| `op.segments.cuts.offset` | int | 视频片段中，视频截帧的时间位置，单位为毫秒。|
+| `op.segments.cuts.result` | interface  | 视频截帧得到的图片的检测标签，结果与具体的命令有关，里面包含`op.segments.cuts.result.label`和`op.segments.cuts.result.score`。例如，视频鉴黄的命令`pulp`的label有`normal`正常, `terror`。 |
+| `op.segments.cuts.result.label` | string  | 视频截帧所属的标签，一个视频截帧只会有一个标签。|
+| `op.segments.cuts.result.score` | float  | 视频截帧所属标签的置信度。 |
+| `op.segments.cuts.suggestion` | string  | 视频截帧的管控建议值，取值包括：[“block”,”review”,”pass”]。 |
+| `op.segments.cuts.uri` | string | 视频截帧的保存路径，增量的保存路径是用户在审核设置中填入的视频截帧地址。 |
+| `op.segments.cuts.result.faces` | interface | `op`为`politician` 且 `op.segments.cuts.result.label`非`normal` 时，显示详细检测人脸结果。其中`boundingBox`表示人脸矩形框信息，类型为map。`boundingBox.pst`表示人脸矩形框在图片中的位置坐标[左上，右上，右下，左下]，类型为list[4]。`boundingBox.score`表示人脸位置检测置信度，类型为float。 |
+
+```
+{
+    "id":"z0.5ba33a7838b9f349c890494e",
+    "pipeline":"1380432151.aaaaa",
+    "code":0,
+    "desc":"The fop was completed successfully",
+    "reqid":"mHIAADaYZi76BlYV",
+    "inputBucket":"netback",
+    "inputKey":"alicia_love_summer-2018-06-11-4.mp4",
+    "items":[
+        {
+            "cmd":"video-censor/v1/pulp/terror/politician/save/eyJidWNrZXQiOiJndW9qdW4iLCJwcmVmaXgiOiJyZXN1bHQwMiJ9/vframe/eyJtb2RlIjowLCJpbnRlcnZhbCI6MX0=|bucket-inspect/v2/true|notify-filter/true/http%3A%2F%2Fargus-ccp.xs.cg.dora-internal.qiniu.io%3A5001%2Fv1%2Fmsg%2Fpfop%2F1380827137%2F6b21bf0d-487f-4482-ac84-0eacaa84fdd1%2Fvideo",
+            "code":0,
+            "desc":"The fop was completed successfully",
+            "result":{
+                "disable":true,
+                "result":{
+                    "scenes":{
+                        "politician":{
+                            "segments":[
+                                {
+                                    "cuts":[
+                                        {
+                                            "offset":0,
+                                            "result":{
+                                                "faces":[
+                                                    {
+                                                        "bounding_box":{
+                                                            "pts":[
+                                                                [
+                                                                    373,
+                                                                    0
+                                                                ],
+                                                                [
+                                                                    621,
+                                                                    0
+                                                                ],
+                                                                [
+                                                                    621,
+                                                                    201
+                                                                ],
+                                                                [
+                                                                    373,
+                                                                    201
+                                                                ]
+                                                            ],
+                                                            "score":0.999931
+                                                        }
+                                                    }
+                                                ],
+                                                "label":"face"
+                                            },
+                                            "suggestion":"pass",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/0"
+                                        }
+                                    ],
+                                    "offset_begin":0,
+                                    "offset_end":0,
+                                    "suggestion":"pass"
+                                }
+                            ],
+                            "suggestion":"pass"
+                        },
+                        "pulp":{
+                            "segments":[
+                                {
+                                    "cuts":[
+                                        {
+                                            "offset":0,
+                                            "result":{
+                                                "label":"pulp",
+                                                "score":0.99717283
+                                            },
+                                            "suggestion":"block",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/0"
+                                        },
+                                        {
+                                            "offset":1000,
+                                            "result":{
+                                                "label":"pulp",
+                                                "score":0.9972186
+                                            },
+                                            "suggestion":"block",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/1000"
+                                        },
+                                        {
+                                            "offset":2000,
+                                            "result":{
+                                                "label":"pulp",
+                                                "score":0.9977402
+                                            },
+                                            "suggestion":"block",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/2000"
+                                        },
+                                        {
+                                            "offset":3000,
+                                            "result":{
+                                                "label":"pulp",
+                                                "score":0.99914116
+                                            },
+                                            "suggestion":"block",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/3000"
+                                        },
+                                        {
+                                            "offset":4000,
+                                            "result":{
+                                                "label":"pulp",
+                                                "score":0.9995518
+                                            },
+                                            "suggestion":"block",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/4000"
+                                        },
+                                        {
+                                            "offset":5000,
+                                            "result":{
+                                                "label":"pulp",
+                                                "score":0.99918985
+                                            },
+                                            "suggestion":"block",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/5000"
+                                        },
+                                        {
+                                            "offset":6000,
+                                            "result":{
+                                                "label":"pulp",
+                                                "score":0.9961891
+                                            },
+                                            "suggestion":"block",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/6000"
+                                        },
+                                        {
+                                            "offset":7000,
+                                            "result":{
+                                                "label":"pulp",
+                                                "score":0.9980135
+                                            },
+                                            "suggestion":"block",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/7000"
+                                        },
+                                        {
+                                            "offset":8000,
+                                            "result":{
+                                                "label":"pulp",
+                                                "score":0.9989619
+                                            },
+                                            "suggestion":"block",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/8000"
+                                        },
+                                        {
+                                            "offset":9000,
+                                            "result":{
+                                                "label":"pulp",
+                                                "score":0.99891454
+                                            },
+                                            "suggestion":"block",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/9000"
+                                        }
+                                    ],
+                                    "offset_begin":0,
+                                    "offset_end":9000,
+                                    "suggestion":"block"
+                                }
+                            ],
+                            "suggestion":"block"
+                        },
+                        "terror":{
+                            "segments":[
+                                {
+                                    "cuts":[
+                                        {
+                                            "offset":0,
+                                            "result":{
+                                                "label":"normal",
+                                                "score":0.99140936
+                                            },
+                                            "suggestion":"pass",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/0"
+                                        },
+                                        {
+                                            "offset":1000,
+                                            "result":{
+                                                "label":"normal",
+                                                "score":0.9995901
+                                            },
+                                            "suggestion":"pass",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/1000"
+                                        },
+                                        {
+                                            "offset":2000,
+                                            "result":{
+                                                "label":"normal",
+                                                "score":0.9995938
+                                            },
+                                            "suggestion":"pass",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/2000"
+                                        },
+                                        {
+                                            "offset":3000,
+                                            "result":{
+                                                "label":"normal",
+                                                "score":0.9969735
+                                            },
+                                            "suggestion":"pass",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/3000"
+                                        },
+                                        {
+                                            "offset":4000,
+                                            "result":{
+                                                "label":"normal",
+                                                "score":0.99999845
+                                            },
+                                            "suggestion":"pass",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/4000"
+                                        },
+                                        {
+                                            "offset":5000,
+                                            "result":{
+                                                "label":"normal",
+                                                "score":1
+                                            },
+                                            "suggestion":"pass",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/5000"
+                                        },
+                                        {
+                                            "offset":6000,
+                                            "result":{
+                                                "label":"normal",
+                                                "score":0.99997556
+                                            },
+                                            "suggestion":"pass",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/6000"
+                                        },
+                                        {
+                                            "offset":7000,
+                                            "result":{
+                                                "label":"normal",
+                                                "score":0.9999733
+                                            },
+                                            "suggestion":"pass",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/7000"
+                                        },
+                                        {
+                                            "offset":8000,
+                                            "result":{
+                                                "label":"normal",
+                                                "score":0.9999771
+                                            },
+                                            "suggestion":"pass",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/8000"
+                                        },
+                                        {
+                                            "offset":9000,
+                                            "result":{
+                                                "label":"normal",
+                                                "score":0.9999926
+                                            },
+                                            "suggestion":"pass",
+                                            "uri":"qiniu://1380827137@/guojun/result02/qiniu_censor_tmp/CAAAAAatfi36BlYV/9000"
+                                        }
+                                    ],
+                                    "offset_begin":0,
+                                    "offset_end":9000,
+                                    "suggestion":"pass"
+                                }
+                            ],
+                            "suggestion":"pass"
+                        }
+                    },
+                    "suggestion":"block"
+                }
+            },
+            "returnOld":0
+        }
+    ]
+}
+```

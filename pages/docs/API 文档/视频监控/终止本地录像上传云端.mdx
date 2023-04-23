@@ -1,0 +1,48 @@
+# **描述**
+本接口用于终止本地录制文件上传云端录制的操作。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/devices/{gbId}/sdcardsave/stop`
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|gbId|是|string|设备国标Id
+
+**Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|channelId|否|string|平台设备指定需要启动的通道国标ID
+|start|是|integer| 开始时间(unix时间戳,单位为秒)
+|end|是| integer | 结束时间(unix时间戳,单位为秒)
+
+**注意**: 该接口应与[本地录像上传云端](https://developer.qiniu.com/qvs/7765/uploaded-to-the-cloud)配合使用
+# **响应参数**
+200
+
+# **示例**
+
+**请求示例**
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarvzvyijd/devices/31011500991320000028/sdcardsave/stop \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json'
+  --data '{
+	"channelId": "34020000001310000003",
+	"start":1612191900,
+	"end":1612191960
+}'
+```
+
+**响应示例**
+```
+{
+  "code": 200
+}
+```

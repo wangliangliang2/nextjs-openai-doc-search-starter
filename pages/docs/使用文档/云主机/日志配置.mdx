@@ -1,0 +1,43 @@
+客户端日志用于记录客户端运行过程中的异常，帮助快速定位和修复问题。本文介绍消息队列 RocketMQ 的客户端日志的打印方式，以及默认和自定义配置。
+# 打印客户端日志
+
+消息队列 RocketMQ 的 TCP Java SDK 基于 SLF4J 接口编程。
+
+消息队列 RocketMQ 已内置了日志实现，您无需在客户端应用中添加日志实现依赖即可打印消息队列 RocketMQ 的客户端日志。
+客户端日志的默认配置以及如何修改默认配置的具体步骤，请参见下文的自定义日志配置部分。
+
+# 客户端日志配置
+
+消息队列 RocketMQ 的客户端支持用户自定义日志保存路径、日志级别以及保存历史日志文件的最大个数。考虑到日志传输以及阅读的便利性，消息队列 RocketMQ 暂不允许自定义单个日志文件大小，保持默认的 64 MB。
+各参数的配置说明如下：
+- 日志保存路径：请确保应用进程有对该路径写的权限，否则日志不会打印。
+- 保存历史日志文件的最大个数：支持 1 到 100 之前的数值；若输入的值超出该范围或格式错误，则系统默认保存 10 个。
+- 日志级别：支持 ERROR、WARN、INFO、DEBUG 中任何一种，不配置则默认为 INFO。
+
+## 默认配置
+
+客户端启动后，会按照如下的默认配置生成日志文件：
+- 日志保存路径：/{user.home}/logs/ons.log，其中 {user.home} 是指启动当前 Java 进程的用户的根目录
+- 保存历史日志文件的最大个数：10 个
+- 日志级别：INFO
+- 单个日志文件大小：64 MB
+
+## 自定义配置
+
+在 Java SDK 中自定义客户端日志配置，请设置以下系统参数：
+- ons.client.logRoot：日志保存路径
+- ons.client.logFileMaxIndex：保存历史日志文件的最大个数
+- ons.client.logLevel：日志级别
+
+## 示例配置
+
+您可在启动脚本中或者 IDE 的 VM options 中添加如下系统参数：
+- Linux 示例
+```
+  -Dons.client.logRoot=/home/admin/logs -Dons.client.logLevel=WARN -Dons.client.logFileMaxIndex=20
+```
+- Windows 示例
+```
+  -Dons.client.logRoot=D:\logs -Dons.client.logLevel=WARN -Dons.client.logFileMaxIndex=20
+```
+其中，/home/admin/ 和 D:\ 仅为示例，请填写您实际的系统目录。

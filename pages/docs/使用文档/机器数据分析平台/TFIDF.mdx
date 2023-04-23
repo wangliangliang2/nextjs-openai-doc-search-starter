@@ -1,0 +1,41 @@
+TFIDF是一种将文本向量化的工具，它基于文本加权方法，采用统计思想，即文本出现的次数和整个语料中文档频率来计算字词的重要度。
+
+
+
+语法：
+
+```
+..｜fit TFIDF max_features=<int> max_df=<float> min_df=<float> analyzer=<str> norm=<l1 | l2(default) | None> token_pattern=<str> ngram_range=<tuple> <feature_field_1> <feature_field_2> [into model_name]...
+```
+
+
+
+参数说明：
+
++ max_features参数，用来指定输出向量的最大维数。如不提供，默认值为None，表示没有最大上限，即输出向量的维数为词库大小。
+
++ max_df参数。如不提供，默认值为1.0。
+  在构建词汇表时，忽略文档频率严格高于max_df阈值的词（它们将被作为此特定语料库的停止词）。
+
++ min_df参数。如不提供，默认值为0.0。
+  在构建词汇表时，忽略文档频率严格低于min_df阈值的词（它们将被作为此特定语料库的停止词）。
+
++ analyzer参数，表示特征应该由单词还是字符的 n-gram 组成。
+
+  + word, 表示用词作为一个特征。（默认值）
+  + char, 表示用字符作为特征，词长度不足的部分会用空格填充。
+  + char_wb, 表示用字符作为特征，仅用词本身的字符，不会用空格填充。
+
++ norm参数，用来指定向量化的正则项，防止模型过拟合。如不提供，默认值为l2。
+
+  + l1，表示用L1正则。
+  + l2，表示用L2正则。
+  + None，表示不用正则。
+
++ token_pattern参数，传入一个正则表达式，它指定了分词方式。仅在 `analyzer == 'word'` 时使用。 如不提供，默认值为`r”(?u)\b\w\w+\b”`。默认的分词方式选择 2 个或更多字母数字字符的标记（标点符号以及单个字符会被完全忽略并始终被视为标记分隔符）。
+  如果需要保留单个字符组成的单词，可以修改分词方式：`token_pattern='(?u)\b\w+\b'`。
+
++ ngram_range参数传入元组，用来指定n-gram 的 n 值范围的下限min_n和上限max_n。如不提供，默认值为1-1。
+
+  模型将使用 min_n <= n <= max_n 的所有 n 值。 例如，`1-1` 的 `ngram_range` 表示只有 unigrams，`1-2` 表示会用 unigrams 和 bigrams，而 `2-2` 表示只有 bigrams。
+

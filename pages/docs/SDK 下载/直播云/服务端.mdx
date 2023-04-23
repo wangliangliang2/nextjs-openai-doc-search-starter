@@ -1,0 +1,1931 @@
+直播云相关功能已集成进七牛综合SDK，建议升级，原直播服务端SDK文档可见 [直播云服务端SDK历史版本](https://developer.qiniu.com/pili/1220/server-sdk)。
+
+此 SDK 适用于 Go 1.10.0 及以上版本。此SDK可以帮助您快速接入七牛云直播服务，主要功能有：
+
+1. [获取直播地址与签算结果](#4) 
+    - 获取推流地址，包括[RTMP推流地址](#41)与[SRT推流地址](#42)
+    - 获取播放地址，包括[RTMP](#43)、[HLS](#44)和[HDL(HTTP-FLV)](#45)播放地址
+    - [直播推流鉴权](#46)与[播放时间戳防盗链](#47)签算方法
+2. [直播空间管理](#5)
+    - [查询直播空间列表](#51)
+    - [查询直播空间信息](#52)
+    - [修改直播空间推流鉴权配置](#53)
+    - [修改直播空间hls低延迟配置](#54)
+    - [修改直播空间存储配置](#55)
+    - [修改直播空间封面配置](#56)
+3. [域名管理](#6)
+    - [查询域名列表](#61)
+    - [查询域名信息](#62)
+    - [绑定直播域名](#63)
+    - [解绑直播域名](#64)
+    - [配置点播域名](#65)
+    - [修改域名证书配置](#66)
+    - [更新域名改写规则](#67)
+4. [直播流管理](#7)
+    - [查询直播流列表](#71)
+    - [查询直播流信息](#72)
+    - [禁用直播流](#73)
+    - [查询在线流信息](#74)
+    - [批量查询在线流信息](#75)
+    - [查询直播流推流记录](#76)
+    - [录制直播回放](#77)
+    - [保存直播截图](#78)
+    - [修改直播流转码配置](#79)
+5. [直播统计数据查询](#8)
+    - [查询直播上行流量](#81)
+    - [查询直播下行流量](#82)
+    - [查询直播转码使用量](#83)
+    - [查询直播鉴黄使用量](#84)
+    - [查询导播台使用量](#85)
+    - [查询Pub转推服务使用量](#86)
+
+# 开源
+
+- [Go SDK 项目地址](https://github.com/qiniu/go-sdk)
+- [Go SDK 发布地址](https://github.com/qiniu/go-sdk/releases)
+
+# 安装
+
+推荐使用 go mod , `github.com/qiniu/go-sdk/v7` ，如 `require github.com/qiniu/go-sdk/v7 v7.11.0` 
+
+# 鉴权
+
+Go SDK 的所有的功能，都需要合法的授权。授权凭证的签算需要七牛账号下的一对有效的`AccessKey`和`SecretKey`，这对密钥可以通过如下步骤获得：
+
+1. 登录 [七牛开发者平台](https://portal.qiniu.com/) 。
+2. 进入七牛 [个人中心/密钥管理](https://portal.qiniu.com/user/key) 页面。
+3. 在 密钥管理 页面，获取一对AccessKey/SecretKey。
+
+# 直播地址与签算方法
+
+## <span id="41">RTMP推流地址</span>
+
+获取RTMP推流地址
+
+### 调用方法
+
+```go
+func RTMPPublishURL(hub, domain, streamTitle string) string
+```
+
+### 参数说明
+
+RTMPPublishURL 函数参数说明
+
+| 参数名称        | 字段类型   | 必填  | 说明    |
+|-------------|--------|-----|-------|
+| hub         | string | 是 | 直播空间名 |
+| domain      | string | 是 | 推流域名  |
+| streamTitle | string | 是 | 直播流名  |
+
+### 示例
+
+```go
+rtmpPublishURL := RTMPPublishURL("testHub","testDomain","testStream")
+```
+
+## <span id="42">SRT推流地址</span>
+
+获取SRT推流地址
+
+### 调用方法
+
+```go
+func SRTPublishURL(hub, domain, streamTitle string) string
+```
+
+### 参数说明
+
+SRTPublishURL 函数参数说明
+
+| 参数名称        | 字段类型   | 必填  | 说明    |
+|-------------|--------|-----|-------|
+| hub         | string | 是 | 直播空间名 |
+| domain      | string | 是 | 推流域名  |
+| streamTitle | string | 是 | 直播流名  |
+
+### 示例
+
+```go
+srtPublishUrl := SRTPublishURL("testHub", "testDomain", "testStream")
+```
+
+## <span id="43">RTMP播放地址</span>
+
+获取RTMP播放地址
+
+### 调用方法
+
+```go
+func RTMPPlayURL(hub, domain, streamTitle string) string
+```
+
+### 参数说明
+
+RTMPPlayURL 函数参数说明
+
+| 参数名称        | 字段类型   | 必填  | 说明        |
+|-------------|--------|-----|-----------|
+| hub         | string | 是 | 直播空间名     |
+| domain      | string | 是 | RTMP 播放域名 |
+| streamTitle | string | 是 | 直播流名      |
+
+### 示例
+
+```go
+rtmpPlayURL := RTMPPlayURL("testHub", "testDomain", "testStream")
+```
+
+## <span id="44">HLS播放地址</span>
+
+获取HLS播放地址
+
+### 调用方法
+
+```go
+func HLSPlayURL(hub, domain, streamTitle string) string
+```
+
+### 参数说明
+
+HLSPlayURL 函数参数说明
+
+| 参数名称        | 字段类型   | 必填  | 说明       |
+|-------------|--------|-----|----------|
+| hub         | string | 是 | 直播空间名    |
+| domain      | string | 是 | HLS 播放域名 |
+| streamTitle | string | 是 | 直播流名     |
+
+### 示例
+
+```go
+hlsPlayURL := HLSPlayURL("testHub", "testDomain", "testStream")
+```
+
+## <span id="45">HDL(HTTP-FLV)播放地址</span>
+
+获取HDL(HTTP-FLV)播放地址
+
+### 调用方法
+
+```go
+func HDLPlayURL(hub, domain, streamTitle string) string
+```
+
+### 参数说明
+
+HDLPlayURL 函数参数说明
+
+| 参数名称        | 字段类型   | 必填  | 说明       |
+|-------------|--------|-----|----------|
+| hub         | string | 是 | 直播空间名    |
+| domain      | string | 是 | HDL 播放域名 |
+| streamTitle | string | 是 | 直播流名     |
+
+### 示例
+
+```go
+flvPlayURL := HDLPlayURL("testHub", "testDomain", "testStream")
+```
+
+## <span id="46">推流 URL 签算（直播鉴权）</span>
+
+获取推流地址签算结果
+
+### 调用方法
+
+```go
+func SignPublishURL(publishURL string, args SignPublishURLArgs) (string, error)
+```
+
+### 参数说明
+
+SignPublishURL 函数参数说明
+
+| 参数名称                 | 字段类型               | 必填  | 说明                                                           |
+|----------------------|--------------------|-----|--------------------------------------------------------------|
+| publishURL           | string             | 是 | 推流URL                                                        |
+| args                 | SignPublishURLArgs | 是 | 推流URL生成签算参数                                                  |
+| ├─ SecurityType      | string             | 是 | 鉴权类型，支持鉴权规格为:<br>1、static: 静态鉴权；<br>2、expiry: 限时鉴权；<br>3、expiry_sk: 限时鉴权SK；<br>4、dynamic: 动态鉴权 |
+| ├─ PublishKey        | string             | 否  | 推流鉴权秘钥，静态鉴权（static）、限时鉴权（expiry）、动态鉴权（dynamic） 类型必要参数        |
+| ├─ ExpireAt          | int64              | 否  | 签算URL过期时间，单位：秒。限时鉴权（expiry）、限时鉴权SK（expiry_sk） 类型必要参数         |
+| ├─ Nonce             | int                | 否  | 随机数，要求每次推流请求的nonce值需要大于上一次推流请求的nonce值。动态鉴权（dynamic） 鉴权类型必要参数 |
+| ├─ AccessKey         | string             | 否  | 访问密钥，限时鉴权SK（expiry_sk） 类型必要参数                                |
+| ├─ SecretKey         | string             | 否  | 访问密钥，限时鉴权SK（expiry_sk） 类型必要参数                                |
+
+### 示例
+
+```go
+// manager 实例
+	manager := NewManager(ManagerConfig{
+		AppName:       "live",
+		APIHost:       APIHost,
+		APIHTTPScheme: APIHTTPSScheme,
+		AccessKey:     "yourAccessKey",
+		SecretKey:     "yourSecretKey",
+		Transport:     http.DefaultTransport,
+	})
+
+	yourHub := "testHub"
+	yourPublishKey := "12345678" // 直播空间的推流鉴权密钥
+
+	hubInfo, err := manager.GetHubInfo(context.Background(), GetHubInfoRequest{Hub: yourHub})
+	if err != nil {
+		return err
+	}
+	rtmpPublishURL := RTMPPublishURL(yourHub, "testDomain", "testStream")
+
+	// 十分钟后过期
+	expireAt := time.Now().Add(10 * time.Minute).Unix()
+	// 此处假设直播空间推流鉴权方式为限时鉴权
+	signedRTMPPublishURL, err := SignPublishURL(rtmpPublishURL, SignPublishURLArgs{
+		SecurityType: hubInfo.PublishSecurity,
+		PublishKey:   yourPublishKey,
+		ExpireAt:     expireAt,
+		Nonce:        0,  // 限时鉴权规格下，此参数可以忽略
+		AccessKey:    "", // 非限时鉴权SK规格，此参数可以忽略
+		SecretKey:    "", // 非限时鉴权SK规格，此参数可以忽略
+	})
+	if err != nil {
+		return err
+	}
+
+	// 此时可以使用签算后的 signedRTMPPublishURL 进行推流
+```
+
+## <span id="47">播放 URL 签算（时间戳防盗链）</span>
+
+获取播放地址签算结果
+
+### 调用方法
+
+```go
+func SignPlayURL(playURL string, args SignPlayURLArgs) (string, error)
+```
+
+### 参数说明
+
+SignPlayURL 函数参数说明
+
+| 参数名称                                                                  | 字段类型            | 必填  | 说明                                          |
+|-----------------------------------------------------------------------|-----------------|-----|---------------------------------------------|
+| playURL                                                               | string          | 是 | 播放URL                                       |
+| args                                                                  | SignPlayURLArgs | 是 | 播放URL签算参数                                   |
+| ├─ SecurityType                                                       | string          | 是 | 鉴权类型，支持鉴权类型为：<br>1、tsStartMD5 时间戳防盗链开始时间限制<br>2、tsExpireMD5 时间戳防盗链结束时间限制|
+| ├─ Key                                                                | string          | 是 | 密钥                                          |
+| ├─ Timestamp                                                          | int64           | 是 | 时间戳，单位：秒<br>鉴权类型为 tsStartMD5 时，表示鉴权开始时间<br>鉴权类型为 tsExpireMD5 时，表示鉴权结束时间  |
+| ├─ Rule                                                               | string          | 是 | 签名规则，支持魔法变量的规则，最终签算结果为所有变量的md5。魔法变量如下：<br>1、 $(key): 密钥<br>2、 $(path): URL 中的 path 部分<br>3、$(streamKey): URL 中的 hub/stream 部分<br>4、 $(streamTitle): URL 中的 stream 部分<br>5、 $(path_<number>): URL 中的 path 部分，<number> 表示 path 层级<br>6、 $(_<query>): URL 中的 query 字段，举例: key1=val，魔法变量中使用 $(_key1) 表示 val     |
+| ├─ TsPart                                                             | string          | 是 | 时间戳字段，URL 中表示时间戳的字段名                        |
+| ├─ TsBase                                                             | int             | 否  | 时间戳进制，可选进制格式为 2-36，即 2 进制到 36 进制，默认使用 16 进制 |
+| ├─ SignPart                                                           | string          | 是 | 签名字段，URL 中表示 token 的字段名                     |
+
+### 示例
+
+```go
+// manager 实例
+	manager := NewManager(ManagerConfig{
+		AppName:       "live",
+		APIHost:       APIHost,
+		APIHTTPScheme: APIHTTPSScheme,
+		AccessKey:     "yourAccessKey",
+		SecretKey:     "yourSecretKey",
+		Transport:     http.DefaultTransport,
+	})
+
+	yourHub := "testHub"
+	rtmpPlayDomain := "testDomain"
+
+	domainInfo, err := manager.GetDomainInfo(context.Background(), GetDomainInfoRequest{
+		Hub:    yourHub,
+		Domain: rtmpPlayDomain,
+	})
+	if err != nil {
+		return err
+	}
+
+	rtmpPlayURL := RTMPPlayURL(yourHub, rtmpPlayDomain, "testStream")
+
+	// 假设域名播放鉴权类型为 tsStartMD5
+	signedRTMPPlayURL, err := SignPlayURL(rtmpPlayURL, SignPlayURLArgs{
+		SecurityType: domainInfo.PlaySecurity.Type,
+		Key:          domainInfo.PlaySecurity.Key1,
+		Timestamp:    time.Now().Unix(),
+		Rule:         domainInfo.PlaySecurity.Rule,
+		TsPart:       domainInfo.PlaySecurity.TsPart,
+		TsBase:       domainInfo.PlaySecurity.TsBase,
+		SignPart:     domainInfo.PlaySecurity.SignPart,
+	})
+	if err != nil {
+		return err
+	}
+
+	// 此时可以使用签算后的 signedRTMPPlayURL 进行播放
+```
+
+# 直播空间管理
+
+## <span id="51">查询直播空间列表</span>
+
+查询您所有的直播空间，结果以列表形式返回
+
+### 调用方法
+
+```go
+func (m *Manager) GetHubList(ctx context.Context) (*GetHubListResponse, error)
+```
+
+### 参数说明
+
+GetHubListResponse 结构体说明
+
+| 参数名称    | 字段类型     | 必填 | 说明     |
+|---------|----------|----|--------|
+| Items   | []object | 否 | 直播空间列表 |
+| ├─ Name | string   | 否 | 直播空间名  |
+
+### 示例
+
+```go
+hubs, err := manager.GetHubList(ctx)
+```
+
+## <span id="52">查询直播空间信息</span>
+
+查询目标直播空间信息，包括直播空间基本信息、绑定的域名列表、存储空间信息和直播空间配置信息
+
+### 调用方法
+
+```go
+func (m *Manager) GetHubInfo(ctx context.Context, req GetHubInfoRequest) (*GetHubInfoResponse, error)
+```
+
+### 参数说明
+
+GetHubInfoRequest 结构体说明
+
+| 参数名称 | 字段类型   | 必填  | 说明    |
+|------|--------|-----|-------|
+| Hub  | string | 是 | 直播空间名 |
+
+GetHubInfoResponse 结构体说明
+
+| 参数名称                 | 字段类型     | 必填 | 说明                                                                |
+|----------------------|----------|----|-------------------------------------------------------------------|
+| Name                 | string   | 否 | 直播空间名                                                             |
+| CreatedAt            | int64    | 否 | 创建时间                                                              |
+| UpdatedAt            | int64    | 否 | 更新时间                                                              |
+| Domains              | []object | 否 | 直播空间下的域名列表                                                        |
+| ├─ Type              | string   | 否 | 域名类型                                                              |
+| ├─ Domain            | string   | 否 | 域名                                                                |
+| ├─ Cname             | string   | 否 | CNAME                                                             |
+| DefaultDomains       | []object | 否 | 直播空间默认域名                                                          |
+| ├─ Type              | string   | 否 | 域名类型，包括：<br>publishRtmp：推流域名<br>liveRtmp：RTMP播放域名<br>liveHls：HLS播放域名<br>liveHdl：FLV播放域名  |
+| ├─ Domain            | string   | 否 | 域名                                                                |
+| StorageBucket        | string   | 否 | 与直播空间绑定的存储空间                                                      |
+| LiveDataExpireDays   | int64    | 否 | 存储过期时间，单位：天                                                       |
+| PublishSecurity      | string   | 否 | 推流鉴权方式                                                            |
+| Nrop                 | object   | 否 | 鉴黄配置信息                                                            |
+| ├─ Enable            | bool     | 否 | 是否开启直播空间级别鉴黄功能                                                    |
+| ├─ Interval          | int      | 否 | 截帧间隔，每个流隔多久进行截帧并鉴黄，单位：秒                                           |
+| ├─ NotifyURL         | string   | 否 | 回调 URL                                                            |
+| ├─NotifyRate         | float64  | 否 | 通知阈值，鉴黄结果阈值表示AI模型判断当前直播画面有多大的概率涉黄，当鉴黄结果阈值大于或等于通知阈值时，将发送回调信息到回调URL |
+| PassiveCodecProfiles | []string | 否 | 被动转码配置，形式如：720p                                                   |
+| Converts             | []string | 否 | 主动转码配置，形式如：720p                                                   |
+| HlsPlus              | bool     | 否 | 是否开启 hls 低延迟                                                      |
+| VodDomain            | string   | 否 | 点播域名                                                              |
+| AccessLog            | object   | 否 | 直播日志保存信息                                                          |
+| ├─SaveBucket         | string   | 否 | 存储空间                                                              |
+| ├─ExpireDays         | int      | 否 | 过期天数                                                              |
+| SnapshotInterval     | int      | 否 | 直播封面的截图间隔，单位：秒                                                    |
+
+### 示例
+
+```go
+hub, err := manager.GetHubInfo(ctx, pili.GetHubInfoRequest{Hub: "yourHub"})
+```
+
+## <span id="53">修改直播空间推流鉴权配置</span>
+
+修改目标直播空间的推流鉴权方式和密钥
+
+### 调用方法
+
+```go
+func (m *Manager) HubSecurity(ctx context.Context, req HubSecurityRequest) error
+```
+
+### 参数说明
+
+HubSecurityRequest 结构体说明
+
+| 参数名称            | 字段类型   | 必填  | 说明                                             |
+|-----------------|--------|-----|------------------------------------------------|
+| Hub             | string | 是 | 直播空间名                                          |
+| PublishSecurity | string | 是 | 鉴权方式，可选推流鉴权类型为： expiry: 限时鉴权、expiry_sk: 限时鉴权SK |
+| PublishKey      | string | 是 | 密钥                                             |
+
+### 示例
+
+```go
+err := manager.HubSecurity(ctx, pili.HubSecurityRequest)
+```
+
+## <span id="54">修改直播空间hls低延迟配置</span>
+
+对目标直播空间下的直播流开启或关闭hls低延迟
+
+### 调用方法
+
+```go
+func (m *Manager) HubHlsplus(ctx context.Context, req HubHlsplusRequest) error
+```
+
+### 参数说明
+
+HubHlsplusRequest 结构体说明
+
+| 参数名称    | 字段类型   | 必填  | 说明           |
+|---------|--------|-----|--------------|
+| Hub     | string | 是 | 直播空间名        |
+| HlsPlus | bool   | 是 | 是否开启 hls 低延迟 |
+
+### 示例
+
+```go
+err := manager.HubHlsplus(ctx, pili.HubHlsplusRequest{Hub:"yourHub", HlsPlus: true,})
+```
+
+## <span id="55">修改直播空间存储配置</span>
+
+修改目标直播空间绑定的存储空间，以及直播存储保存时间，绑定的存储空间需要预先在七牛云存储中创建
+
+### 调用方法
+
+```go
+func (m *Manager) HubPersistence(ctx context.Context, req HubPersistenceRequest) error
+```
+
+### 参数说明
+
+HubPersistenceRequest 结构体说明
+
+| 参数名称                            | 字段类型   | 必填  | 说明                             |
+|---------------------------------|--------|-----|--------------------------------|
+| Hub                             | string | 是 | 直播空间名                          |
+| StorageBucket                   | string | 是 | 存储空间，与直播空间绑定的存储空间需要满足以下两个条件：<br> - 存储区域为华北<br> - 存储空间的访问控制设置为公开 |
+| LiveDataExpireDays              | uint   | 是 | 存储过期时间，单位：天，取值范围为60 ~ 1095<br>根据国家相关规定，电商直播客户的直播存储时长需要为1095天    |
+
+### 示例
+
+```go
+err := manager.HubPersistence(ctx, HubPersistenceRequest{Hub:"testHub", StorageBucket:"testBucket", LiveDataExpireDays: 60,})
+```
+
+## <span id="56">修改直播空间封面配置</span>
+
+设置目标直播空间下的直播流是否使用直播封面，以及修改封面更新时间间隔
+
+### 调用方法
+
+```go
+func (m *Manager) HubSnapshot(ctx context.Context, req HubSnapshotRequest) error
+```
+
+### 参数说明
+
+HubSnapshotRequest 结构体说明
+
+| 参数名称             | 字段类型   | 必填  | 说明                     |
+|------------------|--------|-----|------------------------|
+| Hub              | string | 是 | 直播空间名                  |
+| SnapshotInterval | int    | 是 | 间隔时间，单位：秒，设置为-1时为不开启封面 |
+
+### 示例
+
+```go
+err := manager.HubSnapshot(ctx, HubSnapshotRequest{Hub:"testHub", SnapshotInterval: 30,})
+```
+
+# 域名管理
+
+## <span id="61">查询域名列表</span>
+
+返回目标直播空间下的所有直播域名，以列表形式返回
+
+### 调用方法
+
+```go
+func (m *Manager) GetDomainsList(ctx context.Context, req GetDomainsListRequest) (*GetDomainsListResponse, error)
+```
+
+### 参数说明
+
+GetDomainsListRequest 结构体说明
+
+| 参数名称 | 字段类型   | 必填  | 说明    |
+|------|--------|-----|-------|
+| Hub  | string | 是 | 直播空间名 |
+
+GetDomainsListResponse 结构体说明
+
+| 参数名称              | 字段类型     | 必填 | 说明          |
+|-------------------|----------|----|-------------|
+| Domains           | []object | 否 | 域名列表        |
+| ├─ Type           | string   | 否 | 域名类型，包括：<br>publishRtmp：推流域名<br>liveRtmp：RTMP播放域名<br>liveHls：HLS播放域名<br>liveHdl：FLV播放域名   |
+| ├─ Domain         | string   | 否 | 域名          |
+| ├─ Cname          | string   | 否 | CNAME       |
+| ├─CertEnable      | bool     | 否 | 是否配置 SSL 证书 |
+| ├─ CertName       | string   | 否 | 证书名称        |
+
+### 示例
+
+```go
+list, err := manager.GetDomainsList(ctx, GetDomainsListRequest{Hub: "testHub"})
+```
+
+## <span id="62">查询域名信息</span>
+
+查询目标直播域名基本信息和配置信息
+
+### 调用方法
+
+```go
+func (m *Manager) GetDomainInfo(ctx context.Context, req GetDomainInfoRequest) (*GetDomainInfoResponse, error)
+```
+
+### 参数说明
+
+GetDomainInfoRequest 结构体说明
+
+| 参数名称   | 字段类型   | 必填  | 说明    |
+|--------|--------|-----|-------|
+| Hub    | string | 是 | 直播空间名 |
+| Domain | string | 是 | 域名    |
+
+GetDomainInfoResponse 结构体说明
+
+| 参数名称                                                                           | 字段类型              | 必填  | 说明                                                      |
+|--------------------------------------------------------------------------------|-------------------|-----|---------------------------------------------------------|
+| Domain                                                                         | string            | 否  | 域名                                                      |
+| Type                                                                           | string            | 否  | 域名类型                                                    |
+| Cname                                                                          | string            | 否  | CNAME                                                   |
+| ConnectCallback                                                                | object            | 否  | 开播回调配置                                                  |
+| ├─ Type                                                                        | string            | 否  | 回调类型，可选回调类型为：<br>留空：不开启回调功能<br>GET：发送GET请求回调，请求参数携带在query中<br>FORM：发送POST请求回调，请求参数携带在body中，Content-Type 为 `application/x-www-form-urlencoded`<br>JSON: 发送POST请求回调，请求参数携带在body中，Content-Type 为 `application/json`|
+| ├─ URL                                                                         | string            | 否  | 回调地址,支持魔法变量                                         |
+| ├─ Timeout                                                                     | int64             | 否  | 超时时间, 与回调地址的 HTTP 连接超时时间，单位：秒, 默认值为 2 秒，配置范围为 0~10 秒  |
+| ├─ Vars                                                                        | map[string]string | 否  | 请求参数,支持魔法变量，至少需要一组请求参数，规则解析出错误的会设置成空字段                |
+| ├─RetryTimes                                                                   | int               | 否  | 重试次数，选范围 0~5 次                                          |
+| ├─RetryInterval                                                                | int               | 否  | 重试间隔，可选范围 0~5 秒，单位：秒                                    |
+| ├─SuccessCode                                                                  | int               | 否  | 回调成功的 http code，为 0 表示通配                                |
+| ├─ FailCode                                                                    | int               | 否  | 回调失败的 http code，为 0 表示通配，当 SuccessCode 不为 0 的情况下生效      |
+| DisconnectCallback                                                             | object            | 否  | 断播回调配置                                                  |
+| ├─ Type                                                                        | string            | 否  | 回调类型，可选回调类型为：<br>留空：不开启回调功能<br>GET：发送GET请求回调，请求参数携带在query中<br>FORM：发送POST请求回调，请求参数携带在body中，Content-Type 为 `application/x-www-form-urlencoded`<br>JSON：发送POST请求回调，请求参数携带在body中，Content-Type 为 `application/json` |
+| ├─ URL                                                                         | string            | 否  | 回调地址,支持魔法变量                                          |
+| ├─ Timeout                                                                     | int64             | 否  | 超时时间, 与回调地址的 HTTP 连接超时时间，单位：秒, 默认值为 2 秒，配置范围为 0~10 秒  |
+| ├─ Vars                                                                        | map[string]string | 否  | 请求参数,支持魔法变量，至少需要一组请求参数，规则解析出错误的会设置成空字段                |
+| ├─RetryTimes                                                                   | int               | 否  | 重试次数，选范围 0~5 次                                          |
+| ├─RetryInterval                                                                | int               | 否  | 重试间隔，可选范围 0~5 秒，单位：秒                                    |
+| ├─SuccessCode                                                                  | int               | 否  | 回调成功的 http code，为 0 表示通配                                |
+| ├─ FailCode                                                                    | int               | 否  | 回调失败的 http code，为 0 表示通配，当 SuccessCode 不为 0 的情况下生效      |
+| IPLimit                                                                        | object            | 否  | IP 访问限制                                                 |
+| ├─ WhiteList                                                                   | []string          | 否  | 白名单，允许推拉流的 IP 列表（CIDR 类型），配置白名单后，黑名单列表将失效               |
+| ├─ BlackList                                                                   | []string          | 否  | 黑名单，限制推拉流的 IP 列表（CIDR 类型）                               |
+| PlaySecurity                                                                   | object            | 否  | 时间戳防盗链配置                                                |
+| ├─ Type                                                                        | string            | 否  | 防盗链类型，可选防盗链类型为：<br>留空：默认类型，表示继承直播空间级别配置<br>none：表示关闭鉴权<br>tsStartMD5：有效时间从 `TsPart` 表示的时间戳开始，到 `Range` 秒后截止<br>tsExpireMD5：有效时间从现在当前到 `TsPart` 表示的时间戳为止 |
+| ├─ Key1                                                                        | string            | 否  | 主密钥                                                     |
+| ├─ Key2                                                                        | string            | 否  | 副密钥，  两个密钥将同时生效，便于线上业务替换密钥                              |
+| ├─ Range                                                                       | int               | 否  | 有效时间，当  防盗链类型 为 `tsStartMD5` 时生效，单位：秒              |
+| ├─ Rule                                                                        | string            | 否  | 签名规则，支持魔法变量的规则，最终签算结果为所有变量的MD5，魔法变量如下：<br>$(key)：用户定义的密钥<br>$(path)：URL中的 `path` 部分<br>$(streamKey)：URL中的 `hub/stream` 部分<br>$(streamTitle)：URL中的 `stream` 部分<br>$(_query)：下划线开头为URL中 `query` 字段   |
+| ├─ Rule2                                                                       | string            | 否  | 签名规则2，两个签名规则将同时生效，便于线上业务更换签名规则       |
+| ├─ TsPart                                                                      | string            | 否  | 时间戳字段，URL中表示时间戳的字段名                                     |
+| ├─ TsBase                                                                      | int               | 否  | 时间戳进制，可选进制格式为 2-36，即 2 进制到 36 进制，默认使用16进制|
+| ├─ SignPart                                                                    | string            | 否  | 签名字段，URL中表示token的字段名                                    |
+| ├─GapDuration                                                                  | int               | 否  | 时间误差值，针对 tsExpireMD5 生效，避免因签算方与服务器本地时间误差造成的鉴权失败|
+| DisconnectDelay                                                                | int64             | 否  | 断流延迟配置，单位：秒，针对直播流短时间内闪断重连的情况，不触发断流回调，避免因为短时间内频繁断流造成大量回调 |
+| UrlRewrite                                                                     | object            | 否  | URL 改写规则                                                |
+| ├─ Rules                                                                       | []object          | 否  | 改写规则列表                                                  |
+| CertEnable                                                                     | bool              | 否  | 是否配置 SSL 证书                                             |
+| CertName                                                                       | string            | 否  | 证书名称                                                    |
+| Disable                                                                        | bool              | 否  | 域名是否为禁用状态                                               |
+
+
+### 示例
+
+```go
+info, err := manager.GetDomainInfo(ctx, GetDomainInfoRequest{Hub:"testHub", Domain: "pili-publish.test.cloudvdn.com",})
+```
+
+## <span id="63">绑定直播域名</span>
+
+添加直播域名到目标直播空间，包括推流域名与RTMP、HLS、HDL播放域名，绑定之后可以使用此域名推流或播放
+
+### 调用方法
+
+```go
+func (m *Manager) BindDomain(ctx context.Context, req BindDomainRequest) error
+```
+
+### 参数说明
+
+BindDomainRequest 结构体说明
+
+| 参数名称              | 字段类型   | 必填  | 说明             |
+|-------------------|--------|-----|----------------|
+| Hub               | string | 是 | 直播空间名          |
+| Domain            | string | 是 | 域名             |
+| Type              | string | 是 | 域名类型，可选域名类型为：<br>publishRtmp：推流域名<br>liveRtmp：RTMP播放域名<br>liveHls：HLS播放域名<br>liveHdl：FLV播放域名|
+
+### 示例
+
+```go
+err := manager.BindDomain(ctx, BindDomainRequest{Hub:"testHub", Domain:"pili-publish.go-sdk.cloudvdn.com", Type:liveRtmp,})
+```
+
+## <span id="64">解绑直播域名</span>
+
+将已经绑定的直播域名从目标直播空间解绑，之后无法使用此域名推流或播放
+
+### 调用方法
+
+```go
+func (m *Manager) UnbindDomain(ctx context.Context, req UnbindDomainRequest) error
+```
+
+### 参数说明
+
+UnbindDomainRequest 结构体说明
+
+| 参数名称   | 字段类型   | 必填  | 说明    |
+|--------|--------|-----|-------|
+| Hub    | string | 是 | 直播空间名 |
+| Domain | string | 是 | 域名    |
+
+
+### 示例
+
+```go
+err := manager.UnbindDomain(ctx, UnbindDomainRequest{Hub:"testHub", Domain:"pili-publish.go-sdk.cloudvdn.com",})
+```
+
+## <span id="65">配置点播域名</span>
+
+点播域名用于访问直播空间对应的存储空间中的内容，例如回放、截图文件
+
+请在相应存储空间配置好可用域名后，将其绑定到直播空间。若未正确配置点播域名，可能无法正常使用回放录制、保存截图等功能
+
+### 调用方法
+
+```go
+func (m *Manager) BindVodDomain(ctx context.Context, req BindVodDomainRequest) error
+```
+
+### 参数说明
+
+BindVodDomainRequest 结构体说明
+
+| 参数名称      | 字段类型   | 必填  | 说明    |
+|-----------|--------|-----|-------|
+| Hub       | string | 是 | 直播空间名 |
+| VodDomain | string | 是 | 点播域名  |
+
+### 示例
+
+```go
+err := manager.BindVodDomain(ctx, BindVodDomainRequest{Hub:"testHub", VodDomain:"pili-vod.test.cloudvdn.com",})
+```
+
+## <span id="66">修改域名证书配置</span>
+
+修改域名证书配置，需要提前将证书配置到七牛 CDN 服务中，证书配置地址: https://portal.qiniu.com/certificate/ssl
+
+配置好证书后可以获得证书名称的参数，此时可以使用获得的证书名称请求执行修改域名证书配置
+
+### 调用方法
+
+```go
+func (m *Manager) SetDomainCert(ctx context.Context, req SetDomainCertRequest) error
+```
+
+### 参数说明
+
+SetDomainCertRequest 结构体说明
+
+| 参数名称     | 字段类型   | 必填  | 说明                      |
+|----------|--------|-----|-------------------------|
+| Hub      | string | 是 | 直播空间名                   |
+| Domain   | string | 是 | 域名                      |
+| CertName | string | 是 | 证书名称，需要将证书配置到七牛 CDN 服务中 |
+
+### 示例
+
+```go
+err := manager.SetDomainCert(ctx, SetDomainCertRequest{Hub:"testHub", Domain:"pili-publish.gtest.cloudvdn.com", CertName:"5f1e9df7f9537d6b37000010",})
+```
+
+## <span id="67">更新域名改写规则</span>
+
+可根据业务需求自定义推拉流URL，改写后的URL应符合七牛的直播URL规范: `<scheme>://<domain>/<hub>/<stream>[.<ext>]?<query>`
+
+### 调用方法
+
+```go
+func (m *Manager) SetDomainURLRewrite(ctx context.Context, req SetDomainURLRewriteRequest) error
+```
+
+### 参数说明
+
+SetDomainURLRewriteRequest 结构体说明
+
+| 参数名称       | 字段类型     | 必填  | 说明                                                                                                            |
+|------------|----------|-----|---------------------------------------------------------------------------------------------------------------|
+| Hub        | string   | 是 | 直播空间名                                                                                                         |
+| Domain     | string   | 是 | 域名                                                                                                            |
+| Rules      | []object | 是 | URL 改写规则列表                                                                                                    |
+| ├─ Pattern | string   | 是 | 匹配规则，针对完整URL的正则表达式，形式如：`(.+)/live/(.+)/playlist.m3u8`，括号中的内容允许在 Replacement 中使用${n}引用（n表示括号顺序）                  |
+| ├─ Replace | string   | 是 | 改写规则，希望得到的改写结果，形式如：`${1}/hub/${2}.m3u8`，改写后的URL应符合七牛的直播URL规范：`<scheme>://<domain>/<hub>/<stream>[<ext>]?<query>` |
+
+
+
+### 示例
+
+```go
+req := pili.SetDomainURLRewriteRequest{
+Hub:    "testhub",
+Domain: "pili-publish.test.cloudvdn.com",
+Rules: []pili.DomainURLRewriteRule{
+{
+Pattern: "(.+)/test/(.+)",
+Replace: "${1}/test/live/${2}",
+},
+},
+}
+
+err := manager.SetDomainURLRewrite(ctx, req)
+```
+
+# 直播流管理
+
+## <span id="71">查询直播流列表</span>
+
+查询目标直播空间下的直播流列表，可以根据直播流在线状态和直播流名称进行筛选
+
+### 调用方法
+
+```go
+func (m *Manager) GetStreamsList(ctx context.Context, req GetStreamListRequest) (*GetStreamsListResponse, error)
+```
+
+### 参数说明
+
+GetStreamListRequest结构体说明
+
+| 参数名称     | 字段类型   | 必填  | 说明                                                 |
+|----------|--------|-----|----------------------------------------------------|
+| Hub      | string | 是 | 直播空间名                                              |
+| Liveonly | bool   | 否  | 只返回当前在线的直播流只返回当前在线的流，true 表示查询的是正在直播的流，不指定表示返回所有的流 |
+| Prefix   | string | 否  | 直播流名称前缀匹配                                          |
+| Limit    | int    | 否  | 返回值数量限制，取值范围为0～5000                                |
+| Marker   | string | 否  | 游标，从该位置开始返回                                        |
+
+
+GetStreamsListResponse结构体说明
+
+| 参数名称   | 字段类型                         | 必填 | 说明                         |
+|--------|------------------------------|----|----------------------------|
+| Items  | []GetStreamsListResponseItem | 否 | 直播流列表                      |
+| Marker | string                       | 否 | 游标，表示当前位置，若marker为空，表示遍历完成 |
+
+
+GetStreamsListResponseItem结构体说明
+
+| 参数名称 | 字段类型   | 必填 | 说明   |
+|------|--------|----|------|
+| Key  | string | 否 | 直播流名 |
+
+### 示例
+
+```go
+a, err := manager.GetStreamsList(context.Background(), GetStreamListRequest{Hub: TestHub, LiveOnly: true, Limit: 10})
+```
+
+## <span id="72">查询直播流信息</span>
+
+查询目标直播流基本信息和配置信息
+
+### 调用方法
+
+```go
+func (m *Manager) GetStreamBaseInfo(ctx context.Context, req GetStreamBaseInfoRequest) (*GetStreamBaseInfoResponse, error)
+```
+
+### 参数说明
+
+GetStreamBaseInfoRequest结构体说明
+
+| 参数名称   | 字段类型   | 必填  | 说明    |
+|--------|--------|-----|-------|
+| Hub    | string | 是 | 直播空间名 |
+| Stream | string | 是 | 直播流名  |
+
+GetStreamBaseInfoResponse结构体说明
+
+| 参数名称            | 字段类型     | 必填 | 说明                                                                              |
+|-----------------|----------|----|---------------------------------------------------------------------------------|
+| CreatedAt       | int64    | 否 | 直播流创建时间，Unix 时间戳                                                                |
+| UpdatedAt       | int64    | 否 | 直播流更新时间，Unix 时间戳，对一个流的配置做修改操作会更新这个值                                             |
+| ExpireAt        | int64    | 否 | 直播流过期时间，默认流过期时间15天，Unix 时间戳，过期的流会被自动清除。如您设置的默认存储过期时间是 N 天，那么一个流持续 N 天不推流就会被自动清除 |
+| DisabledTill    | int      | 否 | 禁播结束时间，Unix 时间戳，-1 表示永久禁播                                                       |
+| Converts        | []string | 否 | 转码配置                                                                            |
+| Watermark       | bool     | 否 | 是否开启水印                                                                          |
+| PublishSecurity | string   | 否 | 推流鉴权类型                                                                          |
+| PublishKey      | string   | 否 | 推流密钥                                                                            |
+| NropEnable      | bool     | 否 | 是否开启鉴黄                                                                          |
+
+### 示例
+
+```go
+a, err := manager.GetStreamBaseInfo(context.Background(), GetStreamBaseInfoRequest{Hub: TestHub, Stream: TestStream})
+```
+
+## <span id="73">禁用直播流</span>
+
+禁播或者解禁目标直播流，支持限时禁播或永久禁播
+
+### 调用方法
+
+```go
+func (m *Manager) StreamDisable(ctx context.Context, req StreamDisabledRequest) error
+```
+
+### 参数说明
+
+StreamDisabledRequest结构体说明
+
+| 参数名称                | 字段类型   | 必填  | 说明                                                           |
+|---------------------|--------|-----|--------------------------------------------------------------|
+| Hub                 | string | 是 | 直播空间名                                                        |
+| Stream              | string | 是 | 直播流名                                                         |
+| DisabledTill        | int    | 否  | 禁播结束时间，Unix 时间戳，特殊值含义： -1 永久禁播；0 解除禁播                        |
+| DisablePeriodSecond | int    | 否  | 禁播时长，单位：秒，当 DisabledTill 为0时，DisablePeriodSecond 参数生效，值大于等于0 |
+
+
+### 示例
+
+```go
+err := manager.StreamDisable(context.Background(), StreamDisabledRequest{
+   Hub:                 TestHub,
+   Stream:              TestStream,
+   DisablePeriodSecond: 60,
+})
+```
+
+## <span id="74">查询在线流信息</span>
+
+查询直播开始时间、主播IP、当前码率、当前帧率等信息
+
+### 调用方法
+
+```go
+func (m *Manager) GetStreamLiveStatus(ctx context.Context, req GetStreamLiveStatusRequest) (*GetStreamLiveStatusResponse, error)
+```
+
+### 参数说明
+
+GetStreamLiveStatusRequest结构体说明
+
+| 参数名称   | 字段类型   | 必填  | 说明    |
+|--------|--------|-----|-------|
+| Hub    | string | 是 | 直播空间名 |
+| Stream | string | 是 | 直播流名  |
+
+GetStreamLiveStatusResponse结构体说明
+
+| 参数名称             | 字段类型             | 必填 | 说明          |
+|------------------|------------------|----|-------------|
+| StreamLiveStatus | StreamLiveStatus | 否 | 直播流实时状态     |
+| VideoBitRate     | int              | 否 | 视频码率，单位：bps |
+| AudioBitRate     | int              | 否 | 音频码率，单位：bps |
+
+StreamLiveStatus结构体说明
+
+| 参数名称     | 字段类型   | 必填 | 说明              |
+|----------|--------|----|-----------------|
+| ServerIP | string | 否 | 服务端IP           |
+| ClientIP | string | 否 | 推流端IP           |
+| StartAt  | int64  | 否 | 推流开始时间，Unix 时间戳 |
+| Key      | string | 否 | 直播流名            |
+
+StreamLiveStatusFPS结构体说明
+
+| 参数名称  | 字段类型 | 必填 | 说明         |
+|-------|------|----|------------|
+| Audio | int  | 否 | 音频帧率       |
+| Video | int  | 否 | 视频帧率       |
+| Data  | int  | 否 | metadata帧率 |
+
+### 示例
+
+```go
+a, err := manager.GetStreamLiveStatus(context.Background(), GetStreamLiveStatusRequest{Hub: TestHub, Stream: TestStream})
+```
+
+## <span id="75">批量查询在线流信息</span>
+
+批量查询直播的开始时间、主播IP、当前码率、当前帧率等信息
+
+### 调用方法
+
+```go
+func (m *Manager) BatchGetStreamLiveStatus(ctx context.Context, req BatchGetStreamLiveStatusRequest) (*BatchGetStreamLiveStatusResponse, error)
+```
+
+### 参数说明
+
+BatchGetStreamLiveStatusRequest结构体说明
+
+| 参数名称  | 字段类型     | 必填  | 说明                  |
+|-------|----------|-----|---------------------|
+| Hub   | string   | 是 | 直播空间名               |
+| Items | []string | 否  | 直播流列表，查询流列表数量不超过100 |
+
+BatchGetStreamLiveStatusResponse结构体说明
+
+| 参数名称  | 字段类型               | 必填 | 说明    |
+|-------|--------------------|----|-------|
+| Items | []StreamLiveStatus | 否 | 直播流列表 |
+
+StreamLiveStatus结构体说明
+
+| 参数名称     | 字段类型                | 必填 | 说明              |
+|----------|---------------------|----|-----------------|
+| StartAt  | int64               | 否 | 推流开始时间，Unix 时间戳 |
+| ServerIP | string              | 否 | 服务端IP           |
+| ClientIP | string              | 否 | 推流端IP           |
+| BPS      | int                 | 否 | 推流码率            |
+| FPS      | StreamLiveStatusFPS | 否 | 帧率              |
+| Key      | string              | 否 | 直播流名            |
+
+StreamLiveStatusFPS结构体说明
+
+| 参数名称  | 字段类型 | 必填 | 说明         |
+|-------|------|----|------------|
+| Audio | int  | 否 | 音频帧率       |
+| Video | int  | 否 | 视频帧率       |
+| Data  | int  | 否 | metadata帧率 |
+
+### 示例
+
+```go
+a, err := manager.BatchGetStreamLiveStatus(context.Background(), BatchGetStreamLiveStatusRequest{
+   Hub:   TestHub,
+   Items: []string{TestStream},
+})
+```
+
+## <span id="76">查询直播流推流记录</span>
+
+查询目标直播流在一段时间内的推流记录
+
+### 调用方法
+
+```go
+func (m *Manager) GetStreamHistory(ctx context.Context, req GetStreamHistoryRequest) (*GetStreamHistoryResponse, error)
+```
+
+### 参数说明
+
+GetStreamHistoryRequest结构体说明
+
+| 参数名称   | 字段类型   | 必填  | 说明                |
+|--------|--------|-----|-------------------|
+| Hub    | string | 是 | 直播空间名             |
+| Stream | string | 是 | 直播流名              |
+| Start  | int64  | 否  | 开始时间，单位：秒，默认为0    |
+| End    | int64  | 否  | 结束时间，单位：秒，默认为当前时间 |
+
+GetStreamHistoryResponse结构体说明
+
+| 参数名称  | 字段类型                   | 必填 | 说明    |
+|-------|------------------------|----|-------|
+| Items | []GetStreamHistoryItem | 否 | 直播空间名 |
+
+GetStreamHistoryItem结构体说明
+
+| 参数名称     | 字段类型   | 必填 | 说明     |
+|----------|--------|----|--------|
+| Start    | int64  | 否 | 推流开始时间 |
+| End      | int64  | 否 | 推流结束时间 |
+| ClientIP | string | 否 | 推流端IP  |
+| ServerIP | string | 否 | 服务端IP  |
+
+### 示例
+
+```go
+a, err := manager.GetStreamHistory(context.Background(), GetStreamHistoryRequest{
+   Hub:    TestHub,
+   Stream: TestStream,
+   Start:  time.Now().Add(-1 * time.Hour).Unix(),
+   End:    time.Now().Unix(),
+})
+```
+
+## <span id="77">录制直播回放</span>
+
+录制目标直播流一段时间内的直播为回放文件保存在存储空间中，可选回放文件的格式有m3u8、flv和mp4。其中录制为 flv、mp4 格式需要使用多媒体处理转码服务，录制过程需要一定时间。多媒体处理服务独立计费，使用会额外产生费用，详细费用请参考 [价格表](https://portal.qiniu.com/financial/price) 
+
+### 调用方法
+
+```go
+func (m *Manager) StreamSaveas(ctx context.Context, req StreamSaveasRequest) (*StreamSaveasResponse, error)
+```
+
+### 参数说明
+
+StreamSaveasRequest结构体说明
+
+| 参数名称                                                         | 字段类型   | 必填  | 说明                                                                                                                            |
+|--------------------------------------------------------------|--------|-----|-------------------------------------------------------------------------------------------------------------------------------|
+| Hub                                                          | string | 是 | 直播空间名                                                                                                                         |
+| Stream                                                       | string | 是 | 直播流名                                                                                                                          |
+| Start                                                        | int64  | 否  | 开始时间，Unix 时间戳，默认为第一次直播开始时间                                                                                                    |
+| End                                                          | int64  | 否  | 结束时间，Unix 时间戳，默认为当前时间                                                                                                         |
+| Fname                                                        | string | 否  | 文件名，为空时会随机生成一个文件名                                                                                                             |
+| Format                                                       | string | 否  | 文件格式，可选文件格式为<br>m3u8：HLS格式，默认值<br>flv：FLV格式，将回放切片转封装为单个flv文件，异步模式<br>mp4：MP4格式，将回放切片转封装为单个mp4文件，异步模式<br>异步模式下，生成回放文件需要一定时间 |
+| Pipeline                                                     | string | 否  | 异步模式时，指定数据处理的队列，可以将优先级较高的任务配置到独立的队列中进行执行，参考文档：[流媒体队列](https://developer.qiniu.com/dora/kb/2500/streaming-media-queue-about-seven-cows) |
+| Notify                                                       | string | 否  | 回调地址，异步模式完成任务后的回调通知地址，不指定表示不做回调，参考文档：[状态查询](https://developer.qiniu.com/dora/1294/persistent-processing-status-query-prefop)          |
+| ExpireDays                                                   | int    | 否  | 切片文件的生命周期：<br>0：默认值，表示修改ts文件生命周期为永久保存  <br>&gt;0：表示修改ts文件的的生命周期为 `ExpireDays` 参数值 <br>-1：表示不修改ts文件的expire属性，可显著提升接口响应速度         |
+| PersistentDeleteAfterDays                                    | int    | 否  | 生成文件的生命周期：<br>0：默认值，表示生成文件（m3u8/flv/mp4）永久保存<br>&gt;0：表示生成文件（m3u8/flv/mp4）的生命周期为 `PersistentDeleteAfterDays` 参数值<br>注意，对于m3u8文件，只有当`ExpireDays`为-1时，`persistentDeleteAfterDays`才会生效                                                                                                               |
+| FirstTsType                                                  | byte   | 否  | 过滤ts切片文件类型，部分非标准的直播流，在推流初期缺少视频帧或音频帧，过滤功能可以剔除这部分切片，<br>0：默认值，不做过滤<br>1：第一个ts切片需要是纯视频类型，不符合预期的ts切片将被跳过<br>2：第一个ts切片需要是纯音频类型，不符合预期的ts切片将被跳过<br>3：第一个ts切片需要是音视频类型，不符合预期的ts切片将被跳过|
+
+StreamSaveasResponse结构体说明
+
+| 参数名称         | 字段类型   | 必填 | 说明            |
+|--------------|--------|----|---------------|
+| Fname        | string | 否 | 文件名           |
+| Start        | int64  | 否 | 开始时间，Unix 时间戳 |
+| End          | int64  | 否 | 结束时间，Unix 时间戳 |
+| PersistentID | string | 否 | 异步任务ID        |
+
+### 示例
+
+```go
+m := StreamSaveasRequest{
+   Hub:         "testhub",
+   Stream:      "abcd",
+   Start:       time.Now().Add(-5 * time.Hour).Unix(),
+   End:         time.Now().Unix(),
+   Fname:       "test",
+   ExpireDays:  -1,
+   FirstTsType: 3,
+}
+a, err := manager.StreamSaveas(context.Background(), m)
+```
+
+## <span id="78">保存直播截图</span>
+
+保存目标直播流在特定时间点的画面为图片，并保存在存储空间中。截图使用多媒体处理服务并独立计费，会额外产生费用，详细费用请参考 [价格表](https://portal.qiniu.com/financial/price) 
+
+### 调用方法
+
+```go
+func (m *Manager) StreamSnapshot(ctx context.Context, req StreamSnapshotRequest) (*StreamSnapshotResponse, error)
+```
+
+### 参数说明
+
+StreamSnapshotRequest结构体说明
+
+| 参数名称            | 字段类型   | 必填  | 说明                                                                                                                            |
+|-----------------|--------|-----|-------------------------------------------------------------------------------------------------------------------------------|
+| Hub             | string | 是 | 直播空间名                                                                                                                         |
+| Stream          | string | 是 | 直播流名                                                                                                                          |
+| Time            | int    | 否  | 截图时间，Unix 时间戳，不指定则为当前时间                                                                                                       |
+| Fname           | string | 否  | 文件名，不指定系统会随机生成                                                                                                                |
+| Format          | string | 否  | 文件格式，默认为jpg，可取值为jpg和png                                                                                                       |
+| Pipeline        | string | 否  | 异步模式时，指定数据处理的队列，可以将优先级较高的任务配置到独立的队列中进行执行，参考文档：[流媒体队列](https://developer.qiniu.com/dora/kb/2500/streaming-media-queue-about-seven-cows) |
+| Notify          | string | 否  | 回调地址，若指定回调地址，则截图动作为异步模式                              |
+| DeleteAfterDays | int    | 否  | 生命周期，单位：天<br>默认值为0，表示截图文件永久保存                                                      |
+
+
+StreamSnapshotResponse结构体说明
+
+| 参数名称         | 字段类型   | 必填 | 说明     |
+|--------------|--------|----|--------|
+| Fname        | string | 否 | 文件名    |
+| PersistentID | string | 否 | 异步任务ID |
+
+### 示例
+
+```go
+ret, err := manager.StreamSnapshot(context.Background(), StreamSnapshotRequest{
+   Hub:             "testhub",
+   Stream:          "abcd",
+   Time:            1632810081,
+   Fname:           "test",
+   DeleteAfterDays: 1,
+})
+```
+
+## <span id="79">修改直播流转码配置</span>
+
+设置目标直播流使用的转码配置，设置好转码配置的直播流在推流开始时会触发转码，推流过程中修改转码配置不会立即生效，需要重新推流。
+
+在播放地址后面添加 `@<ProfileName>` 即可播放相应转码流，目前可转码的配置有 `480p` 和 `720p`。使用转码服务会产生额外费用，详情费用请参考 [价格表](https://www.qiniu.com/prices/pili)
+
+### 调用方法
+
+```go
+func (m *Manager) StreamConverts(ctx context.Context, req StreamConvertsRequest) error
+```
+
+### 参数说明
+
+StreamConvertsRequest结构体说明
+
+| 参数名称     | 字段类型     | 必填  | 说明                                                                       |
+|----------|----------|-----|--------------------------------------------------------------------------|
+| Hub      | string   | 是 | 直播空间名                                                                    |
+| Stream   | string   | 是 | 直播流名                                                                     |
+| Converts | []string | 否  | 转码配置，如果提交的 ProfileName 为空数组，那么之前的转码配置将被取消<br>如果需要配置水印，则需要以wmt_开头，下划线后加水印模版名 |
+
+### 示例
+
+```go
+err := manager.StreamConverts(context.Background(), StreamConvertsRequest{
+		Hub:      TestHub,
+		Stream:   TestStream,
+		Converts: []string{"480p", "720p"},
+	})
+```
+
+# 直播统计数据查询
+
+## <span id="81">查询直播上行流量</span>
+
+查询一段时间内目标直播空间、域名、区域的上行流量，延迟5分钟左右。
+
+带宽数据可以从返回的流量数据`flow`转化，计算方法为`bandwidth=flow*8/300`
+
+### 调用方法
+
+```go
+func (m *Manager) GetStatUpflow(ctx context.Context, req GetStatUpflowRequest) ([]StatResponse, error)
+```
+
+### 参数说明
+
+GetStatUpflowRequest结构体说明
+
+| 参数名称                 | 字段类型                 | 必填  | 说明     |
+|----------------------|----------------------|-----|--------|
+| GetStatCommonRequest | GetStatCommonRequest | 是 | 通用请求参数 |
+| Where                | map[string][]string  | 否 | 查询条件   |
+| Select               | []string             | 是 | 查询值    |
+
+GetStatCommonRequest结构体说明
+
+| 参数名称  | 字段类型   | 必填  | 说明                                                            |
+|-------|--------|-----|---------------------------------------------------------------|
+| Begin | string | 是 | 开始时间，支持格式：20060102、20060102150405                             |
+| End   | string | 是 | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+| G     | string | 是 | 时间粒度，可取值为 5min、hour、day、month                                 |
+
+
+Where条件字段说明
+
+| 参数名称   | 必填 | 说明                                                            |
+|--------|----|---------------------------------------------------------------|
+| hub    | 否 | 直播空间名                                                         |
+| domain | 否 | 域名                                                            |
+| area   | 否 | 区域，可取值为 cn(中国大陆)、hk(香港)、tw(台湾)、apac(亚太)、am(美洲)、emea(欧洲/中东/非洲) |
+
+Select值字段说明
+
+| 参数名称 | 必填  | 说明                                           |
+|------|-----|----------------------------------------------|
+| flow | 是 | 流量，单位：byte，带宽可以从流量转换，公式为 带宽=流量*8/时间粒度，单位：bps |
+
+StatResponse结构体说明
+
+| 参数名称   | 字段类型           | 必填 | 说明                                                            |
+|--------|----------------|----|---------------------------------------------------------------|
+| Time   | time.Time      | 否 | 时间                                                            |
+| Values | map[string]int | 否 | 数据，形式如："values":{"flow":4527162977}，其中"flow"对应select项 |
+
+### 示例
+
+```go
+a, err := manager.GetStatUpflow(context.Background(), GetStatUpflowRequest{
+   GetStatCommonRequest: GetStatCommonRequest{
+      Begin: "20210928",
+      End:   "20210930",
+      G:     "day",
+   },
+   Where: map[string][]string{"hub": {TestHub}, "area": {"!cn", "!hk"}},
+})
+```
+
+## 分组查询直播上行流量
+
+查询一段时间内目标直播空间、域名、区域的上行流量，按group分组，延迟5分钟左右。
+
+带宽数据可以从返回的流量数据`flow`转化，计算方法为`bandwidth=flow*8/300`
+
+### 调用方法
+
+```go
+func (m *Manager) GroupStatUpflow(ctx context.Context, req GroupStatUpflowRequest) ([]StatGroupResponse, error)
+```
+
+### 参数说明
+
+GroupStatUpflowRequest结构体说明
+
+| 参数名称                 | 字段类型                 | 必填  | 说明           |
+|----------------------|----------------------|-----|--------------|
+| GetStatCommonRequest | GetStatCommonRequest | 是 | 通用请求参数       |
+| Group                | string               | 是 | 分组，取值范围为条件字段 |
+| Where                | map[string][]string  | 否  | 查询条件         |
+| Select               | []string             | 是 | 查询值          |
+
+GetStatCommonRequest结构体说明
+
+| 参数名称  | 字段类型   | 必填  | 说明                                                            |
+|-------|--------|-----|---------------------------------------------------------------|
+| Begin | string | 是 | 开始时间，支持格式：20060102、20060102150405                             |
+| End   | string | 是 | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+| G     | string | 是 | 时间粒度，可取值为 5min、hour、day、month                                 |
+
+Where条件字段说明
+
+| 参数名称   | 必填 | 说明                                                            |
+|--------|----|---------------------------------------------------------------|
+| hub    | 否 | 直播空间名                                                         |
+| domain | 否 | 域名                                                            |
+| area   | 否 | 区域，可取值为 cn(中国大陆)、hk(香港)、tw(台湾)、apac(亚太)、am(美洲)、emea(欧洲/中东/非洲) |
+
+Select值字段说明
+
+| 参数名称 | 必填  | 说明                                           |
+|------|-----|----------------------------------------------|
+| flow | 是 | 流量，单位：byte，带宽可以从流量转换，公式为 带宽=流量*8/时间粒度，单位：bps |
+
+StatGroupResponse结构体说明
+
+| 参数名称   | 字段类型                      | 必填 | 说明                                                                                    |
+|--------|---------------------------|----|---------------------------------------------------------------------------------------|
+| Time   | time.Time                 | 否 | 时间                                                                                    |
+| Values | map[string]map[string]int | 否 | 数据，形式如："values":{"SD":{"flow":4527162977}}，其中"SD"对应Group项，"flow"对应Select项 |
+
+### 示例
+
+```go
+a, err := manager.GroupStatUpflow(context.Background(), GroupStatUpflowRequest{
+		GetStatCommonRequest: GetStatCommonRequest{
+			Begin: "20210928",
+			End:   "20210930",
+			G:     "day",
+		},
+		Select: []string{"flow"},
+		Where:  map[string][]string{"hub": {TestHub}},
+		Group:  "domain",
+	})
+```
+
+## <span id="82">查询直播下行流量</span>
+
+查询一段时间内目标直播空间、域名、区域的下行流量，延迟5分钟左右。
+
+带宽数据可以从返回的流量数据`flow`转化，计算方法为`bandwidth=flow*8/300`
+
+### 调用方法
+
+```go
+func (m *Manager) GetStatDownflow(ctx context.Context, req GetStatDownflowRequest) ([]StatResponse, error)
+```
+
+### 参数说明
+
+GetStatDownflowRequest结构体说明
+
+| 参数名称                 | 字段类型                 | 是否必填 | 说明     |
+|----------------------|----------------------|------|--------|
+| GetStatCommonRequest | GetStatCommonRequest | 是  | 通用请求参数 |
+| Where                | map[string][]string  | 否   | 查询条件   |
+| Select               | []string             | 是  | 查询值    |
+
+GetStatCommonRequest结构体说明
+
+| 参数名称  | 字段类型   | 必填  | 说明                                                            |
+|-------|--------|-----|---------------------------------------------------------------|
+| Begin | string | 是 | 开始时间，支持格式：20060102、20060102150405                             |
+| End   | string | 是 | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+| G     | string | 是 | 时间粒度，可取值为 5min、hour、day、month                                 |
+
+Where条件字段说明
+
+| 参数名称   | 必填 | 说明                                                            |
+|--------|----|---------------------------------------------------------------|
+| hub    | 否 | 直播空间名                                                         |
+| domain | 否 | 域名                                                            |
+| area   | 否 | 区域，可取值为 cn(中国大陆)、hk(香港)、tw(台湾)、apac(亚太)、am(美洲)、emea(欧洲/中东/非洲) |
+
+Select值字段说明
+
+| 参数名称 | 必填  | 说明                                           |
+|------|-----|----------------------------------------------|
+| flow | 是 | 流量，单位：byte，带宽可以从流量转换，公式为 带宽=流量*8/时间粒度，单位：bps |
+
+StatResponse结构体说明
+
+| 参数名称   | 字段类型           | 必填 | 说明                                                            |
+|--------|----------------|----|---------------------------------------------------------------|
+| Time   | time.Time      | 否 | 时间                                                            |
+| Values | map[string]int | 否 | 数据，形式如："values":{"flow":4527162977}，其中"flow"对应select项 |
+
+### 示例
+
+```go
+a, err := manager.GetStatDownflow(context.Background(), GetStatDownflowRequest{
+   GetStatCommonRequest: GetStatCommonRequest{
+      Begin: "20210928",
+      End:   "20210930",
+      G:     "day",
+   },
+   Select: []string{"flow"},
+   Where:  map[string][]string{"hub": {TestHub}},
+})
+```
+
+## 分组查询直播下行流量
+
+查询一段时间内目标直播空间、域名、区域的下行流量，按group分组，延迟5分钟左右。
+
+带宽数据可以从返回的流量数据`flow`转化，计算方法为`bandwidth=flow*8/300`
+
+### 调用方法
+
+```go
+func (m *Manager) GroupStatDownflow(ctx context.Context, req GroupStatDownflowRequest) ([]StatGroupResponse, error)
+```
+
+### 参数说明
+
+GroupStatDownflowRequest结构体说明
+
+| 参数名称                 | 字段类型                 | 必填  | 说明           |
+|----------------------|----------------------|-----|--------------|
+| GetStatCommonRequest | GetStatCommonRequest | 是 | 通用请求参数       |
+| Group                | string               | 是 | 分组，取值范围为条件字段 |
+| Where                | map[string][]string  | 否  | 查询条件         |
+| Select               | []string             | 是 | 查询值          |
+
+GetStatCommonRequest结构体说明
+
+| 参数名称  | 字段类型   | 必填  | 说明                                                            |
+|-------|--------|-----|---------------------------------------------------------------|
+| Begin | string | 是 | 开始时间，支持格式：20060102、20060102150405                             |
+| End   | string | 是 | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+| G     | string | 是 | 时间粒度，可取值为 5min、hour、day、month                                 |
+
+Where条件字段说明
+
+| 参数名称   | 必填 | 说明                                                            |
+|--------|----|---------------------------------------------------------------|
+| hub    | 否 | 直播空间名                                                         |
+| domain | 否 | 域名                                                            |
+| area   | 否 | 区域，可取值为 cn(中国大陆)、hk(香港)、tw(台湾)、apac(亚太)、am(美洲)、emea(欧洲/中东/非洲) |
+
+Select值字段说明
+
+| 参数名称 | 必填  | 说明                                           |
+|------|-----|----------------------------------------------|
+| flow | 是 | 流量，单位：byte，带宽可以从流量转换，公式为 带宽=流量*8/时间粒度，单位：bps |
+
+StatGroupResponse结构体说明
+
+| 参数名称   | 字段类型                      | 必填 | 说明                                                                                    |
+|--------|---------------------------|----|---------------------------------------------------------------------------------------|
+| Time   | time.Time                 | 否 | 时间                                                                                    |
+| Values | map[string]map[string]int | 否 | 数据，形式如："values":{"SD":{"flow":4527162977}}，其中"SD"对应Group项，"flow"对应Select项 |
+
+### 示例
+
+```go
+a, err := manager.GroupStatDownflow(context.Background(), GroupStatDownflowRequest{
+		GetStatCommonRequest: GetStatCommonRequest{
+			Begin: "20210928",
+			End:   "20210930",
+			G:     "day",
+		},
+		Select: []string{"flow"},
+		Where:  map[string][]string{"hub": {TestHub}},
+		Group:  "area",
+	})
+```
+
+## <span id="83">查询直播转码使用量</span>
+
+查询一段时间内目标直播空间、转码配置的转码时长，延迟10分钟左右
+
+### 调用方法
+
+```go
+func (m *Manager) GetStatCodec(ctx context.Context, req GetStatCodecRequest) ([]StatResponse, error)
+```
+
+### 参数说明
+
+GetStatCodecRequest结构体说明
+
+| 参数名称                 | 字段类型                 | 必填  | 说明     |
+|----------------------|----------------------|-----|--------|
+| GetStatCommonRequest | GetStatCommonRequest | 是 | 通用请求参数 |
+| Where                | map[string][]string  | 否  | 查询条件   |
+| Select               | []string             | 是 | 查询值    |
+
+GetStatCommonRequest结构体说明
+
+| 参数名称  | 字段类型   | 必填  | 说明                                                            |
+|-------|--------|-----|---------------------------------------------------------------|
+| Begin | string | 是 | 开始时间，支持格式：20060102、20060102150405                             |
+| End   | string | 是 | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+| G     | string | 是 | 时间粒度，可取值为 5min、hour、day、month                                 |
+
+Where条件字段说明
+
+| 参数名称    | 必填 | 说明    |
+|---------|----|-------|
+| hub     | 否 | 直播空间名 |
+| profile | 否 | 转码配置  |
+
+Select值字段说明
+
+| 参数名称     | 必填  | 说明       |
+|----------|-----|----------|
+| duration | 是 | 时长，单位：毫秒 |
+
+StatResponse结构体说明
+
+| 参数名称   | 字段类型           | 必填 | 说明                                                                    |
+|--------|----------------|----|-----------------------------------------------------------------------|
+| Time   | time.Time      | 否 | 时间                                                                    |
+| Values | map[string]int | 否 | 数据，形式如："values":{"duration":4527162977}，其中"duration"对应select项 |
+
+### 示例
+
+```go
+a, err := manager.GetStatCodec(context.Background(), GetStatCodecRequest{
+   GetStatCommonRequest: GetStatCommonRequest{
+      Begin: "20210928",
+      End:   "20210930",
+      G:     "day",
+   },
+   Select: []string{"duration"},
+   Where:  map[string][]string{"hub": {TestHub}, "profile": {"480p", "720p"}},
+})
+```
+
+## 分组查询直播转码使用量
+
+查询一段时间内目标直播空间、转码配置的转码时长，按group分组，延迟10分钟左右
+
+### 调用方法
+
+```go
+func (m *Manager) GroupStatCodec(ctx context.Context, req GroupStatCodecRequest) ([]StatGroupResponse, error)
+```
+
+### 参数说明
+
+GroupStatCodecRequest结构体说明
+
+| 参数名称                 | 字段类型                 | 必填  | 说明           |
+|----------------------|----------------------|-----|--------------|
+| GetStatCommonRequest | GetStatCommonRequest | 是 | 通用请求参数       |
+| Group                | string               | 是 | 分组，取值范围为条件字段 |
+| Where                | map[string][]string  | 否  | 查询条件         |
+| Select               | []string             | 是 | 查询值          |
+
+GetStatCommonRequest结构体说明
+
+| 参数名称  | 字段类型   | 必填  | 说明                                                            |
+|-------|--------|-----|---------------------------------------------------------------|
+| Begin | string | 是 | 开始时间，支持格式：20060102、20060102150405                             |
+| End   | string | 是 | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+| G     | string | 是 | 时间粒度，可取值为 5min、hour、day、month                                 |
+
+Where条件字段说明
+
+| 参数名称    | 必填 | 说明    |
+|---------|----|-------|
+| hub     | 否 | 直播空间名 |
+| profile | 否 | 转码配置  |
+
+Select值字段说明
+
+| 参数名称     | 必填  | 说明       |
+|----------|-----|----------|
+| duration | 是 | 时长，单位：毫秒 |
+
+StatGroupResponse结构体说明
+
+| 参数名称   | 字段类型                      | 必填 | 说明                                                                                            |
+|--------|---------------------------|----|-----------------------------------------------------------------------------------------------|
+| Time   | time.Time                 | 否 | 时间                                                                                            |
+| Values | map[string]map[string]int | 否 | 数据，形式如："values":{"SD":{"duration":4527162977}}，其中"SD"对应Group项，"duration"对应Select项 |
+
+### 示例
+
+```go
+a, err := manager.GroupStatCodec(context.Background(), GroupStatCodecRequest{
+		GetStatCommonRequest: GetStatCommonRequest{
+			Begin: "20210928",
+			End:   "20210930",
+			G:     "day",
+		},
+		Select: []string{"duration"},
+		Where:  map[string][]string{"hub": {TestHub}, "profile": {"!480p"}},
+		Group:  "profile",
+	})
+```
+
+## <span id="84">查询直播鉴黄使用量</span>
+
+查询一段时间内目标直播空间的鉴黄次数，延迟10分钟左右
+
+### 调用方法
+
+```go
+func (m *Manager) GetStatNrop(ctx context.Context, req GetStatNropRequest) ([]StatResponse, error)
+```
+
+### 参数说明
+
+GetStatNropRequest结构体说明
+
+| 参数名称                 | 字段类型                 | 必填  | 说明     |
+|----------------------|----------------------|-----|--------|
+| GetStatCommonRequest | GetStatCommonRequest | 是 | 通用请求参数 |
+| Where                | map[string][]string  | 否  | 查询条件   |
+| Select               | []string             | 是 | 查询值    |
+
+GetStatCommonRequest结构体说明
+
+| 参数名称  | 字段类型   | 必填  | 说明                                                            |
+|-------|--------|-----|---------------------------------------------------------------|
+| Begin | string | 是 | 开始时间，支持格式：20060102、20060102150405                             |
+| End   | string | 是 | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+| G     | string | 是 | 时间粒度，可取值为 5min、hour、day、month                                 |
+
+Where条件字段说明
+
+| 参数名称    | 必填 | 说明                  |
+|---------|----|---------------------|
+| hub     | 否 | 直播空间名               |
+| assured | 否 | 鉴黄结果是否确定，true或false |
+
+Select值字段说明
+
+| 参数名称  | 必填  | 说明   |
+|-------|-----|------|
+| count | 是 | 鉴黄次数 |
+
+StatResponse结构体说明
+
+| 参数名称   | 字段类型           | 必填 | 说明                                                       |
+|--------|----------------|----|----------------------------------------------------------|
+| Time   | time.Time      | 否 | 时间                                                       |
+| Values | map[string]int | 否 | 数据，形式如："values":{"count":452}，其中"count"对应select项 |
+
+### 示例
+
+```go
+a, err := manager.GetStatNrop(context.Background(), GetStatNropRequest{
+   GetStatCommonRequest: GetStatCommonRequest{
+      Begin: "20210928",
+      End:   "20210930",
+      G:     "day",
+   },
+   Select: []string{"count"},
+   Where:  map[string][]string{"hub": {"!" + TestHub}, "assured": {"false"}},
+})
+```
+
+## 分组查询直播鉴黄使用量
+
+查询一段时间内目标直播空间的鉴黄次数，按group分组，延迟10分钟左右
+
+### 调用方法
+
+```go
+func (m *Manager) GroupStatNrop(ctx context.Context, req GroupStatNropRequest) ([]StatGroupResponse, error)
+```
+
+### 参数说明
+
+GroupStatNropRequest结构体说明
+
+| 参数名称                 | 字段类型                 | 必填  | 说明           |
+|----------------------|----------------------|-----|--------------|
+| GetStatCommonRequest | GetStatCommonRequest | 是 | 通用请求参数       |
+| Group                | string               | 是 | 分组，取值范围为条件字段 |
+| Where                | map[string][]string  | 否  | 查询条件         |
+| Select               | []string             | 是 | 查询值          |
+
+GetStatCommonRequest结构体说明
+
+| 参数名称  | 字段类型   | 必填  | 说明                                                            |
+|-------|--------|-----|---------------------------------------------------------------|
+| Begin | string | 是 | 开始时间，支持格式：20060102、20060102150405                             |
+| End   | string | 是 | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+| G     | string | 是 | 时间粒度，可取值为 5min、hour、day、month                                 |
+
+Where条件字段说明
+
+| 参数名称    | 必填 | 说明                  |
+|---------|----|---------------------|
+| hub     | 否 | 直播空间名                |
+| assured | 否 | 鉴黄结果是否确定，true或false |
+
+Select值字段说明
+
+| 参数名称  | 必填  | 说明   |
+|-------|-----|------|
+| count | 是 | 鉴黄次数 |
+
+StatGroupResponse结构体说明
+
+| 参数名称   | 字段类型                      | 必填 | 说明                                                                                      |
+|--------|---------------------------|----|-----------------------------------------------------------------------------------------|
+| Time   | time.Time                 | 否 | 时间                                                                                      |
+| Values | map[string]map[string]int | 否 | 数据，形式如："values":{"SD":{"count":4527162977}}，其中"SD"对应Group项，"count"对应Select项 |
+
+### 示例
+
+```go
+a, err := manager.GroupStatNrop(context.Background(), GroupStatNropRequest{
+		GetStatCommonRequest: GetStatCommonRequest{
+			Begin: "20210928",
+			End:   "20210930",
+			G:     "day",
+		},
+		Select: []string{"count"},
+		Where:  map[string][]string{"hub": {"!"+TestHub}, "assured": {"false", "true"}},
+		Group:  "hub",
+	})
+```
+
+## <span id="85">查询导播台使用量</span>
+
+查询一段时间内导播台使用时长，延迟分钟级
+
+### 调用方法
+
+```go
+func (m *Manager) GetStatCaster(ctx context.Context, req GetStatCasterRequest) ([]StatResponse, error)
+```
+
+### 参数说明
+
+GetStatCasterRequest结构体说明
+
+| 参数名称                 | 字段类型                 | 必填  | 说明     |
+|----------------------|----------------------|-----|--------|
+| GetStatCommonRequest | GetStatCommonRequest | 是 | 通用请求参数 |
+| Where                | map[string][]string  | 否  | 查询条件   |
+| Select               | []string             | 是 | 查询值    |
+
+GetStatCommonRequest结构体说明
+
+| 参数名称  | 字段类型   | 必填  | 说明                                                            |
+|-------|--------|-----|---------------------------------------------------------------|
+| Begin | string | 是 | 开始时间，支持格式：20060102、20060102150405                             |
+| End   | string | 是 | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+| G     | string | 是 | 时间粒度，可取值为 5min、hour、day、month                                 |
+
+Where条件字段说明
+
+| 参数名称       | 必填 | 说明  |
+|------------|----|-----|
+| container  | 否 | 容器  |
+| resolution | 否 | 分辨率 |
+
+Select值字段说明
+
+| 参数名称     | 必填 | 说明           |
+|----------|----|--------------|
+| upflow   | 否 | 上行流量，单位：byte |
+| downflow | 否 | 下行流量，单位：byte |
+| duration | 否 | 使用时长，单位：秒    |
+
+StatResponse结构体说明
+
+| 参数名称   | 字段类型           | 必填 | 说明                                                                |
+|--------|----------------|----|-------------------------------------------------------------------|
+| Time   | time.Time      | 否 | 时间                                                                |
+| Values | map[string]int | 否 | 数据，形式如："values":{"upflow":4527162977}，其中"upflow"对应select项 |
+
+### 示例
+
+```go
+a, err := manager.GetStatCaster(context.Background(), GetStatCasterRequest{
+   GetStatCommonRequest: GetStatCommonRequest{
+      Begin: "20211024",
+      End:   "20211026",
+      G:     "day",
+   },
+   Select: []string{"upflow", "downflow", "duration"},
+   Where:  map[string][]string{},
+})
+```
+
+## 分组查询导播台使用量
+
+查询一段时间内导播台使用时长，按group分组，延迟分钟级
+
+### 调用方法
+
+```go
+func (m *Manager) GroupStatCaster(ctx context.Context, req GroupStatCasterRequest) ([]StatGroupResponse, error)
+```
+
+### 参数说明
+
+GroupStatCasterRequest结构体说明
+
+| 参数名称                 | 字段类型                 | 必填  | 说明           |
+|----------------------|----------------------|-----|--------------|
+| GetStatCommonRequest | GetStatCommonRequest | 是 | 通用请求参数       |
+| Group                | string               | 是 | 分组，取值范围为条件字段 |
+| Where                | map[string][]string  | 否  | 查询条件         |
+| Select               | []string             | 是 | 查询值          |
+
+GetStatCommonRequest结构体说明
+
+| 参数名称  | 字段类型   | 必填  | 说明                                                            |
+|-------|--------|-----|---------------------------------------------------------------|
+| Begin | string | 是 | 开始时间，支持格式：20060102、20060102150405                             |
+| End   | string | 是 | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+| G     | string | 是 | 时间粒度，可取值为 5min、hour、day、month                                 |
+
+Where条件字段说明
+
+| 参数名称       | 必填 | 说明  |
+|------------|----|-----|
+| container  | 否 | 容器  |
+| resolution | 否 | 分辨率 |
+
+Select值字段说明
+
+| 参数名称     | 必填 | 说明           |
+|----------|----|--------------|
+| upflow   | 否 | 上行流量，单位：byte |
+| downflow | 否 | 下行流量，单位：byte |
+| duration | 否 | 使用时长，单位：秒    |
+
+StatGroupResponse结构体说明
+
+| 参数名称   | 字段类型                      | 必填 | 说明                                                                                        |
+|--------|---------------------------|----|-------------------------------------------------------------------------------------------|
+| Time   | time.Time                 | 否 | 时间                                                                                        |
+| Values | map[string]map[string]int | 否 | 数据，形式如："values":{"SD":{"upflow":4527162977}}，其中"SD"对应Group项，"upflow"对应Select项 |
+
+### 示例
+
+```go
+a, err := manager.GroupStatCaster(context.Background(), GroupStatCasterRequest{
+		GetStatCommonRequest: GetStatCommonRequest{
+			Begin: "20210928",
+			End:   "20210930",
+			G:     "day",
+		},
+		Select: []string{"upflow"},
+		Group:  "resolution",
+	})
+```
+
+## <span id="86">查询Pub转推服务使用量</span>
+
+查询一段时间内转推服务的使用时长和次数，延迟10分钟内
+
+### 调用方法
+
+```go
+func (m *Manager) GetStatPub(ctx context.Context, req GetStatPubRequest) ([]StatResponse, error)
+```
+
+### 参数说明
+
+GetStatPubRequest结构体说明
+
+| 参数名称                 | 字段类型                 | 必填  | 说明     |
+|----------------------|----------------------|-----|--------|
+| GetStatCommonRequest | GetStatCommonRequest | 是 | 通用请求参数 |
+| Where                | map[string][]string  | 否  | 查询条件   |
+| Select               | []string             | 是 | 查询值    |
+
+GetStatCommonRequest结构体说明
+
+| 参数名称  | 字段类型   | 必填  | 说明                                                            |
+|-------|--------|-----|---------------------------------------------------------------|
+| Begin | string | 是 | 开始时间，支持格式：20060102、20060102150405                             |
+| End   | string | 是 | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+| G     | string | 是 | 时间粒度，可取值为 5min、hour、day、month                                 |
+
+Where条件字段说明
+
+| 参数名称 | 必填 | 说明            |
+|------|----|---------------|
+| tp   | 否 | 状态，可选项 normal |
+
+Select值字段说明
+
+| 参数名称     | 必填 | 说明         |
+|----------|----|------------|
+| count    | 否 | 转推次数       |
+| duration | 否 | 转推时长，单位：毫秒 |
+
+StatResponse结构体说明
+
+| 参数名称   | 字段类型           | 必填 | 说明                                                            |
+|--------|----------------|----|---------------------------------------------------------------|
+| Time   | time.Time      | 否 | 时间                                                            |
+| Values | map[string]int | 否 | 数据，形式如："values":{"flow":4527162977}，其中"flow"对应select项 |
+
+### 示例
+
+```go
+a, err := manager.GetStatPub(context.Background(), GetStatPubRequest{
+   GetStatCommonRequest: GetStatCommonRequest{
+      Begin: "20211024",
+      End:   "20211026",
+      G:     "day",
+   },
+   Select: []string{"duration"},
+   Where:  map[string][]string{},
+})
+```
+
+## 分组查询Pub转推服务使用量
+
+查询一段时间内转推服务的使用时长和次数，按group分组，延迟10分钟内
+
+### 调用方法
+
+```go
+func (m *Manager) GroupStatPub(ctx context.Context, req GroupStatPubRequest) ([]StatGroupResponse, error)
+```
+
+### 参数说明
+
+GroupStatPubRequest结构体说明
+
+| 参数名称                 | 字段类型                 | 必填  | 说明           |
+|----------------------|----------------------|-----|--------------|
+| GetStatCommonRequest | GetStatCommonRequest | 是 | 通用请求参数       |
+| Group                | string               | 是 | 分组，取值范围为条件字段 |
+| Where                | map[string][]string  | 否  | 查询条件         |
+| Select               | []string             | 是 | 查询值          |
+
+GetStatCommonRequest结构体说明
+
+| 参数名称  | 字段类型   | 必填  | 说明                                                            |
+|-------|--------|-----|---------------------------------------------------------------|
+| Begin | string | 是 | 开始时间，支持格式：20060102、20060102150405                             |
+| End   | string | 是 | 结束时间，支持格式：20060102、20060102150405，超过当前时间，则以当前时间为准，时间范围为左闭右开区间 |
+| G     | string | 是 | 时间粒度，可取值为 5min、hour、day、month                                 |
+
+Where条件字段说明
+
+| 参数名称 | 必填 | 说明            |
+|------|----|---------------|
+| tp   | 否 | 状态，可选项 normal |
+
+Select值字段说明
+
+| 参数名称     | 必填 | 说明         |
+|----------|----|------------|
+| count    | 否 | 转推次数       |
+| duration | 否 | 转推时长，单位：毫秒 |
+
+StatGroupResponse结构体说明
+
+| 参数名称   | 字段类型                      | 必填 | 说明                                                                                              |
+|--------|---------------------------|----|-------------------------------------------------------------------------------------------------|
+| Time   | time.Time                 | 否 | 时间                                                                                              |
+| Values | map[string]map[string]int | 否 | 数据，形式如："values":{"normal":{"count":4527162977}}，其中"normal"对应Group项，"count"对应Select项 |
+
+### 示例
+
+```go
+a, err := manager.GroupStatPub(context.Background(), GroupStatPubRequest{
+		GetStatCommonRequest: GetStatCommonRequest{
+			Begin: "20210928",
+			End:   "20210930",
+			G:     "hour",
+		},
+		Select: []string{"duration"},
+		Group:  "tp",
+	})
+```

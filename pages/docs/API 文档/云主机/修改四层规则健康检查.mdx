@@ -1,0 +1,47 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+>`PUT` /v1/security/bgpip/resource/:resource_id/level4rule_v2/:rule_id/health_check
+
+# 请求参数
+| 名称 | 类型 | 位置 | 必须 | 描述 |
+| ----- | ----- | ----- | ----- | ----- |
+| X-Qiniu-Regionid | string | header | 是 | 地域 id, 取值：shanghai (大陆通用地域)|
+| resource_id | string | path | 是 | 高防实例 id |
+| rule_id | string | path | 是 | 规则 id, 可通过四层规则列表接口获取 |
+| enable | int | body | 是 | 是否开启，1表示开启；0表示关闭 |
+| timeout | int | body | 是 | 响应超时时间，单位：秒 |
+| interval | int | body | 是 | 检测间隔时间，单位：秒，必须要大于响应超时时间 |
+| kick_num | int | body | 是 | 不健康阈值，单位：次 |
+| alive_num | int | body | 是 | 健康阈值，单位：次 |
+
+
+注：如果有部分参数无需修改，则填入修改前的参数值即可。
+
+# 返回值
+| 名称 | 类型 | 是否必须 | <center>描述 |
+| ----- | ----- | ----- | ----- |
+| request_id | string | 是 | 请求记录 id |
+
+<br>
+	
+# 示例
+### Body参数示例
+```json
+{
+    "rule_id": "rule1",
+    "enable": 0,
+    "interval": 15,
+    "kick_num": 5,
+    "alive_num": 5,
+    "timeout": 6,
+    "err_msg": ""
+}
+```
+
+### 正常返回示例
+```json
+{
+    "request_id": "04F0F334-AC1"
+}
+```

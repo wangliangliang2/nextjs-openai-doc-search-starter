@@ -1,0 +1,37 @@
+使用score命令来选择一种算法评估方式来评估模型表现。
+
+
+**语法**
+```
+.. | score <scoring-method-name> [option_name]=[option_value] <array_a> against <array_b>
+```
+
+**参数说明**
+
+***必选参数***
+<scoring-method-name\>：“算法评估方式”选项是必不可少的，目前平台支持的算法以及使用方式请参考[Machine Learning App提供的Score评估方式详细使用方式](/express/manual/7424/score-evaluation-method-used-in-detail)
+
+<array_a\>：a数组可以是1个或者n个字段名。
+
+<against <array_b>>：b数组可以是1个或者n个字段名。against不能省略，但可以用"~"代替。
+
+
+***可选参数***
+
+[option_name]=[option_value]：不同的评估方式支持不同的参数选项。“=”的左侧填写参数的名称，而“=”的右侧填写这个参数对应的设定值。
+
+
+**示例用法**
+1、用Confusion Matrix 结果评估分类模型结果
+```
+... | score confusion_matrix target against "predicted(target)"
+```
+2、用R-squared/R2 结果评估并且比较两个回归模型的结果
+```
+... | score r2_score target against "predicted(target)_model_1" "predicted(target)_model_2"
+```
+3、用Silhouette Score评估聚类模型的结果，并且设定参数metric为manhattan
+
+```
+... | score silhouette_score metric=manhattan "predicted(clusters)" against sepal_length sepal_width petal_length petal_width
+```

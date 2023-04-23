@@ -1,0 +1,60 @@
+# 接口简介
+
+主播黑名单接口，验证输入的姓名和身份证号，对比直播行业主播黑名单，返回是否为黑名单内的主播。
+
+
+# 请求语法
+
+```
+POST /blacklist HTTP/1.1
+Host: blacklist.apistore.qiniu.com
+Content-Type: application/json
+Authorization: QiniuToken
+```
+# 头部信息
+
+| 头部名称      | 必填 | 说明                                                         |
+| ------------- | ---- | ------------------------------------------------------------ |
+| Host          | 是   | 固定为  blacklist.apistore.qiniu.com |
+| Content-Type  | 是   | 固定为 application/json                                      |
+| Authorization | 是   | 该参数应严格按照[管理凭证](https://developer.qiniu.com/kodo/manual/1201/access-token)格式进行填充，否则会返回 401 错误码。一个合法的 Authorization 值应类似于：`Qiniu QNJi_bYJlmO5LeY08FfoNj9w_r7...` |
+
+
+# 请求参数
+
+| 字段 | type   | 必填 | 说明           |
+| ---- | ------ | ---- | -------------- |
+| name | string | Y    | 比对者姓名     |
+| id   | string | Y    | 比对者身份证号 |
+
+## 返回参数
+
+| 状态         | ReturnCode | ReturnMessage  | 说明                                                         |
+| ------------ | ---------- | -------------- | ------------------------------------------------------------ |
+| 在黑名单中   | 0          | block          | 经过比对，该对象在黑名单中                                   |
+| 不在黑名单中 | 1          | pass           | 经过比对，该对象不在黑名单中                                 |
+| 对比失败     | 2          | Compare failed | 比对过程中出现错误，无法进行比对（例如非法字符与非法格式等） |
+
+
+# 示例
+
+```
+POST /blacklist HTTP/1.1
+Host: blacklist.apistore.qiniu.com
+Content-Type: application/json
+Authorization:  <TOKEN>
+{
+  "name":"张某某", 
+  "id": "123456789012345"
+}
+```
+
+## 返回示例
+
+```
+{
+  "code":ReturnCode,
+  "msg":ReturnMessage
+}
+```
+

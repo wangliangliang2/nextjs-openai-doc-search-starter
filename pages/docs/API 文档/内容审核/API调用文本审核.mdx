@@ -1,0 +1,99 @@
+本文介绍了 API 调用文本内容审核使用须知，帮助您正确使用此 API 进行文本内容审核，支持基于 API URL 发起 HTTP/HTTPS POST 请求的方式调用。
+
+# 使用限制
+
+* 文本长度不超过 2000 字
+
+# 功能描述
+
+文本内容审核 API 主要用于检测或识别文本中的不良信息，并给出审核结果管控建议。支持的审核类型包括: 文本反垃圾。
+
+**审核类型 scenes 与相应的 label**
+
+在提交内容审核任务时，您需要指定审核类型 **scenes** ；而在返回结果中，则包含了您指定的类型对应的 label 结果分类参数。
+
+|审核类型|说明|scenes|label/group|
+| :--- | :--- | :--- | :--- |
+|文本反垃圾|识别文本中是否包含垃圾信息。|antispam|normal：正常文本<br>spam：含垃圾信息<br>ad：广告<br>politics：涉政<br>terrorism：暴恐<br>abuse：辱骂<br>porn：色情<br>flood：灌水<br>contraband：违禁<br>meaningless：无意义|
+
+# 请求参数
+
+目前，支持提交文本内容进行同步审核。
+
+**请求方式** POST
+
+**请求接口** http://ai.qiniuapi.com/v3/text/censor
+
+**请求Header**
+
+|字段|取值|
+| :--- | :--- |
+|Content-Type|application/json|
+|Authorization|Qiniu &lt;AccessKey&gt;:&lt;Sign&gt; <br>注意: 用户请根据AccessKey和SecretKey后生成鉴权，以便进行身份验证。`<Sign>`的取值请参考[七牛鉴权](https://developer.qiniu.com/dora/kb/3702/QiniuToken)|
+
+**请求参数**
+
+|字段|类型|是否必选|说明|
+| :--- | :--- | :--- | :--- |
+|data.text|string|Y|文本内容。|
+|params.scenes|string array|Y|审核类型，必填字段，可选项：`antispam`|
+
+# 返回参数
+
+|字段|取值|说明|
+| :--- | :--- | :--- |
+|code|int|处理状态：200 调用成功|
+|message|string|与 code 对应的状态描述信息|
+|result.suggestion|string|文本审核结果管控建议说明<br> 根据内容审核中各种审核类型的返回结果，系统会将审核结果转换成对应的管控建议，取值包括：block/review/pass。<br>  suggestion=block：表示系统确认审核内容违规，建议您将其删除。<br> suggestion=review：表示系统无法确认审核内容是否违规，建议您进行人工复核。<br> suggestion=pass：表示系统确认审核内容正常，建议您忽略该文件。<br> |
+|result.scenes.`<scene>`|json 结构体|审核类型，目前支持：`antispam`|
+|result.scenes.`<scene>`.suggestion|string|该审核类型的结果管控建议，参见result.suggestion|
+|result.scenes.`<scene>`.details[]|object array|该审核类型的详细信息数组|
+|result.scenes.`<scene>`.details[].label|string|该审核类型返回的标签，具体请参见上文中**审核类型scenes与相应的label**|
+|result.scenes.`<scene>`.details[].score|float|该审核类型结果置信度|
+|result.scenes.`<scene>`.details[].description|string|违规内容描述|
+
+# 示例
+
+## 请求示例
+
+```HTTP
+POST /v3/text/censor HTTP/1.1
+Host: ai.qiniuapi.com
+Content-Type: application/json
+Authorization: Qiniu YnxrxOSvGotRZpqkZnMzl_euuoqRzOKUd6zwbRju:r6a-o2UpBg6A4puIMnkCExH8lE8=
+{
+    "data": {
+        "text": "七牛文本审核示例"
+    },
+    "params": {
+        "scenes": [
+            "antispam"
+        ]
+    }
+}
+```
+
+**注意：** 请把 Authorization 换成您的账号七牛鉴权 QiniuToken
+
+## 返回示例
+
+```JSON
+{
+    "message": "OK",
+    "code": 200,
+    "result": {
+        "scenes": {
+            "antispam": {
+                "details": [
+                    {
+                        "score": 0.99985,
+                        "label": "normal"
+                    }
+                ],
+                "suggestion": "pass"
+            }
+        },
+        "suggestion": "pass"
+    }
+}
+```

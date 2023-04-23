@@ -1,0 +1,622 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-page" id="rtc-doc">
+<section class="rtc-doc-panel rtc-doc-describe rtc-doc-note">
+                QNRTCClient 事件回调接口，用于回调 RTC 房间相关的事件，如房间状态改变等。可以在 QNRTCClient 的初始化后遵守并实现该代理。</section>
+            <div class="rtc-doc-page-wrap">Index</div>
+<section class="rtc-doc-panel">
+        <div class="rtc-doc-page-title">Core Methods</div>
+        <ul class="rtc-doc-catalogue">
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didConnectionStateChanged`)'>didConnectionStateChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didJoinOfUserID`)'>didJoinOfUserID</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didLeaveOfUserID`)'>didLeaveOfUserID</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didSubscribedRemoteVideoTracks`)'>didSubscribedRemoteVideoTracks</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didUserPublishTracks`)'>didUserPublishTracks</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didUserUnpublishTracks`)'>didUserUnpublishTracks</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didReconnectingOfUserID`)'>didReconnectingOfUserID</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didReconnectedOfUserID`)'>didReconnectedOfUserID</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didStartLiveStreaming`)'>didStartLiveStreaming</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didStopLiveStreaming`)'>didStopLiveStreaming</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didTranscodingTracksUpdated`)'>didTranscodingTracksUpdated</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didErrorLiveStreaming`)'>didErrorLiveStreaming</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didReceiveMessage`)'>didReceiveMessage</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#firstVideoDidDecodeOfTrack`)'>firstVideoDidDecodeOfTrack</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didDetachRenderTrack`)'>didDetachRenderTrack</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didMediaRelayStateChanged`)'>didMediaRelayStateChanged</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#remoteTrackMixedDidGetAudioBuffer`)'>remoteTrackMixedDidGetAudioBuffer</a></li>
+                <li><a onClick='document.location.replace(`${document.location.protocol}//${document.location.host}${document.location.pathname}${document.location.search}#didNetworkQualityNotified`)'>didNetworkQualityNotified</a></li>
+        </ul>
+</section>
+<div class="rtc-doc-page-wrap">Core Methods</div>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didConnectionStateChanged">
+didConnectionStateChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didConnectionStateChanged:(<a href='9254/QNTypeDefines#QNConnectionState'>QNConnectionState</a>)state disconnectedInfo:(<a href='8866/QNConnectionDisconnectedInfo-iOS'>QNConnectionDisconnectedInfo</a> *)info;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>房间状态变更会触发此回调</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>当状态变为 QNConnectionStateReconnecting 时，SDK 会为您自动重连，重连过程中，如果希望退出，直接调用 leave 即可。重连成功后的状态将变为 QNConnectionStateReconnected。</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            state: <a href='9254/QNTypeDefines#QNConnectionState'>QNConnectionState</a>
+        </div>
+                <p>房间状态</p>
+    </li>
+    <li>
+        <div>
+            info: <a href='8866/QNConnectionDisconnectedInfo-iOS'>QNConnectionDisconnectedInfo</a>
+        </div>
+                <p>房间失去连接的具体信息</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didJoinOfUserID">
+didJoinOfUserID</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didJoinOfUserID:(NSString *)userID userData:(NSString *)userData;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端用户加入房间会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            userID: NSString
+        </div>
+                <p>用户 ID</p>
+    </li>
+    <li>
+        <div>
+            userData: NSString
+        </div>
+                <p>用户信息</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didLeaveOfUserID">
+didLeaveOfUserID</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didLeaveOfUserID:(NSString *)userID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端用户离开房会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            userID: NSString
+        </div>
+                <p>用户 ID</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didSubscribedRemoteVideoTracks">
+didSubscribedRemoteVideoTracks</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didSubscribedRemoteVideoTracks:(NSArray&lt;<a href='8858/QNRemoteVideoTrack-iOS'>QNRemoteVideoTrack</a> *&gt; *)videoTracks audioTracks:(NSArray&lt;<a href='8859/QNRemoteAudioTrack-iOS'>QNRemoteAudioTrack</a> *&gt; *)audioTracks ofUserID:(NSString *)userID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>订阅远端用户成功会触发此回调</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>无论手动订阅还是自动订阅都会触发此回调</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            videoTracks: NSArray&lt;<a href='8858/QNRemoteVideoTrack-iOS'>QNRemoteVideoTrack</a>&gt;
+        </div>
+                <p>远端视频 Tracks</p>
+    </li>
+    <li>
+        <div>
+            audioTracks: NSArray&lt;<a href='8859/QNRemoteAudioTrack-iOS'>QNRemoteAudioTrack</a>&gt;
+        </div>
+                <p>远端音频 Tracks</p>
+    </li>
+    <li>
+        <div>
+            userID: NSString
+        </div>
+                <p>用户 ID</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didUserPublishTracks">
+didUserPublishTracks</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didUserPublishTracks:(NSArray&lt;<a href='8857/QNRemoteTrack-iOS'>QNRemoteTrack</a> *&gt; *)tracks ofUserID:(NSString *)userID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端用户发布音/视频会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            tracks: NSArray&lt;<a href='8857/QNRemoteTrack-iOS'>QNRemoteTrack</a>&gt;
+        </div>
+                <p>远端 Tracks</p>
+    </li>
+    <li>
+        <div>
+            userID: NSString
+        </div>
+                <p>用户 ID</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didUserUnpublishTracks">
+didUserUnpublishTracks</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didUserUnpublishTracks:(NSArray&lt;<a href='8857/QNRemoteTrack-iOS'>QNRemoteTrack</a> *&gt; *)tracks ofUserID:(NSString *)userID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端用户取消发布音/视频会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            tracks: NSArray&lt;<a href='8857/QNRemoteTrack-iOS'>QNRemoteTrack</a>&gt;
+        </div>
+                <p>远端 Tracks</p>
+    </li>
+    <li>
+        <div>
+            userID: NSString
+        </div>
+                <p>用户 ID</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didReconnectingOfUserID">
+didReconnectingOfUserID</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didReconnectingOfUserID:(NSString *)userID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端用户发生重连会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            userID: NSString
+        </div>
+                <p>用户 ID</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didReconnectedOfUserID">
+didReconnectedOfUserID</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didReconnectedOfUserID:(NSString *)userID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端用户重连成功会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            userID: NSString
+        </div>
+                <p>用户 ID</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didStartLiveStreaming">
+didStartLiveStreaming</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didStartLiveStreaming:(NSString *)streamID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>成功创建转推/合流转推任务会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            streamID: NSString
+        </div>
+                <p>流 ID</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didStopLiveStreaming">
+didStopLiveStreaming</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didStopLiveStreaming:(NSString *)streamID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>停止转推/合流转推任务会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            streamID: NSString
+        </div>
+                <p>流 ID</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didTranscodingTracksUpdated">
+didTranscodingTracksUpdated</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didTranscodingTracksUpdated:(BOOL)success withStreamID:(NSString *)streamID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>更新合流布局会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            success: BOOL
+        </div>
+                <p>是否成功</p>
+    </li>
+    <li>
+        <div>
+            streamID: NSString
+        </div>
+                <p>流 ID</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didErrorLiveStreaming">
+didErrorLiveStreaming</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didErrorLiveStreaming:(NSString *)streamID errorInfo:(<a href='8864/QNLiveStreamingErrorInfo-iOS'>QNLiveStreamingErrorInfo</a> *)errorInfo;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>单路转推或合流转推出错会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            streamID: NSString
+        </div>
+                <p>流 ID</p>
+    </li>
+    <li>
+        <div>
+            errorInfo: <a href='8864/QNLiveStreamingErrorInfo-iOS'>QNLiveStreamingErrorInfo</a>
+        </div>
+                <p>错误信息</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didReceiveMessage">
+didReceiveMessage</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didReceiveMessage:(<a href='9264/QNMessageInfo'>QNMessageInfo</a> *)message;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>收到远端用户发送给自己的消息时会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            message: <a href='9264/QNMessageInfo'>QNMessageInfo</a>
+        </div>
+                <p>消息信息对象</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="firstVideoDidDecodeOfTrack">
+firstVideoDidDecodeOfTrack</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client firstVideoDidDecodeOfTrack:(<a href='8858/QNRemoteVideoTrack-iOS'>QNRemoteVideoTrack</a> *)videoTrack remoteUserID:(NSString *)userID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端用户视频数据首帧渲染会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            videoTrack: <a href='8858/QNRemoteVideoTrack-iOS'>QNRemoteVideoTrack</a>
+        </div>
+                <p>远端视频 Track</p>
+    </li>
+    <li>
+        <div>
+            userID: NSString
+        </div>
+                <p>用户 ID</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didDetachRenderTrack">
+didDetachRenderTrack</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didDetachRenderTrack:(<a href='8858/QNRemoteVideoTrack-iOS'>QNRemoteVideoTrack</a> *)videoTrack remoteUserID:(NSString *)userID;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>取消渲染远端用户视频数据会触发此回调</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            videoTrack: <a href='8858/QNRemoteVideoTrack-iOS'>QNRemoteVideoTrack</a>
+        </div>
+                <p>远端视频 Track</p>
+    </li>
+    <li>
+        <div>
+            userID: NSString
+        </div>
+                <p>用户 ID</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didMediaRelayStateChanged">
+didMediaRelayStateChanged</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didMediaRelayStateChanged:(NSString *)relayRoom state:(<a href='9254/QNTypeDefines#QNMediaRelayState'>QNMediaRelayState</a>)state;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>跨房媒体转发状态变更的回调</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>非主动调用触发，由目标房间状态变化引起此通知。目前仅当目标房间关闭 <a href='9254/QNTypeDefines#QNMediaRelayState'>QNMediaRelayStateRoomClosed</a> 时，会触发此通知。</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            relayRoom: NSString
+        </div>
+                <p>目标房间名称</p>
+    </li>
+    <li>
+        <div>
+            state: <a href='9254/QNTypeDefines#QNMediaRelayState'>QNMediaRelayState</a>
+        </div>
+                <p>目标房间媒体转发状态</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="remoteTrackMixedDidGetAudioBuffer">
+remoteTrackMixedDidGetAudioBuffer</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client remoteTrackMixedDidGetAudioBuffer:(AudioBuffer *)audioBuffer;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>远端音频 track mix 数据的回调。</p>
+    </div>
+    <section class="rtc-doc-panel rtc-doc-describe-note">
+        <blockquote>
+        <p>该回调在 AU Remote IO 线程，请不要做过于耗时的操作，否则可能阻塞该线程影响音频输出或其他未知问题。</p>
+        </blockquote>
+    </section>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            audioBuffer: AudioBuffer
+        </div>
+                <p>音频数据 buffer</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="rtc-doc-panel">
+<div class="rtc-doc-page-title rtc-doc-antor" id="didNetworkQualityNotified">
+didNetworkQualityNotified</div>
+<ul class="rtc-doc-page-container">
+        <li class="rtc-doc-sign-signature">- (void)RTCClient:(<a href='8836/QNRTCClient-iOS'>QNRTCClient</a> *)client didNetworkQualityNotified:(<a href='8869/QNNetworkQuality-iOS'>QNNetworkQuality</a> *)quality;</li>
+    </li>
+<li class="rtc-doc-page-description">
+    <div class="rtc-doc-desc-wrap">
+        <p>本地网络质量信息的回调。</p>
+    </div>
+<div class="rtc-doc-parameters-title">Parameters</div>
+<ul class="rtc-doc-parameters">
+    <li>
+        <div>
+            client: <a href='8836/QNRTCClient-iOS'>QNRTCClient</a>
+        </div>
+                <p>QNRTCClient 实例</p>
+    </li>
+    <li>
+        <div>
+            quality: <a href='8869/QNNetworkQuality-iOS'>QNNetworkQuality</a>
+        </div>
+                <p>上下行的网络质量</p>
+    </li>
+</ul>
+</li>
+</ul>
+</section>
+</div>
+
+

@@ -1,0 +1,54 @@
+`analyze` 指令用于对查询的执行情况进行分析，可支持从不同的并行层级观察执行状况，帮助观察和分析性能问题。
+
+## 语法
+
+```
+*|analyze [type=<string>] [dry_run=<bool>]
+```
+
+> 目前，analyze 只能用于查询语句的结尾处
+
+## 参数说明
+可选参数：
+- `type`：type 参数描述以哪一种视角观测查询执行细节指标，可选值包括`raw|query|stage|task|driver|exec`。默认值为`"raw"`。具体说明如下：
+  - raw: 以 json 格式返回原始的分析数据。
+  - query: 从 Query 层级观察执行情况, 一个 Query 包含了多个 Stage 执行信息的汇总, 以表格形式输出。
+  - stage: 从 Stage 层级观察执行情况, 一个 Stage 包含多个 Task 执行信息的汇总, 以表格形式输出。
+  - task: 从 Task 层级观察执行情况, 一个 Task 包含多个 Driver 执行信息的汇总, 以表格形式输出。
+  - driver: 从 Driver 层级观察执行情况, Driver是执行查询最小的并行单位, 以表格形式输出。
+  - exec: 从 Exec 层级观察执行情况，一个 Exec 是一个 Driver 内的执行算子, 以表格形式输出。 Exec 层级的信息过多，推荐复制 `queryId`, 进入内置 APP 监控控制台的“查询/快速分析”页面，设置 `查询ID` 进行可视化的查询性能分析。
+
+- `dry_run=<bool>`：是否开启 dry-run 模式，该模式下查询会模拟整个分布式执行过程，但不读取真实的数据，用于快速验证查询执行细节。设置为 `true` 时，开启 dry-run 模式，默认值为`false`。
+
+
+## 示例
+- 示例1
+```spl
+search2 repo="_internal" 
+| stats count() by origin
+| analyze type="task"
+```
+返回如下：
+
+|queryId|stageId|taskId|parentStageId|state|error|elapsedTime|elapsedTimeSeconds|startTime|endTime|acceptTim|distribution|nodeId|nodeName|planInfo|runningDrivers|totalDrivers|totalPipelines|pendingSplits|totalSplits|outputPartitionType|outputPartitionCount|
+|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|JxnCZ...|0|0-0| |COMPLETED|2|0.002|1.6424E+12|1.6424E+12|1.6424E+12|Single|IKQ79ze...|pandora-1|Output() Aggregate(...) XchgSource(...)|0|1|1|0|1|Single|1|
+|JxnCZ...|1|1-0|0|COMPLETED|2|0.002|1.6424E+12|1.6424E+12|1.6424E+12|Source|IKQ79ze...|pandora-1|Aggregate(...) Scan(...)|0|1|1|0|1|Single|1|
+
+- 示例2
+```spl
+search2 repo="_internal" 
+| stats count() by origin
+| analyze type="driver"
+```
+返回如下：
+
+|queryId|stageId|taskId|pipelineId|driverId|state|error|elapsedTime|elapsedTimeSeconds|startTime|endTime|nodeId|nodeName|planInfo|totalSplits|outputPartitionType|outputPartitionCount|exchangeProducerTime|exchangeConsumerTime|
+|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|wGvtb...|0|0-0|0-0-0|0-0-0-0|COMPLETED| |267|0.267|1642538561632|1642538561899|a7ZD9Jf...|a7ZD9Jf|Output() Aggregate(...) XchgSource(...)|1|Single|1|0|137| |wGvtb...|1|1-0|1-0-0|1-0-0-0|COMPLETED| |137|0.137|1642538561758|1642538561895|a7ZD9Jf...|a7ZD9Jf|Aggregate(...)|1|Single|1|0|0|
+|wGvtb...|1|1-0|1-0-0|1-0-0-1|COMPLETED| |137|0.137|1642538561758|1642538561895|a7ZD9Jf...|a7ZD9Jf |Aggregate(...) Scan(...)|1|Single|1|0|0|
+|wGvtb...|1|1-0|1-0-0|1-0-0-2 |COMPLETED| |135|0.135|1642538561760|1642538561895|a7ZD9Jf...|a7ZD9Jf |Aggregate(...) Scan(...)|1|Single|1|0|0|
+
+## 相关算子
+* [explain](https://developer.qiniu.io/express/10770/spl2_explain)
+* [show_queries](https://developer.qiniu.io/express/10782/show-queries)

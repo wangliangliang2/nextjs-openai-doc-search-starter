@@ -1,0 +1,53 @@
+# 接口描述
+
+添加直播域名到目标直播空间，包括推流域名与RTMP、HLS、HDL播放域名，绑定之后可以使用此域名推流或播放
+
+# 请求参数
+
+```
+POST /v2/hubs/<hub>/newdomains
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/json 
+
+{
+    "domain":"<domain>",
+    "Type":"<type>"
+}
+```
+
+|      参数          |      类型          |  必填   |                  描述                      |
+| -------------------- | -------------------- | ----------- | ------------------------------------------ |
+|       Hub           |    string           | 是    |         直播空间名                                   |
+|    Domain           |    string           | 是    |         域名                                   |
+|      Type           |    string           | 是    | 域名类型，可选域名类型为：<br>publishRtmp：推流域名<br>liveRtmp：RTMP播放域名<br>liveHls：HLS播放域名<br>liveHdl：FLV播放域名 |
+
+# 返回数据
+
+空
+
+# 示例
+
+请求体:
+
+```
+POST /v2/hubs/testhub/newdomains HTTP/1.1
+Host: pili.qiniuapi.com 
+Authorization: <QiniuToken>
+Content-Type: application/json 
+
+{
+    "domain":"pili-publish.test.cloudvdn.com",
+    "Type":"liveRtmp"
+}
+```
+
+返回体:
+
+```
+200 OK
+```
+
+# SDK
+
+七牛云 SDK 已集成该接口功能，可以更方便的调用，前往[下载](https://github.com/qiniu/go-sdk)

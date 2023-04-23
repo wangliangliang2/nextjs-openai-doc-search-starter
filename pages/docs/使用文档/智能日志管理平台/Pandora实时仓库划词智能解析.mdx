@@ -1,0 +1,70 @@
+**Pandora 实时仓库划词智能解析**帮助您直接使用智能日志管理平台的[实时仓库](/insight/manual/4875/local-upload-log)已有的解析规则解析数据，具体操作步骤如下：
+
+1.[在智能日志平台创建实时仓库并上传本地日志文件](/insight/manual/4812/sever-regex-parser#1)
+
+2.[配置解析规则(即 logkit Pro支持的智能日志平台解析规则)提取数据字段](/insight/manual/4812/sever-regex-parser#2)
+
+3.[将解析规则入库](/insight/manual/4812/sever-regex-parser#3)
+
+4.[在 logkit Pro 使用实时仓库绑定的规则采集大量数据](/insight/manual/4812/sever-regex-parser#4)。
+
+# **在智能日志平台上传文件**
+
+智能日志管理平台支持通过本地文件上传进行数据采集，并支持对上传数据进行解析，自定义提取字段。
+
+进入[智能日志平台数据上传页面](https://portal.qiniu.com/insight/data)，开始上传本地文件(不超过 100 MB)到目的仓库中。
+
+1.选择仓库并上传文件。
+
+  - 选择新建仓库，上传日志到新仓库中需要对文件配置解析规则提取字段。
+  - 选择已有仓库，若仓库中有文件解析规则，可直接使用已有规则查看数据，或者重新配置字段提取规则。
+
+![](https://pandora-kibana.qiniu.com/fileupload/upload&repo.png)
+
+![](https://pandora-kibana.qiniu.com/fileupload/upload&repo.png)
+
+2.选择示例数据：在日志列表选择一条日志作为示例数据进行解析，并选择对日志读取模式：`单行`或者`多行`。
+
+![](https://pandora-kibana.qiniu.com/fileupload/example_data.png)
+
+
+2.选择示例数据：在日志列表选择一条日志作为示例数据进行解析，并选择对日志读取模式：`单行`或者`多行`。
+
+![](https://pandora-kibana.qiniu.com/fileupload/example_data.png)
+
+# **配置解析规则提取字段**
+
+3.对示例数据选择解析方法，目前提供[使用已有规则解析](/insight/manual/4885/existing-parsing-rules)、[使用正则表达式解析](/insight/manual/4884/regex-parsing)、[使用固定分隔符解析](/insight/manual/4886/fixed-delimiter-parsing)、[解析 JSON 格式日志](/insight/manual/4887/json-format-parsing)、[使用键值对方式解析](/insight/manual/4888/key-value-parsing)、[不解析直接上传](/insight/manual/4889/no-parsing-to-upload)几种字段提取方式。
+
+![](https://pandora-kibana.qiniu.com/upload/analysis_method.png)
+
+
+4.提取字段
+
+以正则表达式解析为例：
+
+选择解析方式为正则表达式，通过鼠标在示例数据上划取想要抽取的字段，并对字段设置名称和类型。字段提取好之后，系统会自动生成正则表达式，并尝应用生成的正则表达式试对全部原始文件进行解析。您可以通过匹配数量查看设置的提取规则是否匹配全部日志，根据匹配结果对提取规则做调整。
+
+![正则表达式数据抽取](https://pandora-kibana.qiniu.com/fileupload/regex.png)
+
+# **将解析规则入库**
+
+5.填写规则名称（如果是新建仓库，需要填写工作流名称）保存解析规则并将数据入库。
+
+* 保存解析规则，这样解析规则可复用，下次您创建实时仓库可直接将已有规则绑定到仓库，并用这些规则解析数据。
+
+* 将此规则设置为默认解析规则，在仓库有多个解析规则的情况下，默认解析规则优先级最高。
+
+此时仓库已经绑定好了刚刚创建好的解析规则，您可以去解析规则列表可以查看所有解析规则及其详情。
+
+![](https://pandora-kibana.qiniu.com/fileupload/save.png)
+
+* 保存解析规则，这样解析规则可复用，下次您创建实时仓库可直接将已有规则绑定仓库。
+
+* 将此规则设置为默认解析规则，在仓库有多个解析规则的情况下，默认解析规则优先级最高。
+
+# **在 logkit Pro 使用实时仓库智能划词解析方式**
+
+现在您可以返回 logkit Pro，选择已有规则的仓库（pandora_repo_name），使用实时仓库的解析规则来解析数据。
+
+![](https://dn-odum9helk.qbox.me/FoXrdAhhjECIf6VFFU3i5J-f-3Md)

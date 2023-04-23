@@ -1,0 +1,79 @@
+# 接口简介
+实时语音识别接口对音频流进行实时识别，达到“边说边出文本”的效果，可应用于对实时性有要求的场景，如语音机器人、智能会议、智能硬件、直播字幕等。
+
+## 请求参数
+
+**请求URL**: `wss://ap-open-ws.service-z0.qiniuapp.com/v2/asr`
+
+**请求方式**: WebSocket
+
+**请求参数**:
+
+* **OnOpen,params部分**
+
+放在 URL Query 中，具体参数如下:
+
+| 参数名称     | 类型     | 是否必选 | 说明                                                         |
+| :----------- | :------- | :------- | :----------------------------------------------------------- |
+| aue          | int      | Y        | 数据格式，1: pcm，2: AAC，3: MPEG2;默认1                     |
+| voice_sample | float    | Y        | 数据采样率，取值: 48000, 44100, 32000, 16000, 8000;默认16000 |
+| model_type   | int32    | N        | 识别语言，中文: 1, 英文: 2, 中英混合: 0; 默认 1              |
+| voice_id     | string   | N        | 数据流id，不同流不同                                         |
+| key_words    | []string | N        | 识别关键字; 相同读音时优先识别为关键字。每个词 2-4 个字, 不同词用 `,` 分割 |
+| e            | int32    | Y        | 请求时间戳, 单位秒                                           |
+| token        | string   | Y        | 请求签名, [签算方式](https://developer.qiniu.com/kodo/1202/download-token) |
+
+* **OnMessage**
+
+客户端向服务端发送**二进制音频流片段**，间隔200ms发送发送一个数据块，单通道。1s 处理对应时长 1s 的音频数据, 超过 1s 的部分会被丢弃
+
+**当音频数据没有识别结果时，服务端不会返回数据**, 服务端会定时向客户端发送 ping message 保持连接, 避免超时断开
+
+* **结束session**
+
+发送 EOS close message 到后台；client 保持继续接受消息，所有结果发送完毕后服务端会主动断开连接
+
+## 返回示例
+
+```
+{"isFinal": false, "isBegin": false, "bestTranscription": {"transcribedText": "测", "keyWordsType":[{"keyWords": "", "keyWordsScore": 0.5, "startTimestamp": 0, "endTimestamp": 10}], "piece":[{"transcribedText": "测", "beginTimestamp": 0, "endTimestamp": 10}], "beginTimestamp": 0, "endTimestamp": 10}}
+{"isFinal": false, "isBegin": false, "bestTranscription": {"transcribedText": "测试", "keyWordsType":[{"keyWords": "", "keyWordsScore": 0.5, "startTimestamp": 0, "endTimestamp": 10}], "piece":[{"transcribedText": "测", "beginTimestamp": 0, "endTimestamp": 10}, {"transcribedText": "试", "beginTimestamp": 10, "endTimestamp": 20}], "beginTimestamp": 0, "endTimestamp": 20}}
+```
+
+**返回参数说明**
+
+| 参数名称          | 类型                          | 说明                     |
+| :---------------- | :---------------------------- | :----------------------- |
+| isFinal           | bool                          | 此识别结果是否为最终结果 |
+| isBegin           | bool                          | 此识别结果是否为第一片   |
+| bestTranscription | object streamingTranscription | 最好的转写候选           |
+
+**streamingTranscription 字段参数说明**
+
+| 参数名称        | 类型                         | 说明                                                         |
+| :-------------- | :--------------------------- | :----------------------------------------------------------- |
+| transcribedText | string                       | 转写结果                                                     |
+| beginTimestamp  | number                       | 句子的开始时间, 单位毫秒                                     |
+| endTimestamp    | number                       | 句子的结束时间, 单位毫秒                                     |
+| keyWordsType    | array of object keyWordsType | 转写结果中包含KeyWords内容                                   |
+| piece           | array of object piece        | 转写结果的分解（只对final状态结果有效，返回每个字及标点的详细信息） |
+
+**keyWordsType 字段参数说明**
+
+| 参数名称       | 类型   | 说明                                                         |
+| :------------- | :----- | :----------------------------------------------------------- |
+| keyWords       | string | 命中的关键词KeyWords。返回不多于10个。                       |
+| keyWordsScore  | number | 命中的关键词KeyWords相应的分数。分数越高表示和关键词越相似，对应kws中的分数。 |
+| endTimestamp   | number | 关键词结束时间, 单位毫秒                                     |
+| beginTimestamp | number | 关键词开始时间, 单位毫秒                                     |
+
+**piece 字段参数说明**
+
+| 参数名称        | 类型   | 说明                                    |
+| :-------------- | :----- | :-------------------------------------- |
+| transcribedText | string | 转写分解结果。                          |
+| endTimestamp    | number | 分解结束时间(音频开始时间为0), 单位毫秒 |
+| beginTimestamp  | number | 分解开始时间(音频开始时间为0), 单位毫秒 |
+
+## 价格
+1.5元/小时

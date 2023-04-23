@@ -1,0 +1,123 @@
+# 说明
+
+Pandora 2.0 API 打点服务是基于[Pandora 2.0 数据打点接口](https://developer.qiniu.com/express/6658/post-data) 进行数据上报。对比 [HTTP 监听打点的方式](https://developer.qiniu.com/express/6025/monitoring_upload)，这个结构更加适合经过解析后的数据上传。
+
+
+# 配置参数说明
+
+1. `pandora_post_data_url`: 必填（例如：http://127.0.0.1:9200）
+
+2. `pandora_post_data_repo`: 必填，打点的仓库
+
+3. `pandora_post_data_token`: 必填，打点的token
+
+4. `pandora_post_data_source_type`: 必填，来源类型
+
+5. `pandora_post_data_group`:选填，按照来源、agentId、hostname进行分组，默认不分组
+
+6. `pandora_escape_html`:选填，安全的json发送，默认是安全
+
+7. `pandora_post_data_gzip`:选填, 发送时启用 `gzip`, 默认开启
+
+8. `pandora_post_data_timeout`:选填，发送数据时，对端响应超时时间，默认30s
+
+9. `datasource_tag`:选填，来源标签，需要和读取中[reader配置]的来源标签一致，对应pandora 2.0的origin字段
+
+10. `pandora_hash_key`:选填，发送端根据key值计算hash，key值必须为string类型，然后负载均衡发送到不同的服务端地址，默认为空
+
+11. `ft_save_log_path`:选填，指定备份数据的存放路径
+
+12. `ft_write_limit`:选填，为了避免速率太快导致磁盘压力加大，可以根据系统情况自行限定写入本地磁盘的速率，单位MB/s
+
+13. `ft_strategy`:选填，磁盘管道容错策略[仅备份错误|全部数据走管道|仅增加并发]，默认仅备份错误
+
+    1. 设置为backup_only的时候，数据不经过本地队列直接发送到下游
+    2. 设置为always_save的时候，则所有数据会先发送到本地队列，配合ft_procs，用于提升发送速率，但也要结合需要使用，不然会浪费资源
+    3. 设置concurrent的时候，会经过队列，配合ft_procs，用于提升发送速率，但也要结合需要使用，不然会浪费资源。
+
+    > 无论该选项设置什么，失败的数据都会加入到重试队列中异步循环重试
+
+14. `ft_procs`：选填，并发仅在 ft_strategy 模式选择 always_save 或 concurrent 时生效，默认为空
+
+15. `ft_discard_failed_data`: 选填，默认不丢弃，设置此选项后会丢弃发送错误的数据，仅在数据只有一条时才会丢弃，多余一条会不断二分。
+
+16. `ft_memory_channel`:内存管道替代磁盘管道
+
+17. `ft_long_data_discard`:丢弃大于2M的数据
+
+18. `max_disk_used_bytes`:磁盘使用总大小限制
+
+19. `max_size_per_file`:磁盘队列单个文件最大字节, 也是单个消息的最大字节。最大不超过2GB
+
+    
+
+## 配置优化说明
+
+[1~6]是普通配置，[7~19]为高级配置
+
+1 数据传输是否压缩，开启压缩会节省带宽，但是额外占用cpu资源
+
+* pandora_post_data_gzip
+
+2 容错
+
+* pandora_post_data_timeout ：对于服务端响应时间的超时设置
+* ft_的相关配置: 对于发送中进行容错处理
+
+3 负载均衡[在对端多节点的情况下]
+
+* pandora_hash_key
+* pandora_post_data_group
+
+4 发送提速
+
+* ft_strategy（concurrent）+ ft_procs（10）：对于采集器的数据源进行并发解析和发送，需要结合数据包大小和服务端响应时间设置最佳参数
+* ft_memory_channel：使用内存管道，减少磁盘读写，能够提升发送效率，但是在意外宕机等情况下有可能丢失数据
+
+> 注意：ft 是fault tolerant简称，代表错误容错发送的机制。简单说，通过内存和磁盘两种方式的缓冲队列（队列一）与发送错误的备份队列（队列二），进行容错发送。
+
+
+
+5 数据动态分派
+
+数据动态分派指的是，可以在发送数据前利用 parser 和 transform 指定系统保留字段值，Pandora 2.0 会根据系统保留字段进行数据动态处理。
+
+常用的动态分派手段包含：
+
+1. 可以通过transform 设置repo 字段，那么不同的数据会根据repo字段值，动态**发送到不同的仓库中**。
+2. 可以通过transform 设置sourcetype 字段，那么不同数据会根据sourcetype字段值，**动态进行字段解析、加速等**
+3. 可以通过transform 指定timestamp、raw字段，直接设置时间和原始日志，这样服务端就避免重复切行和时间识别
+4. 通过使用扩展字段可以为数据增加额外标签字段，这些字段会自动加速，提高查询性能
+
+## 发送数据格式参考
+
+发送数据格式：json
+
+```
+[
+    {
+        // 系统保留字段
+        "raw": "this is a log", 
+        "repo": "test_repo",
+        "sourcetype": "test_sourcetype",
+        "host": "hostname",
+        "origin": "origin",
+        "collectTime": 1582619883000,
+        "timestamp": 1582619883000,
+
+        // 用户扩展字段
+        "key1": "value1",
+        "key2": {
+            "key3": value3
+        }
+    },
+ ...
+]
+```
+
+
+
+详细内容参考：[数据打点接口文档](https://developer.qiniu.com/express/6658/post-data)
+
+
+

@@ -1,0 +1,35 @@
+# **描述**
+本接口用于停止推流，仅适用于类型为`RTMP`的空间 
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：`POST`
+* 接口路径：`/v1/namespaces/{id}/streams/{streamId}/stop`
+* 使用场景：当需要强制终止推流时，可以调用此接口；本接口可以被[禁用流](https://developer.qiniu.io/qvs/6738/disable-the-flow)替代。
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|流ID
+
+
+# **响应参数**
+无
+# **示例**
+
+**请求示例**
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/d102sni9zryu/streams/device0059/stop \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+
+**响应示例**
+
+```
+{
+  "code": 200
+}
+```

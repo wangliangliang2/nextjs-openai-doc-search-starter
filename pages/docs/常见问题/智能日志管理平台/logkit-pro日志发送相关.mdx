@@ -1,0 +1,51 @@
+> 问题描述： 如何不重不漏的高效发送日志数据 ？
+
+1. logkit-pro sender 的默认策略(`fr_stategy`) 是 数据不经过本地队列直接发送到下游（`backup_only`），一旦出现发送错误，则报错到本地队列等待重试。
+2. 如果想要加快发送速度，可以设置策略(`fr_stategy`) 为 并发发送(`concurrent`)，此时会开启多线程发送，还可以设置策略(`ft_stategy`) 为 磁盘队列缓存发送(`always_save`)，则所有数据会先发送到本地队列。两者的主要区别在于 `concurrent` 策略会直接并发发送，不经过队列。`concurrent` 和 `always_save` 都可配合 `ft_procs` 使用。
+3. 在配置了并发策略后，可以配置并发数量（`ft_procs`）， 设置为 "2"，就是开 2 个并发发送，速度就能大大提升。
+4. 如果还嫌不够快怎么办？可以用内存管道替换磁盘队列噢。但是需要说明，使用内存队列在 logkit-pro 异常退出时有丢失数据的风险。可以设置 `ft_memory_channel` 为 `true`，使用 内存队列代替磁盘队列，使得发送和数据读取解析变为异步，在发送较慢的情况下数据可以缓存在内存队列里，不阻塞数据读取和解析的过程。但是使用内存队列数据不落磁盘，会有数据丢失的风险。该功能适合与并发数量(`ft_procs`)参数配合使用，利用内存队列，异步后，在发送端多并发加速。
+
+> 问题描述： 如何发送一份数据到多个数据源？
+ 
+1. 我们推荐添加多个收集器分别发送。
+2. 也支持在一个收集器里面写多个sender，但是这样做的隐患是一个sender发送缓慢会阻塞所有的发送。
+具体如何配置请[查看文档](/insight/manual/4782/senders)
+
+
+> 问题描述： 发送到 Pandora 的数据变化怎么处理？
+
+1. 在发送到 Pandora 的过程中，如果数据字段有增加，只要配置 sender 的 `pandora_schema_free` 为 true 即可，会自动识别并更新数据源的 schema。
+2. 发送到 Pandora 的数据，类型不能被 logkit Pro 自动判别怎么办？ 此时在配置 `pandora_schema_free` 的情况下，再配置一下 `pandora_auto_create`, 只需要填写那些特殊的类型即可，比如 fieldx jsonstring，其他字段依旧可以通过 `pandora_schema_free` 自动更新。
+3. Pandora 不接受的字段名称如何处理呢？ 在 ELK 中，常见的就是 @timestamp，但是 @ 符号，Pandora 是不支持的，此时只要使用 `pandora_schema` 字段配置一下 pandora 的别名即可，如："@timestamp timestamp,..."。同样不支持的符号还包括中划线、竖线等，目前 Pandora 支持的符号是数字、字母以及下划线。 
+注意最后要填写,... 表示其他字段都要。因为 `pandora_schema` 除了别名功能以外，还支持字段的选择，如果不加",..."则表示其他字段都不选。
+
+
+> 问题描述： 发送出错的数据会被怎么处理？ 
+
+ 默认情况下会放到 `pandora_stash` 字段。如果发送出错的数据大于 2M, 会进行切片发送，切片大小为 64KB, 如果在发送出错的数据的  key value 中找到 string 类型的 value 大于 2M，则对该 string 类型的 value 进行切片，尝试发送。否则对于该 value 进行 marshal 之后进行切片，放入 `pandaora_stash` 中。进行切片的数据会自动增加 `pandora_separate_id` 记录该切片的顺序，`pandora_separate_id` 的值为 `separateId + "_" + separateDataKey + "_" + idx`，其中 `separateId` 是随机生成的值，`separateDataKey` 为该切片 value 的 key， `idx` 为该切片在原始数据中的顺序。
+
+
+>  问题描述： 使用logkit-pro发送报错? 
+> `Invalid args, argName: Schema, reason: invalid field key: @timestamp, RequestId=, failDatas size : 1`
+
+目前智能日志管理平台的字段命名规则为: 长度在1-128个字符内,支持小写字母、数字、下划线；**必须以小写字母开头**。   其中`@timestamp`包含了`@`符号，不符合要求，所以无法创建。
+
+>  问题描述： 使用logkit-pro发送报错?
+> `Invalid args, argName: Schema, reason: invalid field key: @timestamp, RequestId=, failDatas size : 1`
+
+ 目前智能日志管理平台的字段命名规则为: 长度在1-128个字符内,支持小写字母、数字、下划线；**必须以小写字母开头**。   其中`@timestamp`包含了`@`符号，不符合要求，所以无法创建。
+
+> 问题描述： 使用logkit-pro发送报错?
+> `error type conflict: key mydata old type is <string> want change to type <long>`
+
+ 目前智能日志管理平台的字段类型一旦确定将无法修改，如果您没有手动指定类型，logkit-pro 会自动根据您的数据进行推导确定，推导的方式就是按第一批数据的格式确定，如数字就确定为`long`，浮点数就确定为`float`，嵌套的类型确定为`map`，数组确定为`array`，其他为`string`。当您的后续数据与之前确定的类型出现冲突时，如之前推导为 `long`类型的字段(如`123`)，出现了一些字符串(`abc`)，那么数据就会出现这样的类型错误。
+解决该问题的方法可以在上传数据之前先确定字段的类型，在`发送到智能日志平台`中有个高级选项`以DSL语法自动创建实时仓库(pandora_auto_create)`，该选项可以在先提前确定仓库类型。
+也可以使用 `convert` 数据变换，将类型转为您希望的类型。
+
+> 问题描述：logkit-pro 发往 Pandora 数值精度丢失
+
+默认情况 logkit-pro 将数据发往七牛云智能日志平台(Pandora) 高级选项中的数字统一为 float (number_use_float) 默认为 true，会将 `long` 类型数据转换为 float 类型，大值会丢失精度，例如值为 123456789987654321 的 field 字段，最终在 Pandora 的值为 123456789987654320，丢失了精度。
+
+解决该问题的方法可以在上传数据，七牛云智能日志平台(Pandora) 的高级选项中将`数字统一为 float (number_use_float)`设置为false。
+
+	

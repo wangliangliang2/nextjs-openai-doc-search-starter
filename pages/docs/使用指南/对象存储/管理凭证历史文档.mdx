@@ -1,0 +1,76 @@
+资源管理属于敏感的操作，原则上所有资源管理操作均应在业务服务端进行。关于管理配置，<label id="Productname">七牛</label>支持的服务端语言 SDK 都已经封装好，例如资源删除、移动和复制等操作只需调用相应的方法即可，不需要手动生成管理配置的发送请求。各 SDK 的对应入口如下：
+
+- [Java](https://github.com/qiniu/java-sdk/blob/master/src/main/java/com/qiniu/util/Auth.java)
+- [Python](https://github.com/qiniu/python-sdk/blob/master/qiniu/auth.py)
+- [PHP](https://github.com/qiniu/php-sdk/blob/master/src/Qiniu/Auth.php)
+- [Go](https://github.com/qiniu/go-sdk/blob/master/storage/token.go)
+- [Node.js](https://developer.qiniu.com/kodo/sdk/1289/nodejs#private-get)
+- [C/C++](https://github.com/qiniu/c-sdk/blob/master/qiniu/rs.c)
+- [C#](https://github.com/qiniu/csharp-sdk/blob/master/src/Qiniu/Util/Auth.cs)
+- [Ruby](https://github.com/qiniu/ruby-sdk/blob/master/lib/qiniu/auth.rb)
+
+每一个资源管理请求均需在 HTTP 请求头部增加一个 Authorization 字段，其值为符合管理凭证的字符串，示例如下：
+
+```
+GET /stat/<EncodedEntryURI> HTTP/1.1
+Host: rs.qiniu.com
+Authorization: QBox <管理凭证>
+```
+
+注意： `EncodedEntryURI` 的细节请参考 [数据格式](/kodo/api/1276/data-format)
+
+管理凭证是<label id="Productname">七牛云存储</label>用于验证管理请求是否合法的机制，建议在业务服务器端使用。例如查看资源元信息、删除或移动资源等，通常需要带一个合法的管理凭证。不带凭证或带非法凭证的管理请求将返回 HTTP 错误码 401，代表认证失败。管理凭证的作用与[下载凭证](/kodo/manual/1202/download-token)类似：
+
+- 保证请求发起者拥有对目标空间的管理权限。
+- 保证服务端收到的管理请求内容未经中途篡改，具体包括代表管理动作的 URI 和该管理动作的参数信息均应未受到篡改。
+
+<a id="algorithm"></a>
+# 算法
+
+1.生成待签名的原始字符串：<br>抽取请求 URL 中 \<path\> 或 \<path\>?\<query\> 的部分与请求内容部分即 HTTP Body，用 \n 连接起来。如无请求内容，该部分必须为空字符串。**注意：** 当 Content-Type 为 application/x-www-form-urlencoded 时，签名内容必须包括请求内容。
+
+```
+signingStr = "<path>?<query>\n"
+或
+signingStr = "<path>?<query>\n<body>"
+```
+2.使用[SecertKey](https://portal.qiniu.com/user/key)对上一步生成的原始字符串计算[HMAC-SHA1](/kodo/glossary/1643/h)签名：
+
+```
+sign = hmac_sha1(signingStr, "<SecretKey>")
+```
+3.对签名进行[URL 安全的 Base64 编码](/kodo/manual/1231/appendix#urlsafe-base64)：
+
+```
+encodedSign = urlsafe_base64_encode(sign)
+```
+4.将 AccessKey 和 encodedSign 用英文符号 : 连接起来： 
+
+```
+accessToken = "<AccessKey>:<encodedSign>"
+```
+
+<a id="examples"></a>
+# 示例
+
+```
+# 假设有如下的管理请求：  
+AccessKey = "MY_ACCESS_KEY"
+SecretKey = "MY_SECRET_KEY"
+url = "http://rs.qiniu.com/move/bmV3ZG9jczpmaW5kX21hbi50eHQ=/bmV3ZG9jczpmaW5kLm1hbi50eHQ="
+
+#则待签名的原始字符串是：
+signingStr = "/move/bmV3ZG9jczpmaW5kX21hbi50eHQ=/bmV3ZG9jczpmaW5kLm1hbi50eHQ=\n"
+
+#签名字符串是：  
+sign = "157b18874c0a1d83c4b0802074f0fd39f8e47843"
+注意：签名结果是二进制数据，此处输出的是每个字节的十六进制表示，以便核对检查。
+
+#编码后的签名字符串是：
+encodedSign = "FXsYh0wKHYPEsIAgdPD9OfjkeEM="
+
+#最终的管理凭证是：  
+accessToken = "MY_ACCESS_KEY:FXsYh0wKHYPEsIAgdPD9OfjkeEM="
+```
+
+ 

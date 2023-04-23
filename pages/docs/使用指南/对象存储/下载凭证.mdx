@@ -1,0 +1,64 @@
+下载凭证是用于对私有资源下载的授权，通过授权客户端，使其具备访问指定私有资源的能力。下载私有资源的请求需要带一个合法的下载凭证。不带凭证或带非法凭证的请求将返回 HTTP 错误码 401，代表认证失败。下载公开空间资源不需要下载凭证。
+
+<a id="algorithm"></a>
+# 算法
+
+1.构造下载 URL：  
+
+```
+DownloadUrl = 'http://78re52.com1.z0.glb.clouddn.com/resource/flower.jpg'
+```
+
+2.为下载 URL 加上过期时间 e 参数，[Unix时间戳](/kodo/glossary/1647/u#unixtime)：  
+
+```
+DownloadUrl = 'http://78re52.com1.z0.glb.clouddn.com/resource/flower.jpg?e=1451491200'
+```
+
+3.对上一步得到的 URL 字符串计算[HMAC-SHA1](/kodo/glossary/1643/h#hmac-sha1)签名（假设访问密钥（AK/SK）是 **MY_SECRET_KEY**），并对结果做[URL 安全的 Base64 编码](/kodo/manual/1231/appendix#urlsafe-base64)：
+
+```
+Sign = hmac_sha1(DownloadUrl, 'MY_SECRET_KEY')
+EncodedSign = urlsafe_base64_encode(Sign)
+```
+
+4.将访问密钥（AK/SK）（假设是 **MY_ACCESS_KEY**）与上一步计算得到的结果用英文符号 : 连接起来：
+
+```
+Token = 'MY_ACCESS_KEY:438dd8pXocjYuF-6dTcKMtETB2g='
+```
+
+5.将上述 **Token** 拼接到含过期时间参数 e 的 **DownloadUrl** 之后，作为最后的下载 URL：  
+
+```
+RealDownloadUrl = 'http://78re52.com1.z0.glb.clouddn.com/resource/flower.jpg?e=1451491200&token=MY_ACCESS_KEY:438dd8pXocjYuF-6dTcKMtETB2g='
+```
+
+**RealDownloadUrl** 即为下载对应私有资源的可用 URL (带有参数的情况下,需要将query一起进行签名)，并在指定时间后失效。失效后，可按需要重新生成下载凭证。 
+
+**注意**：
+
+- 为确保客户端、业务服务器和<span id="Productname">七牛</span>服务器对于授权截止时间的理解保持一致，需要同步校准各自的时钟。频繁返回 401 状态码时请先检查时钟同步性与生成 e 参数值的代码逻辑。  
+- token 必须放在请求的最后，token 之后的参数会被忽略。以请求 `http://test.cinem.net/aaaa.jpg?e=1778754963&token=sQvk4AXf0rEkzcytkr...XjI0M:zwvwiM0wsMBRj46xcby05U=&attname=geral_TS-PFS3010-8ET`为例,此时`attname=geral_TS-PFS3010-8ET`会被忽略，并不生效。
+- 对于包含中文或其它非英文字符的 Key，需要做到以下两点：  
+    - Key 本身要做 UTF-8 编码
+    - 为 URL 签名之前，对 Path 部分（不含前导 / 符号，通常就是 Key 本身，即上例中的 resource/flower.jpg）做一次[URL 安全的 Base64 编码](/kodo/manual/1231/appendix#urlsafe-base64)。
+
+<a id="download-token-samples"></a>
+# 示例
+
+下载凭证不需要单独生成，<span id="Productname">七牛</span>支持的服务端语言 SDK 都提供了生成完整下载私有资源 URL 的方法（包含下载凭证），各 SDK 的对应入口如下：
+
+
+- [Java](https://github.com/qiniu/java-sdk/blob/master/src/main/java/com/qiniu/util/Auth.java)
+- [Python](https://github.com/qiniu/python-sdk/blob/master/qiniu/auth.py)
+- [PHP](https://github.com/qiniu/php-sdk/blob/master/src/Qiniu/Auth.php)
+- [Go](https://github.com/qiniu/go-sdk/blob/master/storage/token.go)
+- [Node.js](https://developer.qiniu.com/kodo/sdk/1289/nodejs#private-get)
+- [C/C++](https://github.com/qiniu/c-sdk/blob/master/qiniu/rs.c)
+- [C#](https://github.com/qiniu/csharp-sdk/blob/master/src/Qiniu/Util/Auth.cs)
+- [Ruby](https://github.com/qiniu/ruby-sdk/blob/master/lib/qiniu/auth.rb)
+
+
+
+ 

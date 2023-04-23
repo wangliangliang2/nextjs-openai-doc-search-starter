@@ -1,0 +1,38 @@
+服务器概览为机器/机器组的整体监控情况提供一个查看入口，帮助用户快速了解机器的资源使用情况、机器的状态（在线、离线）以及整体报警情况。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/service-monitor2.png)
+
+## **监控机器/机器组**
+
+通过筛选可选择查看机器组或者指定某台机器的资源使用情况、报警事件、机器状态。
+
+* 监控机器组
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/monitor_group.png)
+
+* 监控机器
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/monitor_machine.png)
+
+## **资源使用概览**
+
+服务监控为您内置 CPU 使用情况、内存使用情况、磁盘使用情况、网络流量、负载这五种服务器资源的监控视图，视图包括以下两种：
+
+* 单值图：通过单值图一眼看出资源使用量，并支持排序方便您迅速找出资源消耗最大的机器；
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/order.png)
+
+* 时序折线图：通过指标的时序折线图查看资源异常，定位异常发生的时间点。若监控的是机器组，可以对比不同机器的资源使用情况，全局分析异常影响面。
+
+![](https://pandora-kibana.qiniu.com/service_monitoring/time_line.png)
+
+## **报警事件概览**
+
+通过服务器概览查看当前机器/机器组的报警事件分布情况：警告事件、错误事件、致命事件分别有多少。
+
+![](https://pandora-kibana.qiniu.com/monitor_alert.png)
+
+## **服务器状态概览**
+
+服务器状态概览主要用于监控机器集群中机器的在线/离线数量。
+

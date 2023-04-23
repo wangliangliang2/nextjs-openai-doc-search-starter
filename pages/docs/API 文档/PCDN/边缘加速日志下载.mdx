@@ -1,0 +1,160 @@
+日志下载接口可以查询域名日志列表，获取日志的下载外链，只提供 30 个自然日内的日志下载，例如当前日期为 2016-08-31，则只提供 2016-08-01 ~ 2016-08-30 的日志。
+
+日志文件默认按小时下载，如果单小时内日志过大会进行切分(分片大小128MB)，日志文件采用gzip压缩。
+日志大概延迟6小时，举例：1月18日0点-1点的日志，会在1月18日8点-10点左右可下载。 
+
+<a id="access-domain"></a>
+# 访问域名
+```
+Host: fusion.qiniuapi.com
+```
+
+<a id="interface-address"></a>
+# 接口地址
+```
+/v2/tune/pcdnlog/list
+```
+
+<a id="log-authenticated"></a>
+# 认证授权
+
+```
+Authorization: <access_token>
+```
+access_token 详细描述请查阅[这里](/kodo/manual/access-token)。
+
+<a id="log-request-message"></a>
+# 请求报文
+
+<a id="log-request-syntax"></a>
+## 请求语法
+```
+POST /v2/tune/pcdnlog/list HTTP/1.1
+Content-Type: application/json
+
+{
+    "day":<Day>,
+    "domains": <Domains>
+}
+```
+
+<a id="log-request-body"></a>
+## 请求内容
+
+| 参数          | 类型     | 必须   | 描述               |
+|---------- | ----- | --- | --------------- |
+| `Day`     | string | 是    | 日期，例如 2016-07-01 |
+| `Domains` | string | 是    | 域名列表，以英文分号 ; 分割  |
+
+<a id="log-response-message"></a>
+# 响应报文
+
+<a id="log-response-status"></a>
+## 响应状态码
+
+|HTTP状态码|含义|说明|
+| :-------| :--------| :--------|
+|200 | success | 成功 |
+|400 | invalid params | 请求参数格式错误 |
+|401 | bad token | 认证授权失败（包括密钥信息不正确；数字签名错误；授权已超时）|
+|400032 | invalid host | 请求中存在无效的域名，请确保域名格式正确 |
+|500000 | internal error | 服务器内部错误 |
+
+<a id="log-response-body"></a>
+## 响应内容
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "code":<Code>,
+    "error": <Error>,
+    "data": {
+            ...
+            <Domain_i>:[
+                ...
+                {   
+                    "name":<Name>,
+                    "size":<Size>,
+                    "mtime":<Mtime>,
+                    "url":<Url>,
+                },
+                ...
+            ],
+            ...
+    }
+}
+```
+
+参数    |     类型        |说明        
+:----- |:------------ |:------------- |
+Code | int | HTTP 状态码，整型，见[响应状态码](#log-response-status)
+Error | string |自定义错误码描述，字符串 
+data | map| 日志数据  
+Domain_i | string | 域名，字符串
+Domain_i_Name | string| 文件名，字符串
+Domain_i_Size | int64| 文件大小，单位为 Byte
+Domain_i_Mtime | int64| 文件修改时间，Unix 时间戳
+Domain_i_Url | string| 下载链接，字符串
+
+<a id="log-samples"></a>
+# 示例
+
+<a id="log-request-sample"></a>
+## 请求示例
+
+```
+POST http://fusion.qiniuapi.com/v2/tune/pcdnlog/list HTTP/1.1
+Content-Type: application/json
+
+{
+    "day":"2016-07-01",
+    "domains": "log-test1.qiniu.com;log-test2.qiniu.com"
+}
+```
+ 
+<a id="log-response-sample"></a>
+## 响应示例
+ 
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "data": {
+        "log-test1.qiniu.com": [
+            {
+                "name":"log-test1.qiniu.com_2016-07-01-00_00.gz",
+                "size": 88490306,
+                "mtime": 1466274440,
+                "url": "http://fusionlog.qiniu.com/log-test1.qiniu.com_2016-07-01-00_00.gz?e=1561008052&token=557TpseUM8ovpfUhaw8gfa2DQ0104ZScM-BTIcBx:8AUwyRCO6nwb8vTH_LNKg4016Ec"
+            }
+        ],
+        "log-test2.qiniu.com": [
+            {
+                "name":"log-test2.qiniu.com_2016-07-01-00_00.gz",
+                "size": 73280873,
+                "mtime": 1466273259,
+                "url": "http://fusionlog.qiniu.com/log-test2.qiniu.com_2016-07-01-00_00.gz?e=1561008052&token=336DepseUM8ovpfUhaw8gfa2DQ0104ZScM-BTIcBx:8AUwyRCO6nwb8vTH_LNKg3879Wd"
+            }
+        ]
+    }
+}
+```
+<a id="download-log-tool"></a>
+
+# 日志格式
+```
+访问时间 访问类型 URL 持续时长边缘加速流量 CDN流量
+[09/May/2020:15:22:04 +0800] vod "http://vod.qiniu.com/niuxiaoqi.ts" 60000 18358142 0
+```
+
+|描述|说明|示例|
+| :-------| :--------| :--------|
+|访问时间 | 记录客户端开始访问URL的时间 | [09/May/2020:15:22:04 +0800] |
+|访问类型 | vod：点播类型；download：下载类型 | vod |
+|URL | 记录客户发起访问的URL | "http://vod.qiniu.com/niuxiaoqi.ts" |
+|持续时长 | 访问从发起时到结束所持续的时长，单位毫秒 | 60000 |
+|边缘加速流量 | 记录该条URL访问时所使用的p2p流量，单位字节 | 18358142 |
+|CDN流量 | 记录该条URL访问时所使用的CDN流量，单位字节(参考数值，不作为CDN计费依据) | 0 |

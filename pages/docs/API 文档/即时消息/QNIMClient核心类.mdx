@@ -1,0 +1,237 @@
+# QNIMClient Class Reference
+
+| Inherits from | NSObject    |
+| ------------- | ----------- |
+| Declared in   | QNIMClient.h |
+
+### - signUpNewUser:password:completion:
+注册新用户，username和password是必填参数
+
+		- (void)signUpNewUser:(NSString *)_userName_ password:(NSString *)_password_ completion:(void ( ^ ) ( QNIMUserProfile *profile , QNIMError *error ))aCompletionBlock
+
+#### Parameters
+
+| userName         | 用户名                                                       |
+| ---------------- | ------------------------------------------------------------ |
+| password         | 密码                                                         |
+| aCompletionBlock | 注册成功后从该函数处获取新注册用户的Profile信息，初始传入指向为空的shared_ptr对象即可。 |
+
+#### Discussion
+
+注册新用户，username和password是必填参数。
+
+#### Declared In
+
+`QNIMClient.h`
+
+### - signInByName:password:completion:
+
+通过用户名登录
+
+	- (void)signInByName:(NSString *)_userName_ password:(NSString *)_password_ completion:(void ( ^ ) ( QNIMError *error ))aCompletionBlock
+
+#### Discussion
+
+通过用户名登录
+
+#### Declared In
+
+`QNIMClient.h`
+
+### - signInById:password:completion:
+
+通过用户ID登录
+
+	- (void)signInById:(long long)userId password:(NSString *)password completion:(void ( ^ ) ( QNIMError *error ))aCompletionBlock
+
+#### Discussion
+
+通过用户ID登录
+
+
+
+#### Declared In
+
+`QNIMClient.h`
+
+
+
+### - signInById:withToken:completion:
+
+通过用户ID和token登录
+
+	- (void)signInById:(long long)_userId_ withToken:(NSString *)_token_ completion:(void ( ^ ) ( QNIMError *error ))_aCompletionBlock_
+
+#### Discussion
+
+通过用户ID和token登录
+
+#### Declared In
+
+`QNIMClient.h`
+
+### - fastSignInByName:password:completion:
+
+通过用户名自动登录（要求之前成功登录过，登录速度较快）
+
+	- (void)fastSignInByName:(NSString *)_name_ password:(NSString *)_password_ completion:(void ( ^ ) ( QNIMError *error ))_aCompletionBlock_
+
+#### Discussion
+
+通过用户名自动登录（要求之前成功登录过，登录速度较快）
+
+
+
+#### Declared In
+
+`QNIMClient.h`
+
+### - fastSignInById:password:completion:
+
+通过用户ID自动登录（要求之前成功登录过，登录速度较快）
+
+	- (void)fastSignInById:(long long)_uid_ password:(NSString *)_password_ completion:(void ( ^ ) ( QNIMError *error ))_aCompletionBlock_
+
+#### Discussion
+
+通过用户ID自动登录（要求之前成功登录过，登录速度较快）
+
+#### Declared In
+
+`QNIMClient.h`
+
+### - signOutID:ignoreUnbindDevice:completion:
+
+退出登录
+
+	- (void)signOutID:(NSInteger)_userID_ ignoreUnbindDevice:(BOOL)_ignoreUnbindDevice_ completion:(void ( ^ ) ( QNIMError *error ))_aCompletionBlock_
+
+#### Discussion
+
+退出登录
+
+
+
+#### Declared In
+
+`QNIMClient.h`
+
+### - signInStatus
+
+获取当前的登录状态
+
+	- (QNIMSignInStatus)signInStatus
+
+#### Discussion
+
+获取当前的登录状态
+
+#### Declared In
+
+`QNIMClient.h`
+
+### - connectStatus
+
+获取当前和服务器的连接状态
+
+	- (QNIMConnectStatus)connectStatus
+
+#### Discussion
+
+获取当前和服务器的连接状态
+
+#### Declared In
+
+`QNIMClient.h`
+
+### - networkDidChangedType:reconnect:
+
+处理网络状态发送变化
+
+	- (void)networkDidChangedType:(QNIMNetworkType)_type_ reconnect:(BOOL)_reconnect_
+
+#### Parameters
+
+| type      | 变化后的网络类型 |
+| --------- | ---------------- |
+| reconnect | 网络是否需要重连 |
+
+#### Discussion
+
+处理网络状态发送变化
+
+#### Declared In
+
+`QNIMClient.h`
+
+### - reconnect
+
+强制重新连接
+
+	- (void)reconnect
+
+#### Discussion
+
+强制重新连接
+
+#### Declared In
+
+`QNIMClient.h`
+
+
+
+### - disConnect
+
+断开网络连接
+
+	- (void)disConnect
+
+#### Discussion
+
+断开网络连接
+
+
+
+#### Declared In
+
+`QNIMClient.h`
+
+### - changeAppID:completion:
+
+更改SDK的appId，本操作会同时更新QNIMConfig中的appId。
+
+	- (void)changeAppID:(NSString *)_appID_ completion:(void ( ^ ) ( QNIMError *error ))_aCompletionBlock_
+
+#### Parameters
+
+| appID              | 新变更的appId |
+| ------------------ | ------------- |
+| _aCompletionBlock_ | 回调          |
+
+#### Discussion
+
+更改SDK的appId，本操作会同时更新QNIMConfig中的appId。
+
+#### Declared In
+
+`QNIMClient.h`
+
+### - initializeServerConfig:
+
+获取app的服务器网络配置，在初始化SDK之后登陆之前调用，可以提前获取服务器配置加快登陆速度。
+
+	- (void)initializeServerConfig:(BOOL)isLocal
+
+#### Parameters
+
+| isLocal | 为true则使用本地缓存的dns配置，为false则从服务器获取最新的配置。 |
+| ------- | ------------------------------------------------------------ |
+|         |                                                              |
+
+#### Discussion
+
+获取app的服务器网络配置，在初始化SDK之后登陆之前调用，可以提前获取服务器配置加快登陆速度。
+
+#### Declared In
+
+`QNIMClient.h`

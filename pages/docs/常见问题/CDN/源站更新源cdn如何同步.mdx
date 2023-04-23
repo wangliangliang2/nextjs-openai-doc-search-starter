@@ -1,0 +1,27 @@
+# 情景一 cdn的源站是七牛的情况下
+模式是这样的  
+ 
+<img src="https://dn-odum9helk.qbox.me/FnluCu7R_kQ3mTvwAqAQyWVUxqrB" width=800 />
+
+![](https://dn-odum9helk.qbox.me/FhJZUDN-12nhtzVPxakrA9-2TP_y)
+
+![](https://dn-odum9helk.qbox.me/FsQeKLjezlkZislSGhUDLWGmxbMw)
+
+
+* 首先 资源的读取的情况是这样的  客户端访问时候先从 cdn 拉取资源 如果 cdn 存在缓存那么资源直接从 cdn 返回给客户端 
+* 其次 客户端从 cdn 没有拉到资源那么就会从七牛的存储空间拉取资源
+* 最后 如果七牛空间和 cdn 都不存在资源那么 客户端就会从客户的源站拉取资源
+ 
+这个是源站回源到七牛情况，所以客户源站资源的更新需要先把七牛空间的资源 [删除https://portal.qiniu.com/bucket/apple/resource) 再刷新下[ cdn 缓存](https://portal.qiniu.com/domain/refresh)  这样客户端访问才会直接打回到客户的源站取最新资源。
+ 
+ 
+# 情景二 cdn源站直接指向自己域名或ip
+ 
+<img src="https://dn-odum9helk.qbox.me/Fv_iROXoCJXp-y14zoF4lt6zh9tE" width=800 />
+
+![](https://dn-odum9helk.qbox.me/FqmaPPSbkjOFHpT0XcMBbd7pilxN)
+
+* 首先 资源的读取的情况是这样的  客户端访问时候先从cdn 拉取资源 如果cdn存在缓存那么资源直接从cdn返回给客户端 
+* 最后 如果七牛空间和cdn 都不存在资源那么 客户端就会从客户的源站拉取资源
+ 
+这个是源站回源到客户自己域名或ip，所以客户源站资源的更新  刷新下 [cdn 缓存](https://portal.qiniu.com/domain/refresh)  这样客户端访问才会直接打回到客户的源站取最新资源

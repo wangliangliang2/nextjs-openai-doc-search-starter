@@ -1,0 +1,95 @@
+数据立方是对大规模的实时数据进行分析查询的 OLAP 数据库系统，通过直接拉取实时仓库的数据进行预聚合，有效地提高了查询的性能，降低存储的成本。
+
+使用数据立方分析实时数据的步骤如下：
+
+**前提：通过 logkit Pro 发送数据到实时仓库，请参考 [Nginx 日志采集](/insight/manual/4679/nginx-log-collection)**
+
+**步骤 1.创建数据立方实例**
+
+**步骤 2.分析数据立方实例的数据**
+
+# **创建数据立方实例**
+
+1.进入智能日志平台[**数据立方管理页面**](https://portal.qiniu.com/insight/cube/list)，点击右上角添加按钮创建一个数据立方实例。
+
+![](https://pandora-kibana.qiniu.com/data_cube/create_datacube.png)
+
+您需要首先在数据立方管理页面创建一个数据立方实例，填写数据立方的来源仓库（实时仓库）、预聚合时间过滤字段、时间聚合粒度、筛选维度、统计指标等信息，说明如下：
+
+2.填写以下信息。
+
+  - 基本属性：
+  
+    - 名称：为数据立方实例设置一个名字，用数据立方分析的时候选择立方名即可。
+
+    - 实时仓库：选择要分析的数据所在的实时仓库，数据立方将从实时仓库拉取最新数据对数据预聚合。
+
+    - 时间字段：选择预聚合的时间字段，此字段名称将在数据立方中被重命名为 __time。
+
+    - 聚合窗口：此时间聚合窗口为对数据进行预聚合计算的最细粒度，创建完成后不能使用更细时间粒度进行分析计算。
+
+    - 存储时限：数据存储在数据立方中的时间限制，过期的数据将被删除。
+
+    - 数据起始位置：从实时仓库最老/最新的数据开始消费，注意当数据在实时导入或者历史数据量过大的时候不推荐采用最老消费的方式。    
+
+![](https://pandora-kibana.qiniu.com/datacube/attribute1.png)
+
+  - 维度：您在分析时用到的过滤和分组字段，支持`字符串类型`、`数值类型`和`布尔类型`的字段，默认为您选择字符串类型的字段，若需要添加或者替换为其他类型的字段，您可以手动添加/删除。
+
+![](https://pandora-kibana.qiniu.com/data_cube/dimension.png)
+
+  - 统计指标：可以按维度（分组字段）和时间窗口对字段进行求和、去重计数、求最大值、最小值等预聚合计算（类似于对日志仓库的数据配置可视化图表时的统计指标），数据立方实例默认为您创建数值类型字段的求和指标以及计数指标，若需要修改，可以手动添加/编辑/删除。
+
+![](https://pandora-kibana.qiniu.com/data_cube/metric.png)
+
+![](https://pandora-kibana.qiniu.com/data_cube/add_metric.png)
+
+`注意：`创建数据立方时定义的维度与指标限制了分析时可筛选的维度与统计指标，且数据立方一旦创建完成不可修改，您在创建时需要考虑好自己的分析需求。
+ 
+   - 日志预过滤：在高级设置里可预先对实时日志进行过滤，选择字段，填写需要过滤的字段值即可。支持正选、排除、正则、包含逻辑。
+   
+	 ![](https://pandora-kibana.qiniu.com/cube/transform.png?ref=developer.qiniu.com)
+ 
+# **实时数据分析**
+
+在[数据立方分析报表](http://portalv4.dev.qiniu.io/insight/cube/analysis)页面选择数据立方实例、筛选条件（可选、可添加多个）、时间范围即可对数据进行多维度分析。
+
+1.在分析数据之前，可先使用字段过滤功能缩小查询范围。
+
+![](https://pandora-kibana.qiniu.com/datacube/filtering.png)
+
+2.配置分组字段和指标对数据立方的数据进行统计分析，如：
+
+- 统计每天的日志总数，选择图表类型为单值图，指标为 count，根据 _time 时间字段分组。在样式设置里开启时序折线图。
+
+![](https://pandora-kibana.qiniu.com/data_cube/single_value.png)
+
+- 分析按 machine 字段分组的 bytes_sent 总和，选择图表类型为柱状图，添加 _time 和 machine 两个分组字段，指标选择 bytes_sent_sum。
+
+![](https://pandora-kibana.qiniu.com/data_cube/bytes_sent1.png)
+
+`注意：`这里选择的指标已经在原始字段的基础上进行了预聚合，即 bytes_sent_sum 指标的意义为：对 bytes_sent 字段求和，在创建立方时我们给它重命名为 bytes_sent_sum。
+
+3.允许对指标进行数值计算，计算对象支持预聚合的指标或者具体数值，如：
+
+- 统计全部事件的平均响应时间，选择图表类型为单值图，指标添加 count(日志计数)、responsetime(预聚合响应时间总和)，添加 _time 分组字段，并且添加数值运算条件：
+
+![](https://pandora-kibana.qiniu.com/cube/example_3.png)
+
+在样式设置里设置当前显示指标为 avgt。
+
+![](https://pandora-kibana.qiniu.com/cube/metric_display.png)
+
+注：这里的 `“/10000”` 运算是将时间单位换算成 ms。
+
+每种图表类型配置指标与分组字段生成图表的方式与日志分析的可视化一致，详情阅读[报表说明](/insight/manual/4692/reports-and-dashboards)。
+
+4.支持将图表添加到仪表盘，对图表进行统一监控。
+
+![](https://pandora-kibana.qiniu.com/datacube/dashboard.png)
+
+
+
+
+
+

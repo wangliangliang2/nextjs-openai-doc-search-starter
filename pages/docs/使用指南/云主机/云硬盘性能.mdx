@@ -1,0 +1,31 @@
+本文介绍不同类型的块存储的性能衡量指标以及性能规格，包括云盘和本地盘。
+
+
+
+# **性能指标**
+衡量块存储产品的性能指标主要包括 IOPS、吞吐量和访问时延。部分块存储产品对容量也有要求，例如不同性能等级的 ESSD 云盘对应的容量范围不同。
+
+- **IOPS（Input/Output Operations per Second）**
+IOPS指每秒能处理的I/O个数，表示块存储处理读写（输出/输入）的能力，单位为次。如果您需要部署事务密集型应用，例如数据库类应用等典型场景，需要关注IOPS性能。其中，只有挂载到I/O优化的实例时，SSD云盘才能获得期望的IOPS性能。挂载到非I/O优化的实例时，SSD云盘无法获得期望的IOPS性能。 常用的IOPS指标包括顺序操作和随机操作，如下表所示。
+<table><thead><tr><th>指标</th><th>描述</th><th>数据访问方式</th></tr></thead><tbody><tr><td>总IOPS</td><td>每秒执行的I/O操作总次数</td><td>对硬盘存储位置的不连续访问和连续访问</td></tr><tr><td>随机读IOPS</td><td>每秒执行的随机读I/O操作的平均次数</td><td rowspan="2">对硬盘存储位置的不连续访问</td></tr><tr><td>随机写IOPS</td><td>每秒执行的随机写I/O操作的平均次数</td></tr><tr><td>顺序读IOPS</td><td>每秒执行的顺序读I/O操作的平均次数</td><td rowspan="2">对硬盘存储位置的连续访问</td></tr><tr><td>顺序写IOPS</td><td>每秒执行的顺序写I/O操作的平均次数</td></tr></tbody></table>
+
+
+- **吞吐量（Throughput）**
+吞吐量是指单位时间内可以成功传输的数据数量，单位为 MB/s。如果您需要部署大量顺序读写的应用，例如 Hadoop 离线计算型业务等典型场景，需要关注吞吐量。
+
+- **访问时延（Latency）**
+访问时延是指块存储处理一个I/O需要的时间，单位为s、ms或者μs。过高的时延会导致应用性能下降或报错。
+如果您的应用对高时延比较敏感，例如数据库应用，建议您使用ESSD云盘、SSD云盘或本地SSD盘类产品。
+如果您的应用偏重数据吞吐能力，对时延相对不太敏感，例如Hadoop离线计算等吞吐密集型应用，建议您使用d1或d1ne大数据型实例规格包含的SATA HDD本地盘产品。
+
+- **容量（Capacity）**
+容量是指存储空间大小，单位为TiB、GiB、MiB或者KiB。块存储容量按照二进制单位计算，表示1024进位的数据大小，例如，1GiB=1024MiB。
+
+容量无法衡量块存储性能，但对于存储设备而言，不同的容量能达到的性能不同。容量越大，存储设备的数据处理能力越强。相同类型块存储产品的单位容量的I/O性能均一致，但云盘性能随容量增长而线性增长，直至达到该类型块存储的单盘性能上限。ESSD云盘在不同容量范围内还能选择不同的性能等级。
+
+# **云盘性能**
+四种类型云盘的性能对比如下表所示。
+<table><thead><tr><th>性能类别</th><th colspan="4">ESSD云盘</th><th>SSD云盘</th><th>高效云盘</th></tr></thead><tbody><tr><td>性能级别PL（Performance Level）</td><td>PL3</td><td>PL2</td><td>PL1</td><td>PL0</td><td>无</td><td>无</td></tr><tr><td>单盘最大容量（GiB）</td><td>1261~32768</td><td rowspan="2">461~32768</td><td>20~32768</td><td>40~32768</td><td>32768</td><td>32768</td></tr><tr><td>最大IOPS</td><td>1000000</td><td>50000</td><td>10000</td><td>25000 </td><td>5000</td></tr><tr><td>最大吞吐量（MB/s）</td><td>4000</td><td rowspan="2">750</td><td>350</td><td>180</td><td>300 </td><td>140</td></tr><tr><td>单盘IOPS性能计算公式 </td><td>min{1800+50*容量, 1000000}</td><td>min{1800+50*容量, 50000}</td><td>min{ 1800+12*容量, 10000 }</td><td>min{1800+30*容量, 25000}</td><td>min{1800+8*容量, 5000}</td></tr><tr><td>单盘吞吐量性能计算公式（MB/s） </td><td>min{120+0.5*容量, 4000}</td><td>min{120+0.5*容量, 750}</td><td>min{120+0.5*容量, 350}</td><td>min{100+0.25*容量, 180}</td><td>min{120+0.5*容量, 300}</td><td>min{100+0.15*容量, 140}</td></tr><tr><td>数据可靠性</td><td>99.9999999%</td><td>99.9999999%</td><td>99.9999999%</td><td>99.9999999%</td><td>99.9999999%</td><td>99.9999999%</td></tr><tr><td>单路随机写访问时延（ms）</td><td colspan="3">0.2</td><td>0.3~0.5</td><td>0.5~2</td><td>1~3</td></tr><tr><td>API名称</td><td colspan="4">cloud_essd</td><td>cloud_ssd</td><td>cloud_efficiency</td></tr><tr><td>应用场景</td><td colspan="4">大型OLTP数据库：如MySQL、PostgreSQL、Oracle、SQL Server等关系型数据库<br>NoSQL数据库：如MongoDB、HBase、Cassandra等非关系型数据库<br>ElasticSearch分布式日志：ELK（Elasticsearch、Logstash和Kibana）日志分析等</td><td>I/O密集型应用<br>中小型关系数据库<br>NoSQL数据库</td><td>开发与测试业务<br>系统盘</td></tr></tbody></table>
+
+SSD云盘的性能因数据块大小而异，数据块越小，吞吐量越小，IOPS越高，如下表所示。
+<table><thead><tr><th>数据块大小（KiB）</th><th>IOPS最大值</th><th>吞吐量（MB/s）</th></tr></thead><tbody><tr><td>4</td><td>约25000</td><td>约100</td></tr><tr><td>16</td><td>约17200</td><td>约260</td></tr><tr><td>32</td><td>约9600</td><td>约300</td></tr><tr><td>64</td><td>约4800</td><td>约300</td></tr></tbody></table>

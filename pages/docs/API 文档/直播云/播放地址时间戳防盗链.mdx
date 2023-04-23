@@ -1,0 +1,74 @@
+播放防盗链可以有效避免直播资源被非法盗用的问题。使用播放防盗链前需要在域名配置中开启时间戳防盗链功能并设置防盗链 key。
+
+在开启时间戳防盗链并使用防盗链地址访问七牛直播节点时，七牛直播节点会用同样的算法来计算访问链接是否合法，只有在合法时才返回所要访问的资源，否则返回403 Forbidden。
+
+# 防盗链地址生成方法
+
+生成防盗链地址的方法是在播放域名上设置`时间戳防盗链 key`，并将经过计算得到的`加密字符串 sign` 和`访问过期时间 t` 拼接在相应域名的播放地址之后，生成完整的时间戳防盗链地址。
+
+以HLS播放地址为例，开启了时间戳防盗链的播放地址格式如下：
+
+```
+http://<HLSPlayDomain>/<Hub>/<streamTitle>.m3u8?sign=<md5(key+path+t).to_lower()>&t=<hex(time).to_lower()>
+```
+
+各协议防盗链播放地址格式可见：
+
+[RTMP播放地址](/pili/api/2768/rtmp-broadcast-address)
+
+[HLS播放地址](/pili/api/2769/hls-broadcast-address)
+
+[HDL(HTTP-FLV)播放地址](/pili/api/2770/hdl-http-flv-broadcast-address)
+
+**具体生成方法如下：**
+
+## 开启时间戳防盗链并获取防盗链key
+
+- 登录控制台，进入目标直播空间的域名管理页面
+- 点击相应播放域名的管理按钮，进入域名配置页面，开启时间戳防盗链配置开关，并设置主密钥和副秘钥。
+
+## 确定过期时间
+
+生成的时间戳防盗链播放地址在过期时间前有效，可以正常访问，在过期时间后失效。防盗链地址中的 t 即为过期时间的unix时间戳经过16进制转换后得到的值，其中字母需要小写。
+
+例如，若选择2021/10/25 20:00:00为过期时间，则其unix时间戳为1635163200，经过16进制转换后，得到 `t=61769c40`。
+
+## 计算加密字符串 sign
+
+计算 sign 需要前面设置的防盗链key、访问地址中的path部分和过期时间t，计算方法为：
+
+```
+sign=md5(key+path+t).to_lower()
+```
+
+与 `t` 相同，`sign` 中的字母也需要小写。
+
+# 示例
+
+若一个未开启时间戳防盗链的HLS播放地址为
+
+```
+http://pili-hls.pilitest.com/testHub/testStream.m3u8
+```
+
+在开启时间戳防盗链后，设置的防盗链key为test。
+
+若需要生成过期时间为2021/10/25 20:00:00（UNIX时间戳为1635163200）的防盗链地址，则
+
+```
+key=test
+path=/testHub/testStream.m3u8
+t=hex(1635163200).to_lower()=61769c40
+```
+
+所以
+
+```
+sign=md5(key+path+t).to_lower()=md5(test/testHub/testStream.m3u861769c40).to_lower()=86ccb64b114f599e14eb660de7a813a5
+```
+
+将 `sign` 和 `t` 拼接在未开启时间戳防盗链的HLS播放地址之后，得到最终的防盗链播放地址：
+
+```
+http://pili-hls.pilitest.com/testHub/testStream.m3u8?sign=86ccb64b114f599e14eb660de7a813a5&t=61769c40
+```

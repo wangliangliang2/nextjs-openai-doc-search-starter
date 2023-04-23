@@ -1,0 +1,111 @@
+本文档以 Nginx 日志为例，介绍如何使用日志分析服务来分析 Nginx 日志中的各种指标。
+
+许多个人站长选取了 Nginx 作为服务器搭建网站，在对网站访问情况进行分析时，需要对 Nginx 访问日志统计分析，从中获取网站的访问量、访问时段等信息。传统模式下利用 CNZZ 等方式，在前端页面插入 js，用户访问的时候触发 js，但仅能记录访问请求，像 ajax 之类的请求无法记录，还有爬虫信息也不会记录。或者利用流计算、离线统计分析 Nginx 的访问日志，但需要搭建一套环境，并且在实时性以及分析灵活性上难以平衡。
+
+智能日志平台支持大规模的日志搜索分析，支持配置报表可视化呈现分析结果，并将分析结果保存到仪表盘（Dashboard），极大的降低了 Nginx 访问日志的分析复杂度，可以用于便捷统计网站的访问数据，降低了站长们分析 Nginx 日志的门槛。
+
+# **步骤1:采集 Nginx 日志**
+
+通过 logkit-pro 采集 Nginx 日志到日志分析平台。参考[采集 Nginx 日志](/insight/manual/4679/nginx-log-collection)。
+
+# **步骤2:查询分析**
+
+进入[智能日志平台搜索页面](https://portal.qiniu.com/insight/logdb/overview)，开始搜索分析 Nginx 日志内容。
+
+1.可以通过输入搜索条件对日志进行简单的过滤分析。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/nginx%20%281%29.png)
+
+2.切换日志搜索结果到可视化 tab，通过配置报表对日志内容进行更全面深入的分析。
+
+如：
+
+分析过去 1 小时的 UV（即独立 IP 访问总数）：选择图表类型为折线图，指标为 remote_addr（客户端 IP 地址）的去重计数，根据时间字段分组：
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/uv.png)
+
+点击`添加到仪表盘`，输入仪表盘名称和此图表名称，将图表加入指定仪表盘。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/export_to_dashboard.png)
+
+分析 PV（即请求总数）:选择图表类型为折线图，指标为计数，根据时间字段分组。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/pv.png)
+
+分析 ip 来源分布:选择图表类型为饼图，指标为计数，分组字段为 remote_addr。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/ip.png)
+
+分析最近 5 分钟各种请求的占比:选择图表类型为饼图，指标为计数，分组字段为 request。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/request%20%282%29.png)
+
+分析最近 1 小时各种 http 状态码的占比：选择图表类型为饼图，选择指标为计数，分组字段为 status。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/status.png)
+
+分析最近一天访问 PV 前 5 的来源信息：选择图表类型为柱状图，选择指标为计数，分组字段为 http_referer（来源地址）。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/pv5.png)
+
+最近一小时用户来源浏览器的占比情况:选择图表类型为饼图，指标为计数，分组字段为http_user_agent(浏览器相关信息)。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/user_agent.png)
+
+除了一些默认的访问指标外，站长常常还需要对一些访问请求进行诊断，查看一下处理请求的请求时间如何，哪些页面的请求时间比较大。
+
+每 5 分钟的平均请求时间和最大请求时间，从整体上了解请求时间:
+
+ - 选择图表类型为折线图，指标为 request_time 的平均值，按照时间字段分组，以 5 分钟的粒度聚合：
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/every5rt.png)
+
+ - 选择图表类型为折线图，指标为 request_time 的最大值，按照时间字段分组，以 5 分钟的粒度聚合：
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/biggestrt.png)
+
+知道了最大请求时间之后，需要明确最大请求时间对应的请求来源，以方便进一步优化页面响应。
+
+选择图表类型为柱状图，指标为 request_time 的最大值，分组字段为 request。找出最大请求时间对应的请求页面。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/biggestrt1.png)
+
+找到了访问请求时间最大的页面，为了对该页面进行调优，接下来需要统计该页面的访问 PV、UV、各种 method 次数、各种status 次数等。
+
+得到以上数据后，就可以对网站的访问情况进行有针对性的详细评估。更多报表的操作方式请阅读[报表与仪表盘](/insight/manual/4692/reports-and-dashboards#2)。
+
+更详细的 Nginx 日志分析教程请阅读 [Nginx 日志分析](/insight/manual/4612/nginx-scene)。
+
+# **步骤3:在仪表盘对数据统一监控**
+
+进入[仪表盘列表](https://portal.qiniu.com/insight/dashboard)，找到保存图表时创建的仪表盘。
+
+![](https://pandora-kibana.qiniu.com/dashboard/dashboard.png)
+
+在仪表盘详情页，您可以对图表进行统一管理以及实时监控数据。
+
+1.仪表盘支持自动刷新，您可以根据需要自定义刷新时间。
+
+![](https://pandora-kibana.qiniu.com/dashboard/refresh1.png)
+
+2.仪表盘支持灵活控制图表显示时间，除了全局调整仪表盘所有图表的时间范围以外，您也可以对单个图表单独设置时间范围。
+
+![](https://pandora-kibana.qiniu.com/dashboard/edit_time2.png)
+
+![](https://pandora-kibana.qiniu.com/dashboard/edit_time1.png)
+
+3.使用大屏功能对图表进行监控。
+
+![](https://pandora-kibana.qiniu.com/full_screen.png)
+
+4.在仪表盘点击任意感兴趣的数据，即可下钻进入日志详情页面。
+
+![](https://pandora-kibana.qiniu.com/dashboard/xiazuan.png)
+
+点击下钻以后：
+
+![](https://pandora-kibana.qiniu.com/dashboard/xiazuan1.png)
+
+仪表盘也支持编辑图表等操作，详情请阅读[仪表盘](/insight/manual/4867/the-dashboard)。
+
+![](https://pandora-kibana.qiniu.com/nginx_analysis/dashboard%20%281%29.png)

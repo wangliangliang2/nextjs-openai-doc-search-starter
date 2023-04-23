@@ -1,0 +1,114 @@
+智能视频/图片识别接口label ，通过视频/图片数据的分析挖掘，准确识别视频/图片所包含的内容信息，实现智能分类。适用于相册管理、图片/视频理解、分类、个性化推荐等场景。
+
+**使用限制**
+- 图片格式: 格式PNG、JPG、JPEG、BMP, 
+- 图片大小：大小不超过4M，最短边至少30px，最长边最大4096px，长宽比3：1以内
+- 视频格式:  格式FLV、MKV、MOV、WMV、AVI、MPG、3GP、RMVB、WEBM等, 编码标准H.264、H.263/H.263+、MPEG-1/2/4、VP8/9、Quicktime、RealVideo、WMV、MJPE等
+- 视频大小： 200MB以内
+- 目前支持存储在七牛对象存储中的图片/视频（仅支持华东地域）或可访问的图片/视频连接
+- 请联系技术支持开通使用权限
+
+# 功能描述
+智能视频/图片分类API，主要通过对视频/图片中的内容信息进行智能识别、归类，可用于多媒体内容的管理、分类、搜索和推荐。
+目前支持的图片标签有92类，包括动物、植物、大海、风景、建筑、游乐场、食物等；
+目前支持的视频标签有1000多类，以场景、物体、活动、人物四大主题构建标签体系，覆盖日常生活场景。
+# 效果展示
+## 图片标签
+![](https://dn-odum9helk.qbox.me/FoErAy9oa5499QzOPubCNvInkixT)
+![](https://dn-odum9helk.qbox.me/Fu4_XSvXTh285_usnJTnXiWfidIU)
+## 视频标签
+
+<video id="video1" preload="none" poster="https://dn-odum9helk.qbox.me/FtQGrEZXb_caJJ3FhJv-ERs7B_x8"  width="180" controls="controls">
+	<source src="https://dn-odum9helk.qbox.me/FvkZ9VtT_MmOPFeDJ1H-dF-WpBf9" type="video/mp4">
+</video> 
+                                           
+标签：婚礼、仪式、庆典、爱情见证、重要时刻
+<video id="video2" preload="none" poster="https://dn-odum9helk.qbox.me/FlM8Hw5x5Wk2-EQHo0VVckSYcLMH"  width="180" controls="controls">
+	<source src="https://dn-odum9helk.qbox.me/lgt9msfiKWlOh4LizjCC9p0a98xH" type="video/mp4">
+</video>
+
+标签：海洋馆、景点、娱乐场所、水族馆、展馆、孩子的乐园
+
+
+# 接口规格  
+
+**注意**：接口规格不含任何空格与换行符。
+## 请求参数
+### 请求方式 GET
+### 请求接口
+```
+GET <mediaDownloadURI>?label/<type>
+```
+
+### 字段说明
+
+| 参数名称 | 必填 | 说明                                                         |
+| -------- | ---- | ------------------------------------------------------------ |
+| mediaDownloadURI| Y  | 图片或视频地址                       |
+| type     | Y    | image/video, image代表当前处理图片, video代表当前处理视频 |
+
+## 返回参数
+
+| 参数名称             | 类型       | 说明                                                         |
+| -------------------- | ---------- | ------------------------------------------------------------ |
+| code                 | int        | 状态码                                                       |
+| msg                  | string     | 处理结果                                                     |
+| data                 | json       | 处理结果数据                                                 |
+| data.tags            | json array | 满足算法内部条件的标签结果数组,如输出的标签有"动物", "宠物", "狗", 即这三个都是该图片或者视频的标签 |
+| data.tags.confidence | int        | 类型结果置信度                                               |
+| data.tags.value      | string     | 结果标签                                                     |
+
+
+# 示例
+## 请求示例
+### 请求语法
+
+```text
+GET <mediaDownloadURI>?label/<type>
+Host: <mediaDownloadHOST>
+```
+### 头部信息
+
+| 头部名称 | 必填   | 说明 |
+| :--- | :--- | :--------------------------------------- |
+| Host | 是    | 下载服务器域名，可为七牛三级域名或自定义二级域名，参考[七牛自定义域名绑定流程](https://support.qiniu.com/question/68977)。 |
+
+
+## 返回示例
+
+```json
+{
+	"code": 200,
+	"msg": "请求成功",
+	"data": "{
+	'tags':[
+		{'confidence':94,'value':'animal'},
+		{'confidence':94,'value':'pet'},
+		{'confidence':84,'value':'dog'}]}"
+}
+```
+
+
+## 错误码
+
+
+| code｜msg | 错误信息                   |     说明           |
+| --------- | ---------------------- |---------------------- |
+| 0         | Success                |成功                |
+| 100003    | InternalError_Busy     |算法服务忙
+| 100100    | RequestError           |⾮法请求
+| 100101    | RequestError_API       |请求接⼝不存在
+| 200000    | InvalidParam           |⽆效参数
+| 200001    | InvalidParam_Missing   |参数缺失
+| 200001    | InvalidParam_Format    |参数格式错误
+| 200100    | InvalidFile            |⽆效⽂件
+| 200101    | InvalidFile_Resolution |⽂件分辨率超出限制
+| 200102    | InvalidFile_Download   |⽂件⽆法下载
+| 200103    | InvalidFile_Decode     |⽂件⽆法解码
+| 200104    | InvalidFile_Type       |⽂件类型⾮法
+| 200107    | InvalidFile_Size       |⽂件⼤⼩超出限制
+# 计费说明
+API         | 单价 
+:-------------  | :--- 
+智能视频分类| 9元/小时
+智能图片分类| 0.25元/百张

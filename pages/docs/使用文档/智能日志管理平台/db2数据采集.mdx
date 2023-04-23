@@ -1,0 +1,23 @@
+通过插件下发的方式自动下发 db2 驱动，然后通过执行 sql 语句的方式来采集 db2 里的数据（目前仅支持 linux 版本的 logkit-pro）。
+
+## **配置 DB2 Reader**
+配置数据库连接串，例：`DATABASE=sample; HOSTNAME=127.0.0.1; PORT=50000; PROTOCOL=TCPIP; UID=aa; PWD=aa;`
+![](https://pandora-dl.qiniu.com/Screen%20Shot%202019-01-08%20at%2016.27.38.png)
+
+### 基础配置信息
+* 数据库连接字符串(`DSN`):由 `DATABASE`: 数据库名， `HOSTNAME`: 数据库地址，`PORT`: 数据库访问端口， `PROTOCOL`: 请求协议，`UID`: 用户名， `PWD`: 密码 组成， 一个完整 `DSN` 示例:"`DATABASE=sample; HOSTNAME=127.0.0.1; PORT=50000; PROTOCOL=TCPIP; UID=aa; PWD=aa;`"。
+ ！注意：请使用内网方式访问，以免出现安全隐患！
+* 数据查询语句(`db2_sql`):需要要执行的 sql 语句;暂只支持配置单条语句，不支持 where 条件过滤。多条 sql 请添加新的收集器分开收集。
+
+### 高级选项
+* 递增的列名称(`db2_offset_key`)：分批查询的主键，目前只支持整形和浮点型。
+* 分批查询的单批次大小(`db2_limit_batch`)：分批查询时，每次移动的 db2_offset_key 大小。
+* 导入历史数据(`history_all`)：是否导入历史数据，如果选择 true，则会从 db2_offset_key 最小值开始拉取历史数据。
+* 定时任务(`db2_cron`)：定时任务触发周期。
+   *  `"loop"`表示任务会不停的循环，执行完一次再接着执行下一次，后面可以跟循环的间歇时间，如 `"loop 10s"`，表示每次循环间隔 `10s`，支持的单位还有"m（分钟）"，"h(小时)"
+   * crontab 的写法，类似于`* * * * * *` ，对应的是秒(0~59)，分(0~59)，时(0~23)，日(1~31)，月(1-12)，星期(0~6)，填*号表示所有遍历都执行。
+   * 描述式写法,类似于 `"@midnight"`， `"@every 1h30m"`，必须`@`符合开头，目前支持`@hourly`，`@weekly`，`@monthly`，`@yearly`，`@every <time duration>`
+   * 为空表示不执行，如果为空并且选择了sql_exec_onstart，表示只执行一次
+* 启动时立即执行(sql_exec_onstart)：true 表示启动时执行一次，以后再按 cron 处理；false 则表示到cron 预设的时间才执行，默认为 true。
+
+>注意:db2仅支持windows、unix、linux版本的，不支持AS400等系列的

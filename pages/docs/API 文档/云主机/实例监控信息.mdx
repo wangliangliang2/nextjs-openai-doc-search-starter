@@ -1,0 +1,78 @@
+
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+# 请求路径
+> `GET` /v1/vm/monitor/instance
+
+
+# 请求参数
+<table>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>类型</th>
+      <th>位置</th>
+      <th>必须</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+   <tr>
+      <td>instance_id</td>
+      <td>string</td>
+      <td>query</td>
+      <td>是</td>
+      <td>
+      云主机实例ID
+      </td>
+    </tr>
+     <tr>
+      <td>x-qiniu-regionid</td>
+      <td>string</td>
+      <td>header</td>
+      <td>是</td>
+      <td>
+      云主机实例所在地域
+      </td>
+    </tr>
+ <tr>
+      <td>start_time</td>
+      <td>int64</td>
+      <td>query</td>
+      <td>是</td>
+      <td>
+      开始时间，unix 时间戳，单位秒
+      </td>
+    </tr>
+     <tr>
+      <td>end_time</td>
+      <td>int64</td>
+      <td>query</td>
+      <td>是</td>
+      <td>
+      结束时间，unix 时间戳，单位秒
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+# 返回值
+名称 | 类型 | 描述 
+----- | ----- | -----
+request_id | string | 请求 ID
+data | { monitor_data: { instance_monitor_data: []ECSMonitorDataItem } } | 
+
+### ECSMonitorDataItem
+
+字段 | 类型 | 描述 
+----- | ----- | -----
+bps_read | int | 实例系统盘读带宽 Byte/s
+bps_write | int | 实例系统盘写带宽 Byte/s
+iops_read | int | 实例系统盘 I/O 读操作 次/s
+iops_write | int | 实例系统盘 I/O 写操作 次/s
+intranet_rx | int | 实例在TimeStamp时刻的Period时间段内，接收的内网数据流量，kbits。
+intranet_tx | int | 实例在TimeStamp时刻的Period时间段内，发送的内网数据流量，kbits。
+intranet_bandwidth | int | 实例的公网带宽，单位时间内的网络流量，kbits/s
+cpu | int | 实例vCPU的使用比例，单位：百分比（%）
+

@@ -1,0 +1,76 @@
+# **简介**
+
+文件HASH值(qhash)用于实时得到存储在七牛的文件的HASH值。
+
+## **限制说明** 
+
+- 该功能目前支持华东、华南、华北、北美、东南亚区域的存储 bucket。
+
+
+
+# **接口规格**
+
+**注意：** 接口规格不含任何空格与换行符，下列内容经过格式化以便阅读。
+
+```
+qhash/<algorithm> 
+```
+
+| 参数名称  | 必填 | 说明 |
+| :----------- | :--- | :------------------------------------ |
+|`<algorithm>`              | 是  | 计算 hash 的算法。目前支持`sha1`、`md5`、`sha256`。|
+
+# **示例**
+
+**1.按md5算法计算文件的HASH值**
+
+```
+http://dn-odum9helk.qbox.me/resource/gogopher.jpg?qhash/md5
+```
+
+返回结果
+
+```
+{
+    "hash": "6085d57b5ee06ac7f793fa5f0f052cb5",
+    "fsize": 214513
+}
+```
+
+**2.按sha1算法计算文件的HASH值**
+
+```
+http://dn-odum9helk.qbox.me/resource/gogopher.jpg?qhash/sha1
+```
+
+返回结果
+
+```
+{
+    "hash": "1f3156aa1dd8c4359a871f2384b82a944be83f7c",
+    "fsize": 214513
+}
+```
+**3.按sha256算法计算文件的HASH值**
+
+```
+http://dn-odum9helk.qbox.me/resource/gogopher.jpg?qhash/sha256
+```
+
+返回结果
+
+```
+{
+    "hash": "9806aa869d6f9d285164b0ce901e49f56cc915791814de231d41759548a2ee28",
+    "fsize": 214513
+}
+```
+
+
+
+# **操作方式**
+
+- 可以通过 [持久化处理](https://developer.qiniu.com/dora/1291/persistent-data-processing-pfop) 的方式来调用：
+  -  `资源上传时自动触发`：可以在上传时指定[persistentOps](/kodo/manual/put-policy#put-policy-persistent-ops-explanation)参数
+  -  `对已有资源手动手动触发`：调用[pfop]()命令
+- 可以通过 [同步处理](/dora/api/8266/synchronous-processing) 的方式来调用。

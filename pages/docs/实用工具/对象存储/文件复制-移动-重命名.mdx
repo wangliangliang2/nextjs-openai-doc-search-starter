@@ -1,0 +1,107 @@
+介绍一些利用 qsuits 工具对存储空间的文件进行复制/移动/重命名的操作，分为两个基本部分：数据源读取和数据操作，其中数据源读取采用本工具提供的数据源模式（参考：[数据源](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md)），而数据操作根据选择 copy/move/rename，参考：[数据操作](https://developer.qiniu.com/kodo/tools/6263/the-command-line-tools-qsuits#11)）。  
+ 
+1. 支持通过 `-a=<account-name>`/`-d` 使用已设置的账号，则不需要再直接设置数据源的密钥，参考：[账号设置](https://github.com/NigelWu95/qiniu-suits-java/blob/master/README.md#账号设置)，以下配置中出现 ak,sk 等参数设置是为了说明需要用到的密钥参数名称，通过 account 方式读取该参数的情况下就不要再设置该密钥。  
+
+# 1. 文件复制
+即复制空间文件到同一区域的另一个空间（如果是跨账号，需采用空间授权），配置如下：  
+```
+process=copy 
+ak=<ak> 
+sk=<sk> 
+bucket=<bucket> 
+indexes=
+to-bucket=<to-bucket>
+toKey-index=
+add-prefix=
+rm-prefix=
+force=
+```  
+|参数名|参数值及类型 | 含义|  
+|-----|-------|-----|  
+|process=copy| 复制资源时设置为copy| 表示复制操作|  
+|ak、sk|长度40的字符串|七牛账号的ak、sk，通过七牛控制台个人中心获取，当数据源为 qiniu 时无需再设置|  
+|bucket| 字符串| 操作的资源原空间，当数据源为 qiniu 时无需再设置|  
+|indexes|字符串| 设置输入行中 key 字段的下标（有默认值），参考[数据源 indexes 设置](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#1-公共参数)|  
+|to-bucket| 字符串| 复制资源保存的目标空间|  
+|toKey-index| 字符串| copy 操作可选择设置的目标文件名索引（下标），需要手动指定才会进行解析|  
+|add-prefix| 字符串| 表示为保存的文件名添加指定前缀|  
+|rm-prefix| 字符串| 表示将原文件名去除存在的指定前缀后作为 copy 之后保存的文件名|  
+|force| true/false| 目标文件名如果目标空间中已存在是否进行强制覆盖，默认为 false|  
+
+## 单个文件复制
+如果只是单个文件需要该操作，可以用 single 模式，从命令行输入文件名直接处理一次即可，命令如下：  
+`qsuits -s -d -process=copy -bucket=temp -to-bucket=temp -key=10.mp4`   
+无异常错误输出则表示成功，`-s` 表示启用 single 模式进行单次操作，`-d` 表示使用默认账号。  
+
+## 关于 toKey-index
+指定输入行中对应修改之后的文件名字段下标，不设置则无法进行解析，当使用 file 源且 parse=tab/csv 时下标必须为整数，toKey 下标和 key 字段下标不可
+相同，key 下标用 indexes 参数设置，默认会根据 parse 类型设置为 0 或 "key"，参见[ indexes 索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-indexes-索引)及[关于 parse 和索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-parse)。  
+**注意**：七牛存储空间不支持文件名以 `../`, `./` 开头或者包含 `/../`, `/./` 这种情况，会造成无法访问，因此设置文件名时请注意。  
+
+# 2. 文件移动
+即移动空间文件到同一区域的另一个空间（如果是跨账号，需采用空间授权），配置如下：  
+```
+process=move
+ak=
+sk=
+bucket= 
+to-bucket=
+toKey-index=
+add-prefix=
+rm-prefix=
+force=
+```  
+|参数名|参数值及类型 | 含义|  
+|-----|-------|-----|  
+|process=move| 移动资源时设置为move| 表示移动操作|  
+|ak、sk|长度40的字符串|七牛账号的ak、sk，通过七牛控制台个人中心获取，当数据源为 qiniu 时无需再设置|  
+|bucket| 字符串| 操作的资源原空间，当数据源为 qiniu 时无需再设置|  
+|to-bucket| 字符串| 移动资源保存的目标空间|  
+|toKey-index| 字符串| move 操作所需要设置的目标文件名索引（下标），需要手动指定才会进行解析|  
+|add-prefix| 字符串| 表示为保存的文件名添加指定前缀|  
+|rm-prefix| 字符串| 表示将原文件名去除存在的指定前缀后作为 move 之后保存的文件名|  
+|force| true/false| 目标文件名如果目标空间中已存在是否进行强制覆盖，默认为 false|  
+
+## 单个文件移动
+如果只是单个文件需要该操作，可以用 single 模式，从命令行输入文件名直接处理一次即可，命令如下：  
+`qsuits -s -d -process=move -bucket=temp -to-bucket=temp -key=10.mp4`   
+无异常错误输出则表示成功，`-s` 表示启用 single 模式进行单次操作，`-d` 表示使用默认账号。  
+
+## 关于 toKey-index
+指定输入行中对应修改之后的文件名字段下标，不设置则无法进行解析，当使用 file 源且 parse=tab/csv 时下标必须为整数，toKey 下标和 key 字段下标不可
+相同，key 下标用 indexes 参数设置，默认会根据 parse 类型设置为 0 或 "key"，参见[ indexes 索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-indexes-索引)及[关于 parse 和索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-parse)。  
+**注意**：七牛存储空间不支持文件名以 `../`, `./` 开头或者包含 `/../`, `/./` 这种情况，会造成无法访问，因此设置文件名时请注意。  
+
+# 3. 文件重命名
+即对空间文件进行重命名，配置如下：  
+```
+process=rename
+ak=
+sk=
+bucket=
+indexes=
+toKey-index=
+add-prefix=
+rm-prefix=
+force=
+```  
+|参数名|参数值及类型 | 含义|  
+|-----|-------|-----|  
+|process=rename| 资源重命名时设置为rename| 表示重命名操作|  
+|ak、sk|长度40的字符串|七牛账号的ak、sk，通过七牛控制台个人中心获取，当数据源为 qiniu 时无需再设置|  
+|bucket| 字符串| 操作的资源原空间，当数据源为 qiniu 时无需再设置|  
+|indexes|字符串| 设置输入行中 key 字段的下标（有默认值），参考[数据源 indexes 设置](datasource.md#1-公共参数)|  
+|toKey-index| 字符串| rename 操作所需要设置的目标文件名索引（下标），需要手动指定才会进行解析|  
+|add-prefix| 字符串| 表示为保存的文件名添加指定前缀|  
+|rm-prefix| 字符串| 表示将原文件名去除存在的指定前缀后作为 rename 之后保存的文件名|  
+|force| true/false| 目标文件名如果目标空间中已存在是否进行强制覆盖，默认为 false|  
+
+## 单个文件重命名
+如果只是单个文件需要该操作，可以用 single 模式，从命令行输入文件名直接处理一次即可，命令如下：  
+`qsuits -s -d -process=rename -bucket=temp -add-prefix=1 -prefix-force=true -key=10.mp4`   
+无异常错误输出则表示成功，`-s` 表示启用 single 模式进行单次操作，`-d` 表示使用默认账号。  
+
+## 关于 toKey-index
+指定输入行中对应修改之后的文件名字段下标，不设置则无法进行解析，当使用 file 源且 parse=tab/csv 时下标必须为整数，toKey 下标和 key 字段下标不可
+相同，key 下标用 indexes 参数设置，默认会根据 parse 类型设置为 0 或 "key"，参见[ indexes 索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-indexes-索引)及[关于 parse 和索引](https://github.com/NigelWu95/qiniu-suits-java/blob/master/docs/datasource.md#关于-parse)。  
+**注意**：七牛存储空间不支持文件名以 `../`, `./` 开头或者包含 `/../`, `/./` 这种情况，会造成无法访问，因此设置文件名时请注意。  

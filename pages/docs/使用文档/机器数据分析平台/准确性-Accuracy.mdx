@@ -1,0 +1,12 @@
+用 accuracy_score 可以计算真实值和预测值之间的准确性，即对于给定的测试数据集，分类器正确分类的样本数与总样本数之比，通常来说，准确率越高，分类器越好
+
+**语法：**
+
+```
+..| score accuracy_score normalize=<True|False> <actual_field_1> ... <actual_field_n> against <predicted_field_1> ... <predicted_field_n>
+```
+
+**参数说明：**
+
+- 当 normalize=True 的时候，输出为正确分类的比例；当 normalize=False 的时候，输出为正确分类的绝对数量。
+- normalize 默认为 True。

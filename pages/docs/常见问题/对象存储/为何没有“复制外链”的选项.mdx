@@ -1,0 +1,23 @@
+# 问题描述  
+
+没有复制外链选项的情况，如下图所示：
+
+![pic1](https://dn-odum9helk.qbox.me/Fn76ShJZKCamQZv8h4crSI-UrP8Q)  
+
+# 原因分析  
+
+## 第一种情况：  
+
+![pic2](https://dn-odum9helk.qbox.me/FlBVsPVds-QkqV_lPYMnNTxPP6j8)
+当空间为**`私有空间`**的时候，下载链接是需要加上临时的 [下载凭证](/kodo/manual/1202/download-token) 进行下载，所以不提供复制外链的选项，需要自行生成，形式如下：
+```
+[GET] http://<domain>/<key>?e=<deadline>&token=<downloadToken>
+```  
+
+
+
+## 第二种情况：  
+
+![pic3](https://dn-odum9helk.qbox.me/FnliJ7JLWxqCMnySsNhpfoJAQNna)
+当空间设置中开启了 [**`原图保护`**](https://developer.qiniu.com/kodo/kb/1359/what-is-the-original-protection) 的时候，也不会提供复制外链的选项
+

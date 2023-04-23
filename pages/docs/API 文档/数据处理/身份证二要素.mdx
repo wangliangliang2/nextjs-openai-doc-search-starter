@@ -1,0 +1,75 @@
+# 接口简介
+七牛身份证二要素接口，采用权威官方数据库进行比对，验证身份证号与姓名是否相符。
+
+**注意**
+
+- 接口超时时间为 30 秒。
+- 请求接口为标准的HTTP/HTTPS 协议。
+
+# 请求语法
+
+```
+POST /idcard_auth HTTP/1.1
+Host: idcard-auth.qiniuapi.com
+Content-Type: application/json
+Authorization: QiniuToken
+```
+
+# 头部信息
+
+| 头部名称      | 必填 | 说明                                                         |
+| ------------- | ---- | ------------------------------------------------------------ |
+| Host          | 是   | 固定为  idcard-auth.qiniuapi.com |
+| Content-Type  | 是   | 固定为 application/json                                      |
+| Authorization | 是   | 该参数应严格按照[管理凭证](https://developer.qiniu.com/kodo/manual/access-token)格式进行填充，否则会返回 401 错误码。一个合法的 Authorization 值应类似于：`Qiniu QNJi_bYJlmO5LeY08FfoNj9w_r7...` |
+
+# 请求body
+
+| 字段                | 是否必填 | 类型   | 说明                                                         |
+| ------------------- | -------- | ------ | ------------------------------------------------------------ |
+| realname            | Y        | string | 姓名                                                 |
+| idcard              | Y        | string | 身份证号                                         |
+| session_id          | N        | string | 唯一会话id                      |
+
+## 返回
+
+| 字段         | 类型        | 说明         |
+| ------------ | ----------- | ------------ |
+| session_id   | string      | 唯一会话 id  |
+| errorcode    | int         | 返回状态码   |
+| errormsg     | string      | 返回错误消息 |
+
+# 示例
+
+```
+POST /idcard_auth HTTP/1.1
+Host: idcard-auth.qiniuapi.com
+Authorization: Qiniu aWQ6lF1Zxxse43jB6V7lsdfaadf:7cWZPxxxxxasdffed60zkI8=
+Content-Type: application/json 
+{
+     “realname”: “张三”,
+     “idcard”: “12342354345346456”,
+}
+```
+
+## 返回示例
+```
+{
+     “errorcode”: 0,
+     “errormsg”: “OK”
+}
+```
+
+## 错误码
+
+| 错误码   | 错误信息                            | 说明 |
+| -------- | ----------------------------------- | ----------- |
+| 0        | OK                                | 认证成功        |
+| 55060001 | ERROR_PARAMETER_INVALID           | 请求字段有非法传输        |
+| 55060044 | REALNAME_FORMAT_ERROR             | 姓名格式不正确         |
+| 55060045 | IDCARD_NUMBER_ERROR               | 身份证号码有误         |
+| 55060047 | AUTH_INFORMATION_NOT_EXISTED      | 认证信息不存在         |
+| 55060052 | AUTH_REQUEST_FAILED               | 鉴权请求失败         |
+| 55060053 | INTERNAL_SERVER_ERROR             | 服务器内部错误         |
+| 55060054 | REQUEST_TIME_OUT                  | 服务请求超时         |
+| 55060055 | AUTHENTICATION_FAILD              | 身份二要素认证不通过         |

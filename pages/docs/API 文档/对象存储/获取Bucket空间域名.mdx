@@ -1,0 +1,120 @@
+<a id="buckets-description"></a>
+
+# **描述** 
+本接口用于获取 Bucket 的域名列表。
+
+<br>
+
+<a id="buckets-requests"></a>
+
+# **请求**
+<a id="buckets-requests-syntax"></a>
+
+### **请求语法**
+
+```
+GET /v2/domains?tbl=<bucketName> HTTP/1.1
+Host: uc.qiniuapi.com 
+Content-Type: application/x-www-form-urlencoded
+X-Qiniu-Date: 20060102T150405Z  
+Authorization: Qiniu <AccessToken>
+```
+
+<br>
+
+<a id="buckets-request-parameters"></a>
+
+### **请求参数**
+
+| 参数名称 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| tbl | 是 | 要获取域名列表的目标空间名称 |
+
+<br>
+
+<a id="buckets-request-headers"></a>
+### **请求头**
+该请求操作的实现使用了所有操作的公共请求头。有关详细信息，请查阅[公共请求头](/kodo/api/3924/common-request-headers)。
+
+<br>
+
+<a id="buckets-request-elements"></a>
+
+### **请求内容**
+
+该请求操作的请求体为空。
+
+<br>
+
+<a id="buckets-responses"></a>
+
+# **响应**
+### **响应语法**
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+{
+DomainName
+}
+```
+<br>
+
+### **响应头**
+该请求操作的实现使用了所有操作的公共响应头。有关详细信息，请查阅[公共响应头](/kodo/api/3924/common-response-headers)。
+
+
+<br>
+<a id="buckets-response-elements"></a>
+
+### **响应内容**
+
+| 名称 | 说明 |
+| --- | --- |
+| DomainName | 空间域名<br><br> 类型：字符串|
+
+<br>
+
+<a id="buckets-special-errors"></a>
+
+### **响应状态码**
+
+该操作的实现不会返回特殊错误。有关错误和错误代码列表的一般信息，请查阅[错误响应](/kodo/api/3928/error-responses)。
+
+<br>
+
+<a id="buckets-examples"></a>
+
+# **示例**
+
+<a id="buckets-request-examples"></a>
+
+### **请求示例**
+
+```
+GET /v2/domains?tbl=test01 HTTP/1.1
+Host: uc.qiniuapi.com
+User-Agent: Go-http-client/1.1
+X-Qiniu-Date: 20060102T150405Z
+Authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:jfblnkj6JsrlxgbE3l4SfhSyiL4=
+Accept-Encoding: gzip
+```
+*注：要在 `Authorization` 头部的 `<AccessToken>` 前添加 `Qiniu` 和半角空格。*
+
+<br>
+
+<a id="buckets-response-examples"></a>
+### **响应示例**
+```
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Mon, 02 Jan 2006 15:04:05 GMT
+Server: nginx
+Vary: Accept-Encoding
+X-Reqid: BksAALTAQtVZhdsU
+
+[
+  "oupgm4mi4.bkt.clouddn.com", 
+  "sarah.qiniudemo.com"
+]
+```

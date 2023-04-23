@@ -1,0 +1,278 @@
+# 接口说明
+
+检测单张图片中的人脸信息
+
+# 请求
+
+## 请求地址
+
+| 名称        | 值                                               |
+| :---------- | :----------------------------------------------- |
+| HTTP URL    | `https://face-detect.qiniuapi.com/v2/facedetect` |
+| HTTP Method | POST                                             |
+
+## 请求头
+
+| 名称          | 必填 | 说明                                                         |
+| :------------ | :--- | :----------------------------------------------------------- |
+| Host          | 是   | 固定值face-detect.qiniuapi.com                               |
+| Authorization | 是   | 该参数应严格按照[管理凭证格式](https://developer.qiniu.io/kodo/1201/access-token)进行填充，否则会返回 401 错误码。一个合法的 Authorization 值应类似于：Qiniu QNJi_bYJlmO5LeY08FfoNj9w_r7... |
+| Content-Type  | 是   | 固定值application/json                                       |
+
+## 请求参数
+
+| 字段             | 必填 | 类型   | 说明                                                         |
+| :--------------- | :--- | :----- | :----------------------------------------------------------- |
+| image             | 否   | string | 图片信息(总数据大小应小于10M，图片尺寸在1920x1080以下)，图片上传方式根据image_type来判断。 两张图片通过json格式上传，格式参考表格下方示例 |
+| image_type         | 否   | string | 图片类型</br>**BASE64**:图片的base64值，base64编码后的图片数据，编码后的图片大小不超过2M；</br>**URL**:图片的 URL地址( 可能由于网络等原因导致下载图片时间过长)；</br>**FACE_TOKEN**: 人脸图片的唯一标识，调用人脸检测接口时，会为每个人脸图片赋予一个唯一的FACE_TOKEN，同一张图片多次检测得到的FACE_TOKEN是同一个。 |
+| face_field         | 否   | string | 包括`age,expression,face_shape,gender,glasses,landmark,landmark150,quality,eye_status,emotion,face_type,mask,spoofing`信息逗号分隔. 默认只返回`face_token、人脸框、概率和旋转角度` |
+| max_face_num       | 否   | number | 最多处理人脸的数目，默认值为1，根据人脸检测排序类型检测图片中排序第一的人脸（默认为人脸面积最大的人脸），最大值120 |
+| face_type          | 否   | string | 人脸的类型</br>**LIVE**：表示生活照：通常为手机、相机拍摄的人像图片、或从网络获取的人像图片等，</br>**IDCARD**：表示身份证芯片照：二代身份证内置芯片中的人像照片，</br>**WATERMARK**：表示带水印证件照：一般为带水印的小图，如公安网小图</br>**CERT**：表示证件照片：如拍摄的身份证、工卡、护照、学生证等证件图片</br>默认`LIVE` |
+| liveness_control   | 否   | string | 活体检测控制</br>**NONE**: 不进行控制</br>**LOW**:较低的活体要求(高通过率 低攻击拒绝率)</br>**NORMAL**: 一般的活体要求(平衡的攻击拒绝率, 通过率)</br>**HIGH**: 较高的活体要求(高攻击拒绝率 低通过率)</br>默认 `NONE`</br>若活体检测结果不满足要求，则返回结果中会提示活体检测失败 |
+| face_sort_type     | 否   | number | 人脸检测排序类型</br>**0**:代表检测出的人脸按照人脸面积从大到小排列</br>**1**:代表检测出的人脸按照距离图片中心从近到远排列</br>默认为0 |
+| display_corp_image | 否   | number | 是否显示检测人脸的裁剪图base64值</br>0：不显示（默认）</br>1：显示</br>**当取值为1时，max_face_num字段的取值上限按5计算，即最多可返回5张人脸的裁剪图** |
+
+## 请求示例
+
+```plaintext
+POST /v2/facedetect
+Host: face-detect.qiniuapi.com
+Authorization: Qiniu token
+Content-Type: application/json
+
+{
+    "image": "sfasq35sadvsvqwr5q...",
+    "image_type": "BASE64",
+    "face_type": "LIVE",
+    "liveness_control": "HIGH"
+}
+```
+
+# 响应
+
+## 响应头
+
+| 名称         | 必填 | 说明                   |
+| :----------- | :--- | :--------------------- |
+| Content-Type | 是   | 固定值application/json |
+
+## 响应参数
+
+| 字段       | 必填 | 类型                 | 说明     |
+| :--------- | :--- | :------------------- | :------- |
+| error_code | 否   | number               | 错误码   |
+| error_msg  | 否   | string               | 错误信息 |
+| log_id     | 否   | number               | 请求ID   |
+| result     | 否   | Object detect_result | 请求结果 |
+
+其中，*detect_result* 参数
+
+| 字段      | 必填 | 类型           | 说明                                         |
+| :-------- | :--- | :------------- | :------------------------------------------- |
+| face_num  | 否   | number         | 检测到的图片中的人脸数量                     |
+| face_list | 否   | []Object faces | 人脸信息列表，具体包含的参数参考下面的列表。 |
+
+其中，*faces* 参数
+
+| 字段             | 必填 | 类型                     | 说明                                                         |
+| :--------------- | :--- | :----------------------- | :----------------------------------------------------------- |
+| face_token       | 否   | string                   | 人脸图片的唯一标识                                           |
+| location         | 否   | Object face_location     | 人脸在图片中的位置                                           |
+| corp_image_base64 | 否  | string                   | 检测人脸框的人脸图片base64值                                  |
+| face_probability | 否   | number                   | 人脸置信度，范围【0~1】，代表这是一张人脸的概率，0最小、1最大。其中返回0或1时，数据类型为Integer |
+| angle            | 否   | Object face_angle        | 人脸旋转角度参数                                             |
+| age              | 否   | number                   | 年龄 ，当face_field包含age时返回                             |
+| expression       | 否   | Object face_expression | 表情，当 face_field包含expression时返回                      |
+| face_shape       | 否   | Object face_shape        | 脸型，当face_field包含face_shape时返回                       |
+| gender           | 否   | Object face_gender       | 性别，face_field包含gender时返回                             |
+| glasses          | 否   | Object face_glasses      | 是否带眼镜，face_field包含glasses时返回                      |
+| eye_status       | 否   | Object face_eye_status   | 双眼状态（睁开/闭合） face_field包含eye_status时返回         |
+| emotion          | 否   | Object face_emotion      | 情绪 face_field包含emotion时返回                             |
+| face_type        | 否   | Object face_type         | 真实人脸/卡通人脸 face_field包含face_type时返回              |
+| mask             | 否   | Object face_mask         | 口罩识别 face_field包含mask时返回                            |
+| landmark         | 否   | []Object landmark_points | 4个关键点位置，左眼中心、右眼中心、鼻尖、嘴中心。face_field包含landmark时返回 |
+| landmark72       | 否   | []Object landmark_points | 72个特征点位置 face_field包含landmark时返回                  |
+| landmark150      | 否   | []Object landmark_points | 150个特征点位置 face_field包含landmark150时返回              |
+| quality          | 否   | Object face_quality      | 人脸质量信息。face_field包含quality时返回                    |
+| spoofing         | 否   | number                   | 判断图片是否为合成图                                         |
+
+其中，*face_location* 参数
+
+| 字段     | 必填 | 类型   | 说明                                           |
+| :------- | :--- | :----- | :--------------------------------------------- |
+| left     | 否   | number | 人脸区域离左边界的距离                         |
+| top      | 否   | number | 人脸区域离上边界的距离                         |
+| width    | 否   | number | 人脸区域的宽度                                 |
+| height   | 否   | number | 人脸区域的高度                                 |
+| rotation | 否   | number | 人脸框相对于竖直方向的顺时针旋转角，[-180,180] |
+
+其中，*face_angle* 参数
+
+| 字段  | 必填 | 类型   | 说明                                    |
+| :---- | :--- | :----- | :-------------------------------------- |
+| yaw   | 否   | number | 三维旋转之左右旋转角[-90(左), 90(右)]   |
+| pitch | 否   | number | 三维旋转之俯仰角度[-90(上), 90(下)]     |
+| roll  | 否   | number | 平面内旋转角[-180(逆时针), 180(顺时针)] |
+
+其中，*face_expression* 参数
+
+| 字段        | 必填 | 类型   | 说明                                    |
+| :---------- | :--- | :----- | :-------------------------------------- |
+| type        | 否   | string | none:不笑；smile:微笑；laugh:大笑       |
+| probability | 否   | number | 表情置信度，范围【0~1】，0最小、1最大。 |
+
+其中，*face_shape* 参数
+
+| 字段        | 必填 | 类型   | 说明                                                         |
+| :---------- | :--- | :----- | :----------------------------------------------------------- |
+| type        | 否   | string | square: 正方形 triangle:三角形 oval: 椭圆 heart: 心形 round: 圆形 |
+| probability | 否   | number | 置信度，范围【0~1】，0最小、1最大。                          |
+
+其中，*face_gender* 参数
+
+| 字段        | 必填 | 类型   | 说明                                |
+| :---------- | :--- | :----- | :---------------------------------- |
+| type        | 否   | string | male:男性 female:女性               |
+| probability | 否   | number | 置信度，范围【0~1】，0最小、1最大。 |
+
+其中，*face_glasses* 参数
+
+| 字段        | 必填 | 类型   | 说明                                   |
+| :---------- | :--- | :----- | :------------------------------------- |
+| type        | 否   | string | none:无眼镜，common:普通眼镜，sun:墨镜 |
+| probability | 否   | number | 置信度，范围【0~1】，0最小、1最大。    |
+
+其中，*face_eye_status* 参数
+
+| 字段      | 必填 | 类型   | 说明                                        |
+| :-------- | :--- | :----- | :------------------------------------------ |
+| left_eye  | 否   | number | 左眼状态 [0,1]取值，越接近0闭合的可能性越大 |
+| right_eye | 否   | number | 右眼状态 [0,1]取值，越接近0闭合的可能性越大 |
+
+其中，*face_emotion* 参数
+
+| 字段        | 必填 | 类型   | 说明                                                         |
+| :---------- | :--- | :----- | :----------------------------------------------------------- |
+| type        | 否   | string | angry:愤怒 disgust:厌恶 fear:恐惧 happy:高兴 sad:伤心 surprise:惊讶 neutral:无表情 pouty: 撅嘴 grimace:鬼脸 |
+| probability | 否   | number | 置信度，范围【0~1】，0最小、1最大。                          |
+
+其中，*face_type* 参数
+
+| 字段        | 必填 | 类型   | 说明                                |
+| :---------- | :--- | :----- | :---------------------------------- |
+| type        | 否   | string | human: 真实人脸 cartoon: 卡通人脸   |
+| probability | 否   | number | 置信度，范围【0~1】，0最小、1最大。 |
+
+其中，*face_mask* 参数
+
+| 字段        | 必填 | 类型   | 说明                                                |
+| :---------- | :--- | :----- | :-------------------------------------------------- |
+| type        | 否   | number | 没戴口罩/戴口罩 取值0或1 0代表没戴口罩 1 代表戴口罩 |
+| probability | 否   | number | 置信度，范围【0~1】，0最小、1最大。                 |
+
+其中，*landmark_points* 参数
+
+| 字段 | 必填 | 类型   | 说明 |
+| :--- | :--- | :----- | :--- |
+| x    | 否   | number |      |
+| y    | 否   | number |      |
+
+其中，*face_quality* 参数
+
+| 字段         | 必填 | 类型                          | 说明                                                         |
+| :----------- | :--- | :---------------------------- | :----------------------------------------------------------- |
+| occlusion    | 否   | Object face_quality_occlusion | 人脸各部分遮挡的概率，范围[0~1]，0表示完整，1表示不完整      |
+| blur         | 否   | number                        | 人脸模糊程度，范围[0~1]，0表示清晰，1表示模糊                |
+| illumination | 否   | number                        | 取值范围在[0~255], 表示脸部区域的光照程度 越大表示光照越好   |
+| completeness | 否   | number                        | 人脸完整度，0或1, 0为人脸溢出图像边界，1为人脸都在图像边界内 |
+
+其中，*face_quality_occlusion* 参数
+
+| 字段        | 必填 | 类型   | 说明                                  |
+| :---------- | :--- | :----- | :------------------------------------ |
+| left_eye    | 否   | number | 左眼遮挡比例，[0-1] ，1表示完全遮挡   |
+| right_eye   | 否   | number | 右眼遮挡比例，[0-1] ，1表示完全遮挡   |
+| nose        | 否   | number | 鼻子遮挡比例，[0-1] ，1表示完全遮挡   |
+| mouth       | 否   | number | 嘴遮挡比例，[0-1] ，1表示完全遮挡     |
+| left_cheek  | 否   | number | 左脸颊遮挡比例，[0-1] ，1表示完全遮挡 |
+| right_cheek | 否   | number | 右脸颊遮挡比例，[0-1] ，1表示完全遮挡 |
+| chin        | 否   | number | 下巴遮挡比例，[0-1] ，1表示完全遮挡   |
+
+## 响应示例
+
+```plaintext
+200 
+Content-Type: application/json
+
+{
+    "error_code": 0,
+    "error_msg": "SUCCESS",
+    "log_id": 587756642,
+    "result": {
+        "face_num": 1,
+        "face_list": [
+            {
+                "face_token": "35235asfas21421fakghktyfdgh68bio",
+                "location": {
+                    "left": 117,
+                    "top": 131,
+                    "width": 172,
+                    "height": 170,
+                    "rotation": 4
+                },
+                "face_probability": 1,
+                "angle": {
+                    "yaw": -0.34859421849251,
+                    "pitch": 1.9135693311691,
+                    "roll": 2.3033397197723
+                },
+                "landmark": [
+                    {
+                        "x": 161.74819946289,
+                        "y": 163.30244445801
+                    }
+                ],
+                "landmark72": [
+                    {
+                        "x": 161.74819946289,
+                        "y": 163.30244445801
+                    }
+                ],
+                "age": 29.298097610474,
+                "expression": {
+                    "type": "smile",
+                    "probability": 0.5543018579483
+                },
+                "gender": {
+                    "type": "male",
+                    "probability": 0.99979132413864
+                },
+                "glasses": {
+                    "type": "sun",
+                    "probability": 0.99999964237213
+                },
+                "face_shape": {
+                    "type": "triangle",
+                    "probability": 0.5543018579483
+                },
+                "quality": {
+                    "occlusion": {
+                        "left_eye": 0,
+                        "right_eye": 0,
+                        "nose": 0,
+                        "mouth": 0,
+                        "left_cheek": 0,
+                        "right_cheek": 0,
+                        "chin_contour": 0
+                    },
+                    "blur": 0,
+                    "illumination": 114,
+                    "completeness": 1
+                }
+            }
+        ]
+    }
+}
+```
+
+​    

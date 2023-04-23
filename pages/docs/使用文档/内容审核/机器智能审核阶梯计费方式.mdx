@@ -1,0 +1,375 @@
+# 计费说明
+
+* 按照各资源类型各场景独立计量计费。
+* 默认采用按量付费模式，每月提供账单，按当月的使用量进行阶梯收费。
+* 图片审核、视频审核对应场景合并总数，统一结算。
+
+## 计费项目
+
+<table>
+  <tr><th>类型</th><th>计费项</th><th>说明</th></tr>
+  <tr>
+    <td rowspan="5">图片审核</td>
+    <td>图片鉴黄</td>
+    <td rowspan="5">按图片张数计量<br>各项独立计费</td>
+  </tr>
+  <tr><td>图片鉴暴恐</td></tr>
+  <tr><td>图片敏感人物识别</td></tr>
+  <tr><td>图片广告识别</td></tr>
+  <tr><td>图片不良场景识别</td></tr>
+  <tr>
+    <td rowspan="4">视频审核</td>
+    <td>视频鉴黄</td>
+    <td rowspan="4">按截帧张数计量<br>各项独立计费<br>与图片审核对应项目合并</td>
+  </tr>
+  <tr><td>视频鉴暴恐</td></tr>
+  <tr><td>视频敏感人物识别</td></tr>
+  <tr><td>视频广告识别</td></tr>
+  <tr>
+    <td rowspan="5">直播审核</td>
+    <td>直播鉴黄</td>
+    <td rowspan="4">按截帧张数计量<br>各项独立计费</td>
+  </tr>
+  <tr><td>直播鉴暴恐</td></tr>
+  <tr><td>直播敏感人物识别</td></tr>
+  <tr><td>直播图文违规识别</td></tr>
+  <tr>
+    <td>直播音频反垃圾</td>
+    <td>按直播时长计量</td>
+  </tr>
+  <tr>
+    <td>音频审核</td>
+    <td>音频反垃圾</td>
+    <td>按音频时长计量</td>
+  </tr>
+  <tr>
+    <td>文本审核</td>
+    <td>文本反垃圾</td>
+    <td>按调用次数计量</td>
+  </tr>
+</table>
+
+## 免费额度说明
+* 内容审核产品的新用户会获得一次性18万免费额度，其中鉴黄、鉴暴恐、敏感人物识别各6万免费额度。如果是本月15号（包括15号）之前开始使用内容审核，免费额度会在本月生效，如果是本月15号之后开始使用内容审核，免费额度会在下月生效。免费额度的周期为月，当月结束后会清零。每个用户最多只能获得一次免费额度，当月使用量在免费额度内，不收费；如超出免费额度，对超出部分收费。
+注：从2019年2月1日起，对于认证企业用户，仍然提供18万免费额度，对其他用户，仅提供300张免费额度，其中鉴黄、鉴暴恐、敏感人物识别各100张免费额度。
+* 免费额度会在出账时自动进行抵扣。
+
+# 图片鉴黄
+
+|总调用量|机器智能审核价格（单位：元／百张）|
+|:--|:--|
+|第 0 张 至 300 万张|0.085|
+|第 300 万张 至 1500 万张| 0.075|
+|第 1500 万张 至 3000 万张| 0.065|
+|3000 万至1亿张| 0.055|
+|1 亿张以上| 0.05|
+
+<p>例：<br>用户一个月的调用量为<span class="censor-border-bottom" contenteditable data-calc-id="censor-price-pulp-usageCnt">500</span>万次，账单金额约为:</p>
+
+<p><code><span data-calc-id="censor-price-pulp-expr"></span></code></p>
+
+# 图片鉴暴恐
+
+|总调用量|机器智能审核价格（单位：元／百张）|
+|:--|:--|
+|第 0 张 至 300 万张|0.085|
+|第 300 万张 至 1500 万张| 0.075|
+|第 1500 万张 至 3000 万张| 0.065|
+|3000 万至1亿张| 0.055|
+|1 亿张以上| 0.05|
+
+<p>例：<br>用户一个月的调用量为<span class="censor-border-bottom" contenteditable data-calc-id="censor-price-terror-usageCnt">500</span>万次，账单金额约为:</p>
+
+<p><code><span data-calc-id="censor-price-terror-expr"></span></code></p>
+
+# 图片敏感人物识别
+
+|总调用量|机器智能审核价格（单位：元／百张）|
+|:--|:--|
+|第 0 张 至 300 万张|0.085|
+|第 300 万张 至 1500 万张| 0.075|
+|第 1500 万张 至 3000 万张| 0.065|
+|3000 万至1亿张| 0.055|
+|1 亿张以上| 0.05|
+
+<p>例：<br>用户一个月的调用量为<span class="censor-border-bottom" contenteditable data-calc-id="censor-price-politician-usageCnt">500</span>万次，账单金额约为:</p>
+
+<p><code><span data-calc-id="censor-price-politician-expr"></span></code></p>
+
+
+# 图片广告识别
+
+|总调用量|机器智能审核价格（单位：元／百张）|
+|:--|:--|
+|第 0 张 至 300 万张|0.085|
+|第 300 万张 至 1500 万张| 0.075|
+|第 1500 万张 至 3000 万张| 0.065|
+|3000 万至1亿张| 0.055|
+|1 亿张以上| 0.05|
+
+<p>例：<br>用户一个月的调用量为<span class="censor-border-bottom" contenteditable data-calc-id="censor-price-ads-usageCnt">500</span>万次，账单金额约为:</p>
+
+<p><code><span data-calc-id="censor-price-ads-expr"></span></code></p>
+
+
+# 图片不良场景识别
+
+|总调用量|机器智能审核价格（单位：元／百张）|
+|:--|:--|
+|第 0 张 至 300 万张|0.085|
+|第 300 万张 至 1500 万张| 0.075|
+|第 1500 万张 至 3000 万张| 0.065|
+|3000 万至1亿张| 0.055|
+|1 亿张以上| 0.05|
+
+<p>例：<br>用户一个月的调用量为<span class="censor-border-bottom" contenteditable data-calc-id="censor-price-behavior-usageCnt">500</span>万次，账单金额约为:</p>
+
+<p><code><span data-calc-id="censor-price-behavior-expr"></span></code></p>
+
+# 图片审核（图片多鉴合一）
+图片审核接口根据实际调用的服务单独收费，例如，调用图片审核接口时，同时做了图片鉴黄、鉴暴恐、敏感人物识别和图片广告识别，那么最终的价格是按照单个服务的价格总和。
+
+例：
+用户一个月调用图片审核，同时使用了图片鉴黄、图片鉴暴恐、图片敏感人物识别和图片广告识别，其调用量为500万次，账单金额为: 
+图片鉴黄：
+
+``` 3000000*0.085/100+2000000*0.075/100＝2550+1500=4050元 ```
+
+图片鉴暴恐：
+
+``` 3000000*0.085/100+2000000*0.075/100＝2550+1500=4050元 ```
+
+图片敏感人物识别：
+
+``` 3000000*0.085/100+2000000*0.075/100＝2550+1500=4050元 ```
+
+图片广告识别：
+
+``` 3000000*0.085/100+2000000*0.075/100＝2550+1500=4050元 ```
+
+总价为：
+
+``` 4050+4050+4050+4050=16200元 ```
+
+# 视频鉴黄
+视频鉴黄是对视频截帧后，对截帧进行图片鉴黄，所以视频鉴黄价格实际使用的是截帧图片鉴黄的价格，与图片鉴黄共用范围。
+
+例：
+某月视频文件使用视频鉴黄服务，视频截帧的数量为400万，即视频鉴黄产生的图片鉴黄量为400万；当月图片文件使用鉴黄服务，其调用量为100万。则这个月总的图片鉴黄调用量为500万，账单金额则为: 
+图片鉴黄：
+
+``` 3000000*0.085/100+2000000*0.075/100＝2550+1500=4050元 ```
+
+# 视频鉴暴恐
+视频鉴暴恐是对视频截帧后，对截帧进行图片鉴暴恐，所以视频鉴暴恐价格实际使用的是截帧图片鉴暴恐的价格，与图片鉴暴恐共用范围。
+
+例：
+某月视频文件使用视频鉴暴恐服务，视频截帧的数量为400万，即视频鉴暴恐产生的图片鉴暴恐量为400万；当月图片文件使用鉴暴恐服务，其调用量为100万。则这个月总的图片鉴暴恐调用量为500万，账单金额则为: 
+图片鉴暴恐：
+
+``` 3000000*0.085/100+2000000*0.075/100＝2550+1500=4050元 ```
+
+# 视频敏感人物识别
+视频敏感人物识别是对视频截帧后，对截帧进行图片敏感人物识别，所以视频敏感人物识别价格实际使用的是截帧图片敏感人物识别的价格，与图片敏感人物识别共用范围。
+
+例：
+某月视频文件使用视频敏感人物识别服务，视频截帧的数量为400万，即视频敏感人物识别产生的图片敏感人物识别量为400万；当月图片文件使用敏感人物识别服务，其调用量为100万。则这个月总的图片敏感人物识别调用量为500万，账单金额则为: 
+图片敏感人物识别：
+
+``` 3000000*0.085/100+2000000*0.075/100＝2550+1500=4050元 ```
+
+# 视频广告识别
+视频广告识别是对视频截帧后，对截帧进行图片广告识别，所以视频广告识别价格实际使用的是截帧图片广告识别的价格，与图片广告识别共用范围。
+
+例：
+某月视频文件使用视频广告识别服务，视频截帧的数量为400万，即视频广告识别产生的图片广告识别量为400万；当月图片文件使用广告识别服务，其调用量为100万。则这个月总的图片广告识别调用量为500万，账单金额则为: 
+图片广告识别：
+
+``` 3000000*0.085/100+2000000*0.075/100＝2550+1500=4050元 ```
+
+# 直播鉴黄
+
+|总调用量|机器智能审核价格（单位：元／百张）|
+|:--|:--|
+|第 0 张 至 300 万张|0.18|
+|第 300 万张 至 1500 万张| 0.16|
+|第 1500 万张 至 3000 万张| 0.15|
+|3000 万张以上| 0.13|
+
+<p>例：<br>用户一个月的调用量为<span class="censor-border-bottom" contenteditable data-calc-id="censor-price-lpulp-usageCnt">500</span>万次，账单金额约为:</p>
+
+<p><code><span data-calc-id="censor-price-lpulp-expr"></span></code></p>
+
+# 直播鉴暴恐
+
+|总调用量|机器智能审核价格（单位：元／百张）|
+|:--|:--|
+|第 0 张 至 300 万张|0.18|
+|第 300 万张 至 1500 万张| 0.16|
+|第 1500 万张 至 3000 万张| 0.15|
+|3000 万张以上| 0.13|
+
+<p>例：<br>用户一个月的调用量为<span class="censor-border-bottom" contenteditable data-calc-id="censor-price-lterror-usageCnt">500</span>万次，账单金额约为:</p>
+
+<p><code><span data-calc-id="censor-price-lterror-expr"></span></code></p>
+
+# 直播敏感人物识别
+
+|总调用量|机器智能审核价格（单位：元／百张）|
+|:--|:--|
+|第 0 张 至 300 万张|0.18|
+|第 300 万张 至 1500 万张| 0.16|
+|第 1500 万张 至 3000 万张| 0.15|
+|3000 万张以上| 0.13|
+
+<p>例：<br>用户一个月的调用量为<span class="censor-border-bottom" contenteditable data-calc-id="censor-price-lpolitician-usageCnt">500</span>万次，账单金额约为:</p>
+
+<p><code><span data-calc-id="censor-price-lpolitician-expr"></span></code></p>
+
+# 直播广告识别
+
+|总调用量|机器智能审核价格（单位：元／百张）|
+|:--|:--|
+|第 0 张 至 300 万张|0.18|
+|第 300 万张 至 1500 万张| 0.16|
+|第 1500 万张 至 3000 万张| 0.15|
+|3000 万张以上| 0.13|
+
+<p>例：<br>用户一个月的调用量为<span class="censor-border-bottom" contenteditable data-calc-id="censor-price-lads-usageCnt">500</span>万次，账单金额约为:</p>
+
+<p><code><span data-calc-id="censor-price-lads-expr"></span></code></p>
+
+# 直播音频反垃圾
+
+|总调用量|机器智能审核价格（单位：元／分钟）|
+|:--|:--|
+|无阶梯|0.02|
+
+<p>例：<br>用户一个月的调用量为<span class="censor-border-bottom" contenteditable data-calc-id="censor-price-laantispam-usageCnt">500</span>分钟，账单金额约为:</p>
+
+<p><code><span data-calc-id="censor-price-laantispam-expr"></span></code></p>
+
+# 音频反垃圾
+
+|总调用量|机器智能审核价格（单位：元／分钟）|
+|:--|:--|
+|无阶梯|0.02|
+
+<p>例：<br>用户一个月的调用量为<span class="censor-border-bottom" contenteditable data-calc-id="censor-price-aantispam-usageCnt">500</span>分钟，账单金额约为:</p>
+
+<p><code><span data-calc-id="censor-price-aantispam-expr"></span></code></p>
+
+# 文本反垃圾
+
+|总调用量|机器智能审核价格（单位：元／千次）|
+|:--|:--|
+|无阶梯|1.0|
+
+<p>例：<br>用户一个月的调用量为<span class="censor-border-bottom" contenteditable data-calc-id="censor-price-tantispam-usageCnt">500</span>万次，账单金额约为:</p>
+
+<p><code><span data-calc-id="censor-price-tantispam-expr"></span></code></p>
+
+<script>
+function calcPrice(usageCnt, pricesNum, pricesPrice) {
+    // usageCnt 总调用量，单位万张
+    // billAmount 账单金额，单位元
+    // expr 计算表达式
+    var fixNum = function (n) {
+        var s = n.toFixed(2);
+        if (s.endsWith(".00")) {
+            return s.replace(".00", "");
+        }
+        return s;
+    };
+    var exprs = [];
+    var billAmount = 0;
+    for (var i = 0; i < pricesNum.length; i++) {
+        if (usageCnt > pricesNum[i]) {
+            billAmount += (usageCnt - pricesNum[i]) * pricesPrice[i];
+            exprs.push(usageCnt - pricesNum[i] + "*" + pricesPrice[i]);
+            usageCnt = pricesNum[i];
+        }
+    }
+    var r = {
+        billAmount: fixNum(billAmount),
+        expr: exprs.reverse().join("+") + ("=" + fixNum(billAmount) + "\u5143"),
+    };
+    if (r.expr.startsWith("=")) {
+        r.expr = r.expr.replace("=", "");
+    }
+    return r;
+}
+jQuery(function(){
+    jQuery('[data-calc-id="censor-price-pulp-usageCnt"]').on('input', function(){
+        var text = jQuery(this).text()
+        var r = calcPrice(text*100, [1000000, 300000, 150000, 30000, 0], [0.05, 0.055, 0.065, 0.075, 0.085])
+        jQuery('[data-calc-id="censor-price-pulp-expr"]').text(r.expr)
+    }).trigger('input')
+    jQuery('[data-calc-id="censor-price-terror-usageCnt"]').on('input', function(){
+        var text = jQuery(this).text()
+        var r = calcPrice(text*100, [1000000, 300000, 150000, 30000, 0], [0.05, 0.055, 0.065, 0.075, 0.085])
+        jQuery('[data-calc-id="censor-price-terror-expr"]').text(r.expr)
+    }).trigger('input')
+    jQuery('[data-calc-id="censor-price-politician-usageCnt"]').on('input', function(){
+        var text = jQuery(this).text()
+        var r = calcPrice(text*100, [1000000, 300000, 150000, 30000, 0], [0.05, 0.055, 0.065, 0.075, 0.085])
+        jQuery('[data-calc-id="censor-price-politician-expr"]').text(r.expr)
+    }).trigger('input')
+    jQuery('[data-calc-id="censor-price-ads-usageCnt"]').on('input', function(){
+        var text = jQuery(this).text()
+        var r = calcPrice(text*100, [1000000, 300000, 150000, 30000, 0], [0.05, 0.055, 0.065, 0.075, 0.085])
+        jQuery('[data-calc-id="censor-price-ads-expr"]').text(r.expr)
+    }).trigger('input')
+    jQuery('[data-calc-id="censor-price-behavior-usageCnt"]').on('input', function(){
+        var text = jQuery(this).text()
+        var r = calcPrice(text*100, [1000000, 300000, 150000, 30000, 0], [0.05, 0.055, 0.065, 0.075, 0.085])
+        jQuery('[data-calc-id="censor-price-behavior-expr"]').text(r.expr)
+    }).trigger('input')
+    jQuery('[data-calc-id="censor-price-lpulp-usageCnt"]').on('input', function(){
+        var text = jQuery(this).text()
+        var r = calcPrice(text*100, [300000, 150000, 30000, 0], [0.13, 0.15, 0.16, 0.18])
+        jQuery('[data-calc-id="censor-price-lpulp-expr"]').text(r.expr)
+    }).trigger('input')
+    jQuery('[data-calc-id="censor-price-lterror-usageCnt"]').on('input', function(){
+        var text = jQuery(this).text()
+        var r = calcPrice(text*100, [300000, 150000, 30000, 0], [0.13, 0.15, 0.16, 0.18])
+        jQuery('[data-calc-id="censor-price-lterror-expr"]').text(r.expr)
+    }).trigger('input')
+    jQuery('[data-calc-id="censor-price-lpolitician-usageCnt"]').on('input', function(){
+        var text = jQuery(this).text()
+        var r = calcPrice(text*100, [300000, 150000, 30000, 0], [0.13, 0.15, 0.16, 0.18])
+        jQuery('[data-calc-id="censor-price-lpolitician-expr"]').text(r.expr)
+    }).trigger('input')
+    jQuery('[data-calc-id="censor-price-lads-usageCnt"]').on('input', function(){
+        var text = jQuery(this).text()
+        var r = calcPrice(text*100, [300000, 150000, 30000, 0], [0.13, 0.15, 0.16, 0.18])
+        jQuery('[data-calc-id="censor-price-lads-expr"]').text(r.expr)
+    }).trigger('input')
+    jQuery('[data-calc-id="censor-price-laantispam-usageCnt"]').on('input', function(){
+        var text = jQuery(this).text()
+        var r = calcPrice(text, [0], [0.02])
+        jQuery('[data-calc-id="censor-price-laantispam-expr"]').text(r.expr)
+    }).trigger('input')
+    jQuery('[data-calc-id="censor-price-aantispam-usageCnt"]').on('input', function(){
+        var text = jQuery(this).text()
+        var r = calcPrice(text, [0], [0.02])
+        jQuery('[data-calc-id="censor-price-aantispam-expr"]').text(r.expr)
+    }).trigger('input')
+    jQuery('[data-calc-id="censor-price-tantispam-usageCnt"]').on('input', function(){
+        var text = jQuery(this).text()
+        var r = calcPrice(text*10, [0], [1.0])
+        jQuery('[data-calc-id="censor-price-tantispam-expr"]').text(r.expr)
+    }).trigger('input')
+})
+</script>
+
+<style>
+.censor-border-bottom{
+    border: 1px solid #D9D9D9;
+    border-radius: 2px;
+    line-height: 22px;
+    display: inline-block;
+    padding: 3px 17px;
+    margin: 0 4px;
+}
+</style>

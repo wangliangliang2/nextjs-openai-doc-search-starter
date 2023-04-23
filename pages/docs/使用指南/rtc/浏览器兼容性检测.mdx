@@ -1,0 +1,40 @@
+<link rel="stylesheet" type="text/css" href="https://docs.qnsdk.com/styles/doc-v4-api.css" />
+<div class="rtc-doc rtc-doc-ast" id="rtc-doc">
+    <div><p>在开始音视频通话之前，建议先对检测当前设备是否正常。根据不同情况，SDK 提供了多种方法来完成检测。</p>
+
+# 接口检测
+<p>可以通过 <a href="/rtc/9070/WebQNRTC#isBrowserSupported">QNRTC.isBrowserSupported</a> 来获取 SDK 是否支持当前设备。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">if</span> (<span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-property">isBrowserSupported</span>) {
+<span></span>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;support!&quot;</span>);
+<span></span>} <span class="hljs-keyword">else</span> {
+<span></span>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;not support!&quot;</span>);
+<span></span>}
+<span></span></code></pre>
+
+# 设备检测
+<p>可以直接通过请求创建 Track，来判断是否支持媒体流采集。</p>
+<pre><code class="language-typescript"><span class="hljs-comment">// 测试摄像头采集</span>
+<span></span><span class="hljs-keyword">try</span> {
+<span></span>  <span class="hljs-keyword">const</span> track = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createCameraVideoTrack</span>();
+<span></span>} <span class="hljs-keyword">catch</span>(e) {
+<span></span>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;camera track not support!&quot;</span>);
+<span></span>}
+<span></span>
+<span></span><span class="hljs-comment">// 测试麦克风采集</span>
+<span></span><span class="hljs-keyword">try</span> {
+<span></span>  <span class="hljs-keyword">const</span> track = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">createMicrophoneAudioTrack</span>();
+<span></span>} <span class="hljs-keyword">catch</span>(e) {
+<span></span>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;microphone track not support!&quot;</span>);
+<span></span>}
+<span></span></code></pre>
+
+# RTC 全流程检测
+<p>除了上面两种检测方法外，SDK 还提供了一个 <a href="/rtc/9070/WebQNRTC#checkSystemRequirements">QNRTC.checkSystemRequirements</a> 方法。执行该方法，会自动检测媒体流采集、加入房间、发布、订阅、离开房间等整个流程。使用方法如下。</p>
+<pre><code class="language-typescript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">QNRTC</span>.<span class="hljs-title function_">checkSystemRequirements</span>();
+<span></span><span class="hljs-keyword">if</span> (result.<span class="hljs-property">ok</span>) {
+<span></span>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;test ok!&quot;</span>);
+<span></span>} <span class="hljs-keyword">else</span> {
+<span></span>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;test fail&quot;</span>, result.<span class="hljs-property">reason</span>);
+<span></span>}
+<span></span></code></pre>
+<p>注意，由于该方法会实际跑一遍 RTC 视频通话的流程，因此比较耗时，一般需要花费 30s 左右。</p></div></div>

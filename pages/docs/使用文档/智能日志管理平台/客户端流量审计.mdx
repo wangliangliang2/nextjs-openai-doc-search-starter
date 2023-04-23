@@ -1,0 +1,105 @@
+从 `v1.2.3` 版本开始，logkit 加入了审计功能，可以对每个收集器的运行情况进行审计。
+
+
+
+# 配置收集器记录审计信息
+
+## 开启记录发送的审计日志
+
+默认情况下，审计信息并不记录，只有在配置收集器的时候主动开启，才会记录。
+
+![](https://dn-odum9helk.qbox.me/FhuPUw1ybovzTStonXAed6aiAV3G)
+
+如图所示，在配置正常的日志收集器的最后一步，打开【高级选项】，选择记录发送审计日志。
+
+然后正常分发采集器到对应机器上。
+
+
+## 机器上开始生成审计日志
+
+![](https://dn-odum9helk.qbox.me/FsSLGIujyNtWBrf-Zk6Tdya2QDG4)
+
+如图所示，在机器上，logkit的安装目录中，会有一个  `logkit_audit` 文件夹，里面开始出现发送的审计日志。
+
+![](https://dn-odum9helk.qbox.me/FnDKEJmOHnyEd_gX9N-0ljn495tw)
+
+对于审计日志的每一列都是用制表符(`\t`)分隔的。
+
+从左到右依次是 `收集器名称`，`时间戳`，`读取的字节数`，`读取的行数`，`发送的行数`，`备注`以及`当前延迟`。
+
+上图中的样例审计日志中`备注`为空，但是制表符并没有省略。
+
+备注里的内容就是我们在开启`记录发送的审计日志`下面的 `配置备注信息`。
+
+![](https://dn-odum9helk.qbox.me/Fpt0wgb8o-E526R4wRmo1Ubp3YJt)
+
+
+# 收集logkit生成的审计日志
+
+## 配置读取
+
+logkit的审计日志我们也采用收集正常日志的方式，配置一个采集器来收集。
+
+![](https://dn-odum9helk.qbox.me/FiDRhJxaaBxttxtdj_JvPk-nGhAT)
+
+如图所示，添加一个收集器，填写机器上审计日志的文件夹路径，点击【获取数据】就可以看到我们收集到的审计日志。
+
+## 配置解析
+
+在解析方式阶段，选择 `csv格式解析`，并选择分隔符为`制表符\t`。
+
+![](https://dn-odum9helk.qbox.me/Fr689K2reBpirBtOP_jINgVSg4Ie)
+
+请注意修改字段名称和字段类型，尤其是 `时间戳`，`读取的字节数`，`读取的行数`，`发送的行数` 这三个字段的类型一定要改成 `long`  方便后续计算。
+
+![](https://dn-odum9helk.qbox.me/Fmmw3ZBwh-2f44TJJWaiORYzx1qY)
+
+## 时间类型转换
+
+![](https://dn-odum9helk.qbox.me/FiXocRP41jOHaBsvclZcHi0I8CVY)
+
+在转换阶段将之前的时间类型转换一下。
+
+## 配置发送，并分发
+
+![](https://dn-odum9helk.qbox.me/FqSQyVDXQxLNS-J0lKMEDisouU0N)
+
+发送阶段填写上专门存放审计日志的仓库名称，假设为`logkit_audit`。
+
+![](https://dn-odum9helk.qbox.me/Fuuly7_BAiM8zB2p7vnkHNyk6yC0)
+
+注意这个收集审计日志的收集器不要打开【记录审计日志】的选项，否则会导致日志恶性循环。
+
+最后分发完成后，在日志仓库可以看到 `logkit_audit` 的仓库。
+
+![](https://dn-odum9helk.qbox.me/FoSsdfxwnJsWNlnOSY5w2nWuKE6N)
+
+# 配置监控展示
+
+【搜索分析】中选择【可视化】，即可开始配置报表。
+
+![](https://dn-odum9helk.qbox.me/FnsQ9XHjk7bXfo1--kA5LEKRJEa_)
+
+## 每分钟日志流量
+
+![](https://dn-odum9helk.qbox.me/FlBkLkKwrgunwpRv3fr3qDvFqt5K)
+
+添加到仪表盘
+
+![](https://dn-odum9helk.qbox.me/Fis4dokkIIDQcF90OF2bGxqafOxd)
+
+## 每分钟日志条数
+
+![](https://dn-odum9helk.qbox.me/FoMEFGyFExAVJbGoE8OypfXv-28M)
+
+
+## 整体查看
+
+
+![](https://dn-odum9helk.qbox.me/FkZ4BhAm3ieKLWgqFG_LD9_8mtZ5)
+
+可以修改查看的时间范围以便获得整体情况
+
+![](https://dn-odum9helk.qbox.me/FkH32aAZgmPWFjgOJasV3YMfFuxS)
+
+

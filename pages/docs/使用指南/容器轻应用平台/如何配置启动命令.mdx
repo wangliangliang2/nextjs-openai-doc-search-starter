@@ -1,0 +1,38 @@
+如果您在构建镜像时没有设置启动命令和参数，或者想要变更启动命令和参数，可以针对某个应用发布新版本时设置。
+
+本文介绍如何在 QAPP 控制台为容器设置启动时要执行的命令和参数。
+
+
+
+
+
+# **操作步骤**
+
+1. 登录 [容器轻应用平台](https://portal.qiniu.com/dora/qapp)。
+
+2. 在左侧导航栏单击 **具体应用名称**，在顶部菜单栏选择 **版本列表**。
+
+3. 单击【发布新版本】按钮，进入 **创建版本页面**。
+
+4. 点击开启 **高级配置->容器入口**，启动指令必须为容器镜像支持的命令，否则会导致容器启动失败。
+
+   ![img](https://dora-doc.qiniu.com/WX20221103-115251%402x.png)
+
+5. 通过配置容器的可执行命令（Command）和参数（Arg），可以覆盖 `ENTRYPOINT` 和 `CMD`。
+
+
+
+## 启动命令和参数
+
+镜像构建时，通过 `ENTRYPOINT` 和 `CMD` 可以指定启动容器后要执行的命令和参数。
+
+更多信息，请参见[ENTRYPOINT](https://docs.docker.com/engine/reference/builder/#entrypoint)和[CMD](https://docs.docker.com/engine/reference/builder/#cmd)。
+
+| 镜像ENTRYPOINT | 镜像CMD   | 容器Command | 容器Arg    | 命令执行           | 说明                                                         |
+| -------------- | --------- | ----------- | ---------- | ------------------ | ------------------------------------------------------------ |
+| [/ep-1]        | [foo bar] | 未设置      | 未设置     | [ep-1  foo bar]    | Command和Arg均未设置，则执行镜像ENTRYPOINT和CMD。            |
+| [ /ep-1]       | [foo bar] | [ /ep-2]    | 未设置     | [ep-2]             | 设置了Command，未设置Arg，则只执行Command，忽略镜像ENTRYPOINT和CMD。 |
+| [ /ep-1]       | [foo bar] | 未设置      | [zoo]      | [ep-1  zoo]        | 设置了Arg，未设置Command，则执行镜像ENTRYPOINT和容器Arg。    |
+| [ /ep-1]       | [foo bar] | [ /ep-2]    | [zoo  boo] | [ep-2   zoo   boo] | 同时设置了Command和Arg，则执行容器Command和Arg。             |
+
+**注意**：启动指令必须为容器镜像支持的命令，否则会导致容器启动失败。

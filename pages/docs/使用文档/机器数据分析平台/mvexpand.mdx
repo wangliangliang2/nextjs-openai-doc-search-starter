@@ -1,0 +1,54 @@
+mvexpand 将多值字段的值扩展为单独的事件，多值字段中的每个值对应结果中一个新事件。
+
+**语法:**
+
+```
+mvexpand <field> [limit=N]
+```
+
+**参数说明**
+ 
+必填参数：
+
+field ：多值字段的名称。
+
+可选参数：
+
+limit=N：指定展开多值字段的前 N 个值为新事件，默认 limit 无限制，即展开字段的全部值。
+
+**示例:**
+
+
+有以下原始数据:
+
+```
+grade=80,level="good",grade=90,level="excellent",grade=70,level="poor"
+```
+
+
+1.为多值字段grade的每个值创建新事件。
+
+```
+* | mvexpand grade{}
+```
+注意：
+> Pandora 2.0 解析多值字段时会基于原始字段给字段名加上{}，所以这里需要输入mvexpand grade{}。
+
+返回结果:
+
+|grade{}|level{}|
+|:--:|:--:|
+|80|good,excellent,poor|
+|90|good,excellent,poor|
+|70|good,excellent,poor|
+
+2.为多值字段grade的第一个值创建新事件
+```
+mvexpand grade{} limit=1
+```
+返回结果:
+
+|grade{}|level{}|
+|:--:|:--:|
+|80|good,excellent,poor|
+

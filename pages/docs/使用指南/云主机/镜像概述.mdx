@@ -1,0 +1,71 @@
+<a id="step01"></a>
+# **什么是镜像？**
+
+**镜像**提供启动云主机实例所需的所有信息，包括特定的操作系统信息或额外一些预装的应用程序。指定需要的镜像后可以从该镜像启动实例，也可以根据需要从任意多个不同的镜像启动实例。通俗的说，镜像就是云主机的“装机盘”。
+
+<br>
+
+<a id="step02"></a>
+# **镜像类型**
+
+QVM 提供的镜像包括以下几种：
+
+**公共镜像**：官方提供的公共镜像，支持几乎所有 Windows 和 Linux 的主流镜像版本
+
+**自定义镜像**：仅创建者和共享对象可以使用，由现有运行的实例创建而来或由外部导入而来
+
+<a id="step021"></a>
+## **公共镜像**
+
+公共镜像是由官方提供、支持和维护的镜像，包含基础操作系统和初始化组件，所有用户均可使用。该镜像自动免费为用户提供最高 5G 的默认 DDoS 防护能力。镜像版本包括：Windows Server、CentOS、Ubuntu、Debian、SUSE Linux、OpenSUSE、Aliyun Linux、CoreOS 和 FreeBSD。
+
+<a id="step022"></a>
+## **自定义镜像**
+
+自定义镜像是根据你现有的物理机服务器、虚拟机或云主机创建的自定义镜像，或通过镜像导入功能导入的镜像。仅创建者与共享者可以使用。
+
+- 应用场景：对一个已经部署好应用的云服务器实例创建镜像，以此快速创建更多包含相同配置的实例。
+
+- 免费
+
+- 镜像资源会因为地域不同而不同
+
+# **镜像费用**
+国内 Windows Server 镜像免费，港澳台/海外 Windows Server 收费，具体以创建实例时显示的信息为准。
+Linux 镜像全部免费（不含Red Hat Enterprise Linux）。
+
+# **选择镜像**
+**选择系统架构（32位或64位）**
+
+| 系统架构 | 适用内存              | 使用限制                                                                         |
+|----------|-----------------------|----------------------------------------------------------------------------------|
+| 32位     | 适用于4 GiB以下内存   | 实例规格内存大于4 GiB时，无法使用32位操作系统 Windows 32位操作系统最高支持4核CPU |
+| 64位     | 适用于4 GiB及以上内存 | 若您的应用需使用4 GiB以上内存或未来需扩充内存至4 GiB以上，请使用64位操作系统     |
+
+**选择操作系统类型（Windows或Linux/类Unix系统）**
+
+| 操作系统类型 | 登录方式         | 特点                                                                  | 适用场景                                                                                       |
+|--------------|------------------|-----------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
+| Windows      | 支持远程桌面方式 | Windows系统的公共镜像内含正版已激活系统                               | 适合运行Windows下开发的程序，如.NET等 支持SQL Server等数据库（需自行安装）                     |
+| Linux/类Unix | 支持SSH方式      | 常用的服务器端操作系统，具备安全性和稳定性 开源，轻松建立和编译源代码 | 一般用于高性能Web等服务器应用，支持常见的PHP、Python等编程语言 支持MySQL等数据库（需自行安装） |
+
+
+
+## **Windows系统版本**
+建议您选择高版本Windows系统。相对低版本来说，高版本系统漏洞更少，并且IIS 7.5比IIS 6提供了更多功能以及更方便的控制台。
+请您阅读以下注意事项并根据实际需要选择合适的硬件配置和Windows版本。
+- vCPU为1核且内存为1 GiB的实例规格无法启动MySQL数据库。
+- Windows实例用于建站、部署Web环境时，最少需要2 GiB内存。
+- 为了保证性能体验，使用Windows 2012系统时，建议您选择内存为2 GiB及以上的实例规格。
+- 使用Windows Server 2016/2019系统必须选择内存为2 GiB及以上的实例规格，否则售卖页的公共镜像列表中不会出现Windows Server 2016/2019。
+
+
+## **Linux/类Unix系统的发行版**
+**CentOS 和 Red Hat**两种操作系统的特点和关系见下表。
+<table><thead><tr><th>操作系统</th><th>软件包格式</th><th>安装软件</th><th>费用</th><th>特点</th><th>两者关系</th></tr></thead><tbody><tr><td>CentOS</td><td rowspan="2">rpm包</td><td rowspan="2">yum</td><td>免费使用</td><td>稳定，但补丁更新速度慢于Red Hat。<br>支持在线升级，可即时更新系统。</td><td rowspan="2">CentOS是Red Hat的开源版本。<br>两者rpm包通用。<br>两者命令通用。</td></tr><tr><td>Red Hat</td><td>付费使用</td><td>稳定，可获得企业级技术支持。</td></tr></tbody></table>
+
+**Debian和Ubuntu**两种操作系统的特点和关系见下表。
+<table><thead><tr><th>操作系统</th><th>软件包格式</th><th>安装软件</th><th>特点</th><th>两者关系</th></tr></thead><tbody><tr><td>Debian</td><td rowspan="2">deb包</td><td>aptitude</td><td>系统相对稳定。</td><td rowspan="2">Ubuntu基于Debian开发，可简单认为Ubuntu是Debian的功能加强版。</td></tr><tr><td>Ubuntu</td><td>apt-get</td><td>系统配置更人性化。<br>软件的更新更为激进。<br>新手友好度更高，易用性更好，更容易上手。</td></tr></tbody></table>
+
+**OpenSUSE和SUSE Linux**的关系和对比见下表。
+<table><thead><tr><th>操作系统</th><th>两者对比</th><th>两者关系</th></tr></thead><tbody><tr><td>OpenSUSE</td><td rowspan="2">OpenSUSE是社区版，SUSE Linux Enterprise是企业版。<br>SUSE Linux Enterprise更成熟、稳定，官方源中软件与OpenSUSE相比较少。<br>OpenSUSE软件版本更新，可扩展性强（可用于桌面或服务器），免费更新（也可购买官方技术支持）。<br>SUSE Linux Enterprise更适用于工作、生产环境，娱乐功能较差，OpenSUSE可用于个人娱乐和其他较专业的用途。</td><td rowspan="2">SUSE Linux在版本10.2以后更名为OpenSUSE。<br>OpenSUSE使用的内核与SUSE Linux相同。</td></tr><tr><td>SUSE Linux</td></tr></tbody></table>

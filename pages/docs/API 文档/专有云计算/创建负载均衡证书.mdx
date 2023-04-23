@@ -1,0 +1,37 @@
+<style>.topic-content-wrap .topic-detail table thead th { word-break: keep-all; }</style>
+
+
+# 请求路径
+> `POST` /api/rio/v1/network/loadbalancer_certificate
+
+
+# 请求参数
+名称 | 类型 | 位置 | 必须 | 描述 
+----- | ----- | ----- | ----- | ----- 
+x-rio-zone-id           | string | header| 是 | 地域 ID
+server_certificate_name		| string 	| body | 是 | 证书名称
+server_certificate			| string 	| body | 是 | 公钥证书
+private_key					| string 	| body | 是 | 私钥证书
+
+
+# 返回值
+名称 | 类型 |  描述
+----- | ----- | -----
+request_id	| string             | 请求 ID
+
+## 请求值示例
+```json
+{
+    "server_certificate_name":"cert-g18lF",
+    "private_key":"-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEAq2SOUgZGOAHNY3n7qR5R0h/nYYMnz69xz+hXoysPvfsoWnZi\nMIIEpAIBAAKCAQEAq2SOUgZGOAHNY3n7qR5R0h/nYYMnz69xz+hXoysPvfsoWnZi\nMIIEpAIBAAKCAQEAq2SOUgZGOAHNY3n7qR5R0h/nYYMnz69xz+hXoysPvfsoWnZi\nMIIEpAIBAAKCAQEAq2SOUgZGOAHNY3n7qR5R0h/nYYMnz69xz+hXoysPvfsoWnZi\nMIIEpAIBAAKCAQEAq2SOUgZGOAHNY3n7qR5R0h/nYYMnz69xz+hXoysPvfsoWnZi\nMIIEpAIBAAKCAQEAq2SOUgZGOAHNY3n7qR5R0h/nYYMnz69xz+hXoysPvfsoWnZi\nMIIEpAIBAAKCAQEAq2SOUgZGOAHNY3n7qR5R0h/nYYMnz69xz+hXoysPvfsoWnZi\nMIIEpAIBAAKCAQEAq2SOUgZGOAHNY3n7qR5R0h/nYYMnz69xz+hXoysPvfsoWnZi\nMIIEpAIBAAKCAQEAq2SOUgZGOAHNY3n7qR5R0h/nYYMnz69xz+hXoysPvfsoWnZi\nH/Me/JtAfoZC/KPdFXUAP7sKMiRn4W8yjRbwnDoJ+oILYC7BQnnDrg==\n-----END RSA PRIVATE KEY-----",
+    "server_certificate":"-----BEGIN CERTIFICATE-----\nMIIGBzCCBO+gAwIBAgIQB43fqgfzkdLGf7ZbZrnW8DANBgkqhkiG9w0BAQsFADBy\nMIIGBzCCBO+gAwIBAgIQB43fqgfzkdLGf7ZbZrnW8DANBgkqhkiG9w0BAQsFADBy\nMIIGBzCCBO+gAwIBAgIQB43fqgfzkdLGf7ZbZrnW8DANBgkqhkiG9w0BAQsFADBy\nMIIGBzCCBO+gAwIBAgIQB43fqgfzkdLGf7ZbZrnW8DANBgkqhkiG9w0BAQsFADBy\nMIIGBzCCBO+gAwIBAgIQB43fqgfzkdLGf7ZbZrnW8DANBgkqhkiG9w0BAQsFADBy\nMEUCIC8TECfLn7Z2QSF50fslk6qRRUD7/M9U/s/G4lkc9YLGAiEAnFhazQEZi0iv\nk8pTyYVUpTFxc7KVLWKld+FS0LtP830AdwBRo7D1/QF5nFZtuDd4jwykeswbJ8v3\nMIIGBzCCBO+gAwIBAgIQB43fqgfzkdLGf7ZbZrnW8DANBgkqhkiG9w0BAQsFADBy\nZQY7xMdSt78DPO5rtQIhAJxTdyPLScpckqH1TcYrj/YI9UTKVTETqEWMaCmWeczC\nMIIGBzCCBO+gAwIBAgIQB43fqgfzkdLGf7ZbZrnW8DANBgkqhkiG9w0BAQsFADBy\nRjBEAiAsVp6D1slvCxoZOmJWTN7FtfWhy5eDe9HNtWk2kUN/OAIgVCK7LOpU78QB\ndu0dfxwhjpYVfzrIpGECTIFhx5IvQ98wDQYJKoZIhvcNAQELBQADggEBAABsCFZT\nk6utJLcyl2h5+AerUcNYhJaT+u4iiqQEgMEn6axhO/2LGQg46gHZKWlWUqt5g3yG\nMIIGBzCCBO+gAwIBAgIQB43fqgfzkdLGf7ZbZrnW8DANBgkqhkiG9w0BAQsFADBy\nmnu89bPphE1XLNEQTV7m5JeyvY+++HeY5vHyeKEKmUJBo5iGn2Cj/FEawCzoJJCt\n3KbxU/5ccTd7hTQAr6XXXJMkQhbbT2Jdi63gFkdSwhkTqbckrrRh7N0kFYJO1Fp4\nZhfYBD+DfzgCzcCffju8/vK6Dtj6M5tvO6dRCpyLYsmPdzpuoYLpkEVa7NXZy/PQ\nU0SSRQhXUliRv5k=\n-----END CERTIFICATE-----"
+}
+```
+
+## 返回值示例
+```json
+{
+    "request_id":"HtPfEupZugkUAcoW",
+    "data":{}
+}
+```

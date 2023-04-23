@@ -1,0 +1,30 @@
+**本文简述了按需拉流的使用方式**。
+适用的空间类型为`gb28181`或者`主动拉流`或者`ONVIF`三种。
+# **功能介绍**
+视频的播放都是需要消耗带宽及流量的，为了节省用户流量和带宽，QVS平台支持“按需拉流”。当开启按需拉流后，只有在进行播放的情况下才会有视频流的产生，播放结束后, QVS会自动停止设备推流。
+## 按需拉流的2层含义
+* 有播放请求时自动推流。
+* 无人观看时自动断流。
+* 同时也可以调用API触发推流，[启动设备推流](https://developer.qiniu.com/qvs/6907/start-device)等同于点击该按钮。<br>  <img src="https://dn-odum9helk.qbox.me/FiREN3b9sFFPsQGUChrSdbr8USEH" width = "450" height = "300" alt="开始推流" align=center /> <br>调用API终止上行推流，[终止设备推流](https://developer.qiniu.com/qvs/6908/stop-device)等同于点击该按钮 <br> <img src="https://dn-odum9helk.qbox.me/Fts8xYXQsozNmsDHM7qMkaQdZsym" width = "450" height = "300" alt="开始推流" align=center />
+
+# **使用流程**
+## **1.如何开启按需拉流**
+**未创建空间**
+（1）在七牛云视频监控产品portal上空间管理中点击【创建空间】。
+（2）输入空间配置必填项后，开启按需拉流开关即可。
+![](https://dn-odum9helk.qbox.me/FlI2TPtpmOTVuqjBKgSuErvQ4lUH)
+**已创建空间**
+（1）在七牛云视频监控产品portal上查询已经创建的业务空间。
+（2）打开对应业务空间的配置并进行编辑操作。
+（3）开启按需拉流开关。
+![按需拉流](https://dn-odum9helk.qbox.me/FnVplc5T8UIeD9LOjfBxyvn_Qde2)
+## **2.开启按需拉流后如何触发摄像头推流**
+（1）portal上实时预览页面中点击“启动拉流” 操作。
+（2）通过[启动设备拉流](https://developer.qiniu.com/qvs/6907/start-device)api。
+（3）播放器进行播放请求。
+以上3种都会触发摄像头推流，并且在无人观看持续60s左右，会自动终止摄像头推流。
+
+# **额外提示**
+1. 按需拉流, 适用的空间类型为`gb28181`或者`主动拉流`或者`ONVIF`三种; 如果是rtmp类型, 则需要客户先提交工单, 等后台开启后,可体验该功能。
+2. 按需拉流和按需录制是无关的，两者之间没有关联。
+3. 普通模板和按需模板区别:如果绑定了普通的录制/截图模板,设备只要开始推流, qvs就会自动开始录制/截图。 如果绑定了“按需”类型的模板，则需要通过api触发录制的[开始](https://developer.qiniu.com/qvs/6743/start-record-stream)或者[结束](https://developer.qiniu.com/qvs/6744/stop-record-stream)。

@@ -1,0 +1,68 @@
+# **描述**
+用于将任意时间段内的视频，剪裁或拼接合并成新的文件,格式支持m3u8(适合在线点播回放), mp4(适合下载), flv(适合下载)。
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：POST
+* 接口路径：`/v1/namespaces/{namespaceId}/streams/{streamId}/saveas`
+* 如果生成的格式为flv或者mp4, 这是异步过程，可通过[`接收录制状态回调`](https://developer.qiniu.com/qvs/10240/the-message-callback)来获取视频转换完成的通知， 也可以通过本接口返回的persistentID，主动查询视频处理状态。
+
+
+# **请求参数**
+**路径参数**
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|streamId|是|string|	流ID
+
+
+**请求Body**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|start|是|integer|查询开始时间(unix时间戳,单位为秒)
+|end|是|integer|查询结束时间(unix时间戳,单位为秒)
+| format | 是 |string|保存的文件格式,可以为m3u8, mp4或者flv
+| fname | 否 |string|保存的文件名，不指定系统会随机生成
+| pipeline | 否 |string|数据处理的私有队列，不指定则使用公共队列|
+| notifyUrl | 否 |string|保存成功回调通知地址，不指定则不通知  <a href="https://developer.qiniu.com/dora/manual/1291/persistent-data-processing-pfop">通知的详细信息查考这里|
+| deleteAfterDays | 否|integer|文件过期时间,默认和录制模版中的设置保持一致, `-2 表示永不过期`|
+| deleteTs | 否 | bool | 在不生成m3u8格式文件时是否删除对应的ts文件, 默认不删除 |
+
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|bucket|string|文件存储的bucket|
+|fname|string|表示保存后在存储空间里的文件名。使用存储空间的下载域名可以访问这文件，形如: `http://<DownloadDomainOfStorageBucket>/<Fname>`|
+|duration|int|合并后文件的时长(单位为秒)|
+|persistentID|string|持久化异步处理任务ID，异步模式才会返回该字段，可以通过该字段查询转码进度，[持久化处理状态查询](https://developer.qiniu.com/dora/manual/1294/persistent-processing-status-query-prefop)|
+
+
+# 示例
+
+请求包:
+
+```
+curl --request POST \
+  --url http://qvs.qiniuapi.com/v1/namespaces/3nm4x0vyz7xlu/streams/31011500991320000129/saveas \
+	--header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc=' \
+  --header 'content-type: application/json' \
+  --data '{
+	"start":1601346558,
+	"end":1601347915,
+	"format":"mp4"
+}'
+```
+
+返回包:
+
+```
+200 OK {
+  "fname": "record/3nm4x0vyz7xlu/31011500991320000129/1601346558445-1601347917100-1301394.mp4",
+  "persistentId": "z0.01z002c5zj4qq9rouo00muj6so00012w",
+  "bucket": "linking_ipc_test",
+  "duration": 1301
+}
+
+```

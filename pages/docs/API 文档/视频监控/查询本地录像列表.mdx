@@ -1,0 +1,74 @@
+# **描述**
+本接口用于查询设备本地录像列表
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/devices/{deviceId}/recordhistories?start=<start>&end=<end>&chId=<chId>`
+* Get请求，通过`非SDK`方式调用的客户，http头部Content-Type,`要么设置为application/x-www-form-urlencoded`,`要么置空`, `要么不要携带`,否则query字段无效; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|deviceId|是|string|国标ID
+|start|是|integer|查询开始时间(unix时间戳,单位为秒)
+|end|是|integer|查询结束时间(unix时间戳,单位为秒), `[start,end]时间跨度不能超过1天`
+|chId|否|string|设备类型为"平台"时,chId就是通道国标Id; 否则忽略改字段
+
+# **响应参数**
+
+|参数名称|类型|说明|
+|---|---|---|
+|items|录制数组|录制数组
+|items.streamId|string|流id
+|items.start|integer|录制开始时间(unix时间戳,单位为秒)
+|items.end|integer|录制结束时间(unix时间戳,单位为秒)
+|items.playUrls|RoutePlayUrls结构体|播放地址
+|items.playUrls.rtmp|string|rtmp播放地址
+|items.playUrls.hls|string|hls播放地址
+|items.playUrls.flv|string|flv播放地址
+|items.playUrls.webrtc|string|webrtc播放地址
+
+# **示例**
+
+**请求示例**
+
+```
+curl --request GET \
+  --url 'qvs.qiniuapi.com/v1/namespaces/2akrarrzns76w/devices/31011500991180000083/recordhistories?start=1587899020&end=1587968104&chId=34020000001310000034' \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "items": [
+    {
+      "playUrls": {
+        "rtmp": "rtmp://110.242.48.47:2045/2akrarxjr6tzn/31011500991180000083_34020000001310000034_history_1603953722_1603954811?e=1698648132&token=test123%3A2RHFgPUo9TFhnlQLjLGMFQTA3h8",
+        "flv":"http://110.242.48.47:1360/2akrarxjr6tzn/31011500991180000083_34020000001310000034_history_1603953722_1603954811.flv?e=1698648132&token=test123%3Al92J0DMtgo8kOvMJ9pZygqC-cvw",
+        "hls": "http://110.242.48.47:1370/2akrarxjr6tzn/31011500991180000083_34020000001310000034_history_1603953722_1603954811.m3u8?e=1698648132&token=test123%3AdCsTKlht7sDmedNLZOZ28kHUFbU",
+        "webrtc": "webrtc://110.242.48.47:1985/2akrarxjr6tzn/31011500991180000083_34020000001310000034_history_1603953722_1603954811?e=1698648132&token=test123%PUo9PUo9TFhZygqlQLjLGDmedNLv2"
+      },
+      "start": 1603953722,
+      "end": 1603954811,
+      "streamId": "31011500991180000083_34020000001310000034_history_1603953722_1603954811",
+      "type": "time"
+    },
+    {
+      "playUrls": {
+        "rtmp": "rtmp://110.242.48.47:2045/2akrarxjr6tzn/31011500991180000083_34020000001310000034_history_1604037616_1604040122?e=1698648132&token=test123%3AJEGIjT0zX63uwfRrUSDgoeiyQjA",
+        "flv":"http://110.242.48.47:1360/2akrarxjr6tzn/31011500991180000083_34020000001310000034_history_1604037616_1604040122.flv?e=1698648132&token=test123%3AhUmsW6op6lBtFc5RuniTr4MQuKA",
+        "hls": "http://110.242.48.47:1370/2akrarxjr6tzn/31011500991180000083_34020000001310000034_history_1604037616_1604040122.m3u8?e=1698648132&token=test123%3AG5z9b1D8vf6enPgR8OakWdwGfZo",
+        "webrtc": "webrtc://110.242.48.47:1985/2akrarxjr6tzn/31011500991180000083_34020000001310000034_history_1604037616_1604040122?e=1698648132&token=test123%PUo9PUo9TFhZygqlQLjLGDmedNLv2"
+      },
+      "start": 1604037616,
+      "end": 1604040122,
+      "streamId": "31011500991180000083_34020000001310000034_history_1604037616_1604040122",
+      "type": "time"
+    }
+  ]
+}
+```

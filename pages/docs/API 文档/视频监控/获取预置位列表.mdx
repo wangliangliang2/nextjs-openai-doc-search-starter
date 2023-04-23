@@ -1,0 +1,47 @@
+本接口用于获取预置位列表
+
+* 接口请求域名：`qvs.qiniuapi.com`
+* 请求方式：GET
+* 接口路径：`/v1/namespaces/{namespaceId}/devices/{gbId}/presets?chId=<chId>&fetch=<fetch>`
+* Get请求，通过`非SDK`方式调用的客户，http头部Content-Type,`要么设置为application/x-www-form-urlencoded`,`要么置空`, `要么不要携带`; [公共http header说明](https://developer.qiniu.com/qvs/6709/qvs-http-headers)
+
+# **请求参数**
+**路径参数**
+
+|参数名称|必填|字段类型|说明|
+|---|---|---|---|
+|namespaceId|是|string|空间ID
+|gbId|是|string|设备国标ID
+|chId|否|string|如果设备是普通摄像头，该字段置空字符串即可，如果设备是平台类型，该字段为子设备国标ID
+|fetch|否|bool|是否强制从设备获取预置位
+
+# **响应参数**
+|参数名称|必填|类型|说明|
+|---|---|---|---|
+|items|是|预置位数组|预置位数组
+|items.id|gb28181设备需指定|int|预置位ID
+|items.name|是|string|预置位名称
+|items.token|onvif设备需指定|string|预置位token
+
+```
+curl --request GET \
+  --url http://qvs.qiniuapi.com/v1/namespaces/2akrarxtmpned/devices/31011500991320000137/presets \
+  --header 'authorization: Qiniu j853F3bLkWl59I5BOkWm6q1Z1mZClpr9Z9CLfDE0:u372aQV0359mzwTVGxn22sRgFYc='
+```
+**响应示例**
+
+```
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "东南方向2点"
+    },
+    {
+      "id": 2,
+      "name": "预置点2"
+    }
+  ]
+}
+```
+

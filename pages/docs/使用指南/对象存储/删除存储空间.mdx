@@ -1,0 +1,21 @@
+您可以在对象存储 Kodo 控制台删除您不再需要的存储空间（Bucket）。
+<br>
+
+# **说明**
+- 非空空间不可删除，您需要先删除该空间中所有的文件（Object），详情请见[删除文件](/kodo/development_guidelines/8571/delete-the-file)。
+- 直播空间不可删除，详情请参考七牛直播云[直播落存储服务](https://developer.qiniu.com/pili/1209/live-the-core-function#4)。
+- 若空间仍绑定有自定义 CDN 域名时，不允许删除。您可参考[设置自定义 CDN 加速域名](/kodo/development_guidelines/8555/set-the-custom-cdn-to-accelerate-the-domain-name)先解绑 CDN 域名，后删除空间。
+- 空间删除后，空间名称可以被重新使用。
+- 更多详情请参考[删除空间](/kodo/development_guidelines/8601/dev-delete-the-space)。
+
+### **空间删除后不可恢复，请谨慎操作！**
+<br>
+
+# **操作步骤**
+
+1. 登录 Kodo 控制台进入[空间管理](https://portal.qiniu.com/kodo/bucket)界面
+2. 单击**目标空间名称**进入空间概览，单击**空间设置**进入空间设置界面；或单击目标空间栏**设置**，快速链接至空间设置界面
+3. 找到删除空间栏，如图1，单击**删除空间**。
+图1:
+![截屏2021-08-13 下午1.48.42.png](https://dn-odum9helk.qbox.me/Fgm6WV4-Gfjyw_nZBe9nSqSazYGR)
+4. 在弹出的警示窗口，单击**确定**，后输入**账户密码**再单击**确定**，完成删除空间操作。

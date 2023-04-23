@@ -1,0 +1,5 @@
+当镜像源的文件更新（或删除）后，刷新 CDN 缓存的方法有以下两种：  
+1. 首先将空间中该资源删除；  
+然后按照 [刷新缓存的方法](/fusion/kb/1325/refresh-the-cache-and-the-effect-of-time) 文档第一条介绍的方法，提交刷新缓存请求。  
+2. 首先，利用 <a href="https://developer.qiniu.com/kodo/api/1293/prefetch">prefetch 接口</a> 或者 [qshell](/kodo/tools/1302) 工具的 <a href="https://github.com/qiniu/qshell/blob/master/docs/prefetch.md?ref=developer.qiniu.com">prefetch 命令</a> 将镜像源站的资源覆盖空间中相同名称的资源；  
+然后按照 [刷新缓存的方法](/fusion/kb/1325/refresh-the-cache-and-the-effect-of-time) 文档第一条介绍的方法，提交刷新缓存请求。

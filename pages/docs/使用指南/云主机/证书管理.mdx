@@ -1,0 +1,102 @@
+<a id="step01"></a>
+# **上传证书**
+
+为了支持 HTTPS 数据传输加密认证，负载均衡提供证书管理功能。你可以将证书存储到负载均衡证书管理系统，而不需要将证书直接部署到后端服务器上，上传到证书管理系统的私钥都会加密存储。一个证书可以应用于一个或多个监听。
+
+说明：
+
+- 负载均衡证书是分地域管理的，即一个证书如果要在多个地域使用，那么创建、上传证书时就需要选择多个地域。
+
+- 每个账号最多可以创建 100 个证书。
+
+操作步骤：
+
+**1. **登录[云主机管理平台](https://portal.qiniu.com/qvm)
+
+**2. **在左侧导航栏，单击**负载均衡 > 证书**
+
+**3. **在证书管理页面，单击**新建**
+
+**4. **在新建证书页面，完成以下配置后，单击**确定**
+
+- 地域：选择要使用证书的地域。如果你的证书需要在多个地域使用，请把对应地域都选上。
+
+- 名称：输入证书名称
+
+- 证书类型：
+
+	- 服务器证书：HTTPS 单向认证，只需要上传服务器证书和私钥。
+    
+  - CA 证书：如果你要配置 HTTPS 双向认证，除了上传服务器证书外，你还需选择 CA 证书进行上传。
+
+- 证书内容：复制你的服务器或者 CA 证书内容
+
+```
+#服务器证书内容示例
+-----BEGIN CERTIFICATE-----
+MIIE/zCCA+egAwIBAgISA109ChIkKAVUsabw7o2Up7PrMA0GCSqGSIb3DQEBCwUA
+MEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD
+ExpMZXQncyBFbmNyeXB0IEF1dGhvcml0eSBYMzAeFw0xODAzMjIxMTQwMzlaFw0x
+ODA2MjAxMTQwMzlaMBkxFzAVBgNVBAMTDnF2bS5taXhqOTMuY29tMIIBIjANBgkq
+hkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAz1zadEWrzkr6sDCfYcYA87Gn8r1u8oQL
+jcnlwdC5vcmcvcmVwb3NpdG9yeS8wDQYJKoZIhvcNAQELBQADggEBAE33P5DW2Szzc
+pt2iNbr4hsCkkLzc2A/e3jAKAMujjMkXSBW76IYFVf0LdAN9IkH/7C5fn0w0J8QY
+HslKxuAeKxBlYi2qp/ZRpTrJd5sRBJGu3CkvRWn7APXQz3ik1xPXUl+ZIthmj3b1
+LB97v6RFJz65adX29fNfsNOcmjrgW257T4dMk8mlUxsU4uuShefleMiARNzuHh9t
+63HJhBbr+L4lq4IaUmrVtMDmEm3Ad6BU8EtbcVlilRwzgAqBd31yOxCYF5UAUItA
+FoSAB0JCpw7b1CTa/FMxKWzZ7/NYN8pA7C8OfhBDRHiuz7g=
+-----END CERTIFICATE-----
+
+#CA 证书内容示例
+-----BEGIN CERTIFICATE-----
+MIIDIDCCAggCAwD6zjANBgkqhkiG9w0BAQQFADCBlDELMAkGA1UEBhMCQ04xETAP
+BgNVBAgMCFpoZUppYW5nMREwDwYDVQQHDAhIYW5nWmhvdTEOMAwGA1UECgwFUWlu
+aXUxEjAQBgNVBAsMCVRlc3RfMDMyMzEXMBUGA1UEAwwOcXZtLm1peGo5My5jb20x
+6t9xEFk1mTljXiIHpWSDVyFvPf3VD1vDHGUPgL2SJ3Lpx5ke
+-----END CERTIFICATE-----
+
+
+
+```
+
+- 私钥：复制你的服务器证书的私钥，私钥只有服务器证书才需要，格式如下：
+
+```
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpQIBAAKCAQEAz1zadEWrzkr6sDCfYcYA87Gn8r1u8oQL6Q8zWkAqCeuifN+u
+Ii9I9gaMw0laodn6Rs9+r2w860EbyunpUyisgE7wQRvRQdjYBL02Goy5hN1pmrgH
+ZMNdQRpN5OY+DFpd3wEFKhq+7UXawivjimvc2rjNF9/FwAupLrKViiATBfSUJ1C4
+VtpSrIMuZwQsCY2hxKa3Y0T2uIJ+tXBiofPGEcK3i+1W6/L3Ns2KNWxHoV60GTU/
+7mPao/yR5I1RQuddFJDEjI2b9Gi66+ULyxfIPqCMZeXGR7g1/NzAHhNPGTjO01l0
+MIFZE08CgYEAt8UvRGrO+zlFdJ2sef4AxZ/X60nJrCoLZDq/ofzismVkvj4YjK6T
+xRG0Yu4dlM2EjLTuK+ROXWKRhjZ05Y6OAdiQ72pTn5M+mVbqHPiDCOhI7FeIqwAl
+jwtdi/K5B7O1seJOtLkCbMseO7d8omOw7SAxJPLsEn1VFr3c3cDarXM=
+-----END RSA PRIVATE KEY-----
+```
+
+上传证书后，你可以在负载均衡管理控制台的证书管理页面中查看证书、编辑证书名称、删除证书。
+
+- 单击**编辑**，修改证书名称
+
+- 单击**删除**，删除证书
+
+ **注意：**证书如果在 HTTPS 监听中被引用了，则无法删除该证书
+ 
+ <br>
+ 
+<a id="step02"></a>
+# **替换证书**
+
+当出现以下情况时，需要替换证书：
+
+- 证书过期，需要创建新的证书。
+
+- 负载均衡添加证书报错，可能是私钥内容错误，需要替换为新的满足需求的证书。
+
+**1. **新建并上传一个新的证书。详细步骤请参考[上传证书](#step01)。
+
+**2. **在 HTTPS 监听中配置新的证书。详细步骤请参考[配置 HTTPS 监听](/qvm/manual/qvm-listener#4)。
+
+**3. **打开证书管理页面，找到目标证书，然后单击**删除**。
+
+**4. **在弹出的对话框中，单击**确定**。

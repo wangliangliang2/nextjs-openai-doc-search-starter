@@ -1,0 +1,89 @@
+您可以使用 export 命令导出搜索分析结果。
+
+语法：
+
+```
+export type=<string> sink=<string> <args_name>=<args_value>[ <args_name>=<args_value>]...
+```
+
+参数说明：
+* type：导出的数据类型。目前支持类型以 json 格式导出。
+* sink: 导出目的地。目前支持导出到  es，kafka，repo（Pandora 2.0日志仓库），s3, mysql, http。
+* args_name:不同sink需填写的参数不同，详情如下。
+	* sink="es":
+	  * host:接收地址。
+	  * index:导出至es可填写es索引。
+	  * indextype:导出至es可填写es索引类型。
+	* sink="kafka":
+	  * host:接收地址。
+	  * topic:导出至kafka可填写kafka主题。
+	* sink="repo":
+	  * repo:repo名称。
+	  * sourcetype:导出数据的sourcetype。目前支持json类型sourcetype。
+	* sink="s3":
+	   </br>（必参数填）
+	  * bucketName：存储桶名称。
+	  * region: 服务区域。
+	  * prefix：要导出的s3文件名前缀； 导出的文件名为：prefix + timePatternSuffix + fileTypeSuffix。如果需要对文件进行压缩，添加压缩类型为后缀。
+	  * accessKey：访问密钥AK。
+	  * secretKey：访问密钥SK。
+	  </br>（可选参数）
+	  * endpoint：终端节点地址。不填时使用sdk默认参数，填写时必须以 http/https 为前缀
+	  * splitter：每条数据间的分隔符，默认'\n'。
+	  * timeSuffix: 要导出的文件名时间后缀，如yyyy-MM-dd，默认为空。
+	  * fileTypeSuffix: 导出的文件类型后缀，默认为空。
+	  * maxLines: 单个文件最大行数，默认100000。
+	  * maxSize: 单个文件最大大小，单位MB，默认500MB。
+	  * compress: 是否压缩, false or true，默认false。
+	  * compressType: 压缩算法，支持 gz(gzip 算法), bzip2, xz, pack2000, zip 算法。
+	* sink="mysql":
+	  * host: 数据库地址。参考这种写法"jdbc:mysql://xxx.xxx.xxx.xxx:xxxx/databaseName?useSSL=false"， 数据库名称修改<databaseName>参数，还可以通过host指定搜索的时区，"jdbc:mysql://xxx.xxx.xxx.xxx:xxxx/databaseName?useSSL=false&serverTimeZone=Asia/Shanghai"。
+	  * userName: 数据库用户名。 
+	  * password: 数据库密码。
+	  * table: 数据库表。
+	* sink="http":
+	  * url: http地址，url不以http开始时，默认添加http://。
+	  * header: header信息，可为空，或者以json形式的key value，注意转义。 
+
+
+>注意：默认情况下，export命令导出1个小时内的搜索分析结果。如果您想指定时间范围，可以通过搜索分析界面的时间选择器指定时间范围或者通过search命令的start，end参数指定时间区间。形如：
+```start="-3h" end="-2h"……|……|export type="json" sink="kafka" host="10.200.20.39:9092" topic="test_dump"
+```
+导出从前3小时到前2小时的搜索分析结果。关于search命令的start，end参数，[点此](/express/manual/6021/search)了解详情。
+
+用法示例：
+
+导出数据到kafka:
+
+```
+*|export type="json" sink="kafka" host="10.200.20.39:9092" topic="test_dump"
+```
+
+导出数据到es:
+
+```
+*|export type="json" sink="es" host="http://10.200.20.40:9600" index="test_dump" indextype="test"
+```
+
+导出数据到日志仓库:
+```
+*|export type="json" sink="repo" repo="default" sourcetype="json"
+```
+
+导出数据至s3:
+
+```
+*|export type="json" sink="s3" bucketName="bucket" region="region" prefix="key" accessKey="myAccessKey" secretKey="mySecretKey" endpoint="https://<s3-endpoint>" timeSuffix="yyyy-MM-dd" fileTypeSuffix=".json" compress=true compressType="zip" maxLines=10000 maxSize=200
+```
+
+导出数据至mysql:
+
+```
+*| export sink="mysql" host="jdbc:mysql://xxx.xxx.xxx.xxx:xxxx/databaseName?useSSL=false" userName=<userName> password=<password> table=<tableName>
+```
+导出数据至http:
+
+```
+*| export sink="http" url="http://xxx.xxx.xx.xxx:xxxx/test1" header="{\"Content-Type\":\"application/json\"}"
+
+```
