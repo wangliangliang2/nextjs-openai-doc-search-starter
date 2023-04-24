@@ -14,10 +14,6 @@ const openAiKey = process.env.OPENAI_KEY
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-function sleep(ms:number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 export default async function handler(req: NextRequest) {
   try {
     if (!openAiKey) {
@@ -67,8 +63,6 @@ export default async function handler(req: NextRequest) {
         categories: results.categories,
       })
     }
-    
-    await sleep(500)
 
     let embeddingResponse = await fetch('https://api.openai.com/v1/embeddings', {
       method: 'POST',
