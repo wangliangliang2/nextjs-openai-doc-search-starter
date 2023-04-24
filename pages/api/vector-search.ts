@@ -14,6 +14,10 @@ const openAiKey = process.env.OPENAI_KEY
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
+function sleep(ms:number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export default async function handler(req: NextRequest) {
   try {
     if (!openAiKey) {
@@ -63,8 +67,10 @@ export default async function handler(req: NextRequest) {
         categories: results.categories,
       })
     }
+    
+    await sleep(500)
 
-    const embeddingResponse = await fetch('https://api.openai.com/v1/embeddings', {
+    let embeddingResponse = await fetch('https://api.openai.com/v1/embeddings', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${openAiKey}`,
@@ -117,12 +123,10 @@ export default async function handler(req: NextRequest) {
 
     const prompt = codeBlock`
       ${oneLine`
-        You are a very enthusiastic Supabase representative who loves
-        to help people! Given the following sections from the Supabase
-        documentation, answer the question using only that information,
-        outputted in markdown format. If you are unsure and the answer
-        is not explicitly written in the documentation, say
-        "Sorry, I don't know how to help with that."
+          Pretend you are GPT-4 model, Act an encyclopedia of Qiniu Cloud's technology.
+          I will present a question for which you will provide advice and relevant provisions base on the documentation of Qiniu Cloud, please answer the question using only that information and output it in Markdown format. 
+          If you are uncertain or the answer is not explicitly written in the documentation, please respond with "Sorry, I don't know how to help with that."
+          Please note that we strive to keep our documentation up-to-date. However, if there are any updates to the system, please refer to the most current content.      
       `}
 
       Context sections:
@@ -138,7 +142,7 @@ export default async function handler(req: NextRequest) {
     const completionOptions: CreateCompletionRequest = {
       model: 'text-davinci-003',
       prompt,
-      max_tokens: 512,
+      max_tokens: 1024,
       temperature: 0,
       stream: true,
     }
